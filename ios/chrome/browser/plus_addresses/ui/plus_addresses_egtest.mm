@@ -124,7 +124,8 @@ void ExpectModalTimeSample(
       [self isRunningTest:@selector(testAffiliationError)] ||
       [self isRunningTest:@selector(testTimeOutAlertOnConfirm)] ||
       [self isRunningTest:@selector(testGenericAlertOnConfirm)] ||
-      [self isRunningTest:@selector(testQuotaErrorAlertOnReserve)]) {
+      [self isRunningTest:@selector(testQuotaErrorAlertOnReserve)] ||
+      [self isRunningTest:@selector(testTimeoutErrorAlertOnReserve)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
          {}});
@@ -546,6 +547,38 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_OK)] performAction:grey_tap()];
+}
+
+// Tests that a timeout alert is shown when the plus address is failed to
+// reserve.
+- (void)testTimeoutErrorAlertOnReserve {
+  [PlusAddressAppInterface setShouldReturnTimeoutError:YES];
+
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS));
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  // Click on "Try again".
+  id<GREYMatcher> tryAgainButton = grey_text(l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS));
+  [[EarlGrey selectElementWithMatcher:tryAgainButton] performAction:grey_tap()];
+
+  // The error alert is shown again.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  // Clear out the error state.
+  [PlusAddressAppInterface setShouldReturnTimeoutError:NO];
+
+  // "Try again"
+  [[EarlGrey selectElementWithMatcher:tryAgainButton] performAction:grey_tap()];
+
+  // Plus address sheet is opened and label is shown.
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
 }
 
 @end

@@ -216,7 +216,7 @@ enum class PlusAddressAction {
           if (maybePlusProfile.error().IsQuotaError()) {
             [_delegate displayPlusAddressQuotaErrorAlert:YES];
           } else if (maybePlusProfile.error().IsTimeoutError()) {
-            [_delegate displayPlusAddressTimeoutErrorAlert];
+            [_delegate displayPlusAddressTimeoutErrorAlert:YES];
           } else {
             showGenericError = YES;
           }
@@ -251,7 +251,7 @@ enum class PlusAddressAction {
           if (maybePlusProfile.error().IsQuotaError()) {
             [_delegate displayPlusAddressQuotaErrorAlert:NO];
           } else if (maybePlusProfile.error().IsTimeoutError()) {
-            [_delegate displayPlusAddressTimeoutErrorAlert];
+            [_delegate displayPlusAddressTimeoutErrorAlert:NO];
           } else {
             showGenericError = YES;
           }

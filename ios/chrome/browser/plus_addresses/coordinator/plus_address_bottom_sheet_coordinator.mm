@@ -91,6 +91,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
   _mediator.consumer = _viewController;
 
+  CHECK(!_viewIsPresented);
   _viewIsPresented = YES;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -107,14 +108,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 - (void)stop {
   [super stop];
-  if (_viewIsPresented) {
-    [_viewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-  }
-
-  _viewController = nil;
-  _mediator = nil;
+  [self dismissBottomSheetWithCompletion:nil];
 }
 
 #pragma mark - PlusAddressBottomSheetMediatorDelegate
@@ -150,7 +144,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
             isAffiliationError:NO];
 }
 
-- (void)displayPlusAddressTimeoutErrorAlert {
+- (void)displayPlusAddressTimeoutErrorAlert:(BOOL)shouldDismissBottomSheet {
   NSString* title =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_TITLE_IOS);
   NSString* message =
@@ -161,7 +155,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                        message:message
             primaryButtonTitle:primaryButtonTitle
           secondaryButtonTitle:l10n_util::GetNSString(IDS_CANCEL)
-      shouldDismissBottomSheet:NO
+      shouldDismissBottomSheet:shouldDismissBottomSheet
             isAffiliationError:NO];
 }
 
@@ -209,7 +203,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                     if (isAffiliationError) {
                       [weakSelf handlePlusAddressAffiliationErrorAcceptance];
                     } else if (secondaryButtonTitle) {
-                      [weakSelf handleTryAgainAction];
+                      [weakSelf handleTryAgainAction:shouldDismissBottomSheet];
                     } else {
                       [weakSelf handleErrorAlertCancellation];
                     }
@@ -227,12 +221,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
   if (shouldDismissBottomSheet) {
     if (_viewIsPresented) {
-      _viewIsPresented = NO;
-      [self.baseViewController.presentedViewController
-          dismissViewControllerAnimated:YES
-                             completion:^{
-                               [weakSelf.alertCoordinator start];
-                             }];
+      [self dismissBottomSheetWithCompletion:^{
+        [weakSelf.alertCoordinator start];
+      }];
       return;
     }
   }
@@ -247,9 +238,13 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 }
 
 // Called to retry the previous action.
-- (void)handleTryAgainAction {
+- (void)handleTryAgainAction:(BOOL)didDismissBottomSheet {
   [self stopAlertCoordinator];
-  [_mediator didSelectTryAgainToConfirm];
+  if (didDismissBottomSheet) {
+    [self start];
+  } else {
+    [_mediator didSelectTryAgainToConfirm];
+  }
 }
 
 // Called when the cancel button ("OK" or "Cancel") is tapped.
@@ -258,11 +253,24 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [_mediator didCancelAlert];
 }
 
-// Dimisses the alert Coordinator.
+// Dimisses the alert coordinator.
 - (void)stopAlertCoordinator {
   CHECK(self.alertCoordinator);
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
+}
+
+// Dismisses the bottom sheet.
+- (void)dismissBottomSheetWithCompletion:(void (^)(void))completion {
+  if (_viewIsPresented) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:completion];
+    _viewIsPresented = NO;
+  }
+
+  _viewController = nil;
+  _mediator = nil;
 }
 
 @end
