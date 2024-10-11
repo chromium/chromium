@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -148,8 +147,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                     @Override
                     public void updateDrawState(TextPaint textPaint) {
                         super.updateDrawState(textPaint);
-                        textPaint.setColor(
-                                context.getColor(R.color.default_text_color_link_baseline));
+                        textPaint.setColor(context.getColor(R.color.default_text_color_link_light));
                     }
                 };
         view.setText(
@@ -358,11 +356,32 @@ public class IncognitoDescriptionView extends LinearLayout {
                 getContext()
                         .getResources()
                         .getString(R.string.new_tab_otr_subtitle_with_reading_list);
-        boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
 
+        final ClickableSpan learnMoreSpan =
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        mLearnMore.callOnClick();
+                    }
+
+                    @Override
+                    public void updateDrawState(TextPaint textPaint) {
+                        super.updateDrawState(textPaint);
+                        textPaint.setColor(
+                                getContext().getColor(R.color.default_text_color_link_light));
+                    }
+                };
+
+        boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
 
         if (!learnMoreInSubtitle) {
+            // Format the "Learn more" link.
+            SpannableString learnMoreLink =
+                    new SpannableString(getContext().getResources().getString(R.string.learn_more));
+            learnMoreLink.setSpan(learnMoreSpan, 0, learnMoreLink.length(), /* flags= */ 0);
+            mLearnMore.setText(learnMoreLink);
+
             // Revert to the original text.
             mSubtitle.setText(subtitleText);
             mSubtitle.setMovementMethod(null);
@@ -376,13 +395,11 @@ public class IncognitoDescriptionView extends LinearLayout {
         concatenatedText.append(getContext().getResources().getString(R.string.learn_more));
         SpannableString textWithLearnMoreLink = new SpannableString(concatenatedText.toString());
 
-        NoUnderlineClickableSpan span =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        R.color.baseline_primary_80,
-                        (view) -> mLearnMore.callOnClick());
         textWithLearnMoreLink.setSpan(
-                span, subtitleText.length() + 1, textWithLearnMoreLink.length(), /* flags= */ 0);
+                learnMoreSpan,
+                subtitleText.length() + 1,
+                textWithLearnMoreLink.length(),
+                /* flags= */ 0);
         mSubtitle.setText(textWithLearnMoreLink);
         mSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
     }
