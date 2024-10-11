@@ -6,8 +6,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {HIDDEN_CLASS} from './constants.js';
 import {Cloud} from './dino_game/cloud.js';
-import {IS_HIDPI, IS_IOS} from './dino_game/constants.js';
+import {FPS, IS_HIDPI, IS_IOS} from './dino_game/constants.js';
 import {GeneratedSoundFx} from './dino_game/generated_sound_fx.js';
+import {HorizonLine} from './dino_game/horizon_line.js';
 import {getRandomNum} from './dino_game/utils.js';
 import {CollisionBox, GAME_TYPE, spriteDefinitionByType} from './offline-sprite-definitions.js';
 
@@ -111,12 +112,6 @@ export function Runner(outerContainerId, opt_config) {
  * @const
  */
 const DEFAULT_WIDTH = 600;
-
-/**
- * Frames per second.
- * @const
- */
-const FPS = 60;
 
 /** @const */
 const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
@@ -3442,144 +3437,6 @@ NightMode.prototype = {
     this.update(false);
   },
 
-};
-
-
-//******************************************************************************
-
-/**
- * Horizon Line.
- * Consists of two connecting lines. Randomly assigns a flat / bumpy horizon.
- * @param {HTMLCanvasElement} canvas
- * @param {Object} lineConfig Configuration object.
- * @constructor
- */
-function HorizonLine(canvas, lineConfig) {
-  let sourceX = lineConfig.SOURCE_X;
-  let sourceY = lineConfig.SOURCE_Y;
-
-  if (IS_HIDPI) {
-    sourceX *= 2;
-    sourceY *= 2;
-  }
-
-  this.spritePos = {x: sourceX, y: sourceY};
-  this.canvas = canvas;
-  this.canvasCtx =
-      /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
-  this.sourceDimensions = {};
-  this.dimensions = lineConfig;
-
-  this.sourceXPos = [this.spritePos.x, this.spritePos.x +
-      this.dimensions.WIDTH];
-  this.xPos = [];
-  this.yPos = 0;
-  this.bumpThreshold = 0.5;
-
-  this.setSourceDimensions(lineConfig);
-  this.draw();
-}
-
-
-/**
- * Horizon line dimensions.
- * @enum {number}
- */
-HorizonLine.dimensions = {
-  WIDTH: 600,
-  HEIGHT: 12,
-  YPOS: 127,
-};
-
-
-HorizonLine.prototype = {
-  /**
-   * Set the source dimensions of the horizon line.
-   */
-  setSourceDimensions(newDimensions) {
-    for (const dimension in newDimensions) {
-      if (dimension !== 'SOURCE_X' && dimension !== 'SOURCE_Y') {
-        if (IS_HIDPI) {
-          if (dimension !== 'YPOS') {
-            this.sourceDimensions[dimension] = newDimensions[dimension] * 2;
-          }
-        } else {
-          this.sourceDimensions[dimension] = newDimensions[dimension];
-        }
-        this.dimensions[dimension] = newDimensions[dimension];
-      }
-    }
-
-    this.xPos = [0, newDimensions.WIDTH];
-    this.yPos = newDimensions.YPOS;
-  },
-
-  /**
-   * Return the crop x position of a type.
-   */
-  getRandomType() {
-    return Math.random() > this.bumpThreshold ? this.dimensions.WIDTH : 0;
-  },
-
-  /**
-   * Draw the horizon line.
-   */
-  draw() {
-    this.canvasCtx.drawImage(Runner.imageSprite, this.sourceXPos[0],
-        this.spritePos.y,
-        this.sourceDimensions.WIDTH, this.sourceDimensions.HEIGHT,
-        this.xPos[0], this.yPos,
-        this.dimensions.WIDTH, this.dimensions.HEIGHT);
-
-    this.canvasCtx.drawImage(Runner.imageSprite, this.sourceXPos[1],
-        this.spritePos.y,
-        this.sourceDimensions.WIDTH, this.sourceDimensions.HEIGHT,
-        this.xPos[1], this.yPos,
-        this.dimensions.WIDTH, this.dimensions.HEIGHT);
-  },
-
-  /**
-   * Update the x position of an indivdual piece of the line.
-   * @param {number} pos Line position.
-   * @param {number} increment
-   */
-  updateXPos(pos, increment) {
-    const line1 = pos;
-    const line2 = pos === 0 ? 1 : 0;
-
-    this.xPos[line1] -= increment;
-    this.xPos[line2] = this.xPos[line1] + this.dimensions.WIDTH;
-
-    if (this.xPos[line1] <= -this.dimensions.WIDTH) {
-      this.xPos[line1] += this.dimensions.WIDTH * 2;
-      this.xPos[line2] = this.xPos[line1] - this.dimensions.WIDTH;
-      this.sourceXPos[line1] = this.getRandomType() + this.spritePos.x;
-    }
-  },
-
-  /**
-   * Update the horizon line.
-   * @param {number} deltaTime
-   * @param {number} speed
-   */
-  update(deltaTime, speed) {
-    const increment = Math.floor(speed * (FPS / 1000) * deltaTime);
-
-    if (this.xPos[0] <= 0) {
-      this.updateXPos(0, increment);
-    } else {
-      this.updateXPos(1, increment);
-    }
-    this.draw();
-  },
-
-  /**
-   * Reset horizon to the starting position.
-   */
-  reset() {
-    this.xPos[0] = 0;
-    this.xPos[1] = this.dimensions.WIDTH;
-  },
 };
 
 

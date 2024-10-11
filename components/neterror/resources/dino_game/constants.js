@@ -6,3 +6,9 @@
 export const IS_IOS = /CriOS/.test(window.navigator.userAgent);
 
 export const IS_HIDPI = window.devicePixelRatio > 1;
+
+/**
+ * Frames per second.
+ * @const
+ */
+export const FPS = 60;
