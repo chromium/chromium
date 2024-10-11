@@ -392,6 +392,9 @@ void AutocompleteResult::SortAndCull(
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
             std::make_unique<AndroidSRPZpsSection>(suggestion_groups_map_));
+      } else if (omnibox::IsAndroidHub(page_classification)) {
+        sections.push_back(
+            std::make_unique<AndroidHubZPSSection>(suggestion_groups_map_));
       } else {
         sections.push_back(
             std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));

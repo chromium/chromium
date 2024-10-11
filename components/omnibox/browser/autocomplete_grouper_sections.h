@@ -102,7 +102,13 @@ class AndroidNonZPSSection : public Section {
   static size_t num_visible_matches_;
 };
 
-// Android prefix section for Hub search.
+// Android prefix section for Hub search (ZPS).
+class AndroidHubZPSSection : public Section {
+ public:
+  explicit AndroidHubZPSSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Android prefix section for Hub search (non-ZPS).
 class AndroidHubNonZPSSection : public Section {
  public:
   explicit AndroidHubNonZPSSection(omnibox::GroupConfigMap& group_configs);
