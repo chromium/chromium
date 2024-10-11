@@ -76,6 +76,8 @@ if (!is_android && !is_ios) {
       "greedy_text_stabilizer.h",
       "live_translate_controller.cc",
       "live_translate_controller.h",
+      "translation_dispatcher.cc",
+      "translation_dispatcher.h",
     ]
 
     deps = [
