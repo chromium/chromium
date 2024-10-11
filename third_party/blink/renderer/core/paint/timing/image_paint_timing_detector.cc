@@ -224,11 +224,10 @@ void ImagePaintTimingDetector::StopRecordEntries() {
   // occur.
   records_manager_.ClearImagesQueuedForPaintTime();
   if (frame_view_->GetFrame().IsOutermostMainFrame()) {
-    DCHECK(frame_view_->GetFrame().GetDocument());
-    ukm::builders::Blink_PaintTiming(
-        frame_view_->GetFrame().GetDocument()->UkmSourceID())
+    auto* document = frame_view_->GetFrame().GetDocument();
+    ukm::builders::Blink_PaintTiming(document->UkmSourceID())
         .SetLCPDebugging_HasViewportImage(contains_full_viewport_image_)
-        .Record(ukm::UkmRecorder::Get());
+        .Record(document->UkmRecorder());
   }
 }
 
