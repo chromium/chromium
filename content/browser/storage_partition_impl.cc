@@ -451,7 +451,7 @@ class LoginHandlerDelegate {
       WebContents* web_contents,
       content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
-      bool is_request_for_primary_main_frame,
+      bool is_request_for_primary_main_frame_navigation,
       bool is_request_for_navigation,
       base::StrictNumeric<int32_t> process_id,
       base::StrictNumeric<int32_t> request_id,
@@ -461,7 +461,8 @@ class LoginHandlerDelegate {
       : auth_challenge_responder_(std::move(auth_challenge_responder)),
         auth_info_(auth_info),
         request_id_(process_id, request_id),
-        is_request_for_primary_main_frame_(is_request_for_primary_main_frame),
+        is_request_for_primary_main_frame_navigation_(
+            is_request_for_primary_main_frame_navigation),
         is_request_for_navigation_(is_request_for_navigation),
         creating_login_delegate_(false),
         url_(url),
@@ -510,8 +511,9 @@ class LoginHandlerDelegate {
     creating_login_delegate_ = true;
     login_delegate_ = GetContentClient()->browser()->CreateLoginDelegate(
         auth_info_, web_contents_.get(), browser_context_.get(), request_id_,
-        is_request_for_primary_main_frame_, is_request_for_navigation_, url_,
-        response_headers_, first_auth_attempt_,
+        is_request_for_primary_main_frame_navigation_,
+        is_request_for_navigation_, url_, response_headers_,
+        first_auth_attempt_,
         base::BindOnce(&LoginHandlerDelegate::OnAuthCredentials,
                        weak_factory_.GetWeakPtr()));
     creating_login_delegate_ = false;
@@ -535,7 +537,7 @@ class LoginHandlerDelegate {
       auth_challenge_responder_;
   net::AuthChallengeInfo auth_info_;
   const content::GlobalRequestID request_id_;
-  bool is_request_for_primary_main_frame_;
+  bool is_request_for_primary_main_frame_navigation_;
   bool is_request_for_navigation_;
   bool creating_login_delegate_;
   GURL url_;
@@ -1986,7 +1988,7 @@ void StoragePartitionImpl::OnAuthRequired(
         auth_challenge_responder) {
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
-  std::optional<bool> is_primary_main_frame;
+  std::optional<bool> is_primary_main_frame_navigation;
   std::optional<bool> is_navigation_request;
 
   if (window_id) {
@@ -2011,7 +2013,7 @@ void StoragePartitionImpl::OnAuthRequired(
 
           // Only the request for a sub resource intercepted by a service worker
           // reaches here.
-          is_primary_main_frame = false;
+          is_primary_main_frame_navigation = false;
           is_navigation_request = false;
         } else if (NavigationRequest* ongoing_navigation =
                        container_host->GetOngoingNavigationRequestBeforeCommit(
@@ -2036,8 +2038,8 @@ void StoragePartitionImpl::OnAuthRequired(
     return;
   }
 
-  if (!is_primary_main_frame.has_value()) {
-    is_primary_main_frame = context.IsPrimaryMainFrameRequest();
+  if (!is_primary_main_frame_navigation.has_value()) {
+    is_primary_main_frame_navigation = context.IsPrimaryMainFrameRequest();
   }
   if (!is_navigation_request.has_value()) {
     is_navigation_request = context.IsNavigationRequestContext();
@@ -2103,11 +2105,11 @@ void StoragePartitionImpl::OnAuthRequired(
     }
   }
 
-  new LoginHandlerDelegate(std::move(auth_challenge_responder),
-                           current_web_contents, browser_context_, auth_info,
-                           *is_primary_main_frame, *is_navigation_request,
-                           process_id, request_id, url, head_headers,
-                           first_auth_attempt);  // deletes self
+  new LoginHandlerDelegate(
+      std::move(auth_challenge_responder), current_web_contents,
+      browser_context_, auth_info, *is_primary_main_frame_navigation,
+      *is_navigation_request, process_id, request_id, url, head_headers,
+      first_auth_attempt);  // deletes self
 }
 
 void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(

@@ -204,8 +204,8 @@ class ServiceWorkerBasicAuthTest : public ContentBrowserTest {
     // on all platforms.
     ShellContentBrowserClient::Get()->set_login_request_callback(
         base::BindLambdaForTesting(
-            [&](bool is_primary_main_frame, bool is_for_navigation) {
-              login_requested_ = is_primary_main_frame
+            [&](bool is_primary_main_frame_navigation, bool is_for_navigation) {
+              login_requested_ = is_primary_main_frame_navigation
                                      ? LoginRequested::kMainFrame
                                      : LoginRequested::kNotMainFrame;
               is_for_navigation_ = is_for_navigation;

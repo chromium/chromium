@@ -2334,6 +2334,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // worker. If |web_contents| is not null, it is guaranteed to be associated
   // with the same BrowserContext as |browser_context|.
   // |browser_context| is always set.
+  // |is_request_for_primary_main_frame_navigation| is whether the request is
+  // for a navigation of the primary main frame.
+  // |is_request_for_navigation| is whether the request is for a navigation.
   // |first_auth_attempt| is needed by AwHttpAuthHandler constructor.
   // |auth_required_callback| is used to transfer auth credentials to
   // URLRequest::SetAuth(). The credentials parameter of the callback
@@ -2368,7 +2371,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       WebContents* web_contents,
       BrowserContext* browser_context,
       const GlobalRequestID& request_id,
-      bool is_request_for_primary_main_frame,
+      bool is_request_for_primary_main_frame_navigation,
       bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
