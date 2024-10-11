@@ -147,6 +147,23 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCardEnrollSuccess) {
       "Autofill.Snackbar.VirtualCardEnrollSuccess.ActionClicked", true, 1);
 }
 
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_UndoPlusAddressEmailSwap) {
+  base::HistogramTester histogram_tester;
+
+  controller()->Show(AutofillSnackbarType::kPlusAddressEmailOverride,
+                     base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.PlusAddressEmailOverride.Shown", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.PlusAddressEmailOverride.ActionClicked", true, 0);
+
+  controller()->OnActionClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.PlusAddressEmailOverride.ActionClicked", true, 1);
+}
+
 TEST_F(AutofillSnackbarControllerImplTest,
        SaveCardSuccessMessageAndActionButtonText) {
   controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());

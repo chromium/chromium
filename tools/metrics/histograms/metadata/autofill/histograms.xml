@@ -318,6 +318,9 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
 <variants name="Autofill.Snackbar.Type">
   <variant name="MandatoryReauth"
       summary="Snackbar shown after opting into mandatory reauth."/>
+  <variant name="PlusAddressEmailOverride"
+      summary="Snackbar shown after plus address was filled instead of the
+               user's email."/>
   <variant name="SaveCardSuccess"
       summary="Snackbar shown after card has been successfully saved."/>
   <variant name="SaveServerIbanSuccess"
