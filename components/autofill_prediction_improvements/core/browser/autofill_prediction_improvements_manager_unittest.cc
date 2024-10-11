@@ -185,8 +185,10 @@ class AutofillPredictionImprovementsManagerTest
     : public BaseAutofillPredictionImprovementsManagerTest {
  public:
   AutofillPredictionImprovementsManagerTest() {
-    feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
-                                                {{"skip_allowlist", "true"}});
+    feature_.InitAndEnableFeatureWithParameters(
+        kAutofillPredictionImprovements,
+        {{"skip_allowlist", "true"},
+         {"extract_ax_tree_for_predictions", "true"}});
     ON_CALL(client_, GetFillingEngine).WillByDefault(Return(&filling_engine_));
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
     ON_CALL(client_, GetTitle).WillByDefault(Return("title"));
@@ -903,13 +905,17 @@ TEST_F(
 }
 
 class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
-    : public BaseAutofillPredictionImprovementsManagerTest {
+    : public BaseAutofillPredictionImprovementsManagerTest,
+      public testing::WithParamInterface<bool> {
  public:
   AutofillPredictionImprovementsManagerTriggerAutomaticallyTest() {
     feature_.InitAndEnableFeatureWithParameters(
         kAutofillPredictionImprovements,
-        {{"skip_allowlist", "true"}, {"trigger_automatically", "true"}});
+        {{"skip_allowlist", "true"},
+         {"trigger_automatically", "true"},
+         {"extract_ax_tree_for_predictions", GetParam() ? "true" : "false"}});
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    ON_CALL(client_, GetFillingEngine).WillByDefault(Return(&filling_engine_));
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
         &client_, &decider_, &strike_database_);
   }
@@ -918,7 +924,7 @@ class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
 // Tests that calling `OnLoadingSuggestionShown()` results in retrieving the AX
 // tree (implying predictions will be attempted to be retrieved) if the
 // `kTriggerAutomatically` parameter is enabled.
-TEST_F(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
+TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
        OnLoadingSuggestionShownGetsAXTreeIfParamEnabled) {
   base::test::SingleThreadTaskEnvironment task_environment;
   autofill::test::FormDescription form_description = {
@@ -927,10 +933,17 @@ TEST_F(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
-  EXPECT_CALL(client_, GetAXTree);
+  if (GetParam()) {
+    EXPECT_CALL(client_, GetAXTree);
+  }
   manager_->OnLoadingSuggestionShown(form, form.fields().front(),
                                      update_suggestions_callback.Get());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
+    testing::Bool());
 
 class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
     : public BaseAutofillPredictionImprovementsManagerTest {

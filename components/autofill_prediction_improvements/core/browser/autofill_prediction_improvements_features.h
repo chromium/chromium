@@ -39,6 +39,11 @@ inline constexpr base::FeatureParam<base::TimeDelta> kExecutionTimeout{
     &kAutofillPredictionImprovements, /*name=*/"execution_timeout",
     /*default_value=*/base::Seconds(10)};
 
+inline constexpr base::FeatureParam<bool> kExtractAXTreeForPredictions{
+    &kAutofillPredictionImprovements,
+    /*name=*/"extract_ax_tree_for_predictions",
+    /*default_value=*/false};
+
 }  // namespace autofill_prediction_improvements
 
 #endif  // COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_FEATURES_H_

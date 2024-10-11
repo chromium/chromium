@@ -380,9 +380,14 @@ void AutofillPredictionImprovementsManager::RetrievePredictions(
   }
   prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
   last_queried_form_global_id_ = form.global_id();
-  client_->GetAXTree(
-      base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
-                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
+  if (kExtractAXTreeForPredictions.Get()) {
+    client_->GetAXTree(
+        base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
+                       weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
+  } else {
+    optimization_guide::proto::AXTreeUpdate ax_tree_update;
+    OnReceivedAXTree(form, trigger_field, std::move(ax_tree_update));
+  }
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedAXTree(
