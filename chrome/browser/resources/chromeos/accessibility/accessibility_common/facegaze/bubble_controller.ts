@@ -148,7 +148,7 @@ export class BubbleController {
 }
 
 export namespace BubbleController {
-  export const RESET_BUBBLE_TIMEOUT_MS = 5000;
+  export const RESET_BUBBLE_TIMEOUT_MS = 2500;
 
   export interface GetStateResult {
     paused: boolean;
