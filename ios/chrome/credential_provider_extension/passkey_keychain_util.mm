@@ -24,6 +24,7 @@ void FetchSecurityDomainSecret(
     NSString* gaia,
     UINavigationController* navigation_controller,
     PasskeyKeychainProvider::ReauthenticatePurpose purpose,
+    BOOL enable_logging,
     FetchKeyCompletionBlock completion) {
   PasskeyKeychainProvider passkeyKeychainProvider;
   passkeyKeychainProvider.FetchKeys(

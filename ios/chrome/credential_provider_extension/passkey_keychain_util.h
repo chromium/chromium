@@ -15,6 +15,7 @@ void FetchSecurityDomainSecret(
     NSString* gaia,
     UINavigationController* navigation_controller,
     PasskeyKeychainProvider::ReauthenticatePurpose purpose,
+    BOOL enable_logging,
     FetchKeyCompletionBlock completion);
 
 // Marks the security domain secret vault keys as stale and calls the completion

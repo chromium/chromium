@@ -596,7 +596,14 @@ UIColor* BackgroundColor() {
                               completion:(FetchKeyCompletionBlock)completion {
   // TODO(crbug.com/355047459): Add navigation controller.
   FetchSecurityDomainSecret(gaia, /*navigation_controller =*/nil, purpose,
-                            completion);
+                            [self metricsAreEnabled], completion);
+}
+
+- (BOOL)metricsAreEnabled {
+  // If metrics are enabled, the client ID must be set.
+  // If it is not set, metrics are disabled.
+  return [app_group::GetGroupUserDefaults()
+             objectForKey:@(app_group::kChromeAppClientID)] != nil;
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor

@@ -84,8 +84,7 @@ void EnableMetrics(NSString* client_id,
 }
 
 void DisableMetrics() {
-  NSUserDefaults* shared_defaults =
-      [[NSUserDefaults alloc] initWithSuiteName:ApplicationGroup()];
+  NSUserDefaults* shared_defaults = GetGroupUserDefaults();
   [shared_defaults removeObjectForKey:@(kChromeAppClientID)];
   [shared_defaults removeObjectForKey:kContentExtensionDisplayCount];
   [shared_defaults removeObjectForKey:kSearchExtensionDisplayCount];
