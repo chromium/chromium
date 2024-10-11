@@ -294,9 +294,8 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
 
   // Mutate the backing file. Skip the expensive file operations when there are
   // no bytes to mutate.
-  int64_t file_length;
-  CHECK(base::GetFileSize(env.db_path(), &file_length));
-  if (file_length > 0) {
+  std::optional<int64_t> file_length = GetFileSize(env.db_path());
+  if (*file_length > 0) {
     base::File file(env.db_path(), base::File::FLAG_OPEN |
                                        base::File::FLAG_READ |
                                        base::File::FLAG_WRITE);
@@ -305,7 +304,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     // is on a physical disk.
     for (TestCase::Mutation mutation : test_case.mutations()) {
       // File read/write operations expect positions to point within the file.
-      mutation.pos %= file_length;
+      mutation.pos %= *file_length;
       if (mutation.pos < 0) {
         mutation.pos = 0;
       }
@@ -326,7 +325,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
           file.Write(mutation.pos, reinterpret_cast<char*>(&buf), num_read),
           -1);
     }
-    CHECK_EQ(file_length, file.GetLength());
+    CHECK_EQ(*file_length, file.GetLength());
   }
 
   if (!env.out_db_path().empty()) {

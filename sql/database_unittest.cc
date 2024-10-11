@@ -15,6 +15,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -1368,9 +1369,9 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   // page.  Not checking directly because auto_vacuum on Android adds a freelist
   // page.
   ASSERT_TRUE(db_->Raze());
-  int64_t expected_size;
-  ASSERT_TRUE(base::GetFileSize(db_path_, &expected_size));
-  ASSERT_GT(expected_size, 0);
+  std::optional<int64_t> expected_size = GetFileSize(db_path_);
+  ASSERT_TRUE(expected_size.has_value());
+  EXPECT_GT(*expected_size, 0);
 
   // Cause the database to take a few pages.
   static constexpr char kCreateSql[] =
@@ -1385,9 +1386,9 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   // happens.
   ASSERT_TRUE(db_->CheckpointDatabase());
 
-  int64_t db_size;
-  ASSERT_TRUE(base::GetFileSize(db_path_, &db_size));
-  ASSERT_GT(db_size, expected_size);
+  std::optional<int64_t> db_size = GetFileSize(db_path_);
+  ASSERT_TRUE(db_size.has_value());
+  EXPECT_GT(*db_size, *expected_size);
 
   // Make a query covering most of the database file to make sure that the
   // blocks are actually mapped into memory.  Empirically, the truncate problem
@@ -1396,8 +1397,9 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
             ExecuteWithResult(db_.get(), "SELECT SUM(LENGTH(value)) FROM foo"));
 
   ASSERT_TRUE(db_->Raze());
-  ASSERT_TRUE(base::GetFileSize(db_path_, &db_size));
-  ASSERT_EQ(expected_size, db_size);
+  db_size = GetFileSize(db_path_);
+  ASSERT_TRUE(db_size.has_value());
+  EXPECT_EQ(*expected_size, *db_size);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2089,9 +2091,8 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   } else {
     // The Rollback journal should have a zero size when pending operations
     // are completed.
-    int64_t journal_size = 0;
-    base::GetFileSize(journal_path, &journal_size);
-    EXPECT_EQ(journal_size, 0);
+    std::optional<int64_t> journal_size = GetFileSize(journal_path);
+    EXPECT_THAT(journal_size, testing::Optional(0));
   }
 
   // Re-open the database with a different mode (Rollback vs WAL).
@@ -2236,11 +2237,10 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
 
   base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
 
-  int64_t wal_size = 0;
   // WAL file initially empty.
   EXPECT_TRUE(base::PathExists(wal_path));
-  base::GetFileSize(wal_path, &wal_size);
-  EXPECT_EQ(wal_size, 0);
+  std::optional<int64_t> wal_size = GetFileSize(wal_path);
+  EXPECT_THAT(wal_size, testing::Optional(0));
 
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
@@ -2248,18 +2248,20 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (2, 2)"));
 
   // Writes reach WAL file but not db file.
-  base::GetFileSize(wal_path, &wal_size);
-  EXPECT_GT(wal_size, 0);
+  wal_size = GetFileSize(wal_path);
+  ASSERT_TRUE(wal_size.has_value());
+  EXPECT_GT(wal_size.value(), 0);
 
-  int64_t db_size = 0;
-  base::GetFileSize(db_path_, &db_size);
-  EXPECT_EQ(db_size, db_->page_size());
+  std::optional<int64_t> db_size = GetFileSize(db_path_);
+  ASSERT_TRUE(db_size.has_value());
+  EXPECT_EQ(db_size.value(), db_->page_size());
 
   // Checkpoint database to immediately propagate writes to DB file.
   EXPECT_TRUE(db_->CheckpointDatabase());
 
-  base::GetFileSize(db_path_, &db_size);
-  EXPECT_GT(db_size, db_->page_size());
+  db_size = GetFileSize(db_path_);
+  EXPECT_TRUE(db_size.has_value());
+  EXPECT_GT(db_size.value(), db_->page_size());
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=1"),
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
