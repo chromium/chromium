@@ -149,10 +149,11 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
 void HistoryDatabase::ComputeDatabaseMetrics(
     const base::FilePath& history_name) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  int64_t file_size = 0;
-  if (!base::GetFileSize(history_name, &file_size))
+  std::optional<int64_t> file_size = base::GetFileSize(history_name);
+  if (!file_size.has_value()) {
     return;
-  int file_mb = static_cast<int>(file_size / (1024 * 1024));
+  }
+  int file_mb = static_cast<int>(file_size.value() / (1024 * 1024));
   UMA_HISTOGRAM_MEMORY_MB("History.DatabaseFileMB", file_mb);
 
   sql::Statement url_count(db_.GetUniqueStatement("SELECT count(*) FROM urls"));

@@ -92,11 +92,11 @@ bool VerifyFileHash256(const base::FilePath& filepath,
   std::unique_ptr<crypto::SecureHash> hasher(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
 
-  int64_t file_size = 0;
-  if (!base::GetFileSize(filepath, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(filepath);
+  if (!file_size.has_value()) {
     return false;
   }
-  if (file_size > 0) {
+  if (file_size.value() > 0) {
     base::MemoryMappedFile mmfile;
     if (!mmfile.Initialize(filepath)) {
       return false;

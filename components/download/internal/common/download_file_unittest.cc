@@ -381,9 +381,9 @@ class DownloadFileTest : public testing::Test {
 
   void VerifyStreamAndSize() {
     ::testing::Mock::VerifyAndClearExpectations(input_stream_);
-    int64_t size;
-    EXPECT_TRUE(base::GetFileSize(download_file_->FullPath(), &size));
-    EXPECT_EQ(expected_data_.size(), static_cast<size_t>(size));
+    std::optional<int64_t> size = base::GetFileSize(download_file_->FullPath());
+    ASSERT_TRUE(size.has_value());
+    EXPECT_EQ(expected_data_.size(), static_cast<size_t>(size.value()));
   }
 
   // TODO(rdsmith): Manage full percentage issues properly.
@@ -1491,9 +1491,9 @@ TEST_F(DownloadFileTestWithObfuscation, DeobfuscateAndRename) {
   EXPECT_FALSE(base::PathExists(initial_path));
 
   // Verify the final file size after renaming.
-  int64_t final_size;
-  ASSERT_TRUE(base::GetFileSize(new_path, &final_size));
-  EXPECT_EQ(length, static_cast<size_t>(final_size));
+  std::optional<int64_t> final_size = base::GetFileSize(new_path);
+  ASSERT_TRUE(final_size.has_value());
+  EXPECT_EQ(length, static_cast<size_t>(final_size.value()));
 
   DestroyDownloadFile(0, false);
 }

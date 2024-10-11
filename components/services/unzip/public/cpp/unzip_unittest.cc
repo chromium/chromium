@@ -43,9 +43,10 @@ int CountFiles(const base::FilePath& dir, bool* some_files_empty = nullptr) {
                                        base::FileEnumerator::FILES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
-    if (int64_t file_size; some_files_empty != nullptr &&
-                           base::GetFileSize(path, &file_size) &&
-                           file_size == 0) {
+    std::optional<int64_t> file_size = base::GetFileSize(path);
+
+    if (some_files_empty != nullptr && file_size.has_value() &&
+        file_size.value() == 0) {
       *some_files_empty = true;
       some_files_empty = nullptr;  // So we don't check files again.
     }

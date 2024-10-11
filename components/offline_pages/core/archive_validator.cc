@@ -69,11 +69,11 @@ std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
 bool ArchiveValidator::ValidateFile(const base::FilePath& file_path,
                                     int64_t expected_file_size,
                                     const std::string& expected_digest) {
-  int64_t actual_file_size;
-  if (!base::GetFileSize(file_path, &actual_file_size)) {
+  std::optional<int64_t> actual_file_size = base::GetFileSize(file_path);
+  if (!actual_file_size.has_value()) {
     return false;
   }
-  if (expected_file_size != actual_file_size) {
+  if (expected_file_size != actual_file_size.value()) {
     return false;
   }
 

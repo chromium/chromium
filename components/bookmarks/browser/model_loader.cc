@@ -158,11 +158,7 @@ void LoadManagedNode(LoadManagedNodeCallback load_managed_node_callback,
 }
 
 uint64_t GetFileSizeOrZero(const base::FilePath& file_path) {
-  int64_t file_size_bytes = 0;
-  if (base::GetFileSize(file_path, &file_size_bytes)) {
-    return file_size_bytes;
-  }
-  return 0;
+  return base::GetFileSize(file_path).value_or(0);
 }
 
 void RecordLoadMetrics(BookmarkLoadDetails* details,
