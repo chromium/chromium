@@ -12,6 +12,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
@@ -22,12 +23,12 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,16 +47,37 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 /** Handles updating the UI based on requests to the HTML Fullscreen API. */
 public abstract class FullscreenHtmlApiHandlerBase
         implements ActivityStateListener, WindowFocusChangedListener, FullscreenManager {
     private static final boolean DEBUG_LOGS = false;
+    private static final String BROWSER_CONTROLS_FORCED_UPON_FULLSCREEN_EXIT_HISTOGRAM =
+            "Android.FullscreenExit.BrowserControlsForced";
 
     protected static final int MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS = 1;
-    protected  static final int MSG_ID_UNSET_FULLSCREEN_LAYOUT = 2;
+    protected static final int MSG_ID_UNSET_FULLSCREEN_LAYOUT = 2;
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        BrowserControlsForcedUponFullscreenExitState.MULTI_WINDOW_EDGE_TO_EDGE,
+        BrowserControlsForcedUponFullscreenExitState.NOT_MULTI_WINDOW_EDGE_TO_EDGE,
+        BrowserControlsForcedUponFullscreenExitState.MULTI_WINDOW_NOT_EDGE_TO_EDGE,
+        BrowserControlsForcedUponFullscreenExitState.NOT_MULTI_WINDOW_NOT_EDGE_TO_EDGE,
+        BrowserControlsForcedUponFullscreenExitState.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BrowserControlsForcedUponFullscreenExitState {
+        int MULTI_WINDOW_EDGE_TO_EDGE = 0;
+        int NOT_MULTI_WINDOW_EDGE_TO_EDGE = 1;
+        int MULTI_WINDOW_NOT_EDGE_TO_EDGE = 2;
+        int NOT_MULTI_WINDOW_NOT_EDGE_TO_EDGE = 3;
+        int COUNT = 4;
+    }
 
     // The time we allow the Android notification bar to be shown when it is requested temporarily
     // by the Android system (this value is additive on top of the show duration imposed by
@@ -508,7 +530,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             // report should also be logged to help confirm whether odd layout values are related
             // to multi-window mode / the edge-to-edge feature.
             if (ChromeFeatureList.sForceBrowserControlsUponExitingFullscreen.isEnabled()) {
-                logBrowserControlsForcedUponFullscreenExit(top, bottom, oldTop, oldBottom);
+                logBrowserControlsForcedUponFullscreenExit();
             } else {
                 return;
             }
@@ -521,22 +543,29 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
     }
 
-    private void logBrowserControlsForcedUponFullscreenExit(
-            int top, int bottom, int oldTop, int oldBottom) {
-        String message =
-                String.format(
-                        Locale.ENGLISH,
-                        "This is not a crash. See"
-                                + " https://crbug.com/363349568.\n"
-                                + "top: %d, bottom: %d, oldTop: %d\n"
-                                + "oldBottom: %d, inMultiWindowMode: %b, isEdgeToEdgeEnabled: %b",
-                        top,
-                        bottom,
-                        oldTop,
-                        oldBottom,
-                        MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity),
-                        EdgeToEdgeUtils.isEnabled());
-        ChromePureJavaExceptionReporter.reportJavaException(new Throwable(message));
+    private void logBrowserControlsForcedUponFullscreenExit() {
+        @BrowserControlsForcedUponFullscreenExitState int state;
+        boolean isInMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+        boolean edgeToEdgeEnabled = EdgeToEdgeUtils.isEnabled();
+        if (isInMultiWindowMode) {
+            if (edgeToEdgeEnabled) {
+                state = BrowserControlsForcedUponFullscreenExitState.MULTI_WINDOW_EDGE_TO_EDGE;
+            } else {
+                state = BrowserControlsForcedUponFullscreenExitState.MULTI_WINDOW_NOT_EDGE_TO_EDGE;
+            }
+        } else {
+            if (edgeToEdgeEnabled) {
+                state = BrowserControlsForcedUponFullscreenExitState.NOT_MULTI_WINDOW_EDGE_TO_EDGE;
+            } else {
+                state =
+                        BrowserControlsForcedUponFullscreenExitState
+                                .NOT_MULTI_WINDOW_NOT_EDGE_TO_EDGE;
+            }
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                BROWSER_CONTROLS_FORCED_UPON_FULLSCREEN_EXIT_HISTOGRAM,
+                state,
+                BrowserControlsForcedUponFullscreenExitState.COUNT);
     }
 
     private boolean isAlreadyInFullscreenOrNavigationHidden(View contentView) {

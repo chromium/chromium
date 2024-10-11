@@ -709,6 +709,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="VISIBLE_PARTIAL_HEIGHT"/>
 </enum>
 
+<enum name="BrowserControlsForcedUponFullscreenExitState">
+  <summary>
+    The state when browser controls were forced upon fullscreen exit.
+  </summary>
+  <int value="0" label="Multi-Window and Edge-to-Edge"/>
+  <int value="1" label="Not Multi-Window, Edge-to-Edge"/>
+  <int value="2" label="Multi-Window, not Edge-to-Edge"/>
+  <int value="3" label="Neither Multi-Window nor Edge-to-Edge"/>
+</enum>
+
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>

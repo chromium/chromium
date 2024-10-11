@@ -1834,6 +1834,17 @@ chromium-metrics-reviews@google.com.
   <token key="Scenario" variants="ScrollScenarios"/>
 </histogram>
 
+<histogram name="Android.FullscreenExit.BrowserControlsForced"
+    enum="BrowserControlsForcedUponFullscreenExitState"
+    expires_after="2025-07-01">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@google.com</owner>
+  <summary>
+    Records the multi-window mode and edge-to-edge states when browser controls
+    were forced upon fullscreen exit.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="Android.GridTabSwitcher.Animation.FirstFrameLatency" units="ms"
     expires_after="2024-12-20">
