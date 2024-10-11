@@ -166,7 +166,7 @@ class ArcVolumeMounterBridge
       unmount_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   // When the callback for PrepareForRemovableMediaUnmount mojo does not run
   // within this timeout, the callback will be called with false.
-  base::TimeDelta unmount_timeout_ = base::Seconds(3);
+  base::TimeDelta unmount_timeout_ = base::Seconds(10);
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
