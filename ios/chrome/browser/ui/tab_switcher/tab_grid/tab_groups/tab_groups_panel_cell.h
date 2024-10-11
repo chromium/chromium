@@ -7,14 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-@class TabGroupsPanelFaviconGrid;
+@class TabGroupFaviconsGrid;
 @class TabGroupsPanelItem;
 
 // Represents a synced tab group in the Tab Groups panel.
 @interface TabGroupsPanelCell : UICollectionViewCell
 
 // Subviews to configure.
-@property(nonatomic, strong, readonly) TabGroupsPanelFaviconGrid* faviconsGrid;
+@property(nonatomic, strong, readonly) TabGroupFaviconsGrid* faviconsGrid;
 @property(nonatomic, strong, readonly) UIView* dot;
 @property(nonatomic, strong, readonly) UILabel* titleLabel;
 @property(nonatomic, strong, readonly) UILabel* subtitleLabel;

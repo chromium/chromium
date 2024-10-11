@@ -101,13 +101,13 @@ source_set("tab_group_creation") {
 source_set("tab_groups_ui") {
   sources = [
     "create_or_edit_tab_group_view_controller_delegate.h",
+    "tab_group_favicons_grid.h",
+    "tab_group_favicons_grid.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
     "tab_groups_panel_cell.h",
     "tab_groups_panel_cell.mm",
     "tab_groups_panel_consumer.h",
-    "tab_groups_panel_favicon_grid.h",
-    "tab_groups_panel_favicon_grid.mm",
     "tab_groups_panel_item.h",
     "tab_groups_panel_item.mm",
     "tab_groups_panel_item_data.h",

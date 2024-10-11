@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_favicons_grid.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -25,7 +25,7 @@ using LayoutSides::kTrailing;
 
 }  // namespace
 
-@implementation TabGroupsPanelFaviconGrid {
+@implementation TabGroupFaviconsGrid {
   UIView* _innerSquircle;
   UIImageView* _imageView1;
   UIImageView* _imageView2;
