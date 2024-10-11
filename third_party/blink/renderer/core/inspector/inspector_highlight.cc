@@ -1838,7 +1838,6 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
 void InspectorHighlight::VisitAndCollectDistanceInfo(
     PseudoId pseudo_id,
     LayoutObject* layout_object) {
-  protocol::DOM::PseudoType pseudo_type;
   if (pseudo_id == kPseudoIdNone)
     return;
   for (LayoutObject* child = layout_object->SlowFirstChild(); child;
