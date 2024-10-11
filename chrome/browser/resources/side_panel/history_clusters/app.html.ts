@@ -33,7 +33,8 @@ ${this.enableHistoryEmbeddings_ ? html`
   <cr-history-embeddings
       .searchQuery="${this.query}"
       .showRelativeTimes="${true}"
-      .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}">
+      .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
+      @remove-item-click="${this.onHistoryEmbeddingsItemRemoveClick_}">
   </cr-history_embeddings>
   ` : ''}
   <history-clusters id="historyClusters"

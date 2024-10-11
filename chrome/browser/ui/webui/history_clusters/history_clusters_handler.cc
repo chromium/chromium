@@ -368,7 +368,8 @@ void HistoryClustersHandler::RemoveVisits(
 
   // If there's a pending request for deletion, we have to fail here, because
   // `BrowsingHistoryService` only supports one deletion request at a time.
-  if (!pending_remove_visits_callback_.is_null()) {
+  if (!pending_remove_visits_callback_.is_null() ||
+      !pending_remove_visits_by_url_and_time_callback_.is_null()) {
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -396,6 +397,33 @@ void HistoryClustersHandler::RemoveVisits(
   pending_remove_visits_callback_ = std::move(callback);
 
   browsing_history_service_->RemoveVisits(items_to_remove);
+}
+
+void HistoryClustersHandler::RemoveVisitByUrlAndTime(
+    const GURL& url,
+    double timestamp,
+    RemoveVisitByUrlAndTimeCallback callback) {
+  if (!profile_->GetPrefs()->GetBoolean(
+          ::prefs::kAllowDeletingBrowserHistory)) {
+    return;
+  }
+
+  // If there's a pending request for deletion, we have to fail here, because
+  // `BrowsingHistoryService` only supports one deletion request at a time.
+  if (!pending_remove_visits_callback_.is_null() ||
+      !pending_remove_visits_by_url_and_time_callback_.is_null()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  pending_remove_visits_by_url_and_time_callback_ = std::move(callback);
+
+  history::BrowsingHistoryService::HistoryEntry entry;
+  entry.url = url;
+  base::Time visit_time = base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
+  entry.all_timestamps.insert(
+      visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  browsing_history_service_->RemoveVisits({entry});
 }
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
@@ -453,15 +481,23 @@ void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
 }
 
 void HistoryClustersHandler::OnRemoveVisitsComplete() {
-  DCHECK(!pending_remove_visits_callback_.is_null());
-  std::move(pending_remove_visits_callback_).Run(/*success=*/true);
-  // Notify the page of the successfully deleted visits to update the UI.
-  page_->OnVisitsRemoved(std::move(pending_remove_visits_));
+  if (!pending_remove_visits_callback_.is_null()) {
+    std::move(pending_remove_visits_callback_).Run(/*success=*/true);
+    // Notify the page of the successfully deleted visits to update the UI.
+    page_->OnVisitsRemoved(std::move(pending_remove_visits_));
+  } else if (!pending_remove_visits_by_url_and_time_callback_.is_null()) {
+    std::move(pending_remove_visits_by_url_and_time_callback_)
+        .Run(/*success=*/true);
+  }
 }
 
 void HistoryClustersHandler::OnRemoveVisitsFailed() {
-  DCHECK(!pending_remove_visits_callback_.is_null());
-  std::move(pending_remove_visits_callback_).Run(/*success=*/false);
+  if (!pending_remove_visits_callback_.is_null()) {
+    std::move(pending_remove_visits_callback_).Run(/*success=*/false);
+  } else if (!pending_remove_visits_by_url_and_time_callback_.is_null()) {
+    std::move(pending_remove_visits_by_url_and_time_callback_)
+        .Run(/*success=*/false);
+  }
 }
 
 void HistoryClustersHandler::HistoryDeleted() {

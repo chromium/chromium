@@ -5,19 +5,25 @@
 import 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
 
 import type {HistoryClustersAppElement} from 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
-import {HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
+import {BrowserProxyImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote, PageCallbackRouter, PageHandlerRemote} from 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HistoryClustersAppWithEmbeddingsTest', () => {
   let app: HistoryClustersAppElement;
+  let clustersHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    clustersHandler = TestMock.fromClass(PageHandlerRemote);
+    const callbackRouter = new PageCallbackRouter();
+    BrowserProxyImpl.setInstance(
+        new BrowserProxyImpl(clustersHandler, callbackRouter));
 
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
@@ -113,5 +119,28 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     assertEquals(
         'sp-scroller sp-scroller-bottom-of-page',
         app.$.historyClusters.className);
+  });
+
+  test('RemovesEmbeddingItems', async () => {
+    // Force a search so that the cr-history-embeddings component is available.
+    app.query = 'two words';
+    await app.updateComplete;
+
+    const embeddingsComponent = getEmbeddingsComponent();
+    assertTrue(!!embeddingsComponent);
+    embeddingsComponent.dispatchEvent(new CustomEvent('remove-item-click', {
+      detail: {
+        title: 'Google',
+        url: {url: 'http://google.com'},
+        urlForDisplay: 'google.com',
+        relativeTime: '2 hours ago',
+        sourcePassage: 'Google description',
+        lastUrlVisitTimestamp: 1000,
+      },
+    }));
+    const removeVisitArgs =
+        await clustersHandler.whenCalled('removeVisitByUrlAndTime');
+    assertDeepEquals({url: 'http://google.com'}, removeVisitArgs[0]);
+    assertEquals(1000, removeVisitArgs[1]);
   });
 });

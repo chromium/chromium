@@ -103,6 +103,17 @@ interface PageHandler {
   // resolves with whether the request succeeded in the History backend layer.
   RemoveVisits(array<URLVisit> visits) => (bool success);
 
+  // Requests to remove a visit by a specified URL and a timestamp for the
+  // visit. This is used for deleting history entries from embeddings results
+  // which sits inside the history clusters side panel and is done by the parent
+  // of the results so that they can sync pending deletes. Timestamp comes from
+  // history_embeddings::mojom::SearchResultItem::last_url_visit_timestamp,
+  // which is a History URLRow's last visit's timestamp.
+  // TODO(crbug.com/335282446): Timestamp is shared with BrowsingHistoryHandler
+  //     which still requires the timestamp to be a double.
+  RemoveVisitByUrlAndTime(url.mojom.Url url, double timestamp) =>
+      (bool success);
+
   // Requests to open the URLs in `visits` in a new tab group. The new tab group
   // has an optional name `tab_group_name`.
   OpenVisitUrlsInTabGroup(array<URLVisit> visits, string? tab_group_name);

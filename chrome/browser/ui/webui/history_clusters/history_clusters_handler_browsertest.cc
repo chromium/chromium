@@ -5,8 +5,11 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +21,7 @@
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
@@ -255,6 +259,43 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
   EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
   EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       RemoveVisitByUrlAndTime) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  // Open in a new tab to keep the history clusters UI open.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  history::QueryResults history_query_results;
+  base::RunLoop run_loop;
+  base::CancelableTaskTracker tracker;
+  HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->QueryHistory(
+          std::u16string(), history::QueryOptions(),
+          base::BindLambdaForTesting([&](history::QueryResults results) {
+            history_query_results = std::move(results);
+            run_loop.Quit();
+          }),
+          &tracker);
+  run_loop.Run();
+  EXPECT_EQ(history_query_results.size(), 1u);
+
+  base::test::TestFuture<bool> future;
+  handler_->RemoveVisitByUrlAndTime(
+      url,
+      history_query_results[0].visit_time().InMillisecondsFSinceUnixEpoch(),
+      future.GetCallback());
+  bool success = future.Take();
+  ASSERT_TRUE(success);
+
+  // Verify the history entry is no longer there.
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  EXPECT_EQ(0u, enumerator.urls().size());
 }
 
 }  // namespace history_clusters
