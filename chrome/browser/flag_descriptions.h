@@ -2168,8 +2168,10 @@ extern const char kTouchTextEditingRedesignDescription[];
 extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const char kTranslationAPIName[];
 extern const char kTranslationAPIDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];

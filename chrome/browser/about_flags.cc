@@ -11933,9 +11933,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"translation-api", flag_descriptions::kTranslationAPIName,
-     flag_descriptions::kTranslationAPIDescription, kOsAll,
+     flag_descriptions::kTranslationAPIDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kEnableTranslationAPI)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
