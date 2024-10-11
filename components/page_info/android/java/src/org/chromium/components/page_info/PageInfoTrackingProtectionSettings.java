@@ -6,7 +6,6 @@ package org.chromium.components.page_info;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.text.TextPaint;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.text.style.ClickableSpan;
@@ -27,7 +26,6 @@ import org.chromium.components.browser_ui.site_settings.RWSCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.util.AttrUtils;
 
 /** View showing a toggle and a description for tracking protection for a site. */
 public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment {
@@ -192,16 +190,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                         @Override
                         public void onClick(View view) {
                             mOnCookieSettingsLinkClicked.run();
-                        }
-
-                        @Override
-                        public void updateDrawState(TextPaint textPaint) {
-                            super.updateDrawState(textPaint);
-                            textPaint.setColor(
-                                    AttrUtils.resolveColor(
-                                            getContext().getTheme(),
-                                            R.attr.globalClickableSpanColor,
-                                            R.color.default_text_color_link_baseline));
                         }
                     };
             mThirdPartyCookiesSummary.setSummary(
