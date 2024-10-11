@@ -253,6 +253,7 @@
   }
   if (self.omniboxClient) {
     self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
+    self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
   }
 }
 

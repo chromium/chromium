@@ -39,6 +39,10 @@ class LensOmniboxClient final : public OmniboxClient {
     lens_overlay_suggest_inputs_ = suggest_inputs;
   }
 
+  void SetLensResultHasThumbnail(BOOL has_thumbnail) {
+    lens_result_has_thumbnail_ = has_thumbnail;
+  }
+
   // OmniboxClient.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
@@ -103,6 +107,7 @@ class LensOmniboxClient final : public OmniboxClient {
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
+  BOOL lens_result_has_thumbnail_;
   BOOL thumbnail_removed_in_session_;
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_;

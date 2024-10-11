@@ -164,7 +164,10 @@ GURL LensOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 LensOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  if (lens_result_has_thumbnail_ && !thumbnail_removed_in_session_) {
+    return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  }
+  return metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
 }
 
 security_state::SecurityLevel LensOmniboxClient::GetSecurityLevel() const {
