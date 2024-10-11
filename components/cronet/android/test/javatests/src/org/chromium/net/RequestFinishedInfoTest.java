@@ -456,12 +456,15 @@ public class RequestFinishedInfoTest {
         // Empty headers are invalid and will cause start() to throw an exception.
         UrlRequest request = urlRequestBuilder.addHeader("", "").build();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, request::start);
-        if (mImplementationUnderTest == CronetImplementation.AOSP_PLATFORM
+        var oldMessage = "Invalid header =";
+        var newMessage = "Invalid header with headername: ";
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
                 && !mTestRule.isRunningInAOSP()) {
-            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header =");
+            // We may be running against an HttpEngine backed by an old version of Cronet, so accept
+            // both the old and new variants of the message.
+            assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);
         } else {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: ");
+            assertThat(e).hasMessageThat().isEqualTo(newMessage);
         }
     }
 
