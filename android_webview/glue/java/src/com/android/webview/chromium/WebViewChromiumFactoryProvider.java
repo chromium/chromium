@@ -897,25 +897,29 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     private boolean shouldEnableContextExperiment(Context ctx) {
+        // Command line switch overrides all other conditions.
+        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)) {
+            return true;
+        }
+
         // Disable for Samsung devices.
         if ("SAMSUNG".equalsIgnoreCase(Build.MANUFACTURER)) {
             return false;
         }
 
+        // Allow the developer to opt in or opt out of the experiment.
         ManifestMetadataUtil.ensureMetadataCacheInitialized(ctx);
-        if (ManifestMetadataUtil.isAppOptedOutFromContextExperiment()) {
-            return false;
+        Boolean valueFromManifest = ManifestMetadataUtil.shouldEnableContextExperiment();
+        if (valueFromManifest != null) {
+            return valueFromManifest;
         }
 
-        // The command line switch overrides the pref/Android version check.
         // We also want to enable by default on the listed package names.
-        if (sUseWebViewContext
-                || CommandLine.getInstance()
-                        .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)
-                || "com.aurora.launcher".equals(ctx.getPackageName())
+        if ("com.aurora.launcher".equals(ctx.getPackageName())
                 || "com.qiku.android.launcher3".equals(ctx.getPackageName())) {
             return true;
         }
-        return false;
+
+        return sUseWebViewContext;
     }
 }

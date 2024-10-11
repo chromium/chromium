@@ -35,8 +35,8 @@ public class ManifestMetadataUtil {
     // reporting. See https://developer.android.com/reference/android/webkit/WebView.html
     private static final String METRICS_OPT_OUT_METADATA_NAME =
             "android.webkit.WebView.MetricsOptOut";
-    private static final String CONTEXT_EXPERIMENT_OPT_OUT_METADATA_NAME =
-            "android.webkit.WebView.WebViewContextOptOut";
+    private static final String CONTEXT_EXPERIMENT_VALUE_METADATA_NAME =
+            "android.webkit.WebView.UseWebViewResourceContext";
     private static final String SAFE_BROWSING_OPT_IN_METADATA_NAME =
             "android.webkit.WebView.EnableSafeBrowsing";
 
@@ -69,7 +69,8 @@ public class ManifestMetadataUtil {
     @VisibleForTesting
     public static class MetadataCache {
         private final boolean mIsAppOptedOutFromMetricsCollection;
-        private final boolean mIsAppOptedOutFromContextExperiment;
+
+        private final @Nullable Boolean mContextExperimentValue;
         private final @Nullable Boolean mSafeBrowsingOptInPreference;
         private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
         private final @NonNull Set<String> mXRequestedAllowList;
@@ -85,8 +86,7 @@ public class ManifestMetadataUtil {
             Bundle metadataHolderServiceMetadata = getMetadataHolderServiceMetadata(context);
             mAppMultiProfileProfileNameTagKey =
                     getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
-            mIsAppOptedOutFromContextExperiment =
-                    isAppOptedOutFromContextExperiment(metadataHolderServiceMetadata);
+            mContextExperimentValue = shouldEnableContextExperiment(metadataHolderServiceMetadata);
             mXRequestedAllowList =
                     getXRequestedWithAllowList(context, metadataHolderServiceMetadata);
         }
@@ -134,24 +134,27 @@ public class ManifestMetadataUtil {
     }
 
     /**
-     * Checks the application manifest for WebView's context experiment opt-out preference.
+     * Checks the application manifest for WebView's context experiment opt-in/opt-out preference.
      *
-     * @return true if the app has opted out, false otherwise.
+     * @return true if the app has opted in to the experiment, false if the app has opted out or
+     *     null if no value is specified.
      */
-    public static boolean isAppOptedOutFromContextExperiment() {
-        return getMetadataCache().mIsAppOptedOutFromContextExperiment;
+    @Nullable
+    public static Boolean shouldEnableContextExperiment() {
+        return getMetadataCache().mContextExperimentValue;
     }
 
     @VisibleForTesting
-    public static boolean isAppOptedOutFromContextExperiment(
+    @Nullable
+    public static Boolean shouldEnableContextExperiment(
             @Nullable Bundle metadataHolderServiceMetadata) {
-        boolean value = false;
+        Boolean value = null;
         if (metadataHolderServiceMetadata != null
                 && metadataHolderServiceMetadata.containsKey(
-                        CONTEXT_EXPERIMENT_OPT_OUT_METADATA_NAME)) {
+                        CONTEXT_EXPERIMENT_VALUE_METADATA_NAME)) {
             value =
                     metadataHolderServiceMetadata.getBoolean(
-                            CONTEXT_EXPERIMENT_OPT_OUT_METADATA_NAME);
+                            CONTEXT_EXPERIMENT_VALUE_METADATA_NAME);
         }
         return value;
     }

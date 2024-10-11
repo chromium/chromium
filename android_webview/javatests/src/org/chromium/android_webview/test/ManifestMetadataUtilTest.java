@@ -34,8 +34,8 @@ public class ManifestMetadataUtilTest {
      */
     private static final String METRICS_OPT_OUT_METADATA_NAME =
             "android.webkit.WebView.MetricsOptOut";
-    private static final String CONTEXT_EXPERIMENT_OPT_OUT_METADATA_NAME =
-            "android.webkit.WebView.WebViewContextOptOut";
+    private static final String CONTEXT_EXPERIMENT_VALUE_METADATA_NAME =
+            "android.webkit.WebView.UseWebViewResourceContext";
     private static final String SAFE_BROWSING_OPT_IN_METADATA_NAME =
             "android.webkit.WebView.EnableSafeBrowsing";
     private static final String METADATA_HOLDER_SERVICE_NAME =
@@ -87,13 +87,25 @@ public class ManifestMetadataUtilTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
-    public void testContextExperimentOptOut() throws Exception {
+    public void testContextExperimentOptIn() throws Exception {
         var bundle = new Bundle();
-        bundle.putBoolean(CONTEXT_EXPERIMENT_OPT_OUT_METADATA_NAME, true);
+        bundle.putBoolean(CONTEXT_EXPERIMENT_VALUE_METADATA_NAME, true);
         mContext.putServiceMetadata(mContext.getPackageName(), bundle);
 
         Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
-        Assert.assertTrue(ManifestMetadataUtil.isAppOptedOutFromContextExperiment(appMetadata));
+        Assert.assertTrue(ManifestMetadataUtil.shouldEnableContextExperiment(appMetadata));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Manifest"})
+    public void testContextExperimentOptOut() throws Exception {
+        var bundle = new Bundle();
+        bundle.putBoolean(CONTEXT_EXPERIMENT_VALUE_METADATA_NAME, false);
+        mContext.putServiceMetadata(mContext.getPackageName(), bundle);
+
+        Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
+        Assert.assertFalse(ManifestMetadataUtil.shouldEnableContextExperiment(appMetadata));
     }
 
     @Test
@@ -101,7 +113,7 @@ public class ManifestMetadataUtilTest {
     @Feature({"AndroidWebView", "Manifest"})
     public void testContextExperimentDefault() throws Exception {
         Bundle appMetadata = ManifestMetadataUtil.getAppMetadata(mContext);
-        Assert.assertFalse(ManifestMetadataUtil.isAppOptedOutFromMetricsCollection(appMetadata));
+        Assert.assertNull(ManifestMetadataUtil.shouldEnableContextExperiment(appMetadata));
     }
 
     @Test
