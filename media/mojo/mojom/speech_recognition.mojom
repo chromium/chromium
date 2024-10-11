@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -259,6 +259,13 @@ interface SpeechRecognitionClientBrowserInterface {
       pending_receiver<SpeechRecognitionSurfaceClient> surface_client,
       pending_remote<SpeechRecognitionSurface> surface,
       SpeechRecognitionSurfaceMetadata metadata);
+
+  // Similar to BindSpeechRecognitionBrowserObserver, however binds Browser
+  // observers that listen to events specific to BabelOrca rather than
+  // the traditional LiveCaption preference.
+  [MinVersion=7, EnableIf=is_chromeos_ash]
+  BindBabelOrcaSpeechRecognitionBrowserObserver@2(
+      pending_remote<SpeechRecognitionBrowserObserver> observer);
 };
 
 // Corresponds to ExtendedSodaConfigMsg.RecognitionMode in
