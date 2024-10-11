@@ -8312,6 +8312,10 @@ const char kComposeTextSelectionName[] = "Compose Selection";
 const char kComposeTextSelectionDescription[] =
     "Enables feature for different heuristics for selecting text for Compose";
 
+const char kComposeNudgeAtCursorName[] = "Compose Nudge At Cursor";
+const char kComposeNudgeAtCursorDescription[] =
+    "Shows the Compose proactive nudge at the cursor location";
+
 const char kComposeProactiveNudgeName[] = "Compose Proactive Nudge";
 const char kComposeProactiveNudgeDescription[] =
     "Enables proactive nudging for Compose";

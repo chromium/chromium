@@ -3786,42 +3786,80 @@ const FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 // Vatiations of the Compose proactive nudge.
-const FeatureEntry::FeatureParam kComposeProactiveNudge_CompactUI_50[] = {
-    {"proactive_nudge_focus_delay_milliseconds", "1000"},
-    {"proactive_nudge_compact_ui", "true"},
-    {"proactive_nudge_show_probability", "0.5"}};
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactNoFocusDelay_10[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "0"},
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "10"}};
 
-const FeatureEntry::FeatureParam kComposeProactiveNudge_NoFocusDelay_10[] = {
-    {"proactive_nudge_focus_delay_milliseconds", "0"},
-    {"proactive_nudge_show_probability", "1"},
-    {"proactive_nudge_text_change_count", "10"}};
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactNoFocusDelay_50[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "0"},
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "50"}};
 
-const FeatureEntry::FeatureParam kComposeProactiveNudge_NoFocusDelay_50[] = {
-    {"proactive_nudge_focus_delay_milliseconds", "0"},
-    {"proactive_nudge_show_probability", "1"},
-    {"proactive_nudge_text_change_count", "50"}};
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactLongFocusDelay_10[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "60000"},  // one minute
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "10"}};
 
-const FeatureEntry::FeatureParam kComposeProactiveNudge_LongFocusDelay_10[] = {
-    {"proactive_nudge_focus_delay_milliseconds", "60000"},  // one minute
-    {"proactive_nudge_show_probability", "1"},
-    {"proactive_nudge_text_change_count", "10"}};
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactLongFocusDelay_50[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "60000"},  // one minute
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "50"}};
 
-const FeatureEntry::FeatureParam kComposeProactiveNudge_LongFocusDelay_50[] = {
-    {"proactive_nudge_focus_delay_milliseconds", "60000"},  // one minute
-    {"proactive_nudge_show_probability", "1"},
-    {"proactive_nudge_text_change_count", "50"}};
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactLongTextDelay_10[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "0"},
+        {"proactive_nudge_text_settled_delay_milliseconds", "10000"},
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "10"}};
+
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactLongTextDelay_50[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "0"},
+        {"proactive_nudge_text_settled_delay_milliseconds", "10000"},
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "50"}};
+
+const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeNoFocusDelay_10[] =
+    {{"proactive_nudge_focus_delay_milliseconds", "0"},
+     {"proactive_nudge_compact_ui", "false"},
+     {"proactive_nudge_text_change_count", "10"}};
+
+const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeNoFocusDelay_50[] =
+    {{"proactive_nudge_focus_delay_milliseconds", "0"},
+     {"proactive_nudge_compact_ui", "false"},
+     {"proactive_nudge_text_change_count", "50"}};
 
 const FeatureEntry::FeatureVariation kComposeProactiveNudgeVariations[] = {
-    {"Show 50%", kComposeProactiveNudge_CompactUI_50,
-     std::size(kComposeProactiveNudge_CompactUI_50), nullptr},
-    {"No focus delay - 10 edits ", kComposeProactiveNudge_NoFocusDelay_10,
-     std::size(kComposeProactiveNudge_NoFocusDelay_10), nullptr},
-    {"No focus delay - 50 edits ", kComposeProactiveNudge_NoFocusDelay_50,
-     std::size(kComposeProactiveNudge_NoFocusDelay_50), nullptr},
-    {"Long focus delay - 10 edits ", kComposeProactiveNudge_LongFocusDelay_10,
-     std::size(kComposeProactiveNudge_LongFocusDelay_10), nullptr},
-    {"Long focus delay - 50 edits ", kComposeProactiveNudge_LongFocusDelay_50,
-     std::size(kComposeProactiveNudge_LongFocusDelay_50), nullptr}};
+    {"Compact UI - No focus delay - 10 edits",
+     kComposeProactiveNudge_CompactNoFocusDelay_10,
+     std::size(kComposeProactiveNudge_CompactNoFocusDelay_10), nullptr},
+    {"Compact UI - No focus delay - 50 edits",
+     kComposeProactiveNudge_CompactNoFocusDelay_50,
+     std::size(kComposeProactiveNudge_CompactNoFocusDelay_50), nullptr},
+    {"Compact UI - Long focus delay - 10 edits",
+     kComposeProactiveNudge_CompactLongFocusDelay_10,
+     std::size(kComposeProactiveNudge_CompactLongFocusDelay_10), nullptr},
+    {"Compact UI - Long focus delay - 50 edits",
+     kComposeProactiveNudge_CompactLongFocusDelay_50,
+     std::size(kComposeProactiveNudge_CompactLongFocusDelay_50), nullptr},
+
+    {"Compact UI - No Focus delay - 10 edits long text delay",
+     kComposeProactiveNudge_CompactLongTextDelay_10,
+     std::size(kComposeProactiveNudge_CompactLongTextDelay_10), nullptr},
+    {"Compact UI - No Focus delay - 50 edits long text delay",
+     kComposeProactiveNudge_CompactLongTextDelay_50,
+     std::size(kComposeProactiveNudge_CompactLongTextDelay_50), nullptr},
+    {"Large UI - No focus delay - 10 edits",
+     kComposeProactiveNudge_LargeNoFocusDelay_10,
+     std::size(kComposeProactiveNudge_LargeNoFocusDelay_10), nullptr},
+    {"Large UI - Long focus delay - 50 edits",
+     kComposeProactiveNudge_LargeNoFocusDelay_50,
+     std::size(kComposeProactiveNudge_LargeNoFocusDelay_50), nullptr}};
 
 // Variations of the Compose selection nudge.
 const FeatureEntry::FeatureParam kComposeSelectionNudge_1[] = {
@@ -10684,6 +10722,12 @@ const FeatureEntry kFeatureEntries[] = {
          compose::features::kEnableComposeProactiveNudge,
          kComposeProactiveNudgeVariations,
          "ComposeProactiveNudge")},
+
+    {"compose-nudge-display-at-cursor",
+     flag_descriptions::kComposeNudgeAtCursorName,
+     flag_descriptions::kComposeNudgeAtCursorDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kEnableComposeNudgeAtCursor)},
 
     {"compose-polite-nudge", flag_descriptions::kComposePoliteNudgeName,
      flag_descriptions::kComposePoliteNudgeDescription,
