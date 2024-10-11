@@ -409,6 +409,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
       const GURL& form_origin);
 
+  std::unique_ptr<FormFetcher> CreateFormFetcher();
+
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;
 

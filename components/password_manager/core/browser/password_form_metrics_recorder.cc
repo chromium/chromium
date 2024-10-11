@@ -649,8 +649,9 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
       match_type = FormMatchType::kPublicSuffixMatch;
       break;
     case password_manager_util::GetLoginMatchType::kGrouped:
-      // Grouped credentials are never filled on page load.
-      NOTREACHED();
+      match_type = affiliations::IsValidAndroidFacetURI(form.signon_realm)
+                       ? FormMatchType::kGroupedApp
+                       : FormMatchType::kGroupedWebsites;
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", match_type);
 }

@@ -2187,6 +2187,33 @@ TEST_P(PasswordFormManagerTest, RecordsGroupedAppMatch) {
       PasswordFormMetricsRecorder::MatchedFormType::kGroupedApp, 1);
 }
 
+TEST_P(PasswordFormManagerTest, RecordsGroupedWebSiteMatch) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordFormGroupedAffiliations);
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  // Grouped credentials are ignored by the form fetched and are not returned to
+  // the consumers. The only way to detect them is via the
+  // `FormFetched::GetPreferredOrPotentialMatchedFormType()` API.
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites);
+  saved_match_.match_type = PasswordForm::MatchType::kGrouped;
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  form_manager_->Fill();
+
+  // `PasswordManager.MatchedFormType` metric is not recorded for the grouped
+  // credentials. It is only recorded when the best match is available.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MatchedFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites, 1);
+}
+
 TEST_P(PasswordFormManagerTest, RecordsNoMatchesWhenNoCredentialsFetched) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   base::HistogramTester histogram_tester;

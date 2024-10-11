@@ -1249,14 +1249,7 @@ PasswordFormManager::PasswordFormManager(
     : client_(client),
       observed_form_or_digest_(std::move(observed_form_or_digest)),
       metrics_recorder_(metrics_recorder),
-      owned_form_fetcher_(form_fetcher
-                              ? nullptr
-                              : std::make_unique<FormFetcherImpl>(
-                                    observed_digest()
-                                        ? *observed_digest()
-                                        : PasswordFormDigest(*observed_form()),
-                                    client_,
-                                    true /* should_migrate_http_passwords */)),
+      owned_form_fetcher_(form_fetcher ? nullptr : CreateFormFetcher()),
       form_fetcher_(form_fetcher ? form_fetcher : owned_form_fetcher_.get()),
       password_save_manager_(std::move(password_save_manager)),
       // TODO(crbug.com/40570965): set correctly
@@ -1761,6 +1754,18 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
       }
     }
   }
+}
+
+std::unique_ptr<FormFetcher> PasswordFormManager::CreateFormFetcher() {
+  auto form_fetcher = std::make_unique<FormFetcherImpl>(
+      observed_digest() ? *observed_digest()
+                        : PasswordFormDigest(*observed_form()),
+      client_, true /* should_migrate_http_passwords */);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormGroupedAffiliations)) {
+    form_fetcher->set_filter_grouped_credentials(false);
+  }
+  return form_fetcher;
 }
 
 // Returns bit masks with differences in forms attributes which are important
