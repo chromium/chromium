@@ -2760,7 +2760,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2024-09-29">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2025-09-29">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2840,7 +2840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenCompletion"
-    enum="BooleanSuccess" expires_after="2024-09-29">
+    enum="BooleanSuccess" expires_after="2025-09-29">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2862,7 +2862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenResponseCode"
-    units="code" expires_after="2024-09-29">
+    units="code" expires_after="2025-09-29">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
