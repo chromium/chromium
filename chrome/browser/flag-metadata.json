@@ -5465,6 +5465,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-password-suggestion-bottom-sheet-v2",
+    "owners": [ "vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "ios-price-tracking-notification-promo-card",
     "owners": [
       "davidjm@google.com",

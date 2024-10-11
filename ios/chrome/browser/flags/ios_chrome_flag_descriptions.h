@@ -115,6 +115,11 @@ extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 
+// Title and description for the flag that enables the password suggestion
+// bottom sheet V2.
+extern const char kPasswordSuggestionBottomSheetV2Name[];
+extern const char kPasswordSuggestionBottomSheetV2Description[];
+
 // Title and description for the flag that controls whether the maximum number
 // of Autofill suggestions shown is pruned.
 extern const char kAutofillPruneSuggestionsName[];

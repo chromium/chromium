@@ -144,6 +144,12 @@ const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
     "When enabled, Autofill will attempt to find standalone CVC fields for VCN "
     "card on file when parsing forms.";
 
+const char kPasswordSuggestionBottomSheetV2Name[] =
+    "Enable the password suggestion bottom sheet V2";
+const char kPasswordSuggestionBottomSheetV2Description[] =
+    "When enabled, the V2 of the password suggestion bottom sheet will be "
+    "used.";
+
 const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
