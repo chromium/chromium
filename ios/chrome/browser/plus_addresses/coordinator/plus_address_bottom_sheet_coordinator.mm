@@ -47,6 +47,10 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
   // YES if the `_viewController` is the presenting view controller.
   BOOL _viewIsPresented;
+
+  // The autofill callback to be run if the process completes via confirmation
+  // on the bottom sheet.
+  plus_addresses::PlusAddressCallback _autofillCallback;
 }
 
 #pragma mark - ChromeCoordinator
@@ -59,17 +63,20 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       PlusAddressSettingServiceFactory::GetForProfile(profile);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  // TODO(crbug.com/40276862): Move this to the mediator to reduce model
-  // dependencies in this class.
-  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+
+  if (!_autofillCallback) {
+    AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+        AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+    _autofillCallback =
+        bottomSheetTabHelper->GetPendingPlusAddressFillCallback();
+    CHECK(_autofillCallback);
+  }
+
   _mediator = [[PlusAddressBottomSheetMediator alloc]
       initWithPlusAddressService:plusAddressService
        plusAddressSettingService:plusAddressSettingService
                         delegate:self
                        activeUrl:activeWebState->GetLastCommittedURL()
-                autofillCallback:bottomSheetTabHelper
-                                     ->GetPendingPlusAddressFillCallback()
                        urlLoader:UrlLoadingBrowserAgent::FromBrowser(
                                      self.browser)
                        incognito:self.browser->GetProfile()->IsOffTheRecord()];
@@ -176,6 +183,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
           secondaryButtonTitle:l10n_util::GetNSString(IDS_CANCEL)
       shouldDismissBottomSheet:shouldDismissBottomSheet
             isAffiliationError:NO];
+}
+
+- (void)runAutofillCallback:(NSString*)confirmedPlusAddress {
+  std::move(_autofillCallback)
+      .Run(base::SysNSStringToUTF8(confirmedPlusAddress));
 }
 
 #pragma mark - Private

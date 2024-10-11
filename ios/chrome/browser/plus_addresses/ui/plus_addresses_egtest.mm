@@ -580,6 +580,18 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
       base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakePlusAddress)];
 }
 
 // Tests that a generic alert is shown when the plus address is failed to

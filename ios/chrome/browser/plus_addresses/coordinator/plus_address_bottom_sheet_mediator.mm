@@ -32,9 +32,6 @@ enum class PlusAddressAction {
   raw_ptr<plus_addresses::PlusAddressSettingService> _plusAddressSettingService;
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
-  // The autofill callback to be run if the process completes via confirmation
-  // on the bottom sheet.
-  plus_addresses::PlusAddressCallback _autofillCallback;
   // The reserved plus address, which is then eligible for confirmation.
   NSString* _reservedPlusAddress;
   raw_ptr<UrlLoadingBrowserAgent> _urlLoader;
@@ -51,7 +48,6 @@ enum class PlusAddressAction {
                       delegate:
                           (id<PlusAddressBottomSheetMediatorDelegate>)delegate
                      activeUrl:(GURL)activeUrl
-              autofillCallback:(plus_addresses::PlusAddressCallback)callback
                      urlLoader:(UrlLoadingBrowserAgent*)urlLoader
                      incognito:(BOOL)incognito {
   // In order to have reached this point, the service should've been created. If
@@ -63,7 +59,6 @@ enum class PlusAddressAction {
     _plusAddressSettingService = plusAddressSettingService;
     _delegate = delegate;
     _mainFrameOrigin = url::Origin::Create(activeUrl);
-    _autofillCallback = std::move(callback);
     _urlLoader = urlLoader;
     _incognito = incognito;
   }
@@ -144,13 +139,11 @@ enum class PlusAddressAction {
 #pragma mark - PlusAddressErrorAlertDelegate
 
 - (void)didAcceptAffiliatedPlusAddressSuggestion {
-  std::move(_autofillCallback)
-      .Run(base::SysNSStringToUTF8(_reservedPlusAddress));
+  [_delegate runAutofillCallback:_reservedPlusAddress];
   [_consumer dismissBottomSheet];
 }
 
 - (void)didCancelAlert {
-  std::move(_autofillCallback).Run("");
   [_consumer dismissBottomSheet];
 }
 
@@ -163,8 +156,7 @@ enum class PlusAddressAction {
 // Runs the autofill callback and notifies the consumer of the successful
 // confirmation.
 - (void)runAutofillCallback:(NSString*)confirmedPlusAddress {
-  std::move(_autofillCallback)
-      .Run(base::SysNSStringToUTF8(confirmedPlusAddress));
+  [_delegate runAutofillCallback:confirmedPlusAddress];
   if ([self shouldShowNotice]) {
     _plusAddressSettingService->SetHasAcceptedNotice();
   }

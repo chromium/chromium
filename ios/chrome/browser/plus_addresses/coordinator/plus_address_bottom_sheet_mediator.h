@@ -36,6 +36,9 @@ class UrlLoadingBrowserAgent;
 // Shows generic alert with the message.
 - (void)displayPlusAddressGenericErrorAlert:(BOOL)shouldDismissBottomSheet;
 
+// Runs the callback once the plus address is confirmed.
+- (void)runAutofillCallback:(NSString*)confirmedPlusAddress;
+
 @end
 
 // Mediator for the plus_addresses bottom sheet. It is responsible for service
@@ -53,7 +56,6 @@ class UrlLoadingBrowserAgent;
                       delegate:
                           (id<PlusAddressBottomSheetMediatorDelegate>)delegate
                      activeUrl:(GURL)activeUrl
-              autofillCallback:(plus_addresses::PlusAddressCallback)callback
                      urlLoader:(UrlLoadingBrowserAgent*)urlLoader
                      incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 

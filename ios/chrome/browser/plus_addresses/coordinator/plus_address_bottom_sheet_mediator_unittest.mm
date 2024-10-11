@@ -53,7 +53,6 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
          plusAddressSettingService:&plus_address_setting_service_
                           delegate:nil
                          activeUrl:GURL(FakePlusAddressService::kFacet)
-                  autofillCallback:base::DoNothing()
                          urlLoader:url_loader_
                          incognito:incognito];
     mediator_.consumer = consumer_;
