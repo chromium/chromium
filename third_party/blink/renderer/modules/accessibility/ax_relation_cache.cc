@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/accessibility/ax_common.h"
 
 namespace blink {
@@ -326,8 +327,7 @@ void AXRelationCache::UpdateReverseTextRelations(
   HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_target_elements =
       it->value;
   for (Element* target : *explicitly_set_target_elements) {
-    explicitly_set_text_relations_from_element_attributes_.insert(
-        target->GetDomNodeId());
+    explicitly_set_text_relations_from_element_attributes_.insert(target);
     // Mark root of label dirty so that we can change inclusion states as
     // necessary (label subtrees are included in the tree even if hidden).
     object_cache_->MarkElementDirty(target);
@@ -881,8 +881,7 @@ bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
 bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
   // Labels and descriptions set by ariaLabelledByElements,
   // ariaDescribedByElements.
-  if (explicitly_set_text_relations_from_element_attributes_.find(
-          element.GetDomNodeId()) !=
+  if (explicitly_set_text_relations_from_element_attributes_.find(&element) !=
       explicitly_set_text_relations_from_element_attributes_.end()) {
     return true;
   }
@@ -1002,9 +1001,11 @@ void AXRelationCache::UpdateRelatedTreeForIdChange(Element& element) {
   // has its own initial active descendant handling.
   MarkOldAndNewRelationSourcesDirty(element,
                                     id_attr_to_active_descendant_mapping_);
-  if (AXObject* ax_focus = Get(element.GetDocument().FocusedElement())) {
-    if (ax_focus->GetAOMPropertyOrARIAAttribute(
-            AOMRelationProperty::kActiveDescendant) == &element) {
+  Element* focused_element = element.GetDocument().FocusedElement();
+  if (AXObject* ax_focus = Get(focused_element)) {
+    if (AXObject::ElementFromAttribute(focused_element,
+                                       html_names::kAriaActivedescendantAttr) ==
+        &element) {
       ax_focus->HandleActiveDescendantChanged();
     }
   }
@@ -1280,6 +1281,11 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {
       }
     }
   }
+}
+
+void AXRelationCache::Trace(Visitor* visitor) const {
+  visitor->Trace(explicitly_set_text_relations_from_element_attributes_);
+  visitor->Trace(object_cache_);
 }
 
 }  // namespace blink

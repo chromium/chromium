@@ -107,6 +107,10 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable reference target
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "ShadowRootReferenceTarget");
+
+  // Enable AOMAriaRelationshipProperties
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "AOMAriaRelationshipProperties");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
@@ -822,6 +826,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaControls) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaControlsElements) {
+  RunAriaTest(FILE_PATH_LITERAL("ariaControlsElements.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

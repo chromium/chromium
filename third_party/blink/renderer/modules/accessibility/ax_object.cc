@@ -1315,25 +1315,6 @@ const AtomicString& AXObject::GetInternalsAttribute(
   return element.EnsureElementInternals().FastGetAttribute(attribute);
 }
 
-Element* AXObject::GetAOMPropertyOrARIAAttribute(
-    AOMRelationProperty property) const {
-  Element* element = GetElement();
-  if (!element)
-    return nullptr;
-
-  return AccessibleNode::GetPropertyOrARIAAttribute(element, property);
-}
-
-bool AXObject::HasAOMPropertyOrARIAAttribute(
-    AOMRelationListProperty property,
-    HeapVector<Member<Element>>& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  return AccessibleNode::GetPropertyOrARIAAttribute(element, property, result);
-}
-
 namespace {
 
 void SerializeAriaNotificationAttributes(const AriaNotifications& notifications,
@@ -2690,8 +2671,10 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   if (!listbox_candidate &&
       RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
     // Require an aria-activedescendant on the <input>.
-    if (!GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant))
+    if (!ElementFromAttribute(GetElement(),
+                              html_names::kAriaActivedescendantAttr)) {
       return nullptr;
+    }
     listbox_candidate = UnignoredNextSibling();
     if (!listbox_candidate)
       return nullptr;
@@ -5083,7 +5066,27 @@ bool AXObject::ElementsFromAttribute(Element* from,
   for (const auto& element : *attr_associated_elements)
     elements.push_back(element);
 
-  return elements.size();
+  return !elements.empty();
+}
+
+// static
+Element* AXObject::ElementFromAttribute(Element* from,
+                                        const QualifiedName& attribute) {
+  // This method only makes sense for aria-activedescendant, so make sure nobody
+  // has made a typo trying to use ElementsFromAttribute.
+  DCHECK(attribute == html_names::kAriaActivedescendantAttr);
+
+  if (!from) {
+    return nullptr;
+  }
+
+  HeapVector<Member<Element>> vector;
+  if (!ElementsFromAttribute(from, vector, attribute)) {
+    return nullptr;
+  }
+
+  DCHECK_EQ(vector.size(), 1u);
+  return vector[0].Get();
 }
 
 // static
@@ -7827,8 +7830,9 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       } else if (!GetElement() || GetElement()->IsInUserAgentShadowRoot()) {
         // Built-in UI must have correct accessibility without needing repairs.
         result = false;
-      } else if (IsEditable() || GetAOMPropertyOrARIAAttribute(
-                                     AOMRelationProperty::kActiveDescendant)) {
+      } else if (IsEditable() ||
+                 ElementFromAttribute(GetElement(),
+                                      html_names::kAriaActivedescendantAttr)) {
         // Handle exceptions:
         // 1.Elements with contenteditable, where using the contents as a name
         //   would cause them to be double-announced.
@@ -8114,13 +8118,15 @@ String AXObject::ToString(bool verbose) const {
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
-      string_builder = string_builder +
-                       " aria-owns=" + AriaAttribute(html_names::kAriaOwnsAttr);
+      string_builder =
+          string_builder + " aria-owns=" +
+          GetElement()->FastGetAttribute(html_names::kAriaOwnsAttr);
     }
 
-    if (GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant)) {
+    if (Element* active_descendant = ElementFromAttribute(
+            GetElement(), html_names::kAriaActivedescendantAttr)) {
       string_builder = string_builder + " aria-activedescendant=" +
-                       AriaAttribute(html_names::kAriaActivedescendantAttr);
+                       GetNodeString(active_descendant);
     }
     if (IsFocused())
       string_builder = string_builder + " focused";

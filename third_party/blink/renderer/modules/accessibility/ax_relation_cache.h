@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -15,9 +16,7 @@
 namespace blink {
 
 // This class should only be used from inside the accessibility directory.
-class AXRelationCache {
-  USING_FAST_MALLOC(AXRelationCache);
-
+class AXRelationCache : public GarbageCollected<AXRelationCache> {
  public:
   explicit AXRelationCache(AXObjectCacheImpl*);
 
@@ -163,6 +162,8 @@ class AXRelationCache {
   static bool IsValidOwner(AXObject* owner);
   static bool IsValidOwnedChild(Node& child);
 
+  void Trace(Visitor* visitor) const;
+
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void ElementHasBeenProcessed(Element&);
 #endif
@@ -218,7 +219,7 @@ class AXRelationCache {
   // Save the current id attribute for the given DOMNodeId.
   void UpdateRegisteredIdAttribute(Element& element, DOMNodeId node_id);
 
-  WeakPersistent<AXObjectCacheImpl> object_cache_;
+  WeakMember<AXObjectCacheImpl> object_cache_;
 
   // Map from the AXID of the owner to the AXIDs of the children.
   // This is a validated map, it doesn't contain illegal, duplicate,
@@ -255,7 +256,8 @@ class AXRelationCache {
 
   // Labels and descriptions set by ariaLabelledByElements,
   // ariaDescribedByElements as opposed to aria-labelledby.describedy="[id]".
-  HashSet<DOMNodeId> explicitly_set_text_relations_from_element_attributes_;
+  HeapLinkedHashSet<WeakMember<Element>>
+      explicitly_set_text_relations_from_element_attributes_;
 
   // A set of IDs that need to be update when layout is clean.
   // For each of these, the new set of owned children

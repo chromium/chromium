@@ -654,12 +654,12 @@ AXObject* AXNodeObject::ActiveDescendant() const {
     }
   }
 
-  Element* descendant =
-      GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant);
-  if (!descendant)
+  Element* activedescendant_element =
+      ElementFromAttribute(element, html_names::kAriaActivedescendantAttr);
+  if (!activedescendant_element) {
     return nullptr;
-
-  AXObject* ax_descendant = AXObjectCache().Get(descendant);
+  }
+  AXObject* ax_descendant = AXObjectCache().Get(activedescendant_element);
   return ax_descendant && ax_descendant->IsVisible() ? ax_descendant : nullptr;
 }
 
@@ -2881,10 +2881,12 @@ bool AXNodeObject::IsTabItemSelected() const {
   if (!focused_element)
     return false;
 
+  DCHECK(GetElement());
   HeapVector<Member<Element>> elements;
-  if (!HasAOMPropertyOrARIAAttribute(AOMRelationListProperty::kControls,
-                                     elements))
+  if (!AXObject::ElementsFromAttribute(GetElement(), elements,
+                                       html_names::kAriaControlsAttr)) {
     return false;
+  }
 
   for (const auto& element : elements) {
     AXObject* tab_panel = AXObjectCache().Get(element);

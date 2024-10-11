@@ -905,7 +905,7 @@ void AXObjectCacheImpl::RemoveInspectorAgent(
 
 void AXObjectCacheImpl::EnsureRelationCacheAndInitialTree() {
   if (!relation_cache_) {
-    relation_cache_ = std::make_unique<AXRelationCache>(this);
+    relation_cache_ = MakeGarbageCollected<AXRelationCache>(this);
     relation_cache_->Init();
 
     // Build out initial tree so that AXObjects exist for
@@ -2594,8 +2594,8 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
       << node->GetDocument().Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (AccessibleNode::GetPropertyOrARIAAttributeValue(
-          element, AOMRelationProperty::kActiveDescendant)) {
+  if (AXObject::ElementFromAttribute(element,
+                                     html_names::kAriaActivedescendantAttr)) {
     HandleActiveDescendantChangedWithCleanLayout(element);
   }
 
@@ -4383,9 +4383,9 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid() {
         HeapVector<Member<Element>> error_messages;
         // Create the validation message unless the focused form control is
         // overriding it with a different message via aria-errormessage.
-        if (!AccessibleNode::GetPropertyOrARIAAttribute(
-                focused_element, AOMRelationListProperty::kErrorMessage,
-                error_messages)) {
+        if (!AXObject::ElementsFromAttribute(
+                focused_element, error_messages,
+                html_names::kAriaErrormessageAttr)) {
           AXObject* message = GetOrCreateValidationMessageObject();
           CHECK(message);
           CHECK(!message->IsDetached());
@@ -5954,6 +5954,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(popup_document_);
   visitor->Trace(last_selected_from_active_descendant_);
+  visitor->Trace(relation_cache_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(inline_text_box_object_mapping_);
   visitor->Trace(active_aria_modal_dialog_);

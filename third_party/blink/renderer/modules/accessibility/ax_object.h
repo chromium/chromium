@@ -80,9 +80,6 @@ class Node;
 class ScrollableArea;
 class V8HighlightType;
 
-enum class AOMRelationProperty;
-enum class AOMRelationListProperty;
-
 class IgnoredReason {
   DISALLOW_NEW();
 
@@ -337,10 +334,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Wrappers that retrieve either an Accessibility Object Model property,
   // or the equivalent ARIA attribute, in that order.
-  Element* GetAOMPropertyOrARIAAttribute(AOMRelationProperty) const;
-  bool HasAOMPropertyOrARIAAttribute(AOMRelationListProperty,
-                                     HeapVector<Member<Element>>& result) const;
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
+
+  // Returns true if |attribute| was present on |from|.
+  static bool ElementsFromAttribute(Element* from,
+                                    HeapVector<Member<Element>>& elements,
+                                    const QualifiedName& attribute);
+  static Element* ElementFromAttribute(Element* from,
+                                       const QualifiedName& attribute);
 
   // Serialize the properties of this node into |node_data|.
   void Serialize(ui::AXNodeData* node_data,
@@ -1523,10 +1524,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                           AXObjectSet& visited,
                           HeapVector<Member<Element>>& elements,
                           AXRelatedObjectVector* related_objects) const;
-  // Returns true if |attribute| was present on |from|.
-  static bool ElementsFromAttribute(Element* from,
-                                    HeapVector<Member<Element>>& elements,
-                                    const QualifiedName& attribute);
   static bool AriaLabelledbyElementVector(
       Element* from,
       HeapVector<Member<Element>>& elements);

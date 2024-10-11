@@ -994,7 +994,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // in a select with size > 1.
   DOMNodeId last_selected_list_option_ = 0;
 
-  std::unique_ptr<AXRelationCache> relation_cache_;
+  Member<AXRelationCache> relation_cache_;
 
   // Stages of cache/tree.
   AXObjectCacheLifecycle lifecycle_;

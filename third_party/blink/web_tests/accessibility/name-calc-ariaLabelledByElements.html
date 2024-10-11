@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div class="container">
+    <div id="div">Div Contents</div>
+</div>
+
+<script>
+test(function(t){
+    var axDiv = accessibilityController.accessibleElementById("div");
+    assert_equals(axDiv.name, "");
+}, "A simple div with inner text should not have an accessible name.");
+</script>
+
+<div class="container">
+    <button id="self">Contents of button</button>
+</div>
+
+<script>
+test(function(t){
+    var axSelf = accessibilityController.accessibleElementById("self");
+    assert_equals(axSelf.name, "Contents of button");
+    assert_equals(axSelf.nameFrom, "contents");
+}, "A button's accessible name should come from its contents.");
+</script>
+
+<div class="container">
+    <button id="labelledby" aria-labelledby="label1">Contents</button>
+    <div id="label1">Label 1</div>
+</div>
+
+<script>
+test(function(t){
+    var axLabelledby = accessibilityController.accessibleElementById("labelledby");
+    assert_equals(axLabelledby.name, "Label 1");
+    assert_equals(axLabelledby.nameFrom, "relatedElement");
+    assert_equals(axLabelledby.nameElementCount(), 1);
+    assert_equals(axLabelledby.nameElementAtIndex(0).role, "AXRole: AXGenericContainer");
+}, "Button with aria-labelledby referencing the id of another element.");
+</script>
+
+<div class="container">
+    <button id="labelledby2" aria-labelledby="labelledby2">Contents</button>
+</div>
+
+<script>
+test(function(t){
+    var axLabelledby2 = accessibilityController.accessibleElementById("labelledby2");
+    assert_equals(axLabelledby2.name, "Contents");
+    assert_equals(axLabelledby2.nameFrom, "relatedElement");
+    assert_equals(axLabelledby2.nameElementCount(), 1);
+    assert_equals(axLabelledby2.nameElementAtIndex(0).role, "AXRole: AXButton");
+}, "Button with aria-labelledby referencing itself.");
+</script>
+
+<div class="container">
+    <button id="labelledby3" aria-labelledby="labelledby3 label3">Contents</button>
+    <div id="label3">Label 3</div>
+</div>
+
+<script>
+test(function(t){
+    var axLabelledby3 = accessibilityController.accessibleElementById("labelledby3");
+    assert_equals(axLabelledby3.name, "Contents Label 3");
+    assert_equals(axLabelledby3.nameFrom, "relatedElement");
+    assert_equals(axLabelledby3.nameElementCount(), 2);
+    assert_equals(axLabelledby3.nameElementAtIndex(0).role, "AXRole: AXButton");
+    assert_equals(axLabelledby3.nameElementAtIndex(1).role, "AXRole: AXGenericContainer");
+}, "Button with aria-labelledby referencing itself and the id of another element.");
+</script>
+
+<div class="container">
+    <button id="labelledby4" aria-labelledby="label4">Contents</button>
+    <div id="label4" aria-labelledby="label4chained">Contents 4</div>
+    <p id="label4chained">Contents 4 chained</p>
+</div>
+
+<script>
+test(function(t){
+    var axLabelledby4 = accessibilityController.accessibleElementById("labelledby4");
+    assert_equals(axLabelledby4.name, "Contents 4");
+    assert_equals(axLabelledby4.nameFrom, "relatedElement");
+    assert_equals(axLabelledby4.nameElementCount(), 1);
+    assert_equals(axLabelledby4.nameElementAtIndex(0).role, "AXRole: AXGenericContainer");
+}, "Button with chain of aria-labelledby references.");
+</script>
+
+<div class="container">
+    <button id="labelledby5" aria-labelledby="label5">Contents</button>
+</div>
+
+<script>
+test(function(t){
+    var axLabelledby5 = accessibilityController.accessibleElementById("labelledby5");
+    assert_equals(axLabelledby5.name, "Contents");
+    assert_equals(axLabelledby5.nameFrom, "contents");
+    assert_equals(axLabelledby5.nameElementCount(), 0);
+}, "aria-labelledby reference to nonexistant element.");
+</script>
+
+<div class="container">
+    <button id="labelledby6" aria-labelledby="label6">Contents</button>
+    <div id="label6"></div>
+</div>
+
+<script>
+test(function(t){
+    var axLabelledby6 = accessibilityController.accessibleElementById("labelledby6");
+    assert_equals(axLabelledby6.name, "Contents");
+    assert_equals(axLabelledby6.nameFrom, "contents");
+    assert_equals(axLabelledby6.nameElementCount(), 1);
+    assert_equals(axLabelledby6.nameElementAtIndex(0).role, "AXRole: AXGenericContainer");
+}, "aria-labelledby reference to element with no text.");
+</script>
+
+<div class="container">
+    <button id="labelledby7" aria-labelledby="label7">Contents</button>
+    <h3 id="label7" style="visibility: hidden">Invisible label</h3>
+</div>
+
+<script>
+test(function(t){
+    assert_true(accessibilityController.accessibleElementById("label7").isIgnored);
+    var axLabelledby7 = accessibilityController.accessibleElementById("labelledby7");
+    assert_equals(axLabelledby7.name, "Invisible label");
+    assert_equals(axLabelledby7.nameFrom, "relatedElement");
+    assert_equals(axLabelledby7.nameElementCount(), 1);
+    assert_equals(axLabelledby7.nameElementAtIndex(0).role, "AXRole: AXHeading");
+}, "Button with aria-labelledby reference to invisible element.");
+</script>
+
+<div class="container">
+    <button id="labelledby8" aria-labelledby="label8">Contents</button>
+    <h3 id="label8" style="display: none">Display-none label</h3>
+</div>
+
+<script>
+test(function(t){
+    assert_true(accessibilityController.accessibleElementById("label8").isIgnored);
+    var axLabelledby8 = accessibilityController.accessibleElementById("labelledby8");
+    assert_equals(axLabelledby8.name, "Display-none label");
+    assert_equals(axLabelledby8.nameFrom, "relatedElement");
+    assert_equals(axLabelledby8.nameElementCount(), 1);
+    assert_equals(axLabelledby8.nameElementAtIndex(0).role, "AXRole: AXHeading");
+}, "Button with aria-labelledby reference to display-none element.");
+</script>

@@ -1793,6 +1793,8 @@ data/accessibility/aria/aria1.1-combobox-expected-blink.txt
 data/accessibility/aria/aria1.1-combobox-expected-mac.txt
 data/accessibility/aria/aria1.1-combobox-expected-win.txt
 data/accessibility/aria/aria1.1-combobox.html
+data/accessibility/aria/ariaControlsElements-expected-blink.txt
+data/accessibility/aria/ariaControlsElements.html
 data/accessibility/aria/disabled-aria-combobox-has-value-expected-blink.txt
 data/accessibility/aria/disabled-aria-combobox-has-value.html
 data/accessibility/aria/dpub-roles-computed-expected-blink.txt
