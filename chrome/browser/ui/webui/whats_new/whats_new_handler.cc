@@ -144,56 +144,6 @@ void WhatsNewHandler::GetServerUrl(bool is_staging,
   TryShowHatsSurveyWithTimeout();
 }
 
-std::string WhatsNewHandler::GetLatestCountry() {
-  if (override_latest_country_for_testing_.has_value()) {
-    return override_latest_country_for_testing_.value();
-  }
-
-  const auto* variations_service = g_browser_process->variations_service();
-  if (!variations_service) {
-    return "";
-  }
-
-  std::string country = variations_service->GetLatestCountry();
-  if (country.empty()) {
-    country = base::ToLowerASCII(
-        variations::GetCurrentCountryCode(variations_service));
-  }
-
-  return country;
-}
-
-bool WhatsNewHandler::IsHaTSActivated() {
-  // Calculate a threshold value < 100.
-  int threshold = GetThreshold();
-
-  // What's New content is dependent on the user's current country. Use
-  // the latest country to determine whether to show the survey.
-  // Currently the survey is only deployed in the US (us), Germany (de),
-  // and Japan (jp), which each have their own activation percentages.
-  int activation_percentage = 0;
-  const std::string latest_country = GetLatestCountry();
-  if (latest_country == "us") {
-    activation_percentage =
-        features::
-            kHappinessTrackingSurveysForDesktopWhatsNewEnActivationPercentage
-                .Get();
-  } else if (latest_country == "de") {
-    activation_percentage =
-        features::
-            kHappinessTrackingSurveysForDesktopWhatsNewDeActivationPercentage
-                .Get();
-  } else if (latest_country == "jp") {
-    activation_percentage =
-        features::
-            kHappinessTrackingSurveysForDesktopWhatsNewJpActivationPercentage
-                .Get();
-  }
-  // If the user-specific threshold is less than the activation
-  // percentage for the country, the HaTS will be activated.
-  return threshold < activation_percentage;
-}
-
 void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_,
@@ -202,15 +152,8 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
     return;
   }
 
-  if (!IsHaTSActivated()) {
-    return;
-  }
-
-  const auto* trigger_id = user_education::features::IsWhatsNewV2()
-                               ? kHatsSurveyTriggerWhatsNewAlternate
-                               : kHatsSurveyTriggerWhatsNew;
   hats_service->LaunchDelayedSurveyForWebContents(
-      trigger_id, web_contents_,
+      kHatsSurveyTriggerWhatsNew, web_contents_,
       features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
           .InMilliseconds(),
       /*product_specific_bits_data=*/{},
