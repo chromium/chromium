@@ -128,6 +128,7 @@
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
@@ -588,8 +589,14 @@ ChromeAutofillClient::ShowAutofillSuggestions(
 void ChromeAutofillClient::ShowPlusAddressEmailOverrideNotification(
     const std::string& original_email,
     EmailOverrideUndoCallback email_override_undo_callback) {
+#if BUILDFLAG(IS_ANDROID)
+  GetAutofillSnackbarController()->Show(
+      AutofillSnackbarType::kPlusAddressEmailOverride,
+      std::move(email_override_undo_callback));
+#else
   // TODO(crbug.com/324557053): Implement.
   NOTIMPLEMENTED();
+#endif
 }
 
 void ChromeAutofillClient::UpdateAutofillDataListValues(

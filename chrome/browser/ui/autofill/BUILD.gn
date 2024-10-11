@@ -173,6 +173,7 @@ source_set("impl") {
       "//components/android_autofill/browser:android",
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser/features:password_features",
+      "//components/plus_addresses/resources/strings",
     ]
   } else {
     sources += [

@@ -15,6 +15,7 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -98,6 +99,9 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kSaveServerIbanSuccess:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT);
+    case AutofillSnackbarType::kPlusAddressEmailOverride:
+      return l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_ANDROID);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -118,6 +122,9 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
     case AutofillSnackbarType::kSaveServerIbanSuccess:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT);
+    case AutofillSnackbarType::kPlusAddressEmailOverride:
+      return l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_ANDROID);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -151,6 +158,8 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "VirtualCardEnrollSuccess";
     case AutofillSnackbarType::kSaveServerIbanSuccess:
       return "SaveServerIbanSuccess";
+    case AutofillSnackbarType::kPlusAddressEmailOverride:
+      return "PlusAddressEmailOverride";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";
   }

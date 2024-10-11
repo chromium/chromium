@@ -26,6 +26,10 @@ enum class AutofillSnackbarType {
 
   // Used when an IBAN has been successfully saved to the server.
   kSaveServerIbanSuccess = 5,
+
+  // Used when a plus address created for the domain was filled instead of the
+  // email value saved in the autofill profile.
+  kPlusAddressEmailOverride = 6,
 };
 
 }  // namespace autofill
