@@ -1338,6 +1338,8 @@ GetKeyboardMetadataList() {
           {{0x3434, 0x0271}, {}},
           // Keychron K10 Pro Keyboard
           {{0x3434, 0x02a0}, {}},
+          // Keychron K14 Pro Keyboard
+          {{0x3434, 0x02e0}, {}},
           // Keychron V3 Keyboard
           {{0x3434, 0x0330}, {}},
           // Keychron C3 Pro Keyboard
