@@ -2107,8 +2107,7 @@ void BrowserView::UpdateExclusiveAccessBubble(
 }
 
 bool BrowserView::IsExclusiveAccessBubbleDisplayed() const {
-  return exclusive_access_bubble_ && (exclusive_access_bubble_->IsShowing() ||
-                                      exclusive_access_bubble_->IsVisible());
+  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
 }
 
 void BrowserView::OnExclusiveAccessUserInput() {

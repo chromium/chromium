@@ -54,12 +54,11 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // Returns true if the popup is being shown (and not fully shown).
   bool IsShowing() const;
 
-  // Returns whether the popup is visible.
-  bool IsVisible() const;
-
   views::View* GetView();
 
   gfx::SlideAnimation* animation_for_test() { return animation_.get(); }
+
+  bool IsVisibleForTesting() const { return IsVisible(); }
 
  private:
   // Updates |popup|'s bounds given |animation_| and |animated_attribute_|.
@@ -67,6 +66,8 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   void UpdateViewContent(ExclusiveAccessBubbleType bubble_type);
 
+  // Returns whether the popup is visible.
+  bool IsVisible() const;
 
   // Returns the desired rect for the popup window in screen coordinates.
   gfx::Rect GetPopupRect() const;

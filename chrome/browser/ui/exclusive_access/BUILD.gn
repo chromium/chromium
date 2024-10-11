@@ -119,7 +119,6 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/ui:ui_features",
       "//components/content_settings/core/browser",
-      "//ui/base:ozone_buildflags",
     ]
   }
 

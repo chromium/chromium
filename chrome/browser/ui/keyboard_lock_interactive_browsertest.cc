@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,7 +17,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/mock_permission_controller.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -103,11 +101,8 @@ class KeyboardLockInteractiveBrowserTest
   bool IsKeyboardLockActive();
   bool IsKeyboardLockRequestRegistered();
   bool RequestKeyboardLock(bool lock_all_keys = true);
-  void WaitForKeyboardLock();
-  bool RequestAndWaitForKeyboardLock(bool lock_all_keys = true);
   bool CancelKeyboardLock();
   bool DisablePreventDefaultOnTestPage();
-  void SendJsFullscreenShortcutAndWaitForKeyboardLock();
 #if BUILDFLAG(IS_MAC)
   void ExitFullscreen();
 #endif
@@ -123,7 +118,6 @@ class KeyboardLockInteractiveBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_test_server_;
-  content::MockPermissionController permission_controller_;
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<ui::test::ScopedFakeNSWindowFullscreen> fake_fullscreen_ =
@@ -151,19 +145,6 @@ void KeyboardLockInteractiveBrowserTest::SetUpCommandLine(
 void KeyboardLockInteractiveBrowserTest::SetUpOnMainThread() {
   GetEmbeddedTestServer()->AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(GetEmbeddedTestServer()->Start());
-  GetExclusiveAccessManager()
-      ->permission_manager()
-      .set_permission_controller_for_test(&permission_controller_);
-  ON_CALL(permission_controller_, RequestPermissionsFromCurrentDocument)
-      .WillByDefault(
-          [](content::RenderFrameHost* render_frame_host,
-             content::PermissionRequestDescription request_description,
-             base::OnceCallback<void(
-                 const std::vector<content::PermissionStatus>&)> callback) {
-            std::move(callback).Run(std::vector<content::PermissionStatus>(
-                request_description.permissions.size(),
-                content::PermissionStatus::GRANTED));
-          });
   FullscreenKeyboardBrowserTestBase::SetUpOnMainThread();
 }
 
@@ -196,31 +177,6 @@ bool KeyboardLockInteractiveBrowserTest::RequestKeyboardLock(
       .ExtractBool();
 }
 
-// TODO: crbug.com/353393481 - Make the KeyboardLockController state synced with
-// JS so that waiting for the promise to resolve in RequestKeyboardLock() is
-// sufficient and WaitForKeyboardLock() can be deleted.
-void KeyboardLockInteractiveBrowserTest::WaitForKeyboardLock() {
-  if (GetExclusiveAccessManager()
-          ->keyboard_lock_controller()
-          ->IsKeyboardLockActive()) {
-    return;
-  }
-  base::RunLoop run_loop;
-  GetExclusiveAccessManager()
-      ->keyboard_lock_controller()
-      ->set_lock_state_callback_for_test(run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-bool KeyboardLockInteractiveBrowserTest::RequestAndWaitForKeyboardLock(
-    bool lock_all_keys /*=true*/) {
-  bool request_success = RequestKeyboardLock(lock_all_keys);
-  if (request_success) {
-    WaitForKeyboardLock();
-  }
-  return request_success;
-}
-
 bool KeyboardLockInteractiveBrowserTest::CancelKeyboardLock() {
   // keyboard.unlock() is a synchronous call.
   return ExecJs(GetActiveWebContents(), kKeyboardUnlockMethodCall);
@@ -241,12 +197,6 @@ bool KeyboardLockInteractiveBrowserTest::DisablePreventDefaultOnTestPage() {
   // certain keys, such as escape, cannot be prevented by the webpage.
   return ui_test_utils::SendKeyPressSync(GetActiveBrowser(), ui::VKEY_D, false,
                                          false, false, false);
-}
-
-void KeyboardLockInteractiveBrowserTest::
-    SendJsFullscreenShortcutAndWaitForKeyboardLock() {
-  SendJsFullscreenShortcutAndWait();
-  WaitForKeyboardLock();
 }
 
 // https://crbug.com/1382717 Flaky on Linux
@@ -288,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_FALSE(IsKeyboardLockActive());
 
   // Tab-initiated fullscreen (JS API) does engage keyboard lock.
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_FALSE(IsInBrowserFullscreen());
   ASSERT_TRUE(IsActiveTabFullscreen());
   ASSERT_TRUE(IsKeyboardLockActive());
@@ -317,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(VerifyShortcutsAreNotPrevented());
 
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // New Tab shortcut is prevented.
@@ -350,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 
   // First we lock all keys.
   ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/true));
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press does not exit fullscreen.
@@ -384,12 +334,12 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   // request fullscreen again.
   ASSERT_FALSE(IsActiveTabFullscreen());
   ASSERT_TRUE(IsKeyboardLockRequestRegistered());
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsActiveTabFullscreen());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Lock all keys again.
-  ASSERT_TRUE(RequestAndWaitForKeyboardLock(/*lock_all_keys=*/true));
+  ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/true));
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press does not exit fullscreen.
@@ -401,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SendShortcutsAndExpectPrevented());
 
   // Last, update the set of keys being requested so escape is not locked.
-  ASSERT_TRUE(RequestAndWaitForKeyboardLock(/*lock_all_keys=*/false));
+  ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/false));
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press will now exit fullscreen.
@@ -450,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_FALSE(IsKeyboardLockActive());
 
   // Tab-initiated fullscreen (JS API) does engage keyboard lock.
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_FALSE(IsInBrowserFullscreen());
   ASSERT_TRUE(IsActiveTabFullscreen());
   ASSERT_TRUE(IsKeyboardLockActive());
@@ -512,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   // prevent the user from exiting fullscreen.
 
   ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/false));
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press does exit fullscreen.
@@ -608,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_TRUE(IsKeyboardLockRequestRegistered());
   ASSERT_FALSE(first_instance_host_view->IsKeyboardLocked());
 
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(first_instance_host_view->IsKeyboardLocked());
 
   // Now we use the test utility libraries to switch between the first and
@@ -646,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_TRUE(DisablePreventDefaultOnTestPage());
 
   ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/false));
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURLWithDisposition(
@@ -664,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(StartFullscreenLockPage());
 
   ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/false));
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURLWithDisposition(
@@ -682,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_TRUE(DisablePreventDefaultOnTestPage());
 
   ASSERT_TRUE(RequestKeyboardLock(/*lock_all_keys=*/false));
-  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWaitForKeyboardLock());
+  ASSERT_NO_FATAL_FAILURE(SendJsFullscreenShortcutAndWait());
   ASSERT_TRUE(IsKeyboardLockActive());
 
   GURL download_url =
