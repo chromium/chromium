@@ -135,7 +135,7 @@ public class TabGroupModelFilterProvider {
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        for (TabGroupModelFilter filter : mTabGroupModelFilterInternalList) {
+        for (TabGroupModelFilterInternal filter : mTabGroupModelFilterInternalList) {
             filter.destroy();
         }
         mPendingTabModelObserver.clear();

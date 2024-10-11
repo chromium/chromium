@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.lifetime.Destroyable;
+
 /** Package private interface extension of {@link TabGroupModelFilter} */
-// TODO(crbug.com/372068933): Actually make this package private, currently public so that the
-// tab_groups/ module doesn't need to all get moved into chrome/android/.
-public interface TabGroupModelFilterInternal extends TabGroupModelFilter {
+interface TabGroupModelFilterInternal extends TabGroupModelFilter, Destroyable {
     /**
      * Mark TabState initialized, and TabGroupModelFilter ready to use. This should only be called
      * once, and should only be called by {@link TabGroupModelFilterProvider}.
      */
-    void markTabStateInitialized();
+    /*package*/ void markTabStateInitialized();
 }

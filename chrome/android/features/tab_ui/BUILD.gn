@@ -202,7 +202,6 @@ android_library("test_support_javalib") {
     "//chrome/browser/hub:java",
     "//chrome/browser/hub/internal:java",
     "//chrome/browser/tab:java",
-    "//chrome/browser/tab_group:java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",

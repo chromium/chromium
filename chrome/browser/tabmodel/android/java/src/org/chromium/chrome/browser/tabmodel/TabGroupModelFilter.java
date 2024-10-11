@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
-public interface TabGroupModelFilter extends TabList, Destroyable {
+public interface TabGroupModelFilter extends TabList {
     /**
      * Adds a {@link TabModelObserver} to be notified on {@link TabGroupModelFilter} changes.
      *

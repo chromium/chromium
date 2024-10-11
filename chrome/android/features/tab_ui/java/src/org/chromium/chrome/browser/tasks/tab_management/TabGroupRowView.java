@@ -22,7 +22,7 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;

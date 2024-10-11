@@ -519,6 +519,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/tabmodel/ContextMenuLoadUrlParamsTest.java",
   "javatests/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java",
   "javatests/src/org/chromium/chrome/browser/tabmodel/MultiInstanceMigrationTest.java",
+  "javatests/src/org/chromium/chrome/browser/tabmodel/TabGroupsTest.java",
   "javatests/src/org/chromium/chrome/browser/tabmodel/TabModelImplTest.java",
   "javatests/src/org/chromium/chrome/browser/tabmodel/TabModelMergingTest.java",
   "javatests/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserverTestRule.java",

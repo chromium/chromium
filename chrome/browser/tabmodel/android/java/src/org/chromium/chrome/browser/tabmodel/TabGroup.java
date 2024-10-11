@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_groups;
+package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabList;
 
 import java.util.ArrayList;
 import java.util.Collections;

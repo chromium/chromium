@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_groups;
+package org.chromium.chrome.browser.tabmodel;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils.INVALID_COLOR_ID;
+import static org.chromium.chrome.browser.tabmodel.TabGroupColorUtils.INVALID_COLOR_ID;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,7 +31,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 
 import java.util.Set;
 
