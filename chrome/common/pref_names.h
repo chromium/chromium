@@ -3476,11 +3476,6 @@ inline constexpr char kSigninInterceptionEnabled[] =
 // an offer is checked.
 inline constexpr char kEchoCheckedOffers[] = "EchoCheckedOffers";
 
-// Boolean pref indicating whether the user is allowed to create secondary
-// profiles in Lacros browser. This is set by a policy, and the default value
-// for managed users is false.
-inline constexpr char kLacrosSecondaryProfilesAllowed[] =
-    "lacros_secondary_profiles_allowed";
 // String pref indicating what to do when Lacros is disabled and we go back
 // to using Ash.
 inline constexpr char kLacrosDataBackwardMigrationMode[] =

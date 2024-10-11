@@ -94,12 +94,6 @@ bool IsGuestModeEnabled();
 // associated with |profile|.
 bool IsGuestModeEnabled(const Profile& profile);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Returns true if secondary profiles are allowed by
-// |prefs::kLacrosSecondaryProfilesAllowed|.
-bool AreSecondaryProfilesAllowed();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Returns true if sign in is required to browse as this profile.  Call with
 // profile->GetPath() if you have a profile pointer.
 // TODO(mlerman): Refactor appropriate calls to

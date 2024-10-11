@@ -531,12 +531,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 
   // If a browser window cannot be opened for profile, load the profile to
   // display a dialog.
-  if (entry->IsSigninRequired()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      || (!profiles::AreSecondaryProfilesAllowed() &&
-          !Profile::IsMainProfilePath(*profile_path))
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  ) {
+  if (entry->IsSigninRequired()) {
     g_browser_process->profile_manager()->LoadProfileByPath(
         *profile_path, /*incognito=*/false,
         base::BindOnce(&ProfilePickerHandler::OnProfileForDialogLoaded,
@@ -607,14 +602,6 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
     }
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profiles::AreSecondaryProfilesAllowed() &&
-      !Profile::IsMainProfilePath(profile->GetPath())) {
-    LoginUIServiceFactory::GetForProfile(profile)
-        ->SetProfileBlockingErrorMessage();
-    ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ProfilePickerHandler::DisplayForceSigninErrorDialog(

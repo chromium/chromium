@@ -24,14 +24,6 @@ void NetworkAnnotationMonitor::Report(int32_t hash_code) {
   // Multi-profile is not currently supported, so only run on ChromeOS for now.
   static_assert(BUILDFLAG(IS_CHROMEOS));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros allows multi-profile if enabled by policy, so skip reporting in this
-  // case. In the future we could consider using ProfileNetworkContext for this.
-  if (profiles::AreSecondaryProfilesAllowed()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Get blocklist prefs from the current active profile, which on ChromeOS

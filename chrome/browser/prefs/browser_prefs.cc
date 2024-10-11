@@ -1110,6 +1110,8 @@ const char kMoveMigrationResumeStepPref[] =
     "ash.browser_data_migrator.move_migration_resume_step";
 const char kMoveMigrationResumeCountPref[] =
     "ash.browser_data_migrator.move_migration_resume_count";
+const char kLacrosSecondaryProfilesAllowed[] =
+    "lacros_secondary_profiles_allowed";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1580,6 +1582,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(kTabResumeDismissedTabsPrefName,
                              base::Value::List());
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Deprecated 10/2024
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(kLacrosSecondaryProfilesAllowed, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2931,6 +2938,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kTabResumeDismissedTabsPrefName);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Added 10/2024
+#if BUILDFLAG(IS_CHROMEOS)
+  profile_prefs->ClearPref(kLacrosSecondaryProfilesAllowed);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

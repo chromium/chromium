@@ -236,7 +236,6 @@ TEST_F(PolicyLoaderLacrosTest, ChildUsersNoEnterpriseDefaults) {
   per_profile_ = PolicyPerProfileFilter::kFalse;
 
   em::CloudPolicySettings policy_proto;
-  policy_proto.mutable_lacrossecondaryprofilesallowed()->set_value(false);
   const std::vector<uint8_t> data = GetValidPolicyFetchResponse(policy_proto);
 
   // Setup child user session with the policy.
@@ -258,12 +257,6 @@ TEST_F(PolicyLoaderLacrosTest, ChildUsersNoEnterpriseDefaults) {
   // Check that desired policy is set and enterprise defaults are not applied.
   const PolicyMap& policy_map = GetChromePolicyMap(bundle);
   EXPECT_EQ(1u, policy_map.size());
-
-  const PolicyMap::Entry* entry =
-      policy_map.Get(key::kLacrosSecondaryProfilesAllowed);
-  ASSERT_TRUE(entry);
-  EXPECT_FALSE(entry->value(base::Value::Type::BOOLEAN)->GetBool());
-  EXPECT_EQ(policy::POLICY_SOURCE_CLOUD_FROM_ASH, entry->source);
 }
 
 TEST_F(PolicyLoaderLacrosTest, DeviceLocalAccountUsers) {
