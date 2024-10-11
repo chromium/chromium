@@ -4724,4 +4724,21 @@
   <message name="IDS_SETTINGS_AI_THEMES_SUB_LABEL" desc="This string is the subheading of a setting for ‘Create themes with AI’. This subheading summarizes the user benefit of the Create Themes feature. This is an AI (artificial intelligence) feature that helps users create their own custom Chrome themes/wallpapers by letting users select from a list of options. The tone should be motivating.">
     Helps you design custom themes for Chrome
   </message>
+
+  <!-- Experimental settings - Compare -->
+  <message name="IDS_SETTINGS_COMPARE_SETTING_SUBLABEL" desc="This string is the subheading of a setting for ‘Compare products’. This subheading summarizes the user benefit of the Compare Products feature. This is an AI (artificial intelligence) feature that helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
+    Easily compare similar products
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Compare Products help center article when the user taps it. It is at the end of the Compare Products setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
+    Learn more about comparing products
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
+    Helps you see similar products side-by-side and easily compare the details that matter to you
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you compare products, the tab titles and URLs of the products are sent to Google
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_CONSIDER_TABLES_IN_ACCOUNT" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s Google Account in order to provide the feature’s respective benefit. The tone should be informative.">
+    Comparison tables are saved in your Google Account
+  </message>
 </grit-part>

@@ -111,6 +111,7 @@ export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
 // </if>
 
+export {SettingsAiCompareSubpageElement} from './ai_page/ai_compare_subpage.js';
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
 export {FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';

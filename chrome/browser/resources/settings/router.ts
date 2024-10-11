@@ -26,6 +26,7 @@ export interface SettingsRoutes {
   CERTIFICATES: Route;
   CHROME_CLEANUP: Route;
   CLEAR_BROWSER_DATA: Route;
+  COMPARE: Route;
   COOKIES: Route;
   DEFAULT_BROWSER: Route;
   DOWNLOADS: Route;

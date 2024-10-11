@@ -90,6 +90,7 @@
 #include "chrome/grit/settings_resources_map.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
@@ -601,6 +602,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     optimization_guide_feature_visible[0] |= visible;
   }
 
+  bool should_show_compare_settings_page =
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kAiSettingsPageRefresh) &&
+      commerce::CanFetchProductSpecificationsData(
+          shopping_service->GetAccountChecker());
+
+  optimization_guide_feature_visible[0] |= should_show_compare_settings_page;
+
   html_source->AddBoolean("showAdvancedFeaturesMainControl",
                           optimization_guide_feature_visible[0]);
   html_source->AddBoolean("showComposeControl",
@@ -611,6 +620,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           optimization_guide_feature_visible[3]);
   html_source->AddBoolean("showHistorySearchControl",
                           optimization_guide_feature_visible[4]);
+  html_source->AddBoolean("showCompareControl",
+                          should_show_compare_settings_page);
 
   html_source->AddBoolean(
       "enableAiSettingsPageRefresh",

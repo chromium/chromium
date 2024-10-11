@@ -70,6 +70,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -420,6 +421,16 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"historySearchSublabelOn", IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_ON},
       {"historySearchSublabelOff", IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_OFF},
 
+      // Compare strings.
+      {"aiCompareLabel", IDS_COMPARE_EMPTY_STATE_TITLE},
+      {"aiCompareSublabel", IDS_SETTINGS_COMPARE_SETTING_SUBLABEL},
+      {"aiCompareLearnMoreA11yLabel", IDS_SETTINGS_COMPARE_SETTING_LINK_A11Y},
+      {"aiCompareWhenOnProductDetails",
+       IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS},
+      {"aiCompareConsiderData", IDS_SETTINGS_COMPARE_CONSIDER_DATA},
+      {"aiCompareConsiderTablesInAccount",
+       IDS_SETTINGS_COMPARE_CONSIDER_TABLES_IN_ACCOUNT},
+
       // Compose strings.
       {"aiComposeLabel", IDS_COMPOSE_SUGGESTION_MAIN_TEXT},
       {"aiComposeSublabel", IDS_SETTINGS_AI_COMPOSE_SUBLABEL},
@@ -467,6 +478,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          chrome::kHistorySearchLearnMorePageURL);
   html_source->AddString("historySearchDataHomeUrl",
                          chrome::kChromeUIHistoryURL);
+  html_source->AddString("compareLearnMoreUrl",
+                         commerce::kChromeUICompareLearnMoreUrl);
+  html_source->AddString("compareDataHomeUrl",
+                         commerce::kChromeUICompareListsUrl);
   html_source->AddString("composeLearnMorePageURL",
                          chrome::kComposeLearnMorePageURL);
   html_source->AddString("tabOrganizationLearnMoreUrl",

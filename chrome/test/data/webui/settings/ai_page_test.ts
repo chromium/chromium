@@ -38,6 +38,7 @@ suite('ExperimentalAdvancedPage', function() {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
       showHistorySearchControl: false,
+      showCompareControl: true,
       showComposeControl: true,
       showTabOrganizationControl: false,
       showWallpaperSearchControl: false,
@@ -46,6 +47,7 @@ suite('ExperimentalAdvancedPage', function() {
     await createPage();
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    assertTrue(isChildVisible(page, '#compareRowV2'));
     assertTrue(isChildVisible(page, '#composeRowV2'));
     assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
     assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
@@ -59,6 +61,7 @@ suite('ExperimentalAdvancedPage', function() {
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
       showHistorySearchControl: true,
+      showCompareControl: false,
       showComposeControl: false,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
@@ -67,6 +70,7 @@ suite('ExperimentalAdvancedPage', function() {
     await createPage();
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
+    assertFalse(isChildVisible(page, '#compareRowV2'));
     assertFalse(isChildVisible(page, '#composeRowV2'));
     assertTrue(isChildVisible(page, '#tabOrganizationRowV2'));
     assertTrue(isChildVisible(page, '#wallpaperSearchRowV2'));
@@ -112,6 +116,26 @@ suite('ExperimentalAdvancedPage', function() {
 
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.HISTORY_SEARCH, currentRoute);
+    assertEquals(routes.AI, currentRoute.parent);
+  });
+
+  test('compareRow', async () => {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showCompareControl: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const compareRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#compareRowV2');
+
+    assertTrue(!!compareRow);
+    assertTrue(isVisible(compareRow));
+    compareRow.click();
+
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.COMPARE, currentRoute);
     assertEquals(routes.AI, currentRoute.parent);
   });
 
@@ -245,6 +269,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
 
     // V2 UI should be hidden if refresh flag is disabled.
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    assertFalse(isChildVisible(page, '#compareRowV2'));
     assertFalse(isChildVisible(page, '#composeRowV2'));
     assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
     assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
@@ -268,6 +293,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
 
     // V2 UI should be hidden if refresh flag is disabled.
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
+    assertFalse(isChildVisible(page, '#compareRowV2'));
     assertFalse(isChildVisible(page, '#composeRowV2'));
     assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
     assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));

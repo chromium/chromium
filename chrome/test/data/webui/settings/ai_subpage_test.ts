@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {SettingsAiTabOrganizationSubpageElement, SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAiCompareSubpageElement, SettingsAiTabOrganizationSubpageElement, SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
@@ -107,5 +107,42 @@ suite('HistorySearchSubpage', function() {
     assertEquals(
         learnMoreLink.href,
         loadTimeData.getString('historySearchLearnMoreUrl'));
+  });
+});
+
+suite('CompareSubpage', function() {
+  let openWindowProxy: TestOpenWindowProxy;
+  let subpage: SettingsAiCompareSubpageElement;
+
+  suiteSetup(function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+  });
+
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    subpage = document.createElement('settings-ai-compare-subpage');
+    document.body.appendChild(subpage);
+    return flushTasks();
+  }
+
+  test('compareLinkout', async function() {
+    await createPage();
+
+    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    assertTrue(!!linkout);
+
+    linkout.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('compareDataHomeUrl'));
+  });
+
+  test('compareLearnMore', async () => {
+    await createPage();
+
+    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        learnMoreLink.href, loadTimeData.getString('compareLearnMoreUrl'));
   });
 });

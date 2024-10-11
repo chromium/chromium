@@ -217,6 +217,9 @@ function createRoutes(): SettingsRoutes {
       if (loadTimeData.getBoolean('showComposeControl')) {
         r.OFFER_WRITING_HELP = r.AI.createChild('/ai/helpMeWrite');
       }
+      if (loadTimeData.getBoolean('showCompareControl')) {
+        r.COMPARE = r.AI.createChild('/ai/compareProducts');
+      }
     }
   }
 

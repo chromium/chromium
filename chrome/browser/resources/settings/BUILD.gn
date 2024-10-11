@@ -63,6 +63,7 @@ build_webui("build") {
   web_component_files = [
     "a11y_page/a11y_page.ts",
     "about_page/about_page.ts",
+    "ai_page/ai_compare_subpage.ts",
     "ai_page/ai_info_card.ts",
     "ai_page/ai_page.ts",
     "ai_page/ai_tab_organization_subpage.ts",

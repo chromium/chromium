@@ -48,6 +48,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () => loadTimeData.getBoolean('showComposeControl'),
       },
 
+      showCompareControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showCompareControl'),
+      },
+
       showHistorySearchControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showHistorySearchControl'),
@@ -83,6 +88,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             map.set(routes.HISTORY_SEARCH.path, '#historySearchRowV2');
           }
 
+          if (routes.COMPARE) {
+            map.set(routes.COMPARE.path, '#compareRowV2');
+          }
+
           if (routes.OFFER_WRITING_HELP) {
             map.set(routes.OFFER_WRITING_HELP.path, '#composeRowV2');
           }
@@ -109,6 +118,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   private enableAiSettingsPageRefresh_: boolean;
   private showComposeControl_: boolean;
+  private showCompareControl_: boolean;
   private showHistorySearchControl_: boolean;
   private showTabOrganizationControl_: boolean;
   private showWallpaperSearchControl_: boolean;
@@ -136,6 +146,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private onHistorySearchRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
+  }
+
+  private onCompareRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().COMPARE);
   }
 
   private onComposeRowClick_() {

@@ -188,6 +188,10 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, HistorySearchSubpage) {
           "runMochaSuite('HistorySearchSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, CompareSubpage) {
+  RunTest("settings/ai_subpage_test.js", "runMochaSuite('CompareSubpage')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
 }
