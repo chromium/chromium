@@ -123,6 +123,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       base::UTF8ToUTF16(*plusProfile.plus_address));
   NSString* primaryButtonTitle = l10n_util::GetNSString(
       IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS);
+
   [self showAlertWithTitle:title
                        message:message
             primaryButtonTitle:primaryButtonTitle
@@ -136,6 +137,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_TITLE_IOS);
   NSString* message =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS);
+
   [self showAlertWithTitle:title
                        message:message
             primaryButtonTitle:l10n_util::GetNSString(IDS_OK)
@@ -151,6 +153,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS);
   NSString* primaryButtonTitle = l10n_util::GetNSString(
       IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS);
+
   [self showAlertWithTitle:title
                        message:message
             primaryButtonTitle:primaryButtonTitle
@@ -159,18 +162,19 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
             isAffiliationError:NO];
 }
 
-- (void)displayPlusAddressGenericErrorAlert {
+- (void)displayPlusAddressGenericErrorAlert:(BOOL)shouldDismissBottomSheet {
   NSString* title =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS);
   NSString* message =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS);
   NSString* primaryButtonTitle = l10n_util::GetNSString(
       IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS);
+
   [self showAlertWithTitle:title
                        message:message
             primaryButtonTitle:primaryButtonTitle
           secondaryButtonTitle:l10n_util::GetNSString(IDS_CANCEL)
-      shouldDismissBottomSheet:NO
+      shouldDismissBottomSheet:shouldDismissBottomSheet
             isAffiliationError:NO];
 }
 

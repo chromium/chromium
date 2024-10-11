@@ -34,7 +34,7 @@ class UrlLoadingBrowserAgent;
 - (void)displayPlusAddressTimeoutErrorAlert:(BOOL)shouldDismissBottomSheet;
 
 // Shows generic alert with the message.
-- (void)displayPlusAddressGenericErrorAlert;
+- (void)displayPlusAddressGenericErrorAlert:(BOOL)shouldDismissBottomSheet;
 
 @end
 

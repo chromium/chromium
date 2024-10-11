@@ -125,7 +125,8 @@ void ExpectModalTimeSample(
       [self isRunningTest:@selector(testTimeOutAlertOnConfirm)] ||
       [self isRunningTest:@selector(testGenericAlertOnConfirm)] ||
       [self isRunningTest:@selector(testQuotaErrorAlertOnReserve)] ||
-      [self isRunningTest:@selector(testTimeoutErrorAlertOnReserve)]) {
+      [self isRunningTest:@selector(testTimeoutErrorAlertOnReserve)] ||
+      [self isRunningTest:@selector(testGenericAlertOnReserve)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
          {}});
@@ -579,6 +580,19 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
       base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+}
+
+// Tests that a generic alert is shown when the plus address is failed to
+// reserve.
+- (void)testGenericAlertOnReserve {
+  [PlusAddressAppInterface setShouldFailToReserve:YES];
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
 }
 
 @end

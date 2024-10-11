@@ -197,7 +197,6 @@ enum class PlusAddressAction {
                       forAction:(PlusAddressAction)action {
   BOOL errorStatesEnabled = base::FeatureList::IsEnabled(
       plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled);
-  BOOL showGenericError = NO;
   switch (action) {
       // Both actions have the same success behavior.
     case PlusAddressAction::kPlusAddressActionReserve:
@@ -218,7 +217,7 @@ enum class PlusAddressAction {
           } else if (maybePlusProfile.error().IsTimeoutError()) {
             [_delegate displayPlusAddressTimeoutErrorAlert:YES];
           } else {
-            showGenericError = YES;
+            [_delegate displayPlusAddressGenericErrorAlert:YES];
           }
         }
       }
@@ -253,15 +252,11 @@ enum class PlusAddressAction {
           } else if (maybePlusProfile.error().IsTimeoutError()) {
             [_delegate displayPlusAddressTimeoutErrorAlert:NO];
           } else {
-            showGenericError = YES;
+            [_delegate displayPlusAddressGenericErrorAlert:NO];
           }
         }
       }
       break;
-  }
-
-  if (showGenericError && errorStatesEnabled) {
-    [_delegate displayPlusAddressGenericErrorAlert];
   }
 }
 
