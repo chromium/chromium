@@ -1515,7 +1515,7 @@
 <translation id="8156478151976189188">पासवर्ड सिंक काम करत नाही</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाती</translation>
 <translation id="8173034266693057059">लांबी</translation>
-<translation id="8179976553408161302">Enter</translation>
+<translation id="8179976553408161302">एंटर</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} साठी}=2{{website_1}, {website_2} साठी}=3{{website_1}, {website_2} आणि आणखी १ साठी}other{{website_1}, {website_2}, आणि आणखी {more_count} साठी}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">पेजचे भाषांतर करा</translation>

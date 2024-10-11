@@ -30,7 +30,7 @@
 <translation id="1478370723027452770">Recibir axuda con Chrome for Testing</translation>
 <translation id="1497802159252041924">Erro de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Compartir unha pestana de Chromium</translation>
-<translation id="1553461853655228091">Chromium necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
+<translation id="1553461853655228091">Chromium necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Xa non se admite esta extensión. Chromium recomenda que a quites.}other{Xa non se admiten estas extensións. Chromium recomenda que as quites.}}</translation>
 <translation id="1574377791422810894">Ferramentas de seguranza de Chromium</translation>
 <translation id="1591808205441691831">Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión, os datos permanecerán neste dispositivo.</translation>
@@ -429,7 +429,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7384121030444253939">Xa non se admite esta extensión. Chromium recomenda que a quites.</translation>
 <translation id="7398989605938454041">Cos perfís de Chromium podes separar todas as cousas que teñas neste navegador. Así é máis sinxelo separar o traballo do lecer.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> (Chromium para programadores)</translation>
-<translation id="7451052299415159299">Chromium necesita permiso para acceder á cámara neste sitio</translation>
+<translation id="7451052299415159299">Chromium necesita permiso de acceso á cámara neste sitio</translation>
 <translation id="7458892263350425044">Para usar o micrófono, concédelle acceso a Chromium na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Se queres recibir actualizacións de Chromium no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 7.</translation>
 <translation id="7467949745582939695">Queres reiniciar Chromium?</translation>
@@ -507,7 +507,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8704119203788522458">Este é o teu Chromium</translation>
 <translation id="8719993436687031146">Queres iniciar sesión en Chromium?</translation>
 <translation id="878572486461146056">Erro de instalación: A persoa que administra a rede aplicou unha política de grupo que non permite a instalación (<ph name="INSTALL_ERROR" />)</translation>
-<translation id="8796602469536043152">Chromium necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
+<translation id="8796602469536043152">Chromium necesita permiso de acceso á cámara e ao micrófono neste sitio</translation>
 <translation id="8818550178040858407">Queres iniciar sesión en Chromium?</translation>
 <translation id="8826492472752484139">Fai clic no xestor de contrasinais</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>

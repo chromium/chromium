@@ -4069,7 +4069,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3878445208930547646">Não é permitido copiar deste site</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3880513902716032002">Algumas das páginas que visita são pré-carregadas</translation>
-<translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma compatível desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">O seu administrador gere as atualizações</translation>
 <translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3888501106166145415">Redes Wi-Fi associadas</translation>
@@ -8800,7 +8800,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7387107590792462040">Aguarde enquanto a instalação está em curso</translation>
 <translation id="7387273928653486359">Aceitável</translation>
 <translation id="7387951778417998929">Para utilizar outro motor de pesquisa que não seja o predefinido, introduza o respetivo atalho na barra de endereço, seguido do seu atalho de teclado favorito. Também pode alterar o seu motor de pesquisa predefinido aqui.</translation>
-<translation id="7388209873137778229">São apresentados apenas os dispositivos suportados.</translation>
+<translation id="7388209873137778229">São apresentados apenas os dispositivos compatíveis.</translation>
 <translation id="7388615499319468910">Os sites e os anunciantes podem compreender o desempenho dos anúncios. Esta definição está desativada.</translation>
 <translation id="738903649531469042">Adicionar separador à Lista de leitura</translation>
 <translation id="7392118418926456391">Falha ao analisar vírus</translation>
