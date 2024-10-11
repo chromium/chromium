@@ -125,6 +125,23 @@ PrerenderHost* GetPrerenderHostByUrl(WebContents* web_contents,
   return registry.FindHostByUrlForTesting(url);
 }
 
+PrerenderHost::LoadingOutcome WaitForPrerenderLoadingOutcome(
+    WebContents& web_contents,
+    const GURL& gurl) {
+  TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadingOutcome",
+              "web_contents", web_contents, "url", gurl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(&web_contents);
+  PrerenderHost* host = registry.FindHostByUrlForTesting(gurl);
+  // Wait for the host to be created if it hasn't yet.
+  if (!host) {
+    PrerenderHostRegistryObserver observer(web_contents);
+    observer.WaitForTrigger(gurl);
+    host = registry.FindHostByUrlForTesting(gurl);
+    CHECK_NE(host, nullptr);
+  }
+  return host->WaitForLoadStopForTesting();
+}
+
 }  // namespace
 
 class PrerenderHostRegistryObserverImpl
@@ -462,25 +479,24 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(
     WebContents& web_contents,
     const GURL& gurl) {
-  TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadCompletion",
-              "web_contents", web_contents, "url", gurl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(&web_contents);
-  PrerenderHost* host = registry.FindHostByUrlForTesting(gurl);
-  // Wait for the host to be created if it hasn't yet.
-  if (!host) {
-    PrerenderHostRegistryObserver observer(web_contents);
-    observer.WaitForTrigger(gurl);
-    host = registry.FindHostByUrlForTesting(gurl);
-    ASSERT_NE(host, nullptr);
-  }
-  auto status = host->WaitForLoadStopForTesting();
+  auto status = WaitForPrerenderLoadingOutcome(web_contents, gurl);
   EXPECT_EQ(status, PrerenderHost::LoadingOutcome::kLoadingCompleted);
 }
 
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
-  TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadCompletion",
-              "url", gurl);
   WaitForPrerenderLoadCompletion(*GetWebContents(), gurl);
+}
+
+// static
+void PrerenderTestHelper::WaitForPrerenderLoadCancellation(
+    WebContents& web_contents,
+    const GURL& gurl) {
+  auto status = WaitForPrerenderLoadingOutcome(web_contents, gurl);
+  EXPECT_EQ(status, PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
+}
+
+void PrerenderTestHelper::WaitForPrerenderLoadCancellation(const GURL& gurl) {
+  WaitForPrerenderLoadCancellation(*GetWebContents(), gurl);
 }
 
 FrameTreeNodeId PrerenderTestHelper::AddPrerender(const GURL& prerendering_url,

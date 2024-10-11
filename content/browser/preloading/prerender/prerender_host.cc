@@ -1060,7 +1060,15 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
       loop.QuitClosure(), &status);
   loop.Run();
   // Reset callback to null in case if loop is quit by timeout.
-  on_wait_loading_finished_.Reset();
+  //
+  // This `if` body causes SEGV for `kPrerenderingCancelled` case because the
+  // callback is called in dtor and `this` is already destructed here.
+  //
+  // TODO(crbug.com/372691377): Split setup and wait parts and make the wait
+  // part `static`.
+  if (status != PrerenderHost::LoadingOutcome::kPrerenderingCancelled) {
+    on_wait_loading_finished_.Reset();
+  }
   return status;
 }
 

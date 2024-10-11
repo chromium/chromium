@@ -148,14 +148,23 @@ class PrerenderTestHelper {
   // Returns whether the registry holds the handler for prerender-into-new-tab.
   bool HasNewTabHandle(FrameTreeNodeId host_id);
 
-  // Waits until a prerender has finished loading. Note: this may not be called
-  // when the load fails (e.g. because it was blocked by a NavigationThrottle,
-  // or the WebContents is destroyed). If the prerender doesn't yet exist, this
-  // will wait until it is triggered.
+  // Waits until a prerender has finished loading.
+  //
+  // - `WaitForPrerenderLoadCompletion()` waits for
+  //   `PrerenderHost::LoadingOutcome::kLoadingCompleted`. Note: this may not be
+  //   called when the load fails (e.g. because it was blocked by a
+  //   NavigationThrottle, or the WebContents is destroyed).
+  // - `WaitForPrerenderLoadCancellation()` waits for
+  //    `PrerenderHost::LoadingOutcome::kPrerenderingCancelled`.
+  //
+  // If the prerender doesn't yet exist, these will wait until it is triggered.
   static void WaitForPrerenderLoadCompletion(WebContents& web_contents,
                                              const GURL& gurl);
   void WaitForPrerenderLoadCompletion(const GURL& gurl);
   void WaitForPrerenderLoadCompletion(FrameTreeNodeId host_id);
+  static void WaitForPrerenderLoadCancellation(WebContents& web_contents,
+                                               const GURL& gurl);
+  void WaitForPrerenderLoadCancellation(const GURL& gurl);
 
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
