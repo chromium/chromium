@@ -8176,9 +8176,6 @@ crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_id
 crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=dedicated_worker [ Crash Pass ]
 crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=window [ Crash Pass ]
 
-# Timeout on headless shell
-crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
-
 # Flaky on headless shell
 crbug.com/372749228 [ Mac ] external/wpt/preload/avoid-delaying-onload-link-preload.html [ Failure Pass ]
 crbug.com/372749228 [ Win ] external/wpt/preload/avoid-delaying-onload-link-preload.html [ Failure Pass ]
@@ -8198,3 +8195,5 @@ crbug.com/372293920 [ Mac14 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.h
 crbug.com/372293920 [ Mac14-arm64 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass ]
 crbug.com/372293920 [ Mac15 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass ]
 crbug.com/372293920 [ Mac15-arm64 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass ]
+# Timeout on headless shell, failing on Linux
+crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout Failure Pass ]
