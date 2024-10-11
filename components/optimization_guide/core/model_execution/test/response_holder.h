@@ -44,6 +44,8 @@ class ResponseHolder {
         .execution_infos();
   }
 
+  void ClearLogEntry() { log_entry_received_.reset(); }
+
  private:
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result);
 

@@ -103,6 +103,14 @@ struct SessionConfigParams {
   // If `execution_mode` allows, model execution will fall back to the server
   // instead of failing entirely when this timeout is reached.
   std::optional<base::TimeDelta> on_device_execution_timeout;
+
+  enum class LoggingMode {
+    // Enable logging if it's enabled for ModelBasedCapability.
+    kDefault,
+    // Always disable logging.
+    kAlwaysDisable,
+  };
+  LoggingMode logging_mode = LoggingMode::kDefault;
 };
 
 // Reasons why the on-device model was not available for use.

@@ -38,6 +38,7 @@
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/model_info.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -185,6 +186,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
          {features::kOnDeviceModelValidation,
           {{"on_device_model_validation_delay", "0"}}}},
         {features::internal::kModelAdaptationCompose});
+    model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
     model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
     // Fake the requirements to install the model.
@@ -3578,6 +3580,39 @@ TEST_F(OnDeviceModelServiceControllerTest,
             *result_future.Get());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
+  TestModelQualityLogsUploaderService test_uploader(&pref_service_);
+  Initialize();
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
+      test_uploader.GetWeakPtr(),
+      SessionConfigParams{.logging_mode =
+                              SessionConfigParams::LoggingMode::kDefault});
+  ASSERT_TRUE(session);
+  ResponseHolder response_holder;
+  session->ExecuteModel(UserInputRequest("input"), response_holder.callback());
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  EXPECT_TRUE(response_holder.log_entry());
+  response_holder.ClearLogEntry();
+  EXPECT_EQ(1u, test_uploader.uploaded_logs().size());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
+  TestModelQualityLogsUploaderService test_uploader(&pref_service_);
+  Initialize();
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
+      test_uploader.GetWeakPtr(),
+      SessionConfigParams{
+          .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable});
+  ASSERT_TRUE(session);
+  ResponseHolder response_holder;
+  session->ExecuteModel(UserInputRequest("input"), response_holder.callback());
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  response_holder.ClearLogEntry();
+  EXPECT_EQ(0u, test_uploader.uploaded_logs().size());
 }
 
 }  // namespace optimization_guide

@@ -227,10 +227,16 @@ OnDeviceModelServiceController::CreateSession(
       std::make_unique<SafetyChecker>(SafetyConfig(safety_config));
   opts.token_limits = GetTokenLimits();
 
+  base::WeakPtr<ModelQualityLogsUploaderService> log_uploader =
+      (config_params && config_params->logging_mode ==
+                            SessionConfigParams::LoggingMode::kAlwaysDisable
+           ? nullptr
+           : model_quality_uploader_service);
+
   has_started_session_ = true;
   return std::make_unique<SessionImpl>(
       feature, std::move(opts), std::move(execute_remote_fn),
-      optimization_guide_logger, model_quality_uploader_service, config_params);
+      optimization_guide_logger, log_uploader, config_params);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(

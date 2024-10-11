@@ -236,10 +236,12 @@ class CreateOnDeviceSessionTask
 
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
   StartSession() {
-    optimization_guide::SessionConfigParams config_params =
-        optimization_guide::SessionConfigParams{
-            .execution_mode = optimization_guide::SessionConfigParams::
-                ExecutionMode::kOnDeviceOnly};
+    using ::optimization_guide::SessionConfigParams;
+    SessionConfigParams config_params = SessionConfigParams{
+        .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+        .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable,
+    };
+
     UpdateSessionConfigParams(&config_params);
     return service_->StartSession(feature_, config_params);
   }
