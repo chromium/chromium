@@ -90,7 +90,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
       network::mojom::RequestDestination request_destination,
       bool skip_service_worker,
-      bool are_ancestors_secure,
       FrameTreeNodeId frame_tree_node_id,
       int process_id,
       const DedicatedOrSharedWorkerToken* worker_token,
@@ -152,9 +151,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   net::IsolationInfo isolation_info_;
 
   // For window clients:
-  // Whether all ancestor frames of the frame that is navigating have a secure
-  // origin. True for main frames.
-  const bool are_ancestors_secure_;
   // If the intercepted resource load is on behalf
   // of a window, the |frame_tree_node_id_| will be set, |worker_token_| will be
   // std::nullopt, and |process_id_| will be invalid.

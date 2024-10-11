@@ -88,13 +88,23 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
     return nullptr;
   }
 
+  if (!navigation_handle->context_wrapper()->context()) {
+    return nullptr;
+  }
+
+  navigation_handle->set_service_worker_client(
+      navigation_handle->context_wrapper()
+          ->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWindow(request_info.are_ancestors_secure,
+                                              request_info.frame_tree_node_id));
+
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
       request_info.common_params->request_destination,
       request_info.begin_params->skip_service_worker,
-      request_info.are_ancestors_secure, request_info.frame_tree_node_id,
-      ChildProcessHost::kInvalidUniqueID, /* worker_token = */ nullptr,
-      request_info.isolation_info));
+      request_info.frame_tree_node_id, ChildProcessHost::kInvalidUniqueID,
+      /* worker_token = */ nullptr, request_info.isolation_info));
 }
 
 std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
@@ -118,10 +128,29 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     return nullptr;
   }
 
+  if (!navigation_handle->context_wrapper()->context()) {
+    return nullptr;
+  }
+
+  navigation_handle->set_service_worker_client(
+      navigation_handle->context_wrapper()
+          ->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWorker(
+              process_id,
+              absl::ConvertVariantTo<ServiceWorkerClientInfo>(worker_token)));
+
+  // TODO(crbug.com/324939068): remove this UMA after the launch.
+  if (resource_request.destination ==
+      network::mojom::RequestDestination::kSharedWorker) {
+    base::UmaHistogramBoolean("ServiceWorker.SharedWorkerScript.IsBlob",
+                              resource_request.url.SchemeIsBlob());
+  }
+
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle), resource_request.destination,
-      resource_request.skip_service_worker, /*are_ancestors_secure=*/false,
-      FrameTreeNodeId(), process_id, &worker_token, isolation_info));
+      resource_request.skip_service_worker, FrameTreeNodeId(), process_id,
+      &worker_token, isolation_info));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -145,57 +174,27 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // If this is the first request before redirects, the
-  // ScopedServiceWorkerClient has not yet been created.
-  if (!handle_->scoped_service_worker_client()) {
-    if (blink::IsRequestDestinationFrame(request_destination_)) {
-      handle_->set_service_worker_client(
-          context_core->service_worker_client_owner()
-              .CreateServiceWorkerClientForWindow(are_ancestors_secure_,
-                                                  frame_tree_node_id_));
-    } else {
-      DCHECK(request_destination_ ==
-                 network::mojom::RequestDestination::kWorker ||
-             request_destination_ ==
-                 network::mojom::RequestDestination::kSharedWorker);
-
-      handle_->set_service_worker_client(
-          context_core->service_worker_client_owner()
-              .CreateServiceWorkerClientForWorker(
-                  process_id_, absl::ConvertVariantTo<ServiceWorkerClientInfo>(
-                                   *worker_token_)));
-    }
-    CHECK(handle_->service_worker_client());
-
-    // TODO(crbug.com/324939068): remove this UMA after the launch.
-    if (request_destination_ ==
-        network::mojom::RequestDestination::kSharedWorker) {
-      base::UmaHistogramBoolean("ServiceWorker.SharedWorkerScript.IsBlob",
-                                tentative_resource_request.url.SchemeIsBlob());
-    }
-
-    if ((request_destination_ ==
-             network::mojom::RequestDestination::kSharedWorker &&
-         base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix)) ||
-        request_destination_ == network::mojom::RequestDestination::kWorker) {
-      // For the blob worker case, inherit the controller from the worker's
-      // parent. See
-      // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
-      base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
-          handle_->parent_service_worker_client();
-      if (parent_service_worker_client &&
-          tentative_resource_request.url.SchemeIsBlob()) {
-        handle_->service_worker_client()->InheritControllerFrom(
-            *parent_service_worker_client,
-            net::SimplifyUrlForRequest(tentative_resource_request.url));
-        // For the blob worker case, we only inherit the controller and do not
-        // let it intercept the main resource request. Blob URLs are not
-        // eligible to go through service worker interception. So just call the
-        // loader callback now.
-        CompleteWithoutLoader(std::move(loader_callback),
-                              handle_->service_worker_client());
-        return;
-      }
+  if ((request_destination_ ==
+           network::mojom::RequestDestination::kSharedWorker &&
+       base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix)) ||
+      request_destination_ == network::mojom::RequestDestination::kWorker) {
+    // For the blob worker case, inherit the controller from the worker's
+    // parent. See
+    // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
+    base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
+        handle_->parent_service_worker_client();
+    if (parent_service_worker_client &&
+        tentative_resource_request.url.SchemeIsBlob()) {
+      handle_->service_worker_client()->InheritControllerFrom(
+          *parent_service_worker_client,
+          net::SimplifyUrlForRequest(tentative_resource_request.url));
+      // For the blob worker case, we only inherit the controller and do not
+      // let it intercept the main resource request. Blob URLs are not
+      // eligible to go through service worker interception. So just call the
+      // loader callback now.
+      CompleteWithoutLoader(std::move(loader_callback),
+                            handle_->service_worker_client());
+      return;
     }
   }
 
@@ -276,7 +275,6 @@ ServiceWorkerMainResourceLoaderInterceptor::
         base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
         network::mojom::RequestDestination request_destination,
         bool skip_service_worker,
-        bool are_ancestors_secure,
         FrameTreeNodeId frame_tree_node_id,
         int process_id,
         const DedicatedOrSharedWorkerToken* worker_token,
@@ -285,12 +283,12 @@ ServiceWorkerMainResourceLoaderInterceptor::
       request_destination_(request_destination),
       skip_service_worker_(skip_service_worker),
       isolation_info_(isolation_info),
-      are_ancestors_secure_(are_ancestors_secure),
       frame_tree_node_id_(frame_tree_node_id),
       process_id_(process_id),
       worker_token_(base::OptionalFromPtr(worker_token)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(handle_);
+  CHECK(handle_->scoped_service_worker_client());
 }
 
 // static
