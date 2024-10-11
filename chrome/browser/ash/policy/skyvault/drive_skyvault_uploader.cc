@@ -69,6 +69,11 @@ DriveSkyvaultUploader::~DriveSkyvaultUploader() = default;
 void DriveSkyvaultUploader::Run() {
   DCHECK(callback_);
 
+  if (cancelled_) {
+    OnEndCopy(MigrationUploadError::kCancelled);
+    return;
+  }
+
   // TODO(aidazolic): Handle different errors.
   if (!profile_) {
     LOG(ERROR) << "No profile";
@@ -130,12 +135,27 @@ void DriveSkyvaultUploader::Run() {
                      weak_ptr_factory_.GetWeakPtr(), destination_folder_path));
 }
 
+void DriveSkyvaultUploader::Cancel() {
+  cancelled_ = true;
+  if (observed_copy_task_id_.has_value()) {
+    io_task_controller_->Cancel(observed_copy_task_id_.value());
+  }
+  if (observed_delete_task_id_.has_value()) {
+    io_task_controller_->Cancel(observed_delete_task_id_.value());
+  }
+}
+
 void DriveSkyvaultUploader::CreateCopyIOTask(
     const base::FilePath& destination_folder_path,
     bool created) {
   if (observed_copy_task_id_) {
     NOTREACHED_IN_MIGRATION()
         << "The Copy IOTask was already triggered. Case should not be reached.";
+  }
+
+  if (cancelled_) {
+    OnEndCopy(MigrationUploadError::kCancelled);
+    return;
   }
 
   if (!created) {
@@ -187,6 +207,12 @@ void DriveSkyvaultUploader::OnEndCopy(
       drive_integration_service_->GetRelativeDrivePath(
           observed_absolute_dest_path_, &rel_path);
   if (!destination_file_exists) {
+    OnEndUpload();
+    return;
+  }
+
+  if (cancelled_) {
+    error_ = error_.value_or(MigrationUploadError::kCancelled);
     OnEndUpload();
     return;
   }
@@ -263,17 +289,14 @@ void DriveSkyvaultUploader::OnCopyStatus(
         observed_absolute_dest_path_ = status.outputs[0].url.path();
         drive_integration_service_->GetRelativeDrivePath(
             observed_absolute_dest_path_, &observed_relative_drive_path_);
-        // scoped_suppress_drive_notifications_for_path_ = std::make_unique<
-        //     file_manager::ScopedSuppressDriveNotificationsForPath>(
-        //     profile_, observed_relative_drive_path_);
       }
       return;
     case file_manager::io_task::State::kSuccess:
       DCHECK_EQ(status.outputs.size(), 1u);
+      observed_copy_task_id_.reset();
       return;
     case file_manager::io_task::State::kCancelled:
-      LOG(ERROR) << "Upload to Google Drive cancelled";
-      OnEndCopy(MigrationUploadError::kCopyFailed);
+      OnEndCopy(MigrationUploadError::kCancelled);
       return;
     case file_manager::io_task::State::kError:
       // TODO(aidazolic): Potentially handle different IOTask errors as in
@@ -292,17 +315,17 @@ void DriveSkyvaultUploader::OnDeleteStatus(
     const file_manager::io_task::ProgressStatus& status) {
   switch (status.state) {
     case file_manager::io_task::State::kCancelled:
-      NOTREACHED_IN_MIGRATION()
-          << "Deletion of source or destination file should not have "
-             "been cancelled.";
-      ABSL_FALLTHROUGH_INTENDED;
+      // Don't override errors occurred during the copy.
+      error_ = error_.value_or(MigrationUploadError::kCancelled);
+      observed_delete_task_id_.reset();
+      break;
     case file_manager::io_task::State::kError:
-      if (!error_) {
-        // Don't override errors occurred during the copy.
-        error_ = MigrationUploadError::kDeleteFailed;
-      }
+      // Don't override errors occurred during the copy.
+      error_ = error_.value_or(MigrationUploadError::kDeleteFailed);
+      observed_delete_task_id_.reset();
       break;
     case file_manager::io_task::State::kSuccess:
+      observed_delete_task_id_.reset();
       break;
     default:
       return;
