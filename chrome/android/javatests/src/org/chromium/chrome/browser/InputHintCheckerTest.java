@@ -22,7 +22,6 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -76,8 +75,13 @@ public final class InputHintCheckerTest {
                         InputHintChecker.hasInputWithThrottlingForTesting();
                     } else {
                         InputHintChecker.hasInputForTesting();
+                        // Only assert on |mCallCount| in non-throttled case. Oftentimes
+                        // the hasInputWithThrottlingForTesting() call above is preceded by another
+                        // input hint poll from MessagePumpAndroid. This would prevent incrementing
+                        // the poll count for a few milliseconds.
+                        // See https://crbug.com/372637659#comment5.
+                        Assert.assertEquals(1, view.mCallCount);
                     }
-                    Assert.assertEquals(1, view.mCallCount);
                 });
     }
 
@@ -137,7 +141,6 @@ public final class InputHintCheckerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/372637659")
     public void testReadHintDoesNotCrashWithThrottling() {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TestTextView view =
