@@ -1858,8 +1858,13 @@ TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
       features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
-  // TODO(crbug.com/362445807): Check the parameters passed to the callback.
-  EXPECT_CALL(callback, Run);
+  EXPECT_CALL(callback,
+              Run(ElementsAre(EqualsSuggestion(
+                      SuggestionType::kCreateNewPlusAddressInline,
+                      l10n_util::GetStringUTF16(
+                          IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT))),
+                  AutofillSuggestionTriggerSource::
+                      kPlusAddressUpdatedInBrowserProcess));
 
   std::vector<Suggestion> current_suggestions = {
       Suggestion(SuggestionType::kCreateNewPlusAddressInline)};
