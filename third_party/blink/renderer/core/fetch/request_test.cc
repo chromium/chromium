@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_destination.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -227,7 +228,7 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
   DCHECK(request);
   EXPECT_EQ(url, request->url());
   EXPECT_EQ(method, request->method());
-  EXPECT_EQ("audio", request->destination());
+  EXPECT_EQ(V8RequestDestination::Enum::kAudio, request->destination());
   EXPECT_EQ(referrer, request->referrer());
   EXPECT_EQ("navigate", request->mode());
 
