@@ -8,9 +8,11 @@
 
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,7 +33,10 @@ GroupConfig CreateGroup(GroupSection section,
 
 base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_groups =
     LAZY_INSTANCE_INITIALIZER;
-}  // namespace
+base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_hub_zps_groups =
+    LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<GroupConfigMap>::DestructorAtExit
+    g_default_hub_typed_groups = LAZY_INSTANCE_INITIALIZER;
 
 const GroupConfigMap& BuildDefaultGroups() {
   if (g_default_groups.Get().empty()) {
@@ -57,6 +62,50 @@ const GroupConfigMap& BuildDefaultGroups() {
     };
   }
   return g_default_groups.Get();
+}
+
+const GroupConfigMap& BuildDefaultHubZPSGroups() {
+  if (g_default_hub_zps_groups.Get().empty()) {
+    g_default_hub_zps_groups.Get() = {
+        // clang-format off
+        {GROUP_MOBILE_OPEN_TABS,
+         CreateGroup(SECTION_MOBILE_OPEN_TABS,
+        GroupConfig_RenderType_DEFAULT_VERTICAL,
+                    IDS_OMNIBOX_HUB_OPEN_TABS_HEADER)}
+        // clang-format on
+    };
+  }
+  return g_default_hub_zps_groups.Get();
+}
+
+const GroupConfigMap& BuildDefaultHubTypedGroups() {
+  if (g_default_hub_typed_groups.Get().empty()) {
+    g_default_hub_typed_groups.Get() = {
+        // clang-format off
+        {GROUP_MOBILE_OPEN_TABS, CreateGroup(SECTION_MOBILE_OPEN_TABS)},
+        {GROUP_SEARCH,
+             CreateGroup(SECTION_SEARCH,
+                         GroupConfig_RenderType_DEFAULT_VERTICAL,
+                         IDS_OMNIBOX_HUB_SEARCH_HEADER)}
+        // clang-format on
+    };
+  }
+  return g_default_hub_typed_groups.Get();
+}
+
+}  // namespace
+
+const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
+    const AutocompleteInput& input) {
+  using OEP = ::metrics::OmniboxEventProto;
+  switch (input.current_page_classification()) {
+    case OEP::ANDROID_HUB:
+      return input.IsZeroSuggest() || input.text().empty()
+                 ? BuildDefaultHubZPSGroups()
+                 : BuildDefaultHubTypedGroups();
+    default:
+      return BuildDefaultGroups();
+  }
 }
 
 void ResetDefaultGroupsForTest() {

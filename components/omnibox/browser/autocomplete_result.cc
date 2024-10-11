@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -163,7 +164,6 @@ AutocompleteResult::AutocompleteResult() {
   // on-focus or prefix-suggest mode.
   matches_.reserve(std::max(GetMaxMatches(), GetMaxMatches(true)));
   // Add default static suggestion groups.
-  MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 }
 
 AutocompleteResult::~AutocompleteResult() {
@@ -361,6 +361,7 @@ void AutocompleteResult::SortAndCull(
       !is_zero_suggest;
   const bool use_grouping = is_zero_suggest || use_grouping_for_non_zps;
 
+  MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(input));
   // Grouping requires all matches have a group ID. To keep providers 'dumb',
   // they only assign IDs when their ID isn't obvious from the match type.
   // Most matches will instead set IDs here to keep providers 'dumb' and the
@@ -1089,7 +1090,6 @@ void AutocompleteResult::Reset() {
 void AutocompleteResult::ClearMatches() {
   matches_.clear();
   suggestion_groups_map_.clear();
-  MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
 #endif

@@ -392,4 +392,13 @@
     Enter your question or prompt
   </message>
 
+  <!-- Strings for Android Hub Search. -->
+  <message name="IDS_OMNIBOX_HUB_OPEN_TABS_HEADER" desc="The header for the open tabs zero-prefix suggestions section.">
+    Last open tabs
+  </message>
+  <message name="IDS_OMNIBOX_HUB_SEARCH_HEADER" desc="The header for the search typed suggestions section.">
+    Search the web
+  </message>
+
+
 </grit-part>
