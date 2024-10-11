@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_MESSAGE_EVENT_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_message_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_message_type.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 
 namespace blink {
@@ -38,14 +39,9 @@ class MediaKeyMessageEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  MediaKeyMessageEvent();
   MediaKeyMessageEvent(const AtomicString& type,
                        const MediaKeyMessageEventInit* initializer);
   ~MediaKeyMessageEvent() override;
-
-  static MediaKeyMessageEvent* Create() {
-    return MakeGarbageCollected<MediaKeyMessageEvent>();
-  }
 
   static MediaKeyMessageEvent* Create(
       const AtomicString& type,
@@ -55,13 +51,13 @@ class MediaKeyMessageEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  String messageType() const { return message_type_; }
+  const V8MediaKeyMessageType& messageType() const { return message_type_; }
   DOMArrayBuffer* message() const { return message_.Get(); }
 
   void Trace(Visitor*) const override;
 
  private:
-  String message_type_;
+  const V8MediaKeyMessageType message_type_;
   Member<DOMArrayBuffer> message_;
 };
 
