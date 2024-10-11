@@ -39,6 +39,7 @@ import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
+import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
@@ -250,7 +251,7 @@ public final class AwBrowserProcess {
                     });
 
             AwSupervisedUserUrlClassifier classifier = AwSupervisedUserUrlClassifier.getInstance();
-            if (classifier != null) {
+            if (classifier != null && AwSupervisedUserSafeModeAction.isSupervisionEnabled()) {
                 classifier.checkIfNeedRestrictedContentBlocking();
             }
         }

@@ -549,6 +549,7 @@ generate_jni("browser_jni_headers") {
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingConfigHelper.java",
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingSafeModeAction.java",
     "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserHelper.java",
+    "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserSafeModeAction.java",
     "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserUrlClassifier.java",
     "java/src/org/chromium/android_webview/variations/VariationsSeedLoader.java",
   ]
@@ -690,6 +691,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/selection/AwSelectionActionMenuDelegate.java",
     "java/src/org/chromium/android_webview/selection/SamsungSelectionActionMenuHelper.java",
     "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserHelper.java",
+    "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserSafeModeAction.java",
     "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserUrlClassifier.java",
     "java/src/org/chromium/android_webview/variations/FastVariationsSeedSafeModeAction.java",
     "java/src/org/chromium/android_webview/variations/VariationsSeedLoader.java",

@@ -73,7 +73,8 @@ public class SafeModeController {
         SafeModeActionName.DISABLE_ANDROID_AUTOFILL,
         SafeModeActionName.DISABLE_ORIGIN_TRIALS,
         SafeModeActionName.DISABLE_SAFE_BROWSING,
-        SafeModeActionName.RESET_COMPONENT_UPDATER
+        SafeModeActionName.RESET_COMPONENT_UPDATER,
+        SafeModeActionName.DISABLE_SUPERVISION_CHECKS
     })
     private static @interface SafeModeActionName {
         int DELETE_VARIATIONS_SEED = 0;
@@ -84,7 +85,8 @@ public class SafeModeController {
         int DISABLE_ORIGIN_TRIALS = 5;
         int DISABLE_SAFE_BROWSING = 6;
         int RESET_COMPONENT_UPDATER = 7;
-        int COUNT = 8;
+        int DISABLE_SUPERVISION_CHECKS = 8;
+        int COUNT = 9;
     }
 
     // Maps the SafeModeAction ID to its histogram enum
@@ -108,6 +110,9 @@ public class SafeModeController {
         map.put(
                 SafeModeActionIds.RESET_COMPONENT_UPDATER,
                 SafeModeActionName.RESET_COMPONENT_UPDATER);
+        map.put(
+                SafeModeActionIds.DISABLE_SUPERVISION_CHECKS,
+                SafeModeActionName.DISABLE_SUPERVISION_CHECKS);
         return map;
     }
 

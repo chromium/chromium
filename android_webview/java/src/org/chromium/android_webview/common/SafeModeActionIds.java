@@ -18,4 +18,7 @@ public class SafeModeActionIds {
     public static final String DISABLE_ORIGIN_TRIALS = "disable_origin_trials";
     public static final String DISABLE_AW_SAFE_BROWSING = "disable_safe_browsing";
     public static final String RESET_COMPONENT_UPDATER = "reset_component_updater";
+    public static final String DISABLE_SUPERVISION_CHECKS = "disable_supervision_checks";
+    // Note: if you add more SafeMode ID strings, then please also update createLoggingMap() inside
+    // SafeModeController.java.
 }

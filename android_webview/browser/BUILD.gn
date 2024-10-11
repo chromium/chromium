@@ -225,6 +225,8 @@ source_set("browser") {
     "state_serializer.h",
     "supervised_user/aw_supervised_user_blocking_page.cc",
     "supervised_user/aw_supervised_user_blocking_page.h",
+    "supervised_user/aw_supervised_user_safemode_action.cc",
+    "supervised_user/aw_supervised_user_safemode_action.h",
     "supervised_user/aw_supervised_user_throttle.cc",
     "supervised_user/aw_supervised_user_throttle.h",
     "supervised_user/aw_supervised_user_url_classifier.cc",

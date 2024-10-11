@@ -43,6 +43,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.BackgroundThreadExecutor;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -144,6 +145,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     public void tearDown() throws Exception {
         mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
         mWebServer.shutdown();
+        AwSupervisedUserSafeModeAction.resetForTesting();
     }
 
     @Test
@@ -287,6 +289,21 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         } finally {
             Intents.release();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
+    public void testSafeMode() throws Throwable {
+        String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
+        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
+
+        new AwSupervisedUserSafeModeAction().execute();
+        loadUrl(requestUrl);
+
+        assertPageTitle(MATURE_SITE_TITLE);
+        assertIframeTitle(MATURE_SITE_IFRAME_TITLE);
     }
 
     private String setUpWebPage(String path, String title, @Nullable String iFrameUrl) {
