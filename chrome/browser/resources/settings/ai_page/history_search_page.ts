@@ -39,10 +39,26 @@ export class SettingsHistorySearchPageElement extends
         value: FeatureOptInState,
       },
 
+      isAnswersFeatureEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled'),
+      },
+
       numericUncheckedValues_: {
         type: Array,
         value: () =>
             [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
+      },
+
+      toggleSubLabel_: {
+        type: String,
+        value: () => {
+          return loadTimeData.getBoolean(
+                     'historyEmbeddingsAnswersFeatureEnabled') ?
+              loadTimeData.getString('historySearchAnswersSettingSublabel') :
+              loadTimeData.getString('historySearchSettingSublabel');
+        },
       },
     };
   }

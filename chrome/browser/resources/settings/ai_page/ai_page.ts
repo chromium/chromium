@@ -99,6 +99,16 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
           return map;
         },
       },
+
+      historySearchRowSublabel_: {
+        type: String,
+        value: () => {
+          return loadTimeData.getBoolean(
+                     'historyEmbeddingsAnswersFeatureEnabled') ?
+              loadTimeData.getString('historySearchAnswersSettingSublabel') :
+              loadTimeData.getString('historySearchSettingSublabel');
+        },
+      },
     };
   }
 

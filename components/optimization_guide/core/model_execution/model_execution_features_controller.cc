@@ -219,7 +219,7 @@ bool ModelExecutionFeaturesController::
   // on account details while allowing all users (including unsigned users)
   // access to basic embeddings search functionality.
   return ShouldFeatureBeCurrentlyEnabledForUser(feature) &&
-         PerformSigninChecks() == UserValidityResult::kValid;
+         ShouldModelExecutionBeAllowedForUser();
 }
 
 bool ModelExecutionFeaturesController::
@@ -294,6 +294,11 @@ ModelExecutionFeaturesController::PerformSigninChecks() const {
   }
 
   return UserValidityResult::kValid;
+}
+
+bool ModelExecutionFeaturesController::ShouldModelExecutionBeAllowedForUser()
+    const {
+  return PerformSigninChecks() == UserValidityResult::kValid;
 }
 
 ModelExecutionFeaturesController::SettingsVisibilityResult

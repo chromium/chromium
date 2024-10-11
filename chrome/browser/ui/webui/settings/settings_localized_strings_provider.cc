@@ -24,6 +24,8 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -35,7 +37,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -74,6 +75,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -385,6 +387,16 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE},
       {"historySearchConsiderBulletTwo",
        IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO},
+      {"historySearchAnswersSettingSublabel",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_SETTING_SUBLABEL},
+      {"historySearchAnswersWhenOnBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_ONE},
+      {"historySearchAnswersWhenOnBulletTwo",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_TWO},
+      {"historySearchAnswersConsiderBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_ONE},
+      {"historySearchAnswersConsiderBulletTwo",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_TWO},
       {"historySearchLearnMoreA11yLabel",
        IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
 
@@ -1645,6 +1657,15 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  html_source->AddBoolean(
+      "historyEmbeddingsAnswersFeatureEnabled",
+      history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
+          optimization_guide_keyed_service &&
+          optimization_guide_keyed_service
+              ->ShouldModelExecutionBeAllowedForUser());
 
   // Add Google Account URL and include UTM parameter to signal the source of
   // the navigation.
