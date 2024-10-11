@@ -2299,7 +2299,7 @@ TEST_F(LcppInitiatorOriginTest, CanonicalizeBrokenDataOnStartUp) {
   }
 }
 
-TEST_F(LcppDataMapTest, ResetInitiatorOriginDBOverFlag) {
+TEST_F(LcppDataMapTest, KeepDataBaseOverTearnDown) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
 
@@ -2329,27 +2329,6 @@ TEST_F(LcppDataMapTest, ResetInitiatorOriginDBOverFlag) {
               MakeLcppStatWithLCPElementLocator("/#lcp0"));
     EXPECT_EQ(*GetLcppStat(origin, url2),
               MakeLcppStatWithLCPElementLocator("/#lcp1"));
-    TearDownDB();
-  }
-
-  {
-    InitializeDB(config);
-
-    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
-              MakeLcppStatWithLCPElementLocator("/#lcp0"));
-    // LcppStat associated to an initiator origin is removed.
-    EXPECT_FALSE(GetLcppStat(origin, url2));
-    TearDownDB();
-  }
-
-  {
-    [[maybe_unused]] ScopedInitiatorOriginFeature scoped_feature;
-    InitializeDB(config);
-
-    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
-              MakeLcppStatWithLCPElementLocator("/#lcp0"));
-    // LcppStat associated to an initiator origin is removed.
-    EXPECT_FALSE(GetLcppStat(origin, url2));
     TearDownDB();
   }
 }

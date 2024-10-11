@@ -657,17 +657,17 @@ bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
   return base::Contains(*excluded_hosts, url.host());
 }
 
+template <typename T>
 class FakeLoadingPredictorKeyValueTable
-    : public sqlite_proto::KeyValueTable<LcppData> {
+    : public sqlite_proto::KeyValueTable<T> {
  public:
-  FakeLoadingPredictorKeyValueTable()
-      : sqlite_proto::KeyValueTable<LcppData>("") {}
-  void GetAllData(std::map<std::string, LcppData>* data_map,
+  FakeLoadingPredictorKeyValueTable() : sqlite_proto::KeyValueTable<T>("") {}
+  void GetAllData(std::map<std::string, T>* data_map,
                   sql::Database* db) const override {
     *data_map = data_;
   }
   void UpdateData(const std::string& key,
-                  const LcppData& data,
+                  const T& data,
                   sql::Database* db) override {
     data_[key] = data;
   }
@@ -679,7 +679,7 @@ class FakeLoadingPredictorKeyValueTable
   }
   void DeleteAllData(sql::Database* db) override { data_.clear(); }
 
-  std::map<std::string, LcppData> data_;
+  std::map<std::string, T> data_;
 };
 
 bool EnsureTable(sql::Database* db, const std::string_view& table_name) {
@@ -1002,11 +1002,16 @@ LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
                          const LoadingPredictorConfig& config)
     : LcppDataMap(std::move(manager),
                   config,
-                  std::make_unique<DataTable>(std::string(kLcppTableName))) {}
+                  std::make_unique<DataTable>(std::string(kLcppTableName)),
+                  IsInitiatorOriginEnabled()
+                      ? std::make_unique<OriginTable>(
+                            std::string(kLcppTableNameInitiatorOrigin))
+                      : nullptr) {}
 
 LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
                          const LoadingPredictorConfig& config,
-                         std::unique_ptr<DataTable> data_table)
+                         std::unique_ptr<DataTable> data_table,
+                         std::unique_ptr<OriginTable> origin_table)
     : manager_(manager),
       config_(config),
       data_table_(std::move(data_table)),
@@ -1016,8 +1021,7 @@ LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
           config.max_hosts_to_track_for_lcpp,
           base::Seconds(config.flush_data_to_disk_delay_seconds))) {
   if (IsInitiatorOriginEnabled()) {
-    origin_table_ = std::make_unique<OriginTable>(
-        std::string(kLcppTableNameInitiatorOrigin));
+    origin_table_ = std::move(origin_table);
     origin_map_ = std::make_unique<OriginMap>(
         manager, origin_table_.get(), config.max_hosts_to_track_for_lcpp,
         base::Seconds(config.flush_data_to_disk_delay_seconds));
@@ -1028,7 +1032,11 @@ std::unique_ptr<LcppDataMap> LcppDataMap::CreateWithMockTableForTesting(
     scoped_refptr<sqlite_proto::TableManager> manager,
     const LoadingPredictorConfig& config) {
   return base::WrapUnique(new LcppDataMap(
-      manager, config, std::make_unique<FakeLoadingPredictorKeyValueTable>()));
+      manager, config,
+      /*data_table=*/
+      std::make_unique<FakeLoadingPredictorKeyValueTable<LcppData>>(),
+      /*origin_table=*/
+      std::make_unique<FakeLoadingPredictorKeyValueTable<LcppOrigin>>()));
 }
 
 LcppDataMap::~LcppDataMap() {

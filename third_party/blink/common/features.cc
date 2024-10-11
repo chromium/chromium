@@ -1379,7 +1379,7 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE(kLCPPInitiatorOrigin,
              "LCPPInitiatorOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kLcppInitiatorOriginHistogramSlidingWindowSize{
     &kLCPPInitiatorOrigin,

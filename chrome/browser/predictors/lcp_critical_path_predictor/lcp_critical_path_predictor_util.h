@@ -240,9 +240,6 @@ class LcppDataMap {
 
   void DeleteAllData();
 
-  LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
-              const LoadingPredictorConfig& config,
-              std::unique_ptr<DataTable> data_table_);
   static std::unique_ptr<LcppDataMap> CreateWithMockTableForTesting(
 
       scoped_refptr<sqlite_proto::TableManager> manager,
@@ -251,6 +248,12 @@ class LcppDataMap {
  private:
   friend class LcppDataMapTest;
   friend class LcppInitiatorOriginTest;
+
+  LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
+              const LoadingPredictorConfig& config,
+              std::unique_ptr<DataTable> data_table,
+              std::unique_ptr<OriginTable> origin_table);
+
   const std::map<std::string, LcppData>& GetAllCachedForTesting();
   const std::map<std::string, LcppOrigin>& GetAllCachedOriginForTesting();
 

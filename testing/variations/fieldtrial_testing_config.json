@@ -13031,30 +13031,6 @@
             ]
         }
     ],
-    "LCPPDoubleKey": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "lcpp_initiator_origin_histogram_sliding_window_size": "10000",
-                        "lcpp_initiator_origin_max_histogram_buckets": "100"
-                    },
-                    "enable_features": [
-                        "LCPPInitiatorOrigin"
-                    ]
-                }
-            ]
-        }
-    ],
     "LCPPFontURLPredictor": [
         {
             "platforms": [
