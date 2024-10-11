@@ -95,12 +95,14 @@ std::optional<int> ServiceWorkerControlleeRequestHandler::
 
 ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContextCore> context,
+    std::string fetch_event_client_id,
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
     network::mojom::RequestDestination destination,
     bool skip_service_worker,
     FrameTreeNodeId frame_tree_node_id,
     ServiceWorkerAccessedCallback service_worker_accessed_callback)
     : context_(std::move(context)),
+      fetch_event_client_id_(std::move(fetch_event_client_id)),
       service_worker_client_(std::move(service_worker_client)),
       destination_(destination),
       skip_service_worker_(skip_service_worker),
@@ -540,9 +542,9 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
     base::TimeTicks find_registration_start_time) {
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
-          std::move(fallback_callback_), service_worker_client_,
-          frame_tree_node_id_, std::move(find_registration_start_time)));
-  loader_wrapper_->get()->set_worker_parent_client_uuid(parent_client_uuid_);
+          std::move(fallback_callback_), fetch_event_client_id_,
+          service_worker_client_, frame_tree_node_id_,
+          std::move(find_registration_start_time)));
   std::move(loader_callback_)
       .Run(NavigationLoaderInterceptor::Result(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(

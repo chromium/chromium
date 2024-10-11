@@ -241,16 +241,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
-      context_core->AsWeakPtr(), handle_->service_worker_client(),
-      request_destination_, skip_service_worker, frame_tree_node_id_,
+      context_core->AsWeakPtr(), handle_->fetch_event_client_id(),
+      handle_->service_worker_client(), request_destination_,
+      skip_service_worker, frame_tree_node_id_,
       handle_->service_worker_accessed_callback());
-  if (handle_->parent_service_worker_client()) {
-    // Set a parent container's client UUID.
-    // This is needed for PlzDedicatedWorker to have the client id for
-    // nested case.
-    request_handler_->set_parent_client_uuid(
-        handle_->parent_service_worker_client()->client_uuid());
-  }
 
   request_handler_->MaybeCreateLoader(
       tentative_resource_request, *storage_key, browser_context,

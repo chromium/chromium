@@ -305,9 +305,14 @@ void DedicatedWorkerHost::StartScriptLoad(
     parent_service_worker_client =
         creator_worker->service_worker_handle()->service_worker_client();
   }
+  std::string fetch_event_client_id;
+  if (parent_service_worker_client) {
+    fetch_event_client_id = parent_service_worker_client->client_uuid();
+  }
 
   service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
       storage_partition_impl->GetServiceWorkerContext(), base::DoNothing(),
+      std::move(fetch_event_client_id),
       std::move(parent_service_worker_client));
 
   network::mojom::ClientSecurityStatePtr client_security_state;

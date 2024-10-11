@@ -19,8 +19,10 @@ namespace content {
 ServiceWorkerMainResourceHandle::ServiceWorkerMainResourceHandle(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     ServiceWorkerAccessedCallback on_service_worker_accessed,
+    std::string fetch_event_client_id,
     base::WeakPtr<ServiceWorkerClient> parent_service_worker_client)
     : parent_service_worker_client_(std::move(parent_service_worker_client)),
+      fetch_event_client_id_(std::move(fetch_event_client_id)),
       service_worker_accessed_callback_(std::move(on_service_worker_accessed)),
       context_wrapper_(std::move(context_wrapper)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

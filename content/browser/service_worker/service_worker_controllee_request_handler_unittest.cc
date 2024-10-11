@@ -84,6 +84,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               TRAFFIC_ANNOTATION_FOR_TESTS)),
           handler_(std::make_unique<ServiceWorkerControlleeRequestHandler>(
               test->context()->AsWeakPtr(),
+              /*fetch_event_client_id=*/"",
               test->service_worker_client_,
               destination,
               /*skip_service_worker=*/false,
@@ -489,7 +490,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       network::mojom::RequestDestination::kDocument);
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
-          context()->AsWeakPtr(), service_worker_client_,
+          context()->AsWeakPtr(),
+          /*fetch_event_client_id=*/"", service_worker_client_,
           network::mojom::RequestDestination::kDocument,
           /*skip_service_worker=*/true, FrameTreeNodeId(), base::DoNothing()));
 
@@ -530,8 +532,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
       network::mojom::RequestDestination::kDocument);
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
-          context()->AsWeakPtr(), service_worker_client_,
-          network::mojom::RequestDestination::kDocument,
+          context()->AsWeakPtr(), /*fetch_event_client_id=*/"",
+          service_worker_client_, network::mojom::RequestDestination::kDocument,
           /*skip_service_worker=*/false, FrameTreeNodeId(), base::DoNothing()));
 
   // Destroy the context and make a new one.

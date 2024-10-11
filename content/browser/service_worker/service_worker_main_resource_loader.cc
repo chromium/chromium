@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -37,6 +36,7 @@
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_timing_info.h"
 #include "net/http/http_request_headers.h"
@@ -86,20 +86,6 @@ bool HasAutoPreloadEligibleScript(scoped_refptr<ServiceWorkerVersion> version) {
           .contains(version->sha256_script_checksum());
 }
 
-std::string GetContainerHostClientId(FrameTreeNodeId frame_tree_node_id) {
-  std::string client_uuid;
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (frame_tree_node) {
-    base::WeakPtr<ServiceWorkerClient> service_worker_client =
-        frame_tree_node->current_frame_host()
-            ->GetLastCommittedServiceWorkerClient();
-    if (service_worker_client) {
-      client_uuid = service_worker_client->client_uuid();
-    }
-  }
-  return client_uuid;
-}
-
 bool IsStaticRouterRaceRequestFixEnabled() {
   return base::FeatureList::IsEnabled(
       features::kServiceWorkerStaticRouterRaceRequestFix);
@@ -141,6 +127,7 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
+    std::string fetch_event_client_id,
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
     FrameTreeNodeId frame_tree_node_id,
     base::TimeTicks find_registration_start_time)
@@ -149,7 +136,8 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
       frame_tree_node_id_(frame_tree_node_id),
       is_browser_startup_completed_(
           GetContentClient()->browser()->IsBrowserStartupComplete()),
-      find_registration_start_time_(std::move(find_registration_start_time)) {
+      find_registration_start_time_(std::move(find_registration_start_time)),
+      fetch_event_client_id_(std::move(fetch_event_client_id)) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader", this,
@@ -379,28 +367,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     }
   }
 
-  std::string client_uuid;
-  // frame_tree_node_id_ can be empty for:
-  // - PlzSharedWorker (destination == sharedworker)
-  // - PlzDedicatedWorker (destination == worker)
-  // Otherwise frame_tree_node_id_ should be set, except for tests.
-  if (resource_request_.destination ==
-          network::mojom::RequestDestination::kSharedWorker ||
-      (resource_request_.destination ==
-           network::mojom::RequestDestination::kWorker &&
-       base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker))) {
-    client_uuid = worker_parent_client_uuid_;
-  } else if (frame_tree_node_id_) {
-    client_uuid = GetContainerHostClientId(frame_tree_node_id_);
-  } else {
-    // Unit tests may not set ids.
-    CHECK_IS_TEST();
-  }
-
   // Dispatch the fetch event.
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request_),
-      resource_request_.destination, client_uuid,
+      resource_request_.destination, fetch_event_client_id_,
       service_worker_client_->client_uuid(), active_worker,
       base::BindOnce(&ServiceWorkerMainResourceLoader::DidPrepareFetchEvent,
                      weak_factory_.GetWeakPtr(), active_worker,

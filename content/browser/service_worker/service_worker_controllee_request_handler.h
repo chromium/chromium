@@ -6,9 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CONTROLLEE_REQUEST_HANDLER_H_
 
 #include <stdint.h>
-
 #include <memory>
-#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -84,6 +82,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // request interception.
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
+      std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
@@ -109,10 +108,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // Exposed for testing.
   ServiceWorkerMainResourceLoader* loader() {
     return loader_wrapper_ ? loader_wrapper_->get() : nullptr;
-  }
-
-  void set_parent_client_uuid(std::string uuid) {
-    parent_client_uuid_ = std::move(uuid);
   }
 
  private:
@@ -172,6 +167,11 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       start_service_worker_for_empty_fetch_handler_duration_for_testing_;
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
+
+  // FetchEvent.clientId
+  // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
+  const std::string fetch_event_client_id_;
+
   const base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   const network::mojom::RequestDestination destination_;
 
@@ -183,7 +183,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   blink::StorageKey storage_key_;
   bool force_update_started_;
   const FrameTreeNodeId frame_tree_node_id_;
-  std::string parent_client_uuid_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

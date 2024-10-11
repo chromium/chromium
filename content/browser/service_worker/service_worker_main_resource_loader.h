@@ -75,6 +75,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // is used instead of NavigationURLLoaderImpl.
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
+      std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
       FrameTreeNodeId frame_tree_node_id,
       base::TimeTicks find_registration_start_time);
@@ -99,10 +100,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Otherwise |this| will be kept around as far as the loader
   // endpoint is held by the client.
   void DetachedFromRequest();
-
-  void set_worker_parent_client_uuid(std::string uuid) {
-    worker_parent_client_uuid_ = std::move(uuid);
-  }
 
   base::WeakPtr<ServiceWorkerMainResourceLoader> AsWeakPtr();
 
@@ -305,10 +302,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   base::TimeTicks find_registration_start_time_;
 
-  // Dedicated Worker's parent container's UUID.
-  // Valid for fetching the worker script with the PlzDedicatedWorker is
-  // enabled.
-  std::string worker_parent_client_uuid_;
+  // FetchEvent.clientId
+  // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
+  const std::string fetch_event_client_id_;
 
   bool has_fetch_event_finished_ = false;
 

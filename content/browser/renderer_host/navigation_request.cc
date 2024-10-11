@@ -5204,10 +5204,18 @@ void NavigationRequest::OnStartChecksComplete(
     ServiceWorkerContextWrapper* service_worker_context =
         static_cast<ServiceWorkerContextWrapper*>(
             partition->GetServiceWorkerContext());
+    std::string fetch_event_client_id;
+    // TODO(crbug.com/368087661): According to the spec this should be fetch
+    // request's client but it is not here in the implementation.
+    if (auto client = frame_tree_node_->current_frame_host()
+                          ->GetLastCommittedServiceWorkerClient()) {
+      fetch_event_client_id = client->client_uuid();
+    }
     service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
         service_worker_context,
         base::BindRepeating(&NavigationRequest::OnServiceWorkerAccessed,
-                            weak_factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()),
+        std::move(fetch_event_client_id));
   }
 
   // Mark the fetch_start (Navigation Timing API).

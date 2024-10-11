@@ -127,7 +127,8 @@ class SharedWorkerHostTest : public testing::Test {
     // Set up for service worker.
     auto service_worker_handle =
         std::make_unique<ServiceWorkerMainResourceHandle>(
-            helper_->context_wrapper(), base::DoNothing());
+            helper_->context_wrapper(), base::DoNothing(),
+            /*fetch_event_client_id=*/"");
     service_worker_handle->set_service_worker_client(
         helper_->context()
             ->service_worker_client_owner()
