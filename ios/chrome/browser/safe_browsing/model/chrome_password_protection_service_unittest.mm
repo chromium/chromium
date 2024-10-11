@@ -409,7 +409,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPersistPhishedSavedPasswordCredential) {
   service_->SetIsIncognito(false);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test"}, {"http://2.example.com"}};
+      {"http://example.test", GURL("http://example.test/"), u"user"},
+      {"http://2.example.com", GURL("http://2.example.test/"), u"user2"}};
 
   EXPECT_CALL(mock_add_callback_, Run(_, credentials[0]));
   EXPECT_CALL(mock_add_callback_, Run(_, credentials[1]));
@@ -420,8 +421,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyRemovePhishedSavedPasswordCredential) {
   service_->SetIsIncognito(false);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username1"},
-      {"http://2.example.test", u"username2"}};
+      {"http://example.test", GURL("http://example.test/"), u"username1"},
+      {"http://2.example.test", GURL("http://2.example.test/"), u"username2"}};
 
   EXPECT_CALL(mock_remove_callback_, Run(_, credentials[0]));
   EXPECT_CALL(mock_remove_callback_, Run(_, credentials[1]));

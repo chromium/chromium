@@ -127,6 +127,7 @@ static_library("browser") {
     "password_manual_fallback_metrics_recorder.h",
     "password_requirements_service.cc",
     "password_requirements_service.h",
+    "password_reuse_detector.cc",
     "password_reuse_detector.h",
     "password_reuse_detector_consumer.cc",
     "password_reuse_detector_consumer.h",

@@ -248,14 +248,13 @@ std::u16string PasswordReuseDetectorImpl::CheckSavedPasswordReuse(
         passwords_iterator->second;
     DCHECK(!credentials.empty());
 
-    std::set<std::string> signon_realms;
+    std::set<std::string> domains;
     for (const auto& credential : credentials) {
-      signon_realms.insert(
-          GetRegistryControlledDomain(GURL(credential.signon_realm)));
+      domains.insert(GetRegistryControlledDomain(credential.url));
     }
     // If the page's URL matches a saved domain for this password,
     // this isn't password-reuse.
-    if (base::Contains(signon_realms, registry_controlled_domain)) {
+    if (base::Contains(domains, registry_controlled_domain)) {
       continue;
     }
 
@@ -268,9 +267,13 @@ std::u16string PasswordReuseDetectorImpl::CheckSavedPasswordReuse(
     }
   }
 
-  matching_reused_credentials_out->assign(
-      matching_reused_credentials_set.begin(),
-      matching_reused_credentials_set.end());
+  matching_reused_credentials_out->reserve(
+      matching_reused_credentials_set.size());
+  for (auto it = matching_reused_credentials_set.begin();
+       it != matching_reused_credentials_set.end();) {
+    matching_reused_credentials_out->push_back(
+        std::move(matching_reused_credentials_set.extract(it++).value()));
+  }
 
   return reused_saved_password;
 }
@@ -348,7 +351,7 @@ void PasswordReuseDetectorImpl::AddPassword(const PasswordForm& form) {
   }
 
   passwords_with_matching_reused_credentials_[form.password_value].insert(
-      {form.signon_realm, form.username_value, form.in_store});
+      MatchingReusedCredential(form));
 }
 
 void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
@@ -357,8 +360,7 @@ void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
     return;
   }
 
-  MatchingReusedCredential credential_criteria = {
-      form.signon_realm, form.username_value, form.in_store};
+  MatchingReusedCredential credential_criteria(form);
   auto password_value_iter =
       passwords_with_matching_reused_credentials_.begin();
   while (password_value_iter !=

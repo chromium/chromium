@@ -52,7 +52,7 @@ std::vector<std::string> GetMatchingDomains(
     // to be special handing and should use affiliation information instead of
     // the signon_realm.
     std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        GURL(credential.signon_realm),
+        credential.url,
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |

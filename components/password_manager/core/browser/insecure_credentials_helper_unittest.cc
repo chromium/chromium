@@ -27,16 +27,16 @@ PasswordForm CreateForm(std::string_view signon_realm,
                         std::u16string_view password = std::u16string_view()) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
+  form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   return form;
 }
 
-MatchingReusedCredential MakeCredential(std::string_view signon_realm,
+MatchingReusedCredential MakeCredential(const std::string& signon_realm,
                                         std::u16string_view username) {
-  MatchingReusedCredential credential;
-  credential.signon_realm = std::string(signon_realm);
-  credential.username = std::u16string(username);
+  MatchingReusedCredential credential(signon_realm, GURL(signon_realm),
+                                      std::u16string(username));
   return credential;
 }
 

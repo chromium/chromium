@@ -399,8 +399,9 @@ class ChromePasswordProtectionServiceTest
 
   void InitializeRequest(LoginReputationClientRequest::TriggerType trigger_type,
                          PasswordType reused_password_type) {
-    std::vector<password_manager::MatchingReusedCredential> credentials = {
-        {"somedomain.com"}};
+    std::vector<MatchingReusedCredential> credentials;
+    credentials.emplace_back("somedomain.com", GURL("https://somedomain.com/"),
+                             u"user");
     if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
       request_ = new PasswordProtectionRequestContent(
           web_contents(), GURL(kPhishingURL), GURL(), GURL(),
@@ -680,8 +681,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPersistPhishedSavedPasswordCredential) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test"}, {"http://2.example.com"}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back("http://example.test", GURL("http://example.test/"),
+                           u"user");
+  credentials.emplace_back("http://2.example.com",
+                           GURL("http://example2.test/"), u"user");
 
   EXPECT_CALL(mock_add_callback_, Run(password_store_.get(), credentials[0]));
   EXPECT_CALL(mock_add_callback_, Run(password_store_.get(), credentials[1]));
@@ -692,9 +696,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyRemovePhishedSavedPasswordCredential) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username1"},
-      {"http://2.example.test", u"username2"}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back("http://example.test", GURL("http://example.test/"),
+                           u"user");
+  credentials.emplace_back("http://2.example.com",
+                           GURL("http://example2.test/"), u"user");
 
   EXPECT_CALL(mock_remove_callback_,
               Run(password_store_.get(), credentials[0]));
@@ -1672,11 +1678,13 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
        VerifyPersistPhishedSavedPasswordCredential) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {.signon_realm = "http://example.test",
-       .in_store = password_manager::PasswordForm::Store::kAccountStore},
-      {.signon_realm = "http://2.example.test",
-       .in_store = password_manager::PasswordForm::Store::kAccountStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
+  credentials.emplace_back(
+      "http://2.example.com", GURL("http://example2.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
 
   EXPECT_CALL(mock_add_callback_,
               Run(account_password_store_.get(), credentials[0]));
@@ -1689,11 +1697,13 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
        VerifyRemovePhishedSavedPasswordCredential) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username1",
-       password_manager::PasswordForm::Store::kAccountStore},
-      {"http://2.example.test", u"username2",
-       password_manager::PasswordForm::Store::kAccountStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
+  credentials.emplace_back(
+      "http://2.example.com", GURL("http://example2.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
 
   EXPECT_CALL(mock_remove_callback_,
               Run(account_password_store_.get(), credentials[0]));
@@ -1752,9 +1762,10 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForAccountStoreSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username",
-       password_manager::PasswordForm::Store::kAccountStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
   service_->set_saved_passwords_matching_reused_credentials(credentials);
 
   SetUpSyncService(/*is_syncing_passwords=*/true);
@@ -1773,9 +1784,11 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForProfileStoreSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username",
-       password_manager::PasswordForm::Store::kProfileStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kProfileStore);
+
   service_->set_saved_passwords_matching_reused_credentials(credentials);
 
   SetUpSyncService(/*is_syncing_passwords=*/true);
@@ -1794,9 +1807,11 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForProfileStoreNotSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username",
-       password_manager::PasswordForm::Store::kProfileStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kProfileStore);
+
   service_->set_saved_passwords_matching_reused_credentials(credentials);
 
   SetUpSyncService(/*is_syncing_passwords=*/false);
@@ -1815,11 +1830,14 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensSafetyCheckMenuForBothStoresSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username",
-       password_manager::PasswordForm::Store::kProfileStore},
-      {"http://2.example.test", u"username",
-       password_manager::PasswordForm::Store::kAccountStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
+  credentials.emplace_back(
+      "http://2.example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kProfileStore);
+
   service_->set_saved_passwords_matching_reused_credentials(credentials);
 
   SetUpSyncService(/*is_syncing_passwords=*/true);
@@ -1845,9 +1863,10 @@ TEST_F(
     VerifyPhishGuardDialogOpensPasswordCheckupEmptyAccountForNonSyncingUser) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username",
-       password_manager::PasswordForm::Store::kProfileStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kProfileStore);
   service_->set_saved_passwords_matching_reused_credentials(credentials);
 
   SetUpSyncService(/*is_syncing_passwords=*/false);
@@ -1866,9 +1885,11 @@ TEST_F(PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupWithAnAccountForSyncingUser) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username",
-       password_manager::PasswordForm::Store::kProfileStore}};
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kProfileStore);
+
   service_->set_saved_passwords_matching_reused_credentials(credentials);
 
   SetUpSyncService(/*is_syncing_passwords=*/true);

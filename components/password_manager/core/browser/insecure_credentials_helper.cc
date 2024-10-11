@@ -59,8 +59,7 @@ InsecureCredentialsHelper::~InsecureCredentialsHelper() = default;
 void InsecureCredentialsHelper::AddPhishedCredentials(
     const MatchingReusedCredential& credential) {
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml,
-                               credential.signon_realm,
-                               GURL(credential.signon_realm)};
+                               credential.signon_realm, credential.url};
   operation_ =
       base::BindOnce(&InsecureCredentialsHelper::AddPhishedCredentialsInternal,
                      base::Owned(this), credential);
@@ -70,8 +69,7 @@ void InsecureCredentialsHelper::AddPhishedCredentials(
 void InsecureCredentialsHelper::RemovePhishedCredentials(
     const MatchingReusedCredential& credential) {
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml,
-                               credential.signon_realm,
-                               GURL(credential.signon_realm)};
+                               credential.signon_realm, credential.url};
   operation_ = base::BindOnce(
       &InsecureCredentialsHelper::RemovePhishedCredentialsInternal,
       base::Owned(this), credential);

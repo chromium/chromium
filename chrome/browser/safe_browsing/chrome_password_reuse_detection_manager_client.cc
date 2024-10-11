@@ -71,10 +71,8 @@ std::vector<std::string> GetMatchingDomains(
         matching_reused_credentials) {
   base::flat_set<std::string> matching_domains;
   for (const auto& credential : matching_reused_credentials) {
-    // TODO(crbug.com/40895227): Avoid converting signon_realm to URL,
-    // ideally use PasswordForm::url.
     std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        GURL(credential.signon_realm),
+        credential.url,
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
