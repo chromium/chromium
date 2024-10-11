@@ -17,6 +17,7 @@ preprocess_if_expr("preprocess") {
     "dino_game/generated_sound_fx.js",
     "dino_game/horizon_line.js",
     "dino_game/night_mode.js",
+    "dino_game/obstacle.js",
     "dino_game/utils.js",
     "offline-sprite-definitions.js",
   ]

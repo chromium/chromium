@@ -7,6 +7,8 @@ export const IS_IOS = /CriOS/.test(window.navigator.userAgent);
 
 export const IS_HIDPI = window.devicePixelRatio > 1;
 
+export const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
+
 /**
  * Frames per second.
  * @const
