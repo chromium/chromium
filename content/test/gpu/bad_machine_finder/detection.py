@@ -9,6 +9,7 @@ import functools
 import logging
 import math
 import statistics
+from typing import Generator, Iterable, Optional, Set, Tuple
 
 from bad_machine_finder import tasks
 
@@ -36,6 +37,100 @@ class BadMachineList:
     """
     for bot_id, reasons in other.bad_machines.items():
       self.bad_machines[bot_id].extend(reasons)
+
+  def RemoveLowConfidenceMachines(self, num_detections: int) -> None:
+    """Removes machines that weren't flagged at least |num_detections| times.
+
+    Args:
+      num_detections: The minimum number times a machine needs to be flagged as
+          bad in order to be kept.
+    """
+    trimmed_machines = collections.defaultdict(list)
+    for bot_id, reasons in self.bad_machines.items():
+      if len(reasons) >= num_detections:
+        trimmed_machines[bot_id] = reasons
+      else:
+        logging.debug(
+            'Bot %s removed because it was only flagged by %d detection '
+            'method(s)', bot_id, len(reasons))
+    self.bad_machines = trimmed_machines
+
+  def IterMarkdown(self) -> Generator[Tuple[str, str], None, None]:
+    """Iterates over contents, producing Markdown for each machine.
+
+    Yields:
+      A tuple (bot_id, markdown). |bot_id| is the ID of the Swarming bot,
+      |markdown| is a Markdown string describing why the bot is bad.
+    """
+    # Keep a consistent order.
+    bot_ids = sorted(list(self.bad_machines.keys()))
+    for b in bot_ids:
+      markdown_components = []
+      markdown_components.append(f'  * {b}')
+      reasons = self.bad_machines[b]
+      for r in reasons:
+        markdown_components.append(f'    * {r}')
+      yield b, '\n'.join(markdown_components)
+
+
+class MixinGroupedBadMachines:
+  """Stores BadMachineLists for multiple mixins."""
+
+  def __init__(self):
+    self._bad_machines_by_mixin = {}
+
+  def AddMixinData(self, mixin_name: str,
+                   bad_machine_list: 'BadMachineList') -> None:
+    """Adds a BadMachineList for |mixin_name|.
+
+    Args:
+      mixin_name: The name of the mixin
+      bad_machine_list: The BadMachineList for the mixin
+    """
+    if mixin_name in self._bad_machines_by_mixin:
+      raise ValueError(
+          f'Bad machines for mixin {mixin_name} were already added')
+    self._bad_machines_by_mixin[mixin_name] = bad_machine_list
+
+  def GetAllBadMachineNames(self) -> Set[str]:
+    """Gets all unique bad machine names across all stored mixins.
+
+    Returns:
+      A set containing all bad machine names.
+    """
+    bad_machine_names = set()
+    for _, bad_machine_list in self._bad_machines_by_mixin.items():
+      for bot_id in bad_machine_list.bad_machines.keys():
+        bad_machine_names.add(bot_id)
+    return bad_machine_names
+
+  def GenerateMarkdown(self,
+                       bots_to_skip: Optional[Iterable[str]] = None) -> str:
+    """Generates a Markdown string describing the object's contents.
+
+    Args:
+      bots_to_skip: An optional iterable of bot names to not include in the
+          Markdown content. If not provided, all bots will be included.
+
+    Returns:
+      A Markdown string describing each bad machine for each mixin.
+    """
+    bots_to_skip = bots_to_skip or []
+    markdown_components = []
+    # Guarantee a consistent ordering.
+    for mixin_name in sorted(self._bad_machines_by_mixin.keys()):
+      bad_machine_list = self._bad_machines_by_mixin[mixin_name]
+      mixin_report_components = [
+          f'Bad machines for {mixin_name}',
+      ]
+      for bot_id, markdown in bad_machine_list.IterMarkdown():
+        if bot_id in bots_to_skip:
+          continue
+        mixin_report_components.append(markdown)
+      if len(mixin_report_components) > 1:
+        markdown_components.append('\n'.join(mixin_report_components))
+
+    return '\n\n'.join(markdown_components)
 
 
 def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,

@@ -35,6 +35,152 @@ class BadMachineListUnittest(unittest.TestCase):
 
     self.assertEqual(first_list.bad_machines, expected_bad_machines)
 
+  def testRemoveLowConfidenceMachines(self):
+    """Tests that low confidence machines are correctly removed."""
+    bad_machine_list = detection.BadMachineList()
+    bad_machine_list.AddBadMachine('bot-1', 'reason-1')
+    bad_machine_list.AddBadMachine('bot-2', 'reason-2')
+    bad_machine_list.AddBadMachine('bot-2', 'reason-3')
+
+    expected_bad_machines = {
+        'bot-1': ['reason-1'],
+        'bot-2': [
+            'reason-2',
+            'reason-3',
+        ],
+    }
+    self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
+
+    bad_machine_list.RemoveLowConfidenceMachines(2)
+    expected_bad_machines = {
+        'bot-2': [
+            'reason-2',
+            'reason-3',
+        ],
+    }
+    self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
+
+  def testIterMarkdown(self):
+    """Tests that Markdown output is correct."""
+    bad_machine_list = detection.BadMachineList()
+    bad_machine_list.AddBadMachine('bot-2', 'reason-2')
+    bad_machine_list.AddBadMachine('bot-2', 'reason-3')
+    bad_machine_list.AddBadMachine('bot-1', 'reason-1')
+
+    bot_1_expected_markdown = """\
+  * bot-1
+    * reason-1"""
+    bot_2_expected_markdown = """\
+  * bot-2
+    * reason-2
+    * reason-3"""
+
+    expected_pairs = [
+        ('bot-1', bot_1_expected_markdown),
+        ('bot-2', bot_2_expected_markdown),
+    ]
+    self.assertEqual(list(bad_machine_list.IterMarkdown()), expected_pairs)
+
+
+class MixinGroupedBadMachinesUnittest(unittest.TestCase):
+
+  def testInputValidation(self):
+    """Tests that invalid inputs are properly caught."""
+    bad_machine_list = detection.BadMachineList()
+    mgbm = detection.MixinGroupedBadMachines()
+    mgbm.AddMixinData('mixin_name', bad_machine_list)
+    with self.assertRaisesRegex(
+        ValueError, 'Bad machines for mixin mixin_name were already added'):
+      mgbm.AddMixinData('mixin_name', bad_machine_list)
+
+  def testGetAllBadMachineNames(self):
+    """Tests that all bad machine names are properly returned."""
+    first_bad_machine_list = detection.BadMachineList()
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1')
+    first_bad_machine_list.AddBadMachine('bot-2', 'reason-2')
+
+    second_bad_machine_list = detection.BadMachineList()
+    second_bad_machine_list.AddBadMachine('bot-2', 'reason-3')
+    second_bad_machine_list.AddBadMachine('bot-3', 'reason-4')
+
+    mgbm = detection.MixinGroupedBadMachines()
+    mgbm.AddMixinData('first', first_bad_machine_list)
+    mgbm.AddMixinData('second', second_bad_machine_list)
+
+    self.assertEqual(mgbm.GetAllBadMachineNames(), {'bot-1', 'bot-2', 'bot-3'})
+
+  def testGenerateMarkdown(self):
+    """Tests basic Markdown generation."""
+    first_bad_machine_list = detection.BadMachineList()
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1a')
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1b')
+    first_bad_machine_list.AddBadMachine('bot-2', 'reason-2')
+
+    second_bad_machine_list = detection.BadMachineList()
+    second_bad_machine_list.AddBadMachine('bot-3', 'reason-3')
+    second_bad_machine_list.AddBadMachine('bot-4', 'reason-4')
+
+    mgbm = detection.MixinGroupedBadMachines()
+    mgbm.AddMixinData('mixin-b', second_bad_machine_list)
+    mgbm.AddMixinData('mixin-a', first_bad_machine_list)
+
+    expected_markdown = """\
+Bad machines for mixin-a
+  * bot-1
+    * reason-1a
+    * reason-1b
+  * bot-2
+    * reason-2
+
+Bad machines for mixin-b
+  * bot-3
+    * reason-3
+  * bot-4
+    * reason-4"""
+    self.assertEqual(mgbm.GenerateMarkdown(), expected_markdown)
+
+  def testGenerateMarkdownWithSomeBotsSkipped(self):
+    """Tests Markdown generation when some bots should be skipped."""
+    first_bad_machine_list = detection.BadMachineList()
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1a')
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1b')
+    first_bad_machine_list.AddBadMachine('bot-2', 'reason-2')
+
+    second_bad_machine_list = detection.BadMachineList()
+    second_bad_machine_list.AddBadMachine('bot-3', 'reason-3')
+    second_bad_machine_list.AddBadMachine('bot-4', 'reason-4')
+
+    mgbm = detection.MixinGroupedBadMachines()
+    mgbm.AddMixinData('mixin-b', second_bad_machine_list)
+    mgbm.AddMixinData('mixin-a', first_bad_machine_list)
+
+    expected_markdown = """\
+Bad machines for mixin-a
+  * bot-2
+    * reason-2"""
+    self.assertEqual(
+        mgbm.GenerateMarkdown(bots_to_skip={'bot-1', 'bot-3', 'bot-4'}),
+        expected_markdown)
+
+  def testGenerateMarkdownWithAllBotsSkipped(self):
+    """Tests Markdown generation when all bots should be skipped."""
+    first_bad_machine_list = detection.BadMachineList()
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1a')
+    first_bad_machine_list.AddBadMachine('bot-1', 'reason-1b')
+    first_bad_machine_list.AddBadMachine('bot-2', 'reason-2')
+
+    second_bad_machine_list = detection.BadMachineList()
+    second_bad_machine_list.AddBadMachine('bot-3', 'reason-3')
+    second_bad_machine_list.AddBadMachine('bot-4', 'reason-4')
+
+    mgbm = detection.MixinGroupedBadMachines()
+    mgbm.AddMixinData('mixin-b', second_bad_machine_list)
+    mgbm.AddMixinData('mixin-a', first_bad_machine_list)
+
+    self.assertEqual(
+        mgbm.GenerateMarkdown(
+            bots_to_skip={'bot-1', 'bot-2', 'bot-3', 'bot-4'}), '')
+
 
 class DetectViaStdDevOutlierUnittest(unittest.TestCase):
 

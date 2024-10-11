@@ -218,11 +218,17 @@ class BuganizerClient:
                 'error: %s', str(e))
             return {'error': str(e)}
 
-    def NewComment(self, issue_id: IssueID, comment: str):
+    def NewComment(self,
+                   issue_id: IssueID,
+                   comment: str,
+                   use_markdown: bool = False):
         """Makes a request to the issue tracker to add a comment."""
         new_comment_request = {'issueComment': {'comment': comment}}
+        if use_markdown:
+            new_comment_request['issueComment']['formattingMode'] = 'MARKDOWN'
         request = self._service.issues().modify(issueId=str(
-            self._ResolveID(issue_id)), body=new_comment_request)
+            self._ResolveID(issue_id)),
+                                                body=new_comment_request)
         try:
             return self._ExecuteRequest(request)
         except Exception as e:

@@ -3657,6 +3657,7 @@ group("gpu_pytype") {
     "//content/test/gpu/unexpected_passes/",
     "//testing/flake_suppressor_common/",
     "//testing/unexpected_passes_common/",
+    "//third_party/blink/tools/blinkpy/",
   ]
 
   data_deps = [
