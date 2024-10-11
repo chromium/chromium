@@ -10,16 +10,11 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
+#include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 
 namespace extensions {
 

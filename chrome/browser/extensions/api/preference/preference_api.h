@@ -20,17 +20,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-
-#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#include "chromeos/lacros/crosapi_pref_observer.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "components/prefs/pref_service.h"
-#include "extensions/common/extension_id.h"
-#endif
-
 class PrefService;
 
 namespace base {
@@ -61,38 +50,11 @@ class PreferenceEventRouter : public ProfileObserver {
   PrefChangeRegistrar registrar_;
   std::unique_ptr<PrefChangeRegistrar> incognito_registrar_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Callback for extension-controlled prefs where the underlying pref lives
-  // in ash. An event fires when the value of the pref in ash changes.
-  void OnAshPrefChanged(crosapi::mojom::PrefPath pref_path,
-                        const std::string& extension_pref,
-                        const std::string& browser_pref,
-                        base::Value value);
-
-  // Second callback to return additional detail about the extension-controlled
-  // pref.
-  void OnAshGetSuccess(const std::string& browser_pref,
-                       std::optional<::base::Value> opt_value,
-                       crosapi::mojom::PrefControlState control_state);
-
-  // Callback for lacros version of the prefs, to update ash in the event that
-  // they are changed.
-  void OnControlledPrefChanged(PrefService* pref_service,
-                               const std::string& browser_pref);
-
-  std::vector<std::unique_ptr<crosapi::mojom::PrefObserver>>
-      extension_pref_observers_;
-#endif
-
   // Weak, owns us (transitively via ExtensionService).
   raw_ptr<Profile> profile_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::WeakPtrFactory<PreferenceEventRouter> weak_factory_{this};
-#endif
 };
 
 class PreferenceAPI : public BrowserContextKeyedAPI,
@@ -163,11 +125,6 @@ class GetPreferenceFunction : public PreferenceFunction {
  protected:
   ~GetPreferenceFunction() override;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnLacrosGetSuccess(std::optional<::base::Value> opt_value,
-                          crosapi::mojom::PrefControlState control_state);
-#endif
-
   // ExtensionFunction:
   ResponseAction Run() override;
 
@@ -177,12 +134,6 @@ class GetPreferenceFunction : public PreferenceFunction {
                         const std::string& level_of_control,
                         const std::string& browser_pref,
                         bool incognito);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The name of the Chrome preference being retrieved. Used to avoid a second
-  // lookup from the extension API preference name.
-  std::string cached_browser_pref_;
-#endif
 };
 
 class SetPreferenceFunction : public PreferenceFunction {
@@ -191,10 +142,6 @@ class SetPreferenceFunction : public PreferenceFunction {
 
  protected:
   ~SetPreferenceFunction() override;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnLacrosSetSuccess();
-#endif
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -207,10 +154,6 @@ class ClearPreferenceFunction : public PreferenceFunction {
 
  protected:
   ~ClearPreferenceFunction() override;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnLacrosClearSuccess();
-#endif
 
   // ExtensionFunction:
   ResponseAction Run() override;

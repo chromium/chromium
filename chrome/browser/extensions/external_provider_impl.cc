@@ -56,12 +56,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
-#endif  // BUIDLFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
@@ -70,7 +64,10 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #include "components/policy/core/common/device_local_account_type.h"
@@ -80,11 +77,6 @@
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/check_is_test.h"
-#include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
-#endif
-
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
 
@@ -92,7 +84,7 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 const char kCameraAppId[] = "hfhhnacclhffhdffklopdkcgdhifgngh";
 
@@ -111,7 +103,7 @@ bool ShouldUninstallExtensionReplacedByArcApp(const std::string& extension_id) {
   return false;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -257,7 +249,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
   for (auto pref : *prefs_) {
     const std::string& extension_id = pref.first;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (extension_id == kCameraAppId) {
       unsupported_extensions.insert(extension_id);
       install_stage_tracker->ReportFailure(
@@ -275,7 +267,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
           InstallStageTracker::FailureReason::REPLACED_BY_ARC_APP);
       continue;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (!crx_file::id_util::IdIsValid(extension_id)) {
       LOG(WARNING) << "Malformed extension dictionary: key "
@@ -642,7 +634,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   scoped_refptr<ExternalLoader> external_recommended_loader;
   ManifestLocation crx_location = ManifestLocation::kInvalidLocation;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::ProfileHelper::IsSigninProfile(profile)) {
     // Download extensions/apps installed by policy in the login profile.
     // Extensions (not apps) installed through this path will have type
@@ -659,9 +651,7 @@ void ExternalProviderImpl::CreateExternalProviders(
     provider_list->push_back(std::move(signin_profile_provider));
     return;
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorAsh* const connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DCHECK(connector);
@@ -684,16 +674,6 @@ void ExternalProviderImpl::CreateExternalProviders(
       } else {
         NOTREACHED_IN_MIGRATION();
       }
-    }
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::IsKioskSession() || chromeos::IsManagedGuestSession()) {
-    if (DeviceLocalAccountExtensionInstallerLacros::Get()) {
-      external_loader =
-          DeviceLocalAccountExtensionInstallerLacros::Get()->extension_loader();
-      crx_location = ManifestLocation::kExternalPolicy;
-    } else {
-      CHECK_IS_TEST();
     }
   }
 #endif
@@ -721,10 +701,8 @@ void ExternalProviderImpl::CreateExternalProviders(
     if (profiles::IsChromeAppKioskSession()) {
       ManifestLocation location = ManifestLocation::kExternalPolicy;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!connector->IsDeviceEnterpriseManaged())
         location = ManifestLocation::kExternalPref;
-#endif
 
       auto kiosk_app_provider = std::make_unique<ExternalProviderImpl>(
           service,
@@ -750,7 +728,7 @@ void ExternalProviderImpl::CreateExternalProviders(
       secondary_kiosk_app_provider->set_allow_updates(true);
       provider_list->push_back(std::move(secondary_kiosk_app_provider));
     }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return;
   }
 
@@ -782,7 +760,7 @@ void ExternalProviderImpl::CreateExternalProviders(
 #endif
   int bundled_extension_creation_flags = Extension::NO_FLAGS;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bundled_extension_creation_flags = Extension::FROM_WEBSTORE |
       Extension::WAS_INSTALLED_BY_DEFAULT;
 
@@ -812,11 +790,9 @@ void ExternalProviderImpl::CreateExternalProviders(
         ManifestLocation::kExternalPrefDownload, oem_extension_creation_flags));
   }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (!profile->GetPrefs()->GetBoolean(pref_names::kBlockExternalExtensions)) {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(
         service,
         base::MakeRefCounted<ExternalPrefLoader>(
@@ -857,7 +833,7 @@ void ExternalProviderImpl::CreateExternalProviders(
 #endif
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // The pre-installed apps are installed as INTERNAL but use the external
   // extension installer codeflow.
   provider_list->push_back(std::make_unique<preinstalled_apps::Provider>(

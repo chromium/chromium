@@ -355,14 +355,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool());
 #endif
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_AffiliationIDs DISABLED_AffiliationIDs
-#else
-#define MAYBE_AffiliationIDs AffiliationIDs
-#endif
 IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
-                       MAYBE_AffiliationIDs) {
+                       AffiliationIDs) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
   auto context_info_value = api_test_utils::RunFunctionAndReturnSingleResult(

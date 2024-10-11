@@ -402,13 +402,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 // Test that loading an extension with a browser action does not create a
 // background page and that clicking on the action creates the appropriate
 // ExtensionHost.
-// TODO(http://crbug.com/1271329): Times out frequently on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PopupHostCreation DISABLED_PopupHostCreation
-#else
-#define MAYBE_PopupHostCreation PopupHostCreation
-#endif
-IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, MAYBE_PopupHostCreation) {
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, PopupHostCreation) {
   ProcessManager* pm = ProcessManager::Get(profile());
 
   // Load an extension with the ability to open a popup but no background

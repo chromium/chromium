@@ -19,12 +19,9 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
 
@@ -36,8 +33,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS)
       extension_misc::kAssessmentAssistantExtensionId,
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       extension_misc::kAccessibilityCommonExtensionId,
       extension_misc::kChromeVoxExtensionId,
       extension_misc::kEnhancedNetworkTtsExtensionId,
@@ -46,20 +41,13 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kGuestModeTestExtensionId,
       extension_misc::kSelectToSpeakExtensionId,
       extension_misc::kSwitchAccessExtensionId,
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      extension_misc::kEmbeddedA11yHelperExtensionId,
-      extension_misc::kChromeVoxHelperExtensionId,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS)
       extension_misc::kContactCenterInsightsExtensionId,
       extension_misc::kDeskApiExtensionId,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       extension_misc::kQuickOfficeComponentExtensionId,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       extension_misc::kReadingModeGDocsHelperExtensionId,
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   });
 
   if (kAllowed.contains(extension_id)) {
@@ -71,14 +59,12 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_id == extension_misc::kODFSExtensionId) {
     return true;
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::input_method::ComponentExtensionIMEManagerDelegateImpl::
           IsIMEExtensionID(extension_id)) {
     return true;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   LOG(ERROR) << "Component extension with id " << extension_id << " not in "
              << "allowlist and is not being loaded as a result.";
   NOTREACHED_IN_MIGRATION();
@@ -96,7 +82,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_READING_MODE_GDOCS_HELPER_MANIFEST:
     case IDR_WEBSTORE_MANIFEST:
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Separate ChromeOS list, as it is quite large.
     case IDR_ARC_SUPPORT_MANIFEST:
     case IDR_CHROME_APP_MANIFEST:
@@ -105,9 +91,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDR_HELP_MANIFEST:
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
     case IDR_CONTACT_CENTER_INSIGHTS_MANIFEST:
     case IDR_DESK_API_MANIFEST:
     case IDR_ECHO_MANIFEST:
@@ -122,7 +105,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id) {
   constexpr auto kAllowed = base::MakeFixedFlatSet<std::string_view>({

@@ -721,8 +721,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 constexpr char kRulesExtensionName[] =
     "Declarative content persistence apitest";
 
-// TODO(crbug.com/41189874): Flaky on Windows release builds and on LACROS.
-#if (BUILDFLAG(IS_WIN) && defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/41189874): Flaky on Windows release builds.
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_PRE_RulesPersistence DISABLED_PRE_RulesPersistence
 #else
 #define MAYBE_PRE_RulesPersistence PRE_RulesPersistence
@@ -746,8 +746,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   ASSERT_TRUE(ready_split.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/41189874): Flaky on Windows release builds and on LACROS.
-#if (BUILDFLAG(IS_WIN) && defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/41189874): Flaky on Windows release builds.
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_RulesPersistence DISABLED_RulesPersistence
 #else
 #define MAYBE_RulesPersistence RulesPersistence

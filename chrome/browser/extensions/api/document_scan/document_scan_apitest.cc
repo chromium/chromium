@@ -110,14 +110,9 @@ class DocumentScanApiTest : public ExtensionApiTest,
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    // Replace the production DocumentScanAsh with a mock for testing.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        receiver_.BindNewPipeAndPassRemote());
-#else
     DocumentScanAPIHandler::Get(browser()->profile())
         ->SetDocumentScanForTesting(&document_scan_ash_);
-#endif
+
     document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
   }
 
@@ -137,9 +132,6 @@ class DocumentScanApiTest : public ExtensionApiTest,
 
  private:
   FakeDocumentScanAsh document_scan_ash_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  mojo::Receiver<crosapi::mojom::DocumentScan> receiver_{&document_scan_ash_};
-#endif
 };
 
 IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, TestLoadPermissions) {

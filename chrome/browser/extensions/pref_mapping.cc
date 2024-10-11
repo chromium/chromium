@@ -24,12 +24,8 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/containers/fixed_flat_map.h"
 #endif
 
 using extensions::mojom::APIPermissionID;
@@ -103,7 +99,7 @@ const PrefMappingEntry kMappings[] = {
 // feature being controlled exists in ash. They should be kept in sync/in order.
 // If a new extension-controlled pref of this type is added, it should be added
 // to both lists.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"autoclick", chromeos::prefs::kAccessibilityAutoclickEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
@@ -212,52 +208,6 @@ PrefTransformerInterface* PrefMapping::FindTransformerForBrowserPref(
     return it->second.get();
   return identity_transformer_.get();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Given a pref name for an extension-controlled pref where the underlying
-// pref is controlled by ash, returns the PrefPath used by the crosapi to set
-// the pref in ash, or nullptr if no pref exists.
-crosapi::mojom::PrefPath PrefMapping::GetPrefPathForPrefName(
-    const std::string& pref_name) const {
-  static constexpr auto name_to_extension_prefpath = base::MakeFixedFlatMap<
-      std::string_view, crosapi::mojom::PrefPath>(
-      {{chromeos::prefs::kDockedMagnifierEnabled,
-        crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
-       {chromeos::prefs::kAccessibilityAutoclickEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled},
-       {chromeos::prefs::kAccessibilityCaretHighlightEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityCaretHighlightEnabled},
-       {chromeos::prefs::kAccessibilityCursorColorEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityCursorColorEnabled},
-       {chromeos::prefs::kAccessibilityCursorHighlightEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityCursorHighlightEnabled},
-       {chromeos::prefs::kAccessibilityDictationEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityDictationEnabled},
-       {chromeos::prefs::kAccessibilityFocusHighlightEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled},
-       {chromeos::prefs::kAccessibilityHighContrastEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityHighContrastEnabled},
-       {chromeos::prefs::kAccessibilityLargeCursorEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityLargeCursorEnabled},
-       {chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityScreenMagnifierEnabled},
-       {chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
-        crosapi::mojom::PrefPath::kAccessibilitySelectToSpeakEnabled},
-       {chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
-        crosapi::mojom::PrefPath::kExtensionAccessibilitySpokenFeedbackEnabled},
-       {chromeos::prefs::kAccessibilityStickyKeysEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityStickyKeysEnabled},
-       {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
-        crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
-       {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
-        crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled},
-       {proxy_config::prefs::kProxy, crosapi::mojom::PrefPath::kProxy}});
-  auto pref_iter = name_to_extension_prefpath.find(pref_name);
-  return pref_iter == name_to_extension_prefpath.end()
-             ? crosapi::mojom::PrefPath::kUnknown
-             : pref_iter->second;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 PrefMapping::PrefMapping() {
   identity_transformer_ = std::make_unique<IdentityPrefTransformer>();

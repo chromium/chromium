@@ -16,6 +16,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
@@ -28,15 +31,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "extensions/common/extension_id.h"
-#endif
 
 namespace extensions {
 

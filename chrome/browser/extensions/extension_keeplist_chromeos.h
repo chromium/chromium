@@ -15,11 +15,9 @@
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 crosapi::mojom::ExtensionKeepListPtr BuildExtensionKeeplistInitParam();
 crosapi::mojom::StandaloneBrowserAppServiceBlockListPtr
 BuildStandaloneBrowserAppServiceBlockListInitParam();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns ids of the extensions that are allow to run in both Ash and Lacros.
 base::span<const std::string_view> GetExtensionsRunInOSAndStandaloneBrowser();
@@ -72,29 +70,6 @@ bool ExtensionAppRunsInOSOnly(std::string_view app_id);
 // not know about OS-specific extensions that are compiled into ash.
 bool ExtensionRunsInOSOnly(std::string_view extension_id);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool IsAppServiceBlocklistCrosapiSupported();
-
-// Returns true if the app is on app service block list in Lacros, i.e.,
-// the app can't be published in app service by Lacros.
-bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
-    std::string_view app_id);
-
-// Returns true if the extension is on app service block list in Lacros, i.e.,
-// the extension can't be published in app service by Lacros.
-bool ExtensionBlockListedForAppServiceInStandaloneBrowser(
-    std::string_view extension_id);
-
-// Some Lacros chrome apps related browser tests and unit tests run without Ash,
-// therefore, Lacros won't get the Ash extension keeplist data from Ash via
-// crosapi::mojom:::BrowserInitParams. For these tests, call
-// SetEmptyAshKeeplistForTest() to allow the tests to use an empty ash keeplist
-// for tests and proceed without CHECK failure due to absence of the ash
-// keeplist parameter in crosapi::mojom:::BrowserInitParams.
-void SetEmptyAshKeeplistForTest();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if the app is on app service block list in Ash, i.e.,
 // the app can't be published in app service by Ash.
 bool ExtensionAppBlockListedForAppServiceInOS(std::string_view app_id);
@@ -112,7 +87,6 @@ size_t ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
 size_t ExtensionAppsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
 size_t ExtensionsRunInOSOnlyAllowlistSizeForTest();
 size_t ExtensionAppsRunInOSOnlyAllowlistSizeForTest();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
 

@@ -917,15 +917,8 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithMockedSourceRenderer,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40766689) Flaky on lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HitTestMultipleWindows DISABLED_HitTestMultipleWindows
-#else
-#define MAYBE_HitTestMultipleWindows HitTestMultipleWindows
-#endif
-
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
-                       MAYBE_HitTestMultipleWindows) {
+                       HitTestMultipleWindows) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("desktop/hit_test_multiple_windows.js",
                                         kPermissionsWindows))

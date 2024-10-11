@@ -74,19 +74,12 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_lacros.h"
-#include "chrome/browser/extensions/api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.h"
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -361,7 +354,6 @@ ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
 #if BUILDFLAG(IS_CHROMEOS)
 bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
                                                         int pid) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::Value::List* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
@@ -374,20 +366,7 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::DeviceSettings* device_settings =
-      chromeos::BrowserParamsProxy::Get()->DeviceSettings().get();
-  if (device_settings && device_settings->usb_detachable_allow_list) {
-    for (const auto& entry :
-         device_settings->usb_detachable_allow_list->usb_device_ids) {
-      if (entry->has_vendor_id && entry->vendor_id == vid &&
-          entry->has_product_id && entry->product_id == pid) {
-        return true;
-      }
-    }
-  }
-#endif
+
   return false;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -395,10 +374,8 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
 std::unique_ptr<VirtualKeyboardDelegate>
 ChromeExtensionsAPIClient::CreateVirtualKeyboardDelegate(
     content::BrowserContext* browser_context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ChromeVirtualKeyboardDelegate>(browser_context);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<LacrosVirtualKeyboardDelegate>();
 #else
   return nullptr;
 #endif
@@ -429,10 +406,8 @@ MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
 }
 
 FileSystemDelegate* ChromeExtensionsAPIClient::GetFileSystemDelegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegateAsh;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegateLacros;
 #else
   using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegate;
 #endif
@@ -456,7 +431,7 @@ ChromeExtensionsAPIClient::GetFeedbackPrivateDelegate() {
   return feedback_private_delegate_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 MediaPerceptionAPIDelegate*
 ChromeExtensionsAPIClient::GetMediaPerceptionAPIDelegate() {
   if (!media_perception_api_delegate_) {
@@ -474,9 +449,7 @@ ChromeExtensionsAPIClient::GetNonNativeFileSystemDelegate() {
   }
   return non_native_file_system_delegate_.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
     std::vector<uint8_t> image_data,
     api::clipboard::ImageType type,

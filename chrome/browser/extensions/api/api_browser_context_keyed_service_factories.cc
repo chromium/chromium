@@ -49,16 +49,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/image_writer_private/image_writer_controller_lacros.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
@@ -88,17 +81,14 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
   extensions::IdentityAPI::GetFactoryInstance();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  extensions::image_writer::ImageWriterControllerLacros::GetFactoryInstance();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   extensions::InputImeAPI::GetFactoryInstance();
 #endif
   extensions::LanguageSettingsPrivateDelegateFactory::GetInstance();
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
   extensions::MDnsAPI::GetFactoryInstance();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto networking_private_ui_delegate_factory =
       std::make_unique<extensions::NetworkingPrivateUIDelegateFactoryImpl>();
   extensions::NetworkingPrivateDelegateFactory::GetInstance()
@@ -124,10 +114,8 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::TabGroupsEventRouterFactory::GetInstance();
   extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   extensions::TerminalPrivateAPI::GetFactoryInstance();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::VerifyTrustAPI::GetFactoryInstance();
 #endif
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();

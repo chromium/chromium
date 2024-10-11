@@ -132,12 +132,6 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "content/public/browser/devtools_agent_host.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_buffer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 using content::BrowserThread;
 using content::NavigationController;
 using content::NavigationEntry;
@@ -421,12 +415,6 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 
   // Update the set of available browser commands.
   browser->command_controller()->LockedFullscreenStateChanged();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Wipe the clipboard in browser and detach any dev tools.
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  content::DevToolsAgentHost::DetachAllClients();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

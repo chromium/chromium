@@ -175,12 +175,6 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   DCHECK(!base::Contains(print_jobs_, cups_id));
   print_jobs_[cups_id] = PrintJobInfo{printer_id, info.job_id, extension_id};
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(info.job_id, *info.document,
-                      crosapi::mojom::PrintJob::Source::kExtension,
-                      extension_id, local_printer_);
-#endif
-
   if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
     return;
   }

@@ -101,9 +101,7 @@ base::Value::Dict GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
 
 base::Value::Dict GetLacrosPrefsFromPolicy(
     const policy::PolicyMap& policy_map) {
-  extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetLacrosPolicyDict(policy_map)
-      .value_or(base::Value::Dict());
+  return base::Value::Dict();
 }
 
 void SendExtensionsToAsh(

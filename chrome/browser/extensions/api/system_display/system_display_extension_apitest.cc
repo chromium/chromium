@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
 
 using SystemDisplayExtensionApiFunctionTest = SystemDisplayExtensionApiTest;
 
@@ -86,6 +86,6 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiFunctionTest, SetDisplay) {
   EXPECT_FALSE(set_info);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

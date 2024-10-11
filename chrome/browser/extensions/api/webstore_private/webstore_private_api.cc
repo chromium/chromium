@@ -205,12 +205,6 @@ const char kWebstoreBlockByPolicy[] =
     "Extension installation is blocked by policy";
 const char kIncognitoError[] =
     "Apps cannot be installed in guest/incognito mode";
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kSecondaryProfileError[] =
-    "Apps may only be installed using the main profile";
-const char kLegacyPackagedAppError[] =
-    "Legacy packaged apps are no longer supported";
-#endif
 
 const char kParentBlockedExtensionInstallError[] =
     "Parent has blocked extension/app installation";
@@ -1003,23 +997,6 @@ WebstorePrivateCompleteInstallFunction::Run() {
     return RespondNow(
         Error(kNoPreviousBeginInstallWithManifestError, params->expected_id));
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40239506): Centralize logic for disallowing
-  // installation with other installation paths.
-  if (!profile->IsMainProfile()) {
-    bool allowed = approval_->dummy_extension &&
-                   (approval_->dummy_extension->is_extension() ||
-                    approval_->dummy_extension->is_theme());
-    if (!allowed) {
-      return RespondNow(Error(kSecondaryProfileError));
-    }
-  }
-  if (approval_->dummy_extension &&
-      approval_->dummy_extension->is_legacy_packaged_app()) {
-    return RespondNow(Error(kLegacyPackagedAppError));
-  }
-#endif
 
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {

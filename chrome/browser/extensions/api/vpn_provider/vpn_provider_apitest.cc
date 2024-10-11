@@ -18,12 +18,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -35,23 +43,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chromeos/ash/components/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
-#include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace chromeos {
 
@@ -62,7 +54,6 @@ namespace api_vpn = extensions::api::vpn_provider;
 const char kTestConfig[] = "testconfig";
 const char kPacket[] = "feebdaed";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kNetworkProfilePath[] = "/network/test";
 const char* kParameterValues[] = {"10.10.10.10",
                                   "24",
@@ -88,11 +79,9 @@ void DoNothingFailureCallback(const std::string& error_name) {
 void DoNothingSuccessCallback(const std::string& service_path,
                               const std::string& guid) {}
 
-#endif
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Records the number of calls and their parameters. Always replies successfully
 // to calls.
 class TestShillThirdPartyVpnDriverClient
@@ -138,7 +127,6 @@ class TestShillThirdPartyVpnDriverClient
   int send_packet_counter_ = 0;
   std::vector<char> ip_packet_;
 };
-#endif
 
 class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
  public:
@@ -182,53 +170,7 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
   std::optional<std::string> extension_id_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class VpnProviderApiTestLacros : public VpnProviderApiTestBase {
- public:
-  // VpnProviderApiTestBase:
-  void TearDownOnMainThread() override {
-    UnloadExtension(extension_id());
-    VpnProviderApiTestBase::TearDownOnMainThread();
-  }
-  crosapi::mojom::VpnService* service_remote() const override {
-    return chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::VpnService>()
-        .get();
-  }
-  void OnPlatformMessage(const std::string& configuration_name,
-                         api_vpn::PlatformMessage message) override {
-    controller_->OnPlatformMessage(extension_id(), configuration_name,
-                                   base::to_underlying(message));
-  }
-  void OnPacketReceived(const std::string& configuration_name,
-                        const std::vector<char>& data) override {
-    controller_->OnPacketReceived(
-        extension_id(), configuration_name,
-        std::vector<uint8_t>(data.begin(), data.end()));
-  }
-
-  bool InitTestShillController() {
-    auto* service = chromeos::LacrosService::Get();
-    if (!service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
-            static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                                 kBindTestShillControllerMinVersion)) {
-      LOG(ERROR) << "Unsupported ash version.";
-      return false;
-    }
-    base::test::TestFuture<void> future;
-    service->GetRemote<crosapi::mojom::TestController>()
-        ->BindTestShillController(controller_.BindNewPipeAndPassReceiver(),
-                                  future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    return true;
-  }
-
- protected:
-  mojo::Remote<crosapi::mojom::TestShillController> controller_;
-};
-#else
-class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
+class VpnProviderApiTest : public VpnProviderApiTestBase {
  public:
   // VpnProviderApiTestBase:
   void SetUpInProcessBrowserTestFixture() override {
@@ -361,19 +303,7 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
   raw_ptr<TestShillThirdPartyVpnDriverClient, DanglingUntriaged> test_client_ =
       nullptr;  // Unowned
 };
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-using VpnProviderApiTest = VpnProviderApiTestLacros;
-#else
-using VpnProviderApiTest = VpnProviderApiTestAsh;
-#endif
-
-////////////////////////////
-// Ash-specific tests.
-////////////////////////////
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CreateConfigWithoutNetworkProfile) {
   ClearNetworkProfiles();
   EXPECT_TRUE(RunTest("createConfigWithoutNetworkProfile"));
@@ -501,45 +431,29 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CreateBlocklist) {
   EXPECT_FALSE(DoesConfigExist(kTestConfig));
   EXPECT_FALSE(HasService(service_path));
 }
-#endif
 
 ////////////////////////////
 // Ash/lacros shared tests.
 ////////////////////////////
 
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ComboSuite) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!InitTestShillController()) {
-    GTEST_SKIP() << "Unsupported ash version.";
-  }
-#endif
-
   EXPECT_TRUE(RunTest("comboSuite"));
 }
 
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!InitTestShillController()) {
-    GTEST_SKIP() << "Unsupported ash version.";
-  }
-#endif
-
   EXPECT_TRUE(RunTest("createConfigConnectAndDisconnect"));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(DoesConfigExist(kTestConfig));
   EXPECT_TRUE(HasService(GetSingleServicePath()));
   EXPECT_FALSE(IsConfigConnected());
   EXPECT_EQ(0, test_client_->set_parameters_counter_);
   EXPECT_EQ(0, test_client_->update_connection_state_counter_);
   EXPECT_EQ(0, test_client_->send_packet_counter_);
-#endif
 
   extensions::ResultCatcher catcher;
   OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
   ASSERT_TRUE(catcher.GetNextResult());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(IsConfigConnected());
   EXPECT_EQ(1, test_client_->set_parameters_counter_);
   EXPECT_EQ(1, test_client_->update_connection_state_counter_);
@@ -555,7 +469,6 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   std::vector<char> received_packet(std::begin(kPacket),
                                     std::prev(std::end(kPacket)));
   EXPECT_EQ(received_packet, test_client_->ip_packet_);
-#endif
 
   std::vector<char> packet(++std::rbegin(kPacket), std::rend(kPacket));
   OnPacketReceived(kTestConfig, packet);
@@ -564,9 +477,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kDisconnected);
   ASSERT_TRUE(catcher.GetNextResult());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(IsConfigConnected());
-#endif
 }
 
 class FakePepperVpnProviderResourceHostProxy
@@ -589,12 +500,6 @@ class FakePepperVpnProviderResourceHostProxy
 };
 
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PepperProxy) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!InitTestShillController()) {
-    GTEST_SKIP() << "Unsupported ash version.";
-  }
-#endif
-
   base::test::TestFuture<bool> unbind;
   base::test::TestFuture<std::vector<char>> data;
   // This class will be used as a receiver for mojo::SelfOwnedReceiver.
@@ -648,12 +553,6 @@ class TestEventObserverForExtension
 // is initialized by the moment ash decides to send a platform message to the
 // browser.
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PlatformMessage) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!InitTestShillController()) {
-    GTEST_SKIP() << "Unsupported ash version.";
-  }
-#endif
-
   auto test_observer = std::make_unique<TestEventObserverForExtension>();
   mojo::Remote<crosapi::mojom::VpnServiceForExtension> remote;
   mojo::Receiver<crosapi::mojom::EventObserverForExtension> receiver{

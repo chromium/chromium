@@ -127,15 +127,9 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
       ui::ImageModel(),  // Updated asynchronously later.
       std::u16string(),  // display_source
       GURL(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
           ash::NotificationCatalogName::kRequestFileSystem),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 notification_id),
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       data, app_notification_launcher));
 
   app_notification_launcher->InitAndShow(profile, extension_id,

@@ -29,7 +29,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -181,11 +181,11 @@ class ExtensionServiceTestBase : public testing::Test {
   }
   policy::PolicyService* policy_service() { return policy_service_.get(); }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper& cros_settings_test_helper() {
     return cros_settings_test_helper_;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // If a test uses a feature list, it should be destroyed after
   // |task_environment_|, to avoid tsan data races between the ScopedFeatureList
@@ -246,7 +246,7 @@ class ExtensionServiceTestBase : public testing::Test {
   // The associated ExtensionRegistry, for convenience.
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
   user_manager::ScopedUserManager user_manager_;

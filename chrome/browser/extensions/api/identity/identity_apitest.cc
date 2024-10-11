@@ -106,7 +106,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -115,12 +115,6 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/signin/signin_util.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
 #endif
 
 using extensions::ExtensionsAPIClient;
@@ -1165,8 +1159,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       IdentityGetAuthTokenError::State::kSignInFailed, 1);
 }
 
-// Signin is always allowed on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        PRE_InteractiveNotSignedAndSigninNotAllowed) {
   // kSigninAllowed cannot be set after the profile creation. Use
@@ -1191,8 +1183,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       kGetAuthTokenResultHistogramName,
       IdentityGetAuthTokenError::State::kBrowserSigninNotAllowed, 1);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NonInteractiveMintFailure) {
   SignIn("primary@example.com");
@@ -3168,40 +3159,7 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
- public:
-  explicit GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper(
-      DeviceLocalAccountSessionType session_type) {
-    crosapi::mojom::SessionType init_params_session_type =
-        crosapi::mojom::SessionType::kUnknown;
-    switch (session_type) {
-      case DeviceLocalAccountSessionType::kPublic:
-        init_params_session_type = crosapi::mojom::SessionType::kPublicSession;
-        break;
-      case DeviceLocalAccountSessionType::kAppKiosk:
-        init_params_session_type =
-            crosapi::mojom::SessionType::kAppKioskSession;
-        break;
-      case DeviceLocalAccountSessionType::kWebKiosk:
-        init_params_session_type =
-            crosapi::mojom::SessionType::kWebKioskSession;
-        break;
-    }
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    init_params->session_type = init_params_session_type;
-    init_params->is_device_enterprised_managed = true;
-    init_params->device_settings = crosapi::mojom::DeviceSettings::New();
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-  }
-
-  void SetUpOnMainThread() {}
-  void TearDownOnMainThread() {}
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class GetAuthTokenFunctionDeviceLocalAccountTest
     : public GetAuthTokenFunctionTest {
@@ -4304,7 +4262,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignIn) {
   EXPECT_FALSE(HasExpectedEvent());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Test that an event is fired when the primary account signs out. Only
 // applicable in non-DICE mode, as when DICE is enabled clearing the primary
 // account does not result in its refresh token being removed and hence does
@@ -4319,13 +4277,6 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignOut) {
 
   SignIn("primary@example.com");
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Clear primary account is not allowed in Lacros main profile.
-  // This test overrides |UserSignoutSetting| to test Lacros secondary profile.
-  ChromeSigninClientFactory::GetForProfile(profile())
-      ->set_is_clear_primary_account_allowed_for_testing(
-          SigninClient::SignoutDecision::ALLOW);
-#endif
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, false));
 
   // Sign out and verify that the callback fires.
@@ -4333,7 +4284,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignOut) {
 
   EXPECT_FALSE(HasExpectedEvent());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Test that an event is fired when the primary account has a refresh token
 // invalidated.

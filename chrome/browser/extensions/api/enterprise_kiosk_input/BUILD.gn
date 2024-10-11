@@ -16,11 +16,10 @@ source_set("enterprise_kiosk_input") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//extensions/browser" ]
-
-  if (is_chromeos_ash) {
-    public_deps += [ "//chromeos/crosapi/mojom" ]
-  }
+  public_deps = [
+    "//chromeos/crosapi/mojom",
+    "//extensions/browser",
+  ]
 
   deps = [
     "//base",
