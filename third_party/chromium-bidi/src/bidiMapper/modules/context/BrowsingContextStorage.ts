@@ -20,8 +20,17 @@ import {
   type BrowsingContext,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
+
+const enum BrowsingContextStorageEvents {
+  Added = 'added',
+}
+
+type BrowsingContextStorageEvent = {
+  [BrowsingContextStorageEvents.Added]: {browsingContext: BrowsingContextImpl};
+};
 
 /** Container class for browsing contexts. */
 export class BrowsingContextStorage {
@@ -30,6 +39,9 @@ export class BrowsingContextStorage {
     BrowsingContext.BrowsingContext,
     BrowsingContextImpl
   >();
+  /** Event emitter for browsing context storage eventsis not expected to be exposed to
+   * the outside world. */
+  readonly #eventEmitter = new EventEmitter<BrowsingContextStorageEvent>();
 
   /** Gets all top-level contexts, i.e. those with no parent. */
   getTopLevelContexts(): BrowsingContextImpl[] {
@@ -56,6 +68,26 @@ export class BrowsingContextStorage {
   /** Tracks the given context. */
   addContext(context: BrowsingContextImpl) {
     this.#contexts.set(context.id, context);
+    this.#eventEmitter.emit(BrowsingContextStorageEvents.Added, {
+      browsingContext: context,
+    });
+  }
+
+  /**
+   * Waits for a context with the given ID to be added and returns it.
+   */
+  waitForContext(
+    browsingContextId: BrowsingContext.BrowsingContext
+  ): Promise<BrowsingContextImpl> {
+    return new Promise((resolve) => {
+      const listener = (event: {browsingContext: BrowsingContextImpl}) => {
+        if (event.browsingContext.id === browsingContextId) {
+          this.#eventEmitter.off(BrowsingContextStorageEvents.Added, listener);
+          resolve(event.browsingContext);
+        }
+      };
+      this.#eventEmitter.on(BrowsingContextStorageEvents.Added, listener);
+    });
   }
 
   /** Returns true whether there is an existing context with the given ID. */

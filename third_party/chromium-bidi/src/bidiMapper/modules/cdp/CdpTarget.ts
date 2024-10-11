@@ -37,11 +37,13 @@ export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
+  readonly #parentCdpClient: CdpClient;
   readonly #realmStorage: RealmStorage;
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #prerenderingDisabled: boolean;
   readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
@@ -61,11 +63,13 @@ export class CdpTarget {
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
     browserCdpClient: CdpClient,
+    parentCdpClient: CdpClient,
     realmStorage: RealmStorage,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ): CdpTarget {
@@ -73,11 +77,13 @@ export class CdpTarget {
       targetId,
       cdpClient,
       browserCdpClient,
+      parentCdpClient,
       eventManager,
       realmStorage,
       preloadScriptStorage,
       browsingContextStorage,
       networkStorage,
+      prerenderingDisabled,
       unhandledPromptBehavior,
       logger
     );
@@ -97,22 +103,26 @@ export class CdpTarget {
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
     browserCdpClient: CdpClient,
+    parentCdpClient: CdpClient,
     eventManager: EventManager,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
+    this.#parentCdpClient = parentCdpClient;
     this.#eventManager = eventManager;
     this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#prerenderingDisabled = prerenderingDisabled;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
   }
@@ -128,6 +138,10 @@ export class CdpTarget {
 
   get cdpClient(): CdpClient {
     return this.#cdpClient;
+  }
+
+  get parentCdpClient(): CdpClient {
+    return this.#parentCdpClient;
   }
 
   get browserCdpClient(): CdpClient {
@@ -164,6 +178,15 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         }),
+        this.#cdpClient
+          .sendCommand('Page.setPrerenderingAllowed', {
+            isAllowed: !this.#prerenderingDisabled,
+          })
+          .catch(() => {
+            // Ignore CDP errors, as the command is not supported by iframe targets or
+            // prerendered pages. Generic catch, as the error can vary between CdpClient
+            // implementations: Tab vs Puppeteer.
+          }),
         this.toggleNetworkIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
@@ -172,6 +195,8 @@ export class CdpTarget {
         }),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        // Resume tab execution as well if it was paused by the debugger.
+        this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         this.toggleDeviceAccessIfNeeded(),
       ]);
     } catch (error: any) {

@@ -177,7 +177,14 @@ export class BrowsingContextImpl {
             value: {
               type: 'event',
               method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-              params: context.serializeToBidiValue(),
+              params: {
+                ...context.serializeToBidiValue(),
+                // Hack to provide the initial URL of the context, as it can be changed
+                // between the page target is attached and unblocked, as the page is not
+                // fully paused in MPArch session (https://crbug.com/372842894).
+                // TODO: remove once https://crbug.com/372842894 is addressed.
+                url,
+              },
             },
           };
         },
