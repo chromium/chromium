@@ -18,6 +18,7 @@ public class CommerceBottomSheetContentBinder {
     public static void bind(PropertyModel model, LinearLayout view, PropertyKey propertyKey) {
         if (propertyKey == CommerceBottomSheetContentProperties.CUSTOM_VIEW) {
             FrameLayout container = view.findViewById(R.id.content_view_container);
+            container.removeAllViews();
             container.addView(
                     model.get(CommerceBottomSheetContentProperties.CUSTOM_VIEW),
                     new LayoutParams(

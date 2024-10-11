@@ -5,21 +5,31 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!-- This additional LinearLayout is needed to correctly space out the container
+     inside the ListView. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="UselessParent">
+    <LinearLayout
+      android:id="@+id/content_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/content_item_container_top_offset"
       android:padding="@dimen/content_item_container_padding"
       android:background="@drawable/commerce_content_item_container_background"
       android:orientation="vertical">
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/content_item_title_bottom_margin"
-        android:textAppearance="@style/TextAppearance.TextAccentMediumThick" />
-    <FrameLayout
-        android:id="@+id/content_view_container"
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/content_item_title_bottom_margin"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick" />
+        <FrameLayout
+            android:id="@+id/content_view_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    </LinearLayout>
 </LinearLayout>

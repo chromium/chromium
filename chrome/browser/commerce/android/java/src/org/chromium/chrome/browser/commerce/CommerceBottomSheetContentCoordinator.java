@@ -5,24 +5,21 @@
 package org.chromium.chrome.browser.commerce;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ListView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
-import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.modelutil.ModelListAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,7 +41,10 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
     private List<CommerceBottomSheetContentProvider> mContentProviders = new ArrayList<>();
     private final CommerceBottomSheetContentMediator mMediator;
-    private RecyclerView mContenRecyclerView;
+    // TODO(crbug.com/372820957): This can be a RecyclerView, but there's an issue with the
+    // ButtonCompat that uses compound drawables within a RecyclerView displayed in the bottom
+    // sheet. So we use a ListView here instead.
+    private ListView mContentListView;
     private View mCommerceBottomSheetContentContainer;
     private ModelList mModelList;
 
@@ -56,7 +56,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
             Context context, @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
         mModelList = new ModelList();
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
+        ModelListAdapter adapter = new ModelListAdapter(mModelList);
         adapter.registerType(
                 0,
                 new LayoutViewBuilder(R.layout.commerce_bottom_sheet_content_item_container),
@@ -66,26 +66,9 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 LayoutInflater.from(context)
                         .inflate(
                                 R.layout.commerce_bottom_sheet_content_container, /* root= */ null);
-        mContenRecyclerView =
-                mCommerceBottomSheetContentContainer.findViewById(
-                        R.id.commerce_content_recycler_view);
-        mContenRecyclerView.setAdapter(adapter);
-        mContenRecyclerView.addItemDecoration(
-                new ItemDecoration() {
-                    @Override
-                    public void getItemOffsets(
-                            @NonNull Rect outRect,
-                            @NonNull View view,
-                            @NonNull RecyclerView parent,
-                            @NonNull State state) {
-                        if (parent.getChildAdapterPosition(view) != 0) {
-                            outRect.top =
-                                    mContext.getResources()
-                                            .getDimensionPixelOffset(
-                                                    R.dimen.content_item_container_top_offset);
-                        }
-                    }
-                });
+        mContentListView =
+                mCommerceBottomSheetContentContainer.findViewById(R.id.commerce_content_list_view);
+        mContentListView.setAdapter(adapter);
 
         bottomSheetController.addObserver(
                 new EmptyBottomSheetObserver() {
@@ -126,8 +109,8 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
         // TODO(b/362360807): Instantiate all the CommerceBottomSheetContentProvider here.
     }
 
-    public RecyclerView getRecyclerViewForTesting() {
-        return mContenRecyclerView;
+    public ListView getListViewForTesting() {
+        return mContentListView;
     }
 
     public ModelList getModelListForTesting() {
