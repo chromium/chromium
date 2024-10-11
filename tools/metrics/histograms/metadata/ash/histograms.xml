@@ -1066,6 +1066,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.Coral.ClusterExpanded" enum="Boolean"
+    expires_after="2025-03-30">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>cros-coral@google.com</owner>
+  <summary>
+    Recorded whenever a user expands a coral BirchChipButton. Can be recorded
+    multiple times during the lifetime of the BirchChipButton.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Birch.Latency{Type}" units="ms" expires_after="2025-02-10">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>

@@ -12,6 +12,7 @@
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/window_properties.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_handler.h"
@@ -106,6 +107,9 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
       ->SetVectorIcon(visible ? vector_icons::kCaretDownIcon
                               : vector_icons::kCaretUpIcon);
   owner_->SetTopHalfRounded(!visible);
+  if (visible) {
+    base::UmaHistogramBoolean("Ash.Birch.Coral.ClusterExpanded", true);
+  }
 }
 
 gfx::Rect TabAppSelectionHost::GetDesiredBoundsInScreen() {
