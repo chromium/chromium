@@ -2640,40 +2640,64 @@ See your search engine’s instructions for deleting your search history, if app
         Turn On Notifications
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_ADDRESS_BAR_TITLE" desc="The title of the Address Bar Position tip for the Magic Stack.">
-      Choose Address Bar Position
+        Choose Address Bar Position
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_ADDRESS_BAR_DESCRIPTION" desc="The description of the Address Bar Position tip for the Magic Stack.">
-      Switch the position of your address bar for a customized experience.
+        Switch the position of your address bar for a customized experience.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TITLE" desc="The title of the Autofill Saved Passwords tip for the Magic Stack.">
-      Autofill Saved Passwords
+        Autofill Saved Passwords
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_DESCRIPTION" desc="The description of the Autofill Saved Passwords tip for the Magic Stack.">
-      Quickly sign in to sites and apps with your saved passwords.
+        Quickly sign in to sites and apps with your saved passwords.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_1" desc="The first step of the Autofill Saved Passwords tutorial for the Magic Stack.">
+        On a site where you've saved a password, tap the sign-in password field.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_2" desc="The second step of the Autofill Saved Passwords tutorial for the Magic Stack.">
+        Choose the password you want to use from the list that appears.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_3" desc="The third step of the Autofill Saved Passwords tutorial for the Magic Stack.">
+        Tap "Use Password" to sign in securely.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_HIDE_CHROME_TIPS" desc="The description of the Hide Chrome Tips button located in the Chrome Tips Magic Stack context menu.">
-      Hide "<ph name= "Module_Name"><ex>Chrome Tips</ex>$1</ph>"
+        Hide "<ph name= "Module_Name"><ex>Chrome Tips</ex>$1</ph>"
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_TURN_ON_NOTIFICATIONS" desc="The description of the Turn On Chrome Tips button located in the Chrome Tips Magic Stack context menu.">
-      Turn on notifications for <ph name= "Module_Name"><ex>Chrome Tips</ex>$1</ph>
+        Turn on notifications for <ph name= "Module_Name"><ex>Chrome Tips</ex>$1</ph>
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_GOT_IT" desc="Button label to dismiss a full-screen tip promo triggered via the Magic Stack.">
+        Got It
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_DEFAULT_DESCRIPTION" desc="The default description of the Lens tip for the Magic Stack.">
-      Shop, translate, and identify what you see with your camera or photos.
+        Shop, translate, and identify what you see with your camera or photos.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_SHOP_DESCRIPTION" desc="The description of the use Lens for shopping tip for the Magic Stack.">
-      Shop what you see with your camera or photo gallery.
+        Shop what you see with your camera or photo gallery.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_DESCRIPTION" desc="The description of the use Lens for translation tip for the Magic Stack.">
-      Translate text in your photos or your surroundings with your camera.
+        Translate text in your photos or your surroundings with your camera.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_1" desc="The first step of the Save Passwords tutorial for the Magic Stack.">
+        Sign in to a website.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_3" desc="The third step of the Save Passwords tutorial for the Magic Stack.">
+        Tap "Save" to easily access this password the next time you sign in.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_DESCRIPTION" desc="The description of the Save Password tip for the Magic Stack.">
-      Save your passwords to easily sign in to sites and apps.
+        Save your passwords to easily sign in to sites and apps.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_DESCRIPTION" desc="The description of the Safe Browsing tip for the Magic Stack.">
-      Add an extra layer of protection against online threats.
+        Add an extra layer of protection against online threats.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_TITLE" desc="The title of the Set Up List completion for the Magic Stack.">
-      You're all set up
+        You're all set up
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW" desc="Button label to show the tutorial for a Magic Stack tip.">
+        Show Me How
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_TUTORIAL_TITLE" desc="The title of the full-screen tutorial for a Magic Stack tip.">
+        How do I use this feature?
       </message>
       <message name="IDS_IOS_MANAGE_STORAGE_ALERT_TITLE" desc="Title of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
         Your storage is full

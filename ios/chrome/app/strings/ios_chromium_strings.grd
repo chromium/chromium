@@ -561,7 +561,7 @@ Things to consider:
         You can open Lens here.
       </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
-          Chromium shares your location with sites you allow.
+        Chromium shares your location with sites you allow.
       </message>
       <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPAD" desc="iPad summary for lockdown mode info button">
         To disable Lockdown Mode in Chromium turn it off on your iPad.
@@ -573,28 +573,31 @@ Things to consider:
         Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION" desc="The description of the context menu for the Chrome Tips Magic Stack card.">
-      This card shows you suggestions on how to get the most out of Chromium.
+        This card shows you suggestions on how to get the most out of Chromium.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_DEFAULT_TITLE" desc="The default title of the Lens tip for the Magic Stack.">
-      Search
+        Search
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_SHOP_TITLE" desc="The title of the use Lens for shopping tip for the Magic Stack.">
-      Shop
+        Shop
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_TITLE" desc="The title of the use Lens for translation tip for the Magic Stack.">
-      Translate
+        Translate
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_2" desc="The second step of the Save Passwords tutorial for the Magic Stack.">
+        Chromium will offer to save your password.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_TITLE" desc="The title of the Save Password tip for the Magic Stack.">
-      Save Your Passwords on Chromium
+        Save Your Passwords on Chromium
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_TITLE" desc="The title of the Safe Browsing tip for the Magic Stack.">
-      Get Chromium's Strongest Security
+        Get Chromium's Strongest Security
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_DESCRIPTION" desc="The description of the Set Up List completion for the Magic Stack.">
-      Check back here for more useful tips to get the most out of Chromium.
+        Check back here for more useful tips to get the most out of Chromium.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_TITLE" desc="The name of the Chrome Tips Magic Stack.">
-      Chromium Tips
+        Chromium Tips
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO_UNITY" desc="Message explaining that signing out of a managed account will clear all the Chromium data.[Length: 200em, may be line wrapped to multiple lines at run time.] [iOS only].">
         Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN">$1<ex>google.com</ex></ph>, your Chromium data will be deleted from this device. Your data will remain in your Google Account.
