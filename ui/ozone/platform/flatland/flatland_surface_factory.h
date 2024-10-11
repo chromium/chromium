@@ -40,6 +40,7 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
   void Shutdown();
 
   // SurfaceFactoryOzone implementation.
+  bool SupportsOverlays() override;
   std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<PlatformWindowSurface> CreatePlatformWindowSurface(

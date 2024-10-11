@@ -39,6 +39,8 @@ class DrmThreadProxy {
 
   void StartDrmThread(base::OnceClosure receiver_drainer);
 
+  bool IsPrimaryDeviceAtomic();
+
   std::unique_ptr<DrmWindowProxy> CreateDrmWindowProxy(
       gfx::AcceleratedWidget widget);
 

@@ -88,6 +88,8 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   // GLImplementationParts currently in use.
   GLOzone* GetCurrentGLOzone();
 
+  virtual bool SupportsOverlays();
+
 #if BUILDFLAG(ENABLE_VULKAN)
   // Creates the vulkan implementation. This object should be capable of
   // creating surfaces that swap to a platform window.

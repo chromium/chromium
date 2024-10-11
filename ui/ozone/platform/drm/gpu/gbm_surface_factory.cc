@@ -379,6 +379,10 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
 }
 #endif
 
+bool GbmSurfaceFactory::SupportsOverlays() {
+  return drm_thread_proxy_->IsPrimaryDeviceAtomic();
+}
+
 std::unique_ptr<OverlaySurface> GbmSurfaceFactory::CreateOverlaySurface(
     gfx::AcceleratedWidget window) {
   return std::make_unique<GbmOverlaySurface>(

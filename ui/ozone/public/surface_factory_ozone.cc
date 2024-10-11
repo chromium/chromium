@@ -35,6 +35,10 @@ GLOzone* SurfaceFactoryOzone::GetGLOzone(
   return nullptr;
 }
 
+bool SurfaceFactoryOzone::SupportsOverlays() {
+  return false;
+}
+
 GLOzone* SurfaceFactoryOzone::GetCurrentGLOzone() {
   return GetGLOzone(gl::GetGLImplementationParts());
 }

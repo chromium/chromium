@@ -71,6 +71,26 @@ void DrmThreadProxy::StartDrmThread(base::OnceClosure receiver_drainer) {
                     std::make_unique<GbmDeviceGenerator>());
 }
 
+bool DrmThreadProxy::IsPrimaryDeviceAtomic() {
+  static std::optional<bool> cached_is_atomic;
+
+  if (!cached_is_atomic.has_value()) {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    // Passing `kNullAcceleratedWidget` results in querying the primary device.
+    bool is_atomic = false;
+    base::OnceClosure task = base::BindOnce(
+        &DrmThread::IsDeviceAtomic, base::Unretained(&drm_thread_),
+        gfx::kNullAcceleratedWidget, &is_atomic);
+    PostSyncTask(
+        drm_thread_.task_runner(),
+        base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
+                       base::Unretained(&drm_thread_), std::move(task)));
+    cached_is_atomic = is_atomic;
+  }
+
+  return cached_is_atomic.value();
+}
+
 std::unique_ptr<DrmWindowProxy> DrmThreadProxy::CreateDrmWindowProxy(
     gfx::AcceleratedWidget widget) {
   return std::make_unique<DrmWindowProxy>(widget, &drm_thread_);

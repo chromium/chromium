@@ -56,6 +56,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
       VkImage* vk_image) override;
 #endif
 
+  bool SupportsOverlays() final;
   std::unique_ptr<OverlaySurface> CreateOverlaySurface(
       gfx::AcceleratedWidget window) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
