@@ -33,6 +33,7 @@ class PresentationController;
 class PresentationReceiver;
 class PresentationRequest;
 class ScriptPromiseResolverBase;
+class V8PresentationConnectionState;
 class WebString;
 
 class MODULES_EXPORT PresentationConnection
@@ -52,7 +53,7 @@ class MODULES_EXPORT PresentationConnection
 
   const String& id() const { return id_; }
   const String& url() const { return url_; }
-  const WTF::AtomicString& state() const;
+  V8PresentationConnectionState state() const;
 
   void send(const String& message, ExceptionState&);
   void send(DOMArrayBuffer*, ExceptionState&);

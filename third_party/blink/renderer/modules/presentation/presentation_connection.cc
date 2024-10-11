@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 
 #include <memory>
+
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_connection_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -48,45 +50,32 @@ mojom::blink::PresentationConnectionMessagePtr MakeTextMessage(
   return mojom::blink::PresentationConnectionMessage::NewMessage(text);
 }
 
-const AtomicString& ConnectionStateToString(
+V8PresentationConnectionState::Enum ConnectionStateToEnum(
     mojom::blink::PresentationConnectionState state) {
-  DEFINE_STATIC_LOCAL(const AtomicString, connecting_value, ("connecting"));
-  DEFINE_STATIC_LOCAL(const AtomicString, connected_value, ("connected"));
-  DEFINE_STATIC_LOCAL(const AtomicString, closed_value, ("closed"));
-  DEFINE_STATIC_LOCAL(const AtomicString, terminated_value, ("terminated"));
-
   switch (state) {
     case mojom::blink::PresentationConnectionState::CONNECTING:
-      return connecting_value;
+      return V8PresentationConnectionState::Enum::kConnecting;
     case mojom::blink::PresentationConnectionState::CONNECTED:
-      return connected_value;
+      return V8PresentationConnectionState::Enum::kConnected;
     case mojom::blink::PresentationConnectionState::CLOSED:
-      return closed_value;
+      return V8PresentationConnectionState::Enum::kClosed;
     case mojom::blink::PresentationConnectionState::TERMINATED:
-      return terminated_value;
+      return V8PresentationConnectionState::Enum::kTerminated;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return terminated_value;
+  NOTREACHED();
 }
 
-const AtomicString& ConnectionCloseReasonToString(
+V8PresentationConnectionCloseReason::Enum ConnectionCloseReasonToEnum(
     mojom::blink::PresentationConnectionCloseReason reason) {
-  DEFINE_STATIC_LOCAL(const AtomicString, error_value, ("error"));
-  DEFINE_STATIC_LOCAL(const AtomicString, closed_value, ("closed"));
-  DEFINE_STATIC_LOCAL(const AtomicString, went_away_value, ("wentaway"));
-
   switch (reason) {
     case mojom::blink::PresentationConnectionCloseReason::CONNECTION_ERROR:
-      return error_value;
+      return V8PresentationConnectionCloseReason::Enum::kError;
     case mojom::blink::PresentationConnectionCloseReason::CLOSED:
-      return closed_value;
+      return V8PresentationConnectionCloseReason::Enum::kClosed;
     case mojom::blink::PresentationConnectionCloseReason::WENT_AWAY:
-      return went_away_value;
+      return V8PresentationConnectionCloseReason::Enum::kWentaway;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return error_value;
+  NOTREACHED();
 }
 
 void ThrowPresentationDisconnectedError(ExceptionState& exception_state) {
@@ -430,8 +419,8 @@ void PresentationConnection::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 
-const AtomicString& PresentationConnection::state() const {
-  return ConnectionStateToString(state_);
+V8PresentationConnectionState PresentationConnection::state() const {
+  return V8PresentationConnectionState(ConnectionStateToEnum(state_));
 }
 
 void PresentationConnection::send(const String& message,
@@ -614,7 +603,7 @@ void PresentationConnection::DidClose(
   state_ = mojom::blink::PresentationConnectionState::CLOSED;
   EnqueueEvent(*PresentationConnectionCloseEvent::Create(
                    event_type_names::kClose,
-                   ConnectionCloseReasonToString(reason), message),
+                   ConnectionCloseReasonToEnum(reason), message),
                TaskType::kPresentation);
 }
 
