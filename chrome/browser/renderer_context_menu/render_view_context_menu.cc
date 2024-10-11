@@ -101,7 +101,6 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -2432,33 +2431,24 @@ void RenderViewContextMenu::AppendSearchProvider() {
       return;
     }
 
-    // If we couldn't obtain a valid helper from current WebContents, this item
-    // should not be appended in this context.
-    SideSearchTabContentsHelper* helper =
-        SideSearchTabContentsHelper::FromWebContents(embedder_web_contents_);
-
-    Browser* browser = chrome::FindBrowserWithTab(embedder_web_contents_);
-    if (!side_search::IsSearchWebInSidePanelSupported(browser) ||
-        (helper && helper->CanShowSidePanelFromContextMenuSearch())) {
-      menu_model_.AddItem(
-          IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
-          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
-                                     default_provider->short_name(),
-                                     printable_selection_text));
-      if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
-        // Add an "in new tab" item performing the non-side panel behavior.
-        if (base::FeatureList::IsEnabled(
-                companion::features::
-                    kCompanionEnableSearchWebInNewTabContextMenuItem) &&
-            selection_navigation_url_ != params_.link_url &&
-            ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-                selection_navigation_url_.scheme())) {
-          menu_model_.AddItem(
-              IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
-              l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
-                                         default_provider->short_name(),
-                                         printable_selection_text));
-        }
+    menu_model_.AddItem(
+        IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
+                                   default_provider->short_name(),
+                                   printable_selection_text));
+    if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
+      // Add an "in new tab" item performing the non-side panel behavior.
+      if (base::FeatureList::IsEnabled(
+              companion::features::
+                  kCompanionEnableSearchWebInNewTabContextMenuItem) &&
+          selection_navigation_url_ != params_.link_url &&
+          ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
+              selection_navigation_url_.scheme())) {
+        menu_model_.AddItem(
+            IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
+            l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
+                                       default_provider->short_name(),
+                                       printable_selection_text));
       }
     }
   } else {
@@ -3539,15 +3529,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         ExecSearchWebInCompanionSidePanel(selection_navigation_url_);
         break;
       }
-      // Searching in this side panel is dependent on the companion feature
-      // being disabled.
-      if (side_search::IsSearchWebInSidePanelSupported(
-              chrome::FindBrowserWithTab(embedder_web_contents_)) &&
-          !companion::IsSearchInCompanionSidePanelSupported(
-              chrome::FindBrowserWithTab(embedder_web_contents_))) {
-        ExecSearchWebInSidePanel(selection_navigation_url_);
-        break;
-      }
       ABSL_FALLTHROUGH_INTENDED;
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
@@ -4577,13 +4558,6 @@ void RenderViewContextMenu::ExecSearchWebInCompanionSidePanel(const GURL& url) {
     return;
   }
   companion_helper->ShowCompanionSidePanelForSearchURL(url);
-}
-
-void RenderViewContextMenu::ExecSearchWebInSidePanel(const GURL& url) {
-  SideSearchTabContentsHelper* helper =
-      SideSearchTabContentsHelper::FromWebContents(embedder_web_contents_);
-  DCHECK(helper);
-  helper->OpenSidePanelFromContextMenuSearch(url);
 }
 
 void RenderViewContextMenu::ExecLoadImage() {

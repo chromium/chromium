@@ -356,7 +356,6 @@ class RenderViewContextMenu
 
   // Command execution functions.
   void ExecSearchWebInCompanionSidePanel(const GURL& url);
-  void ExecSearchWebInSidePanel(const GURL& url);
   void ExecOpenWebApp();
   void ExecOpenLinkPreview();
   void ExecProtocolHandler(int event_flags, int handler_index);

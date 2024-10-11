@@ -40,10 +40,6 @@ bool IsSidePanelWebContents(content::WebContents* web_contents);
 // Returns true if side search is enabled and is supported for `browser`.
 bool IsEnabledForBrowser(const Browser* browser);
 
-// Returns true if necessary flags are enabled, browser is valid and default
-// search engine (e.g. Google) supports search in side panel.
-bool IsSearchWebInSidePanelSupported(const Browser* browser);
-
 }  // namespace side_search
 
 bool IsSideSearchEnabled(const Profile* profile);

@@ -117,15 +117,6 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
     }
   }
 
-  auto OpenAndInstrumentSideSearch(GURL url) {
-    return Steps(
-        Do(base::BindLambdaForTesting([this, url]() {
-          GetTabContentsHelper()->OpenSidePanelFromContextMenuSearch(url);
-        })),
-        InstrumentNonTabWebView(kSideSearchElementId,
-                                kSideSearchWebViewElementId));
-  }
-
   // Navigates the active tab's side panel web contents.
   // Verb version for InteractiveBrowserTests.
   auto DoNavigateInSideContents(ui::ElementIdentifier current_tab_id,

@@ -216,7 +216,6 @@ std::u16string UnifiedSideSearchController::GetSideSearchName() const {
 }
 
 void UnifiedSideSearchController::OpenSidePanel() {
-  UpdateSidePanel();
   auto* side_panel_ui = GetSidePanelUI();
   if (side_panel_ui) {
     side_panel_ui->Show(SidePanelEntry::Id::kSideSearch);

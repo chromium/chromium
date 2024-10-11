@@ -233,30 +233,6 @@ SideSearchTabContentsHelper::GetSideContentsHelper() {
       side_panel_contents_.get());
 }
 
-void SideSearchTabContentsHelper::OpenSidePanelFromContextMenuSearch(
-    const GURL& url) {
-  DCHECK(url.is_valid());
-  last_search_url_ = url;
-  // Updates SidePanelContents if it exists. Otherwise its creation will be
-  // deferred to Views code.
-  if (side_panel_contents_) {
-    UpdateSideContentsNavigation();
-  }
-  delegate_->OpenSidePanel();
-}
-
-bool SideSearchTabContentsHelper::CanShowSidePanelFromContextMenuSearch() {
-  if (!delegate_)
-    return false;
-
-  SideSearchConfig* config =
-      SideSearchConfig::Get(web_contents()->GetBrowserContext());
-
-  //  Show the context menu option under only if side search can be shown
-  //  for the current page (ignore SRP / NTP pages etc).
-  return config->CanShowSidePanelForURL(web_contents()->GetLastCommittedURL());
-}
-
 void SideSearchTabContentsHelper::CreateSidePanelContents() {
   DCHECK(!side_panel_contents_);
   side_panel_contents_ =
