@@ -86,6 +86,7 @@ static_library("input_method") {
     "editor_text_query_from_memory.h",
     "editor_text_query_provider.cc",
     "editor_text_query_provider.h",
+    "editor_transition_enums.h",
     "emoji_suggester.cc",
     "emoji_suggester.h",
     "field_trial.cc",

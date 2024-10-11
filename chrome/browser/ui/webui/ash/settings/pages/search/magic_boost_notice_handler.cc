@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_handler.h"
 
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/input_method/editor_transition_enums.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/display/screen.h"
@@ -33,7 +34,8 @@ void MagicBoostNoticeHandler::ShowNotice() {
       ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
           profile_);
   if (mediator != nullptr && mediator->IsAllowedForUse()) {
-    mediator->ShowNotice();
+    mediator->ShowNotice(
+        input_method::EditorNoticeTransitionAction::kDoNothing);
   }
 }
 
