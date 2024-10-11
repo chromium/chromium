@@ -80,6 +80,11 @@ class MaskedDomainListManager {
   // Add domains to the `public_suffix_list_matcher_`.
   void AddPublicSuffixListRules(const std::set<std::string>& domains);
 
+  // Sanitizes the given URL by removing a trailing dot from its host if
+  // present. Returns a reference to either the modified sanitized URL or the
+  // original URL if no changes were made.
+  const GURL& SanitizeURLIfNeeded(const GURL& url, GURL& sanitized_url) const;
+
   // Policy that determines which domains are bypassed from IP Protection.
   network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
 
