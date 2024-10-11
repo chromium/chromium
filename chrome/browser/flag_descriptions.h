@@ -2168,6 +2168,9 @@ extern const char kTouchTextEditingRedesignDescription[];
 extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
+extern const char kTranslationAPIName[];
+extern const char kTranslationAPIDescription[];
+
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 

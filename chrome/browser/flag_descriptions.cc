@@ -3732,6 +3732,11 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
     "Force the Translate Triggering on English pages experiment to be enabled "
     "with the selected language model active.";
 
+const char kTranslationAPIName[] = "Experimental translation API";
+const char kTranslationAPIDescription[] =
+    "Eables the on-device language translation API. "
+    "See https://github.com/WICG/translation-api/blob/main/README.md";
+
 const char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";
 const char kTreatInsecureOriginAsSecureDescription[] =

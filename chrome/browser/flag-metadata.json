@@ -8900,6 +8900,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "translation-api",
+    "owners": [
+      "fergal@chromium.org",
+      "builtin-ai@chromium.org"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "ui-debug-tools",
     "owners": [ "//ui/views/OWNERS" ],
     "expiry_milestone": -1

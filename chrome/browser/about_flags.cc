@@ -11887,7 +11887,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardInfoRuntimeRetrievalDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)}
+         autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)},
+
+    {"translation-api", flag_descriptions::kTranslationAPIName,
+     flag_descriptions::kTranslationAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kEnableTranslationAPI)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
