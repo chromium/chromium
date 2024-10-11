@@ -70,7 +70,8 @@ class CommitDescriptionTests(unittest.TestCase):
         before = set(["updated_crate@2.0.1", "deleted@3.0.1"])
         after = set(["updated_crate@2.0.2", "added@5.0.1"])
         diff = DiffCrateIds(before, after, only_minor_updates=True)
-        actual_title = CreateCommitTitle("updated_crate@2.0.1", diff)
+        actual_title = CreateCommitTitle("updated_crate@2.0.1",
+                                         "updated_crate@2.0.2")
         expected_title = \
              "Roll updated_crate: 2.0.1 => 2.0.2 in //third_party/rust."
         self.assertEqual(actual_title, expected_title)
