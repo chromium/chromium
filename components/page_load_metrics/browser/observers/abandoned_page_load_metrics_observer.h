@@ -157,6 +157,8 @@ class AbandonedPageLoadMetricsObserver
           failed_provisional_load_info) override;
   void OnDidInternalNavigationAbort(
       content::NavigationHandle* navigation_handle) override;
+  void ReadyToCommitNextNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Prerender, fenced-frame, bfcache cases are excluded.
   // TODO(https://crbug.com/347706997): Consider logging for these cases, but
@@ -166,9 +168,12 @@ class AbandonedPageLoadMetricsObserver
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  void OnPrimaryPageRenderProcessGone() override;
 
  protected:
   virtual std::vector<std::string> GetAdditionalSuffixes() const;
+  virtual ObservePolicy OnNavigationEvent(
+      content::NavigationHandle* navigation_handle);
   bool IsResponseFromCache() const { return was_cached_; }
 
  private:
@@ -213,8 +218,6 @@ class AbandonedPageLoadMetricsObserver
   // Carveouts for child classes that want to differentiate the logged histogram
   // or react differently on the navigation events (e.g. filtering the URL).
   virtual std::string GetHistogramPrefix() const;
-  virtual ObservePolicy OnNavigationEvent(
-      content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
   virtual const base::flat_map<std::string, NavigationMilestone>&
   GetCustomUserTimingMarkNames() const;
@@ -226,6 +229,10 @@ class AbandonedPageLoadMetricsObserver
   // and `FlushMetricsOnAppEnterBackground()` because LCP is finalized when the
   // page load is complete (or navigate away from the page).
   void FinalizeLCP();
+
+  // Whether we've reached and logged all loading milestones, from kParseStart
+  // to kBodyChunkEnd.
+  bool DidLogAllLoadingMilestones() const;
 
   // The ID, start time, and type of the navigation being tracked.
   int64_t navigation_id_ = 0;
@@ -253,8 +260,9 @@ class AbandonedPageLoadMetricsObserver
   // once.
   bool did_log_backgrounding_ = false;
   bool did_log_hiding_ = false;
-  // Whether the navigation has been abandoned before.
-  bool did_abandon_navigation_ = false;
+  // Whether the navigation has been abandoned terminally before
+  // (non-backgrounding/hiding).
+  bool did_terminally_abandon_navigation_ = false;
 
   // Whether the NavigationStart histogram, which should only be logged once per
   // navigation, has been logged before.
@@ -283,7 +291,7 @@ class AbandonedPageLoadMetricsObserver
   // post-commit loading events that this class implements e.g. OnParseStart().
   // We need this because we'd like to log the latest milestone when the
   // navigation is abandoned, and send all logged milestones to UKM as well.
-  std::vector<LoadingMilestone> loading_milestones_;
+  std::map<NavigationMilestone, base::TimeDelta> loading_milestones_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

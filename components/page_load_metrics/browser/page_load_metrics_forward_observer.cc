@@ -502,4 +502,8 @@ void PageLoadMetricsForwardObserver::OnAdAuctionComplete(
                                         result);
 }
 
+void PageLoadMetricsForwardObserver::OnPrimaryPageRenderProcessGone() {
+  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
+}
+
 }  // namespace page_load_metrics

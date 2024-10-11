@@ -44,6 +44,11 @@ const char* GWSAbandonedPageLoadMetricsObserver::GetObserverName() const {
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSAbandonedPageLoadMetricsObserver::OnNavigationEvent(
     content::NavigationHandle* navigation_handle) {
+  auto parent_result =
+      AbandonedPageLoadMetricsObserver::OnNavigationEvent(navigation_handle);
+  if (parent_result != CONTINUE_OBSERVING) {
+    return parent_result;
+  }
   if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
     involved_srp_url_ = true;
   } else {

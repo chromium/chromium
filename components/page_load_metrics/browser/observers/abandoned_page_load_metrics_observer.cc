@@ -250,6 +250,10 @@ const char* AbandonedPageLoadMetricsObserver::GetObserverName() const {
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnNavigationEvent(
     content::NavigationHandle* navigation_handle) {
+  if (did_terminally_abandon_navigation_ || DidLogAllLoadingMilestones()) {
+    return STOP_OBSERVING;
+  }
+
   return CONTINUE_OBSERVING;
 }
 
@@ -611,8 +615,13 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
 void AbandonedPageLoadMetricsObserver::LogLoadingMilestone(
     NavigationMilestone milestone,
     base::TimeDelta time) {
+  if (loading_milestones_.contains(milestone)) {
+    return;
+  }
+  CHECK_GE(milestone, NavigationMilestone::kParseStart);
+  CHECK_LE(milestone, NavigationMilestone::kBodyChunkEnd);
   LogMilestoneHistogram(milestone, time);
-  loading_milestones_.emplace_back(milestone, time);
+  loading_milestones_[milestone] = time;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -823,6 +832,16 @@ void AbandonedPageLoadMetricsObserver::FinalizeLCP() {
   }
 }
 
+bool AbandonedPageLoadMetricsObserver::DidLogAllLoadingMilestones() const {
+  CHECK_EQ(NavigationMilestone::kBodyChunkEnd, NavigationMilestone::kMaxValue);
+  // We've logged all loading milestones if the map contains all the loading
+  // milestones. Since the keys are unique in the map, we only need to check if
+  // we have amount of entries is the same as the amount of loading milestones.
+  return loading_milestones_.size() ==
+         (static_cast<int>(NavigationMilestone::kBodyChunkEnd) -
+          static_cast<int>(NavigationMilestone::kParseStart) + 1);
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
@@ -844,6 +863,10 @@ AbandonedPageLoadMetricsObserver::OnFencedFramesStart(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (did_terminally_abandon_navigation_ || DidLogAllLoadingMilestones()) {
+    return STOP_OBSERVING;
+  }
+
   if (GetDelegate().DidCommit()) {
     FinalizeLCP();
   }
@@ -869,6 +892,9 @@ AbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (did_terminally_abandon_navigation_ || DidLogAllLoadingMilestones()) {
+    return STOP_OBSERVING;
+  }
   OnHiddenInternal();
   return CONTINUE_OBSERVING;
 }
@@ -892,11 +918,29 @@ void AbandonedPageLoadMetricsObserver::OnHiddenInternal() {
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnShown() {
+  if (did_terminally_abandon_navigation_ || DidLogAllLoadingMilestones()) {
+    return STOP_OBSERVING;
+  }
+
   if (first_shown_timestamp_.is_null()) {
     first_shown_timestamp_ = base::TimeTicks::Now();
   }
   last_shown_timestamp_ = base::TimeTicks::Now();
   return CONTINUE_OBSERVING;
+}
+
+void AbandonedPageLoadMetricsObserver::OnPrimaryPageRenderProcessGone() {
+  if (!did_terminally_abandon_navigation_ && !DidLogAllLoadingMilestones() &&
+      !loading_milestones_.empty()) {
+    // Log this as an abandonment. Note that we only log when the loading
+    // milestones are set, because up until DidCommit we would track
+    // abandonments for kRenderProcessGone (and other reasons) using the
+    // NavigationHandle's NavigationDiscardReason. After commit, the
+    // NavigationHandle is no longer around, so we can't track post-commit
+    // abandonments that way and need to watch for it explicitly here.
+    LogMetricsOnAbandon(AbandonReason::kRenderProcessGone,
+                        base::TimeTicks::Now());
+  }
 }
 
 void AbandonedPageLoadMetricsObserver::LogPreviousHidingIfNeeded() {
@@ -938,6 +982,27 @@ void AbandonedPageLoadMetricsObserver::OnDidInternalNavigationAbort(
       base::TimeTicks::Now());
 }
 
+void AbandonedPageLoadMetricsObserver::ReadyToCommitNextNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument() ||
+      did_terminally_abandon_navigation_ || DidLogAllLoadingMilestones()) {
+    return;
+  }
+  // ReadyToCommitNextNavigation is called when another navigation is about to
+  // commit after the current page has been committed. This counts as an
+  // abandonment if the page hasn't finished loading.
+  AbandonReason reason =
+      navigation_handle->IsHistory()
+          ? AbandonReason::kNewHistoryNavigation
+          : (navigation_handle->GetReloadType() != content::ReloadType::NONE
+                 ? AbandonReason::kNewReloadNavigation
+                 : (navigation_handle->IsRendererInitiated()
+                        ? AbandonReason::kNewOtherNavigationRendererInitiated
+                        : AbandonReason::kNewOtherNavigationBrowserInitiated));
+  LogMetricsOnAbandon(reason, base::TimeTicks::Now());
+}
+
 void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
     AbandonReason abandon_reason,
     base::TimeTicks abandon_timing) {
@@ -946,11 +1011,10 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
   // if the abandonment was because of backgrounding or hiding, in which case we
   // would continue observing and logging, but mark the logged metrics
   // specially.
-  CHECK(!did_abandon_navigation_ || WasBackgrounded() || WasHidden());
+  CHECK(!did_terminally_abandon_navigation_);
 
   // Log the milestones first before logging any abandonment.
   LogNavigationMilestoneMetrics();
-
   // If the navigation was previously hidden or backgrounded and we haven't
   // logged them as abandonments (e.g. if the navigation wasn't allowed to log
   // metrics previously when those abandonments happened), log them first,
@@ -960,6 +1024,15 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
   }
   if (abandon_reason != AbandonReason::kAppBackgrounded) {
     LogPreviousBackgroundingIfNeeded();
+  }
+
+  if (DidLogAllLoadingMilestones()) {
+    return;
+  }
+
+  if (abandon_reason != AbandonReason::kHidden &&
+      abandon_reason != AbandonReason::kAppBackgrounded) {
+    did_terminally_abandon_navigation_ = true;
   }
 
   const std::string abandon_string = AbandonReasonToString(abandon_reason);
@@ -1031,7 +1104,7 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
 
 void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
   CHECK(IsAllowedToLogMetrics());
-  CHECK(!did_abandon_navigation_ || WasBackgrounded() || WasHidden());
+  CHECK(!did_terminally_abandon_navigation_);
 
   if (!did_log_navigation_start_) {
     // Log NavigationStart exactly once.

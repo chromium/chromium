@@ -182,6 +182,7 @@ class PageLoadMetricsForwardObserver final
   void OnAdAuctionComplete(bool is_server_auction,
                            bool is_on_device_auction,
                            content::AuctionResult result) override;
+  void OnPrimaryPageRenderProcessGone() override;
 
   // Holds the forward target observer running in the parent PageLoadTracker.
   base::WeakPtr<PageLoadMetricsObserverInterface> parent_observer_;

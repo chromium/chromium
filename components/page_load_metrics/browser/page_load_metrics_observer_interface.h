@@ -632,6 +632,9 @@ class PageLoadMetricsObserverInterface {
                                    bool is_on_device_auction,
                                    content::AuctionResult result) = 0;
 
+  // Called when the renderer process for the primary main frame is gone.
+  virtual void OnPrimaryPageRenderProcessGone() = 0;
+
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};
 };

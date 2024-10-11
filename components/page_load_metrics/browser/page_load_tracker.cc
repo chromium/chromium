@@ -959,6 +959,11 @@ void PageLoadTracker::UpdatePageEndInternal(
   if (is_certainly_browser_timestamp) {
     ClampBrowserTimestampIfInterProcessTimeTickSkew(&page_end_time_);
   }
+  if (page_end_reason_ == END_RENDER_PROCESS_GONE) {
+    for (const auto& observer : observers_) {
+      observer->OnPrimaryPageRenderProcessGone();
+    }
+  }
 }
 
 void PageLoadTracker::MediaStartedPlaying(
