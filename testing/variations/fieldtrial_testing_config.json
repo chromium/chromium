@@ -25836,6 +25836,26 @@
             ]
         }
     ],
+    "WebAudioBypassOutputBuffering": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAudioBypassOutputBuffering"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebAuthenticationEnclaveAuthenticator": [
         {
             "platforms": [
