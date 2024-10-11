@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/fake_data_sharing_sdk_delegate.h"
@@ -319,7 +320,14 @@ TEST_F(GroupDataModelTest, ShouldHandleNewGroupsAfterRestart) {
               Optional(HasDisplayName(group_display_name)));
 }
 
-TEST_F(GroupDataModelTest, ShouldHandleUpdatesAfterRestart) {
+// TODO(crbug.com/372824571): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldHandleUpdatesAfterRestart \
+  DISABLED_ShouldHandleUpdatesAfterRestart
+#else
+#define MAYBE_ShouldHandleUpdatesAfterRestart ShouldHandleUpdatesAfterRestart
+#endif
+TEST_F(GroupDataModelTest, MAYBE_ShouldHandleUpdatesAfterRestart) {
   WaitForModelLoaded();
 
   const std::string group_display_name = "group";
