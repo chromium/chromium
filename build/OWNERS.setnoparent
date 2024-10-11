@@ -86,3 +86,6 @@ file://ui/webui/PLATFORM_OWNERS
 # Core Views framework needs reviews from direct owners. Limits leakage of +1
 # from higher folder owners.
 file://ui/views/VIEWS_OWNERS
+
+# ChromeOS dependencies reviews
+file://chrome/browser/ash/REFACTORING_OWNERS
