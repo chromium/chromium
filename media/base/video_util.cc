@@ -75,8 +75,12 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
 VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
   // The |frame|.BitDepth() restriction is to avoid treating a P010LE frame as a
   // low-bit depth frame.
-  if (frame.RequiresExternalSampler() && frame.BitDepth() == 8u)
+  bool si_prefers_external_sampler =
+      frame.HasSharedImage() &&
+      frame.shared_image()->format().PrefersExternalSampler();
+  if (si_prefers_external_sampler && frame.BitDepth() == 8u) {
     return PIXEL_FORMAT_XRGB;
+  }
 
   switch (frame.format()) {
     case PIXEL_FORMAT_I420:

@@ -90,31 +90,28 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     bool use_stream_video_draw_quad) {
   const VideoPixelFormat format = frame.format();
 
-  if (frame.RequiresExternalSampler()) {
+  bool si_prefers_external_sampler =
+      frame.shared_image()->format().PrefersExternalSampler();
+  if (si_prefers_external_sampler) {
+    // TODO(crbug.com/343011436): Always set `si_format` to be that from shared
+    // image.
+    si_format = frame.shared_image()->format();
     // The texture |target| can be 0 for Fuchsia.
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
 #if BUILDFLAG(IS_OZONE)
     // The format must be one of NV12/YV12/P010LE/NV12A, as these are the only
-    // formats for which VideoFrame::RequiresExternalSampler() will return
+    // formats for which si_prefers_external_sampler will return
     // true.
     switch (format) {
       case PIXEL_FORMAT_NV12:
-        si_format = viz::MultiPlaneFormat::kNV12;
-        break;
       case PIXEL_FORMAT_YV12:
-        si_format = viz::MultiPlaneFormat::kYV12;
-        break;
       case PIXEL_FORMAT_P010LE:
-        si_format = viz::MultiPlaneFormat::kP010;
-        break;
       case PIXEL_FORMAT_NV12A:
-        si_format = viz::MultiPlaneFormat::kNV12A;
         break;
       default:
         NOTREACHED();
     }
-    si_format.SetPrefersExternalSampler();
     return format == PIXEL_FORMAT_NV12A ? VideoFrameResourceType::RGBA
                                         : VideoFrameResourceType::RGB;
 #else
@@ -125,7 +122,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 #endif
   }
 
-  CHECK(!frame.RequiresExternalSampler());
+  CHECK(!si_prefers_external_sampler);
 
   switch (format) {
     case PIXEL_FORMAT_ARGB:
@@ -1040,7 +1037,6 @@ void VideoResourceUpdater::CopyHardwarePlane(
 VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
     scoped_refptr<VideoFrame> video_frame) {
   TRACE_EVENT0("media", "VideoResourceUpdater::CreateForHardwarePlanes");
-  DCHECK(video_frame->HasSharedImage());
   if (!context_provider_) {
     return VideoFrameExternalResource();
   }

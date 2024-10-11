@@ -1420,26 +1420,6 @@ gfx::ColorSpace VideoFrame::CompatRGBColorSpace() const {
   return gfx::ColorSpace(primary_id, transfer_id);
 }
 
-bool VideoFrame::RequiresExternalSampler() const {
-  const bool is_multiplanar_pixel_format =
-      format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_NV12A ||
-      format() == PIXEL_FORMAT_YV12 || format() == PIXEL_FORMAT_P010LE;
-
-  // Note that kSharedImageFormatExternalSampler is set only for multiplanar
-  // formats.
-  const bool requires_external_sampler =
-      is_multiplanar_pixel_format &&
-      shared_image_format_type() ==
-          SharedImageFormatType::kSharedImageFormatExternalSampler;
-
-  // The texture target can be 0 for Fuchsia.
-  DCHECK(!requires_external_sampler ||
-         (is_multiplanar_pixel_format &&
-          (mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES ||
-           mailbox_holder(0).texture_target == 0u)));
-  return requires_external_sampler;
-}
-
 int VideoFrame::row_bytes(size_t plane) const {
   return RowBytes(plane, format(), coded_size().width());
 }

@@ -445,17 +445,21 @@ std::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {
   const bool mappable = frame.IsMappable() || frame.HasMappableGpuBuffer();
   const bool texturable = frame.HasSharedImage();
-  if (!(mappable || texturable))
+  if (!(mappable || texturable)) {
     return std::nullopt;
+  }
 
   // Readback is not supported for high bit-depth formats.
   if (!mappable && frame.BitDepth() != 8u) {
     return std::nullopt;
   }
 
+  bool si_prefers_external_sampler =
+      frame.HasSharedImage() &&
+      frame.shared_image()->format().PrefersExternalSampler();
   // Externally-sampled frames read back as RGB, regardless of the format.
   // TODO(crbug.com/40215121): Enable alpha readback for supported formats.
-  if (!mappable && frame.RequiresExternalSampler()) {
+  if (!mappable && si_prefers_external_sampler) {
     DCHECK(frame.HasSharedImage());
     return media::PIXEL_FORMAT_XRGB;
   }
