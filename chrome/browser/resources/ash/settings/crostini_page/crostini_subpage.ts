@@ -26,13 +26,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import {type Route, Router, routes} from '../router.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, type CrostiniDiskInfo} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_subpage.html.js';
 
 /**

@@ -25,9 +25,9 @@ import {isCrostiniAllowed, isCrostiniSupported, isRevampWayfindingEnabled} from 
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import {type Route, Router, routes} from '../router.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_settings_card.html.js';
 
 const CrostiniSettingsCardElementBase = DeepLinkingMixin(PrefsMixin(

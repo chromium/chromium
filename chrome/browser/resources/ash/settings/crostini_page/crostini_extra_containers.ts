@@ -17,19 +17,19 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_extra_containers_create_dialog.js';
 import '../settings_shared.css.js';
 
-import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsState} from '../common/types.js';
-import {ContainerInfo, GuestId, ShareableDevices, VM_DEVICE_MICROPHONE} from '../guest_os/guest_os_browser_proxy.js';
+import type {PrefsState} from '../common/types.js';
+import {type ContainerInfo, type GuestId, type ShareableDevices, VM_DEVICE_MICROPHONE} from '../guest_os/guest_os_browser_proxy.js';
 import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_extra_containers.html.js';
 
 type HtmlElementWithData<T extends HTMLElement = HTMLElement> = T&{

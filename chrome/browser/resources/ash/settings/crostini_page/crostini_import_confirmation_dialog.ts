@@ -11,14 +11,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GuestId} from '../guest_os/guest_os_browser_proxy.js';
+import type {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_import_confirmation_dialog.html.js';
 
 interface SettingsCrostiniImportConfirmationDialogElement {

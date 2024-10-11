@@ -17,12 +17,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
 const BruschettaSubpageElementBase =
     DeepLinkingMixin(RouteOriginMixin(PrefsMixin(PolymerElement)));
