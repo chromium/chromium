@@ -76,14 +76,6 @@ enum class RequestResult {
 // Consistent with the buffer size used in url request data reading.
 const size_t kMaxBufferSizeForValidation = 4096;
 
-void GetFileSize(const base::FilePath& file_path, int64_t* file_size) {
-  bool succeeded = base::GetFileSize(file_path, file_size);
-  if (!succeeded) {
-    // Use -1 to indicate that file is not found.
-    *file_size = -1;
-  }
-}
-
 void UpdateDigest(
     const scoped_refptr<OfflinePageRequestHandler::ThreadSafeArchiveValidator>&
         validator,
@@ -578,23 +570,25 @@ void OfflinePageRequestHandler::ValidateFile() {
 }
 
 void OfflinePageRequestHandler::GetFileSizeForValidation() {
-  int64_t* file_size = new int64_t(0);
-  file_task_runner_->PostTaskAndReply(
+  file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&GetFileSize, GetCurrentOfflinePage().file_path,
-                     base::Unretained(file_size)),
+      base::BindOnce(
+          static_cast<std::optional<int64_t> (*)(const base::FilePath&)>(
+              base::GetFileSize),
+          GetCurrentOfflinePage().file_path),
       base::BindOnce(&OfflinePageRequestHandler::DidGetFileSizeForValidation,
-                     weak_ptr_factory_.GetWeakPtr(), base::Owned(file_size)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OfflinePageRequestHandler::DidGetFileSizeForValidation(
-    const int64_t* actual_file_size) {
-  if (*actual_file_size == -1) {
+    std::optional<int64_t> file_size) {
+  int64_t actual_file_size = file_size.value_or(-1);
+  if (actual_file_size == -1) {
     OnFileValidationDone(FileValidationResult::FILE_NOT_FOUND);
     return;
   }
 
-  if (*actual_file_size != GetCurrentOfflinePage().file_size) {
+  if (actual_file_size != GetCurrentOfflinePage().file_size) {
     OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
     return;
   }
