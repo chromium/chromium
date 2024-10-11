@@ -18,7 +18,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "device/fido/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -353,9 +352,6 @@ class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
 };
 
 TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
-  const base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnRelatedOrigin};
-
   struct TestCase {
     const char* json;
     blink::mojom::AuthenticatorStatus expected;

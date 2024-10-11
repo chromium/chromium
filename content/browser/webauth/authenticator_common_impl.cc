@@ -1695,9 +1695,8 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
 
-  barrier_callback.Run(MakeCapability(
-      client_capabilities::kRelatedOrigins,
-      base::FeatureList::IsEnabled(device::kWebAuthnRelatedOrigin)));
+  barrier_callback.Run(
+      MakeCapability(client_capabilities::kRelatedOrigins, true));
 
   IsHybridTransportSupported(
       base::BindOnce(&MakeCapability, client_capabilities::kHybridTransport)

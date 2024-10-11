@@ -76,10 +76,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kChromeOsPasskeys);
 #endif
 
-// Support cross-domain RP ID assertions.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
-
 // Enable the Chrome Android cable authenticator. This lets a Chrome module
 // handle cable requests from scanning a QR code, tapping on an FCM
 // notification, or coming from Play Services. The Chrome Android cable

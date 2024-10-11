@@ -56,7 +56,6 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "device/fido/fake_fido_discovery.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -1790,8 +1789,6 @@ class WebAuthCrossDomainTest : public WebAuthBrowserTestBase {
 
  protected:
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
-  const base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnRelatedOrigin};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
