@@ -81,6 +81,9 @@ BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 // Enables saving enterprise password hashes to a local state preference.
 BASE_DECLARE_FEATURE(kLocalStateEnterprisePasswordHashes);
 
+// Enables offering credentials for filling across grouped domains.
+BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 
 // Enables "chunking" generated passwords by adding hyphens every 4 characters

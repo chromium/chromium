@@ -21059,6 +21059,7 @@ from previous Chrome versions.
   <int value="318277328" label="WebViewAppsPackageNamesAllowlist:enabled"/>
   <int value="318704417" label="LensStandalone:enabled"/>
   <int value="319393766" label="Prerender2WarmUpCompositor:enabled"/>
+  <int value="319578317" label="PasswordFormGroupedAffiliations:disabled"/>
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
   <int value="321023965" label="IPH_LauncherSearchHelpUi:disabled"/>
@@ -24936,6 +24937,7 @@ from previous Chrome versions.
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>
   <int value="1885566305" label="EsbDownloadRowPromo:enabled"/>
+  <int value="1885604289" label="PasswordFormGroupedAffiliations:enabled"/>
   <int value="1886462832" label="EnableTouchscreenMappingExperience:enabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887085478" label="WallpaperGooglePhotosSharedAlbums:enabled"/>

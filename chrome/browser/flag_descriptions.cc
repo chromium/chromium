@@ -2934,6 +2934,12 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPasswordFormGroupedAffiliationsName[] =
+    "Grouped affiliation password suggestions";
+const char kPasswordFormGroupedAffiliationsDescription[] =
+    "Enables offering credentials coming from grouped domains for "
+    "filling";
+
 const char kPasswordGenerationSoftNudgeName[] =
     "Password generation soft nudge";
 const char kPasswordGenerationSoftNudgeDescription[] =

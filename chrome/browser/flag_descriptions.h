@@ -1678,6 +1678,9 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 
+extern const char kPasswordFormGroupedAffiliationsName[];
+extern const char kPasswordFormGroupedAffiliationsDescription[];
+
 extern const char kPasswordGenerationSoftNudgeName[];
 extern const char kPasswordGenerationSoftNudgeDescription[];
 
