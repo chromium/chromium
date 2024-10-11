@@ -59,6 +59,9 @@ class StatefulObliviousHttpClient {
     if (!key_configs.ok()) {
       return std::nullopt;
     }
+    if (key_configs->NumKeys() == 0) {
+      return std::nullopt;
+    }
     quiche::ObliviousHttpHeaderKeyConfig key_config =
         key_configs->PreferredConfig();
     auto ohttp_client = quiche::ObliviousHttpClient::Create(
