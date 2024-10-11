@@ -7,3 +7,4 @@ specific_include_rules = {
     "+base",
   ],
 }
+new_usages_require_review = True
