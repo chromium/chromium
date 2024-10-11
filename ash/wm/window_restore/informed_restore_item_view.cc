@@ -37,6 +37,8 @@ constexpr int kTabOverflowThreshold = kTabMaxElements - 1;
 constexpr gfx::Size kTabCountPreferredSize(24, 14);
 constexpr int kTabCountRounding = 6;
 
+constexpr size_t kMaxShownUrls = 5u;
+
 }  // namespace
 
 InformedRestoreItemView::InformedRestoreItemView(
@@ -44,7 +46,7 @@ InformedRestoreItemView::InformedRestoreItemView(
     bool inside_screenshot)
     : app_id_(app_info.app_id),
       default_title_(app_info.title),
-      tab_count_(app_info.tab_count),
+      tab_count_(app_info.tab_infos.size()),
       inside_screenshot_(inside_screenshot) {
   SetBetweenChildSpacing(inside_screenshot_
                              ? informed_restore::kScreenshotIconRowChildSpacing
@@ -111,7 +113,11 @@ InformedRestoreItemView::InformedRestoreItemView(
             .Build());
   }
 
-  const std::vector<GURL>& favicons = app_info.tab_urls;
+  std::vector<GURL> favicons;
+  for (size_t i = 0; i < app_info.tab_infos.size() && i < kMaxShownUrls; ++i) {
+    favicons.push_back(app_info.tab_infos[i].url);
+  }
+
   if (favicons.empty()) {
     return;
   }
@@ -130,10 +136,9 @@ InformedRestoreItemView::InformedRestoreItemView(
   for (int i = 0; i < static_cast<int>(favicons.size()); ++i) {
     const GURL& url = favicons[i];
     delegate->GetFaviconForUrl(
-        url.spec(), app_info.lacros_profile_id,
-        base::BindOnce(
-            &InformedRestoreItemView::OnOneFaviconLoaded,
-            GetWeakPtr(), barrier, i),
+        url.spec(), /*lacros_profile_id=*/0,
+        base::BindOnce(&InformedRestoreItemView::OnOneFaviconLoaded,
+                       GetWeakPtr(), barrier, i),
         &cancelable_favicon_task_tracker_);
   }
 }

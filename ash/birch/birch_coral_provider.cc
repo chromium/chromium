@@ -295,17 +295,16 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
 
   for (const InformedRestoreContentsData::AppInfo& app_info :
        contents_data->apps_infos) {
-    if (app_info.tab_urls.empty()) {
+    if (app_info.tab_infos.empty()) {
       tab_app_data.push_back(coral::mojom::Entity::NewApp(
           coral::mojom::App::New(app_info.title, app_info.app_id)));
       continue;
     }
 
-    for (const GURL& url : app_info.tab_urls) {
-      // TODO(http://b/365839465): The only title we have right now is the
-      // active tab title.
+    for (const InformedRestoreContentsData::TabInfo& tab_info :
+         app_info.tab_infos) {
       tab_app_data.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New(app_info.title, url)));
+          coral::mojom::Tab::New(tab_info.title, tab_info.url)));
     }
   }
 

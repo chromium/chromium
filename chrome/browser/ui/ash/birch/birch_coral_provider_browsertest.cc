@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -183,10 +184,17 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, PRE_CollectPostLoginData) {
   // Close existing browser windows.
   CloseAllBrowsers();
 
-  // Create two browsers with different tabs and urls.
+  // Create two browsers with different tabs and urls. Use a couple chrome urls
+  // as those are guaranteed to have tab titles. Setting titles to regular urls
+  // is possible, but does not get saved by session restore.
   test::CreateAndShowBrowser(profile(), {GURL("https://examples1.com"),
                                          GURL("https://examples2.com")});
-  test::CreateAndShowBrowser(profile(), {GURL("https://examples3.com")});
+  test::CreateAndShowBrowser(
+      profile(),
+      {GURL(chrome::kChromeUIBookmarksURL),
+       GURL(chrome::kChromeUIChromeURLsURL), GURL(chrome::kChromeUICrashesUrl),
+       GURL(chrome::kChromeUIDownloadsURL), GURL(chrome::kChromeUIHistoryURL),
+       GURL(chrome::kChromeUISettingsURL)});
 
   // Open a SWA and a PWA.
   test::CreateSystemWebApp(profile(), SystemWebAppType::SETTINGS);
@@ -204,14 +212,17 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectPostLoginData) {
       SplitContentData(GetCoralProvider()->GetCoralRequestForTest().content());
 
   // Comparing the collected tab data with the expected tab data.
-  // TODO(http://b/365839465): The given sites have no titles which is ok for
-  // now since the only title we have right now is the active tab title. Update
-  // the sites once tab titles are available for all tabs.
-  EXPECT_THAT(tabs_and_apps.tabs,
-              testing::UnorderedElementsAre(
-                  *Tab::New("", GURL("https://examples1.com/")),
-                  *Tab::New("", GURL("https://examples2.com/")),
-                  *Tab::New("", GURL("https://examples3.com/"))));
+  EXPECT_THAT(
+      tabs_and_apps.tabs,
+      testing::UnorderedElementsAre(
+          *Tab::New("", GURL("https://examples1.com/")),
+          *Tab::New("", GURL("https://examples2.com/")),
+          *Tab::New("bookmarks", GURL(chrome::kChromeUIBookmarksURL)),
+          *Tab::New("chrome-urls", GURL(chrome::kChromeUIChromeURLsURL)),
+          *Tab::New("crashes", GURL(chrome::kChromeUICrashesUrl)),
+          *Tab::New("downloads", GURL(chrome::kChromeUIDownloadsURL)),
+          *Tab::New("history", GURL(chrome::kChromeUIHistoryURL)),
+          *Tab::New("settings", GURL(chrome::kChromeUISettingsURL))));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(tabs_and_apps.apps,

@@ -185,17 +185,36 @@ void InformedRestoreController::
   data->restore_callback = std::move(split.first);
   data->cancel_callback = std::move(split.second);
 
+  // Helper to allow us to convert a vector of a pair of strings which is easy
+  // to initialize into a vector of `InformedRestoreContentsData::TabInfo`.
+  auto make_tab_infos =
+      [](const std::vector<std::pair<std::string, std::string>>& tab_list) {
+        std::vector<InformedRestoreContentsData::TabInfo> tab_infos;
+        for (const auto& url_title_pair : tab_list) {
+          tab_infos.push_back(InformedRestoreContentsData::TabInfo(
+              GURL(url_title_pair.first), url_title_pair.second));
+        }
+        return tab_infos;
+      };
+
   // NOTE: Comment/uncomment the following apps locally, but avoid changes as to
   // reduce merge conflicts.
   // Chrome.
-  data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Reddit",
-      /*window_id=*/0,
-      std::vector<GURL>{
-          GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
-          GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
-          GURL("https://www.google.com/")},
-      /*tab_count=*/10u, /*lacros_profile_id=*/0);
+  data->apps_infos.emplace_back("mgndgikekgjfcpckkfioiadnlibdjbkf",
+                                /*tab_title=*/"Reddit",
+                                /*window_id=*/0,
+                                make_tab_infos({
+                                    {"https://www.cnn.com/", "Cnn"},
+                                    {"https://www.reddit.com/", "Reddit"},
+                                    {"https://www.youtube.com/", "Youtube"},
+                                    {"https://www.waymo.com/", "Waymo"},
+                                    {"https://www.google.com/", "Google"},
+                                    {"https://www.cnn.com/", "Cnn"},
+                                    {"https://www.reddit.com/", "Reddit"},
+                                    {"https://www.youtube.com/", "Youtube"},
+                                    {"https://www.waymo.com/", "Waymo"},
+                                    {"https://www.google.com/", "Google"},
+                                }));
   // PWA.
   data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", "Meet",
                                 /*window_id=*/0);
@@ -211,18 +230,19 @@ void InformedRestoreController::
                                 "Calculator", /*window_id=*/0);
 
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps", /*window_id=*/0,
-      std::vector<GURL>{GURL("https://www.google.com/maps/")},
-      /*tab_count=*/1, /*lacros_profile_id=*/0);
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps",
+      /*window_id=*/0,
+      make_tab_infos({{"https://www.google.com/maps/", "Maps"}}));
   data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files",
                                 /*window_id=*/0);
-  data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Twitter",
-      /*window_id=*/0,
-      std::vector<GURL>{GURL("https://www.twitter.com/"),
-                        GURL("https://www.youtube.com/"),
-                        GURL("https://www.google.com/")},
-      /*tab_count=*/3u, /*lacros_profile_id=*/0);
+  data->apps_infos.emplace_back("mgndgikekgjfcpckkfioiadnlibdjbkf",
+                                /*tab_title=*/"Twitter",
+                                /*window_id=*/0,
+                                make_tab_infos({
+                                    {"https://www.twitter.com/", "Twitter"},
+                                    {"https://www.youtube.com/", "Youtube"},
+                                    {"https://www.google.com/", "Google"},
+                                }));
 
   MaybeStartInformedRestoreSession(std::move(data));
 }

@@ -183,8 +183,8 @@ TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
   // chrome info with some example favicons.
   InformedRestoreContentsData::AppInfo chrome_app_info(
       app_constants::kChromeAppId, "Chrome", /*window_id=*/1);
-  chrome_app_info.tab_urls = std::vector<GURL>(5, GURL("http://example.com"));
-  chrome_app_info.tab_count = 23;
+  chrome_app_info.tab_infos = std::vector<InformedRestoreContentsData::TabInfo>(
+      23, InformedRestoreContentsData::TabInfo(GURL("http://example.com")));
 
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->apps_infos.push_back(chrome_app_info);

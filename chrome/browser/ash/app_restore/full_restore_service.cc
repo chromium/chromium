@@ -164,8 +164,6 @@ const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
 
-constexpr size_t kMaxUrls = 5u;
-
 class DelegateImpl : public FullRestoreService::Delegate {
  public:
   DelegateImpl() = default;
@@ -922,12 +920,13 @@ void FullRestoreService::OnSessionInformationReceived(
     // four URLs afterwards. Otherwise, we put the selected tab index at the
     // front and insert the first four URLs after it.
     std::string active_tab_title;
-    std::vector<GURL> tab_urls;
     const std::vector<std::unique_ptr<sessions::SessionTab>>& tabs =
         session_window->tabs;
+    std::vector<InformedRestoreContentsData::TabInfo> tab_infos;
+    tab_infos.reserve(tabs.size());
 
     auto maybe_add_display_tab =
-        [&tab_urls, &active_tab_title](sessions::SessionTab* tab) -> void {
+        [&tab_infos, &active_tab_title](sessions::SessionTab* tab) -> void {
       const auto& navigations = tab->navigations;
       const int index = tab->current_navigation_index;
 
@@ -939,15 +938,18 @@ void FullRestoreService::OnSessionInformationReceived(
         // Use the tab title if possible. If no tab title is available and it is
         // a chrome WebUI, use the host piece (history, extensions, etc.).
         // Otherwise we will default to the app title, "Chrome".
-        if (active_tab_title.empty()) {
-          active_tab_title = base::UTF16ToUTF8(entry.title());
-          if (active_tab_title.empty() &&
-              entry.original_request_url().SchemeIs(content::kChromeUIScheme)) {
-            active_tab_title = entry.original_request_url().host_piece();
-          }
+        std::string tab_title = base::UTF16ToUTF8(entry.title());
+        if (tab_title.empty() &&
+            entry.original_request_url().SchemeIs(content::kChromeUIScheme)) {
+          tab_title = entry.original_request_url().host_piece();
         }
 
-        tab_urls.push_back(entry.original_request_url());
+        if (active_tab_title.empty()) {
+          active_tab_title = tab_title;
+        }
+
+        tab_infos.push_back(InformedRestoreContentsData::TabInfo(
+            entry.original_request_url(), tab_title));
       }
     };
 
@@ -965,17 +967,10 @@ void FullRestoreService::OnSessionInformationReceived(
         continue;
       }
       maybe_add_display_tab(tabs[i].get());
-
-      // We only show five favicons maximum so we can stop once we reach that
-      // amount.
-      if (tab_urls.size() >= kMaxUrls) {
-        break;
-      }
     }
 
     info = InformedRestoreContentsData::AppInfo(
-        app_id, active_tab_title, window_id, tab_urls, tabs.size(),
-        /*profile_id=*/0);
+        app_id, active_tab_title, window_id, std::move(tab_infos));
   }
 
   // Start the post-login session if not yet and pass the contents data to

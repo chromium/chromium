@@ -419,15 +419,15 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
       contents_data->apps_infos;
 
   ASSERT_EQ(1u, apps_infos.size());
-  ASSERT_EQ(5u, apps_infos[0].tab_urls.size());
+  ASSERT_EQ(5u, apps_infos[0].tab_infos.size());
 
   // As it was the most recently activated tab, waymo.com should appear first,
   // with the other four tabs appearing afterwards in order.
-  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_urls[0]);
-  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_urls[1]);
-  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
-  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_urls[3]);
-  EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_urls[4]);
+  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_infos[0].url);
+  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_infos[1].url);
+  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_infos[2].url);
+  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_infos[3].url);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_infos[4].url);
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoOutsideLimit) {
@@ -470,19 +470,18 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
   const InformedRestoreContentsData::AppsInfos& apps_infos =
       contents_data->apps_infos;
 
-  // Even though there were seven tabs, we limit the number of tab URLs to five
-  // before `InformedRestoreContentsData` is created.
   ASSERT_EQ(1u, apps_infos.size());
-  ASSERT_EQ(5u, apps_infos[0].tab_urls.size());
+  ASSERT_EQ(7u, apps_infos[0].tab_infos.size());
 
   // As it was the most recently activated tab, chromium.org should appear
   // first, with the first four tabs in the tab strip appearing afterwards in
-  // order.
-  EXPECT_EQ(GURL("https://www.chromium.org/"), apps_infos[0].tab_urls[0]);
-  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_urls[1]);
-  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
-  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_urls[3]);
-  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_urls[4]);
+  // order. Only the first five tabs will be displayed in the informed restore
+  // dialog.
+  EXPECT_EQ(GURL("https://www.chromium.org/"), apps_infos[0].tab_infos[0].url);
+  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_infos[1].url);
+  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_infos[2].url);
+  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_infos[3].url);
+  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_infos[4].url);
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
