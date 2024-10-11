@@ -181,9 +181,15 @@ bool ConvertToPrinter(const std::string& service_type,
     return false;
   }
   if (service_description.address.port() == 0) {
-    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
-                       << " printer named '" << service_description.service_name
-                       << "' with invalid port.";
+    // Bonjour printers are required to register the _printer._tcp name even if
+    // they don't support LPD.  If they don't support LPD, they use a port of 0
+    // to indicate this, so it is not an error.
+    if (service_type != ZeroconfPrinterDetector::kLpdServiceName) {
+      PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
+                         << " printer named '"
+                         << service_description.service_name
+                         << "' with invalid port.";
+    }
     return false;
   }
 
