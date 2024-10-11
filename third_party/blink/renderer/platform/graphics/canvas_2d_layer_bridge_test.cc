@@ -141,16 +141,6 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, NoRecreationOfResourceProviderAfterDraw) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  EXPECT_TRUE(Host()->IsResourceValid());
-  cc::PaintFlags flags;
-  uint32_t gen_id = bridge->GetOrCreateResourceProvider()->ContentUniqueID();
-  Canvas().drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
-  EXPECT_EQ(gen_id, bridge->GetOrCreateResourceProvider()->ContentUniqueID());
-}
-
 TEST_F(Canvas2DLayerBridgeTest, GetResourceProviderWhenContextIsLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);

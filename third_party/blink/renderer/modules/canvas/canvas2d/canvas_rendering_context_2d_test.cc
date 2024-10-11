@@ -539,6 +539,20 @@ testing::Matcher<base::HistogramTester> OverdrawOpAre(Args... args) {
       std::unordered_set<BaseRenderingContext2D::OverdrawOp>{args...});
 }
 
+TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
+  CreateContext(kNonOpaque);
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+  uint32_t gen_id =
+      CanvasElement()
+          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
+          ->ContentUniqueID();
+  Context2D()->fillRect(3, 3, 1, 1);
+  EXPECT_EQ(gen_id,
+            CanvasElement()
+                .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
+                ->ContentUniqueID());
+}
+
 TEST_P(CanvasRenderingContext2DTest, NonDisplayedCanvasIsNotRateLimited) {
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
