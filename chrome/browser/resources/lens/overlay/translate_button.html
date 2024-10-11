@@ -69,10 +69,18 @@
     transition-delay: 33ms;
   }
 
+  :host([is-translate-mode-enabled][is-lens-overlay-contextual-searchbox-enabled]) .language-picker-button {
+    min-width: 104px;
+  }
+
   .language-picker-label {
     margin-block-start: 6px;
     margin-block-end: 6px;
     margin-inline-end: 16px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) .language-picker-label {
+    margin-inline-end: 12px;
   }
 
   .language-picker-menu {
@@ -89,6 +97,11 @@
     pointer-events: all;
     position: absolute;
     width: 100%;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) .language-picker-menu {
+    inset-inline-start: 0;
+    width: calc(100% - 56px);
   }
 
   .language-picker-menu::-webkit-scrollbar {
@@ -181,6 +194,11 @@
     width: 20px;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled]) .translate-icon {
+    height: 24px;
+    width: 24px;
+  }
+
   #languagePicker {
     border-radius: 100px;
     display: flex;
@@ -195,7 +213,8 @@
     pointer-events: none;
   }
 
-  :host-context([is-lens-overlay-contextual-searchbox-visible]) #languagePicker {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #languagePicker {
+    background-color: white;
     max-width: 0px;
     min-width: 0px;
   }
@@ -208,6 +227,10 @@
     transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
                 max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
                 opacity 100ms linear 33ms;
+  }
+
+  :host([is-translate-mode-enabled][is-lens-overlay-contextual-searchbox-enabled]) #languagePicker {
+    min-width: 250px;
   }
 
   #languagePickerMenuStarsIcon {
@@ -229,12 +252,21 @@
     margin-inline-start: 5px;
   }
 
-  :host(:not([should-show-stars-icon])) #sourceLanguageButton {
+  :host(:not([should-show-stars-icon])) #sourceLanguageButton,
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #sourceLanguageButton {
     gap: 0px;
   }
 
   :host(:not([should-show-stars-icon])) #sourceLanguageLabel {
     margin-inline-start: 16px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][should-show-stars-icon]) #sourceLanguageLabel {
+    margin-inline-start: 2px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]:not([should-show-stars-icon])) #sourceLanguageLabel {
+    margin-inline-start: 12px;
   }
 
   #sourceAutoDetectButton {
@@ -259,11 +291,16 @@
   }
 
   #targetLanguageButton {
-    margin-inline-end: 6px;
+    margin-inline-end: 5px;
   }
 
   #targetLanguageLabel {
     margin-inline-start: 16px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #targetLanguageLabel {
+    margin-inline-end: 12px;
+    margin-inline-start: 12px;
   }
 
   #translateDisableButton {
@@ -288,6 +325,11 @@
     width: 38px;
   }
 
+  :host([is-translate-mode-enabled]):host([is-lens-overlay-contextual-searchbox-enabled]) #translateDisableButton {
+    height: 48px;
+    width: 48px;
+  }
+
   #translateEnableButton {
     background-color: var(--color-selection-element);
     height: 48px;
@@ -299,7 +341,7 @@
     z-index: 1;
   }
 
-  :host-context([is-lens-overlay-contextual-searchbox-visible]) #translateEnableButton {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateEnableButton {
     min-width: 48px;
     width: 48px;
     gap: 0;
@@ -318,7 +360,7 @@
     margin-inline-end: 20px;
   }
 
-  :host-context([is-lens-overlay-contextual-searchbox-visible]) #translateButtonLabel {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonLabel {
     display: none;
   }
 
@@ -334,23 +376,33 @@
     pointer-events: all;
   }
 
-  :host-context([is-lens-overlay-contextual-searchbox-visible]) #translateContainer {
-    min-width: 48px;
-    border-radius: 48px;
-  }
-
   :host([is-translate-mode-enabled]) #translateContainer {
     background-color: white;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateContainer {
+    background-color: transparent;
+    min-width: 48px;
+    border-radius: 48px;
+  }
+
   #translateDisableButtonContainer {
     display: grid;
-    height: 38px;
     margin-block-start: 5px;
     margin-block-end: 5px;
     margin-inline-end: 5px;
     place-items: center;
-    width: 38px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateDisableButtonContainer {
+    margin-block-start: 0px;
+    margin-inline-end: 0px;
+    margin-inline-start: 8px;
+  }
+
+  :host([target-language-menu-visible]:not([is-lens-overlay-contextual-searchbox-enabled])) #translateDisableButtonContainer,
+  :host([source-language-menu-visible]:not([is-lens-overlay-contextual-searchbox-enabled])) #translateDisableButtonContainer {
+    visibility: hidden;
   }
 
   #translateDisableIcon {
@@ -360,7 +412,6 @@
     position: absolute;
     opacity: 0;
     transition: opacity 1ms linear 15ms;
-    width: 20px;
   }
 
   :host([is-translate-mode-enabled]) #translateDisableIcon {
@@ -374,7 +425,7 @@
     margin-inline-start: 15px;
   }
 
-  :host-context([is-lens-overlay-contextual-searchbox-visible]) #translateEnableIcon {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateEnableIcon {
     margin-inline-start: 0px;
   }
 
@@ -424,16 +475,6 @@
         [[getTargetLanguageDisplayName(targetLanguage)]]
       </span>
     </cr-button>
-  </div>
-  <div id="translateDisableButtonContainer">
-    <cr-button id="translateDisableButton" class="button"
-      on-click="onTranslateButtonClick"
-      aria-hidden="[[!languagePickerButtonsVisible]]"
-      aria-label="$i18n{translateCloseAriaLabel}"
-      tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
-                  sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
-    </cr-button>
-    <span id="translateDisableIcon" class="translate-icon"></span>
   </div>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
       aria-label="$i18n{languagePickerAriaLabel}">
@@ -512,5 +553,16 @@
         </cr-button>
       </template>
     </div>
+  </div>
+  <div id="translateDisableButtonContainer">
+    <cr-button id="translateDisableButton" class="button"
+      on-click="onTranslateButtonClick"
+      aria-hidden="[[!languagePickerButtonsVisible]]"
+      aria-label="$i18n{translateCloseAriaLabel}"
+      tabindex$="[[getTabIndexForTranslateExit(isTranslateModeEnabled,
+                  sourceLanguageMenuVisible, targetLanguageMenuVisible,
+                  isLensOverlayContextualSearchboxVisible)]]">
+    </cr-button>
+    <span id="translateDisableIcon" class="translate-icon"></span>
   </div>
 </div>

@@ -45,7 +45,7 @@
     inset-inline-end: 28px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible]) #optionsButtonContainer {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #optionsButtonContainer {
     inset-block-start: 36px;
   }
 
@@ -62,12 +62,12 @@
     inset-inline-end: 84px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible]) #translateButtonContainer {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonContainer {
     inset-inline-end: 84px;
     inset-block-start: 36px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible][side-panel-opened]) #translateButtonContainer {
+  :host([is-lens-overlay-contextual-searchbox-enabled][side-panel-opened]) #translateButtonContainer {
     inset-inline-end: 24px;
   }
 
@@ -90,7 +90,7 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible]) #closeButton {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #closeButton {
     background-color: var(--color-selection-element);
     height: 48px;
     width: 48px;
@@ -105,7 +105,7 @@
     justify-content: space-between;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible]) #moreOptions {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #moreOptions {
     display: none;
   }
 
@@ -283,7 +283,9 @@
     </div>
   </template>
   <div id="translateButtonContainer" class="button-container">
-    <translate-button id="translateButton"></translate-button>
+    <translate-button id="translateButton"
+      is-lens-overlay-contextual-searchbox-enabled="[[isLensOverlayContextualSearchboxEnabled]]">
+    </translate-button>
   </div>
   <div id="optionsButtonContainer" class="button-container">
     <div id="moreOptions">

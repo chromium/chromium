@@ -102,6 +102,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
             'isPointerDown)',
         reflectToAttribute: true,
       },
+      isLensOverlayContextualSearchboxEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        readOnly: true,
+        value: () =>
+            loadTimeData.getBoolean('enableOverlayContextualSearchbox'),
+      },
       isLensOverlayContextualSearchboxVisible: {
         type: Boolean,
         reflectToAttribute: true,
@@ -149,6 +156,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private shouldFadeOutButtons: boolean = false;
   // The overlay theme.
   private theme: OverlayTheme;
+  // Whether the contextual searchbox feature is enabled.
+  private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the contextual searchbox is visible to the user.
   private isLensOverlayContextualSearchboxVisible: boolean = false;
   private toastMessage: string = '';
@@ -340,8 +349,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private shouldShowContextualSearchBox(shouldShow: boolean) {
     this.isLensOverlayContextualSearchboxVisible =
-        loadTimeData.getBoolean('enableOverlayContextualSearchbox') &&
-        shouldShow;
+        this.isLensOverlayContextualSearchboxEnabled && shouldShow;
   }
 
   // The user started making a selection on the selection overlay.

@@ -78,6 +78,10 @@ export class TranslateButtonElement extends PolymerElement {
         type: String,
         reflectToAttribute: true,
       },
+      isLensOverlayContextualSearchboxEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       isTranslateModeEnabled: {
         type: Boolean,
         reflectToAttribute: true,
@@ -107,6 +111,9 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private eventTracker_: EventTracker = new EventTracker();
+  // Whether the lens overlay contextual searchbox is enabled. Passed in from
+  // parent.
+  private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the translate mode on the lens overlay has been enabled.
   private isTranslateModeEnabled: boolean = false;
   // Whether the language picker buttons are currently visible.
@@ -467,6 +474,15 @@ export class TranslateButtonElement extends PolymerElement {
 
   private getTabIndexForTranslateEntry(): number {
     return this.isTranslateModeEnabled ? -1 : 0;
+  }
+
+  private getTabIndexForTranslateExit(): number {
+    if ((this.sourceLanguageMenuVisible || this.targetLanguageMenuVisible) &&
+        this.isLensOverlayContextualSearchboxEnabled) {
+      return 0;
+    }
+
+    return this.getTabIndexForLanguagePickerButtons();
   }
 
   private getTabIndexForLanguagePickerButtons(): number {
