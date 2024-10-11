@@ -639,7 +639,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext& context,
+      SuggestionsContext context,
       OnGenerateSuggestionsCallback callback,
       AutofillPredictionImprovementsDelegate::HasData
           has_prediction_improvements_data);
@@ -649,7 +649,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       AutofillPredictionImprovementsDelegate::HasData
           has_prediction_improvements_data,
-      SuggestionsContext& context,
+      SuggestionsContext context,
       OnGenerateSuggestionsCallback callback,
       std::vector<std::string> plus_addresses);
 

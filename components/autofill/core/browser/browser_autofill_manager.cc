@@ -1460,8 +1460,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       delegate->IsFormAndFieldEligible(*form_structure, *autofill_field)) {
     delegate->HasDataStored(base::BindOnce(
         &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
-        weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-        base::OwnedRef(context), std::move(callback)));
+        weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
+        std::move(callback)));
     return;
   }
 
@@ -1479,7 +1479,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    SuggestionsContext& context,
+    SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
     AutofillPredictionImprovementsDelegate::HasData
         has_prediction_improvements_data) {
@@ -1510,8 +1510,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      has_prediction_improvements_data, base::OwnedRef(context),
-      std::move(callback));
+      has_prediction_improvements_data, context, std::move(callback));
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1531,7 +1530,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     AutofillSuggestionTriggerSource trigger_source,
     AutofillPredictionImprovementsDelegate::HasData
         has_prediction_improvements_data,
-    SuggestionsContext& context,
+    SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
   FormStructure* form_structure = nullptr;
