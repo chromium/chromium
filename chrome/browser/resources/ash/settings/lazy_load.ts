@@ -235,6 +235,7 @@ export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille
 export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';
 export {SettingsChromeVoxSubpageElement} from './os_a11y_page/chromevox_subpage.js';
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
+export {DisableTouchpadMode} from './os_a11y_page/disable_touchpad_constants.js';
 export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/display_and_magnification_subpage.js';
 export {AddDialogPage, FaceGazeAddActionDialogElement} from './os_a11y_page/facegaze_actions_add_dialog.js';
 export {FaceGazeActionsCardElement} from './os_a11y_page/facegaze_actions_card.js';

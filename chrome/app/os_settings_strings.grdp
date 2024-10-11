@@ -1878,6 +1878,9 @@
   <message name="IDS_SETTINGS_DISABLE_TRACKPAD_ALWAYS" desc="A dropdown item that lets the user always disable the internal trackpad.">
     Always
   </message>
+  <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_DISABLED" desc="In Device Settings, link that shows up when the built-in touchpad is disabled.">
+    Built-in touchpad is disabled
+  </message>
   <message name="IDS_SETTINGS_DISABLE_TRACKPAD_MOUSE_CONNECTED" desc="A dropdown item that lets the user disable the internal trackpad only when a mouse is connected.">
     When a mouse is connected
   </message>

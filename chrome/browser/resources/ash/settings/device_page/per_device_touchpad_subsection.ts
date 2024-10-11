@@ -24,6 +24,7 @@ import './per_device_install_row.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -32,16 +33,22 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
+import {MouseSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {DisableTouchpadMode} from '../os_a11y_page/disable_touchpad_constants.js';
 import {Route, routes} from '../router.js';
 
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {CompanionAppState, InputDeviceSettingsProviderInterface, SimulateRightClickModifier, Touchpad, TouchpadSettings} from './input_device_settings_types.js';
+import {CompanionAppState, InputDeviceSettingsProviderInterface, Mouse, SimulateRightClickModifier, Touchpad, TouchpadSettings} from './input_device_settings_types.js';
 import {settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_touchpad_subsection.html.js';
 
 const SettingsPerDeviceTouchpadSubsectionElementBase =
-    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
+    RouteObserverMixin(DeepLinkingMixin(
+        RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement)))));
+
 export class SettingsPerDeviceTouchpadSubsectionElement extends
     SettingsPerDeviceTouchpadSubsectionElementBase {
   static get is() {
@@ -225,6 +232,10 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
         },
         readOnly: true,
       },
+
+      mice: {
+        type: Array,
+      },
     };
   }
 
@@ -270,6 +281,13 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private isLastDevice: boolean;
   isAltClickAndSixPackCustomizationEnabled: boolean;
   private isRevampWayfindingEnabled_: boolean;
+  protected mice: Mouse[];
+  private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
+
+  constructor() {
+    super();
+    this.observeMouseSettings();
+  }
 
   private showInstallAppRow(): boolean {
     return this.touchpad.appInfo?.state === CompanionAppState.kAvailable;
@@ -317,6 +335,26 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
 
   private onTouchpadHapticFeedbackRowClicked_(): void {
     this.hapticFeedbackValue = !this.hapticFeedbackValue;
+  }
+
+  onMouseListUpdated(mice: Mouse[]): void {
+    this.mice = mice;
+  }
+
+  onMousePoliciesUpdated(_mousePolicies: MousePolicies): void {}
+
+  private observeMouseSettings(): void {
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeMouseSettings(this);
+      return;
+    }
+
+    this.mouseSettingsObserverReceiver =
+        new MouseSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeMouseSettings(
+        this.mouseSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   private onSettingsChanged(): void {
@@ -394,6 +432,17 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
 
   private isCompanionAppInstalled(): boolean {
     return this.touchpad.appInfo?.state === CompanionAppState.kInstalled;
+  }
+
+  private isBuiltInTrackpadDisabled_(trackpadMode: number): boolean {
+    return !this.touchpad.isExternal &&
+        (trackpadMode === DisableTouchpadMode.ALWAYS ||
+         (trackpadMode === DisableTouchpadMode.ON_MOUSE_CONNECTED &&
+          this.isMouseConnected_()));
+  }
+
+  private isMouseConnected_(): boolean {
+    return this.mice && this.mice.length !== 0;
   }
 }
 

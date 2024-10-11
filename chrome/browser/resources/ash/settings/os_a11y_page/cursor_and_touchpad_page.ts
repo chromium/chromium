@@ -36,9 +36,9 @@ import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
+import {DisableTouchpadMode} from './disable_touchpad_constants.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
-const INTERNAL_TRACKPAD_NEVER_DISABLED = 0;
 interface Option {
   name: string;
   value: number;
@@ -616,7 +616,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   }
 
   private showTrackpadEnableMessage_(trackpadMode: number): boolean {
-    return trackpadMode !== INTERNAL_TRACKPAD_NEVER_DISABLED;
+    return trackpadMode !== DisableTouchpadMode.NEVER;
   }
 }
 

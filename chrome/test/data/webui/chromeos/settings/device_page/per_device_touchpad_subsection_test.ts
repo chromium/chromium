@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrToggleElement, FakeInputDeviceSettingsProvider, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceTouchpadSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement, SimulateRightClickModifier} from 'chrome://os-settings/os_settings.js';
+import {DisableTouchpadMode} from 'chrome://os-settings/lazy_load.js'
+import {CrSettingsPrefs, CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceTouchpadSubsectionElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement, SimulateRightClickModifier} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -17,6 +18,7 @@ const TOUCHPAD_SPEED_SETTING_ID = 405;
 suite('<settings-per-device-touchpad-subsection>', () => {
   let subsection: SettingsPerDeviceTouchpadSubsectionElement;
   let provider: FakeInputDeviceSettingsProvider;
+  let prefElement: SettingsPrefsElement;
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -25,16 +27,21 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     provider = new FakeInputDeviceSettingsProvider();
     provider.setFakeTouchpads(fakeTouchpads);
     setInputDeviceSettingsProviderForTesting(provider);
+    prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
+    await CrSettingsPrefs.initialized;
     subsection =
         document.createElement('settings-per-device-touchpad-subsection');
     assert(subsection);
     subsection.set('touchpad', {...fakeTouchpads[0]});
+    subsection.prefs = prefElement.prefs;
     document.body.appendChild(subsection);
     await flushTasks();
   });
 
   teardown(() => {
     subsection.remove();
+    prefElement.remove();
   });
 
   function simulateDropdownChange(modifier: SimulateRightClickModifier) {
@@ -303,4 +310,72 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         Number(simulateRightClickDropdown.$.dropdownMenu.value),
         SimulateRightClickModifier.kAlt);
   });
+
+  test(
+      'Show disabled touchpad header when disable touchpad mode' +
+          ' is set to "Always"',
+      async () => {
+        // In disabled touchpad never mode, disable touchpad header should not
+        // be visible, but the touchpad settings should be visible.
+        assertEquals(
+            subsection.getPref('settings.a11y.disable_trackpad_mode').value,
+            DisableTouchpadMode.NEVER);
+        assertFalse(isVisible(
+            subsection.shadowRoot!.querySelector('#disabledTouchpadHeader')));
+        assertTrue(isVisible(
+            subsection.shadowRoot!.querySelector('#touchpadSettings')));
+
+        subsection.setPrefValue(
+            'settings.a11y.disable_trackpad_mode', DisableTouchpadMode.ALWAYS);
+        await flushTasks();
+
+        // In disabled touchpad always mode, disable touchpad header should be
+        // visible, but the touchpad settings should not be visible.
+        assertFalse(isVisible(
+            subsection.shadowRoot!.querySelector('#touchpadSettings')));
+        assertTrue(isVisible(
+            subsection.shadowRoot!.querySelector('#disabledTouchpadHeader')));
+      });
+
+  test(
+      'Show disabled touchpad header when disable touchpad mode' +
+          ' is set to "on Mouse Connected", and mouse connected',
+      async () => {
+        // In disabled touchpad never mode, disable touchpad header should not
+        // be visible, but the touchpad settings should be visible.
+        assertEquals(
+            subsection.getPref('settings.a11y.disable_trackpad_mode').value,
+            DisableTouchpadMode.NEVER);
+        assertFalse(isVisible(
+            subsection.shadowRoot!.querySelector('#disabledTouchpadHeader')));
+        assertTrue(isVisible(
+            subsection.shadowRoot!.querySelector('#touchpadSettings')));
+
+        // In disable touchpad on mouse connected mode, the visibility of
+        // elements depends on whether or not a mouse is connected. If there is
+        // no mouse connected, the disable touchpad header should not be visible
+        // and the touchpad settings should be visible.
+        subsection.setPrefValue(
+            'settings.a11y.disable_trackpad_mode',
+            DisableTouchpadMode.ON_MOUSE_CONNECTED);
+        provider.setFakeMice([]);
+        await flushTasks();
+
+        assertFalse(isVisible(
+            subsection.shadowRoot!.querySelector('#disabledTouchpadHeader')));
+        assertTrue(isVisible(
+            subsection.shadowRoot!.querySelector('#touchpadSettings')));
+
+        // In disable touchpad on mouse connected mode, the visibility of
+        // elements depends on whether or not a mouse is connected. If there is
+        // a mouse connected, the disable touchpad header should be visible and
+        // the touchpad settings should not be visible.
+        provider.setFakeMice(fakeMice);
+
+        await flushTasks();
+        assertTrue(isVisible(
+            subsection.shadowRoot!.querySelector('#disabledTouchpadHeader')));
+        assertFalse(isVisible(
+            subsection.shadowRoot!.querySelector('#touchpadSettings')));
+      });
 });
