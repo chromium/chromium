@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_sub_image.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_texture_array_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
@@ -135,6 +136,10 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   gfx::SizeF scaled_size =
       gfx::ScaleSize(session()->RecommendedArrayTextureSize(), scale_factor);
 
+  // TODO(crbug.com/359418629): Remove once array Mailboxes are available.
+  scaled_size.set_width(scaled_size.width() *
+                        session()->array_texture_layers());
+
   // If the scaled texture dimensions are larger than the max texture dimension
   // for the device scale it down till it fits.
   unsigned max_texture_size = device_->limits()->maxTextureDimension2D();
@@ -153,7 +158,7 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   color_desc.usage = static_cast<wgpu::TextureUsage>(init->textureUsage());
   color_desc.size = {static_cast<uint32_t>(texture_size.width()),
                      static_cast<uint32_t>(texture_size.height()),
-                     static_cast<uint32_t>(session()->array_texture_layers())};
+                     static_cast<uint32_t>(1)};
   color_desc.dimension = wgpu::TextureDimension::e2D;
 
   XRGPUSwapChain* color_swap_chain;
@@ -166,6 +171,12 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
         MakeGarbageCollected<XRGPUStaticSwapChain>(device_, color_desc);
   }
 
+  // Create the texture array wrapper for the side-by-side swap chain.
+  // TODO(crbug.com/359418629): Remove once array Mailboxes are available.
+  XRGPUTextureArraySwapChain* wrapped_swap_chain =
+      MakeGarbageCollected<XRGPUTextureArraySwapChain>(
+          device_, color_swap_chain, session()->array_texture_layers());
+
   // Create the depth/stencil swap chain
   XRGPUStaticSwapChain* depth_stencil_swap_chain = nullptr;
   if (init->hasDepthStencilFormat()) {
@@ -174,10 +185,7 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
     depth_stencil_desc.format = AsDawnEnum(*init->depthStencilFormat());
     depth_stencil_desc.usage =
         static_cast<wgpu::TextureUsage>(init->textureUsage());
-    depth_stencil_desc.size = {
-        static_cast<uint32_t>(texture_size.width()),
-        static_cast<uint32_t>(texture_size.height()),
-        static_cast<uint32_t>(session()->array_texture_layers())};
+    depth_stencil_desc.size = wrapped_swap_chain->descriptor().size;
     depth_stencil_desc.dimension = wgpu::TextureDimension::e2D;
 
     depth_stencil_swap_chain =

@@ -50,6 +50,8 @@ blink_modules_sources("xr") {
     "xr_gpu_sub_image.h",
     "xr_gpu_swap_chain.cc",
     "xr_gpu_swap_chain.h",
+    "xr_gpu_texture_array_swap_chain.cc",
+    "xr_gpu_texture_array_swap_chain.h",
     "xr_graphics_binding.cc",
     "xr_graphics_binding.h",
     "xr_grip_space.cc",

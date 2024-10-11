@@ -25,7 +25,7 @@ class XRGPUSwapChain : public GarbageCollected<XRGPUSwapChain> {
 
   virtual const wgpu::TextureDescriptor& descriptor() const = 0;
 
-  void SetLayer(XRCompositionLayer* layer) { layer_ = layer; }
+  virtual void SetLayer(XRCompositionLayer* layer) { layer_ = layer; }
   XRCompositionLayer* layer() { return layer_.Get(); }
 
   virtual void Trace(Visitor* visitor) const;
