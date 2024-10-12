@@ -113,7 +113,7 @@ void FocusModeTasksModel::RequestUpdate() {
   if (delegate_) {
     // If there is a currently selected task, we fetch the task to see if the
     // title was updated or if it has been completed.
-    if (selected_task_) {
+    if (selected_task_ && selected_task_->task_id.IsValid()) {
       delegate_->FetchTask(
           selected_task_->task_id,
           base::BindOnce(&FocusModeTasksModel::OnSelectedTaskFetched,
@@ -212,7 +212,7 @@ void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
   pref_task_id_ = task_id;
   FocusModeTasksModel::Delegate::FetchTaskCallback callback = base::BindOnce(
       &FocusModeTasksModel::OnPrefTaskFetched, weak_ptr_factory_.GetWeakPtr());
-  if (delegate_) {
+  if (delegate_ && pref_task_id_->IsValid()) {
     delegate_->FetchTask(*pref_task_id_, std::move(callback));
   }
 }
