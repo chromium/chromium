@@ -432,6 +432,9 @@ class RTCVideoEncoderTest {
       case webrtc::kVideoCodecVP9:
         media_profile = media::VP9PROFILE_PROFILE0;
         break;
+      case webrtc::kVideoCodecAV1:
+        media_profile = media::VP9PROFILE_PROFILE0;
+        break;
 #if BUILDFLAG(RTC_USE_H265)
       case webrtc::kVideoCodecH265:
         media_profile = media::HEVCPROFILE_MAIN;
@@ -804,6 +807,7 @@ TEST_P(RTCVideoEncoderInitTest, AV1Supports270p) {
     GTEST_SKIP();
   }
   CreateEncoder(codec_type);
+  ExpectCreateInitAndDestroyVEA();
   webrtc::VideoCodec codec = GetDefaultCodec();
   codec.width = 480;
   codec.height = 270;
@@ -820,6 +824,9 @@ TEST_P(RTCVideoEncoderInitTest, CreateAndInitSucceedsForTemporalLayer) {
     GTEST_SKIP() << "VP8 temporal layer encoding is not supported";
   if (codec_type == webrtc::kVideoCodecH264)
     GTEST_SKIP() << "H264 temporal layer encoding is not supported";
+  if (codec_type == webrtc::kVideoCodecAV1) {
+    GTEST_SKIP() << "AV1 temporal layer encoding is not supported";
+  }
 
   webrtc::VideoCodec tl_codec = GetSVCLayerCodec(codec_type,
                                                  /*num_spatial_layers=*/1);
@@ -833,6 +840,7 @@ const webrtc::VideoCodecType kInitTestCases[] = {
     webrtc::kVideoCodecH264,
     webrtc::kVideoCodecVP9,
     webrtc::kVideoCodecVP8,
+    webrtc::kVideoCodecAV1,
 };
 
 INSTANTIATE_TEST_SUITE_P(InitTimingAndCodecProfiles,
