@@ -26,7 +26,6 @@
 
 namespace webnn::coreml {
 
-class BufferContent;
 class ContextImplCoreml;
 
 // GraphImplCoreml inherits from WebNNGraphImpl to represent a CoreML graph
@@ -135,24 +134,11 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       override;
 
  private:
-  void DidPredictFromCompute(base::ElapsedTimer model_predict_timer,
-                             mojom::WebNNGraph::ComputeCallback callback,
-                             id<MLFeatureProvider> output_features,
-                             NSError* error);
-
-  void DoDispatch(
-      base::flat_map<std::string,
-                     scoped_refptr<QueueableResourceState<BufferContent>>>
-          named_input_buffer_states,
-      base::flat_map<std::string,
-                     scoped_refptr<QueueableResourceState<BufferContent>>>
-          named_output_buffer_states,
-      base::OnceClosure completion_closure);
+  class ComputeResources;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
-  MLModel* __strong ml_model_;
+  scoped_refptr<ComputeResources> compute_resources_;
 
   base::WeakPtrFactory<GraphImplCoreml> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
