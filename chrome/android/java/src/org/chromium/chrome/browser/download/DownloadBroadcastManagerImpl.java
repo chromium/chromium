@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotifi
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
+import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LaunchLocation;
@@ -213,7 +214,11 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                                 BrowserStartupController.getInstance().isFullBrowserStarted(),
                                 IntentUtils.safeGetBooleanExtra(
                                         intent, EXTRA_IS_OFF_THE_RECORD, false));
+                        int jobId =
+                                TrampolineActivityTracker.getInstance()
+                                        .startProcessingNewIntent(10L);
                         propagateInteraction(intent);
+                        TrampolineActivityTracker.getInstance().onIntentCompleted(jobId);
                     }
 
                     @Override

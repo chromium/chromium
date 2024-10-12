@@ -255,6 +255,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFocusOmniboxInIncognitoTabIntents,
     &kForceBrowserControlsUponExitingFullscreen,
     &kForceListTabSwitcher,
+    &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGtsCloseTabAnimationKillSwitch,
@@ -273,6 +274,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNewTabPageAndroidTriggerForPrerender2,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
+    &kNotificationTrampoline,
     &kTinkerTankBottomSheet,
     &kPageAnnotationsService,
     &kPreconnectOnTabCreation,
@@ -744,6 +746,10 @@ BASE_FEATURE(kForceBrowserControlsUponExitingFullscreen,
              "ForceBrowserControlsUponExitingFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kForceTranslucentNotificationTrampoline,
+             "ForceTranslucentNotificationTrampoline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFullscreenInsetsApiMigration,
              "FullscreenInsetsApiMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -811,6 +817,10 @@ BASE_FEATURE(kNotificationPermissionVariant,
 
 BASE_FEATURE(kNotificationPermissionBottomSheet,
              "NotificationPermissionBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNotificationTrampoline,
+             "NotificationTrampoline",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageAnnotationsService,

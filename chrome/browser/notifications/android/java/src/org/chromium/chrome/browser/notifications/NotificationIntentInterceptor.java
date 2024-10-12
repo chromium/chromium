@@ -16,6 +16,8 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -84,7 +86,7 @@ public class NotificationIntentInterceptor {
         }
     }
 
-    private static void processIntent(Intent intent) {
+    private static boolean processIntent(Intent intent) {
         @IntentType int intentType = intent.getIntExtra(EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
         @NotificationUmaTracker.SystemNotificationType
         int notificationType =
@@ -113,19 +115,52 @@ public class NotificationIntentInterceptor {
                         .onNotificationActionClick(actionType, notificationType, createTime);
                 break;
         }
-
-        forwardPendingIntent(intent);
+        return forwardPendingIntent(intent);
     }
 
     /**
      * A trampoline activity that handles logging metrics for click events and action click events.
      */
     public static class TrampolineActivity extends Activity {
+
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            processIntent(getIntent());
-            finish();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    || hasVisibleActivities()) {
+                processIntent(getIntent());
+                finish();
+                return;
+            }
+
+            if (!ChromeFeatureList.sForceTranslucentNotificationTrampoline.isEnabled()
+                    && getApplicationContext().getApplicationInfo().targetSdkVersion
+                            < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                processIntent(getIntent());
+                finish();
+                return;
+            }
+
+            // If there is already a trampoline activity, finish this instance so that the current
+            // tracked activity will continue to be shown.
+            if (!TrampolineActivityTracker.getInstance().tryTrackActivity(this)) {
+                processIntent(getIntent());
+                finish();
+                return;
+            }
+
+            setContentView(R.layout.notification_trampoline);
+            if (!processIntent(getIntent())) {
+                TrampolineActivityTracker.getInstance().finishTrackedActivity();
+            }
+        }
+
+        private static boolean hasVisibleActivities() {
+            for (Activity activity : ApplicationStatus.getRunningActivities()) {
+                @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
+                if (state == ActivityState.RESUMED || state == ActivityState.PAUSED) return true;
+            }
+            return false;
         }
     }
 
@@ -153,7 +188,6 @@ public class NotificationIntentInterceptor {
             pendingIntent = pendingIntentProvider.getPendingIntent();
             flags = pendingIntentProvider.getFlags();
         }
-
         // The delete intent needs to be handled by broadcast receiver from Q due to background
         // activity start restriction.
         boolean shouldUseService =
@@ -167,6 +201,7 @@ public class NotificationIntentInterceptor {
                                 == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT
                         || actionType
                                 == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT;
+
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent intent = null;
         if (shouldUseService) {
@@ -233,26 +268,33 @@ public class NotificationIntentInterceptor {
                 false);
     }
 
-    // Launches the notification's pending intent, which will perform Chrome feature related tasks.
-    private static void forwardPendingIntent(Intent intent) {
+    /**
+     * Launches the notification's pending intent, which will perform Chrome feature related tasks.
+     *
+     * @param intent The intent that owns the PendingIntent to be launched.
+     * @return Whether the intent was successfully launched.
+     */
+    private static boolean forwardPendingIntent(Intent intent) {
         if (intent == null) {
             Log.e(TAG, "Intent to forward is null.");
-            return;
+            return false;
         }
 
         PendingIntent pendingIntent =
                 (PendingIntent) intent.getParcelableExtra(EXTRA_PENDING_INTENT);
         if (pendingIntent == null) {
             Log.d(TAG, "The notification's PendingIntent is null.");
-            return;
+            return false;
         }
 
         try {
             pendingIntent.send();
+            return true;
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "The PendingIntent to fire is canceled.");
             e.printStackTrace();
         }
+        return false;
     }
 
     /**

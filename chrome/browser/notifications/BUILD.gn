@@ -54,6 +54,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactory.java",
       "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilder.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/TrampolineActivityTracker.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/LocaleChangedBroadcastReceiver.java",
@@ -114,6 +115,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/TrampolineActivityTrackerTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsInitializerTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
@@ -193,6 +195,7 @@ if (is_android) {
       "android/java/res/drawable/notification_permission_rationale_dialog_header.xml",
       "android/java/res/layout/notification_permission_rationale_bottom_sheet.xml",
       "android/java/res/layout/notification_permission_rationale_dialog.xml",
+      "android/java/res/layout/notification_trampoline.xml",
       "android/java/res/values-night/colors.xml",
       "android/java/res/values/colors.xml",
     ]

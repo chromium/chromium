@@ -315,7 +315,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
     </activity>  # DIFF-ANCHOR: e86e2b49
     <activity  # DIFF-ANCHOR: 7ff74272
         android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$DismissNotificationChromeActivity"

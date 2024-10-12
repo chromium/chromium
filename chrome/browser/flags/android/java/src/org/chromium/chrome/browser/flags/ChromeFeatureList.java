@@ -347,6 +347,8 @@ public abstract class ChromeFeatureList {
             "ForceDisableExtendedSyncPromos";
     public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
+    public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
+            "ForceTranslucentNotificationTrampoline";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
@@ -389,6 +391,7 @@ public abstract class ChromeFeatureList {
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
             "NotificationPermissionBottomSheet";
+    public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
@@ -667,6 +670,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
+    public static final CachedFlag sForceTranslucentNotificationTrampoline =
+            newCachedFlag(FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sFullscreenInsetsApiMigration =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
@@ -687,6 +692,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, true);
     public static final CachedFlag sNewTabPageAndroidTriggerForPrerender2 =
             newCachedFlag(NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2, false);
+    public static final CachedFlag sNotificationTrampoline =
+            newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
@@ -809,12 +816,14 @@ public abstract class ChromeFeatureList {
                     sEducationalTipModule,
                     sEnableDiscountInfoApi,
                     sForceListTabSwitcher,
+                    sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
                     sIncognitoReauthenticationForAndroid,
                     sLockBackPressHandlerAtStart,
                     sLogoPolish,
                     sLogoPolishAnimationKillSwitch,
+                    sNotificationTrampoline,
                     sMagicStackAndroid,
                     sMostVisitedTilesReselect,
                     sMultiInstanceApplicationStatusCleanup,
