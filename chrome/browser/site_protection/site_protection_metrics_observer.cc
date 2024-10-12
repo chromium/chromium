@@ -334,6 +334,21 @@ void SiteProtectionMetricsObserver::LogMetrics(
           : "SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration",
       (base::Time::Now() - metrics_data->data_fetch_start_time));
 
+  if (!profile_->IsOffTheRecord()) {
+    bool matches_heuristic_candidate1 =
+        metrics_data->site_engagement_score >= 15 ||
+        metrics_data->url_on_safe_browsing_high_confidence_allowlist ||
+        metrics_data->most_strict_matched_history_heuristic ==
+            SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo ||
+        metrics_data->most_strict_matched_history_heuristic ==
+            SiteFamiliarityHistoryHeuristicName::
+                kVisitedMoreThanADayAgoPreviouslyUnfamiliar;
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.SiteProtection.FamiliarityHeuristic."
+        "Engagement15OrVisitedBeforeTodayOrHighConfidence",
+        matches_heuristic_candidate1);
+  }
+
   for (SiteFamiliarityHeuristicName heuristic :
        metrics_data->matched_heuristics) {
     base::UmaHistogramEnumeration(

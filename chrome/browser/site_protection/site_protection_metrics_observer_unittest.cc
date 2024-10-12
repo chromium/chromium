@@ -177,6 +177,17 @@ class SiteProtectionMetricsObserverTest
     }
   }
 
+  void NavigateAndCheckCandidate1HeuristicHistogram(const GURL& url,
+                                                    bool expected_value) {
+    const char kCandidate1HeuristicHistogramName[] =
+        "SafeBrowsing.SiteProtection.FamiliarityHeuristic."
+        "Engagement15OrVisitedBeforeTodayOrHighConfidence";
+    base::HistogramTester histogram_tester;
+    NavigateAndWaitForHistogram(url, kCandidate1HeuristicHistogramName);
+    histogram_tester.ExpectUniqueSample(kCandidate1HeuristicHistogramName,
+                                        expected_value, 1);
+  }
+
   int64_t GetUkmFamiliarityHeuristicValue(ukm::TestUkmRecorder& ukm_recorder,
                                           const std::string& metric_name) {
     std::vector<int64_t> values = ukm_recorder.GetMetricsEntryValues(
@@ -523,6 +534,47 @@ TEST_F(SiteProtectionMetricsObserverTest, Incognito) {
       kOffTheRecordHistogramName,
       SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo, 1);
   histogram_tester.ExpectTotalCount(kRegularProfileHistogramName, 0u);
+}
+
+// Test that
+// SafeBrowsing.SiteProtection.FamiliarityHeuristic
+//     .Engagement15OrVisitedBeforeTodayOrHighConfidence
+// is properly recorded.
+TEST_F(SiteProtectionMetricsObserverTest, MatchesHeuristicCandidate) {
+  history::HistoryService* history_service = GetRegularProfileHistoryService();
+  site_engagement::SiteEngagementService* site_engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
+  const base::Time kTimeNow = base::Time::Now();
+  const base::Time kTimeHourAgo = kTimeNow - base::Hours(1);
+  const base::Time kTimeYesterday = kTimeNow - base::Days(1);
+
+  GURL kUrlVisitedTodayEngagement5("https://bar.com");
+  history_service->AddPage(kUrlVisitedTodayEngagement5, kTimeHourAgo,
+                           history::SOURCE_BROWSED);
+  site_engagement_service->ResetBaseScoreForURL(kUrlVisitedTodayEngagement5, 5);
+  NavigateAndCheckCandidate1HeuristicHistogram(kUrlVisitedTodayEngagement5,
+                                               /*expected_value=*/false);
+
+  GURL kUrlVisitedTodayEngagement15("https://baz.com");
+  history_service->AddPage(kUrlVisitedTodayEngagement15, kTimeHourAgo,
+                           history::SOURCE_BROWSED);
+  site_engagement_service->ResetBaseScoreForURL(kUrlVisitedTodayEngagement15,
+                                                15);
+  NavigateAndCheckCandidate1HeuristicHistogram(kUrlVisitedTodayEngagement15,
+                                               /*expected_value=*/true);
+
+  GURL kUrlVisitedYesterday("https://foo.com");
+  history_service->AddPage(kUrlVisitedYesterday, kTimeYesterday,
+                           history::SOURCE_BROWSED);
+  NavigateAndCheckCandidate1HeuristicHistogram(kUrlVisitedYesterday,
+                                               /*expected_value=*/true);
+
+  GURL kUrlVisitedNeverHighConfidenceAllowlist("https://hi.com");
+  safe_browsing_database_manager_->SetUrlOnHighConfidenceAllowlist(
+      kUrlVisitedNeverHighConfidenceAllowlist);
+  NavigateAndCheckCandidate1HeuristicHistogram(
+      kUrlVisitedNeverHighConfidenceAllowlist,
+      /*expected_value=*/true);
 }
 
 }  // namespace site_protection

@@ -2708,6 +2708,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.Engagement15OrVisitedBeforeTodayOrHighConfidence"
+    enum="BooleanMatched" expires_after="2025-03-23">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Logged after each non-off-the-record page navigation. Logs whether the site
+    matches a heuristic which requires - The page to be on the safe browsing
+    high confidence allowlist OR - The page to have been visited more than 24
+    hours ago OR - The page to have a site engagement score of &gt; 15
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
     enum="SiteFamiliarityHeuristicName" expires_after="2025-03-23">
   <owner>pkotwicz@chromium.org</owner>
