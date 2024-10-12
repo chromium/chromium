@@ -126,13 +126,12 @@ class TrustedVaultClientBackend : public KeyedService {
   // The UI will be presented by the `navigationController` with a
   // `brandedNavigationItemTitleView` on top. Once the flow is done,
   // `completion` is called (unless the flow is cancelled).
-  // TODO(crbug.com/369153587): Make it pure virtual.
   virtual CancelDialogCallback UpdateGPMPinForAccount(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
       UINavigationController* navigationController,
       UIView* brandedNavigationItemTitleView,
-      UpdateGPMPinCompletionCallback completion);
+      UpdateGPMPinCompletionCallback completion) = 0;
 
  protected:
   // Functions to notify observers.
