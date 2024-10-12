@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ModelUnavailable"/>
   <int value="5" label="ExecutionFailure"/>
   <int value="6" label="ExecutionCancelled"/>
+  <int value="7" label="Filtered"/>
 </enum>
 
 <enum name="CookieOrCacheDeletion">

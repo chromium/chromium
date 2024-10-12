@@ -178,8 +178,12 @@ class MlAnswerer::SessionManager {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result) {
     if (!result.response.has_value()) {
-      FinishCallback(AnswererResult(ComputeAnswerStatus::kExecutionFailure,
-                                    query_, Answer()));
+      ComputeAnswerStatus status = ComputeAnswerStatus::kExecutionFailure;
+      auto error = result.response.error().error();
+      if (error == ModelExecutionError::kFiltered) {
+        status = ComputeAnswerStatus::kFiltered;
+      }
+      FinishCallback(AnswererResult(status, query_, Answer()));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(

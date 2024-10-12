@@ -15,6 +15,7 @@ enum AnswerStatus {
   kModelUnavailable,
   kExecutionFailure,
   kExecutionCanceled,
+  kFiltered,
 };
 
 // Some SearchResultItem may be specialized and marked as the query answer.

@@ -1773,6 +1773,7 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary="Any status, unsliced"/>
     <variant name=".ExecutionCancelled" summary="ExecutionCancelled"/>
     <variant name=".ExecutionFailure" summary="ExecutionFailure"/>
+    <variant name=".Filtered" summary="Filtered"/>
     <variant name=".Loading" summary="Loading"/>
     <variant name=".ModelUnavailable" summary="ModelUnavailable"/>
     <variant name=".Success" summary="Success"/>

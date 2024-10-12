@@ -208,6 +208,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       case AnswerStatus.kSuccess:
         return this.searchResult_.answer;
       case AnswerStatus.kUnanswerable:
+      case AnswerStatus.kFiltered:
         return this.i18n('historyEmbeddingsAnswererErrorUnanswerable');
       case AnswerStatus.kModelUnavailable:
       case AnswerStatus.kExecutionFailure:

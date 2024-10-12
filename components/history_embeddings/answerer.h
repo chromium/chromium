@@ -40,9 +40,12 @@ enum class ComputeAnswerStatus {
   // Model execution cancelled.
   kExecutionCancelled = 6,
 
+  // Model response is filtered.
+  kFiltered = 7,
+
   // These values are logged with histograms; append only, above
   // this line, and update `kMaxValue` to the last value.
-  kMaxValue = kExecutionCancelled
+  kMaxValue = kFiltered
 };
 
 // Holds an answer from the model and associations to source context.

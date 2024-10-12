@@ -55,6 +55,8 @@ history_embeddings::mojom::AnswerStatus AnswererAnswerStatusToMojoAnswerStatus(
       return history_embeddings::mojom::AnswerStatus::kExecutionCanceled;
     case history_embeddings::ComputeAnswerStatus::kLoading:
       return history_embeddings::mojom::AnswerStatus::kLoading;
+    case history_embeddings::ComputeAnswerStatus::kFiltered:
+      return history_embeddings::mojom::AnswerStatus::kFiltered;
   }
 }
 

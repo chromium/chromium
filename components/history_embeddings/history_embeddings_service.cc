@@ -1106,6 +1106,10 @@ void HistoryEmbeddingsService::OnAnswerComputed(
       base::UmaHistogramTimes(
           compute_answer_time_histogram_name + ".ExecutionCancelled", waited);
       break;
+    case ComputeAnswerStatus::kFiltered:
+      base::UmaHistogramTimes(compute_answer_time_histogram_name + ".Filtered",
+                              waited);
+      break;
     case ComputeAnswerStatus::kUnspecified:
       break;
   }
