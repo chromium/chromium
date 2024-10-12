@@ -22,28 +22,21 @@ message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
 
-  // A version number string for the application.
-  // Most commonly this is the browser version number found in a user agent
-  // string, and is typically a 4-tuple of numbers separated by periods.  In
-  // cases where the user agent version might be ambiguous (example: Linux 64-
-  // bit build, rather than 32-bit build, or a Windows version used in some
-  // special context, such as ChromeFrame running in IE), then this may include
-  // some additional postfix to provide clarification not available in the UA
-  // string.
+  // A version number string for the application. For Chrome, this is the
+  // browser version number, typically a 4-tuple of numbers separated by periods
+  // and may be postfixed with additional properties as described below.
   //
-  // An example of a browser version 4-tuple is "5.0.322.0".  Currently used
-  // postfixes are:
+  // An example of a browser version 4-tuple is "129.0.6668.89". Currently used
+  // postfixes are (appended in the order below):
   //
   //   "-64": a 64-bit build
-  //   "-F": Chrome is running under control of ChromeFrame
   //   "-devel": this is not an official build of Chrome
   //
   // A full version number string could look similar to:
-  // "5.0.322.0-F-devel".
+  // "129.0.6668.89-64-devel".
   //
-  // This value, when available, is more trustworthy than the UA string
-  // associated with the request; and including the postfix, may be more
-  // specific.
+  // This value is more trustworthy than the UA string associated with the
+  // request as it is not user-modifiable.
   optional string app_version = 2;
 
   // The application can create logs about previous versions. In particular the
@@ -692,6 +685,8 @@ message SystemProfileProto {
   // The unhashed client_id for this report. This is a uuid in its canonical
   // textual representation in the form 8-4-4-4-12 for a total of 36 characters.
   // Used to simulate field trial assignments for the client.
+  // This field is set when MetricsService::CreateLog is called, and the value
+  // is normally equal to the MetricsStateManager's initial_client_id_.
   optional string client_uuid = 34;
 
   // The session's hash. At the beginning of a Chrome session, a random number

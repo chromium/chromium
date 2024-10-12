@@ -266,7 +266,7 @@ message OmniboxEventProto {
     // Zero-prefix query suggestions based on device local history.
     ZERO_SUGGEST_LOCAL_HISTORY = 18;
     // Only used by Android Chrome. Represents a suggestion showing query tiles
-    // that users can tap on for bulding queries.
+    // that users can tap on for building queries.
     QUERY_TILE = 19;
     // Clusters generated on-device from the user's Chrome history.
     HISTORY_CLUSTER = 20;
@@ -294,6 +294,8 @@ message OmniboxEventProto {
     HISTORY_EMBEDDINGS = 26;
     // Caches and suggests recent calculator answers from the search provider.
     CALCULATOR = 27;
+    // URLs amongst the user's synced sessions.
+    CROSS_DEVICE_TAB = 28;
   }
 
   // The result set displayed on the completion popup
@@ -391,6 +393,10 @@ message OmniboxEventProto {
       NULL_RESULT_MESSAGE = 38;         // Informational messages that cannot be
                                         // navigated to. IPH suggestions which
                                         // use this type are deletable.
+      CROSS_DEVICE_TAB = 39;            // A URL opened on another device.
+      HISTORY_EMBEDDINGS_ANSWER = 40;   // A generated answer based on past
+                                        // visits with similar embeddings to the
+                                        // query.
     }
     optional ResultType result_type = 2;
 
