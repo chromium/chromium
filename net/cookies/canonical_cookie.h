@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "crypto/process_bound_string.h"
 #include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_params.h"
@@ -211,7 +212,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   }
 
   // See CookieBase for other accessors.
-  const std::string& Value() const { return value_; }
+  std::string Value() const;
   const base::Time& ExpiryDate() const { return expiry_date_; }
   const base::Time& LastAccessDate() const { return last_access_date_; }
   const base::Time& LastUpdateDate() const { return last_update_date_; }
@@ -412,7 +413,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // These are the fields specific to CanonicalCookie. See CookieBase for other
   // data fields.
   // If adding more data fields, please also adjust GetAllDataMembersAsTuple().
-  std::string value_;
+  std::optional<crypto::ProcessBoundString> value_;
   base::Time expiry_date_;
   base::Time last_access_date_;
   base::Time last_update_date_;

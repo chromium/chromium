@@ -1730,6 +1730,7 @@ source_set("net_export_header") {
 source_set("net_deps") {
   visibility = [
     ":net",
+    "//crypto",
     "//net/dns",
     "//net/dns:dns_client",
     "//net/dns:host_resolver",

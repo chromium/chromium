@@ -759,6 +759,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
                                  cookie_partition_key, source_type, status);
 }
 
+std::string CanonicalCookie::Value() const {
+  if (!value_.has_value()) {
+    return std::string();
+  }
+  return value_->value();
+}
+
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
     const CanonicalCookie& secure_cookie) const {
   // Partition keys must both be equivalent.
@@ -896,7 +903,7 @@ base::TimeDelta CanonicalCookie::GetLaxAllowUnsafeThresholdAge() const {
 std::string CanonicalCookie::DebugString() const {
   return base::StringPrintf(
       "name: %s value: %s domain: %s path: %s creation: %" PRId64,
-      Name().c_str(), value_.c_str(), Domain().c_str(), Path().c_str(),
+      Name().c_str(), Value().c_str(), Domain().c_str(), Path().c_str(),
       static_cast<int64_t>(CreationDate().ToTimeT()));
 }
 
@@ -927,12 +934,12 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   // here because we don't want to enforce the size checks on names or values
   // that may have been reconstituted from the cookie store.
   if (ParsedCookie::ParseTokenString(Name()) != Name() ||
-      !ParsedCookie::ValueMatchesParsedValue(value_)) {
+      !ParsedCookie::ValueMatchesParsedValue(Value())) {
     return false;
   }
 
   if (!ParsedCookie::IsValidCookieName(Name()) ||
-      !ParsedCookie::IsValidCookieValue(value_)) {
+      !ParsedCookie::IsValidCookieValue(Value())) {
     return false;
   }
 
@@ -976,7 +983,7 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
       break;
   }
 
-  if (Name() == "" && HasHiddenPrefixName(value_)) {
+  if (Name() == "" && HasHiddenPrefixName(Value())) {
     return false;
   }
 
