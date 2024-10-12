@@ -2331,10 +2331,6 @@
       name: "HTMLInvokeTargetAttribute",
       status: "experimental",
     },
-    {
-      name: "HTMLMenuElementIsListOwner",
-      status: "stable",
-    },
     // The `<object>` should follow the specification:
     // > Fallback: The object element represents the element's children.
     // > This is the element's fallback content.

@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -27,9 +26,7 @@ bool ListItemOrdinal::IsListOwner(const Node& node) {
   // See https://html.spec.whatwg.org/#the-li-element and
   // https://drafts.csswg.org/css-contain-2/#containment-style for more details.
   return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node) ||
-         (RuntimeEnabledFeatures::HTMLMenuElementIsListOwnerEnabled() &&
-          IsA<HTMLMenuElement>(node)) ||
-         HasStyleContainment(node);
+         IsA<HTMLMenuElement>(node) || HasStyleContainment(node);
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
