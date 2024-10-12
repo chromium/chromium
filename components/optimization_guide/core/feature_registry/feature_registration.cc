@@ -39,9 +39,9 @@ const char kHistorySearchEnterprisePolicyAllowed[] =
 const char kProductSpecificationsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.tab_compare_settings_enterprise_policy";
 
-const char kFormsPredictionsEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.forms_predictions_enterprise_policy_"
-    "allowed";
+const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.autofill_prediction_improvements_"
+    "enterprise_policy_allowed";
 
 }  // namespace prefs
 
@@ -206,10 +206,11 @@ void RegisterProductSpecifications() {
   MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
 }
 
-void RegisterFormsPredictions() {
+void RegisterAutofillPredictions() {
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
-          prefs::kFormsPredictionsEnterprisePolicyAllowed);
+          prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed);
+
   UserFeedbackCallback fp_logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
         return request_proto.forms_predictions().quality().user_feedback();
@@ -247,7 +248,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterWallpaperSearch();
     RegisterHistorySearch();
     RegisterProductSpecifications();
-    RegisterFormsPredictions();
+    RegisterAutofillPredictions();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

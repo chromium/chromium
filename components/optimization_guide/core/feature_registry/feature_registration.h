@@ -23,7 +23,7 @@ extern const char kHistorySearchEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kProductSpecificationsEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kFormsPredictionsEnterprisePolicyAllowed[];
+extern const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[];
 }  // namespace prefs
 
 namespace features {
