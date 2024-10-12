@@ -223,9 +223,35 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     test('FiresClick', async () => {
       const resultsElements = getResultElements();
       const resultClickEventPromise = eventToPromise('result-click', element);
-      resultsElements[0]!.dispatchEvent(new Event('click'));
+      // Prevent clicking from actually open in new tabs for native anchor tags.
+      resultsElements[0]!.addEventListener('click', (e) => e.preventDefault());
+      resultsElements[0]!.dispatchEvent(new MouseEvent('click', {
+        button: 1,
+        altKey: true,
+        metaKey: false,
+        shiftKey: true,
+        ctrlKey: false,
+        cancelable: true,
+      }));
       const resultClickEvent = await resultClickEventPromise;
-      assertEquals(mockResults[0], resultClickEvent.detail);
+      assertEquals(mockResults[0], resultClickEvent.detail.item);
+      assertEquals(true, resultClickEvent.detail.middleButton);
+      assertEquals(true, resultClickEvent.detail.altKey);
+      assertEquals(false, resultClickEvent.detail.ctrlKey);
+      assertEquals(false, resultClickEvent.detail.metaKey);
+      assertEquals(true, resultClickEvent.detail.shiftKey);
+    });
+
+    test('FiresContextMenu', async () => {
+      const resultsElements = getResultElements();
+      const resultContextMenuEventPromise =
+          eventToPromise('result-context-menu', element);
+      resultsElements[0]!.dispatchEvent(
+          new MouseEvent('contextmenu', {clientX: 50, clientY: 100}));
+      const resultContextMenuEvent = await resultContextMenuEventPromise;
+      assertEquals(mockResults[0], resultContextMenuEvent.detail.item);
+      assertEquals(50, resultContextMenuEvent.detail.x);
+      assertEquals(100, resultContextMenuEvent.detail.y);
     });
 
     test('FiresClickOnMoreActions', async () => {
@@ -394,6 +420,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     });
 
     test('SendsQualityLogOnDisconnect', async () => {
+      if (!enableAnswers) {
+        return;
+      }
       element.remove();
       const [clickedIndices, numChars] =
           await handler.whenCalled('sendQualityLog');
@@ -402,6 +431,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     });
 
     test('SendsQualityLogOnBeforeUnload', async () => {
+      if (!enableAnswers) {
+        return;
+      }
       window.dispatchEvent(new Event('beforeunload'));
       const [clickedIndices, numChars] =
           await handler.whenCalled('sendQualityLog');
@@ -410,6 +442,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     });
 
     test('ForceFlushesQualityLogOnBeforeUnload', async () => {
+      if (!enableAnswers) {
+        return;
+      }
       handler.resetResolver('sendQualityLog');
       // Make the min age really long so we can test a beforeunload happening
       // before results are considered 'stable'.
@@ -633,11 +668,6 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertTrue(!!errorEl);
       assertTrue(isVisible(errorEl));
       assertEquals('Sorry, can\'t help you with that.', errorEl.innerText);
-
-      await updateAnswerStatus(AnswerStatus.kExecutionCanceled);
-      assertTrue(isVisible(errorEl));
-      assertEquals(
-          'Something went wrong. Please try again later.', errorEl.innerText);
 
       await updateAnswerStatus(AnswerStatus.kExecutionCanceled);
       assertTrue(isVisible(errorEl));

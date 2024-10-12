@@ -256,7 +256,7 @@ void HistoryClustersHandler::SetQuery(const std::string& query) {
   }
 }
 
-void HistoryClustersHandler::OpenHistoryCluster(
+void HistoryClustersHandler::OpenHistoryUrl(
     const GURL& url,
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // In the Side Panel, the default is the current tab. From History WebUI, the

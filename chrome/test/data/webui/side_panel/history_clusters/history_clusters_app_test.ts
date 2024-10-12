@@ -43,6 +43,15 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     return app.shadowRoot!.querySelector('cr-history-embeddings');
   }
 
+  async function forceEmbeddingsComponent() {
+    // Force a search so that the cr-history-embeddings component is available.
+    app.query = 'two words';
+    await app.updateComplete;
+    const embeddingsComponent = getEmbeddingsComponent();
+    assertTrue(!!embeddingsComponent);
+    return embeddingsComponent;
+  }
+
   test('SwitchesSearchIcon', async () => {
     assertEquals('history-embeddings:search', app.$.searchbox.iconOverride);
 
@@ -56,12 +65,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
   });
 
   test('DisclaimerLink', async () => {
-    // Force a search so that the cr-history-embeddings component is available.
-    app.query = 'two words';
-    await app.updateComplete;
-
-    const historyEmbeddingsElement =
-        app.shadowRoot!.querySelector('cr-history-embeddings');
+    const historyEmbeddingsElement = await forceEmbeddingsComponent();
     assertTrue(!!historyEmbeddingsElement);
     assertFalse(historyEmbeddingsElement.forceSuppressLogging);
 
@@ -121,12 +125,63 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
         app.$.historyClusters.className);
   });
 
-  test('RemovesEmbeddingItems', async () => {
-    // Force a search so that the cr-history-embeddings component is available.
-    app.query = 'two words';
-    await app.updateComplete;
+  test('OpensEmbeddingItems', async () => {
+    const embeddingsComponent = await forceEmbeddingsComponent();
+    const mockItem = {
+      title: 'Google',
+      url: {url: 'http://google.com'},
+      urlForDisplay: 'google.com',
+      relativeTime: '2 hours ago',
+      shortDateTime: 'Sept 2, 2022',
+      sourcePassage: 'Google description',
+      lastUrlVisitTimestamp: 1000,
+      answerData: null,
+    };
+    const mouseEventArgs = {
+      middleButton: true,
+      altKey: true,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: true,
+    };
+    embeddingsComponent.dispatchEvent(new CustomEvent('result-click', {
+      detail: {
+        item: mockItem,
+        ...mouseEventArgs,
+      },
+    }));
+    const openUrlArgs = await clustersHandler.whenCalled('openHistoryUrl');
+    assertDeepEquals(mockItem.url, openUrlArgs[0]);
+    assertDeepEquals(mouseEventArgs, openUrlArgs[1]);
+  });
 
-    const embeddingsComponent = getEmbeddingsComponent();
+  test('ShowsContextMenusForEmbeddingItems', async () => {
+    const embeddingsComponent = await forceEmbeddingsComponent();
+    const mockItem = {
+      title: 'Google',
+      url: {url: 'http://google.com'},
+      urlForDisplay: 'google.com',
+      relativeTime: '2 hours ago',
+      shortDateTime: 'Sept 2, 2022',
+      sourcePassage: 'Google description',
+      lastUrlVisitTimestamp: 1000,
+      answerData: null,
+    };
+    const mouseEventArgs = {x: 100, y: 200};
+    embeddingsComponent.dispatchEvent(new CustomEvent('result-context-menu', {
+      detail: {
+        item: mockItem,
+        ...mouseEventArgs,
+      },
+    }));
+    const contextMenuArgs =
+        await clustersHandler.whenCalled('showContextMenuForURL');
+    assertDeepEquals(mockItem.url, contextMenuArgs[0]);
+    assertDeepEquals(mouseEventArgs, contextMenuArgs[1]);
+  });
+
+  test('RemovesEmbeddingItems', async () => {
+    const embeddingsComponent = await forceEmbeddingsComponent();
     assertTrue(!!embeddingsComponent);
     embeddingsComponent.dispatchEvent(new CustomEvent('remove-item-click', {
       detail: {

@@ -192,11 +192,10 @@ suite('history-clusters', () => {
 
     urlVisitHeader!.click();
 
-    const openHistoryClusterArgs =
-        await handler.whenCalled('openHistoryCluster');
+    const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
-    assertEquals(urlVisit!.$.url.innerHTML, openHistoryClusterArgs[0].url);
-    assertEquals(1, handler.getCallCount('openHistoryCluster'));
+    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0].url);
+    assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
 
   test('Navigate to url visit via keyboard', async () => {
@@ -225,12 +224,11 @@ suite('history-clusters', () => {
     urlVisitHeader!.dispatchEvent(shiftEnter);
 
     // Navigates to the first match is selected.
-    const openHistoryClusterArgs =
-        await handler.whenCalled('openHistoryCluster');
+    const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
-    assertEquals(urlVisit!.$.url.innerHTML, openHistoryClusterArgs[0].url);
-    assertEquals(true, openHistoryClusterArgs[1].shiftKey);
-    assertEquals(1, handler.getCallCount('openHistoryCluster'));
+    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0].url);
+    assertEquals(true, openHistoryUrlArgs[1].shiftKey);
+    assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
 
   test('url visit requests image', async () => {

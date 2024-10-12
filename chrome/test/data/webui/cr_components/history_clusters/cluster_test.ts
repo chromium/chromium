@@ -142,7 +142,7 @@ suite('cluster element', () => {
     assertEquals(2, queries.length);
 
     queries[0]!.$.searchQueryLink.click();
-    const params = await handler.whenCalled('openHistoryCluster');
+    const params = await handler.whenCalled('openHistoryUrl');
     assertEquals('https://www.google.com', params[0].url);
   });
 });

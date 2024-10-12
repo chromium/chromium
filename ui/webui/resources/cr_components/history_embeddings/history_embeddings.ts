@@ -49,6 +49,21 @@ export interface HistoryEmbeddingsElement {
   };
 }
 
+export type HistoryEmbeddingsResultClickEvent = CustomEvent<{
+  item: SearchResultItem,
+  middleButton: boolean,
+  altKey: boolean,
+  ctrlKey: boolean,
+  metaKey: boolean,
+  shiftKey: boolean,
+}>;
+
+export type HistoryEmbeddingsResultContextMenuEvent = CustomEvent<{
+  item: SearchResultItem,
+  x: number,
+  y: number,
+}>;
+
 export type HistoryEmbeddingsMoreActionsClickEvent =
     CustomEvent<SearchResultItem>;
 
@@ -318,8 +333,28 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     this.$.sharedMenu.get().close();
   }
 
-  private onResultClick_(e: DomRepeatEvent<SearchResultItem>) {
-    this.dispatchEvent(new CustomEvent('result-click', {detail: e.model.item}));
+  private onResultContextMenu_(
+      e: DomRepeatEvent<SearchResultItem, MouseEvent>) {
+    this.dispatchEvent(new CustomEvent('result-context-menu', {
+      detail: {
+        item: e.model.item,
+        x: e.clientX,
+        y: e.clientY,
+      },
+    }));
+  }
+
+  private onResultClick_(e: DomRepeatEvent<SearchResultItem, MouseEvent>) {
+    this.dispatchEvent(new CustomEvent('result-click', {
+      detail: {
+        item: e.model.item,
+        middleButton: e.button === 1,
+        altKey: e.altKey,
+        ctrlKey: e.ctrlKey,
+        metaKey: e.metaKey,
+        shiftKey: e.shiftKey,
+      },
+    }));
 
     this.dispatchEvent(new CustomEvent('record-history-link-click', {
       bubbles: true,

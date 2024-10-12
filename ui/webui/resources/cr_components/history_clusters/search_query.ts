@@ -116,7 +116,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
 
   private openUrl_(event: MouseEvent|KeyboardEvent) {
     assert(this.searchQuery);
-    BrowserProxyImpl.getInstance().handler.openHistoryCluster(
+    BrowserProxyImpl.getInstance().handler.openHistoryUrl(
         this.searchQuery.url, {
           middleButton: false,
           altKey: event.altKey,

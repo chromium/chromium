@@ -89,9 +89,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void SetQuery(const std::string& query);
 
   // mojom::PageHandler:
-  void OpenHistoryCluster(
-      const GURL& url,
-      ui::mojom::ClickModifiersPtr click_modifiers) override;
+  void OpenHistoryUrl(const GURL& url,
+                      ui::mojom::ClickModifiersPtr click_modifiers) override;
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
   void ShowSidePanelUI() override;
   void ToggleVisibility(bool visible,

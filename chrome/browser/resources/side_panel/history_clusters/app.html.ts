@@ -34,6 +34,8 @@ ${this.enableHistoryEmbeddings_ ? html`
       .searchQuery="${this.query}"
       .showRelativeTimes="${true}"
       .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
+      @result-click="${this.onHistoryEmbeddingsResultClick_}"
+      @result-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
       @remove-item-click="${this.onHistoryEmbeddingsItemRemoveClick_}">
   </cr-history_embeddings>
   ` : ''}
