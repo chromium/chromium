@@ -146,6 +146,7 @@ Checkbox::Checkbox(const std::u16string& label,
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
   SetAndUpdateAccessibleDefaultActionVerb();
+  UpdateAccessibleCheckedState();
 }
 
 Checkbox::~Checkbox() = default;
@@ -154,11 +155,11 @@ void Checkbox::SetChecked(bool checked) {
   if (GetChecked() == checked)
     return;
   checked_ = checked;
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   UpdateImage();
   OnPropertyChanged(&checked_, kPropertyEffectsNone);
   NotifyViewControllerCallback();
   SetAndUpdateAccessibleDefaultActionVerb();
+  UpdateAccessibleCheckedState();
 }
 
 bool Checkbox::GetChecked() const {
@@ -185,14 +186,6 @@ bool Checkbox::GetMultiLine() const {
 
 void Checkbox::SetCheckedIconImageColor(SkColor color) {
   checked_icon_image_color_ = color;
-}
-
-void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LabelButton::GetAccessibleNodeData(node_data);
-  const ax::mojom::CheckedState checked_state =
-      GetChecked() ? ax::mojom::CheckedState::kTrue
-                   : ax::mojom::CheckedState::kFalse;
-  node_data->SetCheckedState(checked_state);
 }
 
 gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
@@ -277,6 +270,12 @@ int Checkbox::GetIconState(ButtonState for_state) const {
 void Checkbox::NotifyClick(const ui::Event& event) {
   SetChecked(!GetChecked());
   LabelButton::NotifyClick(event);
+}
+
+void Checkbox::UpdateAccessibleCheckedState() {
+  GetViewAccessibility().SetCheckedState(GetChecked()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 ui::NativeTheme::Part Checkbox::GetThemePart() const {
