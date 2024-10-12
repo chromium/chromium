@@ -22,7 +22,6 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/wpt_internal/",
 
     # Configuration files
-    "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/TestLists/",

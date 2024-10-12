@@ -1297,7 +1297,7 @@ if (use_blink && !is_cronet_build) {
       "//testing/scripts/run_isolated_script_test.py",
       "//testing/xvfb.py",
       "//third_party/blink/tools/",
-      "//third_party/blink/web_tests/external/wpt/config.json",
+      "//third_party/blink/web_tests/external/wpt/.config.json",
       "//third_party/blink/web_tests/resources/",
       "//third_party/blink/web_tests/TestLists/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",

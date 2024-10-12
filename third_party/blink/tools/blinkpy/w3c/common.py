@@ -25,7 +25,7 @@ DEFAULT_WPT_COMMITTER_NAME = 'Chromium WPT Sync'
 DEFAULT_WPT_COMMITTER_EMAIL = 'blink-w3c-test-autoroller@chromium.org'
 
 EXPORT_DENYLIST = {
-    'third_party/blink/web_tests/external/wpt/config.json',
+    'third_party/blink/web_tests/external/wpt/.config.json',
 }
 
 LEGACY_MAIN_BRANCH_NAME = 'retsam'[::-1]

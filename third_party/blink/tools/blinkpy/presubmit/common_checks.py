@@ -49,7 +49,7 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
         '--ignore-glob=*.ini',
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
-        '--ignore-glob=config.json',
+        '--ignore-glob=.config.json',
         f'--paths-file={paths_name}',
     ]
 

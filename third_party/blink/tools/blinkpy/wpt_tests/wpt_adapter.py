@@ -200,6 +200,39 @@ class WPTAdapter:
         if self.options.gtest_filter:
             self.paths.extend(self.options.gtest_filter.split(':'))
 
+    def create_config_files(self):
+        """Create config files based on its template and change the paths to absolute paths.
+        """
+        # create //third_party/blink/web_tests/external/wpt/config.json
+        src_config_json = self.finder.path_from_wpt_tests('.config.json')
+        with self.fs.open_text_file_for_reading(src_config_json) as src:
+            data = json.load(src)
+        data['aliases'] = [{
+            **alias,
+            'local-dir':
+            self.finder.path_from_web_tests(alias['local-dir']),
+        } for alias in data['aliases']]
+        dst_config_json = self.finder.path_from_wpt_tests('config.json')
+        with self.fs.open_text_file_for_writing(dst_config_json) as dst:
+            json.dump(data, dst)
+
+        # TODO: Remove once no wpt_internal tests are run with Chrome
+        # create //third_party/blink/web_tests/wptrunner.blink.ini with content
+        # as below:
+        #     [manifest:internal]
+        #     tests = %(pwd)s/wpt_internal
+        #     metadata = %(pwd)s/wpt_internal
+        #     url_base = /wpt_internal/
+        if self.options.run_wpt_internal:
+            ini_file = self.finder.path_from_web_tests('wptrunner.blink.ini')
+            with self.fs.open_text_file_for_writing(ini_file) as fp:
+                fp.write('[manifest:internal]\n')
+                fp.write('tests = %s\n' %
+                         self.finder.path_from_web_tests('wpt_internal'))
+                fp.write('metadata = %s\n' %
+                         self.finder.path_from_web_tests('wpt_internal'))
+                fp.write('url_base = /wpt_internal/\n')
+
     def log_config(self):
         logger.info(f'Running tests for {self.product.name}')
         logger.info(f'Using port "{self.port.name()}"')
@@ -554,17 +587,6 @@ class WPTAdapter:
                 self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
-            # Restore the original CWD as soon as the call into `wpt run` is
-            # over. This ensures relative paths for `--json-test-results` and
-            # other options work correctly.
-            stack.callback(self.fs.chdir, self.fs.getcwd())
-            # Changing the CWD is not ideal, but necessary for `wptserve` to
-            # resolve relative paths in `external/wpt/config.json` correctly.
-            #
-            # TODO(crbug.com/362344569): Replace this workaround. One option is
-            # to add a `wpt run` parameter to point to a wptserve config with
-            # absolutized paths.
-            self.fs.chdir(self.port.web_tests_dir())
             yield runner_options
 
     @functools.cached_property
@@ -810,6 +832,7 @@ def main(argv) -> int:
             exit_code = _run_with_upstream_wpt(host, argv)
         else:
             adapter.set_up_derived_options()
+            adapter.create_config_files()
             exit_code = adapter.run_tests()
     except KeyboardInterrupt:
         # This clause catches interrupts outside `WPTAdapter.run_tests()`.
