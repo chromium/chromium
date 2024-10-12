@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_translation_internals.mojom;
+
+// Status of a language pack.
+enum LanguagePackStatus {
+  kNotInstalled,
+  kInstalling,
+  kInstalled,
+};
+
+// Information about a language pack.
+struct LanguagePackInfo {
+  // The name of the language pack.
+  string name;
+  // The status of the language pack.
+  LanguagePackStatus status;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page, pending_receiver<PageHandler>
+    handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Installs the language pack at the given index in the list of available
+  // language packs passed via OnLanguagePackStatus.
+  InstallLanguagePackage(uint32 package_index);
+
+  // Uninstalls the language pack at the given index in the list of available
+  // language packs passed via OnLanguagePackStatus.
+  UninstallLanguagePackage(uint32 package_index);
+};
+
+// Renderer-side handler for internal page to process the browser process.
+// This handler is implemented in on_device_translation_internals.ts
+interface Page {
+  // Called when the status of the language packs changes.
+  OnLanguagePackStatus(array<LanguagePackInfo> status);
+};

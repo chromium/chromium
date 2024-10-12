@@ -53,6 +53,20 @@ class OnDeviceTranslationServiceController {
                     const std::string& target_lang,
                     base::OnceCallback<void(bool)> callback);
 
+  // Returns the language packs that are registered.
+  static std::set<on_device_translation::LanguagePackKey>
+  GetRegisteredLanguagePacks();
+  // Returns the language packs that are installed.
+  static std::set<on_device_translation::LanguagePackKey>
+  GetInstalledLanguagePacks();
+
+  // Registers the language pack component.
+  static void RegisterLanguagePackComponent(
+      on_device_translation::LanguagePackKey);
+  // Uninstalls the language pack component.
+  static void UninstallLanguagePackage(
+      on_device_translation::LanguagePackKey language_pack_key);
+
  private:
   friend base::NoDestructor<OnDeviceTranslationServiceController>;
 
@@ -94,9 +108,6 @@ class OnDeviceTranslationServiceController {
 
   // Returns the language packs that are installed or set by the command line.
   std::vector<LanguagePackInfo> GetLanguagePackInfo();
-
-  // Registers the language pack component.
-  void RegisterLanguagePackComponent(on_device_translation::LanguagePackKey);
 
   // Called when the TranslateKitBinaryPath pref is changed.
   void OnTranslateKitBinaryPathChanged(const std::string& pref_name);

@@ -186,6 +186,8 @@ inline constexpr char kChromeUIOmniboxPopupHost[] = "omnibox-popup.top-chrome";
 inline constexpr char kChromeUIOmniboxPopupURL[] =
     "chrome://omnibox-popup.top-chrome/";
 inline constexpr char kChromeUIOmniboxURL[] = "chrome://omnibox/";
+inline constexpr char kChromeUIOnDeviceTranslationInternalsHost[] =
+    "on-device-translation-internals";
 inline constexpr char kChromeUIPasswordManagerCheckupURL[] =
     "chrome://password-manager/checkup?start=true";
 inline constexpr char kChromeUIPasswordManagerInternalsHost[] =

@@ -125,6 +125,10 @@ group("resources") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    public_deps += [ "on_device_translation_internals:resources" ]
+  }
+
   if (is_linux || is_chromeos) {
     public_deps += [ "webui_js_error:resources" ]
   }

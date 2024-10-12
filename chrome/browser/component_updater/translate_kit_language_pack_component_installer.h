@@ -73,6 +73,10 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,
     PrefService* pref_service);
 
+void UninstallTranslateKitLanguagePackComponent(
+    PrefService* pref_service,
+    on_device_translation::LanguagePackKey language_pack_key);
+
 }  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_TRANSLATE_KIT_LANGUAGE_PACK_COMPONENT_INSTALLER_H_

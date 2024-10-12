@@ -160,10 +160,10 @@ void RegisterTranslateKitLanguagePackComponent(
           *on_device_translation::kLanguagePackComponentConfigMap.at(
               language_pack_key)),
       true);
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
+  base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<TranslateKitLanguagePackComponentInstallerPolicy>(
-          pref_service, language_pack_key));
-  installer->Register(cus, std::move(registered_callback));
+          pref_service, language_pack_key))
+      ->Register(cus, std::move(registered_callback));
 }
 
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
@@ -177,6 +177,24 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
                                                 base::OnceClosure());
     }
   }
+}
+
+void UninstallTranslateKitLanguagePackComponent(
+    PrefService* pref_service,
+    LanguagePackKey language_pack_key) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const auto* config =
+      on_device_translation::kLanguagePackComponentConfigMap.at(
+          language_pack_key);
+  pref_service->SetBoolean(
+      on_device_translation::GetRegisteredFlagPrefName(*config), false);
+  pref_service->SetFilePath(
+      on_device_translation::GetComponentPathPrefName(*config),
+      base::FilePath());
+  base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<TranslateKitLanguagePackComponentInstallerPolicy>(
+          pref_service, language_pack_key))
+      ->Uninstall();
 }
 
 }  // namespace component_updater

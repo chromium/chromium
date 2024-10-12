@@ -3104,10 +3104,15 @@ static_library("ui") {
       "webui/app_settings/web_app_settings_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
+      "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.cc",
+      "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.h",
+      "webui/on_device_translation_internals/on_device_translation_internals_ui.cc",
+      "webui/on_device_translation_internals/on_device_translation_internals_ui.h",
     ]
 
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/shortcuts",
       "//components/capture_mode",
       "//services/audio/public/mojom",

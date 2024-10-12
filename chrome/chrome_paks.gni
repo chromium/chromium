@@ -439,7 +439,10 @@ template("chrome_extra_paks") {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [ "$root_gen_dir/chrome/app_settings_resources.pak" ]
+      sources += [
+        "$root_gen_dir/chrome/app_settings_resources.pak",
+        "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
+      ]
       deps += [ "//chrome/browser/resources/app_settings:resources" ]
     }
 

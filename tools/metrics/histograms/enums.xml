@@ -34356,6 +34356,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-476825727" label="chrome://user-notes-side-panel.top-chrome/"/>
   <int value="-451371558" label="chrome://serviceworker-internals/"/>
   <int value="-443189279" label="chrome://enterprise-profile-welcome/"/>
+  <int value="-407160627" label="chrome://on-device-translation-internals/"/>
   <int value="-394586044" label="chrome://confirm-password-change/"/>
   <int value="-377028639" label="chrome://copresence/"/>
   <int value="-359703631" label="chrome://slow_trace/"/>

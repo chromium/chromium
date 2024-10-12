@@ -136,6 +136,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
+#include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals_ui.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #endif
 
@@ -1181,6 +1182,10 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      on_device_translation_internals::mojom::PageHandlerFactory,
+      OnDeviceTranslationInternalsUI>(map);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

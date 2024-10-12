@@ -90,29 +90,6 @@ std::string ToString(base::FilePath path) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-// Returns the language packs that were installed and ready to use.
-std::set<LanguagePackKey> GetInstalledLanguagePacks() {
-  std::set<LanguagePackKey> insalled_pack_keys;
-  for (const auto& it : kLanguagePackComponentConfigMap) {
-    if (!GetFilePathFromGlobalPrefs(GetComponentPathPrefName(*it.second))
-             .empty()) {
-      insalled_pack_keys.insert(it.first);
-    }
-  }
-  return insalled_pack_keys;
-}
-
-// Returns the language packs that were registered.
-std::set<LanguagePackKey> GetRegisteredLanguagePacks() {
-  std::set<LanguagePackKey> registered_pack_keys;
-  for (const auto& it : kLanguagePackComponentConfigMap) {
-    if (GetBooleanFromGlobalPrefs(GetRegisteredFlagPrefName(*it.second))) {
-      registered_pack_keys.insert(it.first);
-    }
-  }
-  return registered_pack_keys;
-}
-
 }  // namespace
 
 OnDeviceTranslationServiceController::PendingTask::PendingTask(
@@ -368,6 +345,33 @@ void OnDeviceTranslationServiceController::CanTranslate(
   GetRemote()->CanTranslate(source_lang, target_lang, std::move(callback));
 }
 
+// static
+// Returns the language packs that were registered.
+std::set<LanguagePackKey>
+OnDeviceTranslationServiceController::GetRegisteredLanguagePacks() {
+  std::set<LanguagePackKey> registered_pack_keys;
+  for (const auto& it : kLanguagePackComponentConfigMap) {
+    if (GetBooleanFromGlobalPrefs(GetRegisteredFlagPrefName(*it.second))) {
+      registered_pack_keys.insert(it.first);
+    }
+  }
+  return registered_pack_keys;
+}
+
+// static
+// Returns the language packs that were installed and ready to use.
+std::set<LanguagePackKey>
+OnDeviceTranslationServiceController::GetInstalledLanguagePacks() {
+  std::set<LanguagePackKey> insalled_pack_keys;
+  for (const auto& it : kLanguagePackComponentConfigMap) {
+    if (!GetFilePathFromGlobalPrefs(GetComponentPathPrefName(*it.second))
+             .empty()) {
+      insalled_pack_keys.insert(it.first);
+    }
+  }
+  return insalled_pack_keys;
+}
+
 // Returns the language packs that are installed or set by the command line.
 std::vector<OnDeviceTranslationServiceController::LanguagePackInfo>
 OnDeviceTranslationServiceController::GetLanguagePackInfo() {
@@ -390,6 +394,7 @@ OnDeviceTranslationServiceController::GetLanguagePackInfo() {
   return packages;
 }
 
+// static
 // Register the language pack component.
 void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
     LanguagePackKey language_pack) {
@@ -400,6 +405,13 @@ void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
           &component_updater::TranslateKitLanguagePackComponentInstallerPolicy::
               UpdateComponentOnDemand,
           language_pack));
+}
+
+// static
+void OnDeviceTranslationServiceController::UninstallLanguagePackage(
+    LanguagePackKey language_pack_key) {
+  component_updater::UninstallTranslateKitLanguagePackComponent(
+      g_browser_process->local_state(), language_pack_key);
 }
 
 // Called when the TranslateKitBinaryPath pref is changed.
