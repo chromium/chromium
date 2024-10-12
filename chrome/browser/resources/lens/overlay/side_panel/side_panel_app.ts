@@ -9,6 +9,7 @@ import '//resources/cr_components/searchbox/searchbox.js';
 import './side_panel_ghost_loader.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -33,7 +34,8 @@ export interface LensSidePanelAppElement {
   };
 }
 
-export class LensSidePanelAppElement extends PolymerElement {
+const LensSidePanelAppElementBase = HelpBubbleMixin(PolymerElement);
+export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   static get is() {
     return 'lens-side-panel-app';
   }
@@ -104,10 +106,13 @@ export class LensSidePanelAppElement extends PolymerElement {
   override ready() {
     super.ready();
 
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.addEventListener('focusin', () => this.onSearchboxFocusIn_());
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.addEventListener('focusout', () => this.onSearchboxFocusOut_());
+    const searchbox =
+        this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox');
+    if (searchbox) {
+      searchbox.addEventListener('focusin', () => this.onSearchboxFocusIn_());
+      searchbox.addEventListener('focusout', () => this.onSearchboxFocusOut_());
+      this.registerHelpBubble('kLensSidePanelSearchBoxElementId', searchbox);
+    }
   }
 
   override connectedCallback() {
@@ -175,6 +180,9 @@ export class LensSidePanelAppElement extends PolymerElement {
 
   private onSearchboxFocusIn_() {
     this.isBackArrowVisible = false;
+    this.notifyHelpBubbleAnchorCustomEvent(
+        'kLensSidePanelSearchBoxElementId',
+        'kLensSidePanelSearchBoxFocusedEventId');
   }
 
   private onSearchboxFocusOut_() {

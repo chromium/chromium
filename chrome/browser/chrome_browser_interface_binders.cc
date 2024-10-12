@@ -1319,7 +1319,8 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory, InternalsUI,
       settings::SettingsUI, ReadingListUI, NewTabPageUI, CustomizeChromeUI,
-      PasswordManagerUI, HistoryUI, lens::LensOverlayUntrustedUI
+      PasswordManagerUI, HistoryUI, lens::LensOverlayUntrustedUI,
+      lens::LensSidePanelUntrustedUI
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
       ,
       ProfilePickerUI
@@ -2001,6 +2002,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<lens::LensSidePanelUntrustedUI>()
         .Add<lens::mojom::LensSidePanelPageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
+        .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
   if (lens::features::IsLensOverlayEnabled()) {

@@ -1470,7 +1470,16 @@ void MaybeRegisterChromeTutorials(
             // Coachmark hides when user starts selecting
             HiddenStep::WaitForHidden(kLensPreselectionBubbleElementId),
 
-            // TODO(crbug.com/372531753): Add search box.
+            // Bubble step - Search box (WebUI context)
+            TutorialDescription::BubbleStep(kLensSidePanelSearchBoxElementId)
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_SEARCH_BOX)
+                .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+                .InAnyContext(),
+
+            // Event step - Click the search box
+            TutorialDescription::EventStep(
+                kLensSidePanelSearchBoxFocusedEventId)
+                .InAnyContext(),
 
             // Bubble step - Pin icon
             TutorialDescription::BubbleStep(kSidePanelPinButtonElementId)
@@ -1481,7 +1490,7 @@ void MaybeRegisterChromeTutorials(
             HiddenStep::WaitForActivated(kSidePanelPinButtonElementId),
 
             // Completion of the tutorial.
-            TutorialDescription::BubbleStep(kTopContainerElementId)
+            TutorialDescription::BubbleStep(kPinnedActionToolbarButtonElementId)
                 .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
                 .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_SUCCESS_BODY)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight));
