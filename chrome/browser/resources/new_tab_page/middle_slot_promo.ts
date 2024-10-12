@@ -170,8 +170,8 @@ export class MiddleSlotPromoElement extends CrLitElement {
         reflect: true,
       },
 
-      hasMobilePromoContent_: {type: Boolean},
       hasDefaultPromo_: {type: Boolean},
+      hasMobilePromoContent_: {type: Boolean},
       promo_: {type: Object},
     };
   }
@@ -179,8 +179,8 @@ export class MiddleSlotPromoElement extends CrLitElement {
   protected mobilePromoEnabled_: boolean =
       loadTimeData.getBoolean('mobilePromoEnabled');
   protected shownMiddleSlotPromoId_: string;
-  private hasMobilePromoContent_ = false;
   private hasDefaultPromo_: boolean|null = null;
+  private hasMobilePromoContent_: boolean|null = null;
   private promo_: Promo;
 
   private blocklistedMiddleSlotPromoId_: string;
@@ -221,20 +221,26 @@ export class MiddleSlotPromoElement extends CrLitElement {
     }
   }
 
-  // Up to one promo type can show at any given time. If the mobile promo is
-  // enabled, it should show whenever the "default" promo is hidden.
-  // Note: To avoid immediately showing a new promo after a user dismisses one,
-  // this behavior is not used in |onDismissPromoButtonClick_()| or
-  // |onUndoDismissPromoButtonClick_()|.
   private updatePromoVisibility_() {
     if (this.hasDefaultPromo_ === null) {
       return;
     }
 
+    // Up to one promo type can show at any given time.
+    // Note: This logic doesn't apply when handling promo dismissal to avoid
+    // immediately showing a new promo after one is dismissed.
     this.$.promoAndDismissContainer.hidden = !this.hasDefaultPromo_;
     if (this.mobilePromoEnabled_) {
       this.$.mobilePromo.hidden =
           this.hasDefaultPromo_ || !this.hasMobilePromoContent_;
+    }
+
+    // Don't fire a load event until we've verified that one or neither of the
+    // promo types (default or mobile) can show. this.mobilePromoEnabled_
+    // becomes false in renderPromo() whenever a default promo is about to
+    // render.
+    if (!this.mobilePromoEnabled_ || this.hasMobilePromoContent_ !== null) {
+      this.fire('ntp-middle-slot-promo-loaded');
     }
   }
 
@@ -243,6 +249,16 @@ export class MiddleSlotPromoElement extends CrLitElement {
   }
 
   private onPromoChange_() {
+    if (this.mobilePromoEnabled_) {
+      if (this.hasMobilePromoContent_ && this.hasDefaultPromo_ !== null) {
+        // Skip calling renderPromo() if we already attempted to render a promo
+        // before AND there is mobile promo content to display. This prevents
+        // the default promo from showing if the mobile promo has already been
+        // displayed, and vice versa.
+        return;
+      }
+    }
+
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
         this.hasDefaultPromo_ = false;
@@ -258,9 +274,10 @@ export class MiddleSlotPromoElement extends CrLitElement {
         const renderedPromoContainer = promo.container;
         assert(renderedPromoContainer);
         this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
+        // Disable the mobile promo since a default promo is going to render.
+        this.mobilePromoEnabled_ = false;
         this.hasDefaultPromo_ = true;
       }
-      this.fire('ntp-middle-slot-promo-loaded');
     });
   }
 
