@@ -312,12 +312,6 @@ void WaylandToplevelWindow::Restore() {
 
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
   DCHECK(connection()->xdg_activation());
-  // xdg-activation implementation in some compositors is still buggy and
-  // Mutter crashes were observed when windows are activated during window
-  // dragging sessions. See https://crbug.com/1366504.
-  if (connection()->IsDragInProgress()) {
-    return;
-  }
   connection()->xdg_activation()->Activate(root_surface()->surface(), token);
 }
 
