@@ -139,11 +139,83 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // Used for testing purposes. No real features use this.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kFormsAnnotations:
-      // TODO: b/361453212 - Add traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation(
+          "forms_annotations_model_execution", R"(
+        semantics {
+          sender: "Autofill Predictions - Forms Annotations"
+          description:
+            "Autofill sends the filled form fields to model execution to "
+            "determine the field types and store them for subsequent "
+            "autofilling of forms."
+          trigger: "User submits a web form."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "User filled form data, title, URL, content of the page, and "
+            "previously saved form entries."
+          internal {
+            contacts {
+              email: "chrome-intelligence-core@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+            type: USER_CONTENT
+          }
+          last_reviewed: "2024-10-10"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this by signing-in to Chrome, and via the "
+            "'Autofill with AI' setting in the 'Autofill and passwords' "
+            "section."
+          chrome_policy {
+            AutofillPredictionSettings {
+              AutofillPredictionSettings: 2
+            }
+          }
+        })");
     case ModelBasedCapabilityKey::kFormsPredictions:
-      // TODO: b/358373261 - Add traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation(
+          "forms_predictions_model_execution", R"(
+        semantics {
+          sender: "Autofill Predictions - Forms Predictions"
+          description:
+            "Autofill sends the filled form fields, and previously saved form "
+            "entries to model execution to predict and prefill the form "
+            "fields."
+          trigger: "User submits a web form."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "User filled form data, title, URL, content of the page, and "
+            "previously saved form entries"
+          internal {
+            contacts {
+              email: "chrome-intelligence-core@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+            type: USER_CONTENT
+          }
+          last_reviewed: "2024-10-10"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this by signing-in to Chrome, and via the "
+            "'Autofill with AI' setting in the 'Autofill and passwords' "
+            "section."
+          chrome_policy {
+            AutofillPredictionSettings {
+              AutofillPredictionSettings: 2
+            }
+          }
+        })");
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
