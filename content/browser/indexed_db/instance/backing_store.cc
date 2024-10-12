@@ -56,6 +56,8 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/active_blob_registry.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
+#include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
 #include "content/browser/indexed_db/status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
@@ -1068,6 +1070,11 @@ Status FindDatabaseId(TransactionalLevelDBDatabase* db,
   return s;
 }
 
+// The number of iterations for every 'round' of the tombstone sweeper.
+const int kTombstoneSweeperRoundIterations = 1000;
+// The maximum total iterations for the tombstone sweeper.
+const int kTombstoneSweeperMaxIterations = 10 * 1000 * 1000;
+
 }  // namespace
 
 BackingStore::BackingStore(
@@ -1093,6 +1100,7 @@ BackingStore::BackingStore(
       std::move(report_outstanding_blobs),
       base::BindRepeating(&BackingStore::ReportBlobUnused,
                           weak_factory_.GetWeakPtr()));
+  InitializeGlobalSweepAndCompactionTimes();
 }
 
 BackingStore::~BackingStore() {
@@ -2843,6 +2851,51 @@ void BackingStore::CleanRecoveryJournalIgnoreReturn() {
   }
   num_aggregated_journal_cleaning_requests_ = 0;
   CleanUpBlobJournal(RecoveryBlobJournalKey::Encode());
+}
+
+std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
+BackingStore::GetPreCloseTasks() {
+  std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>> tasks;
+  if (ShouldRunTombstoneSweeper()) {
+    tasks.push_back(std::make_unique<LevelDbTombstoneSweeper>(
+        kTombstoneSweeperRoundIterations, kTombstoneSweeperMaxIterations,
+        db_->db()));
+  }
+
+  if (ShouldRunCompaction()) {
+    tasks.push_back(std::make_unique<IndexedDBCompactionTask>(db_->db()));
+  }
+  return tasks;
+}
+
+bool BackingStore::ShouldRunTombstoneSweeper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetEarliestSweepTime(db_.get()) > base::Time::Now()) {
+    return false;
+  }
+
+  // A sweep will happen now, so reset the sweep timers.
+  std::unique_ptr<LevelDBDirectTransaction> txn =
+      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(db_.get());
+  if (!UpdateEarliestSweepTime(txn.get()).ok() || !txn->Commit().ok()) {
+    return false;
+  }
+  return true;
+}
+
+bool BackingStore::ShouldRunCompaction() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetEarliestCompactionTime(db_.get()) > base::Time::Now()) {
+    return false;
+  }
+
+  // A compaction will happen now, so reset the compaction timers.
+  std::unique_ptr<LevelDBDirectTransaction> txn =
+      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(db_.get());
+  if (!UpdateEarliestCompactionTime(txn.get()).ok() || !txn->Commit().ok()) {
+    return false;
+  }
+  return true;
 }
 
 Status BackingStore::ClearIndex(BackingStore::Transaction* transaction,

@@ -250,7 +250,7 @@ class BackingStoreTest : public testing::Test {
     bucket_context_ = std::make_unique<BucketContext>(
         bucket_info, temp_dir_.GetPath(), BucketContext::Delegate(),
         quota_manager_proxy_, std::move(blob_storage_context),
-        std::move(fsa_context), base::DoNothing());
+        std::move(fsa_context));
     std::tie(std::ignore, std::ignore, data_loss_info_) =
         bucket_context_->InitBackingStoreIfNeeded(/*create_if_missing=*/true);
 

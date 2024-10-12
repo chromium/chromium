@@ -10,8 +10,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
@@ -187,19 +185,25 @@ template <typename Transaction>
     int64_t database_id,
     int64_t blob_number_generator_current_number);
 
-[[nodiscard]] Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
-                                          base::Time* earliest_sweep);
+// Maximum time delays for tombstone sweeping and compaction tasks, throttled on
+// global and per-bucket frequencies, triggered by backing store close.
+static constexpr base::TimeDelta kMaxGlobalSweepDelay = base::Hours(1);
+static constexpr base::TimeDelta kMaxBucketSweepDelay = base::Days(3);
+static constexpr base::TimeDelta kMaxGlobalCompactionDelay = base::Hours(1);
+static constexpr base::TimeDelta kMaxBucketCompactionDelay = base::Days(3);
 
-template <typename Transaction>
-[[nodiscard]] Status SetEarliestSweepTime(Transaction* txn,
-                                          base::Time earliest_sweep);
+// Get or update the earliest tombstone sweeping and compaction times, using
+// global and per-bucket delays.
+base::Time GetEarliestSweepTime(TransactionalLevelDBDatabase* db);
+Status UpdateEarliestSweepTime(LevelDBDirectTransaction* txn);
+base::Time GetEarliestCompactionTime(TransactionalLevelDBDatabase* db);
+Status UpdateEarliestCompactionTime(LevelDBDirectTransaction* txn);
 
-[[nodiscard]] Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
-                                               base::Time* earliest_compaction);
+// Initialize global times for compaction and tombstone sweeping.
+void InitializeGlobalSweepAndCompactionTimes();
 
-template <typename Transaction>
-[[nodiscard]] Status SetEarliestCompactionTime(Transaction* txn,
-                                               base::Time earliest_compaction);
+// Forcibly reset global times for compaction and tombstone sweeping for tests.
+CONTENT_EXPORT void ResetGlobalSweepAndCompactionTimesForTest();
 
 CONTENT_EXPORT const leveldb::Comparator* GetDefaultLevelDBComparator();
 

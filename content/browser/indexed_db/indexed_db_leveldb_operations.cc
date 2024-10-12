@@ -4,12 +4,16 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 
+#include <atomic>
+#include <optional>
 #include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -47,6 +51,35 @@ class LDBComparator : public leveldb::Comparator {
                              const leveldb::Slice& limit) const override {}
   void FindShortSuccessor(std::string* key) const override {}
 };
+
+static std::atomic<base::Time> g_earliest_global_sweep = base::Time::Min();
+static std::atomic<base::Time> g_earliest_global_compaction = base::Time::Min();
+
+base::Time GenerateNextBucketSweepTime() {
+  constexpr base::TimeDelta kMin = base::Days(1);
+  static_assert(kMin < kMaxBucketSweepDelay);
+  return base::Time::Now() + base::RandTimeDelta(kMin, kMaxBucketSweepDelay);
+}
+
+base::Time GenerateNextGlobalSweepTime() {
+  constexpr base::TimeDelta kMin = base::Minutes(5);
+  static_assert(kMin < kMaxGlobalSweepDelay);
+  return base::Time::Now() + base::RandTimeDelta(kMin, kMaxGlobalSweepDelay);
+}
+
+base::Time GenerateNextBucketCompactionTime() {
+  constexpr base::TimeDelta kMin = base::Days(1);
+  static_assert(kMin < kMaxBucketCompactionDelay);
+  return base::Time::Now() +
+         base::RandTimeDelta(kMin, kMaxBucketCompactionDelay);
+}
+
+base::Time GenerateNextGlobalCompactionTime() {
+  constexpr base::TimeDelta kMin = base::Minutes(5);
+  static_assert(kMin < kMaxGlobalCompactionDelay);
+  return base::Time::Now() +
+         base::RandTimeDelta(kMin, kMaxGlobalCompactionDelay);
+}
 
 }  // namespace
 
@@ -508,71 +541,57 @@ bool UpdateBlobNumberGeneratorCurrentNumber(
   return s.ok();
 }
 
-Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
-                            base::Time* earliest_sweep) {
-  const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
-  *earliest_sweep = base::Time();
+base::Time GetEarliestSweepTime(TransactionalLevelDBDatabase* db) {
+  base::Time earliest = g_earliest_global_sweep.load();
   bool found = false;
-  int64_t time_micros = 0;
-  Status s = GetInt(db, earliest_sweep_time_key, &time_micros, &found);
-  if (!s.ok())
-    return s;
-  if (!found)
-    time_micros = 0;
-
-  DCHECK_GE(time_micros, 0);
-  *earliest_sweep += base::Microseconds(time_micros);
-
-  return s;
+  int64_t micros = 0;
+  Status s = GetInt(db, EarliestSweepKey::Encode(), &micros, &found);
+  if (s.ok() && found && micros > 0) {
+    return std::max(earliest, base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(micros)));
+  }
+  return earliest;
 }
 
-template Status SetEarliestSweepTime<TransactionalLevelDBTransaction>(
-    TransactionalLevelDBTransaction* db,
-    base::Time earliest_sweep);
-template Status SetEarliestSweepTime<LevelDBDirectTransaction>(
-    LevelDBDirectTransaction* db,
-    base::Time earliest_sweep);
-
-template <typename Transaction>
-Status SetEarliestSweepTime(Transaction* txn, base::Time earliest_sweep) {
-  const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
-  int64_t time_micros = (earliest_sweep - base::Time()).InMicroseconds();
-  return PutInt(txn, earliest_sweep_time_key, time_micros);
+Status UpdateEarliestSweepTime(LevelDBDirectTransaction* txn) {
+  g_earliest_global_sweep = GenerateNextGlobalSweepTime();
+  return PutInt(txn, EarliestSweepKey::Encode(),
+                GenerateNextBucketSweepTime()
+                    .ToDeltaSinceWindowsEpoch()
+                    .InMicroseconds());
 }
 
-Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
-                                 base::Time* earliest_compaction) {
-  const std::string earliest_compaction_time_key =
-      EarliestCompactionKey::Encode();
-  *earliest_compaction = base::Time();
+base::Time GetEarliestCompactionTime(TransactionalLevelDBDatabase* db) {
+  base::Time earliest = g_earliest_global_compaction.load();
   bool found = false;
-  int64_t time_micros = 0;
-  Status s = GetInt(db, earliest_compaction_time_key, &time_micros, &found);
-  if (!s.ok())
-    return s;
-  if (!found)
-    time_micros = 0;
-
-  DCHECK_GE(time_micros, 0);
-  *earliest_compaction += base::Microseconds(time_micros);
-
-  return s;
+  int64_t micros = 0;
+  Status s = GetInt(db, EarliestCompactionKey::Encode(), &micros, &found);
+  if (s.ok() && found && micros > 0) {
+    return std::max(earliest, base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(micros)));
+  }
+  return earliest;
 }
 
-template Status SetEarliestCompactionTime<TransactionalLevelDBTransaction>(
-    TransactionalLevelDBTransaction* db,
-    base::Time earliest_compaction);
-template Status SetEarliestCompactionTime<LevelDBDirectTransaction>(
-    LevelDBDirectTransaction* db,
-    base::Time earliest_compaction);
+Status UpdateEarliestCompactionTime(LevelDBDirectTransaction* txn) {
+  g_earliest_global_compaction = GenerateNextGlobalCompactionTime();
+  return PutInt(txn, EarliestCompactionKey::Encode(),
+                GenerateNextBucketCompactionTime()
+                    .ToDeltaSinceWindowsEpoch()
+                    .InMicroseconds());
+}
 
-template <typename Transaction>
-Status SetEarliestCompactionTime(Transaction* txn,
-                                 base::Time earliest_compaction) {
-  const std::string earliest_compaction_time_key =
-      EarliestCompactionKey::Encode();
-  int64_t time_micros = (earliest_compaction - base::Time()).InMicroseconds();
-  return PutInt(txn, earliest_compaction_time_key, time_micros);
+void InitializeGlobalSweepAndCompactionTimes() {
+  base::Time sweep_min = base::Time::Min(), compaction_min = base::Time::Min();
+  g_earliest_global_sweep.compare_exchange_strong(
+      sweep_min, GenerateNextGlobalSweepTime());
+  g_earliest_global_compaction.compare_exchange_strong(
+      compaction_min, GenerateNextGlobalCompactionTime());
+}
+
+void ResetGlobalSweepAndCompactionTimesForTest() {
+  g_earliest_global_sweep = base::Time::Min();
+  g_earliest_global_compaction = base::Time::Min();
 }
 
 const leveldb::Comparator* GetDefaultLevelDBComparator() {

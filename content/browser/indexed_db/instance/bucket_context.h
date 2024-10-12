@@ -72,33 +72,6 @@ class CONTENT_EXPORT BucketContext
  public:
   using DBMap = base::flat_map<std::u16string, std::unique_ptr<Database>>;
 
-  // Represents a method of `BucketContext` which is not yet bound to a
-  // particular instance of `BucketContext`. This is used for the
-  // `for_each_bucket_context` delegate callback.
-  using InstanceClosure = base::RepeatingCallback<void(BucketContext&)>;
-
-  // Maximum time interval between runs of the IndexedDBSweeper. Sweeping only
-  // occurs after backing store close.
-  // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestGlobalSweepFromNow =
-      base::Hours(1);
-  // Maximum time interval between runs of the IndexedDBSweeper for a given
-  // bucket. Sweeping only occurs after backing store close.
-  // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestBucketSweepFromNow =
-      base::Days(3);
-
-  // Maximum time interval between runs of the IndexedDBCompactionTask.
-  // Compaction only occurs after backing store close.
-  // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestGlobalCompactionFromNow =
-      base::Hours(1);
-  // Maximum time interval between runs of the IndexedDBCompactionTask for a
-  // given bucket. Compaction only occurs after backing store close.
-  // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestBucketCompactionFromNow =
-      base::Days(3);
-
   // `CheckCanUseDiskSpace` fudges quota values a little. If there is excess
   // free space, QuotaManager may not be checked the next time a transaction
   // requests space. The decays over this time period.
@@ -155,20 +128,8 @@ class CONTENT_EXPORT BucketContext
     // the amount of disk space used has completed. The parameter is true for
     // transactions that caused the backing store to flush.
     base::RepeatingCallback<void(bool /*did_sync*/)> on_files_written;
-
-    // Called to run a given callback on every bucket context (including the one
-    // in the current sequence and those in other sequences/associated with
-    // other buckets). This method will also be called on every subsequently
-    // created bucket context (see `initialization_closure` in constructor),
-    // until it is replaced by another initialization closure.
-    base::RepeatingCallback<void(InstanceClosure)> for_each_bucket_context;
   };
 
-  // If non-null, `initialization_closure` is immediately run on `this`. If it
-  // is null, `this` will generate a new initialization closure and return it to
-  // the delegate via `for_each_bucket_context`. The delegate, i.e.
-  // `IDBFactory`, will pass a null `InstanceClosure` to the first
-  // `BucketContext` it creates.
   BucketContext(storage::BucketInfo bucket_info,
                 const base::FilePath& data_path,
                 Delegate&& delegate,
@@ -176,8 +137,7 @@ class CONTENT_EXPORT BucketContext
                 mojo::PendingRemote<storage::mojom::BlobStorageContext>
                     blob_storage_context,
                 mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-                    file_system_access_context,
-                InstanceClosure initialization_closure);
+                    file_system_access_context);
 
   BucketContext(const BucketContext&) = delete;
   BucketContext& operator=(const BucketContext&) = delete;
@@ -208,10 +168,6 @@ class CONTENT_EXPORT BucketContext
   }
 
   void ReportOutstandingBlobs(bool blobs_outstanding);
-
-  // Runs `method` on `this`. This exists to facilitate running the setter on
-  // the correct sequence.
-  void RunInstanceClosure(InstanceClosure method);
 
   // Called when `space_requested` bytes are about to be used by committing a
   // transaction. Will invoke `disk_space_check_callback` if this usage is
@@ -341,8 +297,6 @@ class CONTENT_EXPORT BucketContext
   friend class TransactionTest;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
@@ -368,12 +322,6 @@ class CONTENT_EXPORT BucketContext
         client_state_checker_remote;
   };
 
-  // Used to synchronize the global throttling of LevelDB cleanup operations.
-  // See `for_each_bucket_context`.
-  static void SetInternalState(base::Time earliest_global_sweep_time,
-                               base::Time earliest_global_compaction_time,
-                               BucketContext& context);
-
   Database* AddDatabase(const std::u16string& name,
                         std::unique_ptr<Database> database);
 
@@ -390,16 +338,6 @@ class CONTENT_EXPORT BucketContext
   void StartPreCloseTasks();
 
   void RunTasks();
-
-  // Executes database operations, and if `true` is returned by this function,
-  // then the current time will be written to the database as the last sweep
-  // time.
-  bool ShouldRunTombstoneSweeper();
-
-  // Executes database operations, and if `true` is returned by this function,
-  // then the current time will be written to the database as the last
-  // compaction time.
-  bool ShouldRunCompaction();
 
   void OnGotBucketSpaceRemaining(storage::QuotaErrorOr<int64_t> space_left);
 
@@ -446,8 +384,6 @@ class CONTENT_EXPORT BucketContext
 
   bool running_tasks_ = false;
 
-  base::Time earliest_global_sweep_time_;
-  base::Time earliest_global_compaction_time_;
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;

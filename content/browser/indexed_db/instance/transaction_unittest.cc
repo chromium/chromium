@@ -81,7 +81,7 @@ class TransactionTest : public testing::Test {
             storage::BucketInitParams::ForDefaultBucket(storage_key)),
         temp_dir_.GetPath(), std::move(delegate), quota_manager_->proxy(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
+        /*file_system_access_context=*/mojo::NullRemote());
 
     bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->AddDatabase(

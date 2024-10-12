@@ -999,15 +999,6 @@ IndexedDBContextImpl::FindIndexedDBFiles() const {
   return bucket_id_to_file_path;
 }
 
-void IndexedDBContextImpl::ForEachBucketContext(
-    BucketContext::InstanceClosure callback) {
-  for_each_bucket_context_ = callback;
-  for (auto& [bucket_id, bucket_context] : bucket_contexts_) {
-    bucket_context.AsyncCall(&BucketContext::RunInstanceClosure)
-        .WithArgs(for_each_bucket_context_);
-  }
-}
-
 void IndexedDBContextImpl::GetInMemorySize(
     storage::BucketId bucket_id,
     base::OnceCallback<void(int64_t)> on_got_size) const {
@@ -1083,10 +1074,6 @@ void IndexedDBContextImpl::EnsureBucketContext(
       idb_task_runner_,
       base::BindRepeating(&IndexedDBContextImpl::OnFilesWritten,
                           weak_factory_.GetWeakPtr(), bucket_locator));
-  bucket_delegate.for_each_bucket_context = base::BindPostTask(
-      idb_task_runner_,
-      base::BindRepeating(&IndexedDBContextImpl::ForEachBucketContext,
-                          weak_factory_.GetWeakPtr()));
 
   mojo::PendingRemote<storage::mojom::BlobStorageContext>
       cloned_blob_storage_context;
@@ -1124,7 +1111,7 @@ void IndexedDBContextImpl::EnsureBucketContext(
                                : std::move(bucket_task_runner),
           bucket, data_directory, std::move(bucket_delegate),
           quota_manager_proxy_, std::move(cloned_blob_storage_context),
-          std::move(fsa_context), for_each_bucket_context_));
+          std::move(fsa_context)));
   DCHECK(inserted);
   if (pending_failure_injector_) {
     iter->second.AsyncCall(&BucketContext::BindMockFailureSingletonForTesting)

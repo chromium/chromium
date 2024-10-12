@@ -33,7 +33,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -81,8 +80,6 @@
 #include "content/browser/indexed_db/instance/database.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/factory_client.h"
-#include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
-#include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/list_set.h"
@@ -115,69 +112,6 @@ namespace {
 const int64_t kBackingStoreGracePeriodSeconds = 2;
 // Total time we let pre-close tasks run.
 const int64_t kRunningPreCloseTasksMaxRunPeriodSeconds = 60;
-// The number of iterations for every 'round' of the tombstone sweeper.
-const int kTombstoneSweeperRoundIterations = 1000;
-// The maximum total iterations for the tombstone sweeper.
-const int kTombstoneSweeperMaxIterations = 10 * 1000 * 1000;
-
-constexpr const base::TimeDelta kMinEarliestBucketSweepFromNow = base::Days(1);
-static_assert(kMinEarliestBucketSweepFromNow <
-                  BucketContext::kMaxEarliestBucketSweepFromNow,
-              "Min < Max");
-
-constexpr const base::TimeDelta kMinEarliestGlobalSweepFromNow =
-    base::Minutes(5);
-static_assert(kMinEarliestGlobalSweepFromNow <
-                  BucketContext::kMaxEarliestGlobalSweepFromNow,
-              "Min < Max");
-
-base::Time GenerateNextBucketSweepTime(base::Time now) {
-  uint64_t range =
-      BucketContext::kMaxEarliestBucketSweepFromNow.InMilliseconds() -
-      kMinEarliestBucketSweepFromNow.InMilliseconds();
-  int64_t rand_millis = kMinEarliestBucketSweepFromNow.InMilliseconds() +
-                        static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::Milliseconds(rand_millis);
-}
-
-base::Time GenerateNextGlobalSweepTime(base::Time now) {
-  uint64_t range =
-      BucketContext::kMaxEarliestGlobalSweepFromNow.InMilliseconds() -
-      kMinEarliestGlobalSweepFromNow.InMilliseconds();
-  int64_t rand_millis = kMinEarliestGlobalSweepFromNow.InMilliseconds() +
-                        static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::Milliseconds(rand_millis);
-}
-
-constexpr const base::TimeDelta kMinEarliestBucketCompactionFromNow =
-    base::Days(1);
-static_assert(kMinEarliestBucketCompactionFromNow <
-                  BucketContext::kMaxEarliestBucketCompactionFromNow,
-              "Min < Max");
-
-constexpr const base::TimeDelta kMinEarliestGlobalCompactionFromNow =
-    base::Minutes(5);
-static_assert(kMinEarliestGlobalCompactionFromNow <
-                  BucketContext::kMaxEarliestGlobalCompactionFromNow,
-              "Min < Max");
-
-base::Time GenerateNextBucketCompactionTime(base::Time now) {
-  uint64_t range =
-      BucketContext::kMaxEarliestBucketCompactionFromNow.InMilliseconds() -
-      kMinEarliestBucketCompactionFromNow.InMilliseconds();
-  int64_t rand_millis = kMinEarliestBucketCompactionFromNow.InMilliseconds() +
-                        static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::Milliseconds(rand_millis);
-}
-
-base::Time GenerateNextGlobalCompactionTime(base::Time now) {
-  uint64_t range =
-      BucketContext::kMaxEarliestGlobalCompactionFromNow.InMilliseconds() -
-      kMinEarliestGlobalCompactionFromNow.InMilliseconds();
-  int64_t rand_millis = kMinEarliestGlobalCompactionFromNow.InMilliseconds() +
-                        static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::Milliseconds(rand_millis);
-}
 
 // This struct facilitates requesting bucket space usage from the quota manager.
 // There have been reports of the callback being passed to the quota manager
@@ -358,20 +292,11 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-constexpr const base::TimeDelta BucketContext::kMaxEarliestGlobalSweepFromNow;
-constexpr const base::TimeDelta BucketContext::kMaxEarliestBucketSweepFromNow;
-
-constexpr const base::TimeDelta
-    BucketContext::kMaxEarliestGlobalCompactionFromNow;
-constexpr const base::TimeDelta
-    BucketContext::kMaxEarliestBucketCompactionFromNow;
-
 BucketContext::Delegate::Delegate()
     : on_ready_for_destruction(base::DoNothing()),
       on_receiver_bounced(base::DoNothing()),
       on_content_changed(base::DoNothing()),
-      on_files_written(base::DoNothing()),
-      for_each_bucket_context(base::DoNothing()) {}
+      on_files_written(base::DoNothing()) {}
 
 BucketContext::Delegate::Delegate(Delegate&& other) = default;
 BucketContext::Delegate::~Delegate() = default;
@@ -384,8 +309,7 @@ BucketContext::BucketContext(
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-        file_system_access_context,
-    InstanceClosure initialize_closure)
+        file_system_access_context)
     : bucket_info_(std::move(bucket_info)),
       data_path_(data_path),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -396,16 +320,6 @@ BucketContext::BucketContext(
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "BucketContext", base::SequencedTaskRunner::GetCurrentDefault(),
           base::trace_event::MemoryDumpProvider::Options());
-
-  if (!initialize_closure) {
-    base::Time now = base::Time::Now();
-    initialize_closure = base::BindRepeating(
-        &BucketContext::SetInternalState, GenerateNextGlobalSweepTime(now),
-        GenerateNextGlobalCompactionTime(now));
-    delegate_.for_each_bucket_context.Run(initialize_closure);
-  }
-  initialize_closure.Run(*this);
-
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
 }
@@ -510,10 +424,6 @@ void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_blobs_outstanding_ = blobs_outstanding;
   MaybeStartClosing();
-}
-
-void BucketContext::RunInstanceClosure(InstanceClosure method) {
-  method.Run(*this);
 }
 
 void BucketContext::CheckCanUseDiskSpace(
@@ -949,18 +859,6 @@ void BucketContext::BindMockFailureSingletonForTesting(
           std::move(receiver));
 }
 
-// static
-void BucketContext::SetInternalState(base::Time earliest_global_sweep_time,
-                                     base::Time earliest_global_compaction_time,
-                                     BucketContext& context) {
-  if (!earliest_global_sweep_time.is_null()) {
-    context.earliest_global_sweep_time_ = earliest_global_sweep_time;
-  }
-  if (!earliest_global_compaction_time.is_null()) {
-    context.earliest_global_compaction_time_ = earliest_global_compaction_time;
-  }
-}
-
 Database* BucketContext::AddDatabase(const std::u16string& name,
                                      std::unique_ptr<Database> database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1045,18 +943,8 @@ void BucketContext::StartPreCloseTasks() {
       },
       weak_factory_.GetWeakPtr()));
 
-  std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>> tasks;
-
-  if (ShouldRunTombstoneSweeper()) {
-    tasks.push_back(std::make_unique<LevelDbTombstoneSweeper>(
-        kTombstoneSweeperRoundIterations, kTombstoneSweeperMaxIterations,
-        backing_store_->db()->db()));
-  }
-
-  if (ShouldRunCompaction()) {
-    tasks.push_back(
-        std::make_unique<IndexedDBCompactionTask>(backing_store_->db()->db()));
-  }
+  std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
+      tasks = backing_store_->GetPreCloseTasks();
 
   if (!tasks.empty()) {
     pre_close_task_queue_ = std::make_unique<BackingStorePreCloseTaskQueue>(
@@ -1074,100 +962,6 @@ void BucketContext::CloseNow() {
   close_timer_.Stop();
   pre_close_task_queue_.reset();
   QueueRunTasks();
-}
-
-bool BucketContext::ShouldRunTombstoneSweeper() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!backing_store_) {
-    return false;
-  }
-
-  // Check that the last sweep hasn't run too recently.
-  base::Time now = base::Time::Now();
-  if (earliest_global_sweep_time_ > now) {
-    return false;
-  }
-
-  base::Time bucket_earliest_sweep;
-  Status s = GetEarliestSweepTime(backing_store_->db(), &bucket_earliest_sweep);
-  // TODO(dmurph): Log this or report to UMA.
-  if (!s.ok() && !s.IsNotFound()) {
-    return false;
-  }
-
-  if (bucket_earliest_sweep > now) {
-    return false;
-  }
-
-  // A sweep will happen now, so reset the sweep timers.
-  earliest_global_sweep_time_ = GenerateNextGlobalSweepTime(now);
-  delegate().for_each_bucket_context.Run(base::BindRepeating(
-      &BucketContext::SetInternalState, earliest_global_sweep_time_,
-      earliest_global_compaction_time_));
-  std::unique_ptr<LevelDBDirectTransaction> txn =
-      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
-          backing_store_->db());
-  s = SetEarliestSweepTime(txn.get(), GenerateNextBucketSweepTime(now));
-  // TODO(dmurph): Log this or report to UMA.
-  if (!s.ok()) {
-    return false;
-  }
-  s = txn->Commit();
-
-  // TODO(dmurph): Log this or report to UMA.
-  if (!s.ok()) {
-    return false;
-  }
-  return true;
-}
-
-bool BucketContext::ShouldRunCompaction() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!backing_store_) {
-    return false;
-  }
-
-  base::Time now = base::Time::Now();
-  // Check that the last compaction hasn't run too recently.
-  if (earliest_global_compaction_time_ > now) {
-    return false;
-  }
-
-  base::Time bucket_earliest_compaction;
-  Status s = GetEarliestCompactionTime(backing_store_->db(),
-                                       &bucket_earliest_compaction);
-  // TODO(dmurph): Log this or report to UMA.
-  if (!s.ok() && !s.IsNotFound()) {
-    return false;
-  }
-
-  if (bucket_earliest_compaction > now) {
-    return false;
-  }
-
-  // A compaction will happen now, so reset the compaction timers.
-  earliest_global_compaction_time_ = GenerateNextGlobalCompactionTime(now);
-  delegate().for_each_bucket_context.Run(base::BindRepeating(
-      &BucketContext::SetInternalState, earliest_global_sweep_time_,
-      earliest_global_compaction_time_));
-  std::unique_ptr<LevelDBDirectTransaction> txn =
-      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
-          backing_store_->db());
-  s = SetEarliestCompactionTime(txn.get(),
-                                GenerateNextBucketCompactionTime(now));
-  // TODO(dmurph): Log this or report to UMA.
-  if (!s.ok()) {
-    return false;
-  }
-  s = txn->Commit();
-
-  // TODO(dmurph): Log this or report to UMA.
-  if (!s.ok()) {
-    return false;
-  }
-  return true;
 }
 
 void BucketContext::BindFileReader(

@@ -31,6 +31,7 @@
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -685,9 +686,15 @@ class CONTENT_EXPORT BackingStore {
   // via StartJournalCleaningTimer().
   void CleanRecoveryJournalIgnoreReturn();
 
+  // Get tasks to be run after a BackingStore no longer has any connections.
+  std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
+  GetPreCloseTasks();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
                            ActiveBlobJournal);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
 
   friend class AutoDidCommitTransaction;
 
@@ -722,6 +729,11 @@ class CONTENT_EXPORT BackingStore {
   void WillCommitTransaction();
   // Can run a journal cleaning job if one is pending.
   void DidCommitTransaction();
+
+  // Returns whether tombstone sweeping or compaction should occur now, checking
+  // and updating timing information as needed for throttling.
+  bool ShouldRunTombstoneSweeper();
+  bool ShouldRunCompaction();
 
   // Owns `this`. Should be initialized shortly after construction.
   raw_ptr<BucketContext> bucket_context_ = nullptr;

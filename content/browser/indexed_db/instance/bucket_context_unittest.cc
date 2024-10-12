@@ -55,7 +55,7 @@ class BucketContextTest : public testing::Test {
         bucket_info, base::FilePath(), BucketContext::Delegate(),
         quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
+        /*file_system_access_context=*/mojo::NullRemote());
   }
 
   void SetQuotaLeft(int64_t quota_manager_response) {

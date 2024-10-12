@@ -237,9 +237,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetAllBucketsDetailsCallback callback,
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
-  // Applies the given `callback` to all bucket contexts.
-  void ForEachBucketContext(BucketContext::InstanceClosure callback);
-
   // Calculates in-memory/incognito usage for usage reporting.
   void GetInMemorySize(storage::BucketId bucket_id,
                        base::OnceCallback<void(int64_t)> on_got_size) const;
@@ -375,8 +372,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
     scoped_refptr<base::SequencedTaskRunner> overflow_task_runner;
   };
   std::map<net::SchemefulSite, TaskRunnerLimiter> task_runner_limiters_;
-
-  BucketContext::InstanceClosure for_each_bucket_context_;
 
   // When true, run backing stores (and bucket contexts) on `idb_task_runner_`
   // to simplify unit tests. This is set to true when the ctor param
