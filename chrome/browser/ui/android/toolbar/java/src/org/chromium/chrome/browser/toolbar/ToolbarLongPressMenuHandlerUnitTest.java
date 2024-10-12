@@ -5,17 +5,22 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -38,6 +44,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -48,11 +55,14 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarApi26;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.UiWidgetFactory;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ToolbarLongPressMenuHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -73,6 +83,8 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     private Activity mActivity;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier;
+    private SharedPreferencesManager mSharedPreferencesManager;
+    private String mUrlString;
 
     @Before
     public void setUp() throws Exception {
@@ -86,13 +98,16 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         mOmniboxFocusStateSupplier = new ObservableSupplierImpl<>();
         mOmniboxFocusStateSupplier.set(false);
         mToolbarLongPressMenuHandler =
-                new ToolbarLongPressMenuHandler(mActivity, false, mOmniboxFocusStateSupplier);
+                new ToolbarLongPressMenuHandler(
+                        mActivity, false, mOmniboxFocusStateSupplier, () -> mUrlString);
         mUrlBar.setOnLongClickListener(mToolbarLongPressMenuHandler.getOnLongClickListener());
+
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
 
     @After
     public void tearDown() throws Exception {
-        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
+        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
         UiWidgetFactory.setInstance(null);
     }
 
@@ -167,8 +182,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testbuildMenuItemsWhenToolbarOnBottom() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false);
+        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false);
         ModelList list = mToolbarLongPressMenuHandler.buildMenuItems();
 
         assertEquals(
@@ -183,5 +197,38 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         assertEquals(
                 ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK,
                 list.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testHandleMoveAddressBarTo() {
+        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        assertFalse(
+                mSharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        assertTrue(
+                mSharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
+    }
+
+    @Test
+    @SmallTest
+    public void testHandleCopyLink() {
+        Clipboard clipboard = Clipboard.getInstance();
+        ClipboardManager clipboardManager = mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
+        mUrlString = JUnitTestGURLs.URL_1.getSpec();
+
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK);
+
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
+        assertEquals(mUrlString, clipCaptor.getValue().getItemAt(0).getText());
     }
 }

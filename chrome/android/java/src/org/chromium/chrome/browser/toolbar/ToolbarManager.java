@@ -787,7 +787,10 @@ public class ToolbarManager
 
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
-                        /* context= */ mActivity, mIsCustomTab, mOmniboxFocusStateSupplier);
+                        /* context= */ mActivity,
+                        mIsCustomTab,
+                        mOmniboxFocusStateSupplier,
+                        () -> getUrlBarTextWithoutAutocomplete());
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 
