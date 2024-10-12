@@ -529,6 +529,33 @@ TEST_P(MachPortRendezvousServerTest,
   EXPECT_EQ(0, exit_code);
 }
 
+// Dynamic-only validation requires that the unit test executable have an
+// Info.plist embedded in its __TEXT __info_plist section.
+MULTIPROCESS_TEST_MAIN(ValidateParentCodeSigningRequirement_DynamicOnly) {
+  mac::ProcessRequirement requirement =
+      mac::ProcessRequirement::AlwaysMatchesForTesting();
+  requirement.SetShouldCheckDynamicValidityOnlyForTesting();
+  MachPortRendezvousClientMac::SetServerProcessRequirement(requirement);
+  auto* rendezvous_client = MachPortRendezvousClient::GetInstance();
+  CHECK(rendezvous_client);
+  return 0;
+}
+
+TEST_P(MachPortRendezvousServerTest,
+       ValidateParentCodeSigningRequirement_DynamicOnly) {
+  auto* server = MachPortRendezvousServerMac::GetInstance();
+  ASSERT_TRUE(server);
+
+  Process child =
+      SpawnChild("ValidateParentCodeSigningRequirement_DynamicOnly");
+
+  int exit_code;
+  ASSERT_TRUE(WaitForMultiprocessTestChildExit(
+      child, TestTimeouts::action_timeout(), &exit_code));
+
+  EXPECT_EQ(0, exit_code);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     MachPortRendezvousServerTest,

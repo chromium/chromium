@@ -3638,6 +3638,18 @@ test("base_unittests") {
     ]
   }
 
+  if (is_mac) {
+    # Embed an Info.plist in the `base_unittests` executable.
+    # This allows //base/apple/mach_port_rendezvous_unittest.cc to exercise code
+    # paths that depend on the executable having an Info.plist
+    ldflags = [
+      "-sectcreate",
+      "__TEXT",
+      "__info_plist",
+      rebase_path("mac/base_unittests-Info.plist"),
+    ]
+  }
+
   data = [
     "test/data/",
     "//tools/metrics/actions/actions.xml",

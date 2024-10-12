@@ -418,6 +418,10 @@ ProcessRequirement ProcessRequirement::NeverMatchesForTesting() {
   return ProcessRequirement(ForTesting::NeverMatches);
 }
 
+void ProcessRequirement::SetShouldCheckDynamicValidityOnlyForTesting() {
+  dynamic_validity_only_ = true;
+}
+
 bool ProcessRequirement::RequiresSignatureValidation() const {
   if (for_testing_.has_value()) {
     // `ForTesting::AlwaysMatches` does not require validation because

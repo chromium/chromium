@@ -147,6 +147,8 @@ class BASE_EXPORT ProcessRequirement {
   static ProcessRequirement AlwaysMatchesForTesting();
   static ProcessRequirement NeverMatchesForTesting();
 
+  void SetShouldCheckDynamicValidityOnlyForTesting();
+
   struct CSOpsSystemCallProvider {
     virtual ~CSOpsSystemCallProvider() = default;
     virtual int csops(pid_t pid,
