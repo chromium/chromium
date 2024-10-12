@@ -1484,6 +1484,7 @@
 <translation id="7707922173985738739">მობილური ინტერნეტის გამოყენება</translation>
 <translation id="7709918231054955894">მიიღეთ თქვენი ყველა ჩანართი</translation>
 <translation id="7733878270780732638">მოწყობილობაზე არ არის საკმარისი სივრცე</translation>
+<translation id="7746817319925672889">Google პაროლების მმართველი მალე შეწყვეტს ამ მოწყობილობაზე მუშაობას</translation>
 <translation id="774876555279732384">ავტომატური შევსების სერვისები იმართება <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდანაც<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">არასავალდებულო</translation>
 <translation id="7762668264895820836">SD ბარათი <ph name="SD_CARD_NUMBER" /></translation>
@@ -1511,6 +1512,7 @@
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="7846296061357476882">Google სერვისები</translation>
 <translation id="784934925303690534">დროის დიაპაზონი</translation>
+<translation id="7850687713580657633">პაროლები მალე შეწყვეტს მუშაობას, რადგან Google Play Services მიუწვდომელია. Google პაროლების მმართველში შენახული პაროლების გამოსაყენებლად შედით სხვა მოწყობილობით ან გახსენით passwords.google.com.</translation>
 <translation id="7851858861565204677">სხვა მოწყობილობები</translation>
 <translation id="7853202427316060426">აქტივობა</translation>
 <translation id="7859988229622350291">არასოდეს ითარგმნოს</translation>

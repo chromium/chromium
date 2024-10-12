@@ -175,6 +175,13 @@ Politika ayarlanmadan bırakılırsa <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLI
 <translation id="1095209545735032039">Bu sitelerde Serial API'sini engelle</translation>
 <translation id="1096105751829466145">Varsayılan arama sağlayıcı</translation>
 <translation id="1099282607296956954">Site İzolasyonu'nu her site için etkinleştirme</translation>
+<translation id="1099858055878287525">İş ve okul profillerinde, araç çubuğu avatarının yanında varsayılan olarak "İş" veya "Okul" etiketi gösterilir. Etiket yalnızca oturum açılan hesap yönetilen bir hesap olduğunda gösterilir.
+
+Bu politika <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (1 değeri) olarak ayarlanırsa araç çubuğundaki yönetilen profil için kurumsal rozet gizlenir.
+
+Bu politika ayarlanmadan bırakılır veya <ph name="SHOW_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (0 değeri) olarak ayarlanırsa kurumsal rozet gösterilir.
+
+Etiket, <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_NAME" /> politikası kullanılarak özelleştirilebilir.</translation>
 <translation id="1100840127293327071">Mevcut tarama verilerini saklama seçeneğini varsayılan olarak işaretleme</translation>
 <translation id="1105572260329131950">Güvenli bağlantılar için varsayılan simgeler kullanın</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra tüm kullanıcı verileri bir sonraki girişte kaldırılır.</translation>
@@ -1278,6 +1285,7 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
         Bu politika yalnızca çocuk kullanıcılar için kullanılır.
         Bu politika "UsageTimeLimit" için tamamlayıcıdır. "UsageTimeLimit" politikasında belirtilen ekran başında kalma süresi ve uyku vakti gibi kısıtlamalar, "PerAppTimeLimits" politikasından bağımsız olarak uygulanır.</translation>
 <translation id="1913629775420987861">Çıkmaya çalışan kullanıcılara uyarı iletişimi göster</translation>
+<translation id="1915242485679279502">Genişletilmiş kurumsal araç çubuğu rozetini göster</translation>
 <translation id="1916266055944569995">Politikanın ayarlanması, belirli bir kaynak için Managed Configuration API'nin döndürdüğü değeri tanımlar.
 
       Bir anahtar/değer yapılandırması olan Managed Configuration API'ye navigator.managed.getManagedConfiguration() javascript çağrısı ile erişilebilir. Bu API, yalnızca <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> aracılığıyla zorunlu yüklenmiş web uygulamalarına karşılık gelen kaynaklar için kullanılabilir.
@@ -2266,6 +2274,17 @@ Kullanıcılar, oturum başlangıcında izin verilmediyse giriş yaptıktan sonr
 
 Politika, Devre Dışı değerine ayarlanırsa cihaz, içerik koruması için uzaktan onay kullanmaz ve korumalı içeriği oynatmayabilir.</translation>
 <translation id="262740370354162807">Dokümanların <ph name="CLOUD_PRINT_NAME" /> için gönderilmesini etkinleştir</translation>
+<translation id="2628738243936676400">Yapay zeka destekli geçmişte arama işlevi, kullanıcıların tarama geçmişlerinde yalnızca sayfa başlığı ve URL ile değil, sayfa içeriğine göre de arama yapmasına ve oluşturulan yanıtları almasına olanak tanıyan bir özelliktir.
+
+0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliği devre dışı bırakın.
+
+Politika ayarlanmadan bırakılırsa varsayılan davranış, normal tüketici kullanıcılar için 0, <ph name="PRODUCT_OS_NAME" /> ürününde yönetilen kullanıcı hesapları için ise 2 değerinin kullanılmasıdır.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="2633084400146331575">Sözlü geribildirimi etkinleştir</translation>
 <translation id="2633907568797306353">Telefon Merkezi bildirimlerinin etkinleştirilmesine izin ver</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" />, macOS 13.5 veya sonraki sürümlerde geçiş anahtarı/WebAuthn oluşturma isteklerini doğrudan iCloud Anahtar Zinciri'ne yönlendirebilir. iCloud Anahtar Zinciri senkronizasyonu henüz etkinleştirilmemişse kullanıcıdan iCloud ile oturum açması istenir veya iCloud Anahtar Zinciri senkronizasyonunu etkinleştirmesi istenebilir.
@@ -2466,6 +2485,19 @@ Politikayı ayarlamadan bırakırsanız <ph name="BLOCK_POPUPS_POLICY_NAME" /> p
 <translation id="2801065672151277034">Sertifika yönetim ayarları</translation>
 <translation id="2801155097555584385">Pil şarjı için özel şarj başlatma değerini yüzde olarak ayarla</translation>
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" /> entegrasyonunu devre dışı bırak</translation>
+<translation id="2804159858652849094">Bu politika, bir profili veya tarayıcıyı yöneten kişiyi tanımlamak için kullanılan özel bir etiket ekler.
+
+Bu etiket, araç çubuğunda gösterilir.
+
+Bu politika, tarayıcı düzeyinde ayarlanırsa etiket araç çubuğundaki tüm profillerde gösterilir.
+
+Bu politika, profil düzeyinde ayarlanırsa etiket yalnızca ilgili profilde gösterilir.
+
+Diğer politikaların aksine, profil düzeyinde ayarlanan bu politika, tarayıcı düzeyinde ayarlanan bir politikaya göre daha önceliklidir.
+
+Özel etiket çevrilmez.
+
+<ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> politikası <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (1 değeri) olarak ayarlanırsa bu politikanın etkisi olmaz.</translation>
 <translation id="2805707493867224476">Tüm sitelerin pop-up göstermesine izin ver</translation>
 <translation id="2806804577787377637">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> politikasını kullanın.</translation>
 <translation id="2815701930753942156">Bu politika, <ph name="PRODUCT_OS_NAME" /> cihazın kullanılamayacağı haftalık aralıkların listesini belirtir. Devam eden tüm oturumlar kapatılır ve giriş yapılması engellenir.
@@ -4749,6 +4781,21 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google
 <translation id="4557134566541205630">Varsayılan arama sağlayıcısı yeni sekme sayfası URL'si</translation>
 <translation id="4558166110367609724">Otomatik olarak Hizmet Şartları'nı atlayıp tarayıcıyı yükler.</translation>
 <translation id="4559846397119102037"><ph name="LACROS_NAME" /> tarayıcısının kullanımına izin ver</translation>
+<translation id="456018799964679771">Cihaz düzeyindeki bu politika, <ph name="PRODUCT_OS_NAME" /> hizmetinin TLS'de ML-KEM NIST standardını kullanarak kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. <ph name="PRODUCT_OS_NAME" /> 131 sürümünden önce algoritma, standardın daha önceki bir taslak iterasyonu olan Kyber'di. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
+
+Bu politika etkinleştirilirse <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
+
+Bu politika devre dışı bırakılırsa <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
+
+Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" />, kuantum sonrası anahtar anlaşması sunmayla ilgili varsayılan kullanıma sunma sürecini uygular.
+
+Kyber'ı sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
+
+Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
+
+Bu politika geçici bir çözüm olup <ph name="PRODUCT_OS_NAME" /> 141 sürümünden sonra kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.
+
+Hem bu politika hem de PostQuantumKeyAgreementEnabled politikası ayarlanırsa bu politika öncelikli olur.</translation>
 <translation id="4561560385824323005">Kullanıcıların yükleyecekleri önceden yapılandırılmış bir masaüstü düzeni seçmesine izin ver</translation>
 <translation id="4561940244682063697">Sitelerin kullanıcılardan ekranlarının video akışını paylaşmalarını istemesine izin verme</translation>
 <translation id="4562165737444703281">Kullanıcıların Crostini bağlantı noktası yönlendirmesini [etkinleştirmesine/yapılandırmasına] izin verir</translation>
@@ -6242,6 +6289,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5622590774455244290">Android uygulamaları kendi tercihleriyle bu listeye uymaya karar verebilir ve bunu yapmaya zorlanamaz.</translation>
 <translation id="5622924058222112599">Varsayılan CECPQ2 kullanıma sunma işlemini etkinleştir</translation>
 <translation id="5623304306796942802">Birden fazla sertifika eşleştiğinde istem görüntüle</translation>
+<translation id="5624310713789233422">Araç çubuğundaki kurumsal profil rozetinin görünürlüğünü kontrol eder</translation>
 <translation id="5624334866248253262">Veri sızıntılarını önlemek için veri denetimi kural listesi yapılandırır.
 
       Her kural aşağıdakilerden oluşur:
@@ -9549,6 +9597,19 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
       Bu politika, Chrome 88 sürümünde kaldırılmıştır, ayarlanırsa göz ardı edilir.
 
       https://www.chromestatus.com/feature/5989473649164288 adresine bakın.</translation>
+<translation id="8137301668000005268">Bu politika, <ph name="PRODUCT_NAME" /> hizmetinin TLS'de ML-KEM NIST standardını kullanarak kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. <ph name="PRODUCT_NAME" /> 131 sürümünden önce algoritma, standardın daha önceki bir taslak iterasyonu olan Kyber'di. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
+
+Bu politika etkinleştirilirse <ph name="PRODUCT_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
+
+Bu politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
+
+Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, kuantum sonrası anahtar anlaşması sunmayla ilgili varsayılan kullanıma sunma sürecini uygular.
+
+Kuantum sonrası anahtar anlaşması sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
+
+Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
+
+Bu politika geçici bir çözüm olup <ph name="PRODUCT_NAME" /> 141 sürümünden sonra kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.</translation>
 <translation id="8137443729340035928">Giriş yapan kullanıcıya son oturumun geri yüklenip yüklenmeyeceğini sor.</translation>
 <translation id="8141795997560411818">Bu politika, kullanıcının Android Google Drive uygulamasını kullanmasını engellemez. Google Drive'a erişimi engellemek isterseniz Android Google Drive uygulamasının yüklenmesine de izin vermemeniz gerekir.</translation>
 <translation id="8142894094385450823">Yönetilen oturum için önerilen yerel ayarları belirtir</translation>
