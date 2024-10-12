@@ -366,6 +366,9 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     }
 
     CrasAudioHandler::Get()->RefreshStyleTransferState();
+    if (base::FeatureList::IsEnabled(ash::features::kShowSpatialAudioToggle)) {
+      CrasAudioHandler::Get()->RefreshSpatialAudioState();
+    }
   }
 }
 

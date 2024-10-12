@@ -127,6 +127,8 @@ void CrasAudioHandler::AudioObserver::OnForceRespectUiGainsStateChanged() {}
 
 void CrasAudioHandler::AudioObserver::OnHfpMicSrStateChanged() {}
 
+void CrasAudioHandler::AudioObserver::OnSpatialAudioStateChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnHotwordTriggered(
     uint64_t /* tv_sec */,
     uint64_t /* tv_nsec */) {}
@@ -832,6 +834,27 @@ void CrasAudioHandler::SetHfpMicSrState(bool hfp_mic_sr_on,
 
   for (auto& observer : observers_) {
     observer.OnHfpMicSrStateChanged();
+  }
+}
+
+bool CrasAudioHandler::GetSpatialAudioState() const {
+  return audio_pref_handler_->GetSpatialAudioState();
+}
+
+void CrasAudioHandler::RefreshSpatialAudioState() {
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetSpatialAudio(GetSpatialAudioState());
+}
+
+void CrasAudioHandler::SetSpatialAudioState(bool state) {
+  base::UmaHistogramBoolean(CrasAudioHandler::kSpatialAudioHistogramName,
+                            state);
+  CrasAudioClient::Get()->SetSpatialAudio(state);
+  audio_pref_handler_->SetSpatialAudioState(state);
+
+  for (auto& observer : observers_) {
+    observer.OnSpatialAudioStateChanged();
   }
 }
 

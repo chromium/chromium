@@ -222,4 +222,12 @@ void AudioDevicesPrefHandlerStub::UpdateMostRecentActivatedDeviceIdList(
   most_recent_activated_device_id_list.Append(target_device_id);
 }
 
+bool AudioDevicesPrefHandlerStub::GetSpatialAudioState() {
+  return spatial_audio_;
+}
+
+void AudioDevicesPrefHandlerStub::SetSpatialAudioState(bool spatial_audio) {
+  spatial_audio_ = spatial_audio;
+}
+
 }  // namespace ash

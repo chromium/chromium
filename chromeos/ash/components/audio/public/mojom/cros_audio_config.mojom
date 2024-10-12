@@ -80,6 +80,9 @@ struct AudioDevice {
   // The state of the Bluetooth hands-free profile(hfp) input super resolution
   // audio effect.
   AudioEffectState hfp_mic_sr_state;
+
+  // The state of the spatial audio effect.
+  AudioEffectState spatial_audio_state;
 };
 
 // Represents the audio state of the Audio system.
@@ -163,4 +166,9 @@ interface CrosAudioConfig {
   // so changing the active input device will keep the enabled state from the
   // previous active bluetooth input device.
   SetHfpMicSrEnabled(bool enabled);
+
+  // Sets whether spatial audio is enabled or not. This is shared
+  // between different output devices, so changing the active output device will
+  // keep the enabled state from the previous active output device.
+  SetSpatialAudioEnabled(bool enabled);
 };

@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool GetHfpMicSrState() override;
   void SetHfpMicSrState(bool hfp_mic_sr_state) override;
 
+  bool GetSpatialAudioState() override;
+  void SetSpatialAudioState(bool spatial_audio) override;
+
   // Registers volume and mute preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

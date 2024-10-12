@@ -136,6 +136,18 @@
         </cr-slider>
       </div>
     </div>
+    <div id="audioOutputSpatialAudioSubsection" class="settings-box"
+      hidden="[[!showSpatialAudio]]"
+      on-click="onSpatialAudioRowClicked_" actionable-row>
+      <div id="audioOutputSpatialAudioLabel" class="settings-box-text start">
+        $i18n{audioOutputSpatialAudioTitle}
+      </div>
+      <cr-toggle id="audioOutputSpatialAudioToggle"
+          checked="{{isSpatialAudioEnabled_}}"
+          aria-labelledby="audioOutputSpatialAudioLabel"
+          on-change="toggleSpatialAudioEnabled_">
+      </cr-toggle>
+    </div>
   </div>
 </div>
 <!--TODO(b/260277007): Replace placeholder text when localization strings

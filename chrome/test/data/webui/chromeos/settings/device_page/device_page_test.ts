@@ -88,6 +88,14 @@ suite('<settings-device-page>', () => {
     });
   }
 
+  /**
+   * Set enableSpatialAudioToggle feature flag to true for tests.
+   */
+  function setEnableSpatialAudioToggleEnabled(isEnabled: boolean): void {
+    loadTimeData.overrideValues({
+      enableSpatialAudioToggle: isEnabled,
+    });
+  }
 
   test('device page', async () => {
     const provider = new FakeInputDeviceSettingsProvider();
@@ -490,7 +498,6 @@ suite('<settings-device-page>', () => {
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
     };
-
 
     const hfpMicSrNotSupportedAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
@@ -1413,6 +1420,134 @@ suite('<settings-device-page>', () => {
           assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
           assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
         });
+  });
+
+  suite('simulate spatial audio', () => {
+    let audioPage: SettingsAudioElement;
+    let crosAudioConfig: fakeCrosAudioConfig.FakeCrosAudioConfig;
+
+    const spatialAudioSupportedAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [
+        fakeCrosAudioConfig.fakeSpeakerActive,
+      ],
+      inputDevices: [],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+    };
+
+    const spatialAudioNotSupportedAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [
+        fakeCrosAudioConfig.fakeMicJackInactive,
+      ],
+      inputDevices: [],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+    };
+
+    setup(async () => {
+      setEnableSpatialAudioToggleEnabled(true);
+      await init();
+
+      // FakeAudioConfig must be set before audio subpage is loaded.
+      crosAudioConfig = new fakeCrosAudioConfig.FakeCrosAudioConfig();
+      setCrosAudioConfigForTesting(crosAudioConfig);
+      // Ensure data reset to fresh state.
+      crosAudioConfig.setAudioSystemProperties(
+          {...fakeCrosAudioConfig.defaultFakeAudioSystemProperties});
+      audioPage = showAndGetDeviceSubpage('audio', routes.AUDIO) as
+          SettingsAudioElement;
+      await flushTasks();
+    });
+
+    teardown(() => {
+      audioPage.remove();
+    });
+
+    test('simulate click toggle switch spatial audio', async () => {
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioSupportedAudioSystemProperties);
+
+      const spatialAudioToggle =
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#audioOutputSpatialAudioToggle');
+      const activeDevice = crosAudioConfig.getDeviceByIdForTesting(
+          fakeCrosAudioConfig.fakeSpeakerActive.id);
+
+      assertTrue(!!spatialAudioToggle);
+      assertFalse(spatialAudioToggle.checked);
+      assertTrue(!!activeDevice);
+
+      spatialAudioToggle.click();
+      await flushTasks();
+
+      assertTrue(spatialAudioToggle.checked);
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kEnabled,
+          activeDevice.spatialAudioState);
+
+      spatialAudioToggle.click();
+      await flushTasks();
+
+      assertFalse(spatialAudioToggle.checked);
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kNotEnabled,
+          activeDevice.spatialAudioState);
+    });
+
+    test('simulate click row switch spatial audio', async () => {
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioSupportedAudioSystemProperties);
+
+      const spatialAudioSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+              '#audioOutputSpatialAudioSubsection');
+      const activeDevice = crosAudioConfig.getDeviceByIdForTesting(
+          fakeCrosAudioConfig.fakeSpeakerActive.id);
+
+      assertTrue(!!spatialAudioSubsection);
+      assertTrue(!!activeDevice);
+
+      // Clicking on the row should toggle the spatial audio toggle.
+      spatialAudioSubsection.click();
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kEnabled,
+          activeDevice.spatialAudioState);
+
+      spatialAudioSubsection.click();
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kNotEnabled,
+          activeDevice.spatialAudioState);
+    });
+
+    test('simulate spatial audio visibility', async () => {
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioSupportedAudioSystemProperties);
+
+      const spatialAudioSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+              '#audioOutputSpatialAudioSubsection');
+      const spatialAudioToggle =
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#audioOutputSpatialAudioToggle');
+
+      assertTrue(!!spatialAudioSubsection);
+      assertTrue(isVisible(spatialAudioSubsection));
+      assertTrue(!!spatialAudioToggle);
+      assertTrue(isVisible(spatialAudioToggle));
+
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioNotSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertFalse(isVisible(spatialAudioSubsection));
+      assertFalse(isVisible(spatialAudioToggle));
+    });
   });
 
   if (!isRevampWayfindingEnabled) {

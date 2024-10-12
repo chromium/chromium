@@ -21,6 +21,7 @@ export const defaultFakeMicJack: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export const fakeSpeakerActive: AudioDevice = {
@@ -32,6 +33,7 @@ export const fakeSpeakerActive: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotSupported,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotEnabled,
 };
 
 export const fakeMicJackInactive: AudioDevice = {
@@ -43,6 +45,7 @@ export const fakeMicJackInactive: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotSupported,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export const defaultFakeSpeaker: AudioDevice = {
@@ -54,6 +57,7 @@ export const defaultFakeSpeaker: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotSupported,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotEnabled,
 };
 
 export const fakeInternalFrontMic: AudioDevice = {
@@ -65,6 +69,7 @@ export const fakeInternalFrontMic: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export const fakeBluetoothMic: AudioDevice = {
@@ -76,6 +81,7 @@ export const fakeBluetoothMic: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalMicActive: AudioDevice = {
@@ -87,6 +93,7 @@ export const fakeInternalMicActive: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export const fakeBluetoothNbMicActiveHfpMicSrNotEnabled: AudioDevice = {
@@ -98,6 +105,7 @@ export const fakeBluetoothNbMicActiveHfpMicSrNotEnabled: AudioDevice = {
   styleTransferState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
   hfpMicSrState: AudioEffectState.kNotEnabled,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalMicActiveWithStyleTransfer: AudioDevice = {
@@ -109,6 +117,7 @@ export const fakeInternalMicActiveWithStyleTransfer: AudioDevice = {
   styleTransferState: AudioEffectState.kNotEnabled,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
   hfpMicSrState: AudioEffectState.kNotSupported,
+  spatialAudioState: AudioEffectState.kNotSupported,
 };
 
 export interface FakePropertiesObserverInterface {
@@ -177,6 +186,20 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   setAudioSystemProperties(properties: AudioSystemProperties): void {
     this.audioSystemProperties = properties;
     this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /**
+   * Gets `AudioDevice` for `deviceId` for testing purpose.
+   */
+  getDeviceByIdForTesting(deviceId: bigint): AudioDevice|undefined {
+    const outputDevice = this.audioSystemProperties.outputDevices.find(
+        (device: AudioDevice) => device.id === deviceId);
+    if (outputDevice !== undefined) {
+      return outputDevice;
+    }
+
+    return this.audioSystemProperties.inputDevices.find(
+        (device: AudioDevice) => device.id === deviceId);
   }
 
   /** Handle updating active input device noise cancellation state. */
@@ -250,6 +273,24 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
     const nextState: AudioEffectState =
         enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
     this.audioSystemProperties.inputDevices[activeIndex].hfpMicSrState =
+        nextState;
+    this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /** Handle updating active output device spatial audio state. */
+  setSpatialAudioEnabled(enabled: boolean): void {
+    if (!this.audioSystemProperties.outputDevices) {
+      return;
+    }
+
+    const activeIndex = this.audioSystemProperties.outputDevices.findIndex(
+        (device: AudioDevice) => device.isActive);
+    if (activeIndex === -1) {
+      return;
+    }
+    const nextState: AudioEffectState =
+        enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
+    this.audioSystemProperties.outputDevices[activeIndex].spatialAudioState =
         nextState;
     this.notifyAudioSystemPropertiesUpdated();
   }

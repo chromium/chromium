@@ -8232,6 +8232,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "show-spatial-audio-toggle",
+    "owners": ["eddyhsu@chromium.org", "chromeos-audio@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "show-taps",
     "owners": [ "//ash/OWNERS" ],
     // This is a debug flag, so that video bug reports can show input taps to

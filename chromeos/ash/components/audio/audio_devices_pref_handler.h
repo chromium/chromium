@@ -119,6 +119,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Sets the hfp_mic_sr in profile prefs.
   virtual void SetHfpMicSrState(bool hfp_mic_sr_state) = 0;
 
+  // Reads whether spatial audio is on from profile prefs.
+  virtual bool GetSpatialAudioState() = 0;
+  // Sets the spatial audio in profile prefs.
+  virtual void SetSpatialAudioState(bool spatial_audio) = 0;
+
  protected:
   virtual ~AudioDevicesPrefHandler() = default;
 

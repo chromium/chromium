@@ -2175,6 +2175,9 @@ inline constexpr char kAshLoginSessionStartedIsFirstSession[] =
 inline constexpr char kInputForceRespectUiGainsEnabled[] =
     "ash.input_force_respect_ui_gains_enabled";
 
+// A boolean pref that controls whether spatial audio is enabled.
+inline constexpr char kSpatialAudioEnabled[] = "ash.spatial_audio_enabled";
+
 // An integer pref that tracks how many times (3) we'll show the user a
 // notification when an incoming event would have been remapped to a right
 // click but either the user's setting is inconsistent with the matched

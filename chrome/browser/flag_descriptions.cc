@@ -7895,6 +7895,11 @@ const char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
     "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
     "loopback";
 
+const char kShowSpatialAudioToggleName[] =
+    "Enable a setting toggle for spatial audio.";
+const char kShowSpatialAudioToggleDescription[] =
+    "Enable a setting toggle for spatial audio.";
+
 const char kCrosMallName[] = "ChromeOS App Mall";
 const char kCrosMallDescription[] =
     "Enables an app to discover and install other apps.";

@@ -335,6 +335,8 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   void OnForceRespectUiGainsStateChanged() override {}
 
+  void OnSpatialAudioStateChanged() override {}
+
   void OnSurveyTriggered(const CrasAudioHandler::AudioSurvey& survey) override {
     ++survey_triggerd_count_;
     survey_triggerd_recv_.set_type(survey.type());

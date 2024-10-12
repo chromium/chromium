@@ -15199,6 +15199,7 @@ from previous Chrome versions.
   <int value="-2066541315" label="Mus:enabled"/>
   <int value="-2064999807"
       label="OmniboxRevertModelBeforeClosingPopup:disabled"/>
+  <int value="-2064902003" label="show-spatial-audio-toggle:disabled"/>
   <int value="-2064193453" label="GameDashboardGamesInTest:enabled"/>
   <int value="-2064164557" label="DownloadsForeground:disabled"/>
   <int value="-2063352474" label="enable-new-task-manager"/>
@@ -15731,6 +15732,7 @@ from previous Chrome versions.
   <int value="-1868978829" label="spurious-power-button-accel-count"/>
   <int value="-1868957045" label="SyncUSSAutofillWalletMetadata:enabled"/>
   <int value="-1868284723" label="DirectManipulationStylus:disabled"/>
+  <int value="-1868266261" label="ShowSpatialAudioToggle:enabled"/>
   <int value="-1867872071" label="ContainerAppPreinstallDebug:enabled"/>
   <int value="-1867563782" label="NewPrintPreviewLayout:disabled"/>
   <int value="-1867382602" label="WebRTC-H264WithOpenH264FFmpeg:enabled"/>
@@ -16192,6 +16194,7 @@ from previous Chrome versions.
   <int value="-1669172326"
       label="AutofillEnableDependentLocalityParsing:disabled"/>
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
+  <int value="-1668141399" label="show-spatial-audio-toggle:enabled"/>
   <int value="-1667822423" label="ContextMenuGoogleLensChip:disabled"/>
   <int value="-1666652919" label="MagnifierPanningImprovements:disabled"/>
   <int value="-1666519913"
@@ -18463,6 +18466,7 @@ from previous Chrome versions.
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
   <int value="-745005043"
       label="enable-experimental-accessibility-switch-access-setup-guide"/>
+  <int value="-744627684" label="ShowSpatialAudioToggle:disabled"/>
   <int value="-744159181" label="disable-spdy-proxy-dev-auth-origin"/>
   <int value="-744037223" label="BluetoothQualityReport:enabled"/>
   <int value="-743590125" label="TabEngagementReportingAndroid:enabled"/>

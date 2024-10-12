@@ -730,6 +730,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetSpatialAudio(bool spatial_audio) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetSpatialAudio);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(spatial_audio);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
  private:
   // Called when the cras signal is initially connected.
   void SignalConnected(const std::string& interface_name,

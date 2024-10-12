@@ -7638,6 +7638,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kAudioFlexibleLoopbackForSystemLoopback)},
+    {"show-spatial-audio-toggle",
+     flag_descriptions::kShowSpatialAudioToggleName,
+     flag_descriptions::kShowSpatialAudioToggleDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kShowSpatialAudioToggle)},
 #endif
 
     {"drop-input-events-before-first-paint",

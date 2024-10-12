@@ -464,6 +464,15 @@ void AudioDevicesPrefHandlerImpl::SetHfpMicSrState(bool hfp_mic_sr_state) {
                            hfp_mic_sr_state);
 }
 
+bool AudioDevicesPrefHandlerImpl::GetSpatialAudioState() {
+  return local_state_->GetBoolean(prefs::kSpatialAudioEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetSpatialAudioState(
+    bool spatial_audio_state) {
+  local_state_->SetBoolean(prefs::kSpatialAudioEnabled, spatial_audio_state);
+}
+
 AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
     PrefService* local_state)
     : local_state_(local_state) {
@@ -683,6 +692,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesLastSeen);
 
   registry->RegisterBooleanPref(prefs::kInputForceRespectUiGainsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kSpatialAudioEnabled, false);
 }
 
 }  // namespace ash

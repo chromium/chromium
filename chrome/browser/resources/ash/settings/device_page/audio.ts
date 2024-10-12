@@ -147,6 +147,15 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
       showStyleTransfer: {
         type: Boolean,
       },
+
+      showSpatialAudio: {
+        type: Boolean,
+      },
+
+      isSpatialAudioEnabled_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -155,6 +164,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected isHfpMicSrEnabled: boolean;
   protected showHfpMicSr: boolean;
   protected showStyleTransfer: boolean;
+  protected showSpatialAudio: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private devicePageBrowserProxy_: DevicePageBrowserProxy;
@@ -168,6 +178,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private isNoiseCancellationSupported_: boolean;
   private isStyleTransferEnabled_: boolean;
   private isStyleTransferSupported_: boolean;
+  private isSpatialAudioEnabled_: boolean;
+  private isSpatialAudioSupported_: boolean;
   private outputVolume_: number;
   private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
@@ -237,6 +249,17 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.showHfpMicSr =
         (this.isHfpMicSrSupported_ &&
          loadTimeData.getBoolean('enableAudioHfpMicSRToggle'));
+
+    const activeOutputDevice = this.audioSystemProperties_.outputDevices.find(
+        (device: AudioDevice) => device.isActive);
+    this.isSpatialAudioEnabled_ = activeOutputDevice !== undefined &&
+        activeOutputDevice?.spatialAudioState === AudioEffectState.kEnabled;
+    this.isSpatialAudioSupported_ = activeOutputDevice !== undefined &&
+        activeOutputDevice?.spatialAudioState !==
+            AudioEffectState.kNotSupported;
+    this.showSpatialAudio =
+        (this.isSpatialAudioSupported_ &&
+         loadTimeData.getBoolean('enableSpatialAudioToggle'));
   }
 
   getIsOutputMutedForTest(): boolean {
@@ -456,6 +479,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.crosAudioConfig_.setForceRespectUiGainsEnabled(!e.detail);
   }
 
+  private toggleSpatialAudioEnabled_(e: CustomEvent<boolean>): void {
+    this.crosAudioConfig_.setSpatialAudioEnabled(e.detail);
+  }
+
   private computePowerSoundsHidden_(): boolean {
     return !this.batteryStatus_?.present;
   }
@@ -489,6 +516,12 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
       // Do not toggle if the contained link is clicked.
       event.stopPropagation();
     }
+  }
+
+  private onSpatialAudioRowClicked_(): void {
+    const spatialAudioToggle = strictQuery(
+        '#audioOutputSpatialAudioToggle', this.shadowRoot, CrToggleElement);
+    this.crosAudioConfig_.setSpatialAudioEnabled(!spatialAudioToggle.checked);
   }
 }
 

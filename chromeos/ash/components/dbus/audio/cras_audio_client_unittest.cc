@@ -1924,4 +1924,20 @@ TEST_F(CrasAudioClientTest, SetForceRespectUiGainsEnabled) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CrasAudioClientTest, SetSpatialAudioEnabled) {
+  const bool kSpatialAudioOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      cras::kSetSpatialAudio,
+      base::BindRepeating(&ExpectBoolArgument, kSpatialAudioOn),
+      response.get());
+  // Call method.
+  client()->SetSpatialAudio(kSpatialAudioOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace ash

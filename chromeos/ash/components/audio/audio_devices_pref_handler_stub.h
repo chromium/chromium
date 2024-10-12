@@ -71,6 +71,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void SetForceRespectUiGainsState(bool force_respect_ui_gains) override;
   bool GetHfpMicSrState() override;
   void SetHfpMicSrState(bool hfp_mic_sr_state) override;
+  bool GetSpatialAudioState() override;
+  void SetSpatialAudioState(bool spatial_audio) override;
 
   const std::optional<uint64_t> GetPreferredDeviceFromPreferenceSet(
       bool is_input,
@@ -103,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool style_transfer_state_ = false;
   bool force_respect_ui_gains_ = false;
   bool hfp_mic_sr_ = false;
+  bool spatial_audio_ = false;
 };
 
 }  // namespace ash

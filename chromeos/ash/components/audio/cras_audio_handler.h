@@ -167,6 +167,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "Cras.OutputVolumeMutedSource";
   static constexpr char kNoiseCancellationEnabledSourceHistogramName[] =
       "Cras.NoiseCancellationEnabledSource";
+  static constexpr char kSpatialAudioHistogramName[] = "Cras.SpatialAudio";
 
   class AudioObserver {
    public:
@@ -217,6 +218,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
     // Called when hotword is detected.
     virtual void OnHotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec);
+
+    // Called when spatial audio state changed.
+    virtual void OnSpatialAudioStateChanged();
 
     // Called when the battery level change is reported over the Hands-Free
     // Profile for a Bluetooth headset.
@@ -492,6 +496,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // `AudioDevicesPrefHandler` to the provided value. `source` records to
   // metrics who changed the hfp_mic_sr state.
   void SetHfpMicSrState(bool hfp_mic_sr_on, AudioSettingsChangeSource source);
+
+  // Gets the state of spatial audio state.
+  bool GetSpatialAudioState() const;
+
+  // Refreshes the spatial audio state.
+  void RefreshSpatialAudioState();
+
+  // Makes a DBus call to set the state of spatial audio.
+  void SetSpatialAudioState(bool state);
 
   // Whether there is alternative input/output audio device.
   bool has_alternative_input() const;

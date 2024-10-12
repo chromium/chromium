@@ -4619,6 +4619,9 @@ extern const char kCrOSSystemVoiceIsolationOptionDescription[];
 
 extern const char kAudioFlexibleLoopbackForSystemLoopbackName[];
 extern const char kAudioFlexibleLoopbackForSystemLoopbackDescription[];
+
+extern const char kShowSpatialAudioToggleName[];
+extern const char kShowSpatialAudioToggleDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

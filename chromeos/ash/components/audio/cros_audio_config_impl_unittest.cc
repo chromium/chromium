@@ -164,6 +164,8 @@ class CrosAudioConfigImplTest : public testing::Test {
         /*force_respect_ui_gains=*/false);
     audio_pref_handler_->SetHfpMicSrState(
         /*hfp_mic_sr_state=*/false);
+    audio_pref_handler_->SetSpatialAudioState(
+        /*spatial_audio=*/false);
     cras_audio_handler_->SetPrefHandlerForTesting(audio_pref_handler_);
     cros_audio_config_ = std::make_unique<CrosAudioConfigImpl>();
     ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
@@ -243,6 +245,12 @@ class CrosAudioConfigImplTest : public testing::Test {
   void SimulateSetHfpMicSrEnabled(bool enabled) {
     // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetHfpMicSrEnabled(enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateSetSpatialAudioEnabled(bool enabled) {
+    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    remote_->SetSpatialAudioEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -422,6 +430,27 @@ class CrosAudioConfigImplTest : public testing::Test {
     cras_audio_handler_->SetHfpMicSrState(
         hfp_mic_sr_on,
         CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool GetSpatialAudioState() {
+    return fake_cras_audio_client_->spatial_audio_enabled();
+  }
+
+  bool GetSpatialAudioStatePref() {
+    return audio_pref_handler_->GetSpatialAudioState();
+  }
+
+  void SetSpatialAudioStatePref(bool enabled) {
+    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    audio_pref_handler_->SetSpatialAudioState(
+        /*force_respect_ui_gains=*/enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetSpatialAudioState(bool spatial_audio_on) {
+    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    cras_audio_handler_->SetSpatialAudioState(spatial_audio_on);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1489,6 +1518,40 @@ TEST_F(CrosAudioConfigImplTest, SetInputGainHistogram) {
   histogram_tester_.ExpectBucketCount(
       CrasAudioHandler::kInputGainChangedSourceHistogramName,
       CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetSpatialAudioState) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // By default spatial audio is disabled in this test.
+  ASSERT_FALSE(GetSpatialAudioState());
+  ASSERT_FALSE(GetSpatialAudioStatePref());
+
+  // Simulate trying to set force respect ui gains.
+  SimulateSetSpatialAudioEnabled(/*enabled=*/true);
+
+  // Add output audio nodes.
+  SetAudioNodes({kInternalSpeaker, kMicJack});
+  SetActiveOutputNodes({kInternalSpeakerId});
+
+  ASSERT_TRUE(GetSpatialAudioState());
+  ASSERT_TRUE(GetSpatialAudioStatePref());
+  ASSERT_EQ(mojom::AudioEffectState::kEnabled,
+            fake_observer->GetOutputAudioDevice(0)->spatial_audio_state);
+
+  // Change active node does not change force respect ui gains state.
+  SetActiveOutputNodes({kMicJackId});
+  ASSERT_EQ(mojom::AudioEffectState::kEnabled,
+            fake_observer->GetOutputAudioDevice(0)->spatial_audio_state);
+
+  // Turn spatial audio off.
+  SetActiveOutputNodes({kInternalSpeakerId});
+  SimulateSetSpatialAudioEnabled(/*enabled=*/false);
+
+  ASSERT_FALSE(GetSpatialAudioState());
+  ASSERT_FALSE(GetSpatialAudioStatePref());
+  ASSERT_EQ(mojom::AudioEffectState::kNotEnabled,
+            fake_observer->GetOutputAudioDevice(0)->spatial_audio_state);
 }
 
 }  // namespace ash::audio_config

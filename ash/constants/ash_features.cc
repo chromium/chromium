@@ -2870,6 +2870,11 @@ BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
              "ShowSharingUserInLauncherContinueSection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Shows the spatial audio toggle in audio settings page.
+BASE_FEATURE(kShowSpatialAudioToggle,
+             "ShowSpatialAudioToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling/disabling the Sunfish feature.
 BASE_FEATURE(kSunfishFeature,
              "SunfishFeature",

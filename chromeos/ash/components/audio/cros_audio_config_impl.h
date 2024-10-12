@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetForceRespectUiGainsEnabled(bool enabled) override;
   void SetHfpMicSrEnabled(bool enabled) override;
   void SetStyleTransferEnabled(bool enabled) override;
+  void SetSpatialAudioEnabled(bool enabled) override;
 
   // Records the output volume percentage set by the user to metrics.
   void RecordOutputVolume();
@@ -76,6 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void OnStyleTransferStateChanged() override;
   void OnForceRespectUiGainsStateChanged() override;
   void OnHfpMicSrStateChanged() override;
+  void OnSpatialAudioStateChanged() override;
 
   // Timers used to prevent the output/input volume metrics from recording each
   // time the user moves the slider while setting the desired volume.

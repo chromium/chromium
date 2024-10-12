@@ -312,6 +312,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void GetNumberOfArcStreams(
       chromeos::DBusMethodCallback<int32_t> callback) = 0;
 
+  // Sets spatial audio state to |spatial_audio| value.
+  virtual void SetSpatialAudio(bool spatial_audio) = 0;
+
  protected:
   friend class CrasAudioClientTest;
 
