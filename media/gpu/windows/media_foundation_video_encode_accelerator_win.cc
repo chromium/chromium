@@ -2600,7 +2600,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   }
 
   RETURN_ON_HR_FAILURE(hr, "Couldn't get encoded data", );
-  DVLOG(3) << "Got encoded data " << hr;
+  DVLOG(3) << "Got encoded data: " << PrintHr(hr);
 
   ComMFSample output_sample;
   ComMFMediaBuffer output_buffer;
