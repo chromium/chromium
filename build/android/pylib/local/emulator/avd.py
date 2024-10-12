@@ -437,13 +437,17 @@ class AvdConfig:
   def GetMetadata(self):
     """Return a dict containing metadata of this avd config.
 
-    Including avd config file path, avd name, avd variant names, and etc.
+    Including avd proto path, avd name, avd variant names, and etc.
     """
-    return {
-        'avd_config_file_path': self.avd_proto_path,
-        'avd_variants': list(self.avd_variants.keys()) or None,
+    metadata = {
+        'avd_proto_path': self.avd_proto_path,
         'is_available': self.IsAvailable(),
     }
+    avd_variant_keys = sorted(self.avd_variants.keys())
+    if avd_variant_keys:
+      metadata['avd_variants'] = avd_variant_keys
+
+    return metadata
 
   def HasSnapshot(self, snapshot_name):
     """Check if a given snapshot exists or not."""
