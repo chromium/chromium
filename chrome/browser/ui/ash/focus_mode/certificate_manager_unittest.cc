@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ui/ash/focus_mode/test/test_certificate.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
@@ -207,6 +208,112 @@ TEST_F(CertificateManagerTest, Sign) {
   EXPECT_THAT(status, Eq(CertificateManager::CertificateResult::kSuccess));
 
   // Wait for the `FakeAttestationClient` to finish.
+  run_loop.Run();
+}
+
+// Verifies that if the `CertificateManager` finds that the currently cached
+// certificate requires upgrade, we attempt upgrade one time (and only once to
+// prevent overwhelming the server).
+TEST_F(CertificateManagerTest, CertificateUpgradeRequired_Failed) {
+  // A certificate signed with SHA-1 that's expected to be rejected.
+  std::string test_certificate = ash::ReadSha1TestCertificate();
+
+  testing::InSequence sequence;
+  EXPECT_CALL(*mock_attestation_flow(),
+              GetCertificate(_, _, _, /*force_refresh=*/false, _, _, _, _))
+      .WillOnce(
+          [&](ash::attestation::AttestationCertificateProfile, const AccountId&,
+              const std::string&, bool, ::attestation::KeyType,
+              const std::string&,
+              const std::optional<
+                  ash::attestation::AttestationFlow::CertProfileSpecificData>&,
+              ash::attestation::AttestationFlow::CertificateCallback callback) {
+            std::move(callback).Run(
+                ash::attestation::AttestationStatus::ATTESTATION_SUCCESS,
+                test_certificate);
+          });
+
+  EXPECT_CALL(*mock_attestation_flow(),
+              GetCertificate(_, _, _, /*force_refresh=*/true, _, _, _, _))
+      .WillOnce(
+          [&](ash::attestation::AttestationCertificateProfile, const AccountId&,
+              const std::string&, bool, ::attestation::KeyType,
+              const std::string&,
+              const std::optional<
+                  ash::attestation::AttestationFlow::CertProfileSpecificData>&,
+              ash::attestation::AttestationFlow::CertificateCallback callback) {
+            std::move(callback).Run(
+                ash::attestation::AttestationStatus::ATTESTATION_SUCCESS,
+                test_certificate);
+          });
+
+  base::RunLoop run_loop;
+  bool cert_status = certificate_manager()->GetCertificate(
+      false, base::BindLambdaForTesting(
+                 [&](const std::optional<CertificateManager::Key>& key) {
+                   // Since an appropriate certificate is not available, this
+                   // fails.
+                   EXPECT_THAT(key, Eq(std::nullopt));
+                   run_loop.Quit();
+                 }));
+  ASSERT_TRUE(cert_status);
+
+  run_loop.Run();
+
+  // Get Certificate should have been called exactly twice. New requests for
+  // certificates should fail.
+  cert_status = certificate_manager()->GetCertificate(false, base::DoNothing());
+  EXPECT_THAT(cert_status, Eq(false));
+}
+
+TEST_F(CertificateManagerTest, CertificateUpgraded) {
+  testing::InSequence sequence;
+  EXPECT_CALL(*mock_attestation_flow(),
+              GetCertificate(_, _, _, /*force_refresh=*/false, _, _, _, _))
+      .WillOnce(
+          [&](ash::attestation::AttestationCertificateProfile, const AccountId&,
+              const std::string&, bool, ::attestation::KeyType,
+              const std::string&,
+              const std::optional<
+                  ash::attestation::AttestationFlow::CertProfileSpecificData>&,
+              ash::attestation::AttestationFlow::CertificateCallback callback) {
+            // A certificate signed with SHA-1 that's expected to be rejected.
+            std::string test_certificate = ash::ReadSha1TestCertificate();
+            std::move(callback).Run(
+                ash::attestation::AttestationStatus::ATTESTATION_SUCCESS,
+                test_certificate);
+          });
+
+  EXPECT_CALL(*mock_attestation_flow(),
+              GetCertificate(_, _, _, /*force_refresh=*/true, _, _, _, _))
+      .WillOnce(
+          [&](ash::attestation::AttestationCertificateProfile, const AccountId&,
+              const std::string&, bool, ::attestation::KeyType,
+              const std::string&,
+              const std::optional<
+                  ash::attestation::AttestationFlow::CertProfileSpecificData>&,
+              ash::attestation::AttestationFlow::CertificateCallback callback) {
+            // On refresh, provide a SHA-256 signed certificate that is
+            // accepted.
+            std::string certificate;
+            ASSERT_TRUE(ash::attestation::GetFakeCertificatePEM(base::Days(30),
+                                                                &certificate));
+            std::move(callback).Run(
+                ash::attestation::AttestationStatus::ATTESTATION_SUCCESS,
+                certificate);
+          });
+
+  base::RunLoop run_loop;
+  bool cert_status = certificate_manager()->GetCertificate(
+      false, base::BindLambdaForTesting(
+                 [&](const std::optional<CertificateManager::Key>& key) {
+                   // Since a valid certificate was provided in the second
+                   // request, we get the key for that certificate.
+                   EXPECT_THAT(key, Ne(std::nullopt));
+                   run_loop.Quit();
+                 }));
+  ASSERT_TRUE(cert_status);
+
   run_loop.Run();
 }
 

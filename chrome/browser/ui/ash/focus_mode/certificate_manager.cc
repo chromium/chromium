@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/pem.h"
 
 namespace {
@@ -44,11 +45,7 @@ bool IsAttestationAllowedByPolicy() {
 }
 
 std::optional<base::Time> CertificateExpiration(
-    const std::string& certificate) {
-  CHECK(!certificate.empty());
-
-  scoped_refptr<net::X509Certificate> x509 =
-      net::X509Certificate::CreateFromBytes(base::as_byte_span(certificate));
+    const scoped_refptr<net::X509Certificate> x509) {
   if (!x509.get() || x509->valid_expiry().is_null()) {
     // Certificate parsing failed.
     LOG(WARNING) << "Certificate parsing failed";
@@ -76,6 +73,11 @@ class CertificateManagerImpl : public CertificateManager {
       CertificateManager::CertificateCallback callback) override {
     if (!IsAttestationAllowedByPolicy()) {
       LOG(ERROR) << "Attestation is not allowed by policy.";
+      return false;
+    }
+
+    if (fatal_error_) {
+      LOG(ERROR) << "A valid certificate cannot be retrieved.";
       return false;
     }
 
@@ -164,9 +166,30 @@ class CertificateManagerImpl : public CertificateManager {
       return;
     }
 
-    std::optional<base::Time> expiration = CertificateExpiration(client_cert);
+    scoped_refptr<net::X509Certificate> x509 =
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(client_cert));
+    std::optional<base::Time> expiration = CertificateExpiration(x509);
     if (!expiration.has_value()) {
       LOG(WARNING) << "Certificate has no expiration";
+      std::move(callback).Run({});
+      return;
+    }
+
+    auto crypto_buffer = net::x509_util::CreateCryptoBuffer(client_cert);
+    if (net::x509_util::HasRsaPkcs1Sha1Signature(crypto_buffer.get())) {
+      if (!certificate_upgrade_attempted_) {
+        // Make 1 attempt to force a refresh of the certificate.
+        certificate_upgrade_attempted_ = true;
+        GetCertificateImpl(/*force_update=*/true, std::move(callback));
+        return;
+      }
+
+      LOG(ERROR) << "Certificate is unsuitable for use.";
+
+      // A suitable certificate cannot be retrieved. Give up forever.
+      fatal_error_ = true;
+
+      // Certificate is not suitable for use. Fail request.
       std::move(callback).Run({});
       return;
     }
@@ -224,6 +247,14 @@ class CertificateManagerImpl : public CertificateManager {
   const base::TimeDelta expiration_buffer_;
   std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow_;
   raw_ptr<ash::AttestationClient> attestation_client_;
+
+  // If this is true, an unrecoverable error was encountered and all future
+  // requests will fail.
+  bool fatal_error_ = false;
+
+  // Tracks if we have attempted to upgrade a SHA-1 certificate to a new
+  // certificate. This will only be attempted once.
+  bool certificate_upgrade_attempted_ = false;
 
   // Expiration timestamp for the most recently retrieved certificate. nullopt
   // if a certificate has not been retrieved.
