@@ -147,7 +147,7 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
   controller->set_initial_item_selected_callback_for_test(
       run_loop.QuitClosure());
   EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      gfx::Rect(), ui::MENU_SOURCE_NONE,
       ClipboardHistoryControllerShowSource::kDefaultValue));
   run_loop.Run();
   EXPECT_TRUE(controller->IsMenuShowing());
@@ -204,7 +204,7 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
   auto* const controller = GetClipboardHistoryController();
   ASSERT_TRUE(controller);
   EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      gfx::Rect(), ui::MENU_SOURCE_NONE,
       ClipboardHistoryControllerShowSource::kDefaultValue));
   EXPECT_TRUE(controller->IsMenuShowing());
 
@@ -338,8 +338,8 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
   EXPECT_EQ(controller->history()->GetItems().size(), 2u);
 
   // Show the clipboard history menu.
-  EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+  EXPECT_TRUE(
+      controller->ShowMenu(gfx::Rect(), ui::MENU_SOURCE_NONE, GetSource()));
   EXPECT_TRUE(controller->IsMenuShowing());
 
   const auto time_since_menu_shown =

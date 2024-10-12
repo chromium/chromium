@@ -1959,7 +1959,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryLongpressEnabledBrowserTest,
   // Show the clipboard history menu via the Ctrl+V long-press shortcut so that
   // the menu's educational footer shows.
   EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      gfx::Rect(), ui::MENU_SOURCE_NONE,
       crosapi::mojom::ClipboardHistoryControllerShowSource::
           kControlVLongpress));
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());

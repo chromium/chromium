@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// TODO(varunjain): Remove `kNone` (crbug.com/250964)
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.mojom
+// These are used in histograms, do not remove/renumber entries.
+// Also remember to update the MenuSourceType enum listing in
+// tools/metrics/histograms/enums.xml.
+
+// TODO(crbug.com/370252254): Move back to ui_base_types.mojom and delete
+// this file.
+[Stable, Extensible]
+enum MenuSourceType {
+  [Default] kNone = 0,
+  kMouse = 1,
+  kKeyboard = 2,
+  kTouch = 3,
+  kTouchEditMenu = 4,
+  kLongPress = 5,
+  kLongTap = 6,
+  kTouchHandle = 7,
+  kStylus = 8,
+  kAdjustSelection = 9,
+  kAdjustSelectionReset = 10,
+};

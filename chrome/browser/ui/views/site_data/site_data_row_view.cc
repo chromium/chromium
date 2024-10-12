@@ -252,10 +252,9 @@ void SiteDataRowView::OnMenuIconClicked() {
       dialog_model_.get(), views::MenuRunner::HAS_MNEMONICS,
       base::BindRepeating(&SiteDataRowView::OnMenuClosed,
                           base::Unretained(this)));
-  menu_runner_->RunMenuAt(GetWidget(), nullptr,
-                          menu_button_->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MenuSourceType::MENU_SOURCE_MOUSE);
+  menu_runner_->RunMenuAt(
+      GetWidget(), nullptr, menu_button_->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_MOUSE);
   menu_button_->SetState(views::Button::ButtonState::STATE_PRESSED);
 }
 

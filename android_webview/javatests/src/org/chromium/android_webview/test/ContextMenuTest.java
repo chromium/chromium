@@ -52,8 +52,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -251,7 +251,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -295,7 +295,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 

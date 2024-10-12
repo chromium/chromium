@@ -247,9 +247,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                 [](ui::TrackedElement* element) {
                   // Show the tab group editor bubble.
                   auto* const view = AsView(element);
-                  view->ShowContextMenu(
-                      view->GetLocalBounds().CenterPoint(),
-                      ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
+                  view->ShowContextMenu(view->GetLocalBounds().CenterPoint(),
+                                        ui::MENU_SOURCE_KEYBOARD);
                 }),
       WaitForShow(kTabGroupEditorBubbleId),
 

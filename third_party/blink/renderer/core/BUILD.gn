@@ -349,6 +349,8 @@ component("core") {
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/re2",
     "//ui/accessibility:ax_base",
+    "//ui/base:base",
+    "//ui/base:ui_data_pack",
     "//ui/base/cursor",
     "//ui/base/dragdrop/mojom:mojom_blink_headers",
     "//ui/base/dragdrop/mojom:mojom_shared",

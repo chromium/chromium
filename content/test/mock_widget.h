@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "ui/base/ui_base_types.h"
 
 namespace content {
 

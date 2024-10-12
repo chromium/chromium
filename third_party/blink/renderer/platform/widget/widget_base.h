@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/gfx/ca_layer_result.h"
 
 namespace cc {

@@ -67,9 +67,9 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
@@ -230,7 +230,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         // adjustSelectionByCharacterOffset() should be called.
@@ -256,7 +256,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_ADJUST_SELECTION,
+                MenuSourceType.ADJUST_SELECTION,
                 mRenderFrameHost);
 
         order.verify(mView).startActionMode(isNull(), eq(ActionMode.TYPE_FLOATING));
@@ -298,7 +298,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         // adjustSelectionByCharacterOffset() should be called.
@@ -323,7 +323,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
         order.verify(mWebContents)
                 .adjustSelectionByCharacterOffset(newResult.startAdjust, newResult.endAdjust, true);
@@ -347,7 +347,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_ADJUST_SELECTION,
+                MenuSourceType.ADJUST_SELECTION,
                 mRenderFrameHost);
 
         SelectionClient.Result returnResult = mController.getClassificationResult();
@@ -371,7 +371,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_ADJUST_SELECTION,
+                MenuSourceType.ADJUST_SELECTION,
                 mRenderFrameHost);
 
         order.verify(mView).startActionMode(isNull(), eq(ActionMode.TYPE_FLOATING));
@@ -405,7 +405,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         // Another long press triggered showSelectionMenu() call.
@@ -424,7 +424,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         // Then we are done with the first classification.
@@ -458,7 +458,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_ADJUST_SELECTION,
+                MenuSourceType.ADJUST_SELECTION,
                 mRenderFrameHost);
 
         SelectionClient.Result returnResult = mController.getClassificationResult();
@@ -482,7 +482,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_ADJUST_SELECTION,
+                MenuSourceType.ADJUST_SELECTION,
                 mRenderFrameHost);
 
         order.verify(mView).startActionMode(isNull(), eq(ActionMode.TYPE_FLOATING));
@@ -518,7 +518,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
@@ -543,7 +543,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_ADJUST_SELECTION,
+                MenuSourceType.ADJUST_SELECTION,
                 mRenderFrameHost);
 
         order.verify(mLogger)
@@ -566,7 +566,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_TOUCH_HANDLE,
+                MenuSourceType.TOUCH_HANDLE,
                 mRenderFrameHost);
 
         order.verify(mLogger, never())
@@ -608,7 +608,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         when(mView.startActionMode(any(ActionMode.Callback2.class), anyInt()))
@@ -636,7 +636,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_TOUCH_HANDLE,
+                MenuSourceType.TOUCH_HANDLE,
                 mRenderFrameHost);
 
         order.verify(mLogger, never())
@@ -790,7 +790,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         Mockito.verify(mView).startActionMode(isNull(), eq(ActionMode.TYPE_FLOATING));
@@ -839,7 +839,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
 
         Mockito.verify(mView).startActionMode(isNull(), eq(ActionMode.TYPE_FLOATING));
@@ -931,7 +931,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_MOUSE,
+                MenuSourceType.MOUSE,
                 mRenderFrameHost);
         Mockito.verify(spyController, times(1)).createAndShowDropdownMenu();
         Mockito.verify(spyController, times(1)).destroyActionModeAndKeepSelection();
@@ -964,7 +964,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
         Mockito.verify(spyController, times(1)).showActionModeOrClearOnFailure();
         Mockito.verify(dropdownMenuDelegate, times(1)).dismiss();
@@ -994,7 +994,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS,
+                MenuSourceType.LONG_PRESS,
                 mRenderFrameHost);
         Mockito.verify(spyController, times(1)).showActionModeOrClearOnFailure();
         Mockito.verify(dropdownMenuDelegate, times(1)).dismiss();
@@ -1021,7 +1021,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_MOUSE,
+                MenuSourceType.MOUSE,
                 mRenderFrameHost);
 
         SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
@@ -1040,7 +1040,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_MOUSE,
+                MenuSourceType.MOUSE,
                 mRenderFrameHost);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
@@ -1066,7 +1066,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_MOUSE,
+                MenuSourceType.MOUSE,
                 mRenderFrameHost);
 
         SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
@@ -1085,7 +1085,7 @@ public class SelectionPopupControllerTest {
                 /* canSelectAll= */ true,
                 /* canRichlyEdit= */ true,
                 /* shouldSuggest= */ true,
-                MenuSourceType.MENU_SOURCE_MOUSE,
+                MenuSourceType.MOUSE,
                 mRenderFrameHost);
 
         // Check the menu is different and not similar to the one we have stored.

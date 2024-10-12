@@ -426,8 +426,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     filter_menu_runner_->RunMenuAt(
         search_box->GetWidget(), nullptr /*button_controller*/,
         search_box->filter_button()->GetBoundsInScreen(),
-        views::MenuAnchorPosition::kBubbleBottomRight,
-        ui::MenuSourceType::MENU_SOURCE_NONE);
+        views::MenuAnchorPosition::kBubbleBottomRight, ui::MENU_SOURCE_NONE);
   }
 
   // Returns true if the category filter menu is opened.

@@ -224,7 +224,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
@@ -13610,7 +13610,7 @@ TEST_F(WebFrameTest, ContextMenuDataNonLocatedMenu) {
       WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 
   web_view->MainFrameImpl()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::TOUCH,
+      ui::mojom::blink::MenuSourceType::kTouch,
       web_view->MainFrameImpl()->GetPositionInViewportForTesting());
 
   RunPendingTasks();

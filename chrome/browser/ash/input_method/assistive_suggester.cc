@@ -480,8 +480,7 @@ void AssistiveSuggester::OnLongpressDetected() {
 
   if (IsLongpressEnabledControlV(current_longpress_keydown_.value())) {
     if (Shell::Get()->clipboard_history_controller()->ShowMenu(
-            GetClipboardHistoryMenuAnchor(),
-            ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+            GetClipboardHistoryMenuAnchor(), ui::MENU_SOURCE_KEYBOARD,
             crosapi::mojom::ClipboardHistoryControllerShowSource::
                 kControlVLongpress,
             base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,

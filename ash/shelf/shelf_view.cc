@@ -2638,8 +2638,8 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   const ShelfItem* item = ShelfItemForView(source);
 
-  if ((source_type == ui::MenuSourceType::MENU_SOURCE_MOUSE ||
-       source_type == ui::MenuSourceType::MENU_SOURCE_KEYBOARD) &&
+  if ((source_type == ui::MENU_SOURCE_MOUSE ||
+       source_type == ui::MENU_SOURCE_KEYBOARD) &&
       item) {
     views::InkDrop::Get(source)->GetInkDrop()->AnimateToState(
         views::InkDropState::ACTIVATED);
@@ -2647,7 +2647,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   // Only selected shelf items with context menu opened can be dragged.
   if (context_menu && item && ShelfButtonIsInDrag(item->type, source) &&
-      source_type == ui::MenuSourceType::MENU_SOURCE_TOUCH) {
+      source_type == ui::MENU_SOURCE_TOUCH) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 

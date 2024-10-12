@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/latency/latency_info.h"
 
 using blink::WebGestureEvent;
@@ -504,7 +505,7 @@ RenderInputRouter::GetEmbeddedRenderInputRouters() {
 
 void RenderInputRouter::ShowContextMenuAtPoint(
     const gfx::Point& point,
-    const ui::MenuSourceType source_type) {
+    const ui::mojom::MenuSourceType source_type) {
   if (client_remote_) {
     client_remote_->ShowContextMenu(source_type, point);
   }

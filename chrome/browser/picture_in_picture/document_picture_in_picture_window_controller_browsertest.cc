@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Simulate a click on the document picture in picture window title, and
   // verify that the context menu is not shown.
   pip_frame_view->frame()->ShowContextMenuForViewImpl(
-      window_title, click_location, ui::MenuSourceType::MENU_SOURCE_MOUSE);
+      window_title, click_location, ui::MENU_SOURCE_MOUSE);
 
   EXPECT_EQ(false, pip_frame_view->frame()->IsMenuRunnerRunningForTesting());
 }

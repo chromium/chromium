@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "ui/base/mojom/menu_source_type.mojom.h"
+
 namespace ui {
 
 // Specifies which edges of the window are tiled.
@@ -81,27 +83,36 @@ enum class ZOrderLevel {
   kSecuritySurface,
 };
 
-// TODO(varunjain): Remove MENU_SOURCE_NONE (crbug.com/250964)
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
-// These are used in histograms, do not remove/renumber entries. Only add at the
-// end just before MENU_SOURCE_TYPE_LAST. Also remember to update the
-// MenuSourceType enum listing in tools/metrics/histograms/enums.xml.
-// Lastly, any new type here needs to be synced with ui_base_types.mojom.
-enum MenuSourceType {
-  MENU_SOURCE_NONE = 0,
-  MENU_SOURCE_MOUSE = 1,
-  MENU_SOURCE_KEYBOARD = 2,
-  MENU_SOURCE_TOUCH = 3,
-  MENU_SOURCE_TOUCH_EDIT_MENU = 4,
-  MENU_SOURCE_LONG_PRESS = 5,
-  MENU_SOURCE_LONG_TAP = 6,
-  MENU_SOURCE_TOUCH_HANDLE = 7,
-  MENU_SOURCE_STYLUS = 8,
-  MENU_SOURCE_ADJUST_SELECTION = 9,
-  MENU_SOURCE_ADJUST_SELECTION_RESET = 10,
-  MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
-};
+// Alias until all clients of `MenuSourceType` have been migrated.
+// Will be removed once that is complete.
+using MenuSourceType = ::ui::mojom::MenuSourceType;
+
+// Alias for the old enumerators of `MenuSourceType` until all clients have been
+// migrated. Will be removed once that is complete.
+inline constexpr MenuSourceType MENU_SOURCE_NONE =
+    ui::mojom::MenuSourceType::kNone;
+inline constexpr MenuSourceType MENU_SOURCE_MOUSE =
+    ui::mojom::MenuSourceType::kMouse;
+inline constexpr MenuSourceType MENU_SOURCE_KEYBOARD =
+    ui::mojom::MenuSourceType::kKeyboard;
+inline constexpr MenuSourceType MENU_SOURCE_TOUCH =
+    ui::mojom::MenuSourceType::kTouch;
+inline constexpr MenuSourceType MENU_SOURCE_TOUCH_EDIT_MENU =
+    ui::mojom::MenuSourceType::kTouchEditMenu;
+inline constexpr MenuSourceType MENU_SOURCE_LONG_PRESS =
+    ui::mojom::MenuSourceType::kLongPress;
+inline constexpr MenuSourceType MENU_SOURCE_LONG_TAP =
+    ui::mojom::MenuSourceType::kLongTap;
+inline constexpr MenuSourceType MENU_SOURCE_TOUCH_HANDLE =
+    ui::mojom::MenuSourceType::kTouchHandle;
+inline constexpr MenuSourceType MENU_SOURCE_STYLUS =
+    ui::mojom::MenuSourceType::kStylus;
+inline constexpr MenuSourceType MENU_SOURCE_ADJUST_SELECTION =
+    ui::mojom::MenuSourceType::kAdjustSelection;
+inline constexpr MenuSourceType MENU_SOURCE_ADJUST_SELECTION_RESET =
+    ui::mojom::MenuSourceType::kAdjustSelectionReset;
+inline constexpr MenuSourceType MENU_SOURCE_TYPE_LAST =
+    ui::mojom::MenuSourceType::kMaxValue;
 
 // Where an owned anchored window should be anchored to. Used by such backends
 // as Wayland, which doesn't provide clients with on screen coordinates, but

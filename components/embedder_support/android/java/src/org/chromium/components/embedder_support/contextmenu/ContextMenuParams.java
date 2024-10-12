@@ -14,11 +14,10 @@ import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.url.GURL;
 
 /**
- * A list of parameters that explain what kind of context menu to show the user.  This data is
+ * A list of parameters that explain what kind of context menu to show the user. This data is
  * generated from content/public/common/context_menu_params.h.
  */
 @JNINamespace("context_menu")
@@ -125,7 +124,7 @@ public class ContextMenuParams {
      * @return The method used to cause the context menu to be shown. For example, right mouse click
      *         or long press.
      */
-    public @MenuSourceType int getSourceType() {
+    public int getSourceType() {
         return mSourceType;
     }
 
@@ -170,7 +169,7 @@ public class ContextMenuParams {
             boolean canSaveMedia,
             int triggeringTouchXDp,
             int triggeringTouchYDp,
-            @MenuSourceType int sourceType,
+            int sourceType,
             boolean openedFromHighlight,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mNativePtr = nativePtr;
@@ -208,7 +207,7 @@ public class ContextMenuParams {
             boolean canSaveMedia,
             int triggeringTouchXDp,
             int triggeringTouchYDp,
-            @MenuSourceType int sourceType,
+            int sourceType,
             boolean openedFromHighlight,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         // TODO(crbug.com/40549331): Convert Referrer to use GURL.

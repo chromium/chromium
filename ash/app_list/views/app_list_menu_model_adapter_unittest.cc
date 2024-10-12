@@ -34,9 +34,9 @@ class AppListMenuModelAdapterTest
     menu_model->AddItem(NOTIFICATION_CONTAINER, u"Test menu item");
 
     return std::make_unique<AppListMenuModelAdapter>(
-        "test-app-id", std::move(menu_model), nullptr,
-        ui::MenuSourceType::MENU_SOURCE_MOUSE, metric_params, type,
-        base::OnceClosure(), is_tablet_mode, AppCollection::kUnknown);
+        "test-app-id", std::move(menu_model), nullptr, ui::MENU_SOURCE_MOUSE,
+        metric_params, type, base::OnceClosure(), is_tablet_mode,
+        AppCollection::kUnknown);
   }
 
   std::string AppendClamshellOrTabletModePostfix(
@@ -88,13 +88,13 @@ TEST_P(AppListMenuModelAdapterTest, RecordsHistogramOnMenuClosed) {
         ".");
 
     if (test_case.has_non_tablet_clamshell_histograms) {
-      histogram_tester.ExpectUniqueSample(
-          show_source_histogram_name, ui::MenuSourceType::MENU_SOURCE_MOUSE, 1);
+      histogram_tester.ExpectUniqueSample(show_source_histogram_name,
+                                          ui::MENU_SOURCE_MOUSE, 1);
       histogram_tester.ExpectTotalCount(user_journey_time_histogram_name, 1);
     }
     histogram_tester.ExpectUniqueSample(
         AppendClamshellOrTabletModePostfix(show_source_histogram_name),
-        ui::MenuSourceType::MENU_SOURCE_MOUSE, 1);
+        ui::MENU_SOURCE_MOUSE, 1);
     histogram_tester.ExpectTotalCount(
         AppendClamshellOrTabletModePostfix(user_journey_time_histogram_name),
         1);

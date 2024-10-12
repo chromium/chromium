@@ -89,7 +89,7 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.MenuSourceType;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -911,7 +911,7 @@ public class ContextMenuTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         /* getOpenedFromHighlight= */ true,
                         /* additionalNavigationParams= */ null);
         ContextMenuPopulatorFactory populatorFactory =

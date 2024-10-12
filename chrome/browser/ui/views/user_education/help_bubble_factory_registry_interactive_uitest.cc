@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
             FROM_HERE, base::BindLambdaForTesting([this]() {
               auto* tab = GetBrowserView()->tabstrip()->tab_at(0);
               tab->ShowContextMenu(tab->bounds().CenterPoint(),
-                                   ui::MenuSourceType::MENU_SOURCE_MOUSE);
+                                   ui::MENU_SOURCE_MOUSE);
             }));
       }),
 

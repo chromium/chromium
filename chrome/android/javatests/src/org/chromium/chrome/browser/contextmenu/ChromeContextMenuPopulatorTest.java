@@ -60,9 +60,9 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -224,7 +224,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -299,7 +299,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -359,7 +359,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -424,7 +424,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -489,7 +489,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -558,7 +558,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -636,7 +636,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -707,7 +707,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -772,7 +772,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -860,7 +860,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -915,7 +915,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -973,7 +973,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -1009,7 +1009,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -1047,7 +1047,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -1088,7 +1088,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -1129,7 +1129,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -1180,7 +1180,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* canSaveMedia= */ false,
                         /* triggeringTouchXDp= */ 0,
                         /* triggeringTouchXDp= */ 0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         /* openedFromHighlight= */ true,
                         /* additionalNavigationParams= */ null);
 
@@ -1222,7 +1222,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, linkParams);
@@ -1250,7 +1250,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, imageParams);

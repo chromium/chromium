@@ -143,7 +143,6 @@ java_cpp_enum("java_enums_srcjar") {
     "../base/ime/text_input_type.h",
     "../base/page_transition_types.h",
     "../base/pointer/pointer_device.h",
-    "../base/ui_base_types.h",
     "../events/android/gesture_event_type.h",
     "../events/back_gesture_event.h",
     "../gfx/android/java_bitmap.h",

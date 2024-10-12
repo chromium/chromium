@@ -1632,6 +1632,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_full_java",
       "//ui/android:ui_java_test_support",
+      "//ui/base/mojom:ui_base_types_java",
       "//url:android_test_helper_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",

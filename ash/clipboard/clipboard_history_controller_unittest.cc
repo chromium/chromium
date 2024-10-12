@@ -816,7 +816,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
   // Try to show the menu without populating the clipboard. The menu should not
   // show.
   EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+      gfx::Rect(), ui::MENU_SOURCE_NONE, GetSource()));
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
                                     /*expected_count=*/0);
@@ -831,7 +831,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
   EXPECT_TRUE(session_controller->IsScreenLocked());
 
   EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+      gfx::Rect(), ui::MENU_SOURCE_NONE, GetSource()));
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
                                     /*expected_count=*/0);
@@ -842,7 +842,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
 
   // Show the menu.
   EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+      gfx::Rect(), ui::MENU_SOURCE_NONE, GetSource()));
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu", GetSource(),
@@ -851,7 +851,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
   // Try to show the menu again without closing the active menu. The menu should
   // still be showing, but this attempt should fail.
   EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+      gfx::Rect(), ui::MENU_SOURCE_NONE, GetSource()));
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu", GetSource(),
@@ -872,7 +872,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
 
   // Show the menu with an `OnMenuClosingCallback`.
   GetClipboardHistoryController()->ShowMenu(
-      test_window_rect, ui::MenuSourceType::MENU_SOURCE_NONE, GetSource(),
+      test_window_rect, ui::MENU_SOURCE_NONE, GetSource(),
       on_menu_closing_future.GetRepeatingCallback());
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_FALSE(on_menu_closing_future.IsReady());
@@ -888,7 +888,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
 
   // Show the menu again.
   GetClipboardHistoryController()->ShowMenu(
-      test_window_rect, ui::MenuSourceType::MENU_SOURCE_NONE, GetSource(),
+      test_window_rect, ui::MENU_SOURCE_NONE, GetSource(),
       on_menu_closing_future.GetCallback());
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_FALSE(on_menu_closing_future.IsReady());

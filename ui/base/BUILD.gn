@@ -47,6 +47,8 @@ component("ui_data_pack") {
     ":base",
     "//chromeos/crosapi/mojom",  # This target requires minimal dependencies.
     "//ios/chrome/tools/strings:generate_localizable_strings",
+    "//third_party/blink/renderer/core:core",
+    "//third_party/blink/renderer/platform:platform",
     "//ui/gfx:*",
   ]
 
@@ -123,6 +125,9 @@ source_set("types") {
   if (!is_ios) {
     sources += [ "ui_base_types.h" ]
   }
+
+  # Need to be removed once all clients of `MenuSourceType` have been migrated.
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
 
   deps = [ "//build:chromeos_buildflags" ]
 }

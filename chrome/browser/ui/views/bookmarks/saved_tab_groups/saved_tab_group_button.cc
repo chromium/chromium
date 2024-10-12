@@ -150,8 +150,7 @@ std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
 
 bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
-    ShowContextMenu(GetKeyboardContextMenuLocation(),
-                    ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
+    ShowContextMenu(GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_KEYBOARD);
     return true;
   } else if (event.key_code() == ui::KeyboardCode::VKEY_SPACE) {
     NotifyClick(event);

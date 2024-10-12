@@ -7,7 +7,7 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
 
 // The different ways the multipaste menu can be shown. These values are
 // written to logs. New enum values can be added, but existing enums must

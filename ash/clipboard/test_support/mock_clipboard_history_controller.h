@@ -12,6 +12,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_types.h"
 
 namespace crosapi::mojom {
 enum class ClipboardHistoryControllerShowSource;
@@ -20,10 +21,6 @@ enum class ClipboardHistoryControllerShowSource;
 namespace gfx {
 class Rect;
 }  // namespace gfx
-
-namespace ui {
-enum MenuSourceType;
-}  // namespace ui
 
 namespace ash {
 

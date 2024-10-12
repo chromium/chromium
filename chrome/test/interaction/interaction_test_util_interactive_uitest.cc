@@ -72,8 +72,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
   // would be far more complicated trying to use RunLoops, tasks, and events.
 
   auto open_context_menu = base::BindLambdaForTesting([&]() {
-    tab->ShowContextMenu(tab->bounds().CenterPoint(),
-                         ui::MenuSourceType::MENU_SOURCE_MOUSE);
+    tab->ShowContextMenu(tab->bounds().CenterPoint(), ui::MENU_SOURCE_MOUSE);
   });
 
   auto set_up = base::BindLambdaForTesting(

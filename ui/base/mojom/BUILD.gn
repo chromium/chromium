@@ -24,16 +24,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ui.mojom.MenuSourceType"
-          cpp = "::ui::MenuSourceType"
-        },
-      ]
-      traits_headers = [ "ui_base_types_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base" ]
-    },
-    {
-      types = [
-        {
           mojom = "ui.mojom.WindowOpenDisposition"
           cpp = "::WindowOpenDisposition"
         },
@@ -54,10 +44,12 @@ mojom("mojom") {
 
 # TODO(crbug.com/359910414): Move back DialogButton enum to ui_base_types.mojom.
 # TODO(crbug.com/361008605): Move back `WindowShowState` enum to ui_base_types.mojom.
+# TODO(crbug.com/370252254): Move back `MenuSourceType` enum to ui_base_types.mojom.
 mojom("ui_base_types") {
   generate_java = true
   sources = [
     "dialog_button.mojom",
+    "menu_source_type.mojom",
     "window_show_state.mojom",
   ]
 }

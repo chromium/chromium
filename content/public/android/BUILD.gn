@@ -421,6 +421,8 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
     "java/src/org/chromium/content_public/common/InputUtils.java",
   ]
+
+  public_deps = [ "//ui/base/mojom:ui_base_types_java" ]
 }
 
 android_library("content_util_java") {
@@ -735,6 +737,7 @@ robolectric_binary("content_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/base/mojom:ui_base_types_java",
     "//ui/gfx/geometry/mojom:mojom_java",
   ]
   data_deps = [ "//testing/buildbot/filters:content_junit_tests_filters" ]

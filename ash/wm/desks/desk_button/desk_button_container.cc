@@ -269,11 +269,11 @@ void DeskButtonContainer::HandleLocaleChange() {
 void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
                                                ui::LocatedEvent* event) {
   if (!desk_button_->is_activated()) {
-    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+    ui::MenuSourceType source_type = ui::MENU_SOURCE_MOUSE;
     if (event->type() == ui::EventType::kGestureLongPress) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
+      source_type = ui::MENU_SOURCE_LONG_PRESS;
     } else if (event->type() == ui::EventType::kGestureLongTap) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
+      source_type = ui::MENU_SOURCE_LONG_TAP;
     }
     gfx::Point location_in_screen(event->location());
     View::ConvertPointToScreen(source, &location_in_screen);

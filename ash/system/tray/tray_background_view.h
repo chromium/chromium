@@ -15,12 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace ui {
 class Event;
-enum MenuSourceType;
 }  // namespace ui
 
 namespace views {

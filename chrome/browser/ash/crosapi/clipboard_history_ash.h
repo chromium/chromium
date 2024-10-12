@@ -10,6 +10,7 @@
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/base/ui_base_types.h"
 
 namespace ash {
 class Shell;

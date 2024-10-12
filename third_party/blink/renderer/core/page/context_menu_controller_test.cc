@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::Return;
@@ -787,7 +788,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
                           (rect->top() + rect->bottom()) / 2);
   LocalMainFrame()->MoveRangeSelectionExtent(middle_point);
   LocalMainFrame()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::TOUCH_HANDLE, middle_point);
+      ui::mojom::blink::MenuSourceType::kTouchHandle, middle_point);
 
   context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_NE(context_menu_data.selected_text, "");
@@ -800,7 +801,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   LocalMainFrame()->MoveRangeSelectionExtent(
       gfx::Point(rect->right(), rect->bottom()));
   LocalMainFrame()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::TOUCH_HANDLE,
+      ui::mojom::blink::MenuSourceType::kTouchHandle,
       gfx::Point(rect->right() / 2, rect->bottom() / 2));
 
   context_menu_data = GetWebFrameClient().GetContextMenuData();
@@ -2041,7 +2042,7 @@ class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
 
   void ShowContextMenu(const gfx::Point& point) {
     child_frame_->LocalRootFrameWidget()->ShowContextMenu(
-        ui::mojom::MenuSourceType::MOUSE, point);
+        ui::mojom::blink::MenuSourceType::kMouse, point);
     base::RunLoop().RunUntilIdle();
   }
 

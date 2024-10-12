@@ -337,7 +337,10 @@ if (enable_pdf) {
 
     public = [ "pdf_view_web_plugin.h" ]
 
-    public_deps = [ "//pdf/mojom" ]
+    public_deps = [
+      "//pdf/mojom",
+      "//ui/base:base",
+    ]
 
     deps = [
       ":accessibility",

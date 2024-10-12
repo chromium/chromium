@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 #include "ui/gfx/ca_layer_result.h"
 
@@ -454,7 +455,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  void ShowContextMenu(ui::mojom::MenuSourceType source_type,
+  void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void BindInputTargetClient(
       mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver)

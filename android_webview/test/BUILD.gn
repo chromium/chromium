@@ -336,6 +336,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/androidx_javascriptengine:javascriptengine_common_java",
     "//third_party/androidx_javascriptengine:javascriptengine_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/base/mojom:ui_base_types_java",
   ]
   sources = [
     "../javatests/src/org/chromium/android_webview/test/AcceptLanguageTest.java",

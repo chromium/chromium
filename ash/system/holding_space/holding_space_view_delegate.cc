@@ -451,8 +451,9 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
   // In order to determine if the gesture resulting in this context menu being
   // shown was actually the start of a drag sequence, holding space views will
   // have to receive events that would otherwise be consumed by the `MenuHost`.
-  if (source_type == ui::MenuSourceType::MENU_SOURCE_TOUCH)
+  if (source_type == ui::MENU_SOURCE_TOUCH) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
 
   context_menu_runner_ =
       std::make_unique<views::MenuRunner>(BuildMenuModel(), run_types);
