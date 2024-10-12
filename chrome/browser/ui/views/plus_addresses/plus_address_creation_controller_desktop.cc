@@ -12,8 +12,12 @@
 
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -211,6 +215,10 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const bool was_notice_shown = ShouldShowNotice();
     if (was_notice_shown) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
+      if (Browser* browser = chrome::FindBrowserWithTab(&GetWebContents())) {
+        browser->window()->MaybeShowFeaturePromo(
+            feature_engagement::kIPHPlusAddressFirstSaveFeature);
+      }
     }
 
     RecordModalShownOutcome(

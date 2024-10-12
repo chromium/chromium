@@ -574,6 +574,15 @@ if we want to translate this file.
       <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses in iOS." translateable="false">
         Placeholder Plus Address Create Suggestion IPH Screenreader String
       </message>
+      <message name="IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_TITLE" desc="Title of the IPH shown after saving the first plus address on Desktop" translateable="false">
+        Plus address saved
+      </message>
+      <message name="IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_DESCRIPTION" desc="Body of the IPH shown after saving the first plus address on Desktop" translateable="false">
+        You won't need to remember this address. It's saved to your Google Account and can be used from any device.
+      </message>
+      <message name="IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_ACCEPT" desc="Text of the accept button of the IPH shown after saving the first plus address on Desktop" translateable="false">
+        Manage
+      </message>
 
     </messages>
   </release>

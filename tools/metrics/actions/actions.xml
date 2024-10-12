@@ -46256,6 +46256,8 @@ should be able to be added at any place in this file.
       label="For new badge next to Performance feature."/>
   <suffix name="PlusAddressCreateSuggestion"
       label="For creating plus addresses."/>
+  <suffix name="PlusAddressFirstSaveFeature"
+      label="For accessing settings after saving the first plus address."/>
   <suffix name="PowerBookmarksSidePanel"
       label="For power bookmarks side panel feature."/>
   <suffix name="PreviewsOmniboxUI"

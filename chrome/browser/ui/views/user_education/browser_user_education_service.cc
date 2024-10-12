@@ -89,6 +89,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/views/user_education/low_usage_promo.h"
+#include "components/plus_addresses/resources/vector_icons.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -152,6 +153,25 @@ bool HasTabGroups(const BrowserView* browser_view) {
               ->group_model()
               ->ListTabGroups()
               .empty();
+}
+
+// Returns a `CustomActionCallback` that navigates to `target` in a new tab.
+user_education::FeaturePromoSpecification::CustomActionCallback
+CreateNavigationAction(GURL target) {
+  return base::BindRepeating(
+      [](GURL url, ui::ElementContext ctx,
+         user_education::FeaturePromoHandle promo_handle) {
+        auto* const browser = chrome::FindBrowserWithUiElementContext(ctx);
+        if (!browser) {
+          return;
+        }
+        NavigateParams params(browser->profile(), url,
+                              ui::PAGE_TRANSITION_LINK);
+        params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        params.browser = browser;
+        Navigate(&params);
+      },
+      std::move(target));
 }
 
 }  // namespace
@@ -320,6 +340,29 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(128, "vidhanj@google.com",
                        "Triggered after create plus address popup appears.")));
+
+  // kIPHPlusAddressFirstSaveFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHPlusAddressFirstSaveFeature,
+          kToolbarAvatarButtonElementId,
+          IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_DESCRIPTION,
+          IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_ACCEPT,
+          CreateNavigationAction(
+              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())))
+          .SetCustomActionIsDefault(true)
+          .SetBubbleIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+              &plus_addresses::kPlusAddressLogoSmallIcon
+#else
+              &vector_icons::kEmailIcon
+#endif
+              )
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleTitleText(IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_TITLE)
+          .SetMetadata(
+              131, "jkeitel@google.com",
+              "Triggered after first creation of a plus address on Desktop.")));
 
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
@@ -792,22 +835,7 @@ void MaybeRegisterChromeFeaturePromos(
             kToolbarAppMenuButtonElementId,
             IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
             IDS_LEARN_MORE,
-            base::BindRepeating(
-                [](ui::ElementContext ctx,
-                   user_education::FeaturePromoHandle promo_handle) {
-                  auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                  if (!browser) {
-                    return;
-                  }
-
-                  const GURL learn_more_link{chrome::kTabGroupsLearnMoreURL};
-                  NavigateParams params(browser->profile(), learn_more_link,
-                                        ui::PAGE_TRANSITION_LINK);
-                  params.disposition =
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB;
-                  params.browser = browser;
-                  Navigate(&params);
-                }))
+            CreateNavigationAction(GURL(chrome::kTabGroupsLearnMoreURL)))
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
             .SetAnchorElementFilter(
                 base::BindRepeating(&tab_groups::SavedTabGroupUtils::
