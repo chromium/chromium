@@ -164,6 +164,8 @@ extern const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[];
 extern const char kNtpWallpaperSearchButtonHideConditionParam[];
 // Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
 extern const char kWallpaperSearchHatsDelayParam[];
+// Parameter determining the target url to go to from the Ntp Mobile Promo.
+extern const char kNtpMobilePromoTargetUrlParam[];
 
 // Parameter determining the experiment name to pass to the Google Calendar
 // API.

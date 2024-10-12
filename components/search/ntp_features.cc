@@ -360,6 +360,7 @@ const char kNtpWallpaperSearchButtonHideConditionParam[] =
 const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[] =
     "NtpWallpaperSearchButtonAnimationShownThresholdParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
+const char kNtpMobilePromoTargetUrlParam[] = "NtpMobilePromoTargetUrlParam";
 
 const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(
     &ntp_features::kNtpCalendarModule,
