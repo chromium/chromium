@@ -1320,22 +1320,20 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
 }
 
 int32_t GraphBuilderTflite::InsertTransposeOperation(
-    base::span<const int32_t> input_dimensions,
-    ::tflite::TensorType input_tensor_type,
-    int32_t input_tensor_index,
+    const TensorInfo& input_tensor_info,
     base::span<const uint32_t> permutation) {
   // Create `tflite::Tensor` for the output operand of Transpose operator with
   // the dimensions and tensor data type.
-  const size_t input_rank = input_dimensions.size();
+  const size_t input_rank = input_tensor_info.dimensions.size();
   CHECK_EQ(permutation.size(), input_rank);
   base::FixedArray<int32_t> output_shape(input_rank);
   for (size_t i = 0; i < input_rank; ++i) {
-    output_shape[i] = input_dimensions[permutation[i]];
+    output_shape[i] = input_tensor_info.dimensions[permutation[i]];
   }
   const int32_t output_tensor_index =
-      SerializeTemporaryTensor(output_shape, input_tensor_type);
+      SerializeTemporaryTensor(output_shape, input_tensor_info.data_type);
   operators_.emplace_back(SerializeTransposeOperation(
-      input_tensor_index, output_tensor_index, permutation));
+      input_tensor_info.index, output_tensor_index, permutation));
 
   return output_tensor_index;
 }
@@ -2086,38 +2084,27 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   CHECK(context_properties_.data_type_limits.gemm_input.Has(
       GetOperand(gemm.output_operand_id).descriptor.data_type()));
 
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(gemm.output_operand_id));
-  CHECK_EQ(output_tensor_info.dimensions.size(), 2u);
-  std::optional<TensorInfo> c_tensor_info;
-  if (gemm.c_operand_id.has_value()) {
-    // The TFLite fully connected operator only supports a 1-D bias tensor with
-    // `output_channels` dimensions.
-    const int32_t output_channels = output_tensor_info.dimensions[1];
-    ASSIGN_OR_RETURN(c_tensor_info,
-                     SerializeInputTensorInfo(*gemm.c_operand_id));
-    if (c_tensor_info->dimensions.size() != 1 ||
-        c_tensor_info->dimensions[0] != output_channels) {
-      // TODO(crbug.com/328652105): Support the bias with other dimensions by
-      // element-wise addition operator.
-      return base::unexpected(base::StringPrintf(
-          "The dimensions of bias must be [%u].", output_channels));
-    }
-  }
-  if (gemm.alpha != 1.0f) {
-    // TODO(crbug.com/328652105): Support alpha by using element-wise
-    // multiplication operator.
-    return base::unexpected("gemm doesn't support alpha option.");
-  }
-  if (gemm.beta != 1.0f) {
-    // TODO(crbug.com/328652105): Support beta by using element-wise
-    // multiplication operator.
-    return base::unexpected("gemm doesn't support beta option.");
-  }
+  ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
+                   SerializeInputTensorInfo(gemm.a_operand_id));
+  CHECK_EQ(a_tensor_info.dimensions.size(), 2u);
+  int32_t a_tensor_index = a_tensor_info.index;
+  // The permutation transpose first or second 2-D tensor.
+  static constexpr std::array<uint32_t, 2> permutation = {1u, 0u};
   if (gemm.a_transpose) {
-    // TODO(crbug.com/328652105): Support aTranspose by using transpose
-    // operator.
-    return base::unexpected("gemm doesn't support aTranspose option.");
+    a_tensor_index = InsertTransposeOperation(a_tensor_info, permutation);
+  }
+  // TODO(crbug.com/372932099): Avoid executing alpha * A * B if gemma.alpha ==
+  // 0.0f.
+  if (gemm.alpha != 1.0f) {
+    const int32_t alpha_tensor_index = SerializeTensorWithBuffer<float>(
+        /*buffer=*/std::array<float, 1>{gemm.alpha},
+        /*dimensions=*/{});
+    const int32_t output_tensor_index_of_mul = SerializeTemporaryTensor(
+        a_tensor_info.dimensions, a_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MUL, a_tensor_index, alpha_tensor_index,
+        output_tensor_index_of_mul));
+    a_tensor_index = output_tensor_index_of_mul;
   }
 
   // The WebNN Gemm follows the expression `alpha * A * B + beta * C`, where
@@ -2128,28 +2115,68 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   // Gemm When bTranspose option is false.
   ASSIGN_OR_RETURN(const TensorInfo& b_tensor_info,
                    SerializeInputTensorInfo(gemm.b_operand_id));
-  int32_t filter_index = b_tensor_info.index;
+  CHECK_EQ(b_tensor_info.dimensions.size(), 2u);
+  int32_t b_tensor_index = b_tensor_info.index;
   if (!gemm.b_transpose) {
-    CHECK_EQ(b_tensor_info.dimensions.size(), 2u);
-    const std::array<uint32_t, 2> permutation = {1u, 0u};
-    filter_index = InsertTransposeOperation(b_tensor_info.dimensions,
-                                            b_tensor_info.data_type,
-                                            b_tensor_info.index, permutation);
+    b_tensor_index = InsertTransposeOperation(b_tensor_info, permutation);
+  }
+  std::vector<int32_t> fully_connected_inputs = {a_tensor_index,
+                                                 b_tensor_index};
+
+  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                   SerializeOutputTensorInfo(gemm.output_operand_id));
+  CHECK_EQ(output_tensor_info.dimensions.size(), 2u);
+  std::optional<int32_t> c_tensor_index;
+  if (gemm.c_operand_id && gemm.beta != 0.0f) {
+    ASSIGN_OR_RETURN(const TensorInfo& c_tensor_info,
+                     SerializeInputTensorInfo(*gemm.c_operand_id));
+    CHECK_LE(c_tensor_info.dimensions.size(), 2u);
+    c_tensor_index = c_tensor_info.index;
+    if (gemm.beta != 1.0f) {
+      const int32_t beta_tensor_index = SerializeTensorWithBuffer<float>(
+          /*buffer=*/std::array<float, 1>{gemm.beta},
+          /*dimensions=*/{});
+      const int32_t output_tensor_index_of_mul = SerializeTemporaryTensor(
+          c_tensor_info.dimensions, c_tensor_info.data_type);
+      operators_.emplace_back(SerializeBinaryOperation(
+          ::tflite::BuiltinOperator_MUL, c_tensor_info.index, beta_tensor_index,
+          output_tensor_index_of_mul));
+      c_tensor_index = output_tensor_index_of_mul;
+    }
+
+    // The TFLite fully connected operator only supports a 1-D bias tensor with
+    // `output_channels` dimensions.
+    const int32_t output_channels = output_tensor_info.dimensions[1];
+    if (c_tensor_info.dimensions.size() == 1 &&
+        c_tensor_info.dimensions[0] == output_channels) {
+      fully_connected_inputs.push_back(*c_tensor_index);
+    }
   }
 
-  ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
-                   SerializeInputTensorInfo(gemm.a_operand_id));
-  std::vector<int32_t> op_inputs = {a_tensor_info.index, filter_index};
-  if (gemm.c_operand_id.has_value()) {
-    op_inputs.push_back(c_tensor_info->index);
+  // Add the `beta * C` subexpression if it's not fused into FULLY_CONNECTED
+  // operator.
+  const bool addition_c_expression =
+      c_tensor_index && fully_connected_inputs.size() == 2;
+  int32_t output_tensor_index = output_tensor_info.index;
+  if (addition_c_expression) {
+    output_tensor_index = SerializeTemporaryTensor(
+        output_tensor_info.dimensions, output_tensor_info.data_type);
   }
-
   const uint32_t operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_FULLY_CONNECTED);
-  const std::array<int32_t, 1> op_outputs = {output_tensor_info.index};
-  return ::tflite::CreateOperator(builder_, operator_code_index,
-                                  builder_.CreateVector<int32_t>(op_inputs),
-                                  builder_.CreateVector<int32_t>(op_outputs));
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  OperatorOffset operator_offset = ::tflite::CreateOperator(
+      builder_, operator_code_index,
+      builder_.CreateVector<int32_t>(fully_connected_inputs),
+      builder_.CreateVector<int32_t>(op_outputs));
+
+  if (addition_c_expression) {
+    operators_.push_back(operator_offset);
+    operator_offset = SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_ADD, output_tensor_index, *c_tensor_index,
+        output_tensor_info.index);
+  }
+  return operator_offset;
 }
 
 // Serialize a sub graph (input * weight + bias) for gru cell.
@@ -3209,10 +3236,8 @@ int32_t GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
   std::optional<int32_t> transpose_tensor_index;
   const std::vector<uint32_t> sorted_indices = GetIndexOfSortedValue(axes);
   if (!base::ranges::is_sorted(sorted_indices)) {
-    transpose_tensor_index = InsertTransposeOperation(
-        scale_or_bias_tensor_info.dimensions,
-        scale_or_bias_tensor_info.data_type, scale_or_bias_tensor_info.index,
-        sorted_indices);
+    transpose_tensor_index =
+        InsertTransposeOperation(scale_or_bias_tensor_info, sorted_indices);
   }
 
   const int32_t reshape_tensor_index = SerializeTemporaryTensor(
@@ -3444,7 +3469,8 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
         SerializeInputTensorInfo(*lstm_cell.peephole_weight_operand_id));
     peephole_weight_tensor_index = peephole_weight_tensor_info.index;
   }
-  base::FixedArray<int32_t> output_tensor_indices(lstm_cell.output_operand_ids.size());
+  base::FixedArray<int32_t> output_tensor_indices(
+      lstm_cell.output_operand_ids.size());
   for (size_t i = 0; i < lstm_cell.output_operand_ids.size(); ++i) {
     ASSIGN_OR_RETURN(
         const TensorInfo& output_tensor_info,

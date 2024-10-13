@@ -286,9 +286,7 @@ class GraphBuilderTflite final {
 
   // Insert a tempary transpose operation for input operand with calling
   // `SerializeTransposeOperation`.
-  int32_t InsertTransposeOperation(base::span<const int32_t> input_dimensions,
-                                   ::tflite::TensorType input_tensor_type,
-                                   int32_t input_tensor_index,
+  int32_t InsertTransposeOperation(const TensorInfo& input_tensor_info,
                                    base::span<const uint32_t> permutation);
 
   // Serialize a sub graph (pow appending mul operation) for erf operation.
