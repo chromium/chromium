@@ -819,12 +819,6 @@
                   'chromeos/ash/components/dbus/hermes/|'\
                   'chrome/test/data/webui/cr_components/chromeos/cellular_setup/',
     },
-    'chromeos_geolocation': {
-      'filepath': 'chromeos/ash/components/geolocation/',
-    },
-    'chromeos_lkgm': {
-      'filepath': 'chromeos/CHROMEOS_LKGM',
-    },
     'chromeos_login': {
       'filepath': 'ash/login/|'\
                   'chrome/browser/ash/login/|'\
@@ -862,9 +856,6 @@
     },
     'chromeos_tast_control': {
       'filepath': 'chromeos/tast_control.gni',
-    },
-    'chromeos_timezone': {
-      'filepath': 'chromeos/ash/components/timezone/',
     },
     'chromeos_webui': {
       'filepath': 'chrome/browser/ui/webui/ash/|'\
@@ -2759,11 +2750,8 @@
                           'khorimoto+watch-cellular@chromium.org',
                           'nikhilcn@google.com',
                           'tjohnsonkanu@google.com'],
-    'chromeos_geolocation': ['alemate+watch@chromium.org'],
-    'chromeos_lkgm': ['achuith+watch@chromium.org'],
-    'chromeos_login': ['alemate+watch@chromium.org',
-                       'tbarzic+watch@chromium.org',
-		       'rrsilva+watch-chromium@google.com'],
+    'chromeos_login': ['tbarzic+watch@chromium.org',
+                      'rrsilva+watch-chromium@google.com'],
     'chromeos_media_app': ['cros-essential-apps-dev-watch@chromium.org'],
     'chromeos_net': ['chadduffin+watch-network@chromium.org',
                      'ejcaruso+watch-network@chromium.org',
@@ -2778,9 +2766,7 @@
                      'tjohnsonkanu+watch-network@google.com'],
     'chromeos_tast_control': ['chromeos-engprod+watch@google.com',
                               'chrome-os-gardeners+watch@google.com'],
-    'chromeos_timezone': ['alemate+watch@chromium.org'],
-    'chromeos_webui': ['alemate+watch@chromium.org',
-                       'rrsilva+watch-chromium@google.com'],
+    'chromeos_webui': ['rrsilva+watch-chromium@google.com'],
     'chromeos_wifi_sync': ['ajayramamurthy+watch@google.com',
                            'jackshira+watch-wifi-sync@google.com',
                            'jonmann+watch@chromium.org',
