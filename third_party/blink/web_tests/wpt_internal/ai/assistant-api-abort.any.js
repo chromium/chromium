@@ -3,14 +3,14 @@
 
 promise_test(async (t) => {
   const controller = new AbortController();
-  const createPromise = ai.assistant.create({ signal: controller.signal });
+  const createPromise = ai.languageModel.create({ signal: controller.signal });
   controller.abort();
   await promise_rejects_dom(t, 'AbortError', createPromise);
 }, "Aborting AIAssistantFactory.create()");
 
 promise_test(async (t) => {
   const controller = new AbortController();
-  const session = await ai.assistant.create();
+  const session = await ai.languageModel.create();
   const clonePromise = session.clone({ signal: controller.signal });
   controller.abort();
   await promise_rejects_dom(t, 'AbortError', clonePromise);
@@ -18,7 +18,7 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   const controller = new AbortController();
-  const session = await ai.assistant.create();
+  const session = await ai.languageModel.create();
   const promptPromise = session.prompt(
     "Write a poem", { signal: controller.signal }
   );

@@ -10905,7 +10905,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8AIAssistantCapabilities_DefaultTemperature_AttributeGetter"/>
   <int value="5084" label="V8AIAssistantFactory_Capabilities_Method"/>
   <int value="5085" label="V8AIAssistantFactory_Create_Method"/>
-  <int value="5086" label="V8AI_Assistant_AttributeGetter"/>
+  <int value="5086" label="OBSOLETE_V8AI_Assistant_AttributeGetter"/>
   <int value="5087" label="V8AIAssistant_MaxTokens_AttributeGetter"/>
   <int value="5088" label="V8AIAssistant_TokensSoFar_AttributeGetter"/>
   <int value="5089" label="V8AIAssistant_TokensLeft_AttributeGetter"/>
@@ -10946,6 +10946,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter"/>
   <int value="5118"
       label="V8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter"/>
+  <int value="5119" label="V8AI_LanguageModel_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

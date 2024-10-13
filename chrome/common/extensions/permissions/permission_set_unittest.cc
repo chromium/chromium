@@ -833,7 +833,7 @@ TEST(PermissionsTest, PermissionMessages) {
 
   // This API is still in origin trial so we don't want to show a permission
   // prompt.
-  skip.insert(APIPermissionID::kAIAssistantOriginTrial);
+  skip.insert(APIPermissionID::kAILanguageModelOriginTrial);
 
   // These are private.
   skip.insert(APIPermissionID::kAccessibilityPrivate);

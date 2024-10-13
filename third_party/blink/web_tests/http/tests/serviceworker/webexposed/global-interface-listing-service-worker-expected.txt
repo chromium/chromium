@@ -1,8 +1,8 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
-    getter assistant
     getter languageDetector
+    getter languageModel
     getter rewriter
     getter summarizer
     getter writer

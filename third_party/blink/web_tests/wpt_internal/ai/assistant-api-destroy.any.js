@@ -4,11 +4,11 @@ promise_test(async t => {
   // Make sure the prompt api is enabled.
   assert_true(!!ai);
   // Make sure the session could be created.
-  const capabilities = await ai.assistant.capabilities();
+  const capabilities = await ai.languageModel.capabilities();
   const status = capabilities.available;
   assert_true(status === 'readily');
   // Start a new session.
-  const session = await ai.assistant.create();
+  const session = await ai.languageModel.create();
 
   // Calling `session.destroy()` immediately after `session.prompt()` will
   // trigger the "The model execution session has been destroyed." exception.

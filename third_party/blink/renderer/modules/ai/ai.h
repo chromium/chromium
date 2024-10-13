@@ -32,7 +32,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  AIAssistantFactory* assistant();
+  AIAssistantFactory* languageModel();
   AISummarizerFactory* summarizer();
   AIRewriterFactory* rewriter();
   AIWriterFactory* writer();

@@ -7,14 +7,14 @@ promise_test(async t => {
   let iframe = document.createElement("iframe");
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);
   let iframeWindow = iframe.contentWindow;
-  iframeWindow.assistant = iframeWindow.ai.assistant;
+  iframeWindow.languageModel = iframeWindow.ai.languageModel;
   let iframeDOMException = iframeWindow.DOMException;
   // Detach the iframe.
   iframe.remove();
-  // Calling `ai.assistant.capabilities()` from an invalid script state will trigger
+  // Calling `ai.languageModel.capabilities()` from an invalid script state will trigger
   // the "The execution context is not valid." exception.
   await promise_rejects_dom(
-    t, 'InvalidStateError', iframeDOMException, iframeWindow.assistant.capabilities(),
+    t, 'InvalidStateError', iframeDOMException, iframeWindow.languageModel.capabilities(),
     "The promise should be rejected with InvalidStateError if the execution context is invalid."
   );
 });

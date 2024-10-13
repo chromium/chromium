@@ -6,8 +6,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
 [Worker] interface AI
 [Worker]     attribute @@toStringTag
-[Worker]     getter assistant
 [Worker]     getter languageDetector
+[Worker]     getter languageModel
 [Worker]     getter rewriter
 [Worker]     getter summarizer
 [Worker]     getter writer

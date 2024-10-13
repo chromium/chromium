@@ -16,7 +16,8 @@ v8::Local<v8::Value> WebAIAssistant::GetAIAssistantFactory(
     v8::Local<v8::Context> v8_context,
     v8::Isolate* isolate) {
   ExecutionContext* execution_context = ExecutionContext::From(v8_context);
-  AIAssistantFactory* assistant = DOMAI::ai(*execution_context)->assistant();
+  AIAssistantFactory* assistant =
+      DOMAI::ai(*execution_context)->languageModel();
   return assistant->ToV8(ScriptState::From(isolate, v8_context));
 }
 

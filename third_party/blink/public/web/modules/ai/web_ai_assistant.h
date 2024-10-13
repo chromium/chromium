@@ -12,12 +12,12 @@ namespace blink {
 
 class BLINK_EXPORT WebAIAssistant {
  public:
-  // Returns the `self.ai.assistant` value even if it's not generated through
-  // the binding (i.e. the runtime enabled feature controlling the interface is
-  // disabled).
-  // This method is used for creating the `chrome.aiOriginTrial.assistant` for
-  // extension, see `NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI`
-  // for more information.
+  // Returns the `self.ai.languageModel` value even if it's not generated
+  // through the binding (i.e. the runtime enabled feature controlling the
+  // interface is disabled). This method is used for creating the
+  // `chrome.aiOriginTrial.languageModel` for extension, see
+  // `NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI` for more
+  // information.
   static v8::Local<v8::Value> GetAIAssistantFactory(
       v8::Local<v8::Context> v8_context,
       v8::Isolate* isolate);

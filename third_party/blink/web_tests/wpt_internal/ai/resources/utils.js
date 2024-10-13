@@ -64,7 +64,7 @@ const testPromptAPI = async () => {
   }
 
   try {
-    const capabilities = await ai.assistant.capabilities();
+    const capabilities = await ai.languageModel.capabilities();
     const status = capabilities.available;
     if (status !== "readily") {
       return {
@@ -73,7 +73,7 @@ const testPromptAPI = async () => {
       };
     }
 
-    const session = await ai.assistant.create({
+    const session = await ai.languageModel.create({
       topK: 3,
       temperature: 0.8,
       systemPrompt: "Let's talk about Mauritius."

@@ -81,7 +81,7 @@ namespace {
 constexpr char kBindingsSystemPerContextKey[] = "extension_bindings_system";
 
 constexpr char kStringNameAIOriginTrial[] = "aiOriginTrial";
-constexpr char kStringNameAssistant[] = "assistant";
+constexpr char kStringNameAssistant[] = "languageModel";
 
 // Returns true if the given |api| is a "prefixed" api of the |root_api|; that
 // is, if the api begins with the root.
@@ -1106,14 +1106,15 @@ void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = context->v8_context();
 
-  // If the extension has requested for `kAIAssistantOriginTrial`
-  // permission, we will set the `chrome.ai.assistantOriginTrial` as a
-  // mirror of `self.ai.assistant`.
+  // If the extension has requested for `kAILanguageModelOriginTrial`
+  // permission, we will set the `chrome.aiOriginTrial.languageModel` as a
+  // mirror of `self.ai.languageModel`.
   if (!context->extension() ||
       !context->extension()
            ->permissions_data()
            ->active_permissions()
-           .HasAPIPermission(mojom::APIPermissionID::kAIAssistantOriginTrial)) {
+           .HasAPIPermission(
+               mojom::APIPermissionID::kAILanguageModelOriginTrial)) {
     return;
   }
 

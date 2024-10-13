@@ -4457,7 +4457,7 @@ enum WebFeature {
   kV8AIAssistantCapabilities_DefaultTemperature_AttributeGetter = 5083,
   kV8AIAssistantFactory_Capabilities_Method = 5084,
   kV8AIAssistantFactory_Create_Method = 5085,
-  kV8AI_Assistant_AttributeGetter = 5086,
+  kOBSOLETE_V8AI_Assistant_AttributeGetter = 5086,
   kV8AIAssistant_MaxTokens_AttributeGetter = 5087,
   kV8AIAssistant_TokensSoFar_AttributeGetter = 5088,
   kV8AIAssistant_TokensLeft_AttributeGetter = 5089,
@@ -4490,6 +4490,7 @@ enum WebFeature {
   kV8PerformanceResourceTiming_WorkerCacheLookupStart_AttributeGetter = 5116,
   kV8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter = 5117,
   kV8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter = 5118,
+  kV8AI_LanguageModel_AttributeGetter = 5119,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

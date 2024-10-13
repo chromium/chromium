@@ -47,7 +47,7 @@ scoped_refptr<base::SequencedTaskRunner> AI::GetTaskRunner() {
   return task_runner_;
 }
 
-AIAssistantFactory* AI::assistant() {
+AIAssistantFactory* AI::languageModel() {
   if (!ai_assistant_factory_) {
     ai_assistant_factory_ = MakeGarbageCollected<AIAssistantFactory>(this);
   }
