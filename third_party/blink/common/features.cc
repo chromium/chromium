@@ -1868,13 +1868,9 @@ BASE_FEATURE(kPath2DPaintCache,
 
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
-// TODO(350785857): remove the non-plzdedicatedworker path.
-#if BUILDFLAG(IS_FUCHSIA)
-#define DISABLED_ON_FUCHSIA base::FEATURE_DISABLED_BY_DEFAULT
-#else
-#define DISABLED_ON_FUCHSIA base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-BASE_FEATURE(kPlzDedicatedWorker, "PlzDedicatedWorker", DISABLED_ON_FUCHSIA);
+BASE_FEATURE(kPlzDedicatedWorker,
+             "PlzDedicatedWorker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
              "DedicatedWorkerAblationStudyEnabled",

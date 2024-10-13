@@ -350,7 +350,10 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   auto* frame_impl = FrameImpl::FromWebContents(wc_getter.Run());
-  DCHECK(frame_impl);
+  if (!frame_impl) {
+    // `wc_getter` may access stale data, and may return nullptr.
+    return {};
+  }
   auto rules =
       frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {
