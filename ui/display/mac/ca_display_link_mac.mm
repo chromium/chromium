@@ -280,7 +280,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
 }
 
 base::TimeTicks CADisplayLinkMac::GetCurrentTime() const {
-  return base::TimeTicks();
+  return base::TimeTicks() + base::Seconds(CACurrentMediaTime());
 }
 
 CADisplayLinkMac::CADisplayLinkMac(CGDirectDisplayID display_id)
