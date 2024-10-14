@@ -201,9 +201,10 @@ interface LensPageHandler {
   // shown and dismissed.
   MaybeShowTranslateFeaturePromo();
 
-  // Requests to close the feature promo on the translate button because the
-  // feature was engaged. A no-op if no promo is showing.
-  MaybeCloseTranslateFeaturePromo();
+  // Requests to close the feature promo on the translate button with a
+  // parameter denoting whether the feature was engaged. A no-op if no promo is
+  // showing.
+  MaybeCloseTranslateFeaturePromo(bool feature_engaged);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

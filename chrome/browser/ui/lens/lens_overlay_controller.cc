@@ -1129,13 +1129,25 @@ void LensOverlayController::MaybeShowTranslateFeaturePromo() {
               weak_factory_.GetWeakPtr()));
 }
 
-void LensOverlayController::MaybeCloseTranslateFeaturePromo() {
+void LensOverlayController::MaybeCloseTranslateFeaturePromo(
+    bool feature_engaged) {
   if (auto* const interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               tab_->GetContents())) {
-    interface->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHLensOverlayTranslateButtonFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    if (!interface->IsFeaturePromoActive(
+            feature_engagement::kIPHLensOverlayTranslateButtonFeature)) {
+      // Do nothing if feature promo is not active.
+      return;
+    }
+
+    if (feature_engaged) {
+      interface->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHLensOverlayTranslateButtonFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    } else {
+      interface->AbortFeaturePromo(
+          feature_engagement::kIPHLensOverlayTranslateButtonFeature);
+    }
   }
 }
 

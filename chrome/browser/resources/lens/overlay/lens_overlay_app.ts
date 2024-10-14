@@ -221,6 +221,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
               'kLensOverlayTranslateButtonElementId',
               this.$.translateButton.getTranslateEnableButton());
           this.browserProxy.handler.maybeShowTranslateFeaturePromo();
+          this.eventTracker_.remove(
+              this.$.translateButtonContainer, 'transitionend');
         });
     this.eventTracker_.add(document, 'language-picker-closed', () => {
       this.handleLanguagePickerClosed();
@@ -320,6 +322,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private onMoreOptionsButtonClick() {
+    if (this.isTranslateButtonEnabled) {
+      // Try to close the translate feature promo if it is currently active.
+      // No-op if it is not active.
+      this.browserProxy.handler.maybeCloseTranslateFeaturePromo(
+          /*featureEngaged=*/ false);
+    }
     this.moreOptionsMenuVisible = !this.moreOptionsMenuVisible;
   }
 

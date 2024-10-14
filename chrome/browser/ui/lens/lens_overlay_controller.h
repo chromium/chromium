@@ -851,7 +851,7 @@ class LensOverlayController : public LensSearchboxClient,
       lens::mojom::SemanticEvent event) override;
   void SaveAsImage(lens::mojom::CenterRotatedBoxPtr region) override;
   void MaybeShowTranslateFeaturePromo() override;
-  void MaybeCloseTranslateFeaturePromo() override;
+  void MaybeCloseTranslateFeaturePromo(bool feature_engaged) override;
 
   // Tries to show the translate feature promo after the translate button
   // element is shown.

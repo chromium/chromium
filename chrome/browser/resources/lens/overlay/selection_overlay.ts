@@ -648,6 +648,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       clientY: event.clientY,
     };
 
+    // Try to close the translate feature promo if it is currently active. No-op
+    // if it is not active.
+    this.browserProxy.handler.maybeCloseTranslateFeaturePromo(
+        /*featureEngaged=*/ false);
+
     // If searchbox is stealing focus, we only want to respond to drag gestures,
     // so wait to send gesture started until a drag has happened. This is also
     // the case if the language pickers are currently open.
