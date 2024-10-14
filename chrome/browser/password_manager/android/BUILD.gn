@@ -134,6 +134,7 @@ android_library("java") {
     "//chrome/browser/notifications:java",
     "//chrome/browser/password_manager/android/access_loss:enums_java",
     "//chrome/browser/password_manager/android/access_loss:settings_dialog_java",
+    "//chrome/browser/password_manager/android/access_loss:utils_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
@@ -171,6 +172,7 @@ android_library("java") {
   public_deps = [
     ":backend_interface_java",
     ":password_manager_resource_provider_java",
+    "access_loss:enums_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
@@ -320,6 +322,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/password_manager/android/access_loss:enums_java",
     "//chrome/browser/password_manager/android/access_loss:helper_java",
+    "//chrome/browser/password_manager/android/access_loss:utils_java",
     "//chrome/browser/password_manager/android/pwd_migration:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

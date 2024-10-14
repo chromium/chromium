@@ -28046,6 +28046,17 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="After First Paint"/>
 </enum>
 
+<enum name="PasswordAccessLossWarningExportStep">
+  <int value="0" label="Password serialization failed"/>
+  <int value="1" label="Export with deletion was rejected"/>
+  <int value="2" label="No screen lock set up"/>
+  <int value="3" label="Saving exported passwords failed"/>
+  <int value="4" label="Export was aborted because authenticaiton expired"/>
+  <int value="5" label="Passwords were exported"/>
+  <int value="6" label="Password import rejected"/>
+  <int value="7" label="The GMS Core UI for password import was opened"/>
+</enum>
+
 <enum name="PasswordAccessLossWarningTriggers">
   <int value="0" label="Chrome started up"/>
   <int value="1" label="A password was saved or updated"/>

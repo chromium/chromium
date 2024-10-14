@@ -1760,6 +1760,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/password_manager/android:settings_interface_java",
       "//chrome/browser/password_manager/android:test_support_java",
       "//chrome/browser/password_manager/android/access_loss:enums_java",
+      "//chrome/browser/password_manager/android/access_loss:utils_java",
       "//chrome/browser/password_manager/android/account_storage_toggle:java",
       "//chrome/browser/password_manager/android/pwd_check_wrapper:test_support_java",
       "//chrome/browser/password_manager/android/pwd_migration:java",

@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
@@ -94,6 +97,9 @@ public class PasswordAccessLossExportFlowCoordinator
     @Override
     public void onPasswordsDeletionFinished() {
         if (mWarningType != PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
+            // If in the flow with no GMS Core on the device, the export flow ends here.
+            logExportFlowLastStepMetric(
+                    getAccessLossWarningType(), PasswordAccessLossWarningExportStep.EXPORT_DONE);
             mChromeShutDownRunnable.run();
             return;
         }

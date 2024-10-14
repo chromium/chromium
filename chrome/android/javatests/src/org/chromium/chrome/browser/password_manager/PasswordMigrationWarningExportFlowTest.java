@@ -54,6 +54,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
@@ -100,7 +101,7 @@ public class PasswordMigrationWarningExportFlowTest {
                         .getBottomSheetController();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mExportFlow = new ExportFlow();
+                    mExportFlow = new ExportFlow(PasswordAccessLossWarningType.NONE);
                     mFakePasswordManagerHandler =
                             new FakePasswordManagerHandler(
                                     PasswordManagerHandlerProvider.getForProfile(

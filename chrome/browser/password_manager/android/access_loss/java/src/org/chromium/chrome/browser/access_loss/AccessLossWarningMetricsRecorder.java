@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,6 +32,36 @@ public class AccessLossWarningMetricsRecorder {
         int COUNT = 3;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PasswordAccessLossWarningExportStep.PWD_SERIALIZATION_FAILED,
+        PasswordAccessLossWarningExportStep.EXPORT_CANCELED,
+        PasswordAccessLossWarningExportStep.NO_SCREEN_LOCK_SET_UP,
+        PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED,
+        PasswordAccessLossWarningExportStep.AUTHENTICATION_EXPIRED,
+        PasswordAccessLossWarningExportStep.EXPORT_DONE,
+        PasswordAccessLossWarningExportStep.IMPORT_CANCELED,
+        PasswordAccessLossWarningExportStep.PASSWORD_IMPORT,
+        PasswordAccessLossWarningExportStep.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PasswordAccessLossWarningExportStep {
+        int PWD_SERIALIZATION_FAILED = 0;
+        int EXPORT_CANCELED = 1;
+        int NO_SCREEN_LOCK_SET_UP = 2;
+        int SAVE_PWD_FILE_FAILED = 3;
+        // Authentication can expire while Chrome app was in the background with an ongoing export
+        // flow. In this case the export flow is aborted when Chrome app is foregrounded.
+        int AUTHENTICATION_EXPIRED = 4;
+        // This step ends the flow with no GMS Core.
+        int EXPORT_DONE = 5;
+        int IMPORT_CANCELED = 6;
+        // This step ends the flow with new GMS Core and migration failed.
+        int PASSWORD_IMPORT = 7;
+        int COUNT = 8;
+    }
+
     static final String PASSWORD_ACCESS_LOSS_WARNING_USER_ACTION_PREFIX =
             "PasswordManager.PasswordAccessLossWarningSheet.";
     static final String PASSWORD_ACCESS_LOSS_WARNING_USER_ACTION_SUFFIX = ".UserAction";
@@ -39,6 +70,10 @@ public class AccessLossWarningMetricsRecorder {
             "PasswordManager.PasswordAccessLossWarningDialog";
     static final String ACCESS_LOSS_DIALOG_SHOWN_SUFFIX = ".Shown";
     static final String ACCESS_LOSS_DIALOG_ACTION_SUFFIX = ".UserAction";
+    static final String EXPORT_FLOW_METRIC_TITLE =
+            "PasswordManager.PasswordAccessLossWarningExportFlow.";
+
+    static final String EXPORT_FLOW_FINAL_STEP_SUFFIX = ".FinalStep";
 
     static void logAccessLossWarningSheetUserAction(
             @PasswordAccessLossWarningType int warningType,
@@ -76,6 +111,21 @@ public class AccessLossWarningMetricsRecorder {
                 PasswordAccessLossWarningUserAction.COUNT);
     }
 
+    public static void logExportFlowLastStepMetric(
+            @PasswordAccessLossWarningType int warningType,
+            @PasswordAccessLossWarningExportStep int exportStep) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            // This metric should only be logged if the password access loss warning is shown.
+            return;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                getExportFlowFinalStepHistogramName(warningType),
+                exportStep,
+                PasswordAccessLossWarningExportStep.COUNT);
+    }
+
     @VisibleForTesting
     static String getDialogShownHistogramName() {
         // The name of the histogram will be PasswordManager.PasswordAccessLossWarningDialog.Shown
@@ -85,10 +135,20 @@ public class AccessLossWarningMetricsRecorder {
     @VisibleForTesting
     static String getDialogUserActionHistogramName(@PasswordAccessLossWarningType int warningType) {
         // The name of the histogram will will have the format:
-        // PasswordManager.PasswordAccessLossWarningDialog.{AccessLossWarningType}.UserAction"
+        // PasswordManager.PasswordAccessLossWarningDialog.{AccessLossWarningType}.UserAction
         return ACCESS_LOSS_DIALOG_METRIC_PREFIX
                 + getAccessLossWarningTypeName(warningType)
                 + ACCESS_LOSS_DIALOG_ACTION_SUFFIX;
+    }
+
+    @VisibleForTesting
+    public static String getExportFlowFinalStepHistogramName(
+            @PasswordAccessLossWarningType int warningType) {
+        // The name of the histogram will have the format:
+        // PasswordManager.PasswordAccessLossWarningExportFlow.{AccessLossWarningType}.FinalStep
+        return EXPORT_FLOW_METRIC_TITLE
+                + getAccessLossWarningTypeName(warningType)
+                + EXPORT_FLOW_FINAL_STEP_SUFFIX;
     }
 
     private static String getAccessLossWarningTypeName(

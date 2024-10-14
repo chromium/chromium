@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 import static org.junit.Assert.assertEquals;
@@ -16,6 +17,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
+
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.getExportFlowFinalStepHistogramName;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -43,10 +46,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileProviderUtils.FileProviderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerHandler;
@@ -70,13 +75,15 @@ import java.io.OutputStream;
 /** Tests for {@link PasswordAccessLossExportDialogCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "The ReauthenticationManager setup should not leak between tests.")
 @EnableFeatures(
         ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
 public class PasswordAccessLossExportDialogCoordinatorTest {
     private static final Uri TEMP_EXPORT_FILE_URI = Uri.parse("tmp/fake/test/path/file.ext");
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");
+    // 10 minutes in milliseconds
+    private static final long TIME_PASSED_SINCE_LAST_AUTH_MINS = 1000L * 60 * 10;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -255,7 +262,148 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     }
 
     @Test
-    public void testDialogIsDismissedWhenExportFails() {
+    public void testExportFlowWithReauthFailed() throws IOException {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType.NO_GMS_CORE),
+                                PasswordAccessLossWarningExportStep.NO_SCREEN_LOCK_SET_UP)
+                        .build();
+
+        setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
+        mCoordinator.showExportDialog();
+        setUpPasswordManagerHandler();
+        setUpPasswordStoreBridge();
+
+        // Fake that screen lock wasn't set up.
+        ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
+        ReauthenticationManager.setScreenLockSetUpOverride(
+                ReauthenticationManager.OverrideState.UNAVAILABLE);
+
+        setUpContentResolver();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        // Reply with the serialized passwords count & file name.
+        mPasswordManagerHandler
+                .getExportSuccessCallback()
+                .onResult(10, TEMP_EXPORT_FILE_URI.toString());
+
+        // Simulates the `onResume` call after re-authentication.
+        mCoordinator.getMediatorForTesting().onResume();
+        Robolectric.flushForegroundThreadScheduler();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testExportFlowWithSavingFileFailed() throws IOException {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType
+                                                .NEW_GMS_CORE_MIGRATION_FAILED),
+                                PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED)
+                        .build();
+
+        setUp(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        mCoordinator.showExportDialog();
+        setUpPasswordManagerHandler();
+        setUpPasswordStoreBridge();
+        setUpReauthenticationManager();
+        setUpContentResolver();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        // Reply with the serialized passwords count & file name.
+        mPasswordManagerHandler
+                .getExportSuccessCallback()
+                .onResult(10, TEMP_EXPORT_FILE_URI.toString());
+
+        // Biometric re-auth should have been triggered. Need to fake successful authentication to
+        // proceed.
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
+        // Simulates the `onResume` call after re-authentication.
+        mCoordinator.getMediatorForTesting().onResume();
+        Robolectric.flushForegroundThreadScheduler();
+
+        ShadowActivity shadowActivity = shadowOf(mActivity);
+        Intent startedIntent = shadowActivity.getNextStartedActivityForResult().intent;
+        // Verify that the create document intent was triggered (creating file in Downloads for
+        // exported passwords).
+        assertEquals(Intent.ACTION_CREATE_DOCUMENT, startedIntent.getAction());
+
+        // Return the result of the create document intent (the file name).
+        shadowActivity.receiveResult(
+                startedIntent, RESULT_CANCELED, new Intent().setData(SAVED_EXPORT_FILE_URI));
+        Robolectric.flushForegroundThreadScheduler();
+        // Dialog is expected to be dismissed now.
+        assertFalse(dialog.isShowing());
+        // Verify that the exported passwords file was  not written to and the passwords were not
+        // deleted.
+        verify(mInputStream, times(0)).read(any(byte[].class));
+        verify(mOutputStream, times(0)).write(any(byte[].class), anyInt(), anyInt());
+        verify(mPasswordStoreBridgeJniMock, times(0)).clearAllPasswordsFromProfileStore(anyLong());
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testExportFlowWithReauthExpired() throws IOException {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType
+                                                .NEW_GMS_CORE_MIGRATION_FAILED),
+                                PasswordAccessLossWarningExportStep.AUTHENTICATION_EXPIRED)
+                        .build();
+
+        setUp(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        mCoordinator.showExportDialog();
+        setUpPasswordManagerHandler();
+        setUpPasswordStoreBridge();
+        setUpReauthenticationManager();
+        setUpContentResolver();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        // Reply with the serialized passwords count & file name.
+        mPasswordManagerHandler
+                .getExportSuccessCallback()
+                .onResult(10, TEMP_EXPORT_FILE_URI.toString());
+
+        // Simulates that time has passed while Chrome was backgrounded for 10 minutes and the
+        // authentication expired.
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis() - TIME_PASSED_SINCE_LAST_AUTH_MINS,
+                ReauthenticationManager.ReauthScope.BULK);
+        // Simulates the `onResume` call after foregrounding Chrome.
+        mCoordinator.getMediatorForTesting().onResume();
+        Robolectric.flushForegroundThreadScheduler();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testDialogIsDismissedWhenExportFailsDueToSerialization() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType.NO_GMS_CORE),
+                                PasswordAccessLossWarningExportStep.PWD_SERIALIZATION_FAILED)
+                        .build();
+
         setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
         mCoordinator.showExportDialog();
         setUpPasswordManagerHandler();
@@ -280,6 +428,8 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
 
         // Dialog is expected to be dismissed now.
         assertFalse(dialog.isShowing());
+
+        histogram.assertExpected();
     }
 
     @Test
@@ -300,6 +450,13 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
 
     @Test
     public void testExportDialogNegativeButtonClick() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType.NO_GMS_CORE),
+                                PasswordAccessLossWarningExportStep.EXPORT_CANCELED)
+                        .build();
         setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
         mCoordinator.showExportDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
@@ -309,5 +466,6 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
 
         // Dialog is expected to be dismissed now.
         assertFalse(dialog.isShowing());
+        histogram.assertExpected();
     }
 }

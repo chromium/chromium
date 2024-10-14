@@ -13,6 +13,7 @@ android_library("utils_java") {
   deps = [
     ":enums_java",
     "//base:base_java",
+    "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

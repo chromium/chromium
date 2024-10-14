@@ -65,6 +65,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -1252,7 +1253,8 @@ public class PasswordSettingsExportTest {
                                     R.string.password_settings_export_no_app,
                                     null,
                                     positiveButtonLabelId,
-                                    HistogramExportResult.NO_CONSUMER);
+                                    HistogramExportResult.NO_CONSUMER,
+                                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
                 });
     }
 

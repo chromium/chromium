@@ -2343,6 +2343,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordAccessLossWarningExportFlow.{AccessLossWarningType}.FinalStep"
+    enum="PasswordAccessLossWarningExportStep" expires_after="2025-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    This histogram logs the last export flow step that the user performed.
+    Recorded exactly when the export flow ends. Android only.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.Trigger"
     enum="PasswordAccessLossWarningTriggers" expires_after="2025-03-01">
   <owner>izuzic@google.com</owner>

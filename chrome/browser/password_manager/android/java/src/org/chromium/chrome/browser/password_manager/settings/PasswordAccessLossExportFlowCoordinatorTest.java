@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.getExportFlowFinalStepHistogramName;
+
 import androidx.fragment.app.FragmentActivity;
 
 import org.junit.Assert;
@@ -26,7 +28,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -103,7 +107,7 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     @Test
     @EnableFeatures(
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    public void testShowsImportDialogWhenDeletionFinished() {
+    public void testShowsImportDialogWhenDeletionFinishedForNewGmsCore() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         initializeExportFlowCoordinator();
         setUpSyncService();
@@ -111,6 +115,26 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
 
         // Import dialog should be displayed.
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    public void testRecordsFinalStepMetricWhenDeletionFinishedForNoGmsCore() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType.NO_GMS_CORE),
+                                PasswordAccessLossWarningExportStep.EXPORT_DONE)
+                        .build();
+
+        setUpAccessLossWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
+        initializeExportFlowCoordinator();
+        setUpSyncService();
+        mCoordinator.onPasswordsDeletionFinished();
+
+        histogram.assertExpected();
     }
 
     @Test

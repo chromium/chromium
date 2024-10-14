@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPasswordsExportResult;
@@ -25,6 +26,8 @@ import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
@@ -81,6 +84,8 @@ public class ExportFlow implements ExportFlowInterface {
 
     /** Describes at which state the password export flow is. */
     @ExportState private int mExportState;
+
+    private @PasswordAccessLossWarningType int mWarningType;
 
     /** Name of the subdirectory in cache which stores the exported passwords file. */
     private static final String PASSWORDS_CACHE_DIR = "/passwords";
@@ -182,6 +187,12 @@ public class ExportFlow implements ExportFlowInterface {
 
     private boolean mPasswordSerializationStarted;
 
+    private boolean mExportFLowFinalStepLogged;
+
+    public ExportFlow(@PasswordAccessLossWarningType int warningType) {
+        mWarningType = warningType;
+    }
+
     public String getExportEventHistogramName() {
         return mCallerMetricsId + ".Event";
     }
@@ -247,7 +258,8 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_tips,
                     e.getMessage(),
                     getPositiveButtonLabelId(),
-                    HistogramExportResult.WRITE_FAILED);
+                    HistogramExportResult.WRITE_FAILED,
+                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
             return;
         }
 
@@ -268,6 +280,7 @@ public class ExportFlow implements ExportFlowInterface {
     public void startExporting() {
         assert mExportState == ExportState.INACTIVE;
         mPasswordSerializationStarted = false;
+        mExportFLowFinalStepLogged = false;
         // Disable re-triggering exporting until the current exporting finishes.
         mExportState = ExportState.REQUESTED;
 
@@ -294,6 +307,8 @@ public class ExportFlow implements ExportFlowInterface {
                 logPasswordsExportResult(
                         mCallerMetricsId, HistogramExportResult.NO_SCREEN_LOCK_SET_UP);
             }
+            maybeLogExportFlowLastStepMetric(
+                    PasswordAccessLossWarningExportStep.NO_SCREEN_LOCK_SET_UP);
         } else {
             // Always trigger reauthentication at the start of the exporting flow, even if the last
             // one succeeded recently.
@@ -322,7 +337,8 @@ public class ExportFlow implements ExportFlowInterface {
                                     R.string.password_settings_export_tips,
                                     errorMessage,
                                     getPositiveButtonLabelId(),
-                                    HistogramExportResult.WRITE_FAILED);
+                                    HistogramExportResult.WRITE_FAILED,
+                                    PasswordAccessLossWarningExportStep.PWD_SERIALIZATION_FAILED);
                         });
     }
 
@@ -460,7 +476,8 @@ public class ExportFlow implements ExportFlowInterface {
             int descriptionId,
             @Nullable String detailedDescription,
             int positiveButtonLabelId,
-            @HistogramExportResult int histogramExportResult) {
+            @HistogramExportResult int histogramExportResult,
+            @PasswordAccessLossWarningExportStep int finalStep) {
         assert mErrorDialogParams == null;
         mDelegate.onExportFlowFailed();
         mProgressBarManager.hide(
@@ -471,6 +488,7 @@ public class ExportFlow implements ExportFlowInterface {
                             positiveButtonLabelId,
                             histogramExportResult);
                 });
+        maybeLogExportFlowLastStepMetric(finalStep);
     }
 
     public void showExportErrorAndAbortImmediately(
@@ -588,7 +606,8 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_no_app,
                     e.getMessage(),
                     getPositiveButtonLabelId(),
-                    HistogramExportResult.NO_CONSUMER);
+                    HistogramExportResult.NO_CONSUMER,
+                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
         }
     }
 
@@ -611,7 +630,8 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_no_app,
                     null,
                     R.string.password_settings_export_learn_google_drive,
-                    HistogramExportResult.NO_CONSUMER);
+                    HistogramExportResult.NO_CONSUMER,
+                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
         }
         mExportFileUri = null;
     }
@@ -623,7 +643,8 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_tips,
                     "Could not create file.",
                     getPositiveButtonLabelId(),
-                    HistogramExportResult.WRITE_FAILED);
+                    HistogramExportResult.WRITE_FAILED,
+                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
             return;
         }
         new AsyncTask<String>() {
@@ -632,6 +653,13 @@ public class ExportFlow implements ExportFlowInterface {
                 try {
                     writeToInternalStorage(mExportFileUri, passwordsFile);
                 } catch (IOException e) {
+                    // This metric should be logged in onPostExecute in case of an exception.
+                    // Since that happens in a callback, to be absolutely sure it's logged,
+                    // it's already logged here. It won't be logged as a duplicate because the
+                    // logging method checks if the metric was prevoiusly logged for the current
+                    // export flow.
+                    maybeLogExportFlowLastStepMetric(
+                            PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
                     return e.getMessage();
                 }
                 return null;
@@ -646,7 +674,8 @@ public class ExportFlow implements ExportFlowInterface {
                                         R.string.password_settings_export_tips,
                                         exceptionMessage,
                                         getPositiveButtonLabelId(),
-                                        HistogramExportResult.WRITE_FAILED);
+                                        HistogramExportResult.WRITE_FAILED,
+                                        PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
                             } else {
                                 mDelegate.onExportFlowSucceeded();
                                 mExportFileUri = null;
@@ -688,6 +717,8 @@ public class ExportFlow implements ExportFlowInterface {
                     ReauthenticationManager.ReauthScope.BULK)) {
                 if (mExportWarningDialogFragment == null) exportAfterReauth();
             } else {
+                maybeLogExportFlowLastStepMetric(
+                        PasswordAccessLossWarningExportStep.AUTHENTICATION_EXPIRED);
                 if (mExportWarningDialogFragment != null) mExportWarningDialogFragment.dismiss();
                 mExportState = ExportState.INACTIVE;
             }
@@ -730,5 +761,17 @@ public class ExportFlow implements ExportFlowInterface {
             return 0;
         }
         return R.string.try_again;
+    }
+
+    private void maybeLogExportFlowLastStepMetric(
+            @PasswordAccessLossWarningExportStep int finalStep) {
+        // The serialization and reauthentication step might happen at the same time and might cause
+        // two final step metrics to be logged if they both fail. This method checks if the metric
+        // was already logged for this export flow before logging.
+        if (mExportFLowFinalStepLogged) {
+            return;
+        }
+        logExportFlowLastStepMetric(mWarningType, finalStep);
+        mExportFLowFinalStepLogged = true;
     }
 }

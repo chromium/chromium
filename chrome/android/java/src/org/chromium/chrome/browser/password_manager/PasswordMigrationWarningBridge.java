@@ -10,6 +10,7 @@ import android.content.Context;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
@@ -63,7 +64,7 @@ class PasswordMigrationWarningBridge {
                         bottomSheetController,
                         SyncConsentActivityLauncherImpl.get(),
                         ManageSyncSettings.class,
-                        new ExportFlow(),
+                        new ExportFlow(PasswordAccessLossWarningType.NONE),
                         (PasswordListObserver observer) ->
                                 PasswordManagerHandlerProvider.getForProfile(profile)
                                         .addObserver(observer),

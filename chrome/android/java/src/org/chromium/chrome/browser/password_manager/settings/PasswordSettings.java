@@ -33,6 +33,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -64,6 +65,8 @@ import java.util.Locale;
 /**
  * The "Passwords" screen in Settings, which allows the user to enable or disable password saving,
  * to view saved passwords (just the username and URL), and to delete saved passwords.
+ *
+ * <p>TODO: crbug.com/372657804 - Make sure that the PasswordSettings is not created in UPM M4.1
  */
 public class PasswordSettings extends ChromeBaseSettingsFragment
         implements PasswordListObserver,
@@ -136,7 +139,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** For controlling the UX flow of exporting passwords. */
-    private ExportFlow mExportFlow = new ExportFlow();
+    private ExportFlow mExportFlow = new ExportFlow(PasswordAccessLossWarningType.NONE);
 
     public ExportFlow getExportFlowForTesting() {
         return mExportFlow;
