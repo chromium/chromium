@@ -72,9 +72,9 @@ TEST_F(ScopedD3DBufferTest, ScopedSequenceD3DInputBuffer) {
 TEST_F(ScopedD3DBufferTest, FillUpScopedSequenceD3DInputBuffer) {
   ScopedSequenceD3DInputBuffer buffer(
       std::unique_ptr<ScopedD3DBuffer>(new MemoryBuffer(size_)));
-  size_t larger_size = size_ + 10;
-  std::unique_ptr<uint8_t[]> data(new uint8_t[larger_size]);
-  EXPECT_EQ(buffer.Write({data.get(), larger_size}), size_);
+  const size_t larger_size = size_ + 10;
+  base::HeapArray<uint8_t> data = base::HeapArray<uint8_t>::Uninit(larger_size);
+  EXPECT_EQ(buffer.Write(data.as_span()), size_);
   EXPECT_EQ(buffer.BytesWritten(), size_);
   EXPECT_EQ(buffer.BytesAvailable(), 0ull);
   EXPECT_TRUE(buffer.Commit());
