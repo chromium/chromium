@@ -5,6 +5,8 @@
 #include "ash/picker/views/picker_caps_lock_state_view.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/i18n/rtl.h"
+#include "base/test/icu_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -37,6 +39,54 @@ TEST_F(PickerCapsLockStateViewTest, ShowsCapsLockOff) {
                    .vector_icon()
                    ->name,
                kPickerCapsLockOffIcon.name);
+}
+
+class PickerCapsLockStateViewRTLTest
+    : public PickerCapsLockStateViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PickerCapsLockStateViewRTLTest() { base::i18n::SetRTLForTesting(GetParam()); }
+
+ private:
+  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PickerCapsLockStateViewRTLTest,
+                         testing::Values(true, false));
+
+TEST_P(PickerCapsLockStateViewRTLTest,
+       ShowsCapsLockRightAlignedForLTRTextDirection) {
+  PickerCapsLockStateView* view =
+      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(500, 0, 1, 1),
+                                  base::i18n::TextDirection::LEFT_TO_RIGHT);
+  view->Show();
+
+  EXPECT_LT(view->GetBoundsInScreen().right(), 500);
+}
+
+TEST_P(PickerCapsLockStateViewRTLTest,
+       ShowsCapsLockLeftAlignedForRTLTextDirection) {
+  PickerCapsLockStateView* view =
+      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(500, 0, 1, 1),
+                                  base::i18n::TextDirection::RIGHT_TO_LEFT);
+  view->Show();
+
+  EXPECT_GT(view->GetBoundsInScreen().x(), 500);
+}
+
+TEST_P(PickerCapsLockStateViewRTLTest,
+       ShowsCapsLockAlignedBasedOnLocaleForUnknownTextDirection) {
+  PickerCapsLockStateView* view =
+      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(500, 0, 1, 1),
+                                  base::i18n::TextDirection::UNKNOWN_DIRECTION);
+  view->Show();
+
+  if (GetParam()) {
+    EXPECT_GT(view->GetBoundsInScreen().x(), 500);
+  } else {
+    EXPECT_LT(view->GetBoundsInScreen().right(), 500);
+  }
 }
 
 }  // namespace

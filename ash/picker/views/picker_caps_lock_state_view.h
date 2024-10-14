@@ -6,6 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_CAPS_LOCK_STATE_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -26,9 +27,12 @@ class ASH_EXPORT PickerCapsLockStateView
   METADATA_HEADER(PickerCapsLockStateView, views::BubbleDialogDelegateView)
 
  public:
-  explicit PickerCapsLockStateView(gfx::NativeView parent,
-                                   bool enabled,
-                                   const gfx::Rect& caret);
+  explicit PickerCapsLockStateView(
+      gfx::NativeView parent,
+      bool enabled,
+      gfx::Rect caret_bounds,
+      base::i18n::TextDirection text_direction =
+          base::i18n::TextDirection::UNKNOWN_DIRECTION);
   PickerCapsLockStateView(const PickerCapsLockStateView&) = delete;
   PickerCapsLockStateView& operator=(const PickerCapsLockStateView&) = delete;
   ~PickerCapsLockStateView() override;
