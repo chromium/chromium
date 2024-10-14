@@ -85,6 +85,14 @@ class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kCoralFeature};
 };
 
+MATCHER_P2(TabEq, title, url, "") {
+  return arg.title == title && arg.url == url;
+}
+
+MATCHER_P2(AppEq, title, id, "") {
+  return arg.title == title && arg.id == id;
+}
+
 // Tests that the coral provider collects correct in-session tab and app data.
 IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   // Close existing browser windows.
@@ -118,18 +126,18 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tabs_and_apps.tabs,
               testing::UnorderedElementsAre(
-                  *Tab::New("examples1.com", GURL("https://examples1.com/")),
-                  *Tab::New("examples2.com", GURL("https://examples2.com/")),
-                  *Tab::New("examples3.com", GURL("https://examples3.com/"))));
+                  TabEq("examples1.com", GURL("https://examples1.com/")),
+                  TabEq("examples2.com", GURL("https://examples2.com/")),
+                  TabEq("examples3.com", GURL("https://examples3.com/"))));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(tabs_and_apps.apps,
               testing::UnorderedElementsAre(
-                  *App::New("Gmail", "gdkbjbkdgeggmfkjbfohmimchmkikbid"),
-                  *App::New("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
-                  *App::New("Explore", "nbljnnecbjbmifnoehiemkgefbnpoeak"),
-                  *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
-                  *App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
+                  AppEq("Gmail", "gdkbjbkdgeggmfkjbfohmimchmkikbid"),
+                  AppEq("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
+                  AppEq("Explore", "nbljnnecbjbmifnoehiemkgefbnpoeak"),
+                  AppEq("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
+                  AppEq("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }
 
 // Tests that the coral provider filters out duplicated tab and app data.
@@ -167,16 +175,16 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tabs_and_apps.tabs,
               testing::UnorderedElementsAre(
-                  *Tab::New("examples1.com", GURL("https://examples1.com/")),
-                  *Tab::New("examples2.com", GURL("https://examples2.com/")),
-                  *Tab::New("examples3.com", GURL("https://examples3.com/"))));
+                  TabEq("examples1.com", GURL("https://examples1.com/")),
+                  TabEq("examples2.com", GURL("https://examples2.com/")),
+                  TabEq("examples3.com", GURL("https://examples3.com/"))));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(tabs_and_apps.apps,
               testing::UnorderedElementsAre(
-                  *App::New("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
-                  *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
-                  *App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
+                  AppEq("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
+                  AppEq("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
+                  AppEq("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }
 
 // Tests that the coral provider collects correct post-login tab and app data.
@@ -212,23 +220,22 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectPostLoginData) {
       SplitContentData(GetCoralProvider()->GetCoralRequestForTest().content());
 
   // Comparing the collected tab data with the expected tab data.
-  EXPECT_THAT(
-      tabs_and_apps.tabs,
-      testing::UnorderedElementsAre(
-          *Tab::New("", GURL("https://examples1.com/")),
-          *Tab::New("", GURL("https://examples2.com/")),
-          *Tab::New("bookmarks", GURL(chrome::kChromeUIBookmarksURL)),
-          *Tab::New("chrome-urls", GURL(chrome::kChromeUIChromeURLsURL)),
-          *Tab::New("crashes", GURL(chrome::kChromeUICrashesUrl)),
-          *Tab::New("downloads", GURL(chrome::kChromeUIDownloadsURL)),
-          *Tab::New("history", GURL(chrome::kChromeUIHistoryURL)),
-          *Tab::New("settings", GURL(chrome::kChromeUISettingsURL))));
+  EXPECT_THAT(tabs_and_apps.tabs,
+              testing::UnorderedElementsAre(
+                  TabEq("", GURL("https://examples1.com/")),
+                  TabEq("", GURL("https://examples2.com/")),
+                  TabEq("bookmarks", GURL(chrome::kChromeUIBookmarksURL)),
+                  TabEq("chrome-urls", GURL(chrome::kChromeUIChromeURLsURL)),
+                  TabEq("crashes", GURL(chrome::kChromeUICrashesUrl)),
+                  TabEq("downloads", GURL(chrome::kChromeUIDownloadsURL)),
+                  TabEq("history", GURL(chrome::kChromeUIHistoryURL)),
+                  TabEq("settings", GURL(chrome::kChromeUISettingsURL))));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(tabs_and_apps.apps,
               testing::UnorderedElementsAre(
-                  *App::New("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
-                  *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj")));
+                  AppEq("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
+                  AppEq("Settings", "odknhmnlageboeamepcngndbggdpaobj")));
 }
 
 }  // namespace ash
