@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
@@ -400,15 +401,27 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
 
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   VLOG(2) << __func__;
-  std::vector<SavedTabGroup> non_empty_groups;
-  for (const auto& group : model_->saved_tab_groups()) {
+  std::unordered_set<base::Uuid, base::UuidHash> tab_groups_to_skip;
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     if (group.saved_tabs().empty()) {
-      continue;
+      tab_groups_to_skip.insert(group.saved_guid());
     }
-    non_empty_groups.push_back(group);
+    if (group.originating_saved_tab_group_guid().has_value()) {
+      // Exclude saved tabs which were used to create a shared tab group.
+      tab_groups_to_skip.insert(
+          group.originating_saved_tab_group_guid().value());
+    }
   }
 
-  return non_empty_groups;
+  std::vector<SavedTabGroup> tab_groups;
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (tab_groups_to_skip.contains(group.saved_guid())) {
+      continue;
+    }
+    tab_groups.push_back(group);
+  }
+
+  return tab_groups;
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(

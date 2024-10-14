@@ -44,6 +44,7 @@ using testing::Invoke;
 using testing::IsEmpty;
 using testing::Matcher;
 using testing::Return;
+using testing::SizeIs;
 
 namespace tab_groups {
 namespace {
@@ -128,7 +129,10 @@ class MockOptimizationGuideDecider
 class TabGroupSyncServiceTest : public testing::Test {
  public:
   TabGroupSyncServiceTest()
-      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+      : saved_store_(
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+        shared_store_(
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         decider_(std::make_unique<MockOptimizationGuideDecider>()),
         fake_controller_delegate_(syncer::SAVED_TAB_GROUP),
         group_1_(test::CreateTestSavedTabGroup()),
@@ -157,17 +161,23 @@ class TabGroupSyncServiceTest : public testing::Test {
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
         std::make_unique<SyncDataTypeConfiguration>(
-            processor_.CreateForwardingProcessor(),
+            saved_processor_.CreateForwardingProcessor(),
             syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
-                store_.get())),
-        nullptr, &pref_service_, std::move(metrics_logger), decider_.get(),
+                saved_store_.get())),
+        std::make_unique<SyncDataTypeConfiguration>(
+            shared_processor_.CreateForwardingProcessor(),
+            syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+                shared_store_.get())),
+        &pref_service_, std::move(metrics_logger), decider_.get(),
         identity_test_environment_.identity_manager());
-    ON_CALL(processor_, IsTrackingMetadata())
+    ON_CALL(saved_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    ON_CALL(processor_, TrackedCacheGuid())
+    ON_CALL(saved_processor_, TrackedCacheGuid())
         .WillByDefault(testing::Return(kTestCacheGuid));
-    ON_CALL(processor_, GetControllerDelegate())
+    ON_CALL(saved_processor_, GetControllerDelegate())
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
+    ON_CALL(shared_processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
 
     auto coordinator = std::make_unique<MockTabGroupSyncCoordinator>();
     coordinator_ = coordinator.get();
@@ -182,7 +192,7 @@ class TabGroupSyncServiceTest : public testing::Test {
 
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
   mock_processor() {
-    return &processor_;
+    return &saved_processor_;
   }
 
   void TearDown() override {
@@ -259,8 +269,10 @@ class TabGroupSyncServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
   TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
-  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
-  std::unique_ptr<syncer::DataTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> saved_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> shared_processor_;
+  std::unique_ptr<syncer::DataTypeStore> saved_store_;
+  std::unique_ptr<syncer::DataTypeStore> shared_store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<MockTabGroupSyncCoordinator> coordinator_;
@@ -388,7 +400,7 @@ TEST_F(TabGroupSyncServiceTest, AddGroup_BeforeInit) {
 
 TEST_F(TabGroupSyncServiceTest, AddGroupWhenSignedOut) {
   // Add a new group while signed out.
-  ON_CALL(processor_, IsTrackingMetadata())
+  ON_CALL(saved_processor_, IsTrackingMetadata())
       .WillByDefault(testing::Return(false));
 
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
@@ -1161,6 +1173,23 @@ TEST_F(TabGroupSyncServiceTest, MetricsOnSync) {
       {"TabGroups.OnSync.ClosedTabGroupTabsCount", 1}};
   EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSync."),
               ContainerEq(expected_sync_counts));
+}
+
+// Tests that after transitioning from a saved tab group to a shared tab group,
+// the shared tab group is the only tab group returned by GetAllGroups().
+TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
+  ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
+  ASSERT_THAT(model_->saved_tab_groups(), SizeIs(3));
+
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
+                                              "collaboration");
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(group.has_value());
+  ASSERT_TRUE(group->is_shared_tab_group());
+
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
 }
 
 }  // namespace tab_groups
