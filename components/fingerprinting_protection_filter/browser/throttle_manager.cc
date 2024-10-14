@@ -186,9 +186,6 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
                     url.possibly_invalid_spec().c_str());
               })));
       CHECK(ruleset_handle_);
-      // TODO(https://crbug.com/346583606): Create a simpler passthrough
-      // ActivationThrottle that defers child navigations until the parent
-      // activation is computed and then forwards it to the child.
       auto activation_throttle =
           ActivationStateComputingNavigationThrottle::CreateForChild(
               navigation_handle, ruleset_handle_.get(),
