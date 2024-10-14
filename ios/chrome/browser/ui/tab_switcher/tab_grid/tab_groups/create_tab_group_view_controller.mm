@@ -257,6 +257,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   // Assign the overlay button to the text field
   tabGroupTextField.rightView = clearButton;
   tabGroupTextField.rightViewMode = UITextFieldViewModeWhileEditing;
+  tabGroupTextField.rightView.hidden = _title.length == 0;
 
   tabGroupTextField.accessibilityIdentifier =
       kCreateTabGroupTextFieldIdentifier;
@@ -831,8 +832,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
 // Hides the clear button in the text field if the length of the text is 0.
 - (void)textFieldDidChange {
-  BOOL hasText = _tabGroupTextField.text.length > 0;
-  _tabGroupTextField.rightView.hidden = hasText ? NO : YES;
+  _tabGroupTextField.rightView.hidden = _tabGroupTextField.text.length == 0;
 }
 
 // Activates or deactivates the appropriate constraints.
