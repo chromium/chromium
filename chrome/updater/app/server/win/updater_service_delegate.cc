@@ -43,27 +43,8 @@ int UpdaterServiceDelegate::RunWindowsService() {
 UpdaterServiceDelegate::UpdaterServiceDelegate() = default;
 UpdaterServiceDelegate::~UpdaterServiceDelegate() = default;
 
-// Updater initializes logging in `updater.cc`, so this method is unused.
-uint16_t UpdaterServiceDelegate::GetLogEventCategory() {
-  NOTREACHED_IN_MIGRATION();
-  return {};
-}
-
-// Updater initializes logging in `updater.cc`, so this method is unused.
-uint32_t UpdaterServiceDelegate::GetLogEventMessageId() {
-  NOTREACHED_IN_MIGRATION();
-  return {};
-}
-
-// Updater returns a `Run` callback in `PreRun`, so this method is unused.
-base::expected<base::HeapArray<FactoryAndClsid>, HRESULT>
-UpdaterServiceDelegate::CreateClassFactories() {
-  NOTREACHED_IN_MIGRATION();
-  return {};
-}
-
 bool UpdaterServiceDelegate::PreRun() {
-  return true;
+  return true;  // This delegate implements `Run()`.
 }
 
 void UpdaterServiceDelegate::OnServiceControlStop() {

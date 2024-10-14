@@ -25,10 +25,6 @@ class UpdaterServiceDelegate : public ServiceDelegate {
   UpdaterServiceDelegate();
   ~UpdaterServiceDelegate() override;
 
-  uint16_t GetLogEventCategory() override;
-  uint32_t GetLogEventMessageId() override;
-  base::expected<base::HeapArray<FactoryAndClsid>, HRESULT>
-  CreateClassFactories() override;
   bool PreRun() override;
 
   // Runs the main logic of the service.

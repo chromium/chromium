@@ -26,11 +26,11 @@ class ServiceDelegate {
 
   // This method is only called if `ServiceProgramMain` is used.
   // Returns the event category to use when logging to the Windows Event Log.
-  virtual uint16_t GetLogEventCategory() = 0;
+  virtual uint16_t GetLogEventCategory();
 
   // This method is only called if `ServiceProgramMain` is used.
   // Returns the event message to use when logging to the Windows Event Log.
-  virtual uint32_t GetLogEventMessageId() = 0;
+  virtual uint32_t GetLogEventMessageId();
 
   // Performs any service-specific processing prior to registering the service's
   // COM classes. Called on the service's main thread. Implementations should:
@@ -51,7 +51,7 @@ class ServiceDelegate {
   // for more details. Returns the service's class factories and corresponding
   // CLSIDs. Called on the service's main thread.
   virtual base::expected<base::HeapArray<FactoryAndClsid>, HRESULT>
-  CreateClassFactories() = 0;
+  CreateClassFactories();
 
   // Allows the delegate to handle a `SERVICE_CONTROL_STOP` message. This method
   // is called from the service control dispatcher thread.
