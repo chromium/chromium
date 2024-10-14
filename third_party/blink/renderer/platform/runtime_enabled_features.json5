@@ -4403,6 +4403,13 @@
       public: true,
     },
     {
+      // Makes navigation APIs to use focus node for caret navigation instead
+      // of selection start.
+      // https://crbug.com/40658856
+      name: "UseSelectionFocusNodeForCaretNavigation",
+      status: "stable",
+    },
+    {
       name: "UseUndoStepElementDispatchBeforeInput",
       status: "stable",
     },

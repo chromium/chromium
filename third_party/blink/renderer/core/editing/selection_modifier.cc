@@ -503,18 +503,25 @@ VisiblePositionInFlatTree SelectionModifier::ModifyMovingForward(
               ComputeVisibleFocus(selection_).DeepEquivalent()),
           TextAffinity::kUpstreamIfPossible);
     case TextGranularity::kLine: {
-      // down-arrowing from a range selection that ends at the start of a line
-      // needs to leave the selection at that line start (no need to call
-      // nextLinePosition!)
       const VisiblePositionInFlatTree& pos = EndForPlatform();
-      if (selection_.IsRange() && IsStartOfLine(pos))
-        return pos;
       DCHECK(pos.IsValid()) << pos;
+      if (RuntimeEnabledFeatures::
+              UseSelectionFocusNodeForCaretNavigationEnabled()) {
+        return CreateVisiblePosition(NextLinePosition(
+            pos.ToPositionWithAffinity(),
+            LineDirectionPointForBlockDirectionNavigation(selection_.Focus())));
+      }
       return CreateVisiblePosition(NextLinePosition(
           pos.ToPositionWithAffinity(),
           LineDirectionPointForBlockDirectionNavigation(selection_.Start())));
     }
     case TextGranularity::kParagraph:
+      if (RuntimeEnabledFeatures::
+              UseSelectionFocusNodeForCaretNavigationEnabled()) {
+        return NextParagraphPosition(
+            EndForPlatform(),
+            LineDirectionPointForBlockDirectionNavigation(selection_.Focus()));
+      }
       return NextParagraphPosition(
           EndForPlatform(),
           LineDirectionPointForBlockDirectionNavigation(selection_.Start()));
@@ -706,15 +713,29 @@ VisiblePositionInFlatTree SelectionModifier::ModifyMovingBackward(
     case TextGranularity::kLine: {
       const VisiblePositionInFlatTree& start = StartForPlatform();
       DCHECK(start.IsValid()) << start;
-      pos = CreateVisiblePosition(PreviousLinePosition(
-          start.ToPositionWithAffinity(),
-          LineDirectionPointForBlockDirectionNavigation(selection_.Start())));
+      if (RuntimeEnabledFeatures::
+              UseSelectionFocusNodeForCaretNavigationEnabled()) {
+        pos = CreateVisiblePosition(PreviousLinePosition(
+            start.ToPositionWithAffinity(),
+            LineDirectionPointForBlockDirectionNavigation(selection_.Focus())));
+      } else {
+        pos = CreateVisiblePosition(PreviousLinePosition(
+            start.ToPositionWithAffinity(),
+            LineDirectionPointForBlockDirectionNavigation(selection_.Start())));
+      }
       break;
     }
     case TextGranularity::kParagraph:
-      pos = PreviousParagraphPosition(
-          StartForPlatform(),
-          LineDirectionPointForBlockDirectionNavigation(selection_.Start()));
+      if (RuntimeEnabledFeatures::
+              UseSelectionFocusNodeForCaretNavigationEnabled()) {
+        pos = PreviousParagraphPosition(
+            StartForPlatform(),
+            LineDirectionPointForBlockDirectionNavigation(selection_.Focus()));
+      } else {
+        pos = PreviousParagraphPosition(
+            StartForPlatform(),
+            LineDirectionPointForBlockDirectionNavigation(selection_.Start()));
+      }
       break;
     case TextGranularity::kSentenceBoundary:
       pos = CreateVisiblePosition(
