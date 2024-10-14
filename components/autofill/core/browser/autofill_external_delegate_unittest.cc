@@ -2045,7 +2045,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Tests that the `AutofillPredictionImprovementsDelegate` is notified when the
 // `kPredictionImprovementsLoadingState` suggestion is shown.
 TEST_F(AutofillExternalDelegateUnitTest,
-       OnPredictionImprovementsLoadingStateShownNotifiesDelegate) {
+       OnPredictionImprovementsSuggestionsShownNotifiesDelegate) {
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
   const std::u16string value_to_fill = u"John";
@@ -2058,7 +2058,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       /*caret_bounds=*/gfx::Rect(),
       AutofillSuggestionTriggerSource::kPredictionImprovements);
   EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
-              OnLoadingSuggestionShown);
+              OnSuggestionsShown);
   external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
       Suggestion(SuggestionType::kPredictionImprovementsLoadingState)});
 }

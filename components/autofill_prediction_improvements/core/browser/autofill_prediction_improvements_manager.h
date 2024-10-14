@@ -74,10 +74,9 @@ class AutofillPredictionImprovementsManager
   bool ShouldDisplayIph(const autofill::FormStructure& form,
                         const autofill::AutofillField& field) const override;
   void GoToSettings() const override;
-  // Event handler called when the loading suggestion is shown. Used for the
-  // automatic triggering path.
-  // TODO(crbug.com/370695706): Add to the delegate interface.
-  void OnLoadingSuggestionShown(
+  void OnSuggestionsShown(
+      const autofill::DenseSet<autofill::SuggestionType>&
+          shown_suggestion_types,
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) override;
@@ -102,6 +101,13 @@ class AutofillPredictionImprovementsManager
     // Retrieving prediction improvements resulted in an error.
     kDoneError = 3
   };
+
+  // Event handler called when the loading suggestion is shown. Used for the
+  // automatic triggering path.
+  void OnLoadingSuggestionShown(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field,
+      UpdateSuggestionsCallback update_suggestions_callback);
 
   // Receives prediction improvements for all fields in `form`, then calls
   // `update_suggestions_callback_`.

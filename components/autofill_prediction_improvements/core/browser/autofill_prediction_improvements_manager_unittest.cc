@@ -855,8 +855,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       update_suggestions_callback;
   EXPECT_CALL(update_suggestions_callback, Run).Times(0);
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager_->OnLoadingSuggestionShown(form, form.fields().front(),
-                                     update_suggestions_callback.Get());
+  manager_->OnSuggestionsShown(
+      {autofill::SuggestionType::kPredictionImprovementsLoadingState}, form,
+      form.fields().front(), update_suggestions_callback.Get());
 }
 
 // Tests that the regular Autofill flow continues if predictions are being
@@ -936,8 +937,9 @@ TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
   if (GetParam()) {
     EXPECT_CALL(client_, GetAXTree);
   }
-  manager_->OnLoadingSuggestionShown(form, form.fields().front(),
-                                     update_suggestions_callback.Get());
+  manager_->OnSuggestionsShown(
+      {autofill::SuggestionType::kPredictionImprovementsLoadingState}, form,
+      form.fields().front(), update_suggestions_callback.Get());
 }
 
 INSTANTIATE_TEST_SUITE_P(

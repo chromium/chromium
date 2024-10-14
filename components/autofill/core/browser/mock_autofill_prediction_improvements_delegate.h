@@ -59,8 +59,9 @@ class MockAutofillPredictionImprovementsDelegate
               (const override));
   MOCK_METHOD(void, GoToSettings, (), (const override));
   MOCK_METHOD(void,
-              OnLoadingSuggestionShown,
-              (const FormData& form,
+              OnSuggestionsShown,
+              (const DenseSet<SuggestionType>& shown_suggestion_types,
+               const FormData& form,
                const FormFieldData& trigger_field,
                UpdateSuggestionsCallback update_suggestions_callback),
               (override));

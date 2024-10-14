@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace optimization_guide::proto {
@@ -101,9 +102,9 @@ class AutofillPredictionImprovementsDelegate {
   // stored by the prediction improvements system.
   virtual void GoToSettings() const = 0;
 
-  // Event handler called when the loading suggestion is shown. Used for the
-  // automatic triggering path.
-  virtual void OnLoadingSuggestionShown(
+  // Event handler called when suggestions are shown.
+  virtual void OnSuggestionsShown(
+      const DenseSet<SuggestionType>& shown_suggestion_types,
       const FormData& form,
       const FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;

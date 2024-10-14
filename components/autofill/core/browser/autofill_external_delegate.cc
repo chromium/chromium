@@ -505,12 +505,16 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
-  if (shown_suggestion_types.contains(
-          SuggestionType::kPredictionImprovementsLoadingState)) {
+  if (base::ranges::any_of(shown_suggestion_types,
+                           [](const SuggestionType& type) {
+                             return GetFillingProductFromSuggestionType(type) ==
+                                    FillingProduct::kPredictionImprovements;
+                           })) {
     if (auto* prediction_improvements_delegate =
             manager_->client().GetAutofillPredictionImprovementsDelegate()) {
-      prediction_improvements_delegate->OnLoadingSuggestionShown(
-          query_form_, query_field_, CreateUpdateSuggestionsCallback());
+      prediction_improvements_delegate->OnSuggestionsShown(
+          shown_suggestion_types, query_form_, query_field_,
+          CreateUpdateSuggestionsCallback());
     }
   }
 

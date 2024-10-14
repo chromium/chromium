@@ -511,7 +511,8 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
 void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback) {
+    AutofillPredictionImprovementsManager::UpdateSuggestionsCallback
+        update_suggestions_callback) {
   if (kTriggerAutomatically.Get() &&
       prediction_retrieval_state_ !=
           PredictionRetrievalState::kIsLoadingPredictions) {
@@ -529,6 +530,17 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
     // `OnClickedTriggerSuggestion()` to one with the same
     // `AutofillClient::SuggestionUiSessionId`, which doesn't matter though.
     update_suggestions_callback_ = std::move(update_suggestions_callback);
+  }
+}
+
+void AutofillPredictionImprovementsManager::OnSuggestionsShown(
+    const autofill::DenseSet<autofill::SuggestionType>& shown_suggestion_types,
+    const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  if (shown_suggestion_types.contains(
+          autofill::SuggestionType::kPredictionImprovementsLoadingState)) {
+    OnLoadingSuggestionShown(form, trigger_field, update_suggestions_callback);
   }
 }
 
