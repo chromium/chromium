@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
 
   // Click into Omnibox, so the text will be unselected.
   base::RunLoop loop1;
-  ui_test_utils::MoveMouseToCenterAndPress(omnibox_view, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(omnibox_view, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            loop1.QuitClosure());
   loop1.Run();
@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   // The omnibox popup is open, and the browser's center point falls inside,
   // near the bottom of the popup. Offset the click down 5px, so that it
   // actually clicks the browser window and not the popup.
-  ui_test_utils::MoveMouseToCenterWithOffsetAndPress(
+  ui_test_utils::MoveMouseToCenterWithOffsetAndClick(
       browser_view, {0, 5}, ui_controls::LEFT,
       ui_controls::DOWN | ui_controls::UP, loop2.QuitClosure());
   loop2.Run();

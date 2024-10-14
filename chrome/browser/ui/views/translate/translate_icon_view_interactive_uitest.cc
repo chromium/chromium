@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(TranslateIconViewTest, ClosePartialTranslateBubble) {
   // Clicking the icon should close the Partial Translate bubble and should not
   // open the Full Page Translate bubble.
   base::RunLoop loop;
-  ui_test_utils::MoveMouseToCenterAndPress(translate_icon, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(translate_icon, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            loop.QuitClosure());
   loop.Run();

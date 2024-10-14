@@ -35,7 +35,7 @@ int MenuTestBase::GetAXEventCount(ax::mojom::Event event_type) const {
 }
 
 void MenuTestBase::Click(views::View* view, base::OnceClosure next) {
-  ui_test_utils::MoveMouseToCenterAndPress(view, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(view, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            std::move(next));
   views::test::WaitForMenuClosureAnimation();

@@ -145,14 +145,14 @@ void HideNativeWindow(gfx::NativeWindow window);
 // SendMouseEvents. Only exposed for toolkit-views.
 // Alternatives: ClickOnView() and ui::test::EventGenerator.
 #if defined(TOOLKIT_VIEWS)
-void MoveMouseToCenterAndPress(
+void MoveMouseToCenterAndClick(
     views::View* view,
     ui_controls::MouseButton button,
     int button_state,
     base::OnceClosure task,
     int accelerator_state = ui_controls::kNoAccelerator);
 
-void MoveMouseToCenterWithOffsetAndPress(
+void MoveMouseToCenterWithOffsetAndClick(
     views::View* view,
     const gfx::Vector2d& offset,
     ui_controls::MouseButton button,

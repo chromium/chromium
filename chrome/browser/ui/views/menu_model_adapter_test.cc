@@ -256,7 +256,7 @@ class MenuModelAdapterTest : public ViewEventTestBase {
  private:
   // Generate a mouse click on the specified view and post a new task.
   virtual void Click(views::View* view, base::OnceClosure next) {
-    ui_test_utils::MoveMouseToCenterAndPress(
+    ui_test_utils::MoveMouseToCenterAndClick(
         view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
         std::move(next));
   }

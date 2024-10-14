@@ -399,7 +399,7 @@ void MenuViewDragAndDropTestTestInMenuDrag::DoTestWithMenuOpen() {
   // We're going to drag the second menu element.
   views::MenuItemView* drag_view = submenu->GetMenuItemAt(1);
   ASSERT_NE(nullptr, drag_view);
-  ui_test_utils::MoveMouseToCenterAndPress(
+  ui_test_utils::MoveMouseToCenterAndClick(
       drag_view, ui_controls::LEFT, ui_controls::DOWN,
       CreateEventTask(this, &MenuViewDragAndDropTestTestInMenuDrag::StartDrag));
 }
@@ -486,7 +486,7 @@ void MenuViewDragAndDropTestNestedDrag::DoTestWithMenuOpen() {
   // We're going to drag the target's first child.
   views::View* drag_view = target_view()->children()[0];
   ASSERT_NE(nullptr, drag_view);
-  ui_test_utils::MoveMouseToCenterAndPress(
+  ui_test_utils::MoveMouseToCenterAndClick(
       drag_view, ui_controls::LEFT, ui_controls::DOWN,
       CreateEventTask(this, &MenuViewDragAndDropTestNestedDrag::StartDrag));
 }

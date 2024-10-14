@@ -95,13 +95,13 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
 
   // Click in tab strip then in Omnibox.
   base::RunLoop click_loop_1;
-  ui_test_utils::MoveMouseToCenterAndPress(
+  ui_test_utils::MoveMouseToCenterAndClick(
       container_web_view, ui_controls::LEFT,
       ui_controls::DOWN | ui_controls::UP, click_loop_1.QuitClosure());
   click_loop_1.Run();
 
   base::RunLoop click_loop_2;
-  ui_test_utils::MoveMouseToCenterAndPress(omnibox, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(omnibox, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            click_loop_2.QuitClosure());
   click_loop_2.Run();
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
   RunScheduledLayouts();
 
   base::RunLoop click_loop;
-  ui_test_utils::MoveMouseToCenterAndPress(
+  ui_test_utils::MoveMouseToCenterAndClick(
       browser_view->contents_web_view(), ui_controls::LEFT,
       ui_controls::DOWN | ui_controls::UP, click_loop.QuitClosure());
   click_loop.Run();
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
   RunScheduledLayouts();
 
   base::RunLoop click_loop;
-  ui_test_utils::MoveMouseToCenterAndPress(container, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(container, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            click_loop.QuitClosure());
   click_loop.Run();
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 
   // Tapping in the tab strip shouldn't hide the toolbar.
   base::RunLoop click_loop_1;
-  ui_test_utils::MoveMouseToCenterAndPress(container, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(container, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            click_loop_1.QuitClosure());
   click_loop_1.Run();
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 
   // Interacting with the toolbar should also not close the container.
   base::RunLoop click_loop_2;
-  ui_test_utils::MoveMouseToCenterAndPress(
+  ui_test_utils::MoveMouseToCenterAndClick(
       browser_view->toolbar()->reload_button(), ui_controls::LEFT,
       ui_controls::DOWN | ui_controls::UP, click_loop_2.QuitClosure());
   click_loop_2.Run();
