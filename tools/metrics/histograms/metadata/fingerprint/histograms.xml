@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanError"
-    expires_after="2024-11-17">
+    expires_after="2025-11-17">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.SensorError.InitializationFailure"
-    enum="BooleanError" expires_after="2024-11-17">
+    enum="BooleanError" expires_after="2025-11-17">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AttemptsCountBeforeSuccess" units="count"
-    expires_after="2024-11-17">
+    expires_after="2025-11-17">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess"
-    units="attempts" expires_after="2024-11-17">
+    units="attempts" expires_after="2025-11-17">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
