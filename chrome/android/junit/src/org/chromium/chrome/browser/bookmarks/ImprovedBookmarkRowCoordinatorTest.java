@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -99,11 +100,11 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         // Setup BookmarkImageFetcher.
         doCallback(
-                        1,
+                        2,
                         (Callback<Pair<Drawable, Drawable>> callback) ->
                                 callback.onResult(new Pair<>(mDrawable, mDrawable)))
                 .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
+                .fetchFirstTwoImagesForFolder(any(), anyInt(), any());
         setBookmarkImageReturnValue(mDrawable);
         doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mFavicon))
                 .when(mBookmarkImageFetcher)
@@ -329,8 +330,8 @@ public class ImprovedBookmarkRowCoordinatorTest {
     }
 
     private void setBookmarkImageReturnValue(@Nullable Drawable drawable) {
-        doCallback(1, (Callback<Drawable> callback) -> callback.onResult(drawable))
+        doCallback(2, (Callback<Drawable> callback) -> callback.onResult(drawable))
                 .when(mBookmarkImageFetcher)
-                .fetchImageForBookmarkWithFaviconFallback(any(), any());
+                .fetchImageForBookmarkWithFaviconFallback(any(), anyInt(), any());
     }
 }

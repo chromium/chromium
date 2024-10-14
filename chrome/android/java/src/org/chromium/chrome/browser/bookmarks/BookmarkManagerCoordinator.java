@@ -45,7 +45,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -206,9 +205,6 @@ public class BookmarkManagerCoordinator
                         () -> IncognitoUtils.isIncognitoModeEnabled(profile));
         mSelectableListLayout.configureWideDisplayStyle();
 
-        LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
-        largeIconBridge.createCache(computeCacheMaxSize());
-
         Resources res = context.getResources();
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
@@ -218,10 +214,7 @@ public class BookmarkManagerCoordinator
                         context,
                         mBookmarkModel,
                         mImageFetcher,
-                        largeIconBridge,
-                        BookmarkUtils.getRoundedIconGenerator(context, displayPref),
-                        BookmarkUtils.getImageIconSize(res, displayPref),
-                        BookmarkUtils.getFaviconDisplaySize(res));
+                        BookmarkUtils.getRoundedIconGenerator(context, displayPref));
 
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
@@ -236,7 +229,6 @@ public class BookmarkManagerCoordinator
                         mSelectionDelegate,
                         mRecyclerView,
                         dragReorderableRecyclerViewAdapter,
-                        largeIconBridge,
                         isDialogUi,
                         mBackPressStateSupplier,
                         mProfile,

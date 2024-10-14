@@ -33,7 +33,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
@@ -106,9 +105,6 @@ import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
-import org.chromium.components.favicon.IconType;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
@@ -168,7 +164,6 @@ public class BookmarkManagerMediatorTest {
     @Mock private SelectableListLayout<BookmarkId> mSelectableListLayout;
     @Mock private SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock private RecyclerView mRecyclerView;
-    @Mock private LargeIconBridge mLargeIconBridge;
     @Mock private BookmarkUiObserver mBookmarkUiObserver;
     @Mock private Profile mProfile;
     @Mock private SyncService mSyncService;
@@ -418,16 +413,6 @@ public class BookmarkManagerMediatorTest {
                 .when(mBookmarkUiObserver)
                 .onDestroy();
 
-        // Setup LargeIconBridge.
-        doAnswer(
-                        invocation -> {
-                            LargeIconCallback cb = invocation.getArgument(3);
-                            cb.onLargeIconAvailable(mBitmap, Color.GREEN, false, IconType.FAVICON);
-                            return null;
-                        })
-                .when(mLargeIconBridge)
-                .getLargeIconForUrl(any(), anyInt(), anyInt(), any());
-
         // Setup BookmarkUiPrefs.
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
 
@@ -447,7 +432,7 @@ public class BookmarkManagerMediatorTest {
                             return null;
                         })
                 .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
+                .fetchFirstTwoImagesForFolder(any(), anyInt(), any());
         doAnswer(
                         (invocation) -> {
                             Callback<Drawable> callback = invocation.getArgument(1);
@@ -455,7 +440,7 @@ public class BookmarkManagerMediatorTest {
                             return null;
                         })
                 .when(mBookmarkImageFetcher)
-                .fetchImageForBookmarkWithFaviconFallback(any(), any());
+                .fetchImageForBookmarkWithFaviconFallback(any(), anyInt(), any());
         doAnswer(
                         (invocation) -> {
                             Callback<Drawable> callback = invocation.getArgument(1);
@@ -506,7 +491,6 @@ public class BookmarkManagerMediatorTest {
                         mSelectionDelegate,
                         mRecyclerView,
                         mDragReorderableRecyclerViewAdapter,
-                        mLargeIconBridge,
                         /* isDialogUi= */ true,
                         mBackPressStateSupplier,
                         mProfile,
@@ -665,7 +649,6 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkUiObserver).onDestroy();
         verify(mBookmarkUndoController).destroy();
         verify(mBookmarkImageFetcher).destroy();
-        verify(mLargeIconBridge).destroy();
         verify(mBookmarkMoveSnackbarManager).destroy();
     }
 

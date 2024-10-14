@@ -122,3 +122,16 @@ TEST_F(ImageServiceBridgeTest, TestGetImageUrlWithInvalidURL) {
       /*is_account_data=*/false, page_image_service::mojom::ClientId::Bookmarks,
       GURL(""), mock_callback.Get());
 }
+
+TEST_F(ImageServiceBridgeTest, TestHasConsentToFetchImages) {
+  identity_test_environment()->SetPrimaryAccount("test@gmail.com",
+                                                 signin::ConsentLevel::kSync);
+  ASSERT_TRUE(image_service_bridge()->HasConsentToFetchImagesImpl(false));
+  ASSERT_TRUE(image_service_bridge()->HasConsentToFetchImagesImpl(true));
+
+  identity_test_environment()->ClearPrimaryAccount();
+  identity_test_environment()->SetPrimaryAccount("testnosync@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(image_service_bridge()->HasConsentToFetchImagesImpl(false));
+  ASSERT_TRUE(image_service_bridge()->HasConsentToFetchImagesImpl(true));
+}

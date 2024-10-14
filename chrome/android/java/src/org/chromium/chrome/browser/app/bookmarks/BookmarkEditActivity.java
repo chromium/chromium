@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -152,11 +151,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
                                 ImageFetcherFactory.createImageFetcher(
                                         ImageFetcherConfig.DISK_CACHE_ONLY,
                                         profile.getProfileKey()),
-                                new LargeIconBridge(profile),
                                 BookmarkUtils.getRoundedIconGenerator(
-                                        this, BookmarkRowDisplayPref.VISUAL),
-                                BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                                BookmarkUtils.getFaviconDisplaySize(res)),
+                                        this, BookmarkRowDisplayPref.VISUAL)),
                         mModel,
                         mBookmarkUiPrefs,
                         ShoppingServiceFactory.getForProfile(profile));

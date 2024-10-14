@@ -30,7 +30,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -101,11 +100,8 @@ public class BookmarkSaveFlowCoordinator {
                         mBookmarkModel,
                         ImageFetcherFactory.createImageFetcher(
                                 ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()),
-                        new LargeIconBridge(mProfile),
                         BookmarkUtils.getRoundedIconGenerator(
-                                mContext, BookmarkRowDisplayPref.VISUAL),
-                        res.getDimensionPixelSize(R.dimen.improved_bookmark_save_flow_image_size),
-                        BookmarkUtils.getFaviconDisplaySize(res));
+                                mContext, BookmarkRowDisplayPref.VISUAL));
 
         mMediator =
                 new BookmarkSaveFlowMediator(

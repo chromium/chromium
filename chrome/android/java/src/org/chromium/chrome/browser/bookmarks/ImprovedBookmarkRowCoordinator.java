@@ -30,6 +30,7 @@ public class ImprovedBookmarkRowCoordinator {
     private final BookmarkModel mBookmarkModel;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final ShoppingService mShoppingService;
+    private int mImageSize;
 
     /**
      * @param context The calling context.
@@ -49,6 +50,11 @@ public class ImprovedBookmarkRowCoordinator {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mShoppingService = shoppingService;
+        onBookmarkRowDisplayPrefChanged(mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+    }
+
+    private void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
+        mImageSize = BookmarkUtils.getImageIconSize(mContext.getResources(), displayPref);
     }
 
     /** Sets the given bookmark id. */
@@ -163,7 +169,7 @@ public class ImprovedBookmarkRowCoordinator {
                                             mContext, item.getId(), mBookmarkModel, displayPref));
                         } else if (shouldShowImagesForBookmark(item, displayPref)) {
                             mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
-                                    item, this::set);
+                                    item, mImageSize, this::set);
                         } else {
                             mBookmarkImageFetcher.fetchFaviconForBookmark(item, this::set);
                         }
@@ -201,7 +207,7 @@ public class ImprovedBookmarkRowCoordinator {
                     public void doSet() {
                         if (shouldShowImagesForFolder(bookmarkItem.getId())) {
                             mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(
-                                    bookmarkItem, this::set);
+                                    bookmarkItem, mImageSize, this::set);
                         } else {
                             set(new Pair<>(null, null));
                         }

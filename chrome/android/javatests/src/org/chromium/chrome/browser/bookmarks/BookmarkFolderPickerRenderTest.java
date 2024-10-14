@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -131,14 +132,14 @@ public class BookmarkFolderPickerRenderTest {
                 Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         secondaryBitmap.eraseColor(Color.RED);
         doCallback(
-                        /* index= */ 1,
+                        /* index= */ 2,
                         (Callback<Pair<Drawable, Drawable>> callback) ->
                                 callback.onResult(
                                         new Pair<>(
                                                 new BitmapDrawable(resources, primaryBitmap),
                                                 new BitmapDrawable(resources, secondaryBitmap))))
                 .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
+                .fetchFirstTwoImagesForFolder(any(), anyInt(), any());
 
         // Setup BookmarkUiPrefs.
         doReturn(

@@ -87,13 +87,24 @@ void ImageServiceBridge::FetchImageUrlForImpl(
   // The caller must either be (1) syncing or (2) the underlying data-type
   // being fetched for is account-bound. If neither of these conditions are
   // met, then return early with an empty result.
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      !is_account_data) {
+  if (!HasConsentToFetchImagesImpl(is_account_data)) {
     std::move(callback).Run(GURL());
     return;
   }
   image_service_->FetchImageFor(client_id, page_url,
                                 page_image_service::mojom::Options(),
                                 std::move(callback));
+}
 
-}  // namespace page_image_service
+jboolean ImageServiceBridge::HasConsentToFetchImages(
+    JNIEnv* env,
+    const bool is_account_data) {
+  return HasConsentToFetchImagesImpl(is_account_data);
+}
+
+bool ImageServiceBridge::HasConsentToFetchImagesImpl(
+    const bool is_account_data) {
+  // The basic pre-conditions used before issuing the request to the component.
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+         is_account_data;
+}

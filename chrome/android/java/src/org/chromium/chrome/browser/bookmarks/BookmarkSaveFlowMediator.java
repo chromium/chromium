@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -244,7 +245,11 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                             ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
                 };
 
-        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, callback);
+        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
+                item,
+                BookmarkUtils.getImageIconSize(
+                        mContext.getResources(), BookmarkRowDisplayPref.VISUAL),
+                callback);
     }
 
     void handlePriceTrackingSwitchToggle(CompoundButton view, boolean toggled) {

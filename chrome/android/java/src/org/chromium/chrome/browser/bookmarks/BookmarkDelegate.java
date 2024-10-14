@@ -9,7 +9,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
@@ -83,11 +82,6 @@ public interface BookmarkDelegate {
      */
     @BookmarkUiMode
     int getCurrentUiMode();
-
-    /**
-     * @return LargeIconBridge instance. By sharing the instance, we can also share the cache.
-     */
-    LargeIconBridge getLargeIconBridge();
 
     /**
      * @return The drag state delegate that is associated with this list of bookmarks.

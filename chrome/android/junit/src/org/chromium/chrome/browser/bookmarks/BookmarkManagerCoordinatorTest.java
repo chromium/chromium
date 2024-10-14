@@ -38,12 +38,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -76,7 +75,7 @@ public class BookmarkManagerCoordinatorTest {
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
-    @Mock private LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -94,7 +93,7 @@ public class BookmarkManagerCoordinatorTest {
     @Before
     public void setUp() {
         // Setup JNI mocks.
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
+        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJni);
         mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
         mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
 

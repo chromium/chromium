@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -46,8 +47,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -72,8 +71,7 @@ public class BookmarkUtilsTest {
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Tracker mTracker;
-    @Mock private LargeIconBridge mLargeIconBridge;
-    @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
+    @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
@@ -98,7 +96,7 @@ public class BookmarkUtilsTest {
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
 
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNatives);
+        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJni);
         mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
         mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
         mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);

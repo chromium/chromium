@@ -319,7 +319,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
                         (Callback<Pair<Drawable, Drawable>> callback) ->
                                 callback.onResult(new Pair<>(null, null)))
                 .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
+                .fetchFirstTwoImagesForFolder(any(), anyInt(), any());
 
         // Setup BookmarkUiPrefs
         doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
