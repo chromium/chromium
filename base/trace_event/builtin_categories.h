@@ -389,6 +389,7 @@
   X("shutdown,viz")                                                           \
   X("startup,benchmark,rail")                                                 \
   X("startup,rail")                                                           \
+  X("toplevel,graphics.pipeline")                                             \
   X("toplevel,Java")                                                          \
   X("toplevel,viz")                                                           \
   X("ui,input")                                                               \

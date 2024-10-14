@@ -2193,9 +2193,52 @@ message EventTiming {
   optional EventType type = 9;
 }
 
+// Frame information provided by Android's Choreographer.
+// See
+// https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata.
+// Next ID: 4
+message AndroidChoreographerFrameCallbackData {
+  // The time in microseconds at which the frame started being rendered.
+  // See
+  // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimenanos.
+  optional int64 frame_time_us = 1;
+
+  message FrameTimeline {
+    // The token used by the platform to identify the frame timeline.
+    // See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelinevsyncid.
+    optional int64 vsync_id = 1;
+
+    // The difference in microseconds between:
+    // (A) the time at which the frame needs to be ready by in order to be
+    //     presented on time and
+    // (B) the time at which the frame started being rendered (frame_time_us).
+    // See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelinedeadlinenanos.
+    optional int64 latch_delta_us = 2;
+
+    // The difference in microseconds between:
+    // (A) the time at which the frame is expected to be presented and
+    // (B) the time at which the frame started being rendered (frame_time_us).
+    // See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelineexpectedpresentationtimenanos.
+    optional int64 present_delta_us = 3;
+  }
+
+  // Possible frame timelines.
+  // See
+  // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelineslength.
+  repeated FrameTimeline frame_timeline = 2;
+
+  // The index (into frame_timeline) of the platform-preferred frame timeline.
+  // See
+  // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getpreferredframetimelineindex.
+  optional int64 preferred_frame_timeline_index = 3;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1070
+  // Next ID: 1071
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2343,5 +2386,8 @@ message ChromeTrackEvent {
     optional ChromeLatencyInfo2 chrome_latency_info = 1068;
 
     optional EventTiming event_timing = 1069;
+
+    optional AndroidChoreographerFrameCallbackData
+        android_choreographer_frame_callback_data = 1070;
   }
 }
