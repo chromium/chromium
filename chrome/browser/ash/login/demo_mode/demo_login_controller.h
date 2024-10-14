@@ -44,9 +44,11 @@ class DemoLoginController : public LoginScreenShownObserver {
   // Sends a request to create Demo accounts and login with this account.
   void SendSetupDemoAccountRequest();
   // Called on setup demo account complete.
-  void OnSetupDemoAccountComplete(std::unique_ptr<std::string> response_body);
+  void OnSetupDemoAccountComplete(const std::string& device_id,
+                                  std::unique_ptr<std::string> response_body);
   // Parses the setup demo account response body and maybe login demo account.
-  void HandleSetupDemoAcountResponse(const std::string& response_body);
+  void HandleSetupDemoAcountResponse(const std::string& device_id,
+                                     const std::string& response_body);
 
   void OnSetupDemoAccountError(const ResultCode result_code);
 

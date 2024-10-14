@@ -1478,17 +1478,20 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
 }
 
 void ExistingUserController::DoCompleteLogin(
-    const UserContext& user_context_wo_device_id) {
-  UserContext user_context = user_context_wo_device_id;
+    const UserContext& login_user_context) {
+  UserContext user_context = login_user_context;
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
-  if (device_id.empty()) {
-    const bool is_ephemeral =
-        user_manager::UserManager::Get()->IsEphemeralAccountId(
-            user_context.GetAccountId());
-    device_id = GenerateSigninScopedDeviceId(is_ephemeral);
+
+  if (user_context.GetDeviceId().empty()) {
+    std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
+    if (device_id.empty()) {
+      const bool is_ephemeral =
+          user_manager::UserManager::Get()->IsEphemeralAccountId(
+              user_context.GetAccountId());
+      device_id = GenerateSigninScopedDeviceId(is_ephemeral);
+    }
+    user_context.SetDeviceId(device_id);
   }
-  user_context.SetDeviceId(device_id);
 
   const std::string& gaps_cookie = user_context.GetGAPSCookie();
   if (!gaps_cookie.empty()) {

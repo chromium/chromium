@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -30,6 +31,8 @@
 namespace ash {
 
 namespace {
+
+constexpr char kEphemeralUserDeviceIDPrefix[] = "t_";
 
 // Demo account Json key in set up demo account response.
 constexpr char kDemoAccountEmail[] = "username";
@@ -105,9 +108,19 @@ GURL GetSetupDemoAccountUrl() {
   return net::AppendQueryParameter(setup_url, kApiKeyParam, api_key);
 }
 
+// TODO(crbug.com/372928818): Should use the same function in
+// c/b/signin/chrome_device_id_helper.h for consistent. However there is
+// circular deps issue with /c/b:browser. Temporary use this one before
+// completion of modularization (crbug.com/364667553) of c/b/signin.
+std::string GenerateSigninScopedDeviceId() {
+  return kEphemeralUserDeviceIDPrefix +
+         base::Uuid::GenerateRandomV4().AsLowercaseString();
+}
+
 void LoginDemoAccount(const std::string& email,
                       const std::string& gaia_id,
-                      const std::string& auth_code) {
+                      const std::string& auth_code,
+                      const std::string& device_id) {
   // TODO(crbug.com/364195755): Allow list this user in CrosSetting when the
   // request is success.
   // TODO(crbug.com/364195323):After login with a demo account, several screens
@@ -127,6 +140,7 @@ void LoginDemoAccount(const std::string& email,
           /*sync_trusted_vault_keys=*/std::nullopt,
           /*challenge_response_key=*/std::nullopt);
   user_context->SetAuthCode(auth_code);
+  user_context->SetDeviceId(device_id);
 
   // Enforced auto-login for given account creds.
   auto* login_display_host = LoginDisplayHost::default_host();
@@ -191,26 +205,24 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
   auto post_data = base::Value::Dict();
   // TODO(crbug.com/372762477): Get device adid form enterprise. Temporary set
   // as "0000" right now.
-  // TODO(crbug.com/372770674): Generate device id before login. Temporary set
-  // as "0000" right now.
+  const std::string device_id = GenerateSigninScopedDeviceId();
   post_data.Set(kDeviceIdentifier, base::Value::Dict()
                                        .Set(kDeviceADID, "0000")
-                                       .Set(kLoginScopeDeviceId, "0000"));
-
+                                       .Set(kLoginScopeDeviceId, device_id));
   std::string request_string;
   CHECK(base::JSONWriter::Write(post_data, &request_string));
-
   setup_request_url_loader_->AttachStringForUpload(request_string,
                                                    kContentTypeJSON);
   setup_request_url_loader_->SetTimeoutDuration(kDemoAccountRequestTimeout);
   setup_request_url_loader_->DownloadToString(
       GetUrlLoaderFactory().get(),
       base::BindOnce(&DemoLoginController::OnSetupDemoAccountComplete,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
       kMaxResponseSize);
 }
 
 void DemoLoginController::OnSetupDemoAccountComplete(
+    const std::string& device_id,
     std::unique_ptr<std::string> response_body) {
   if (setup_request_url_loader_->NetError() != net::OK) {
     // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
@@ -233,7 +245,7 @@ void DemoLoginController::OnSetupDemoAccountComplete(
   bool is_success =
       response_body && response_code >= 200 && response_code < 300;
   if (is_success) {
-    HandleSetupDemoAcountResponse(*response_body);
+    HandleSetupDemoAcountResponse(device_id, *response_body);
   } else if (!response_body) {
     OnSetupDemoAccountError(ResultCode::kEmptyReponse);
   } else {
@@ -244,6 +256,7 @@ void DemoLoginController::OnSetupDemoAccountComplete(
 }
 
 void DemoLoginController::HandleSetupDemoAcountResponse(
+    const std::string& device_id,
     const std::string& response_body) {
   std::optional<base::Value::Dict> gaia_creds(
       base::JSONReader::ReadDict(response_body));
@@ -261,7 +274,7 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
     return;
   }
 
-  LoginDemoAccount(*email, *gaia_id, *auth_code);
+  LoginDemoAccount(*email, *gaia_id, *auth_code, device_id);
 }
 
 // TODO(crbug.com/364214790): Handle Setup demo account errors.

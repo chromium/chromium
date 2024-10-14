@@ -97,7 +97,10 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccess) {
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin)
       .Times(1)
-      .WillOnce(testing::InvokeWithoutArgs(&loop, &base::RunLoop::Quit));
+      .WillOnce(testing::Invoke([&](const UserContext& user_context) {
+        EXPECT_FALSE(user_context.GetDeviceId().empty());
+        loop.Quit();
+      }));
   login_screen_client()->OnLoginScreenShown();
   loop.Run();
 }
