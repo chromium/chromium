@@ -7,6 +7,8 @@ import("//components/safe_browsing/buildflags.gni")
 source_set("download") {
   sources = [
     "download_item_warning_data.h",
+    "download_prompt_status.h",
+    "download_stats.h",
     "download_ui_model.h",
   ]
   public_deps = [
