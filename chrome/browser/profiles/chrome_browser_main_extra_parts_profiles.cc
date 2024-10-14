@@ -280,6 +280,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_factory.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -1098,6 +1099,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   PrivacySandboxSurveyFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   PrivacySandboxSurveyDesktopControllerFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  PrivacySandboxActivityTypesFactory::GetInstance();
 #endif
   ProfileNetworkContextServiceFactory::GetInstance();
   ProfilePasswordStoreFactory::GetInstance();
