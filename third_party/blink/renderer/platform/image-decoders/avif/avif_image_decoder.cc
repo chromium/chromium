@@ -872,7 +872,8 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     return true;
   }
   if (ret != AVIF_RESULT_OK) {
-    DVLOG(1) << "avifDecoderParse failed: " << avifResultToString(ret);
+    DVLOG(1) << "avifDecoderParse failed: " << avifResultToString(ret) << ". "
+             << decoder_->diag.error;
     return false;
   }
 

@@ -896,7 +896,8 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
   }
   if (ret != crabbyavif::AVIF_RESULT_OK) {
     DVLOG(1) << "crabbyavif::crabby_avifDecoderParse failed: "
-             << crabbyavif::crabby_avifResultToString(ret);
+             << crabbyavif::crabby_avifResultToString(ret) << ". "
+             << decoder_->diag.error;
     return false;
   }
 
