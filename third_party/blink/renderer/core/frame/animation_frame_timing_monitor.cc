@@ -726,10 +726,14 @@ void AnimationFrameTimingMonitor::Will(
     return;
   }
 
+  EventTarget* target = probe_data.event->currentTarget();
   pending_script_info_ = PendingScriptInfo{
       .invoker_type = ScriptTimingInfo::InvokerType::kEventHandler,
       .start_time = probe_data.CaptureStartTime(),
-      .execution_start_time = probe_data.CaptureStartTime()};
+      .execution_start_time = probe_data.CaptureStartTime(),
+      .source_location = CaptureScriptSourceLocation(
+          probe_data.script_state->GetIsolate(),
+          probe_data.listener->GetListenerObject(*target))};
 }
 
 void AnimationFrameTimingMonitor::Did(
@@ -765,11 +769,6 @@ void AnimationFrameTimingMonitor::Did(
   } else {
     info->SetClassLikeName(target->InterfaceName());
   }
-
-  v8::HandleScope scope(probe_data.script_state->GetIsolate());
-  info->SetSourceLocation(CaptureScriptSourceLocation(
-      probe_data.script_state->GetIsolate(),
-      probe_data.listener->GetListenerObject(*target)));
 }
 
 void AnimationFrameTimingMonitor::Will(
