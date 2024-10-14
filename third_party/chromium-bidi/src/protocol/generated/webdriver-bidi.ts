@@ -133,7 +133,6 @@ export namespace Session {
     platformName?: string;
     proxy?: Session.ProxyConfiguration;
     unhandledPromptBehavior?: Session.UserPromptHandler;
-    'goog:prerenderingDisabled'?: boolean;
   } & Extensible;
 }
 export namespace Session {
