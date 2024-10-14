@@ -13,8 +13,6 @@
 // user's Drive folders.
 @interface DriveFilePickerNavigationController : UINavigationController
 
-// Drive file picker handler.
-@property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
 
 @end
 
