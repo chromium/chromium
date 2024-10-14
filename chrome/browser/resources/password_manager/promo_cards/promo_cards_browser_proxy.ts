@@ -22,6 +22,11 @@ export interface PromoCardsProxy {
    * promo should be shown in the future.
    */
   recordPromoDismissed(id: string): void;
+
+  /**
+   * Opens the batch upload modal dialog on top of the current browser.
+   */
+  openBatchUpload(): void;
 }
 
 export class PromoCardsProxyImpl implements PromoCardsProxy {
@@ -31,6 +36,10 @@ export class PromoCardsProxyImpl implements PromoCardsProxy {
 
   recordPromoDismissed(id: string) {
     chrome.send('recordPromoDismissed', [id]);
+  }
+
+  openBatchUpload(): void {
+    chrome.send('openBatchUpload');
   }
 
   static getInstance(): PromoCardsProxy {

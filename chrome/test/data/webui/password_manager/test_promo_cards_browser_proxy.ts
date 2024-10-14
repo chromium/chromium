@@ -18,6 +18,7 @@ export class TestPromoCardsProxy extends TestBrowserProxy implements
     super([
       'getAvailablePromoCard',
       'recordPromoDismissed',
+      'openBatchUpload',
     ]);
 
     this.promo = null;
@@ -30,5 +31,9 @@ export class TestPromoCardsProxy extends TestBrowserProxy implements
 
   recordPromoDismissed(id: string) {
     this.methodCalled('recordPromoDismissed', id);
+  }
+
+  openBatchUpload(): void {
+    this.methodCalled('openBatchUpload');
   }
 }
