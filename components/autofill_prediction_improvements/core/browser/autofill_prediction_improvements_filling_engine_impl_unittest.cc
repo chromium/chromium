@@ -103,13 +103,13 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   AddFieldToResponse(response, "label", "normalized label", "value", 0);
   AddFieldToResponse(response, "empty", "", "", 2);
   AddFieldToResponse(response, "notinform", "", "doesntmatter");
-  AddFieldToResponse(response, "State", "", "33", 3);
+  AddFieldToResponse(response, "State", "", "North Carolina", 3);
   AddFieldToResponse(
       response, "Country Code - response not in select options, not filled", "",
       "-2", 4);
   AddFieldToResponse(response,
                      "Country - response equals selected value, not filled", "",
-                     "2", 5);
+                     "Spain", 5);
   AddFieldToResponse(response, "Field has value, not filled", "", "value", 6);
   optimization_guide::proto::Any any;
   any.set_type_url(response.GetTypeName());
