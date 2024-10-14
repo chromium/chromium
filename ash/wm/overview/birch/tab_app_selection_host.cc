@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 
+#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/birch/birch_coral_item.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -63,7 +65,10 @@ class TabAppSelectionHost::SelectionHostHider : public ui::EventHandler {
 };
 
 TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
-    : hider_(std::make_unique<SelectionHostHider>(this)), owner_(coral_chip) {
+    : hider_(std::make_unique<SelectionHostHider>(this)),
+      owner_(coral_chip),
+      scoped_a11y_overrider_(
+          std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   using InitParams = views::Widget::InitParams;
   InitParams params(InitParams::CLIENT_OWNS_WIDGET, InitParams::TYPE_MENU);
   params.accept_events = true;
@@ -107,8 +112,16 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
       ->SetVectorIcon(visible ? vector_icons::kCaretDownIcon
                               : vector_icons::kCaretUpIcon);
   owner_->SetTopHalfRounded(!visible);
+
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      visible ? GetNativeWindow() : nullptr);
   if (visible) {
     base::UmaHistogramBoolean("Ash.Birch.Coral.ClusterExpanded", true);
+    GetContentsView()->GetViewAccessibility().NotifyEvent(
+        ax::mojom::Event::kMenuStart);
+  } else {
+    views::AsViewClass<TabAppSelectionView>(GetContentsView())
+        ->ClearSelection();
   }
 }
 

@@ -9,13 +9,16 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/typography.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -28,8 +31,7 @@ namespace ash {
 
 namespace {
 
-// TODO(http://b/361326120): The below are hardcoded temporary values.
-constexpr int kScrollViewMaxHeight = 400;
+constexpr int kScrollViewMaxHeight = 358;
 
 constexpr int kItemChildSpacing = 16;
 constexpr gfx::Insets kItemInsets = gfx::Insets::VH(8, 16);
@@ -45,10 +47,9 @@ constexpr gfx::Insets kSubtitleMargins = gfx::Insets::VH(8, 16);
 // If the menu has two items or less, do not allow deleting.
 constexpr int kMinItems = 2;
 
-std::unique_ptr<views::Label> CreateSubtitle(const std::u16string& text,
-                                             int id) {
+std::unique_ptr<views::Label> CreateSubtitle(int text_message_id, int id) {
   return views::Builder<views::Label>()
-      .SetText(text)
+      .SetText(l10n_util::GetStringUTF16(text_message_id))
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
       .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
       .SetProperty(views::kMarginsKey, kSubtitleMargins)
@@ -102,18 +103,26 @@ class TabAppSelectionView::TabAppSelectionItemView
     raw_ptr<TabAppSelectionView> owner;
 
     bool show_close_button = true;
+
+    // Used by accessibility to speak "Menu item pos in size".
+    // Indicates the initial position of this item in the parent selector view
+    // and the number of elements in the parent selector view. Used by
+    // accessibility to give spoken feedback: "Menu item `position_in_selector`
+    // in `num_selector_elements`". The view accessibility will be updated when
+    // an item is closed.
+    int position_in_selector = 0;
+    int num_selector_elements = 0;
   };
 
   explicit TabAppSelectionItemView(InitParams params)
       : type_(params.type), owner_(params.owner) {
-    // TODO(http://b/361326120): Add a default icon.
     views::Label* title;
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
         .SetAccessibleName(u"TempAccessibleName")
         .SetBetweenChildSpacing(kItemChildSpacing)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-        .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+        .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
         .SetInsideBorderInsets(kItemInsets)
         .SetNotifyEnterExitOnChild(true)
         .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -134,6 +143,9 @@ class TabAppSelectionView::TabAppSelectionItemView
                       TypographyToken::kCrosButton2, *label);
                 })))
         .BuildChildren();
+
+    SetPositionAndSetSize(params.position_in_selector,
+                          params.num_selector_elements);
 
     if (params.show_close_button) {
       close_button_ = AddChildView(std::make_unique<CloseButton>(
@@ -189,6 +201,12 @@ class TabAppSelectionView::TabAppSelectionItemView
 
   InitParams::Type type() const { return type_; }
 
+  void SetPositionAndSetSize(int position_in_selector,
+                             int num_selector_elements) {
+    GetViewAccessibility().SetPosInSet(position_in_selector);
+    GetViewAccessibility().SetSetSize(num_selector_elements);
+  }
+
   bool selected() const { return selected_; }
   void SetSelected(bool selected) {
     if (selected_ == selected) {
@@ -202,6 +220,9 @@ class TabAppSelectionView::TabAppSelectionItemView
     SetBackground(selected_ ? views::CreateThemedSolidBackground(
                                   cros_tokens::kCrosSysHoverOnSubtle)
                             : nullptr);
+    if (selected_) {
+      GetViewAccessibility().NotifyEvent(ax::mojom::Event::kSelection);
+    }
   }
 
   void RemoveCloseButton() {
@@ -259,6 +280,11 @@ TabAppSelectionView::TabAppSelectionView(int group_id) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, kContainerCornerRadius, 0));
 
+  GetViewAccessibility().SetIsVertical(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME));
+
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->ClipHeightTo(/*min_height=*/0,
@@ -305,29 +331,35 @@ TabAppSelectionView::TabAppSelectionView(int group_id) {
   const bool show_close_button = (num_tabs + num_apps) > kMinItems;
   auto create_item_view =
       [&](TabAppSelectionItemView::InitParams::Type type,
-          const std::string& identifier) {
+          const std::string& identifier, int position_in_selector) {
         TabAppSelectionItemView::InitParams params;
         params.type = type;
         params.identifier = identifier;
         params.owner = this;
         params.show_close_button = show_close_button;
+        params.position_in_selector = position_in_selector;
+        params.num_selector_elements = static_cast<int>(num_tabs + num_apps);
         auto* item_view = contents->AddChildView(
             std::make_unique<TabAppSelectionItemView>(std::move(params)));
         item_views_.push_back(item_view);
       };
 
+  int position = 1;
   if (num_tabs > 0) {
-    contents->AddChildView(CreateSubtitle(u"Tabs", kTabSubtitleID));
+    contents->AddChildView(CreateSubtitle(
+        IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE, kTabSubtitleID));
     for (const GURL& gurl : page_urls) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kTab,
-                       gurl.spec());
+                       gurl.spec(), position++);
     }
   }
 
   if (num_apps > 0) {
-    contents->AddChildView(CreateSubtitle(u"Apps", kAppSubtitleID));
+    contents->AddChildView(CreateSubtitle(
+        IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE, kAppSubtitleID));
     for (const std::string& app_id : app_ids) {
-      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app_id);
+      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app_id,
+                       position++);
     }
   }
 
@@ -335,6 +367,12 @@ TabAppSelectionView::TabAppSelectionView(int group_id) {
 }
 
 TabAppSelectionView::~TabAppSelectionView() = default;
+
+void TabAppSelectionView::ClearSelection() {
+  for (TabAppSelectionItemView* item : item_views_) {
+    item->SetSelected(false);
+  }
+}
 
 void TabAppSelectionView::ProcessKeyEvent(ui::KeyEvent* event) {
   switch (event->key_code()) {
@@ -421,24 +459,21 @@ void TabAppSelectionView::OnCloseButtonPressed(
     scroll_view_->contents()->RemoveChildViewT(GetViewByID(*id));
   }
 
-  if (item_views_.size() > kMinItems) {
-    return;
-  }
-
-  // Remove all close buttons if we have 3 elements or less. This function won't
-  // be called again.
-  for (TabAppSelectionItemView* item : item_views_) {
-    item->RemoveCloseButton();
+  // Update the items' accessibility and remove all close buttons once if we
+  // have `kMinItems` left. This function won't be called again.
+  const int num_items = static_cast<int>(item_views_.size());
+  for (int i = 0; i < num_items; ++i) {
+    item_views_[i]->SetPositionAndSetSize(i + 1, num_items);
+    if (num_items <= kMinItems) {
+      item_views_[i]->RemoveCloseButton();
+    }
   }
 }
 
 void TabAppSelectionView::OnItemTapped(TabAppSelectionItemView* sender) {
+  // Toggle selection for `sender`; clear selection otherwise.
   for (TabAppSelectionItemView* item : item_views_) {
-    if (item != sender) {
-      item->SetSelected(false);
-    } else {
-      item->SetSelected(!item->selected());
-    }
+    item->SetSelected(item == sender && !item->selected());
   }
 }
 

@@ -9,6 +9,7 @@
 
 namespace ash {
 class BirchChipButton;
+class ScopedA11yOverrideWindowSetter;
 
 class TabAppSelectionHost : public views::Widget {
  public:
@@ -31,6 +32,10 @@ class TabAppSelectionHost : public views::Widget {
 
   std::unique_ptr<SelectionHostHider> hider_;
   const raw_ptr<BirchChipButton> owner_;
+
+  // This widget isn't activatable so this is a way to force accessibility
+  // features to focus on the underlying window.
+  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
 
 }  // namespace ash
