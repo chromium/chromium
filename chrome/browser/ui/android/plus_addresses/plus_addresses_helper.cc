@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/plus_addresses/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -22,7 +23,8 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
     Java_PlusAddressesHelper_openManagePlusAddresses(
         base::android::AttachCurrentThread(),
         web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-        plus_addresses::features::kPlusAddressManagementUrl.Get());
+        Profile::FromBrowserContext(web_contents.GetBrowserContext())
+            ->GetJavaObject());
   }
 }
 

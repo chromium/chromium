@@ -413,6 +413,8 @@ public abstract class ChromeFeatureList {
             "PlusAddressLoadingStatesAndroid";
     public static final String PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED =
             "PlusAddressAndroidEnhancedLoadingStatesEnabled";
+    public static final String PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE =
+            "PlusAddressAndroidOpenGmsCoreManagementPage";
     public static final String PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY =
             "PlusAddressAndroidSettingsEntry";
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =

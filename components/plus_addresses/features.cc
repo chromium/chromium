@@ -41,6 +41,12 @@ BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
              "PlusAddressAndroidManualFallbackEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the user is shown the GMS core plus address management activity
+// instead of the web page in a Chrome custom tab.
+BASE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage,
+             "PlusAddressAndroidOpenGmsCoreManagementPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the mobile autofill profiles fragment shows a link to open plus
 // address management page.
 BASE_FEATURE(kPlusAddressAndroidSettingsEntry,

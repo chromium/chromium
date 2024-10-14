@@ -356,6 +356,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,
     &plus_addresses::features::kPlusAddressesEnabled,
     &plus_addresses::features::kPlusAddressAndroidEnhancedLoadingStatesEnabled,
+    &plus_addresses::features::kPlusAddressAndroidOpenGmsCoreManagementPage,
     &plus_addresses::features::kPlusAddressAndroidSettingsEntry,
     &privacy_sandbox::kFingerprintingProtectionUserBypass,
     &privacy_sandbox::kFingerprintingProtectionUx,

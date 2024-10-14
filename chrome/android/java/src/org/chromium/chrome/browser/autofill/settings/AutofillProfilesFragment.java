@@ -254,8 +254,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         }
 
         if (preference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
-            PlusAddressesHelper.openManagePlusAddresses(
-                    getActivity(), PlusAddressesHelper.getPlusAddressManagementUrl());
+            PlusAddressesHelper.openManagePlusAddresses(getActivity(), getProfile());
             return;
         }
 
