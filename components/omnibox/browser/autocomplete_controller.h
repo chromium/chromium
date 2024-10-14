@@ -355,6 +355,7 @@ class AutocompleteController : public AutocompleteProviderListener,
                            AccessibleActivedescendantId);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleSelectionOnResultSelection);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, AccessibleResultName);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.
