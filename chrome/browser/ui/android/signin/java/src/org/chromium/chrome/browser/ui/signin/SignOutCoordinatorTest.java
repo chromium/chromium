@@ -189,6 +189,42 @@ public class SignOutCoordinatorTest {
         verify(mOnSignOut).run();
     }
 
+    /**
+     * Test Snackbar is suppressed when the user signout from the settings panel.
+     *
+     * <p>This is a regression test for crbug.com/361747614.
+     */
+    @Test
+    @MediumTest
+    public void testSnackbarSuppressedByParameter() {
+        setUpMocks();
+        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
+        doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
+        doAnswer(
+                        args -> {
+                            args.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .runAfterOperationInProgress(any(Runnable.class));
+        doAnswer(
+                        args -> {
+                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
+                            signOutCallback.signOutComplete();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+
+        startSignOutFlow(signOutReason, mOnSignOut, false, /* suppressSnackbar= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(mSnackbarManager.isShowing());
+                });
+        verify(mOnSignOut).run();
+    }
+
     @Test
     @MediumTest
     public void testUnsavedDataDialog() {
@@ -369,7 +405,10 @@ public class SignOutCoordinatorTest {
     }
 
     private void startSignOutFlow(
-            @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
+            @SignoutReason int signoutReason,
+            Runnable onSignOut,
+            boolean showConfirmDialog,
+            boolean suppressSnackbar) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SignOutCoordinator.startSignOutFlow(
@@ -380,6 +419,12 @@ public class SignOutCoordinatorTest {
                                 mSnackbarManager,
                                 signoutReason,
                                 showConfirmDialog,
-                                onSignOut));
+                                onSignOut,
+                                suppressSnackbar));
+    }
+
+    private void startSignOutFlow(
+            @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
+        startSignOutFlow(signoutReason, onSignOut, showConfirmDialog, false);
     }
 }
