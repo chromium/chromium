@@ -12,6 +12,8 @@ source_set("session_api") {
     "create_session_request.h",
     "get_session_request.cc",
     "get_session_request.h",
+    "remove_student_request.cc",
+    "remove_student_request.h",
     "session_client_impl.cc",
     "session_client_impl.h",
     "session_parser.cc",
@@ -41,6 +43,7 @@ source_set("unit_tests") {
   sources = [
     "create_session_request_unittest.cc",
     "get_session_request_unittest.cc",
+    "remove_student_request_unittest.cc",
     "session_parser_unittest.cc",
     "update_session_request_unittest.cc",
     "update_student_activities_request_unittest.cc",
