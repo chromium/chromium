@@ -649,6 +649,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/win/win_handle_types_list.inc",
       "partition_alloc_base/win/windows_types.h",
     ]
+    libs = []
 
     if (is_win) {
       sources += [
@@ -659,6 +660,9 @@ if (is_clang_or_gcc) {
         "partition_alloc_base/scoped_clear_last_error_win.cc",
         "partition_alloc_base/threading/platform_thread_win.cc",
         "partition_alloc_base/time/time_win.cc",
+      ]
+      libs += [
+        "winmm.lib",  # For timeGetTime.
       ]
     }
 
