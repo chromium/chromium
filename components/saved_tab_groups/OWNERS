@@ -3,4 +3,4 @@ dpenning@chromium.org
 shaktisahu@chromium.org
 tbergquist@chromium.org
 
-per-file *sync_bridge*=file://components/sync/OWNERS
+per-file internal/*sync_bridge*=file://components/sync/OWNERS
