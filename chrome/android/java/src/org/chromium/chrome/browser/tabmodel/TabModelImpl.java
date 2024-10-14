@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -959,7 +960,18 @@ public class TabModelImpl extends TabModelJniBridge {
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
                         .build();
+
         filter.closeTabs(params);
+
+        // Open a new tab if all tabs are closed and the respective experiment arm is eanbled.
+        if (QuickDeleteController.isQuickDeleteFollowupEnabledOpenNewTabOnEmptyState()) {
+            for (Tab tab : mTabs) {
+                if (!tab.isCustomTab()) {
+                    return;
+                }
+            }
+            getTabCreator(false).launchNtp();
+        }
     }
 
     @VisibleForTesting

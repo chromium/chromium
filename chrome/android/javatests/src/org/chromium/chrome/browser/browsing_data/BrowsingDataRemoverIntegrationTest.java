@@ -180,7 +180,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         callbackHelper.waitForCallback(0);
 
-        Assert.assertEquals(0, mActivityTestRule.tabsCount(/* incognito= */ false));
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
         Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ true));
     }
 }
