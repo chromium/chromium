@@ -16,7 +16,7 @@ import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, i
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../../metrics_recorder.js';
-import {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
+import type {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './app_notification_row.html.js';

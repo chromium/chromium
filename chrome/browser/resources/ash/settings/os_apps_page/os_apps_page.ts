@@ -29,9 +29,9 @@ import './app_parental_controls/app_setup_pin_dialog.js';
 import './app_parental_controls/app_verify_pin_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -42,17 +42,20 @@ import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled, shouldShowStartup} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
-import {AppParentalControlsHandlerInterface} from '../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {App as AppWithNotifications, AppNotificationsHandlerInterface} from '../mojom-webui/app_notification_handler.mojom-webui.js';
+import {AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
+import type {AppParentalControlsHandlerInterface} from '../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
+import type {AndroidAppsInfo} from './android_apps_browser_proxy.js';
+import {AndroidAppsBrowserProxyImpl} from './android_apps_browser_proxy.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
-import {getAppParentalControlsProvider} from './app_parental_controls/mojo_interface_provider.js';
 import {ParentalControlsDialogType, recordParentalControlsDialogFlowCompleted, recordParentalControlsDialogOpened} from './app_parental_controls/metrics_utils.js';
+import {getAppParentalControlsProvider} from './app_parental_controls/mojo_interface_provider.js';
 import {getTemplate} from './os_apps_page.html.js';
 
 export function isAppInstalled(app: AppWithNotifications): boolean {

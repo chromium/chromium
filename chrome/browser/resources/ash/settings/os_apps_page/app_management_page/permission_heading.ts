@@ -4,9 +4,9 @@
 
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {getParentApp, getSubAppsOfSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {getParentApp, getSubAppsOfSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

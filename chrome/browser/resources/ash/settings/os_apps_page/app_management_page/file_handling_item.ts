@@ -6,17 +6,17 @@ import './app_management_cros_shared_style.css.js';
 import './toggle_row.js';
 
 import {assert} from '//resources/js/assert.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './file_handling_item.html.js';
-import {AppManagementToggleRowElement} from './toggle_row.js';
+import type {AppManagementToggleRowElement} from './toggle_row.js';
 
 const AppManagementFileHandlingItemBase = I18nMixin(PolymerElement);
 
