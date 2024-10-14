@@ -7593,6 +7593,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
 
   <!-- Mall app -->
   <message name="IDS_MALL_APP_NAME" desc="Name of a system app which can be used to find and install apps and games">
-    Apps &amp; games
+    Get Apps and Games
   </message>
 </grit-part>
