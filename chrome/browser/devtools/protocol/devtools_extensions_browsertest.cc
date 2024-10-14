@@ -17,6 +17,7 @@
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 namespace {
@@ -111,6 +112,18 @@ scoped_refptr<content::DevToolsAgentHost> FindExtensionHost(
 
 // Returns the `DevToolsAgentHost` associated with an extension page if
 // available.
+scoped_refptr<content::DevToolsAgentHost> FindBackgroundPageHost(
+    const std::string& path) {
+  for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == "background_page" && host->GetURL().path() == path) {
+      return host;
+    }
+  }
+  return nullptr;
+}
+
+// Returns the `DevToolsAgentHost` associated with an extension page if
+// available.
 scoped_refptr<content::DevToolsAgentHost> FindPageHost(
     const std::string& path) {
   for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
@@ -186,6 +199,30 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                               base::Value::List().Append("remove-on-clear")));
   ASSERT_TRUE(get_result_3);
   ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanGetStorageValuesBackgroundPage) {
+  const base::Value::Dict* load_result =
+      SendLoadUnpackedCommand("background_page_storage_access");
+  ASSERT_TRUE(load_result);
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension = registry->GetExtensionById(
+      *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+
+  DetachProtocolClient();
+
+  extensions::ExtensionBackgroundPageWaiter(browser()->profile(), *extension)
+      .WaitForBackgroundOpen();
+  agent_host_ = FindBackgroundPageHost("/_generated_background_page.html");
+  agent_host_->AttachClient(this);
+
+  ASSERT_TRUE(SendStorageCommand("Extensions.getStorageItems", extension,
+                                 base::Value::Dict()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,

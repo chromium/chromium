@@ -82,6 +82,10 @@ bool CanRendererAccessExtensionStorage(
   }
 
   if (storage_area == StorageAreaNamespace::kSession) {
+    if (extension.manifest_version() < 3) {
+      return false;
+    }
+
     api::storage::AccessLevel access_level =
         GetSessionAccessLevel(extension.id(), browser_context);
     if (access_level == api::storage::AccessLevel::kTrustedContexts) {

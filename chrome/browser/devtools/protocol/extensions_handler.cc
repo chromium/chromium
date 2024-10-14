@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -68,7 +69,8 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
   // Allow a page or frame target to access extension storage if it is
   // associated with a renderer that hosts an extension origin or has an
   // extension injected into it.
-  if (host->GetType() == content::DevToolsAgentHost::kTypePage ||
+  if (host->GetType() == ChromeDevToolsManagerDelegate::kTypeBackgroundPage ||
+      host->GetType() == content::DevToolsAgentHost::kTypePage ||
       host->GetType() == content::DevToolsAgentHost::kTypeFrame) {
     if (!host->GetWebContents() ||
         !host->GetWebContents()->GetPrimaryMainFrame()) {
