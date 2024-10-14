@@ -48,6 +48,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -216,7 +217,8 @@ DeskMiniView::DeskMiniView(
       /*close_all_target_name=*/desk_->name(),
       /*context_menu_callback_=*/
       base::BindRepeating(&DeskMiniView::OpenContextMenu,
-                          base::Unretained(this), ui::MENU_SOURCE_NONE),
+                          base::Unretained(this),
+                          ui::mojom::MenuSourceType::kNone),
       /*combine_desks_callback=*/
       base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
                           DeskCloseType::kCombineDesks),
@@ -451,7 +453,7 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
   return GetWidget() && HitTestPoint(point_in_view);
 }
 
-void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
+void DeskMiniView::OpenContextMenu(ui::mojom::MenuSourceType source) {
   DeskActionContextMenu::Config menu_config;
   menu_config.on_context_menu_closed_callback = base::BindRepeating(
       &DeskMiniView::OnContextMenuClosed, base::Unretained(this));

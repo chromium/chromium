@@ -10,6 +10,7 @@
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace ash {
@@ -48,7 +49,7 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
 
   // Helper function to create context menu when needed.
   void CreateMenu(gfx::Point location_in_screen,
-                  ui::MenuSourceType menu_source);
+                  ui::mojom::MenuSourceType menu_source);
 
   // Invoked when the context menu is closed.
   void OnMenuClosed();

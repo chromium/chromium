@@ -38,6 +38,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -632,7 +633,7 @@ bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
   // If we have a right click we should open the context menu.
   if (event.IsRightMouseButton()) {
     DeskNameView::CommitChanges(GetWidget());
-    mini_view_->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
+    mini_view_->OpenContextMenu(ui::mojom::MenuSourceType::kMouse);
   } else {
     mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
   }

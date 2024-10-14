@@ -25,6 +25,7 @@
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -272,10 +273,11 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
 
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
-  menu_runner_->RunMenuAt(
-      settings_button_->GetWidget(), /*button_controller=*/nullptr,
-      settings_button_->GetBoundsInScreen(),
-      views::MenuAnchorPosition::kBubbleRight, ui::MENU_SOURCE_NONE);
+  menu_runner_->RunMenuAt(settings_button_->GetWidget(),
+                          /*button_controller=*/nullptr,
+                          settings_button_->GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kBubbleRight,
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 views::Builder<views::ImageButton>

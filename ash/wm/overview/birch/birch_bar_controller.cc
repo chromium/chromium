@@ -23,6 +23,7 @@
 #include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
 namespace ash {
@@ -151,10 +152,11 @@ void BirchBarController::OnBarDestroying(BirchBarView* bar_view) {
   }
 }
 
-void BirchBarController::ShowChipContextMenu(BirchChipButton* chip,
-                                             BirchSuggestionType chip_type,
-                                             const gfx::Point& point,
-                                             ui::MenuSourceType source_type) {
+void BirchBarController::ShowChipContextMenu(
+    BirchChipButton* chip,
+    BirchSuggestionType chip_type,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   chip_menu_model_adapter_ = std::make_unique<BirchBarMenuModelAdapter>(
       std::make_unique<BirchChipContextMenuModel>(
           /*delegate=*/chip, chip_type),

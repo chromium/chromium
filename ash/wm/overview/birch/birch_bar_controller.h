@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -57,7 +58,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void ShowChipContextMenu(BirchChipButton* chip,
                            BirchSuggestionType chip_type,
                            const gfx::Point& point,
-                           ui::MenuSourceType source_type);
+                           ui::mojom::MenuSourceType source_type);
 
   // Called if a suggestion is hidden by user from context menu.
   void OnItemHiddenByUser(BirchItem* item);
