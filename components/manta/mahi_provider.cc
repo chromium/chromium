@@ -84,7 +84,8 @@ constexpr char kUsedHistogram[] = "ChromeOS.Mahi.Used";
 enum class MahiFeature {
   kSummary = 0,
   kQA = 1,
-  kMaxValue = kQA,
+  kElucidation = 2,
+  kMaxValue = kElucidation,
 };
 
 void OnServerResponseOrErrorReceived(
@@ -169,6 +170,45 @@ void MahiProvider::Summarize(const std::string& input,
       kTimeout);
 
   base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kSummary);
+}
+
+void MahiProvider::Elucidate(const std::string& input,
+                             const std::string& context,
+                             const std::string& title,
+                             const std::optional<std::string>& url,
+                             MantaGenericCallback done_callback) {
+  proto::Request request;
+  request.set_feature_name(proto::FeatureName::CHROMEOS_READER_ELUCIDATION);
+
+  auto* input_data = request.add_input_data();
+  input_data->set_tag("model_input");
+  input_data->set_text(input);
+
+  input_data = request.add_input_data();
+  input_data->set_tag("context");
+  input_data->set_text(context);
+
+  if (!title.empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("title");
+    input_data->set_text(title);
+  }
+
+  if (url.has_value() && !url->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("url");
+    input_data->set_text(url.value());
+  }
+
+  RequestInternal(
+      GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
+      kOauthConsumerName, kMahiTrafficAnnotationTag, request,
+      MantaMetricType::kMahiElucidation,
+      base::BindOnce(&OnServerResponseOrErrorReceived,
+                     std::move(done_callback)),
+      kTimeout);
+
+  base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kElucidation);
 }
 
 void MahiProvider::Outline(const std::string& input,

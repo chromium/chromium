@@ -80,6 +80,10 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.Summary.TimeCost",
                               time_cost);
       break;
+    case MantaMetricType::kMahiElucidation:
+      base::UmaHistogramTimes(
+          "Ash.MantaService.MahiProvider.Elucidation.TimeCost", time_cost);
+      break;
     case MantaMetricType::kMahiQA:
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
                               time_cost);
@@ -117,6 +121,10 @@ void LogMantaStatusCode(const MantaMetricType request_type,
     case MantaMetricType::kMahiSummary:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.MahiProvider.Summary.StatusCode", status_code);
+      break;
+    case MantaMetricType::kMahiElucidation:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.Elucidation.StatusCode", status_code);
       break;
     case MantaMetricType::kMahiQA:
       base::UmaHistogramEnumeration(

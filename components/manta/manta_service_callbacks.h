@@ -27,6 +27,7 @@ enum class MantaMetricType {
   kScanner,
   kSnapper,
   kMahiSummary,
+  kMahiElucidation,
   kMahiQA,
   kSparky,
   kWalrus,

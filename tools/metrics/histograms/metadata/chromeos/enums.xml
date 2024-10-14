@@ -1418,6 +1418,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
 <enum name="MahiFeature">
   <int value="0" label="Summary"/>
   <int value="1" label="QA"/>
+  <int value="2" label="Elucidation"/>
 </enum>
 
 <enum name="MahiMenuButton">
