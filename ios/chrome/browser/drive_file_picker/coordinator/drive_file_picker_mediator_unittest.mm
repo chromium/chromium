@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/drive/model/test_drive_list.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
@@ -233,6 +234,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
             [FakeSystemIdentity fakeIdentity1]);
     file_downloader_ = file_downloader.get();
     GetTestDriveService()->SetFileDownloader(std::move(file_downloader));
+    metrics_helper_ = [[DriveFilePickerMetricsHelper alloc] init];
   }
 
   // Initializes `mediator_`.
@@ -251,7 +253,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
              sortingDirection:DriveItemsSortingOrder::kAscending
                  driveService:drive_service_
         accountManagerService:_accountManagerService
-                 imageFetcher:std::move(image_fetcher_)];
+                 imageFetcher:std::move(image_fetcher_)
+                metricsHelper:metrics_helper_];
     mediator_.consumer = fake_consumer_;
     mediator_.delegate = fake_delegate_;
   }
@@ -294,6 +297,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   FakeDriveFilePickerConsumer* fake_consumer_;
   raw_ptr<TestDriveList> drive_list_;
   raw_ptr<TestDriveFileDownloader> file_downloader_;
+  DriveFilePickerMetricsHelper* metrics_helper_;
 };
 
 // Tests that disconnecting the root mediator stops the file selection.

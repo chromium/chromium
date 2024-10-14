@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_helper.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
@@ -118,6 +119,8 @@ constexpr int kThumbnailResizeDimension = 64;
   // A flag to ignore accepted types that has been set externally. The value
   // will be applied the next time the mediator is active.
   std::optional<BOOL> _pendingIgnoreAcceptedTypes;
+  // A helper to report metrics.
+  __weak DriveFilePickerMetricsHelper* _metricsHelper;
 }
 
 - (instancetype)
@@ -134,8 +137,9 @@ constexpr int kThumbnailResizeDimension = 64;
          sortingDirection:(DriveItemsSortingOrder)sortingDirection
              driveService:(drive::DriveService*)driveService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
-             imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
-                              imageFetcher {
+             imageFetcher:
+                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
+            metricsHelper:(DriveFilePickerMetricsHelper*)metricsHelper {
   self = [super init];
   if (self) {
     CHECK(webState);
@@ -157,6 +161,8 @@ constexpr int kThumbnailResizeDimension = 64;
     _sortingDirection = sortingDirection;
     _fetchedDriveItems = {};
     _imageFetcher = std::move(imageFetcher);
+    _metricsHelper = metricsHelper;
+    _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
     // Initialize the list of accepted types.
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::GetOrCreateForWebState(webState);
@@ -250,6 +256,18 @@ constexpr int kThumbnailResizeDimension = 64;
     return;
   }
   _active = active;
+  if (_active) {
+    if (_shouldShowSearchItems) {
+      if (_searchText.length) {
+        _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchText;
+      } else {
+        _metricsHelper.searchingState =
+            DriveFilePickerSearchState::kSearchRecent;
+      }
+    } else {
+      _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
+    }
+  }
   [self applyPendingFilterAndSorting];
 }
 
@@ -272,6 +290,10 @@ constexpr int kThumbnailResizeDimension = 64;
   [self setSelectedFile:std::nullopt];
 
   if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive)) {
+    if (_collectionType == DriveFilePickerCollectionType::kRoot &&
+        _shouldShowSearchItems) {
+      _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSearch;
+    }
     // If this is a real folder or shared drive, then open it.
     [self.delegate
         browseDriveCollectionWithMediator:self
@@ -303,22 +325,27 @@ constexpr int kThumbnailResizeDimension = 64;
     title = myDriveItem.title;
     collectionType = DriveFilePickerCollectionType::kFolder;
     folderIdentifier = kMyDriveFolderIdentifier;
+    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kMyDrive;
   } else if ([driveItemIdentifier isEqual:starredItem.identifier]) {
     title = starredItem.title;
     collectionType = DriveFilePickerCollectionType::kStarred;
     folderIdentifier = nil;
+    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kStarred;
   } else if ([driveItemIdentifier isEqual:recentItem.identifier]) {
     title = recentItem.title;
     collectionType = DriveFilePickerCollectionType::kRecent;
     folderIdentifier = nil;
+    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kRecent;
   } else if ([driveItemIdentifier isEqual:sharedWithMeItem.identifier]) {
     title = sharedWithMeItem.title;
     collectionType = DriveFilePickerCollectionType::kSharedWithMe;
     folderIdentifier = nil;
+    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSharedWithMe;
   } else if ([driveItemIdentifier isEqual:sharedDrivesItem.identifier]) {
     title = sharedDrivesItem.title;
     collectionType = DriveFilePickerCollectionType::kSharedDrives;
     folderIdentifier = nil;
+    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSharedDrive;
   } else {
     NOTREACHED();
   }
@@ -433,6 +460,7 @@ constexpr int kThumbnailResizeDimension = 64;
     [self.driveFilePickerHandler hideDriveFilePicker];
     return;
   }
+  _metricsHelper.submitted = YES;
   CHECK(_selectedFileDestinationURL);
   tab_helper->StopChoosingFiles(@[ _selectedFileDestinationURL ], nil, nil);
   [self.delegate mediatorDidStopFileSelection:self];
@@ -494,6 +522,11 @@ constexpr int kThumbnailResizeDimension = 64;
     [self clearItems];
     [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   }
+  if (_searchText.length == 0) {
+    _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchRecent;
+  } else {
+    _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchText;
+  }
   [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
   // Fetching new items is delayed when `_searchText` is modified, to ensure
   // modifying it very frequently does not equally too frequent API calls. This
@@ -513,6 +546,7 @@ constexpr int kThumbnailResizeDimension = 64;
   if (_shouldShowSearchItems) {
     [self setShouldShowSearchItems:NO];
   } else {
+    _metricsHelper.userDismissed = YES;
     [self.delegate mediatorDidStopFileSelection:self];
   }
 }
@@ -600,6 +634,9 @@ constexpr int kThumbnailResizeDimension = 64;
     _searchBarFocused = NO;
     [self.consumer setSearchBarFocused:NO searchText:nil];
     _searchText = nil;
+    _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
+  } else {
+    _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchRecent;
   }
   // When switching between search items and non-search items, the list of items
   // is cleared and the loading indicator is presented.
@@ -636,7 +673,7 @@ constexpr int kThumbnailResizeDimension = 64;
                                         : DriveFileDownloadStatus::kNotStarted];
   // Allow/forbid file picker dismissal.
   [self.delegate mediator:self didAllowDismiss:(_selectedFile == std::nullopt)];
-
+  _metricsHelper.selectedFile = _selectedFile.has_value();
   // If there is a new selected item, start to download it.
   if (!item) {
     return;
@@ -647,9 +684,13 @@ constexpr int kThumbnailResizeDimension = 64;
   __weak __typeof(self) weakSelf = self;
   _selectedFileDownloadID = _driveDownloader->DownloadFile(
       *item, fileURL,
-      base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
-                            const DriveFileDownloadProgress& progress){
-      }),
+      base::BindRepeating(
+          ^(DriveFilePickerMetricsHelper* metricsHelper,
+            DriveFileDownloadID driveFileDownloadID,
+            const DriveFileDownloadProgress& progress) {
+            metricsHelper.fileSize = progress.total_bytes_written;
+          },
+          _metricsHelper),
       base::BindOnce(
           [](DriveFilePickerMediator* mediator, NSURL* downloadFileURL,
              DriveFileDownloadID driveFileDownloadID, BOOL success,
@@ -669,6 +710,7 @@ constexpr int kThumbnailResizeDimension = 64;
   // anymore.
   _selectedFileDownloadID = nil;
   if (error) {
+    _metricsHelper.hasError = YES;
     // If there is a download error, prepare a callback to optionally try again.
     __weak __typeof(self) weakSelf = self;
     auto retrySelectCallback = base::BindOnce(

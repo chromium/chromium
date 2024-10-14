@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/fake_drive_file_picker_handler.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -37,6 +38,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     fake_web_state_ = std::make_unique<web::FakeWebState>();
     images_pending_ = [NSMutableSet set];
     image_cache_ = [[NSCache alloc] init];
+    metrics_helper_ = [[DriveFilePickerMetricsHelper alloc] init];
     coordinator_ = [[BrowseDriveFilePickerCoordinator alloc]
         initWithBaseNavigationViewController:navigation_controller_
                                      browser:browser_.get()
@@ -52,8 +54,8 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
                          ignoreAcceptedTypes:NO
                              sortingCriteria:DriveItemsSortingType::kName
                             sortingDirection:DriveItemsSortingOrder::kAscending
-                                    identity:[FakeSystemIdentity
-                                                 fakeIdentity1]];
+                                    identity:[FakeSystemIdentity fakeIdentity1]
+                               metricsHelper:metrics_helper_];
     StartChoosingFiles();
   }
 
@@ -83,6 +85,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   FakeDriveFilePickerHandler* handler_;
   NSMutableSet<NSString*>* images_pending_;
   NSCache<NSString*, UIImage*>* image_cache_;
+  DriveFilePickerMetricsHelper* metrics_helper_;
   BrowseDriveFilePickerCoordinator* coordinator_;
 };
 

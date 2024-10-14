@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
@@ -57,6 +58,8 @@
   NSCache<NSString*, UIImage*>* _imageCache;
   // Whether the file picker should dismiss when swiping down.
   BOOL _presentationControllerShouldDismiss;
+  // A helper class to report metrics.
+  DriveFilePickerMetricsHelper* _metricsHelper;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -85,6 +88,7 @@
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
           profile->GetSharedURLLoaderFactory());
+  _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
   _viewController = [[DriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
@@ -102,7 +106,8 @@
            sortingDirection:DriveItemsSortingOrder::kAscending
                driveService:driveService
       accountManagerService:accountManagerService
-               imageFetcher:std::move(imageFetcher)];
+               imageFetcher:std::move(imageFetcher)
+              metricsHelper:_metricsHelper];
 
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.presentationController.delegate = self;
@@ -130,6 +135,7 @@
 }
 
 - (void)stop {
+  [_metricsHelper reportMetrics];
   [_mediator disconnect];
   _mediator = nil;
   [_navigationController.presentingViewController
@@ -160,6 +166,7 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  _metricsHelper.userDismissed = YES;
   // If the navigation controller is not dismissed programmatically i.e. not
   // dismissed using `dismissViewControllerAnimated:completion:`, then call
   // `-hideDriveFilePicker`.
@@ -172,7 +179,7 @@
     (UIPresentationController*)presentationController {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock discardSelectionBlock = ^{
-    [weakSelf stopAnimated];
+    [weakSelf userInterrupted];
   };
   UIAlertController* discardSelectionAlertController =
       DiscardSelectionAlertController(discardSelectionBlock, nil);
@@ -216,7 +223,8 @@
                        ignoreAcceptedTypes:ignoreAcceptedTypes
                            sortingCriteria:sortingCriteria
                           sortingDirection:sortingDirection
-                                  identity:_currentIdentity];
+                                  identity:_currentIdentity
+                             metricsHelper:_metricsHelper];
   _childBrowseCoordinator.delegate = self;
   [_childBrowseCoordinator start];
 }
@@ -298,6 +306,12 @@
                }];
   [applicationCommandsHandler showSignin:addAccountCommand
                       baseViewController:_navigationController];
+}
+
+// Called when user interrupted a download/upload.
+- (void)userInterrupted {
+  _metricsHelper.userInterrupted = YES;
+  [self stopAnimated];
 }
 
 // Stops the Drive file picker after animating its dismissal.

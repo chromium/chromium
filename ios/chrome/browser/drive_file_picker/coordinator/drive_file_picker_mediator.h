@@ -12,9 +12,10 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
 @protocol DriveFilePickerMediatorDelegate;
-@protocol SystemIdentity;
+@class DriveFilePickerMetricsHelper;
 @protocol DriveFilePickerConsumer;
 @protocol DriveFilePickerCommands;
+@protocol SystemIdentity;
 
 namespace drive {
 class DriveService;
@@ -61,6 +62,7 @@ class ChromeAccountManagerService;
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:
                  (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
+            metricsHelper:(DriveFilePickerMetricsHelper*)metricsHelper
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

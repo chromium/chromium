@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
@@ -51,6 +52,7 @@
   __weak NSMutableSet<NSString*>* _imagesPending;
   __weak NSCache<NSString*, UIImage*>* _imageCache;
   id<SystemIdentity> _identity;
+  __weak DriveFilePickerMetricsHelper* _metricsHelper;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -72,7 +74,9 @@
                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
                         sortingDirection:
                             (DriveItemsSortingOrder)sortingDirection
-                                identity:(id<SystemIdentity>)identity {
+                                identity:(id<SystemIdentity>)identity
+                           metricsHelper:
+                               (DriveFilePickerMetricsHelper*)metricsHelper {
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
   if (self) {
@@ -91,6 +95,7 @@
     _imagesPending = imagesPending;
     _imageCache = imageCache;
     _identity = identity;
+    _metricsHelper = metricsHelper;
   }
   return self;
 }
@@ -105,21 +110,22 @@
       std::make_unique<image_fetcher::ImageDataFetcher>(
           profile->GetSharedURLLoaderFactory());
   _viewController = [[DriveFilePickerTableViewController alloc] init];
-  _mediator = [[DriveFilePickerMediator alloc]
-           initWithWebState:_webState.get()
-                   identity:_identity
-                      title:_title
-              imagesPending:_imagesPending
-                 imageCache:_imageCache
-             collectionType:_collectionType
-           folderIdentifier:_folderIdentifier
-                     filter:_filter
-        ignoreAcceptedTypes:_ignoreAcceptedTypes
-            sortingCriteria:_sortingCriteria
-           sortingDirection:_sortingDirection
-               driveService:driveService
-      accountManagerService:accountManagerService
-               imageFetcher:std::move(imageFetcher)];
+  _mediator =
+      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
+                                               identity:_identity
+                                                  title:_title
+                                          imagesPending:_imagesPending
+                                             imageCache:_imageCache
+                                         collectionType:_collectionType
+                                       folderIdentifier:_folderIdentifier
+                                                 filter:_filter
+                                    ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                        sortingCriteria:_sortingCriteria
+                                       sortingDirection:_sortingDirection
+                                           driveService:driveService
+                                  accountManagerService:accountManagerService
+                                           imageFetcher:std::move(imageFetcher)
+                                          metricsHelper:_metricsHelper];
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
@@ -173,7 +179,8 @@
                        ignoreAcceptedTypes:ignoreAcceptedTypes
                            sortingCriteria:sortingCriteria
                           sortingDirection:sortingDirection
-                                  identity:_identity];
+                                  identity:_identity
+                             metricsHelper:_metricsHelper];
   _childBrowseCoordinator.delegate = self;
   [_childBrowseCoordinator start];
 }

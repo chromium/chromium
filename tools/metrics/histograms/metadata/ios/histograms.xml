@@ -1392,12 +1392,49 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.FilePicker.Drive.Displayed"
+    enum="IOSFilePickerDriveDisplayed" expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report whether the choose from drive was displayed or not (and in that case
+    why).
+  </summary>
+</histogram>
+
+<histogram name="IOS.FilePicker.Drive.Outcome" enum="IOSFilePickerDriveOutcome"
+    expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>The outcome of Drive file picker flow.</summary>
+</histogram>
+
+<histogram name="IOS.FilePicker.Drive.SubmittedFileSize" units="MB"
+    expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>The size in MB of submitted file.</summary>
+</histogram>
+
 <histogram name="IOS.FilePicker.InstallError" enum="IOSFilePickerInstallError"
-    expires_after="2025-03-11">
+    expires_after="2025-10-10">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Report errors when the file picker will be installed.</summary>
+</histogram>
+
+<histogram name="IOS.FilePicker.SelectedElement"
+    enum="IOSFilePickerSelectedElement" expires_after="2025-10-10">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the custom element that was selected in Choose file menu.
+  </summary>
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"

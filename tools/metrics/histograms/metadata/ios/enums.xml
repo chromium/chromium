@@ -334,11 +334,39 @@ the generic promo launch. -->
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
 </enum>
 
+<enum name="IOSFilePickerDriveDisplayed">
+  <int value="0" label="The Drive element was displayed"/>
+  <int value="1" label="The tab was killed"/>
+  <int value="2" label="The feature was disabled"/>
+  <int value="3" label="The tab was OTR"/>
+  <int value="4" label="The user was not signed in"/>
+</enum>
+
+<enum name="IOSFilePickerDriveOutcome">
+  <int value="0" label="Cancelled (no file selected, no error)"/>
+  <int value="1" label="Interrupted by the user"/>
+  <int value="2" label="Interrupted by the user after an error"/>
+  <int value="3" label="Interrupted externally"/>
+  <int value="4" label="Interrupted externally with selected file"/>
+  <int value="5" label="Submitted from Search Text"/>
+  <int value="6" label="Submitted from Search Recent"/>
+  <int value="7" label="Submitted from Root Search"/>
+  <int value="8" label="Submitted from My Drive"/>
+  <int value="9" label="Submitted from Shared with me"/>
+  <int value="10" label="Submitted from Shared Drives"/>
+  <int value="11" label="Submitted from Recent"/>
+  <int value="12" label="Submitted from Starred"/>
+</enum>
+
 <enum name="IOSFilePickerInstallError">
   <int value="0" label="The file picker was not found"/>
   <int value="1" label="The file picker configuration was not found"/>
   <int value="2" label="The file picker cannot submit the selection"/>
   <int value="3" label="The file picker cannot present a sub menu"/>
+</enum>
+
+<enum name="IOSFilePickerSelectedElement">
+  <int value="0" label="Drive"/>
 </enum>
 
 <enum name="IOSHomeActionType">
