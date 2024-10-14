@@ -556,16 +556,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.TriggeredReset" enum="BooleanReset"
-    expires_after="2020-05-03">
-  <owner>robertshield@chromium.org</owner>
-  <summary>
-    Indicates whether a profile had a reset trigger that caused it to launch a
-    reset flow. The presence of this trigger is recorded during profile
-    creation.
-  </summary>
-</histogram>
-
 <histogram name="Profile.UserAction.PerProfile" enum="Profile"
     expires_after="never">
 <!-- expires-never: Used by the Chrome Profile Metrics dashboard to track user
