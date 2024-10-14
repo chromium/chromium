@@ -48,6 +48,9 @@ constexpr FieldRendererId kUsernameFieldId(1);
 constexpr FieldRendererId kPasswordFieldId(2);
 
 using features_util::PasswordAccountStorageUsageLevel;
+using PasswordFormMetricsRecorder::ClassificationCorrectness::kCorrect;
+using PasswordFormMetricsRecorder::ClassificationCorrectness::kUnknown;
+using PasswordFormMetricsRecorder::ClassificationCorrectness::kWrong;
 using UkmEntry = ukm::builders::PasswordForm;
 using StoreSet = std::set<std::pair<std::u16string, PasswordForm::Store>>;
 
@@ -2126,6 +2129,8 @@ struct ClassificationCorrectnessTestCase {
   // Renderer IDs of key form elements received during form parsing.
   FieldRendererId username_field_id = FieldRendererId();
   FieldRendererId password_field_id = FieldRendererId();
+  FieldRendererId new_password_field_id = FieldRendererId();
+  FieldRendererId confirm_password_field_id = FieldRendererId();
 
   std::vector<ClassificationCorrectnessFieldInfo> fields;
 
@@ -2237,11 +2242,7 @@ TEST_F(PasswordFormMetricsRecorderTest,
                   {.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
        .saved_usernames = {kSavedUsername},
        .saved_passwords = {kSavedPassword},
-       .expectation = {
-           {"Username",
-            PasswordFormMetricsRecorder::ClassificationCorrectness::kCorrect},
-           {"CurrentPassword", PasswordFormMetricsRecorder::
-                                   ClassificationCorrectness::kCorrect}}});
+       .expectation = {{"Username", kCorrect}, {"CurrentPassword", kCorrect}}});
 }
 
 TEST_F(PasswordFormMetricsRecorderTest,
@@ -2260,11 +2261,7 @@ TEST_F(PasswordFormMetricsRecorderTest,
                   {.value = kSavedPassword, .renderer_id = FieldRendererId(4)}},
        .saved_usernames = {kSavedUsername},
        .saved_passwords = {kSavedPassword},
-       .expectation = {
-           {"Username",
-            PasswordFormMetricsRecorder::ClassificationCorrectness::kWrong},
-           {"CurrentPassword",
-            PasswordFormMetricsRecorder::ClassificationCorrectness::kWrong}}});
+       .expectation = {{"Username", kWrong}, {"CurrentPassword", kWrong}}});
 }
 
 TEST_F(PasswordFormMetricsRecorderTest,
@@ -2279,11 +2276,7 @@ TEST_F(PasswordFormMetricsRecorderTest,
                   {.value = u"new_password", .renderer_id = kPasswordFieldId}},
        .saved_usernames = {kSavedUsername},
        .saved_passwords = {kSavedPassword},
-       .expectation = {
-           {"Username",
-            PasswordFormMetricsRecorder::ClassificationCorrectness::kUnknown},
-           {"CurrentPassword", PasswordFormMetricsRecorder::
-                                   ClassificationCorrectness::kUnknown}}});
+       .expectation = {{"Username", kUnknown}, {"CurrentPassword", kUnknown}}});
 }
 
 TEST_F(PasswordFormMetricsRecorderTest,
@@ -2297,9 +2290,111 @@ TEST_F(PasswordFormMetricsRecorderTest,
        .fields = {{.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
        .saved_usernames = {kSavedUsername},
        .saved_passwords = {kSavedPassword},
-       .expectation = {{"CurrentPassword",
-                        PasswordFormMetricsRecorder::ClassificationCorrectness::
-                            kCorrect}}});
+       .expectation = {{"CurrentPassword", kCorrect}}});
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_NewPasswordFieldOnly) {
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Incorrect classification: the field classified as new password "
+           "contains a previously saved password value",
+       .new_password_field_id = kPasswordFieldId,
+       .fields = {{.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {{"NewPassword", kWrong}}});
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Incorrect classification: the field classified as new password "
+           "contains a previously saved username value",
+       .new_password_field_id = kPasswordFieldId,
+       .fields = {{.value = kSavedUsername, .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {{"NewPassword", kWrong}}});
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Correct classification: the field classified as new password "
+           "contains a previously unseen value",
+       .new_password_field_id = kPasswordFieldId,
+       .fields = {{.value = u"new_shiny_pw", .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {{"NewPassword", kCorrect}}});
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Unknown correctness of new password classification: no saved "
+           "values and no confirmation field",
+       .new_password_field_id = kPasswordFieldId,
+       .fields = {{.value = u"new_shiny_pw", .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {},
+       .saved_passwords = {},
+       .expectation = {{"NewPassword", kUnknown}}});
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_NewAndConfirmationPasswordFields) {
+  constexpr FieldRendererId kSecondPasswordFieldId(3);
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging = "New and confirmation password values don't "
+                                  "match, and there are no saved values.",
+       .new_password_field_id = kPasswordFieldId,
+       .confirm_password_field_id = kSecondPasswordFieldId,
+       .fields =
+           {
+               {.value = u"pizza", .renderer_id = kPasswordFieldId},
+               {.value = u"pineapple", .renderer_id = kSecondPasswordFieldId},
+           },
+       .saved_usernames = {},
+       .saved_passwords = {},
+       .expectation = {{"NewPassword", kWrong},
+                       {"ConfirmationPassword", kWrong}}});
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging = "New and confirmation password values "
+                                  "match, and there are no saved values.",
+       .new_password_field_id = kPasswordFieldId,
+       .confirm_password_field_id = kSecondPasswordFieldId,
+       .fields =
+           {
+               {.value = u"new_shiny_pwd", .renderer_id = kPasswordFieldId},
+               {.value = u"new_shiny_pwd",
+                .renderer_id = kSecondPasswordFieldId},
+           },
+       .saved_usernames = {},
+       .saved_passwords = {},
+       .expectation = {{"NewPassword", kCorrect},
+                       {"ConfirmationPassword", kCorrect}}});
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "New and confirmation password values "
+           "match, but saved values indicate it's not a new password.",
+       .new_password_field_id = kPasswordFieldId,
+       .confirm_password_field_id = kSecondPasswordFieldId,
+       .fields =
+           {
+               {.value = kSavedPassword, .renderer_id = kPasswordFieldId},
+               {.value = kSavedPassword, .renderer_id = kSecondPasswordFieldId},
+           },
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {{"NewPassword", kWrong},
+                       {"ConfirmationPassword", kCorrect}}});
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "New and confirmation password values do not match, but saved "
+           "values confirm that the new password is new.",
+       .new_password_field_id = kPasswordFieldId,
+       .confirm_password_field_id = kSecondPasswordFieldId,
+       .fields =
+           {
+               {.value = u"pizza", .renderer_id = kPasswordFieldId},
+               {.value = u"pineapple", .renderer_id = kSecondPasswordFieldId},
+           },
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {{"NewPassword", kCorrect},
+                       {"ConfirmationPassword", kWrong}}});
 }
 
 }  // namespace password_manager

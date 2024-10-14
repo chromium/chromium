@@ -1139,6 +1139,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-04-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@google.com</owner>
+  <summary>
+    This metric records the correctness of a confirmation password field
+    classification produced on the page load.
+
+    Is recorded for successfully submitted password forms containing a
+    confirmation password field. The classification is considered correct iff
+    values in the new and in the confirmation password fields match.
+
+    Recorded on the corresponding form manager destruction.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ClassificationCorrectness.CurrentPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2025-04-30">
   <owner>kazinova@google.com</owner>
@@ -1152,6 +1169,24 @@ chromium-metrics-reviews@google.com.
     is considered correct, if the field contained a previously saved password at
     the moment of submisison, and incorrect, if any other fields in the form
     contained a previosuly saved password.
+
+    Recorded on the corresponding form manager destruction.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ClassificationCorrectness.NewPassword"
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-04-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@google.com</owner>
+  <summary>
+    This metric records the correctness of a new password field classification
+    produced on the page load.
+
+    Is recorded for successfully submitted password forms containing a new
+    password field. The correctness is estimated based on previosuly saved
+    credentials (if the field value was saved before, it's not a new password),
+    and on whether the confirmation password field is present and validates form
+    classification.
 
     Recorded on the corresponding form manager destruction.
   </summary>

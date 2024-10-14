@@ -871,6 +871,50 @@ void PasswordFormMetricsRecorder::CalculateClassificationCorrectnessMetric(
   SetClassificationCorrectnessForLoginField(
       submitted_form, PasswordFieldType::kCurrentPassword, saved_passwords,
       password_renderer_id_);
+
+  const FormFieldData* new_pwd_field =
+      FindFieldByRendererId(submitted_form, new_password_renderer_id_);
+  if (new_pwd_field && !new_pwd_field->value().empty()) {
+    ClassificationCorrectness new_pwd_correctness =
+        ClassificationCorrectness::kUnknown;
+    if ((base::ranges::find(saved_passwords, new_pwd_field->value()) !=
+         saved_passwords.end()) ||
+        (base::ranges::find(saved_usernames, new_pwd_field->value()) !=
+         saved_usernames.end())) {
+      // If a previously saved value was submitted, it's not a new password.
+      new_pwd_correctness = ClassificationCorrectness::kWrong;
+
+    } else if (!saved_passwords.empty()) {
+      // If there are saved passwords, but the field contains some previously
+      // unseen value, consider the classification correct.
+      new_pwd_correctness = ClassificationCorrectness::kCorrect;
+    }
+
+    const FormFieldData* confirmation_field = FindFieldByRendererId(
+        submitted_form, confirmation_password_renderer_id_);
+    if (confirmation_field) {
+      classification_correctness_[PasswordFieldType::kConfirmationPassword] =
+          confirmation_field->value() == new_pwd_field->value()
+              ? ClassificationCorrectness::kCorrect
+              : ClassificationCorrectness::kWrong;
+
+      // If we couldn't determine the correctness of a new password field
+      // classification based on already saved passwords, rely on the
+      // confirmation password matching or not.
+      if (new_pwd_correctness == ClassificationCorrectness::kUnknown) {
+        new_pwd_correctness = classification_correctness_
+            [PasswordFieldType::kConfirmationPassword];
+      }
+    }
+    classification_correctness_[PasswordFieldType::kNewPassword] =
+        new_pwd_correctness;
+
+  } else {
+    // Make sure to clear the saved value if the form has changed dynamically
+    // and the field is no longer present.
+    classification_correctness_.erase(PasswordFieldType::kNewPassword);
+    classification_correctness_.erase(PasswordFieldType::kConfirmationPassword);
+  }
 }
 
 void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
