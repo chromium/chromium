@@ -156,6 +156,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetProperties.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetView.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetViewBinder.java",
+  "java/src/org/chromium/chrome/browser/automotivetoolbar/AutomotiveBackButtonToolbarCoordinator.java",
+  "java/src/org/chromium/chrome/browser/automotivetoolbar/EdgeSwipeGestureDetector.java",
   "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
   "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProvider.java",
   "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
