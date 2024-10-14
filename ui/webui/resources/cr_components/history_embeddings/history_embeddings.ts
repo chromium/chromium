@@ -305,6 +305,29 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
+  private onAnswerLinkContextMenu_(e: MouseEvent) {
+    this.dispatchEvent(new CustomEvent('answer-context-menu', {
+      detail: {
+        item: this.answerSource_,
+        x: e.clientX,
+        y: e.clientY,
+      },
+    }));
+  }
+
+  private onAnswerLinkClick_(e: MouseEvent) {
+    this.dispatchEvent(new CustomEvent('answer-click', {
+      detail: {
+        item: this.answerSource_,
+        middleButton: e.button === 1,
+        altKey: e.altKey,
+        ctrlKey: e.ctrlKey,
+        metaKey: e.metaKey,
+        shiftKey: e.shiftKey,
+      },
+    }));
+  }
+
   private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
     e.preventDefault();
     e.stopPropagation();

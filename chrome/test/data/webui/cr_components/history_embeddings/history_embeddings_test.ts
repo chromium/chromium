@@ -254,6 +254,60 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertEquals(100, resultContextMenuEvent.detail.y);
     });
 
+    test('FiresMouseEventsForAnswerLink', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      const resultWithAnswer = {
+        title: 'Website with answer',
+        url: {url: 'http://answer.com'},
+        urlForDisplay: 'Answer.com',
+        relativeTime: '2 months ago',
+        shortDateTime: 'Sept 2, 2022',
+        sourcePassage: 'Answer description',
+        lastUrlVisitTimestamp: 2000,
+        answerData: {answerTextDirectives: []},
+      };
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults, resultWithAnswer],
+      });
+      await flushTasks();
+
+      const answerLink = element.shadowRoot!.querySelector('.answer-link');
+      assertTrue(!!answerLink);
+      answerLink.addEventListener('click', (e) => e.preventDefault());
+      const answerClickEventPromise = eventToPromise('answer-click', element);
+      answerLink.dispatchEvent(new MouseEvent('click', {
+        button: 1,
+        altKey: true,
+        metaKey: false,
+        shiftKey: true,
+        ctrlKey: false,
+        cancelable: true,
+      }));
+      const answerClickEvent = await answerClickEventPromise;
+      assertEquals(resultWithAnswer, answerClickEvent.detail.item);
+      assertEquals(true, answerClickEvent.detail.middleButton);
+      assertEquals(true, answerClickEvent.detail.altKey);
+      assertEquals(false, answerClickEvent.detail.ctrlKey);
+      assertEquals(false, answerClickEvent.detail.metaKey);
+      assertEquals(true, answerClickEvent.detail.shiftKey);
+
+      const answerLinkContextMenuEventPromise =
+          eventToPromise('answer-context-menu', element);
+      answerLink.dispatchEvent(
+          new MouseEvent('contextmenu', {clientX: 50, clientY: 100}));
+      const answerLinkContextMenuEvent =
+          await answerLinkContextMenuEventPromise;
+      assertEquals(resultWithAnswer, answerLinkContextMenuEvent.detail.item);
+      assertEquals(50, answerLinkContextMenuEvent.detail.x);
+      assertEquals(100, answerLinkContextMenuEvent.detail.y);
+    });
+
     test('FiresClickOnMoreActions', async () => {
       const moreActionsIconButtons = getResultElements().map(
           result => result.querySelector('cr-icon-button'));
@@ -575,12 +629,15 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           '.answer-source');
       assertTrue(!!answerSource);
       assertFalse(answerSource.hidden);
-      assertEquals('http://answer.com/', answerSource.href);
+      assertEquals(
+          'http://answer.com/',
+          answerSource.querySelector<HTMLAnchorElement>('.answer-link')!.href);
 
-      const answerUrlAndDate =
-          answerSource.querySelector<HTMLElement>('.result-url')!.innerText;
-      assertTrue(answerUrlAndDate.startsWith('Answer.com'));
-      assertTrue(answerUrlAndDate.endsWith('Sept 2, 2022'));
+      assertTrue(
+          answerSource.querySelector<HTMLElement>(
+                          '.result-url')!.innerText.includes('Answer.com'));
+      assertTrue(answerSource.querySelector<HTMLElement>(
+                                 '.time')!.innerText.includes('Sept 2, 2022'));
       assertEquals(
           getFaviconForPageURL('http://answer.com', true),
           answerSource.querySelector<HTMLElement>(
@@ -614,21 +671,21 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         return flushTasks();
       }
 
-      const answerSource = element.shadowRoot!.querySelector<HTMLAnchorElement>(
-          '.answer-source');
-      assertTrue(!!answerSource);
+      const answerLink =
+          element.shadowRoot!.querySelector<HTMLAnchorElement>('.answer-link');
+      assertTrue(!!answerLink);
       await sendAnswerWithTextDirectives([]);
-      assertEquals('http://answer.com/', answerSource.href);
+      assertEquals('http://answer.com/', answerLink.href);
 
       await sendAnswerWithTextDirectives(['start text']);
       assertEquals(
-          'http://answer.com/#:~:text=start%20text', answerSource.href,
+          'http://answer.com/#:~:text=start%20text', answerLink.href,
           'should generate a link using the first directive');
 
       await sendAnswerWithTextDirectives(['another start text', 'end text']);
       assertEquals(
-          'http://answer.com/#:~:text=another%20start%20text',
-          answerSource.href, 'should ignore other directives');
+          'http://answer.com/#:~:text=another%20start%20text', answerLink.href,
+          'should ignore other directives');
     });
 
     test('DisplaysFavicons', async () => {

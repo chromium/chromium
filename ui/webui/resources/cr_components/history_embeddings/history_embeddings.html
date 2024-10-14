@@ -70,6 +70,17 @@ h2 cr-icon {
   text-decoration: none;
 }
 
+:host([enable-answers_]) .answer-link {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+:host([enable-answers_]) .answer-link .result-url {
+  text-decoration: underline;
+}
+
 .loading {
   padding: var(--cr-history-embeddings-loading-padding, 4px 24px 24px 24px);
 }
@@ -177,6 +188,7 @@ cr-url-list-item:hover + hr {
   font-size: 11px;
   line-height: 16px;
   margin-inline-start: 0;
+  white-space: nowrap;
 }
 
 :host([enable-answers_]) .more-actions {
@@ -288,15 +300,23 @@ cr-url-list-item:hover + hr {
       <div class="answer" hidden="[[loadingAnswer_]]">
         [[getAnswerOrError_(searchResult_.*)]]
       </div>
-      <a class="answer-source" hidden="[[!answerSource_]]"
-          href="[[getAnswerSourceUrl_(answerSource_)]]" target="_blank">
-        <div class="favicon"
-            style$="background-image: [[getFavicon_(answerSource_)]]"></div>
-        <div class="result-url">
-          [[answerSource_.urlForDisplay]] &bull;
+      <div class="answer-source" hidden="[[!answerSource_]]">
+        <a class="answer-link"
+            href="[[getAnswerSourceUrl_(answerSource_)]]" target="_blank"
+            on-click="onAnswerLinkClick_"
+            on-auxclick="onAnswerLinkClick_"
+            on-contextmenu="onAnswerLinkContextMenu_">
+          <div class="favicon"
+              style$="background-image: [[getFavicon_(answerSource_)]]"></div>
+          <div class="result-url">
+            [[answerSource_.urlForDisplay]]
+          </div>
+        </a>
+        &bull;
+        <div class="time">
           [[getAnswerDateTime_(answerSource_, showRelativeTimes)]]
         </div>
-      </a>
+      </div>
     </div>
 
     <h2 class="heading results-heading">
