@@ -15,6 +15,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -43,14 +44,21 @@ class ChromeAutofillPredictionImprovementsClientTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    ChromeAutofillPredictionImprovementsClient::CreateForWebContents(
-        web_contents(), profile());
+    ASSERT_TRUE(
+        autofill_prediction_improvements::
+            IsAutofillPredictionImprovementsSupported(profile()->GetPrefs()));
+    client_ =
+        ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
+            web_contents(), profile());
+    ASSERT_TRUE(client_);
   }
 
-  ChromeAutofillPredictionImprovementsClient* client() {
-    return ChromeAutofillPredictionImprovementsClient::FromWebContents(
-        web_contents());
+  void TearDown() override {
+    client_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
   }
+
+  ChromeAutofillPredictionImprovementsClient& client() { return *client_; }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
@@ -60,6 +68,11 @@ class ChromeAutofillPredictionImprovementsClientTest
                 UserAnnotationsServiceFactory::GetInstance(),
                 base::BindRepeating(&CreateUserAnnotationsServiceFactory)}};
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill_prediction_improvements::kAutofillPredictionImprovements};
+  std::unique_ptr<ChromeAutofillPredictionImprovementsClient> client_;
 };
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
@@ -67,26 +80,26 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
                          AutofillPredictionImprovementsClient::AXTreeCallback>
       callback;
   EXPECT_CALL(callback, Run);
-  client()->GetAXTree(callback.Get());
+  client().GetAXTree(callback.Get());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
        GetUserAnnotationsService) {
-  EXPECT_TRUE(client()->GetUserAnnotationsService());
+  EXPECT_TRUE(client().GetUserAnnotationsService());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
        IsAutofillPredictionImprovementsEnabledPrefReturnsTrueIfPrefEnabled) {
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
-  EXPECT_TRUE(client()->IsAutofillPredictionImprovementsEnabledPref());
+  EXPECT_TRUE(client().IsAutofillPredictionImprovementsEnabledPref());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
        IsAutofillPredictionImprovementsEnabledPrefReturnsFalseIfPrefDisabled) {
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, false);
-  EXPECT_FALSE(client()->IsAutofillPredictionImprovementsEnabledPref());
+  EXPECT_FALSE(client().IsAutofillPredictionImprovementsEnabledPref());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
@@ -101,7 +114,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
   mutator.set_can_use_model_execution_features(true);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
-  EXPECT_FALSE(client()->IsUserEligible());
+  EXPECT_FALSE(client().IsUserEligible());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
@@ -115,7 +128,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
   mutator.set_can_use_model_execution_features(false);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
-  EXPECT_FALSE(client()->IsUserEligible());
+  EXPECT_FALSE(client().IsUserEligible());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
@@ -129,12 +142,12 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
   mutator.set_can_use_model_execution_features(true);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
-  EXPECT_TRUE(client()->IsUserEligible());
+  EXPECT_TRUE(client().IsUserEligible());
 }
 
 // Tests that the filling engine is initialized and returned.
 TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetFillingEngine) {
-  EXPECT_TRUE(client()->GetFillingEngine());
+  EXPECT_TRUE(client().GetFillingEngine());
 }
 
 // Tests that GetLastCommittedURL() accurately returns the last committed URL.
@@ -142,13 +155,13 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetLastCommittedURL) {
   const GURL about_blank = GURL("about:blank");
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(about_blank);
-  EXPECT_EQ(client()->GetLastCommittedURL(), about_blank);
+  EXPECT_EQ(client().GetLastCommittedURL(), about_blank);
 }
 
 // Tests that GetTitle() returns an empty string if no navigation had happened
 // before.
 TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetTitle) {
-  EXPECT_EQ(client()->GetTitle(), "");
+  EXPECT_EQ(client().GetTitle(), "");
 }
 
 // Tests that TryToOpenFeedbackPage() doesn't emit histogram
@@ -169,7 +182,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, TryToOpenFeedbackPage) {
                       kFormsPredictions))
       .WillOnce(Return(false));
   base::HistogramTester histogram_tester_;
-  client()->TryToOpenFeedbackPage("feedback id");
+  client().TryToOpenFeedbackPage("feedback id");
   histogram_tester_.ExpectUniqueSample("Feedback.RequestSource",
                                        feedback::kFeedbackSourceAI, 0);
 }

@@ -7594,6 +7594,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:unit_tests",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
+      "//components/autofill_prediction_improvements/core/browser:browser",
     ]
 
     if (is_chrome_branded) {

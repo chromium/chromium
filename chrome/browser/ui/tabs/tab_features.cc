@@ -106,7 +106,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     chrome_autofill_prediction_improvements_client_ =
         ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-            tab.GetContents());
+            tab.GetContents(), profile);
 
     if (!profile->IsIncognitoProfile()) {
       commerce_ui_tab_helper_ =
@@ -185,6 +185,9 @@ TabFeatures::CreateCommerceUiTabHelper(content::WebContents* web_contents,
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* old_contents,
                                       content::WebContents* new_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(new_contents->GetBrowserContext());
+
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
   read_anything_side_panel_controller_->ResetForTabDiscard();
@@ -200,14 +203,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   extension_side_panel_manager_->WillDiscard();
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(
-          Profile::FromBrowserContext(new_contents->GetBrowserContext()),
-          new_contents, side_panel_registry_.get());
+          profile, new_contents, side_panel_registry_.get());
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
-    commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(
-        new_contents,
-        Profile::FromBrowserContext(new_contents->GetBrowserContext()));
+    commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(new_contents, profile);
   }
   if (user_annotations_web_contents_observer_) {
     user_annotations_web_contents_observer_ =
@@ -217,7 +217,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (chrome_autofill_prediction_improvements_client_) {
     chrome_autofill_prediction_improvements_client_ =
         ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-            new_contents);
+            new_contents, profile);
   }
 
   if (privacy_sandbox_tab_observer_) {

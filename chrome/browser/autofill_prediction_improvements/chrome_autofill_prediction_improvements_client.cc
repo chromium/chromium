@@ -29,7 +29,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -37,8 +36,7 @@ ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
         content::WebContents* web_contents,
         Profile* profile)
-    : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
-          *web_contents),
+    : web_contents_(CHECK_DEREF(web_contents)),
       prefs_(CHECK_DEREF(profile->GetPrefs())),
       prediction_improvements_manager_{
           this,
@@ -52,9 +50,8 @@ ChromeAutofillPredictionImprovementsClient::
 // static
 std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
 ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    content::WebContents* web_contents,
+    Profile* profile) {
   if (!autofill_prediction_improvements::
           IsAutofillPredictionImprovementsSupported(profile->GetPrefs())) {
     return nullptr;
@@ -73,7 +70,7 @@ void ChromeAutofillPredictionImprovementsClient::GetAXTree(
                                                       &ax_tree_proto);
         return ax_tree_proto;
       });
-  GetWebContents().RequestAXTreeSnapshot(
+  web_contents_->RequestAXTreeSnapshot(
       std::move(processing_callback).Then(std::move(callback)),
       ui::kAXModeWebContentsOnly,
       /*max_nodes=*/500,
@@ -90,7 +87,7 @@ autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
 ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
   if (!filling_engine_) {
     Profile* profile =
-        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     filling_engine_ =
         std::make_unique<autofill_prediction_improvements::
                              AutofillPredictionImprovementsFillingEngineImpl>(
@@ -101,17 +98,17 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
 }
 
 const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
-  return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
+  return web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
 }
 
 std::string ChromeAutofillPredictionImprovementsClient::GetTitle() {
-  return base::UTF16ToUTF8(GetWebContents().GetTitle());
+  return base::UTF16ToUTF8(web_contents_->GetTitle());
 }
 
 user_annotations::UserAnnotationsService*
 ChromeAutofillPredictionImprovementsClient::GetUserAnnotationsService() {
   Profile* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
                  : nullptr;
 }
@@ -125,7 +122,7 @@ bool ChromeAutofillPredictionImprovementsClient::
 bool ChromeAutofillPredictionImprovementsClient::CanShowFeedbackPage() {
   OptimizationGuideKeyedService* opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
           optimization_guide::proto::LogAiDataRequest::FeatureCase::
@@ -145,8 +142,8 @@ void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
   feedback_metadata.Set("log_id", feedback_id);
 
   chrome::ShowFeedbackPage(
-      GetWebContents().GetLastCommittedURL(),
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
+      web_contents_->GetLastCommittedURL(),
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
       feedback::kFeedbackSourceAI,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
@@ -159,7 +156,7 @@ void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
 
 void ChromeAutofillPredictionImprovementsClient::
     OpenPredictionImprovementsSettings() {
-  GetWebContents().OpenURL(
+  web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(chrome::kAutofillPredictionImprovementsSubPage),
           content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -170,7 +167,7 @@ void ChromeAutofillPredictionImprovementsClient::
 
 bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
   Profile* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
@@ -197,5 +194,3 @@ bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
 
   return true;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

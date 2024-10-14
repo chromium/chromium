@@ -8,7 +8,6 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class Profile;
 
@@ -20,9 +19,7 @@ class WebContents;
 // Android.
 class ChromeAutofillPredictionImprovementsClient
     : public autofill_prediction_improvements::
-          AutofillPredictionImprovementsClient,
-      public content::WebContentsUserData<
-          ChromeAutofillPredictionImprovementsClient> {
+          AutofillPredictionImprovementsClient {
  public:
   ChromeAutofillPredictionImprovementsClient(
       const ChromeAutofillPredictionImprovementsClient&) = delete;
@@ -32,8 +29,10 @@ class ChromeAutofillPredictionImprovementsClient
 
   // Creates a `ChromeAutofillPredictionImprovementsClient` for `web_contents`
   // if allowed.
-  static std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
-  MaybeCreateForWebContents(content::WebContents* web_contents);
+  [[nodiscard]] static std::unique_ptr<
+      ChromeAutofillPredictionImprovementsClient>
+  MaybeCreateForWebContents(content::WebContents* web_contents,
+                            Profile* profile);
 
   // AutofillPredictionImprovementsClient:
   void GetAXTree(AXTreeCallback callback) override;
@@ -56,9 +55,7 @@ class ChromeAutofillPredictionImprovementsClient
       Profile* profile);
 
  private:
-  friend class content::WebContentsUserData<
-      ChromeAutofillPredictionImprovementsClient>;
-
+  const raw_ref<content::WebContents> web_contents_;
   const raw_ref<const PrefService> prefs_;
 
   // Returns whether the optimization guide suggests that Autofill prediction
@@ -71,8 +68,6 @@ class ChromeAutofillPredictionImprovementsClient
 
   autofill_prediction_improvements::AutofillPredictionImprovementsManager
       prediction_improvements_manager_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CHROME_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
