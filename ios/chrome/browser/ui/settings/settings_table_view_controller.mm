@@ -519,7 +519,10 @@ struct EnhancedSafeBrowsingActivePromoData
   [model addItem:[self autoFillProfileDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      !base::FeatureList::IsEnabled(
+          plus_addresses::features::
+              kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
     _plusAddressesItem = [self plusAddressesItem];
     [model addItem:_plusAddressesItem
         toSectionWithIdentifier:SettingsSectionIdentifierBasics];
