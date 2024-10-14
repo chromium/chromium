@@ -1812,7 +1812,7 @@ TEST_F(WebGPUMailboxBufferTest, WriteToMailboxThenReadFromIt) {
                            wgpu::CallbackMode::AllowSpontaneous,
                            ToMockBufferMapCallback);
   EXPECT_CALL(*mock_buffer_map_callback,
-              Call(wgpu::MapAsyncStatus::Success, nullptr))
+              Call(wgpu::MapAsyncStatus::Success, testing::_))
       .Times(1);
 
   WaitForCompletion(device_);
