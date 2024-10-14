@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -248,6 +249,14 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
 
   if (!IsArcAvailable()) {
     VLOG_IF(1, should_report_reason) << "ARC is not available.";
+    return ArcStatus::kNotAvailable;
+  }
+
+  if (ash::switches::IsRevenBranding() &&
+      (!policy_util::IsAccountManaged(profile) ||
+       !ash::InstallAttributes::Get()->IsEnterpriseManaged())) {
+    VLOG_IF(1, should_report_reason)
+        << "ARC unavailable on reven board due to unmanaged device or account.";
     return ArcStatus::kNotAvailable;
   }
 

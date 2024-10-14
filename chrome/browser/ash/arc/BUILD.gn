@@ -80,6 +80,7 @@ static_library("arc") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/settings",
     "//chromeos/components/mgs",

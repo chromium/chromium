@@ -404,8 +404,8 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
     ash::ResourcedClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
-
  protected:
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   raw_ptr<ash::FakeResourcedClient> resourced_client_ = nullptr;
 };
 
@@ -1666,6 +1666,10 @@ TEST_F(ArcSessionManagerTest, RequestDisableWithArcDataRemoval) {
 // Hardware check enablement test case on the board that supports
 // the arcvm dlc method. (Only the reven board has arcvm dlc feature now).
 TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
+  cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
+      "example.com", "fake-device-id");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kRevenBranding);
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
@@ -1677,6 +1681,22 @@ TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
   // Inject the mock hardware checker into the ArcSessionManager.
   arc_session_manager()->SetHardwareCheckerForTesting(
       std::move(mock_hardware_checker_));
+  arc_session_manager()->ExpandPropertyFilesAndReadSalt();
+}
+
+// Verify that the hardware check is not being run to install
+// the arcvm DLC image for unmanaged reven devices.
+TEST_F(ArcSessionManagerTest, NoArcVmInstallOnUnmanaged) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kRevenBranding);
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_,
+              IsRevenDeviceCompatibleForArc(::testing::_))
+      .Times(0);
+  arc_session_manager()->reset_property_files_expansion_result();
   arc_session_manager()->ExpandPropertyFilesAndReadSalt();
 }
 

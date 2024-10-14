@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
@@ -1970,16 +1971,26 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
               {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0")}},
   };
 
-  if (arc::IsArcVmDlcEnabled()) {
+  if (!arc::IsArcVmDlcEnabled()) {
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Only the reven board can install arcvm images from DLC. Other boards can
+  // implement their own checking logic after supporting DLC installation later.
+  if (ash::switches::IsRevenBranding() &&
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // Check if the Reven device is compatible for ARC.
     hardware_checker_->IsRevenDeviceCompatibleForArc(
         base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
                        weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
   } else {
-    ConfigureUpstartJobs(
-        std::move(jobs),
-        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
-                       weak_ptr_factory_.GetWeakPtr()));
+    VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
   }
 }
 

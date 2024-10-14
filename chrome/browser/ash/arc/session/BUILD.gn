@@ -110,6 +110,7 @@ static_library("session") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/memory",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
