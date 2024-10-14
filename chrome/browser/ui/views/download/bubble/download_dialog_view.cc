@@ -51,9 +51,6 @@
 
 namespace {
 
-constexpr char kFullBubbleVisibleHistogramName[] =
-    "Download.Bubble.FullView.VisibleTime";
-
 class ShowAllDownloadsButton : public RichHoverButton {
   METADATA_HEADER(ShowAllDownloadsButton, RichHoverButton)
 
@@ -188,13 +185,7 @@ DownloadDialogView::DownloadDialogView(
   AddFooter();
 }
 
-DownloadDialogView::~DownloadDialogView() {
-  LogVisibleTimeMetrics();
-}
-
-std::string_view DownloadDialogView::GetVisibleTimeHistogramName() const {
-  return kFullBubbleVisibleHistogramName;
-}
+DownloadDialogView::~DownloadDialogView() = default;
 
 bool DownloadDialogView::IsPartialView() const {
   return false;

@@ -73,10 +73,6 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
   // in OTR mode are visible to anyone on the device.
   void MaybeAddOtrInfoRow(Browser* browser);
 
-  // Log the histogram for how long the bubble was visible.
-  void LogVisibleTimeMetrics() const;
-  virtual std::string_view GetVisibleTimeHistogramName() const = 0;
-
  private:
   // The ScrollView holding the DownloadBubbleRowListView with the download
   // rows.

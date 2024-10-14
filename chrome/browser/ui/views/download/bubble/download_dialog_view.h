@@ -47,9 +47,6 @@ class DownloadDialogView : public DownloadBubblePrimaryView {
   bool IsPartialView() const override;
 
  private:
-  // DownloadBubblePrimaryView
-  std::string_view GetVisibleTimeHistogramName() const override;
-
   void CloseBubble();
   void ShowAllDownloads();
   void AddHeader();

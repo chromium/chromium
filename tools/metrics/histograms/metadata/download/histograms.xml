@@ -208,19 +208,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
-    units="ms" expires_after="2024-11-17">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Measures the time (in ms) for which the full view (opened manually) or the
-    partial view (opened by the browser for new and completed downloads) are
-    visible. Recorded only for Desktop platforms, where Download Bubble is
-    enabled.
-  </summary>
-  <token key="DownloadBubbleViewType" variants="DownloadBubbleViewType"/>
-</histogram>
-
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
     units="items" expires_after="2024-12-07">
   <owner>chlily@chromium.org</owner>
