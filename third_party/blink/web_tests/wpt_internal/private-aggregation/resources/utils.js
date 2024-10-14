@@ -2,7 +2,7 @@
 // ../../aggregation-service/support/aggregation-service.js
 
 const NUM_CONTRIBUTIONS_SHARED_STORAGE = 20;
-const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 20;
+const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 100;
 
 const NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES = Object.freeze({
   bucket: encodeBigInt(0n, 16),
