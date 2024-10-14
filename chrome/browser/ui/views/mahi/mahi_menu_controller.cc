@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
@@ -57,6 +58,9 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
           chromeos::switches::kUseFakeMahiManager)) {
     return;
   }
+
+  chromeos::MahiWebContentsManager::Get()->SetSelectedText(
+      base::UTF8ToUTF16(selected_text));
 
   if (selected_text.empty()) {
     menu_widget_ = MahiMenuView::CreateWidget(anchor_bounds);

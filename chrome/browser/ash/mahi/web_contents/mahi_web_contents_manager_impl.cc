@@ -250,6 +250,7 @@ void MahiWebContentsManagerImpl::OnFocusedPageLoadComplete(
 }
 
 void MahiWebContentsManagerImpl::ClearFocusedWebContentState() {
+  selected_text_ = std::u16string();
   focused_web_contents_ = nullptr;
   is_pdf_focused_web_contents_ = false;
   focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
@@ -374,6 +375,15 @@ void MahiWebContentsManagerImpl::RequestContent(
   } else {
     RequestWebContent(page_id, std::move(callback));
   }
+}
+
+void MahiWebContentsManagerImpl::SetSelectedText(
+    const std::u16string& selected_text) {
+  selected_text_ = selected_text;
+}
+
+std::u16string MahiWebContentsManagerImpl::GetSelectedText() const {
+  return selected_text_;
 }
 
 void MahiWebContentsManagerImpl::RequestWebContent(

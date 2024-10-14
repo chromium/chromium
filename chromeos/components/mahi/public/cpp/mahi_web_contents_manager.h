@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiWebContentsManager {
   virtual void RequestContent(const base::UnguessableToken& page_id,
                               mahi::GetContentCallback callback) = 0;
 
+  // Sets/gets the current user selected text.
+  virtual void SetSelectedText(const std::u16string& selected_text) = 0;
+  virtual std::u16string GetSelectedText() const = 0;
+
  protected:
   MahiWebContentsManager();
 };

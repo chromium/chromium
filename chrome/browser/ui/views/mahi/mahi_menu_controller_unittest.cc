@@ -85,6 +85,7 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
  protected:
   ReadWriteCardsUiController read_write_cards_ui_controller_;
   std::unique_ptr<ash::FakeMahiManager> fake_mahi_manager_;
+  ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -98,7 +99,6 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
 
   std::unique_ptr<MahiMenuController> menu_controller_;
 
-  ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
   std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>
       scoped_mahi_web_contents_manager_;
 };
@@ -117,6 +117,8 @@ TEST_F(MahiMenuControllerTest, TextNotSelected) {
   EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
   EXPECT_TRUE(views::IsViewClass<MahiMenuView>(
       menu_controller()->menu_widget_for_test()->GetContentsView()));
+
+  EXPECT_EQ(u"", fake_mahi_web_contents_manager_.GetSelectedText());
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
@@ -173,6 +175,9 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
   EXPECT_TRUE(read_write_cards_ui_controller_.GetMahiUiForTest());
   EXPECT_TRUE(views::IsViewClass<MahiCondensedMenuView>(
       read_write_cards_ui_controller_.GetMahiUiForTest()));
+
+  EXPECT_EQ(u"test selected text",
+            fake_mahi_web_contents_manager_.GetSelectedText());
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);

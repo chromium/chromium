@@ -88,6 +88,8 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
   bool IsFocusedPageDistillable() override;
   void RequestContent(const base::UnguessableToken& page_id,
                       chromeos::mahi::GetContentCallback callback) override;
+  void SetSelectedText(const std::u16string& selected_text) override;
+  std::u16string GetSelectedText() const override;
 
  private:
   // Friends to access some test-only functions.
@@ -140,6 +142,9 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
 
   // Observer to observe accessibility changed on PDFs.
   std::unique_ptr<MahiPDFObserver> pdf_observer_;
+
+  // The user selected text on the current focused web content.
+  std::u16string selected_text_;
 
   base::WeakPtrFactory<MahiWebContentsManagerImpl> weak_pointer_factory_{this};
 };
