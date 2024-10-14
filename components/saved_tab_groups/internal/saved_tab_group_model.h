@@ -137,9 +137,15 @@ class SavedTabGroupModel {
                                  const base::Uuid& tab_id);
 
   // Similar to above but the group with `group_id` must exist. Notifies
-  // observers that the tab was removed from sync.
+  // observers that the tab was removed from sync. If
+  // `prevent_group_destruction` is set to true, then the group will not be
+  // removed as a result of calling this method on the last tab in the group.
+  // This should only be used for testing, since there are no cases where the
+  // group should live after the tab is deleted, except during a race condition
+  // in sync.
   void RemoveTabFromGroupFromSync(const base::Uuid& group_id,
-                                  const base::Uuid& tab_id);
+                                  const base::Uuid& tab_id,
+                                  bool prevent_group_destruction = false);
 
   // Moves a saved tab from its current position to `index` in the specified
   // group denoted by `group_id` if it exists.

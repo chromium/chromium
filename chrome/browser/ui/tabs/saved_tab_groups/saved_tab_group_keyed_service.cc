@@ -436,31 +436,56 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   const SavedTabGroup* const saved_group = model_->Get(saved_guid);
   CHECK(saved_group);
 
-  const size_t tabs_in_group = tab_group->tab_count();
-  const size_t tabs_in_saved_group = saved_group->saved_tabs().size();
+  size_t tabs_in_group = tab_group->tab_count();
+  size_t tabs_in_saved_group = saved_group->saved_tabs().size();
+
+  const bool saved_group_has_zero_tabs = tabs_in_saved_group == 0;
   const bool saved_group_has_less_tabs = tabs_in_saved_group < tabs_in_group;
   const bool saved_group_has_more_tabs = tabs_in_saved_group > tabs_in_group;
 
   stats::RecordTabCountMismatchOnConnect(tabs_in_saved_group, tabs_in_group);
-  if (saved_group_has_more_tabs) {
+
+  // If the group has no tabs, and we are attempting to connect a local group
+  // to that saved group, we add the tabs into the saved group. Groups of size
+  // 0 are eventually going to be delete, so repopulating is better than
+  // destroying.
+  if (saved_group_has_zero_tabs) {
+    const gfx::Range tab_range = tab_group->ListTabs();
+
+    for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+      tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(i);
+      CHECK(tab);
+
+      SavedTabGroupTab saved_tab_group_tab =
+          SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
+              tab->contents(), saved_group->saved_guid());
+
+      model()->AddTabToGroupLocally(saved_group->saved_guid(),
+                                    std::move(saved_tab_group_tab));
+    }
+
+    // If there were tabs added to the group
+  } else if (saved_group_has_more_tabs) {
     AddMissingTabsToOutOfSyncLocalTabGroup(browser, tab_group, saved_group);
   } else if (saved_group_has_less_tabs) {
     RemoveExtraTabsFromOutOfSyncLocalTabGroup(tab_strip_model, tab_group,
                                               saved_group);
   }
 
-  const gfx::Range& tab_range = tab_group->ListTabs();
-  CHECK(tab_range.length() == tabs_in_saved_group);
+  tabs_in_saved_group = saved_group->saved_tabs().size();
+  tabs_in_group = tab_group->tab_count();
+  CHECK(tabs_in_group == tabs_in_saved_group);
 
   UpdateWebContentsToMatchSavedTabGroupTabs(tab_strip_model, saved_group,
-                                            tab_range);
+                                            tab_group->ListTabs());
 
   model_->OnGroupOpenedInTabStrip(saved_guid, local_group_id);
   UpdateGroupVisualData(saved_guid, local_group_id);
 
   listener_->ConnectToLocalTabGroup(
-      *model_->Get(saved_guid), GetTabToGuidMappingForSavedGroup(
-                                    tab_strip_model, saved_group, tab_range));
+      *model_->Get(saved_guid),
+      GetTabToGuidMappingForSavedGroup(tab_strip_model, saved_group,
+                                       tab_group->ListTabs()));
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {

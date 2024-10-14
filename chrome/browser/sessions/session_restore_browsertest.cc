@@ -99,6 +99,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -3034,7 +3035,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
   auto* saved_tab_group =
       saved_tab_group_keyed_service->model()->Get(tab_group_id);
   ASSERT_TRUE(saved_tab_group);
-  auto saved_tab_group_id = saved_tab_group->saved_guid();
+  auto saved_group_id = saved_tab_group->saved_guid();
 
   // This ensures SessionService knows about the savedtabgroup. It shouldn't be
   // necessary.
@@ -3048,8 +3049,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
   QuitBrowserAndRestore(
       browser(), GURL(), true, base::BindLambdaForTesting([&]() {
         saved_tab_group_keyed_service->model()->RemoveTabFromGroupLocally(
-            saved_tab_group_id,
-            saved_tab_group->saved_tabs()[0].saved_tab_guid());
+            saved_group_id, saved_tab_group->saved_tabs()[0].saved_tab_guid());
       }));
 }
 
@@ -4688,6 +4688,86 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
   EXPECT_EQ(u"Group2", local_group2->visual_data()->title());
   EXPECT_EQ(tab_groups::TabGroupColorId::kBlue,
             local_group2->visual_data()->color());
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+                       GroupsOfSizeZeroHaveTabsAddedToThem) {
+  // The sync migration uses a different keyed service, and will need to be
+  // investigated separately.
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    GTEST_SKIP();
+  }
+
+  base::Uuid saved_group_id;
+  base::Uuid tab_id_1;
+  base::Uuid tab_id_2;
+  auto* saved_tab_group_keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+
+  {  // Create the browser add 2 tabs to a group and save it.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+    tab_groups::LocalTabGroupID local_id =
+        browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+    if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+      saved_tab_group_keyed_service->SaveGroup(local_id);
+    }
+
+    const tab_groups::SavedTabGroup* saved_group =
+        saved_tab_group_keyed_service->model()->Get(local_id);
+    ASSERT_NE(nullptr, saved_group);
+
+    saved_group_id = saved_group->saved_guid();
+    browser()
+        ->tab_strip_model()
+        ->group_model()
+        ->GetTabGroup(local_id)
+        ->SetVisualData(tab_groups::TabGroupVisualData(
+            u"x", tab_groups::TabGroupColorId::kGrey));
+
+    tab_id_1 = saved_group->saved_tabs()[0].saved_tab_guid();
+    tab_id_2 = saved_group->saved_tabs()[1].saved_tab_guid();
+  }
+
+  // Create the new browser, restore, and expect the group to have 2 tabs.
+  Browser* new_browser = QuitBrowserAndRestore(
+      browser(), GURL(), true, base::BindLambdaForTesting([&]() {
+        saved_tab_group_keyed_service->model()->RemoveTabFromGroupFromSync(
+            saved_group_id, tab_id_1, /*prevent_group_destruction=*/true);
+        saved_tab_group_keyed_service->model()->RemoveTabFromGroupFromSync(
+            saved_group_id, tab_id_2, /*prevent_group_destruction=*/true);
+
+        const tab_groups::SavedTabGroup* saved_group =
+            saved_tab_group_keyed_service->model()->Get(saved_group_id);
+        EXPECT_TRUE(saved_group);
+      }));
+  saved_tab_group_keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          new_browser->profile());
+  ASSERT_NE(nullptr, saved_tab_group_keyed_service);
+
+  const tab_groups::SavedTabGroup* saved_group =
+      saved_tab_group_keyed_service->model()->Get(saved_group_id);
+  EXPECT_TRUE(saved_group);
+  EXPECT_TRUE(saved_group->local_group_id().has_value());
+  EXPECT_EQ(2u, saved_group->saved_tabs().size());
+  for (const auto& saved_tab : saved_group->saved_tabs()) {
+    EXPECT_TRUE(saved_tab.local_tab_id().has_value());
+  }
+
+  // expect 1 extra tab in the tabstrip.
+  EXPECT_EQ(3, new_browser->tab_strip_model()->count());
+  EXPECT_TRUE(new_browser->tab_strip_model()->group_model()->ContainsTabGroup(
+      saved_group->local_group_id().value()));
 }
 
 INSTANTIATE_TEST_SUITE_P(SessionRestore,
