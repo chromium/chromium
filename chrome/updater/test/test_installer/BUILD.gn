@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
@@ -35,6 +36,15 @@ if (is_win) {
     deps = [ ":test_meta_installer" ]
 
     outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+  }
+
+  if (is_asan) {
+    copy("test_installer_asan_runtime") {
+      testonly = true
+      deps = [ "//build/config/sanitizers:copy_sanitizer_runtime" ]
+      sources = [ "$root_build_dir/clang_rt.asan_dynamic-x86_64.dll" ]
+      outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+    }
   }
 
   template("test_app_installer") {
@@ -87,6 +97,12 @@ if (is_win) {
     app_name = "test_" + target_name
     inputs = [ "$root_build_dir/test_installer/" + invoker.setup_name + ".exe" ]
     deps = [ ":" + app_name + "_installer" ]
+
+    if (is_asan) {
+      deps += [ ":test_installer_asan_runtime" ]
+      inputs +=
+          [ "$root_build_dir/test_installer/clang_rt.asan_dynamic-x86_64.dll" ]
+    }
 
     crx3(app_name + "_installer_crx") {
       base_dir = "$root_build_dir/test_installer"

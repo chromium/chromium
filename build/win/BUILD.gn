@@ -48,7 +48,7 @@ if (is_win) {
       "$root_out_dir/dbghelp.dll",
       "$root_out_dir/dbgcore.dll",
     ]
-    if (is_component_build) {
+    if (is_component_build || is_asan) {
       # Copy the VS runtime DLLs into the isolate so that they don't have to be
       # preinstalled on the target machine. The debug runtimes have a "d" at
       # the end.

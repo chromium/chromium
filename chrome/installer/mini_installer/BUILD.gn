@@ -273,7 +273,6 @@ template("generate_mini_installer") {
       "//build/config/win:console",
     ]
     configs += [
-      "//build/config/sanitizers:link_executable",
       "//build/config/win:sdk_link",
       "//build/config/win:windowed",
     ]

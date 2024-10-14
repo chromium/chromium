@@ -156,7 +156,8 @@ template("generate_installer") {
 
     deps = invoker.archive_deps
 
-    if (is_component_build) {
+    if (is_component_build || is_asan) {
+      # Include component build / ASan DLLs in the installer.
       args += [ "--component_build=1" ]
     }
 

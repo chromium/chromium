@@ -242,28 +242,31 @@ TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
          "target was built, instead of delayloads_unittests.exe";
 
   static const char* const kValidFilePatterns[] = {
-    "KERNEL32.dll",
-    "chrome_elf.dll",
-    "DWrite.dll",
-    "ADVAPI32.dll",
-    "CRYPT32.dll",
-    "dbghelp.dll",
-    "dhcpcsvc.DLL",
-    "IPHLPAPI.DLL",
-    "ntdll.dll",
-    "OLEAUT32.dll",
-    "Secur32.dll",
-    "UIAutomationCore.DLL",
-    "USERENV.dll",
-    "WINHTTP.dll",
-    "WINMM.dll",
-    "WINSPOOL.DRV",
-    "WINTRUST.dll",
-    "WS2_32.dll",
-    // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
-    // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
-    // be ok.
-    "VERSION.dll",
+      "KERNEL32.dll",
+      "chrome_elf.dll",
+      "DWrite.dll",
+      "ADVAPI32.dll",
+      "CRYPT32.dll",
+      "dbghelp.dll",
+      "dhcpcsvc.DLL",
+      "IPHLPAPI.DLL",
+      "ntdll.dll",
+      "OLEAUT32.dll",
+      "Secur32.dll",
+      "UIAutomationCore.DLL",
+      "USERENV.dll",
+      "WINHTTP.dll",
+      "WINMM.dll",
+      "WINSPOOL.DRV",
+      "WINTRUST.dll",
+      "WS2_32.dll",
+      // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
+      // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
+      // be ok.
+      "VERSION.dll",
+#if defined(ADDRESS_SANITIZER)
+      "clang_rt.asan_dynamic-x86_64.dll",
+#endif
   };
 
   // Make sure all of chrome.dll's imports are in the valid imports list.
@@ -343,15 +346,15 @@ TEST_F(DelayloadsTest, ChromeElfDllDelayloadsCheck) {
 
   // Allowlist of modules that do not delayload.
   static const char* const kValidFilePatterns[] = {
-    "KERNEL32.dll",
-    "ntdll.dll",
-#if defined(ADDRESS_SANITIZER) && defined(COMPONENT_BUILD)
-    "clang_rt.asan_dynamic-i386.dll",
+      "KERNEL32.dll",
+      "ntdll.dll",
+      // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
+      // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
+      // be ok.
+      "VERSION.dll",
+#if defined(ADDRESS_SANITIZER)
+      "clang_rt.asan_dynamic-x86_64.dll",
 #endif
-    // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
-    // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
-    // be ok.
-    "VERSION.dll",
   };
 
   // Make sure all of ELF's imports are in the valid imports list.
@@ -431,16 +434,17 @@ TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
 
   // Allowlist of modules that do not delayload.
   static const char* const kValidFilePatterns[] = {
-    "KERNEL32.dll",
-    "ntdll.dll",
-    "chrome_elf.dll",
-    // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
-    // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
-    // be ok.
-    "VERSION.dll",
+      "KERNEL32.dll",
+      "ntdll.dll",
+      "chrome_elf.dll",
+      // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
+      // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
+      // be ok.
+      "VERSION.dll",
 #if defined(ADDRESS_SANITIZER)
-    // The ASan runtime uses the synchapi (see crbug.com/1236586).
-    "api-ms-win-core-synch-l1-2-0.dll",
+      "clang_rt.asan_dynamic-x86_64.dll",
+      // The ASan runtime uses the synchapi (see crbug.com/1236586).
+      "api-ms-win-core-synch-l1-2-0.dll",
 #endif
   };
 
@@ -458,24 +462,43 @@ TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
 }
 
 TEST_F(MinimumWindowsSupportTest, ChromeElf) {
+#if defined(ADDRESS_SANITIZER)
+  SetExtraAllowedImports({"clang_rt.asan_dynamic-x86_64.dll"});
+#endif
   Validate(L"chrome_elf.dll");
 }
 
 TEST_F(MinimumWindowsSupportTest, ChromeWer) {
+#if defined(ADDRESS_SANITIZER)
+  SetExtraAllowedImports({"clang_rt.asan_dynamic-x86_64.dll"});
+#endif
   Validate(L"chrome_wer.dll");
 }
 
 TEST_F(MinimumWindowsSupportTest, ChromeExe) {
-  SetExtraAllowedImports({"chrome_elf.dll"});
+  SetExtraAllowedImports({
+      "chrome_elf.dll",
+#if defined(ADDRESS_SANITIZER)
+      "clang_rt.asan_dynamic-x86_64.dll",
+#endif
+  });
   Validate(L"chrome.exe");
 }
 
 TEST_F(MinimumWindowsSupportTest, ChromeDll) {
-  SetExtraAllowedImports({"chrome_elf.dll"});
+  SetExtraAllowedImports({
+      "chrome_elf.dll",
+#if defined(ADDRESS_SANITIZER)
+      "clang_rt.asan_dynamic-x86_64.dll",
+#endif
+  });
   Validate(L"chrome.dll");
 }
 
 TEST_F(MinimumWindowsSupportTest, ChromeExtraDlls) {
+#if defined(ADDRESS_SANITIZER)
+  SetExtraAllowedImports({"clang_rt.asan_dynamic-x86_64.dll"});
+#endif
   std::vector<std::wstring> extra_dlls = {
       L"d3dcompiler_47.dll",
 #if !defined(ARCH_CPU_ARM64)

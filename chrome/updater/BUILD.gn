@@ -720,6 +720,12 @@ if (is_win || is_mac || is_linux) {
         inputs = [ "$root_build_dir/UpdaterSetup_test.exe" ]
         deps = [ "//chrome/updater/win/installer:installer_test" ]
 
+        if (is_asan) {
+          # TODO(crbug.com/367746304): Get the inputs from //build/win:runtime.
+          deps += [ "//build/config/sanitizers:copy_sanitizer_runtime" ]
+          inputs += [ "$root_build_dir/clang_rt.asan_dynamic-x86_64.dll" ]
+        }
+
         if (is_component_build) {
           inputs += [
             "$root_build_dir/base.dll",

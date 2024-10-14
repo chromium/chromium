@@ -29,12 +29,6 @@ class SuppressibleDiagnosticBuilder : public clang::DiagnosticBuilder {
       // Clear the underlying data, so the base class destructor
       // doesn't try to emit the diagnostic.
       Clear();
-
-#if !defined(LLVM_FORCE_HEAD_REVISION)
-      // Also clear the current diagnostic being processed by the
-      // DiagnosticsEngine, since it won't be emitted.
-      diagnostics_->Clear();
-#endif
     }
   }
 

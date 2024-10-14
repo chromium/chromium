@@ -529,7 +529,12 @@ bool BuildTestAppInstaller(const base::FilePath& installer_script,
     return false;
   }
   const base::FilePath installer_dir = exe_path.AppendASCII("test_installer");
-
+#if defined(ADDRESS_SANITIZER)
+  static const char kAsanRuntime[] = "clang_rt.asan_dynamic-x86_64.dll";
+  const base::FilePath asan_runtime = exe_path.AppendASCII(kAsanRuntime);
+  EXPECT_TRUE(base::CopyFile(
+      asan_runtime, output_installer.DirName().AppendASCII(kAsanRuntime)));
+#endif
   base::CommandLine command(
       installer_dir.AppendASCII("embed_install_scripts.py"));
   command.AppendSwitchPath(

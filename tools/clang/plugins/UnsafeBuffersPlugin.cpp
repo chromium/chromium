@@ -176,9 +176,6 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       // Construct the StoredDiagnostic before Clear() or we get bad data from
       // `diag`.
       auto stored = clang::StoredDiagnostic(elevated_level, diag);
-#if !defined(LLVM_FORCE_HEAD_REVISION)
-      engine_->Clear();
-#endif
       inside_handle_diagnostic_ = true;
       engine_->Report(stored);
       if (elevated_level != clang::DiagnosticsEngine::Level::Note) {
