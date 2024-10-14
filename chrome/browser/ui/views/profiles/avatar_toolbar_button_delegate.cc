@@ -62,6 +62,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
@@ -78,6 +79,10 @@ static std::optional<base::TimeDelta> g_show_name_duration_for_testing;
 constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
 static std::optional<base::TimeDelta>
     g_show_signin_pending_text_delay_for_testing;
+
+// Enterprise custom labels have a limmit of 16 characters, so they will be cut
+// at the 17th characters.
+constexpr int kMaximumEnterpriseCustomLabelLengthCutOff = 17;
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -1364,7 +1369,9 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
           profile_->GetPrefs()->GetString(
               prefs::kEnterpriseCustomLabelForProfile);
       if (!enterprise_custom_label.empty()) {
-        text = base::UTF8ToUTF16(enterprise_custom_label);
+        text = gfx::TruncateString(base::UTF8ToUTF16(enterprise_custom_label),
+                                   kMaximumEnterpriseCustomLabelLengthCutOff,
+                                   gfx::CHARACTER_BREAK);
       } else if (IsManagementWork(profile_)) {
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
       } else {

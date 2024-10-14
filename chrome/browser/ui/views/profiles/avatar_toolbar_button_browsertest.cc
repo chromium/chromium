@@ -1176,6 +1176,20 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       CustomBadgeLengthLimited) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kEnterpriseCustomLabelForProfile,
+      "Custom Label Can Be Max 16 Characters");
+
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  // The text should be tuncated to 16 characters followed by "...".
+  EXPECT_EQ(avatar_button->GetText(), u"Custom Label Can…");
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkNewBrowserShowsBadgeWithCustomLabel) {
   browser()->profile()->GetPrefs()->SetString(
       prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
