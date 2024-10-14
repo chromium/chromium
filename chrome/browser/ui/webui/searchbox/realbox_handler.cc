@@ -386,6 +386,9 @@ void RealboxHandler::OnFocusChanged(bool focused) {
     edit_model()->OnWillKillFocus();
     edit_model()->OnKillFocus();
   }
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnFocusChanged(focused);
+  }
 }
 
 void RealboxHandler::QueryAutocomplete(const std::u16string& input,

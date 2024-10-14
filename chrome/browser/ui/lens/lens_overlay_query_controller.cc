@@ -332,6 +332,28 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
   PrepareAndFetchFullImageRequest();
 }
 
+void LensOverlayQueryController::SendPageContentUpdateRequest(
+    base::span<const uint8_t> new_content_bytes,
+    lens::PageContentMimeType new_content_type) {
+  if (new_content_bytes == underlying_content_bytes_ &&
+      new_content_type == underlying_content_type_) {
+    return;
+  }
+  underlying_content_bytes_ = new_content_bytes;
+  underlying_content_type_ = new_content_type;
+
+  // Since the page content uses the full image request ID, but this is a new
+  // request, update the latest_full_image_request_data_ with a new request ID.
+  auto request_id = request_id_generator_->GetNextRequestId(
+      RequestIdUpdateMode::kFullImageRequest);
+  latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
+      request_id->sequence_id(),
+      /*query_start_time=*/base::TimeTicks::Now());
+  latest_full_image_request_data_->request_id_ = std::move(request_id);
+
+  PrepareAndFetchPageContentRequest();
+}
+
 void LensOverlayQueryController::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType lens_selection_type,

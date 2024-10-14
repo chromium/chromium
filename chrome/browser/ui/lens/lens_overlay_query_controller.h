@@ -110,6 +110,11 @@ class LensOverlayQueryController {
   // ending translate mode.
   virtual void SendEndTranslateModeQuery();
 
+  // Sends a request to the server to update the page content.
+  virtual void SendPageContentUpdateRequest(
+      base::span<const uint8_t> new_content_bytes,
+      lens::PageContentMimeType new_content_type);
+
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
   // the region out of the screenshot. This should be used to provide a higher

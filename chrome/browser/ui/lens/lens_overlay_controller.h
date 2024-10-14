@@ -95,6 +95,11 @@ class Profile;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
 
+// Callback type alias for page content bytes retrieved.
+using PageContentRetrievedCallback =
+    base::OnceCallback<void(std::vector<uint8_t> bytes,
+                            lens::PageContentMimeType content_type)>;
+
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
 // thread.
@@ -650,29 +655,47 @@ class LensOverlayController : public LensSearchboxClient,
       const std::vector<gfx::Rect>& all_bounds,
       SkBitmap rgb_screenshot);
 
+  // Stores the page content and continues the initialization process.
+  void StorePageContentAndContinueIntialization(
+      std::unique_ptr<OverlayInitializationData> initialization_data,
+      std::vector<uint8_t> bytes,
+      lens::PageContentMimeType content_type);
+
+  // Tries to fetch the underlying page content bytes to use for
+  // contextualization. If page content can not be retrieved, the callback will
+  // be run with no bytes.
+  void GetPageContextualization(PageContentRetrievedCallback callback);
+
 #if BUILDFLAG(ENABLE_PDF)
   // Receives the PDF bytes from the IPC call to the PDF renderer and stores
   // them in initialization data.
-  void OnPdfBytesReceived(
-      std::unique_ptr<OverlayInitializationData> initialization_data,
-      pdf::mojom::PdfListener::GetPdfBytesStatus status,
-      const std::vector<uint8_t>& bytes);
+  void OnPdfBytesReceived(PageContentRetrievedCallback callback,
+                          pdf::mojom::PdfListener::GetPdfBytesStatus status,
+                          const std::vector<uint8_t>& bytes);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Callback for when the inner text is retrieved from the underlying page.
   void OnInnerTextReceived(
-      std::unique_ptr<OverlayInitializationData> initialization_data,
+      PageContentRetrievedCallback callback,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
   // Callback for when the inner HTML is retrieved from the underlying page.
-  void OnInnerHtmlReceived(
-      std::unique_ptr<OverlayInitializationData> initialization_data,
-      const std::optional<std::string>& result);
+  void OnInnerHtmlReceived(PageContentRetrievedCallback callback,
+                           const std::optional<std::string>& result);
 
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(
       OverlayInitializationData* initialization_data,
       const std::vector<gfx::Rect>& bounds);
+
+  // Tries to fetch the underlying page content bytes and update the query flow
+  // with them.
+  void TryUpdatePageContextualization();
+
+  // Updates the query flow with the new page content bytes. A request will only
+  // be sent if the bytes are different from the previous bytes sent.
+  void UpdatePageContextualization(std::vector<uint8_t> bytes,
+                                   lens::PageContentMimeType content_type);
 
   // Enables/disables the background blur updating live. This should be used to
   // save resources on blurring the background when not needed.
@@ -751,6 +774,7 @@ class LensOverlayController : public LensSearchboxClient,
   void OnSuggestionAccepted(const GURL& destination_url,
                             AutocompleteMatchType::Type match_type,
                             bool is_zero_prefix_suggestion) override;
+  void OnFocusChanged(bool focused) override;
   void OnPageBound() override;
 
   // SidePanelViewStateObserver:
@@ -839,9 +863,16 @@ class LensOverlayController : public LensSearchboxClient,
                                       int selection_start_index,
                                       int selection_end_index);
 
+  // Tries to update the page content and then issues a searchbox request.
+  void IssueSearchBoxRequest(
+      const std::string& search_box_text,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
+      std::map<std::string, std::string> additional_query_params);
+
   // Handles a request (either region or multimodal) trigger by sending
   // the request to the query controller.
-  void IssueSearchBoxRequest(
+  void IssueSearchBoxRequestPart2(
       const std::string& search_box_text,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,

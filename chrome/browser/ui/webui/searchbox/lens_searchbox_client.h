@@ -48,6 +48,9 @@ class LensSearchboxClient {
                                     AutocompleteMatchType::Type match_type,
                                     bool is_zero_prefix_suggestion) = 0;
 
+  // Called when the user focuses or unfocuses the searchbox.
+  virtual void OnFocusChanged(bool focused) = 0;
+
   // Called when the handler binds to the remote page, aka when SetPage is set.
   virtual void OnPageBound() = 0;
 };

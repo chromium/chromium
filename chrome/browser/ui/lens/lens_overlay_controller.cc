@@ -1273,7 +1273,9 @@ class LensOverlayController::UnderlyingWebContentsObserver
          !is_reload)) {
       return;
     }
-
+    if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
+      return;
+    }
     lens_overlay_controller_->CloseUISync(
         lens::LensOverlayDismissalSource::kPageChanged);
   }
@@ -1432,19 +1434,36 @@ void LensOverlayController::ContinueCreateInitializationData(
       page_title);
   AddBoundingBoxesToInitializationData(initialization_data.get(), all_bounds);
 
+  GetPageContextualization(base::BindOnce(
+      &LensOverlayController::StorePageContentAndContinueIntialization,
+      weak_factory_.GetWeakPtr(), std::move(initialization_data)));
+}
+
+void LensOverlayController::StorePageContentAndContinueIntialization(
+    std::unique_ptr<OverlayInitializationData> initialization_data,
+    std::vector<uint8_t> bytes,
+    lens::PageContentMimeType content_type) {
+  if (!bytes.empty()) {
+    initialization_data->page_content_bytes_ = bytes;
+    initialization_data->page_content_type_ = content_type;
+  }
+  InitializeOverlay(std::move(initialization_data));
+}
+
+void LensOverlayController::GetPageContextualization(
+    PageContentRetrievedCallback callback) {
 #if BUILDFLAG(ENABLE_PDF)
   // Try and fetch the PDF bytes if enabled.
   pdf::PDFDocumentHelper* pdf_helper =
       lens::features::UsePdfsAsContext()
-          ? MaybeGetPdfHelper(active_web_contents)
+          ? MaybeGetPdfHelper(tab_->GetContents())
           : nullptr;
   if (pdf_helper) {
     // Fetch the PDF bytes then initialize the overlay.
     pdf_helper->GetPdfBytes(
         /*size_limit=*/lens::features::GetLensOverlayFileUploadLimitBytes(),
         base::BindOnce(&LensOverlayController::OnPdfBytesReceived,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(initialization_data)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -1455,8 +1474,7 @@ void LensOverlayController::ContinueCreateInitializationData(
     content_extraction::GetInnerText(
         *render_frame_host, /*node_id=*/std::nullopt,
         base::BindOnce(&LensOverlayController::OnInnerTextReceived,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(initialization_data)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
@@ -1465,51 +1483,52 @@ void LensOverlayController::ContinueCreateInitializationData(
     content_extraction::GetInnerHtml(
         *render_frame_host,
         base::BindOnce(&LensOverlayController::OnInnerHtmlReceived,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(initialization_data)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
-  // Since there are no page content bytes to wait on, assign
-  // initialization_data and initialize the overlay.
-  InitializeOverlay(std::move(initialization_data));
+  std::move(callback).Run(std::vector<uint8_t>(),
+                          lens::PageContentMimeType::kNone);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
 void LensOverlayController::OnPdfBytesReceived(
-    std::unique_ptr<OverlayInitializationData> initialization_data,
+    PageContentRetrievedCallback callback,
     pdf::mojom::PdfListener::GetPdfBytesStatus status,
     const std::vector<uint8_t>& bytes) {
   // TODO(b/370530197): Show user error message if status is not success.
-  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
-    initialization_data->page_content_bytes_ = bytes;
-    initialization_data->page_content_type_ = lens::PageContentMimeType::kPdf;
+  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
+    std::move(callback).Run(std::vector<uint8_t>(),
+                            lens::PageContentMimeType::kNone);
+    return;
   }
-  InitializeOverlay(std::move(initialization_data));
+  std::move(callback).Run(bytes, lens::PageContentMimeType::kPdf);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 void LensOverlayController::OnInnerTextReceived(
-    std::unique_ptr<OverlayInitializationData> initialization_data,
+    PageContentRetrievedCallback callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  if (result) {
-    initialization_data->page_content_bytes_ = std::vector<uint8_t>(
-        result->inner_text.begin(), result->inner_text.end());
-    initialization_data->page_content_type_ =
-        lens::PageContentMimeType::kPlainText;
+  if (!result) {
+    std::move(callback).Run(std::vector<uint8_t>(),
+                            lens::PageContentMimeType::kNone);
+    return;
   }
-  InitializeOverlay(std::move(initialization_data));
+  std::move(callback).Run(std::vector<uint8_t>(result->inner_text.begin(),
+                                               result->inner_text.end()),
+                          lens::PageContentMimeType::kPlainText);
 }
 
 void LensOverlayController::OnInnerHtmlReceived(
-    std::unique_ptr<OverlayInitializationData> initialization_data,
+    PageContentRetrievedCallback callback,
     const std::optional<std::string>& result) {
-  if (result.has_value()) {
-    initialization_data->page_content_bytes_ =
-        std::vector<uint8_t>(result->begin(), result->end());
-    initialization_data->page_content_type_ = lens::PageContentMimeType::kHtml;
+  if (!result.has_value()) {
+    std::move(callback).Run(std::vector<uint8_t>(),
+                            lens::PageContentMimeType::kNone);
+    return;
   }
-  InitializeOverlay(std::move(initialization_data));
+  std::move(callback).Run(std::vector<uint8_t>(result->begin(), result->end()),
+                          lens::PageContentMimeType::kHtml);
 }
 
 void LensOverlayController::AddBoundingBoxesToInitializationData(
@@ -1553,6 +1572,19 @@ void LensOverlayController::AddBoundingBoxesToInitializationData(
   }
   initialization_data->significant_region_boxes_ =
       std::move(significant_region_boxes);
+}
+
+void LensOverlayController::TryUpdatePageContextualization() {
+  GetPageContextualization(
+      base::BindOnce(&LensOverlayController::UpdatePageContextualization,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LensOverlayController::UpdatePageContextualization(
+    std::vector<uint8_t> bytes,
+    lens::PageContentMimeType content_type) {
+  lens_overlay_query_controller_->SendPageContentUpdateRequest(bytes,
+                                                               content_type);
 }
 
 void LensOverlayController::SetLiveBlur(bool enabled) {
@@ -2003,6 +2035,16 @@ void LensOverlayController::OnSuggestionAccepted(
                         additional_query_parameters);
 }
 
+void LensOverlayController::OnFocusChanged(bool focused) {
+  if (!focused) {
+    return;
+  }
+
+  // If the searchbox becomes focused, showing intent to issue a new query,
+  // upload the new page content for contextualization.
+  TryUpdatePageContextualization();
+}
+
 void LensOverlayController::OnPageBound() {
   // If the side panel closes before the remote gets bound,
   // side_panel_searchbox_handler_ could become unset. Verify it is set before
@@ -2384,6 +2426,32 @@ void LensOverlayController::HidePreselectionBubble() {
 }
 
 void LensOverlayController::IssueSearchBoxRequest(
+    const std::string& search_box_text,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion,
+    std::map<std::string, std::string> additional_query_params) {
+  // Do not attempt to contextualize if CSB is disabled or if the user is not in
+  // the contextual search flow (aka, issues an image request already).
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
+      GetPageClassification() !=
+          metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+    IssueSearchBoxRequestPart2(search_box_text, match_type,
+                          is_zero_prefix_suggestion, additional_query_params);
+    return;
+  }
+
+  // If contextual searchbox is enabled, make sure the page bytes are current
+  // prior to issuing the search box request.
+  GetPageContextualization(
+      base::BindOnce(&LensOverlayController::UpdatePageContextualization,
+                     weak_factory_.GetWeakPtr())
+          .Then(base::BindOnce(
+              &LensOverlayController::IssueSearchBoxRequestPart2,
+              weak_factory_.GetWeakPtr(), search_box_text, match_type,
+              is_zero_prefix_suggestion, additional_query_params)));
+}
+
+void LensOverlayController::IssueSearchBoxRequestPart2(
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,

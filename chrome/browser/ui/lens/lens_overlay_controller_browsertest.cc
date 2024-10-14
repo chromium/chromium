@@ -115,6 +115,7 @@ constexpr char kDocumentWithNamedElementWithFragment[] =
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
+constexpr char kPdfDocumentWithForm[] = "/pdf/submit_form.pdf";
 constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
 
 constexpr char kPdfDocument12KbFileName[] = "pdf/test-title.pdf";
@@ -451,6 +452,13 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
         FROM_HERE, base::BindOnce(full_image_callback_, std::move(test_objects),
                                   std::move(text),
                                   /*is_error=*/false));
+  }
+
+  void SendPageContentUpdateRequest(
+      base::span<const uint8_t> new_content_bytes,
+      lens::PageContentMimeType new_content_type) override {
+    last_sent_underlying_content_bytes_ = new_content_bytes;
+    last_sent_underlying_content_type_ = new_content_type;
   }
 
   void SetShouldReturnError(bool full_image_request_should_return_error) {
@@ -2171,6 +2179,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       std::map<std::string, std::string>());
 
   // Wait for URL to load in side panel.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -3989,6 +3999,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
                        {{"use-pdfs-as-context", "true"},
+                        {"use-inner-html-as-context", "true"},
                         {"file-upload-limit-bytes",
                          base::NumberToString(file_size_limit_bytes_)}}});
     return enabled;
@@ -4029,6 +4040,54 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_TRUE(fake_controller->fake_overlay_page_
                   .last_received_should_show_contextual_searchbox_);
+}
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       PdfBytesInFollowUpRequest) {
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  LoadPdfGetExtensionHost(url);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Make a searchbox query.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Verify transitions to live page.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Reset mock query controller so we can verify the new request.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  fake_query_controller->Reset();
+
+  // Change page to new PDF.
+  const GURL new_url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
+  LoadPdfGetExtensionHost(new_url);
+
+  // Issue a new searchbox query.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Verify bytes was updated.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !fake_query_controller->last_sent_underlying_content_bytes_.empty();
+  }));
+  ASSERT_EQ(lens::PageContentMimeType::kPdf,
+            fake_query_controller->last_sent_underlying_content_type_);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4363,6 +4422,93 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ("The below are non-ascii characters.\n\nこんにちは thêrē 🐶 ©",
             std::string(last_sent_underlying_content_bytes.begin(),
                         last_sent_underlying_content_bytes.end()));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       InnerTextBytesInFollowUpRequest) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Make a searchbox query.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Verify transitions to live page.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Reset mock query controller so we can verify the new request.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  fake_query_controller->Reset();
+
+  // Change page.
+  WaitForPaint(kDocumentWithNamedElement);
+
+  // Issue a new searchbox query.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Verify inner text was updated.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !fake_query_controller->last_sent_underlying_content_bytes_.empty();
+  }));
+  ASSERT_EQ(lens::PageContentMimeType::kPlainText,
+            fake_query_controller->last_sent_underlying_content_type_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       NoBytesInNonCsbFollowUpRequest) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a text seleciton request to get out of CSB flow.
+  controller->IssueTextSelectionRequestForTesting("testing",
+                                                  /*selection_start_index=*/10,
+                                                  /*selection_end_index=*/16);
+
+  // Verify transitions to live page.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Reset mock query controller so we can verify the new request.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  fake_query_controller->Reset();
+
+  // Issue a new searchbox query.
+  controller->IssueSearchBoxRequestForTesting(
+      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Verify inner text was not updated.
+  ASSERT_TRUE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
+  ASSERT_EQ(lens::PageContentMimeType::kNone,
+            fake_query_controller->last_sent_underlying_content_type_);
 }
 
 class LensOverlayControllerInnerHtmlEnabledTest
