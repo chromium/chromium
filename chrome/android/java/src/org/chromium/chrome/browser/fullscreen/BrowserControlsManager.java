@@ -702,8 +702,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         try (TraceEvent e =
                 TraceEvent.scoped("BrowserControlsManager.notifyControlOffsetChanged")) {
             scheduleVisibilityUpdate();
-            if (shouldShowAndroidControls()) {
-                // TODO(crbug.com/40941730): Fix frame mismatch between Android view with cc layer.
+            if (shouldShowAndroidControls() && mControlsPosition == ControlsPosition.TOP) {
                 mControlContainer.getView().setTranslationY(getTopControlOffset());
             }
 

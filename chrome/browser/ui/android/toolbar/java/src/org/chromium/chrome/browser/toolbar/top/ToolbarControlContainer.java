@@ -755,8 +755,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      * @return Whether or not the toolbar container is fully visible on screen.
      */
     private boolean isToolbarContainerFullyVisible() {
-        return Float.compare(0f, getTranslationY()) == 0
-                && mToolbarContainer.getVisibility() == VISIBLE;
+        return mToolbarContainer.getVisibility() == VISIBLE;
     }
 
     private class SwipeGestureListenerImpl extends SwipeGestureListener {
