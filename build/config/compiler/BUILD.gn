@@ -1973,6 +1973,11 @@ config("default_warnings") {
 
         # TODO(crbug.com/356172342): Fix and re-enable.
         cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
+
+        if (llvm_force_head_revision) {
+          # TODO(crbug.com/373130005): Fix and re-enable.
+          cflags_cc += [ "-Wno-deprecated-literal-operator" ]
+        }
       }
     }
 
