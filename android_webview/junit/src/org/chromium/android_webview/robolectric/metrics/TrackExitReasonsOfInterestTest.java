@@ -5,13 +5,15 @@
 package org.chromium.android_webview.robolectric.metrics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
 import android.app.ApplicationExitInfo;
 
-import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -22,8 +24,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AppState;
 import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest.ExitReasonData;
+import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest.AppStateData;
 import org.chromium.base.Callback;
+import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -32,25 +35,22 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.crash.browser.ProcessExitReasonFromSystem;
 import org.chromium.components.crash.browser.ProcessExitReasonFromSystem.ExitReason;
 
-import java.util.Arrays;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** Junit tests for TrackExitReasonsOfInterest. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE)
 public class TrackExitReasonsOfInterestTest {
     private static final String TAG = "ExitReasonsTest";
-    private MockAwContentsLifecycleNotifier mTestSupplier = new MockAwContentsLifecycleNotifier();
+    private MockAwContentsLifecycleNotifier mMockNotifier = new MockAwContentsLifecycleNotifier();
 
     @Before
     public void setUp() {
         // Needed in case the data directory is not initialized for testing
         PathUtils.setPrivateDataDirectorySuffix("webview", "WebView");
-        TrackExitReasonsOfInterest.setStateSupplier(mTestSupplier::getAppState);
-        mTestSupplier.mState = AppState.UNKNOWN;
     }
 
     public static class MockAwContentsLifecycleNotifier {
@@ -60,8 +60,8 @@ public class TrackExitReasonsOfInterestTest {
             mState = AppState.UNKNOWN;
         }
 
-        public MockAwContentsLifecycleNotifier(@AppState int appState) {
-            mState = appState;
+        public MockAwContentsLifecycleNotifier(@AppState int state) {
+            mState = state;
         }
 
         @AppState
@@ -73,196 +73,66 @@ public class TrackExitReasonsOfInterestTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testReadWriteExitReasonUtils() {
-        int previousPid = 1;
-        long timeAtLastRecording = 5L;
-        TrackExitReasonsOfInterest.writeLastExitInfo(
-                new ExitReasonData(previousPid, timeAtLastRecording, AppState.UNKNOWN));
+    public void testAppStateDataConstructor() {
+        int pid = 42;
+        long timeMillis = 5L;
+        for (@AppState int state = AppState.UNKNOWN; state <= AppState.STARTUP; state++) {
+            AppStateData data = new AppStateData(pid, timeMillis, state);
+            assertEquals("AppStateData process id should match", pid, data.mPid);
+            assertEquals("AppStateData app state should match", state, data.mState);
+            assertEquals("AppStateData time should match", timeMillis, data.mTimeMillis);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testReadDataWhenThereIsNoFile() {
+        assertFalse(
+                "File should initially not exist", TrackExitReasonsOfInterest.getFile().exists());
+        List<AppStateData> dataList = TrackExitReasonsOfInterest.readData();
+        assertEquals("Data list should be empty because there is no file", 0, dataList.size());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testWriteThenReadAppStateData() {
+        int pid = 42;
+        long timeMillis = 5L;
+        @AppState int state = AppState.BACKGROUND;
+        TrackExitReasonsOfInterest.setPidForTest(pid);
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(timeMillis);
+        TrackExitReasonsOfInterest.writeState(state);
+
         assertTrue(
-                "last-exit-info file should exist after writing to it",
-                TrackExitReasonsOfInterest.getLastExitInfoFile().exists());
-        ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-        assertEquals(
-                "Last exit info PID should be stored in last-exit-info file",
-                previousPid,
-                data.mExitInfoPid);
-        assertEquals(
-                "Last exit info timestamp should be stored in last-exit-info file",
-                timeAtLastRecording,
-                data.mTimestampAtLastRecordingInMillis);
-        assertEquals(
-                "Last exit info timestamp should be stored in last-exit-info file",
-                AppState.UNKNOWN,
-                data.mState);
+                "File should exist after writing to it",
+                TrackExitReasonsOfInterest.getFile().exists());
+        List<AppStateData> dataList = TrackExitReasonsOfInterest.readData();
+        assertEquals("Data list should have one entry after writing app state", 1, dataList.size());
+        AppStateData data = dataList.get(0);
+        assertEquals("Process id should be stored in file", pid, data.mPid);
+        assertEquals("Time should be stored in file", timeMillis, data.mTimeMillis);
+        assertEquals("State should be stored in file", state, data.mState);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testExitReasonMarkedAsInvalidWhenFileDoesNotExist() {
-        ActivityManager mockedActivityManager =
-                getMockedActivityManager(
-                        /* pid= */ 1, ApplicationExitInfo.REASON_ANR, /* isEmpty= */ true);
-        ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
-        assertEquals(
-                "Last exit info data should be created after first run",
-                -1,
-                TrackExitReasonsOfInterest.run());
-    }
+    public void testValidSystemReasonsAndStatesAreLogged() {
+        int previousPid = 42;
+        long previousTimeMillis = 5L;
+        long currentTimeMillis = 7L;
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(currentTimeMillis);
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testWriteAppStateOnlyModifiesAppStateInFile() throws TimeoutException {
-        int previousPid = 1;
-        long timeAtLastRecording = 5L;
-        TrackExitReasonsOfInterest.setPidForTest(previousPid);
-        TrackExitReasonsOfInterest.setCurrtimeForTest(timeAtLastRecording);
-        TrackExitReasonsOfInterest.writeLastExitInfo(
-                new ExitReasonData(previousPid, timeAtLastRecording, AppState.DESTROYED));
-        ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-        // pids are updated
-        assertTrue(data.mExitInfoPid == previousPid);
-        // timestamps are updated
-        assertTrue(data.mTimestampAtLastRecordingInMillis == timeAtLastRecording);
-        assertTrue(data.mState == AppState.DESTROYED);
+        for (int systemReason = 0; systemReason < ExitReason.NUM_ENTRIES; systemReason++) {
+            for (@AppState int state = 0; state <= AppState.STARTUP; state++) {
+                ProcessExitReasonFromSystem.setActivityManagerForTest(
+                        createMockActivityManager(previousPid, systemReason));
 
-        final CallbackHelper writeFinished = new CallbackHelper();
-        final Callback<Boolean> callback =
-                new Callback<Boolean>() {
-                    @Override
-                    public void onResult(Boolean result) {
-                        writeFinished.notifyCalled();
-                    }
-                };
-        int calls;
-        for (@AppState int appState = AppState.UNKNOWN; appState < AppState.DESTROYED; appState++) {
-            mTestSupplier.mState = appState;
-            calls = writeFinished.getCallCount();
-            TrackExitReasonsOfInterest.writeLastWebViewState(callback);
-            writeFinished.waitForCallback(calls);
-            data = TrackExitReasonsOfInterest.readLastExitInfo();
-            // pids are updated
-            assertTrue(data.mExitInfoPid == previousPid);
-            // timestamps are updated
-            assertTrue(data.mTimestampAtLastRecordingInMillis == timeAtLastRecording);
-            assertEquals(data.mState, appState);
-        }
-    }
+                AppStateData data = new AppStateData(previousPid, previousTimeMillis, state);
 
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    public void testWriteAppStateTaskRunnerOnlyUpdatesWithNewState() throws TimeoutException {
-        int previousPid = 1;
-        long timeAtLastRecording = 5L;
-        final CallbackHelper writeFinished = new CallbackHelper();
-        final Callback<Boolean> callback =
-                new Callback<Boolean>() {
-                    @Override
-                    public void onResult(Boolean result) {
-                        writeFinished.notifyCalled();
-                    }
-                };
-        int calls;
-        TrackExitReasonsOfInterest.setPidForTest(previousPid);
-        TrackExitReasonsOfInterest.setCurrtimeForTest(timeAtLastRecording);
-        TrackExitReasonsOfInterest.writeLastExitInfo(
-                new ExitReasonData(previousPid, timeAtLastRecording, AppState.DESTROYED));
-        ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-        // pids are updated
-        assertTrue(data.mExitInfoPid == previousPid);
-        // timestamps are updated
-        assertTrue(data.mTimestampAtLastRecordingInMillis == timeAtLastRecording);
-        assertTrue(data.mState == AppState.DESTROYED);
-
-        mTestSupplier.mState = AppState.FOREGROUND;
-        calls = writeFinished.getCallCount();
-        TrackExitReasonsOfInterest.writeLastWebViewState(callback);
-        writeFinished.waitForCallback(calls);
-
-        data = TrackExitReasonsOfInterest.readLastExitInfo();
-        // pids are updated
-        assertTrue(data.mExitInfoPid == previousPid);
-        // timestamps are updated
-        assertTrue(data.mTimestampAtLastRecordingInMillis == timeAtLastRecording);
-        assertEquals(data.mState, mTestSupplier.getAppState());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testExitReasonMarkedAsInvalidWhenExitReasonsFileDoesNotHavePreviousPid() {
-        int previousPid = 0;
-        ActivityManager mockedActivityManager =
-                getMockedActivityManager(
-                        previousPid, ApplicationExitInfo.REASON_ANR, /* isEmpty= */ false);
-        ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
-        TrackExitReasonsOfInterest.writeLastExitInfo(
-                new ExitReasonData(previousPid + 1, 5L, AppState.UNKNOWN));
-        assertEquals(
-                "Last exit info data should be created after first run",
-                -1,
-                TrackExitReasonsOfInterest.run());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testExpectedExitReasons() {
-        int previousPid = 1;
-        long timeAtLastRecording = 5L;
-        long systemTimeForTest = 10L;
-        TrackExitReasonsOfInterest.setSystemTimeForTest(systemTimeForTest);
-        for (int mockedSystemExitReason = 0;
-                mockedSystemExitReason < ExitReason.NUM_ENTRIES;
-                mockedSystemExitReason++) {
-            ActivityManager mockedActivityManager =
-                    getMockedActivityManager(
-                            previousPid, mockedSystemExitReason, /* isEmpty= */ false);
-            ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
-            TrackExitReasonsOfInterest.writeLastExitInfo(
-                    new ExitReasonData(previousPid, timeAtLastRecording, AppState.UNKNOWN));
-            Integer exitReasonData =
-                    ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
-                            TrackExitReasonsOfInterest.run());
-            Integer exitReason =
-                    ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
-                            mockedSystemExitReason);
-            assertEquals(
-                    "Last exit info data should be created after first run",
-                    exitReason,
-                    exitReasonData);
-            assertTrue(
-                    "Exit reason should be within the expected range of exit reasons: "
-                            + exitReason
-                            + " "
-                            + mockedSystemExitReason,
-                    exitReasonData != null);
-        }
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testHistogramsAreUpdatedWithValidLastExitInfoSet() {
-        int previousPid = 1;
-        long timeAtLastRecording = 5L;
-        long systemTimeForTest = 10L;
-        TrackExitReasonsOfInterest.setSystemTimeForTest(systemTimeForTest);
-        // Mock current PID
-        TrackExitReasonsOfInterest.setPidForTest(previousPid + 1);
-        for (int mockedSystemExitReason = 0;
-                mockedSystemExitReason < ExitReason.NUM_ENTRIES;
-                mockedSystemExitReason++) {
-            for (@AppState int state = 0; state <= AppState.DESTROYED; state++) {
-                ActivityManager mockedActivityManager =
-                        getMockedActivityManager(
-                                previousPid, mockedSystemExitReason, /* isEmpty= */ false);
-                ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
-                TrackExitReasonsOfInterest.writeLastExitInfo(
-                        new ExitReasonData(previousPid, timeAtLastRecording, state));
-
+                // There should be logs for recognized system exit reasons.
                 var histogramWatcher =
                         HistogramWatcher.newBuilder()
                                 .expectIntRecord(
@@ -272,31 +142,19 @@ public class TrackExitReasonsOfInterestTest {
                                                         state),
                                         ProcessExitReasonFromSystem
                                                 .convertApplicationExitInfoToExitReason(
-                                                        mockedSystemExitReason))
+                                                        systemReason))
                                 .expectIntRecord(
                                         TrackExitReasonsOfInterest.UMA_COUNTS,
                                         ProcessExitReasonFromSystem
                                                 .convertApplicationExitInfoToExitReason(
-                                                        mockedSystemExitReason))
+                                                        systemReason))
                                 .expectIntRecord(
                                         TrackExitReasonsOfInterest.UMA_DELTA,
-                                        (int) (systemTimeForTest - timeAtLastRecording))
+                                        (int) (currentTimeMillis - previousTimeMillis))
                                 .build();
-                TrackExitReasonsOfInterest.run();
-                histogramWatcher.assertExpected();
 
-                ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-                // pids are updated
-                assertTrue(
-                        "Pid in last-exit-info should be updated with current PID"
-                                + data.mExitInfoPid
-                                + " "
-                                + previousPid,
-                        data.mExitInfoPid != previousPid);
-                // timestamps are updated
-                assertTrue(
-                        "Timestamp in last-exit-info should be updated with latest system time",
-                        data.mTimestampAtLastRecordingInMillis != timeAtLastRecording);
+                assertNotEquals(-1, TrackExitReasonsOfInterest.findExitReasonAndLog(data));
+                histogramWatcher.assertExpected();
             }
         }
     }
@@ -304,65 +162,199 @@ public class TrackExitReasonsOfInterestTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testExitReasonDataBuilderProvidesExpectedValues() {
-        int testPid = 10;
-        long testTimestampAtLastRecordingInMillis = 12345;
-        for (@AppState int testState = AppState.UNKNOWN;
-                testState <= AppState.DESTROYED;
-                testState++) {
-            ExitReasonData data =
-                    new ExitReasonData(testPid, testTimestampAtLastRecordingInMillis, testState);
-            assertEquals("Last exit info data PIDs should match", testPid, data.mExitInfoPid);
-            assertEquals("Last exit info data's AppState should match", testState, data.mState);
-            assertEquals(
-                    "Last exit info data's timestamps should match",
-                    testTimestampAtLastRecordingInMillis,
-                    data.mTimestampAtLastRecordingInMillis);
+    public void testUnexpectedSystemReasonsAreNotLogged() {
+        int pid = 1;
+        long timeMillis = 5L;
+        int unexpectedSystemReason = 1337;
+        ProcessExitReasonFromSystem.setActivityManagerForTest(
+                createMockActivityManager(pid, unexpectedSystemReason));
+        AppStateData data = new AppStateData(pid, timeMillis, AppState.DESTROYED);
+
+        // There should be nothing logged for unexpected system exit reasons.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(TrackExitReasonsOfInterest.UMA_COUNTS + ".DESTROYED")
+                        .expectNoRecords(TrackExitReasonsOfInterest.UMA_COUNTS)
+                        .expectNoRecords(TrackExitReasonsOfInterest.UMA_DELTA)
+                        .build();
+
+        assertEquals(-1, TrackExitReasonsOfInterest.findExitReasonAndLog(data));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUpdateAppStateWritesFileOnlyIfAppStateChanged() throws TimeoutException {
+        TrackExitReasonsOfInterest.setStateSupplier(mMockNotifier::getAppState);
+        mMockNotifier.mState = AppState.UNKNOWN;
+        long timeMillis = 5L;
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(timeMillis);
+
+        // The first call writes the file with the initial state.
+        CallbackHelper writeFinished = new CallbackHelper();
+        Callback<Boolean> resultCallback =
+                result -> {
+                    writeFinished.notifyCalled();
+                };
+        int calls = writeFinished.getCallCount();
+        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        writeFinished.waitForCallback(calls);
+
+        AppStateData data = TrackExitReasonsOfInterest.readData().get(0);
+        assertEquals(timeMillis, data.mTimeMillis);
+        assertEquals(AppState.UNKNOWN, data.mState);
+
+        // The second call also writes the file because the app state has changed.
+        mMockNotifier.mState = AppState.FOREGROUND;
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(++timeMillis);
+        calls = writeFinished.getCallCount();
+        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        writeFinished.waitForCallback(calls);
+
+        data = TrackExitReasonsOfInterest.readData().get(0);
+        assertEquals(timeMillis, data.mTimeMillis);
+        assertEquals(AppState.FOREGROUND, data.mState);
+
+        // The third call does not write the file because the app state has not changed, the
+        // previous time is still in the file.
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(++timeMillis);
+        calls = writeFinished.getCallCount();
+        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        writeFinished.waitForCallback(calls);
+
+        data = TrackExitReasonsOfInterest.readData().get(0);
+        assertEquals(timeMillis - 1, data.mTimeMillis);
+        assertEquals(AppState.FOREGROUND, data.mState);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testStartTrackingStartupMultipleTimes() throws TimeoutException, IOException {
+        // If an app exits during early startup repeatedly, new data keeps getting added to the file
+        // without getting logged to UMA and removed from the file. We do not want the file to have
+        // unbounded growth, so there is a limit.
+        for (int i = 1; i <= TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE + 1; i++) {
+            TrackExitReasonsOfInterest.setPidForTest(i);
+            TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(i);
+
+            CallbackHelper writeFinished = new CallbackHelper();
+            Callback<Boolean> resultCallback =
+                    result -> {
+                        writeFinished.notifyCalled();
+                    };
+            int calls = writeFinished.getCallCount();
+            TrackExitReasonsOfInterest.startTrackingStartup(resultCallback);
+            writeFinished.waitForCallback(calls);
+
+            if (i <= TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE) {
+                assertEquals(i, TrackExitReasonsOfInterest.readData().size());
+            } else {
+                assertEquals(
+                        TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE,
+                        TrackExitReasonsOfInterest.readData().size());
+            }
+            try (FileInputStream fis = new FileInputStream(TrackExitReasonsOfInterest.getFile())) {
+                assertTrue(
+                        "File should not be larger than 4KB",
+                        FileUtils.readStream(fis).length <= 4096);
+            }
         }
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testLastExitInfoIsFilledAfterExecution() {
-        int previousPid = 50;
-        TrackExitReasonsOfInterest.setPidForTest(previousPid);
-        ActivityManager mockedActivityManager =
-                getMockedActivityManager(
-                        previousPid, ApplicationExitInfo.REASON_ANR, /* isEmpty= */ false);
-        ProcessExitReasonFromSystem.setActivityManagerForTest(mockedActivityManager);
-        TrackExitReasonsOfInterest.run();
+    public void testStartAndFinishTrackingStartup() throws TimeoutException {
+        int previousPid = 42;
+        int currentPid = 1337;
+        long previousTimeMillis = 5L;
+        long currentTimeMillis = 7L;
+        int systemReason = ApplicationExitInfo.REASON_CRASH;
 
-        ExitReasonData data = TrackExitReasonsOfInterest.readLastExitInfo();
-        assertTrue(
-                "Last exit info pid should be created after first run " + data.mExitInfoPid,
-                data != null && data.mExitInfoPid == previousPid);
-        assertTrue(
-                "Last exit info timestamp should be created after first run "
-                        + data.mTimestampAtLastRecordingInMillis,
-                data.mTimestampAtLastRecordingInMillis != 0L);
+        CallbackHelper writeFinished = new CallbackHelper();
+        Callback<Boolean> resultCallback =
+                result -> {
+                    writeFinished.notifyCalled();
+                };
+        int calls;
+
+        List<AppStateData> dataList;
+        TrackExitReasonsOfInterest.setStateSupplier(mMockNotifier::getAppState);
+
+        ProcessExitReasonFromSystem.setActivityManagerForTest(
+                createMockActivityManager(previousPid, systemReason));
+
+        // Set previous state and write it to file, this overwrites its contents.
+        TrackExitReasonsOfInterest.setPidForTest(previousPid);
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(previousTimeMillis);
+        mMockNotifier.mState = AppState.DESTROYED;
+        calls = writeFinished.getCallCount();
+        TrackExitReasonsOfInterest.updateAppState(resultCallback);
+        writeFinished.waitForCallback(calls);
+
+        dataList = TrackExitReasonsOfInterest.readData();
+        assertEquals(1, dataList.size());
+        assertEquals(previousPid, dataList.get(0).mPid);
+        assertEquals(previousTimeMillis, dataList.get(0).mTimeMillis);
+        assertEquals(AppState.DESTROYED, dataList.get(0).mState);
+
+        // Set current state and start tracking startup, the current state is appended
+        // to the file and it is STARTUP.
+        TrackExitReasonsOfInterest.setPidForTest(currentPid);
+        TrackExitReasonsOfInterest.setCurrentTimeMillisForTest(currentTimeMillis);
+        calls = writeFinished.getCallCount();
+        TrackExitReasonsOfInterest.startTrackingStartup(resultCallback);
+        writeFinished.waitForCallback(calls);
+
+        dataList = TrackExitReasonsOfInterest.readData();
+        assertEquals(2, dataList.size());
+        AppStateData currentData = null;
+        for (AppStateData data : dataList) {
+            if (data.mPid == currentPid) currentData = data;
+        }
+        assertNotNull(currentData);
+        assertEquals(AppState.STARTUP, currentData.mState);
+
+        // Finish tracking startup, the previous process state is logged, and the file
+        // is rewritten to contain just the current state.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                TrackExitReasonsOfInterest.UMA_COUNTS + ".DESTROYED",
+                                ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
+                                        systemReason))
+                        .expectIntRecord(
+                                TrackExitReasonsOfInterest.UMA_COUNTS,
+                                ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
+                                        systemReason))
+                        .expectIntRecord(
+                                TrackExitReasonsOfInterest.UMA_DELTA,
+                                (int) (currentTimeMillis - previousTimeMillis))
+                        .build();
+
+        calls = writeFinished.getCallCount();
+        mMockNotifier.mState = AppState.FOREGROUND;
+        TrackExitReasonsOfInterest.finishTrackingStartup(
+                mMockNotifier::getAppState, resultCallback);
+        writeFinished.waitForCallback(calls);
+
+        histogramWatcher.assertExpected();
+        dataList = TrackExitReasonsOfInterest.readData();
+        assertEquals(1, dataList.size());
+        assertEquals(currentPid, dataList.get(0).mPid);
+        assertEquals(currentTimeMillis, dataList.get(0).mTimeMillis);
+        assertEquals(AppState.FOREGROUND, dataList.get(0).mState);
     }
 
-    // Helper methods below
-
-    private ActivityManager getMockedActivityManager(
-            int pid, int systemExitReason, boolean isEmpty) {
-        ActivityManager mockedActivityManager = Mockito.mock(ActivityManager.class);
-        // Note: "aei" is just short hand for ApplicationExitInfo
-        ApplicationExitInfo aei = Mockito.mock(ApplicationExitInfo.class);
-        when(aei.getReason()).thenReturn(systemExitReason);
-        when(aei.getPid()).thenReturn(pid);
-
-        Stream<ApplicationExitInfo> s = Stream.of(aei);
-        List<ApplicationExitInfo> aeiList;
-        if (isEmpty) {
-            aeiList = Arrays.asList();
-        } else {
-            aeiList = s.collect(Collectors.toList());
-        }
-        when(mockedActivityManager.getHistoricalProcessExitReasons(null, pid, 1))
-                .thenReturn(aeiList);
-
-        return mockedActivityManager;
+    private static ActivityManager createMockActivityManager(int pid, int systemReason) {
+        ActivityManager mockActivityManager = Mockito.mock(ActivityManager.class);
+        ApplicationExitInfo exitInfo = Mockito.mock(ApplicationExitInfo.class);
+        when(exitInfo.getPid()).thenReturn(pid);
+        when(exitInfo.getReason()).thenReturn(systemReason);
+        when(mockActivityManager.getHistoricalProcessExitReasons(null, pid, 1))
+                .thenReturn(List.of(exitInfo));
+        return mockActivityManager;
     }
 }

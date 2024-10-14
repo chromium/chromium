@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,231 +29,312 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * Tracks the most recent exit reason of interest in embedding WebView apps
- * associated with WebView's last pid.
- *
- * @return The most recent exit reason of interest matching the last PID.
- */
+/** Tracks and logs the most recent exit reasons in embedding WebView apps. */
 @RequiresApi(Build.VERSION_CODES.R)
 @JNINamespace("android_webview")
 public class TrackExitReasonsOfInterest {
-    public static final String TAG = "TrackExitReasons";
-    public static final String LAST_EXIT_INFO_FILENAME = "last-exit-info";
-    public static final String LAST_EXIT_INFO_PID = "exitInfoPid";
-    public static final String TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS =
-            "timestampAtLastRecordingInMillis";
-    public static final String LAST_STATE_KEY = "appState";
-    public static final String UMA_DELTA = "Android.WebView.HistoricalApplicationExitInfo.Delta";
-    public static final String UMA_COUNTS = "Android.WebView.HistoricalApplicationExitInfo.Counts";
-    private static long sTestTime;
+    private static final String TAG = "TrackExitReasons";
+    private static final String FILE_NAME = "last-exit-info";
+    private static final String KEY_PID = "pid";
+    private static final String KEY_TIME_MILLIS = "timeMillis";
+    private static final String KEY_STATE = "appState";
+    private static final String KEY_DATA_ARRAY = "dataArray";
+    private static final String KEY_VERSION = "version";
+    private static final int FILE_VERSION = 2;
+    // The maximum number of data entries to store in the file, as we don't want the file to grow
+    // unbounded. Also, the OS has the same limit per app for storing exit reasons, so there is no
+    // point in storing more.
+    public static final int MAX_DATA_LIST_SIZE = 16;
+    public static final String UMA_DELTA = "Android.WebView.HistoricalApplicationExitInfo.Delta2";
+    public static final String UMA_COUNTS = "Android.WebView.HistoricalApplicationExitInfo.Counts2";
+    private static long sCurrentTimeMillisForTest;
+
+    // The id of the current process.
     private static int sPid;
 
-    @VisibleForTesting public static final Map<Integer, String> sUmaSuffixMap = createMap();
+    @VisibleForTesting
+    public static final Map<Integer, String> sUmaSuffixMap =
+            Map.of(
+                    AppState.UNKNOWN, "UNKNOWN",
+                    AppState.FOREGROUND, "FOREGROUND",
+                    AppState.BACKGROUND, "BACKGROUND",
+                    AppState.DESTROYED, "DESTROYED",
+                    AppState.STARTUP, "STARTUP");
 
-    private static Map<Integer, String> createMap() {
-        Map<Integer, String> umaSuffixMap = new HashMap<Integer, String>();
-        umaSuffixMap.put(AppState.UNKNOWN, "UNKNOWN");
-        umaSuffixMap.put(AppState.FOREGROUND, "FOREGROUND");
-        umaSuffixMap.put(AppState.BACKGROUND, "BACKGROUND");
-        umaSuffixMap.put(AppState.DESTROYED, "DESTROYED");
-        return umaSuffixMap;
-    }
-
-    private static long sTimestampAtLastRecording;
-    // To avoid any potential synchronization issues we post all exit reason actions to
-    // the same sequence to be run serially. This should also guarantee that the #run method
-    // always runs prior to any #writeLastWebViewState invocations, since the run method is
-    // called at startup.
-    private static final TaskRunner sSequencedTaskRunner =
+    // To avoid any potential synchronization issues and avoid burdening the UI thread, we post all
+    // file reads and writes to the same sequence to be run serially.
+    private static final TaskRunner sTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
-    private static Supplier<Integer> sAppStateSupplier;
-    private static @AppState int sLastStateWritten;
-
-    /** Posts the exit reason tracker work in task runner queue. */
-    public static void init(Supplier<Integer> stateSupplier) {
-        sAppStateSupplier = stateSupplier;
-        sSequencedTaskRunner.execute(
-                () -> {
-                    run();
-                });
-    }
+    // The app state supplier.
+    private static Supplier<Integer> sStateSupplier;
+    private static int sLastStateWritten = -1;
 
     /**
+     * Looks up the exit reason for the process identified in the data, and records histograms in
+     * UMA if the reason is found.
      *
-     * @return The latest exit reason matching the last process's PID
+     * @return The exit reason or null if not found
      */
     @VisibleForTesting
-    public static int run() {
-        ExitReasonData previousInfoData = readLastExitInfo();
-        int pid = sPid != 0 ? sPid : Process.myPid();
-        // No previous pid, so no need to attempt to log anything
-        // Return -1 for testing purposes
-        int systemExitReason = -1;
+    public static int findExitReasonAndLog(AppStateData data) {
+        int systemReason = ProcessExitReasonFromSystem.getExitReason(data.mPid);
+        Integer convertedReason =
+                ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(systemReason);
 
-        sTimestampAtLastRecording = currentTimeMillis();
-        if (previousInfoData != null) {
-            systemExitReason =
-                    ProcessExitReasonFromSystem.getExitReason(previousInfoData.mExitInfoPid);
-            Integer mappedExitReasonData =
-                    ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
-                            systemExitReason);
+        // If the converted reason is null, the system reason is unknown and we cannot
+        // log it.
+        if (convertedReason == null) return -1;
 
-            // Log the new record
-            if (mappedExitReasonData != null) {
-                if (previousInfoData.mTimestampAtLastRecordingInMillis > 0L) {
-                    long delta =
-                            sTimestampAtLastRecording
-                                    - previousInfoData.mTimestampAtLastRecordingInMillis;
-                    RecordHistogram.recordLongTimesHistogram100(UMA_DELTA, delta);
-                }
-                ProcessExitReasonFromSystem.recordAsEnumHistogram(UMA_COUNTS, systemExitReason);
-                ProcessExitReasonFromSystem.recordAsEnumHistogram(
-                        UMA_COUNTS + "." + sUmaSuffixMap.get(previousInfoData.mState),
-                        systemExitReason);
-            }
+        if (data.mTimeMillis > 0L) {
+            long delta = getCurrentTimeMillis() - data.mTimeMillis;
+            RecordHistogram.recordLongTimesHistogram100(UMA_DELTA, delta);
         }
-        writeLastExitInfo(
-                new ExitReasonData(pid, sTimestampAtLastRecording, sAppStateSupplier.get()));
 
-        return systemExitReason;
+        ProcessExitReasonFromSystem.recordAsEnumHistogram(UMA_COUNTS, systemReason);
+        ProcessExitReasonFromSystem.recordAsEnumHistogram(
+                UMA_COUNTS + "." + sUmaSuffixMap.get(data.mState), systemReason);
+
+        return systemReason;
     }
 
-    /** Data class for tracking exit reasons */
-    public static class ExitReasonData {
-        public final int mExitInfoPid;
-        public final long mTimestampAtLastRecordingInMillis;
+    private static Supplier<Integer> getStartupStateSupplier() {
+        return StartupStateSupplier.getInstance()::getAppState;
+    }
+
+    /** Supplier class for AppState.STARTUP */
+    private static class StartupStateSupplier {
+        private StartupStateSupplier() {}
+
+        private static class LazyHolder {
+            static final StartupStateSupplier sInstance = new StartupStateSupplier();
+        }
+
+        /**
+         * @return the singleton StartupStateSupplier.
+         */
+        public static StartupStateSupplier getInstance() {
+            return LazyHolder.sInstance;
+        }
+
+        public int getAppState() {
+            return AppState.STARTUP;
+        }
+    }
+
+    /** Data class for holding app state and related details. */
+    public static class AppStateData {
+        // The process id.
+        public final int mPid;
+
+        // The time in milliseconds since the epoch.
+        public final long mTimeMillis;
+
+        // The app state.
         public final @AppState int mState;
 
-        public ExitReasonData(int pid, long timestampAtLastRecordingInMillis, @AppState int state) {
-            mExitInfoPid = pid;
-            mTimestampAtLastRecordingInMillis = timestampAtLastRecordingInMillis;
+        public AppStateData(int pid, long timeMillis, @AppState int state) {
+            mPid = pid;
+            mTimeMillis = timeMillis;
             mState = state;
         }
     }
 
+    /**
+     * Reads the list of {@link AppStateData} from a file.
+     *
+     * @return The list of {@link AppStateData} that was written to the file, empty if no data is
+     *     found. One of the data can be about the current process, it will have a matching process
+     *     id.
+     */
     @VisibleForTesting
-    public static ExitReasonData readLastExitInfo() {
-        try (FileInputStream fis = new FileInputStream(getLastExitInfoFile())) {
+    public static List<AppStateData> readData() {
+        List<AppStateData> dataList = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(getFile())) {
             String buffer = new String(FileUtils.readStream(fis));
-            JSONObject jsonObj = new JSONObject(buffer);
+            JSONObject jsonRoot = new JSONObject(buffer);
 
-            // Want to early return since we cannot do anything useful without previous PID
-            if (!jsonObj.has(LAST_EXIT_INFO_PID)) return null;
-            int exitInfoPid = jsonObj.getInt(LAST_EXIT_INFO_PID);
+            int version = jsonRoot.getInt(KEY_VERSION);
+            // If the file format is not for the expected version we cannot proceed.
+            if (version != FILE_VERSION) return dataList;
 
-            long timestampAtLastRecordingInMillis =
-                    jsonObj.optLong(TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS);
-            @AppState int state = jsonObj.optInt(LAST_STATE_KEY);
-
-            return new ExitReasonData(exitInfoPid, timestampAtLastRecordingInMillis, state);
+            JSONArray dataArray = jsonRoot.optJSONArray(KEY_DATA_ARRAY);
+            for (int i = 0; i < dataArray.length(); i++) {
+                JSONObject data = dataArray.getJSONObject(i);
+                int pid = data.getInt(KEY_PID);
+                long timeMillis = data.getLong(KEY_TIME_MILLIS);
+                @AppState int state = data.getInt(KEY_STATE);
+                dataList.add(new AppStateData(pid, timeMillis, state));
+            }
         } catch (IOException e) {
-            // File does not exist or the file read fails here
-            return null;
+            // File does not exist or the file read failed.
+            Log.i(TAG, "Failed to read file.");
         } catch (JSONException e) {
             Log.i(TAG, "Failed to parse JSON from file.");
         }
 
-        return null;
+        return dataList;
     }
 
     /**
-     * This stores the exit info data for future runs. The {@link
-     * org.chromium.android_webview.AwContentsLifecycleNotifier} will also call this when users
-     * change apps between the foreground & background.
+     * Writes the app state and the current process id and time to a file, overwriting any existing
+     * data.
      *
-     * @param newData Provides the pid and timestamp at last recording
-     * @return whether the newData is valid
+     * @param state The {@link AppState} to write
+     * @return whether the data was written successfully
      */
-    @VisibleForTesting
-    public static boolean writeLastExitInfo(final ExitReasonData newData) {
-        return writeLastExitInfo(newData, /* callbackResult= */ null);
+    public static boolean writeState(@AppState int state) {
+        return writeState(state, null);
     }
 
+    /**
+     * Writes the app state and the current process id and time to a file, overwriting any existing
+     * data.
+     *
+     * @param state The {@link AppState} to write
+     * @return whether the data was written successfully
+     */
     @VisibleForTesting
-    public static boolean writeLastExitInfo(
-            final ExitReasonData newData, final Callback<Boolean> callbackResult) {
-        try (FileOutputStream writer =
-                new FileOutputStream(getLastExitInfoFile(), /* append= */ false)) {
-            JSONObject jsonObj = new JSONObject();
-            jsonObj.put(LAST_EXIT_INFO_PID, newData.mExitInfoPid);
-            jsonObj.put(
-                    TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS,
-                    newData.mTimestampAtLastRecordingInMillis);
-            jsonObj.put(LAST_STATE_KEY, newData.mState);
-            String jsonString = jsonObj.toString();
-            writer.write(jsonString.getBytes());
+    public static boolean writeState(@AppState int state, Callback<Boolean> resultCallback) {
+        sLastStateWritten = state;
+        AppStateData data = new AppStateData(getPid(), getCurrentTimeMillis(), state);
+        return writeData(List.of(data), resultCallback);
+    }
+
+    /**
+     * Reads the previous app state data from file, appends the current state, and writes it back.
+     */
+    private static boolean appendCurrentState(Callback<Boolean> resultCallback) {
+
+        List<AppStateData> oldDataList = readData();
+        List<AppStateData> newDataList = new ArrayList<>();
+        for (int i = 0; i < oldDataList.size() && i < MAX_DATA_LIST_SIZE - 1; i++) {
+            // During startup we do not expect to find data with the same pid because we're spinning
+            // up a new process with a new pid, but a collision with a previous process id could
+            // happen very rarely.
+            if (oldDataList.get(i).mPid != getPid()) newDataList.add(oldDataList.get(i));
+        }
+        newDataList.add(new AppStateData(getPid(), getCurrentTimeMillis(), sStateSupplier.get()));
+        sLastStateWritten = sStateSupplier.get();
+        return writeData(newDataList, resultCallback);
+    }
+
+    /**
+     * Writes the data to a file, overwriting any existing data.
+     *
+     * @param data The data to write
+     * @return whether the data was written successfully
+     */
+    private static boolean writeData(
+            List<AppStateData> dataList, Callback<Boolean> resultCallback) {
+        try (FileOutputStream writer = new FileOutputStream(getFile(), /* append= */ false)) {
+            JSONObject jsonRoot = new JSONObject();
+            jsonRoot.put(KEY_VERSION, FILE_VERSION);
+
+            List<JSONObject> jsonDataList = new ArrayList<>();
+            for (AppStateData data : dataList) {
+                JSONObject jsonData = new JSONObject();
+                jsonData.put(KEY_PID, data.mPid);
+                jsonData.put(KEY_TIME_MILLIS, data.mTimeMillis);
+                jsonData.put(KEY_STATE, data.mState);
+                jsonDataList.add(jsonData);
+            }
+            jsonRoot.put(KEY_DATA_ARRAY, new JSONArray(jsonDataList));
+
+            writer.write(jsonRoot.toString().getBytes());
             writer.flush();
         } catch (JSONException | IOException e) {
-            Log.e(TAG, "Failed to write last exit info.");
-            if (callbackResult != null) {
-                callbackResult.onResult(false);
-            }
+            Log.e(TAG, "Failed to write file.");
+            if (resultCallback != null) resultCallback.onResult(false);
             return false;
         }
 
-        sLastStateWritten = newData.mState;
-        if (callbackResult != null) {
-            callbackResult.onResult(true);
-        }
+        if (resultCallback != null) resultCallback.onResult(true);
         return true;
     }
 
-    @VisibleForTesting
-    public static File getLastExitInfoFile() {
-        return new File(PathUtils.getDataDirectory(), LAST_EXIT_INFO_FILENAME);
+    /** Gets the app state from the supplier and writes it to a file if it has changed. */
+    public static void updateAppState() {
+        updateAppState(null);
     }
 
-    /** Commits the latest app state for exit reason tracking to disk. */
-    public static void writeLastWebViewState() {
-        writeLastWebViewState(/* callbackResult= */ null);
-    }
-
-    /**
-     * Commits the latest app state for exit reason tracking to disk.
-     *
-     * @param callbackResult Used for testing purposes only for waiting on disk writes to complete.
-     */
+    /** Gets the app state from the supplier and writes it to a file if it has changed. */
     @VisibleForTesting
-    public static void writeLastWebViewState(final Callback<Boolean> callbackResult) {
-        int pid = sPid != 0 ? sPid : Process.myPid();
-        sSequencedTaskRunner.execute(
+    public static void updateAppState(Callback<Boolean> resultCallback) {
+        sTaskRunner.execute(
                 () -> {
-                    @AppState int currentState = sAppStateSupplier.get();
+                    @AppState int currentState = sStateSupplier.get();
                     if (sLastStateWritten != currentState) {
-                        writeLastExitInfo(
-                                new ExitReasonData(pid, sTimestampAtLastRecording, currentState),
-                                callbackResult);
+                        writeState(currentState, resultCallback);
+                    } else {
+                        if (resultCallback != null) resultCallback.onResult(false);
                     }
                 });
     }
 
-    private static long currentTimeMillis() {
-        if (sTestTime > 0L) return sTestTime;
+    /** Starts tracking app state at startup for the current process. */
+    public static void startTrackingStartup() {
+        startTrackingStartup(null);
+    }
+
+    /** Starts tracking app state at startup for the current process. */
+    @VisibleForTesting
+    public static void startTrackingStartup(Callback<Boolean> resultCallback) {
+        sTaskRunner.execute(
+                () -> {
+                    setStateSupplier(getStartupStateSupplier());
+                    appendCurrentState(resultCallback);
+                });
+    }
+
+    public static void finishTrackingStartup(Supplier<Integer> stateSupplier) {
+        finishTrackingStartup(stateSupplier, null);
+    }
+
+    public static void finishTrackingStartup(
+            Supplier<Integer> stateSupplier, Callback<Boolean> resultCallback) {
+        sTaskRunner.execute(
+                () -> {
+                    setStateSupplier(stateSupplier);
+                    for (AppStateData data : readData()) {
+                        // Log app state and exit reason data about previous processes. There could
+                        // be data for multiple processes if early exits in previous runs prevented
+                        // us from logging it and clearing it from the file.
+                        if (data.mPid != getPid()) findExitReasonAndLog(data);
+                    }
+                    writeState(sStateSupplier.get(), resultCallback);
+                });
+    }
+
+    @VisibleForTesting
+    public static File getFile() {
+        return new File(PathUtils.getDataDirectory(), FILE_NAME);
+    }
+
+    private static long getCurrentTimeMillis() {
+        if (sCurrentTimeMillisForTest > 0L) return sCurrentTimeMillisForTest;
         return System.currentTimeMillis();
     }
 
-    @VisibleForTesting
-    public static void setSystemTimeForTest(long testTime) {
-        sTestTime = testTime;
+    public static void setCurrentTimeMillisForTest(long timeMillis) {
+        sCurrentTimeMillisForTest = timeMillis;
     }
 
-    @VisibleForTesting
+    private static int getPid() {
+        return sPid != 0 ? sPid : Process.myPid();
+    }
+
     public static void setPidForTest(int pid) {
         sPid = pid;
     }
 
     @VisibleForTesting
-    public static void setCurrtimeForTest(long currTime) {
-        sTimestampAtLastRecording = currTime;
-    }
-
-    @VisibleForTesting
-    public static void setStateSupplier(Supplier<Integer> supplier) {
-        sAppStateSupplier = supplier;
+    public static void setStateSupplier(Supplier<Integer> stateSupplier) {
+        sStateSupplier = stateSupplier;
     }
 }

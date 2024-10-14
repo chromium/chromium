@@ -99,14 +99,14 @@ public class AwContentsLifecycleNotifier {
         mAppState = appState;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasonsOfInterest.writeLastWebViewState();
+            TrackExitReasonsOfInterest.updateAppState();
         }
     }
 
     @CalledByNative
     public static void initialize() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasonsOfInterest.init(AwContentsLifecycleNotifier.getInstance()::getAppState);
+            TrackExitReasonsOfInterest.finishTrackingStartup(getInstance()::getAppState);
         }
     }
 }

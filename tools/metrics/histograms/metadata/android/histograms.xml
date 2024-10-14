@@ -5853,7 +5853,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts"
+<histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>avvall@chromium.org</owner>
@@ -5861,12 +5861,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
-    application.
+    application. Logged when the browser process is started.
   </summary>
 </histogram>
 
 <histogram
-    name="Android.WebView.HistoricalApplicationExitInfo.Counts.BACKGROUND"
+    name="Android.WebView.HistoricalApplicationExitInfo.Counts2.BACKGROUND"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>avvall@chromium.org</owner>
@@ -5875,12 +5875,12 @@ chromium-metrics-reviews@google.com.
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
     application, specifically when WebView's last recorded state before exiting
-    was the background state.
+    was the background state. Logged when the browser process is started.
   </summary>
 </histogram>
 
 <histogram
-    name="Android.WebView.HistoricalApplicationExitInfo.Counts.DESTROYED"
+    name="Android.WebView.HistoricalApplicationExitInfo.Counts2.DESTROYED"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>avvall@chromium.org</owner>
@@ -5889,12 +5889,12 @@ chromium-metrics-reviews@google.com.
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
     application, specifically when WebView's last recorded state before exiting
-    was the destroyed state.
+    was the destroyed state. Logged when the browser process is started.
   </summary>
 </histogram>
 
 <histogram
-    name="Android.WebView.HistoricalApplicationExitInfo.Counts.FOREGROUND"
+    name="Android.WebView.HistoricalApplicationExitInfo.Counts2.FOREGROUND"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>avvall@chromium.org</owner>
@@ -5903,11 +5903,11 @@ chromium-metrics-reviews@google.com.
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
     application, specifically when WebView's last recorded state before exiting
-    was the foreground state.
+    was the foreground state. Logged when the browser process is started.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts.UNKNOWN"
+<histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.STARTUP"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>avvall@chromium.org</owner>
@@ -5916,11 +5916,24 @@ chromium-metrics-reviews@google.com.
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
     application, specifically when WebView's last recorded state before exiting
-    was the detached state.
+    was the startup state. Logged when the browser process is started.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.HistoricalApplicationExitInfo.Delta"
+<histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.UNKNOWN"
+    enum="AndroidProcessExitReason" expires_after="2025-10-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>avvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Enumerates over the historical list of ApplicationExitInfo and their exit
+    reasons for an application. Records the latest exit reason for the embedding
+    application, specifically when WebView's last recorded state before exiting
+    was the detached state. Logged when the browser process is started.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.HistoricalApplicationExitInfo.Delta2"
     units="ms" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>avvall@chromium.org</owner>
@@ -5929,7 +5942,7 @@ chromium-metrics-reviews@google.com.
     Tracks the deltas (in ms) between the current time of recording and the last
     time of recording historical application exit info data. Only recorded if
     the last time at recording was non-zero and there was some exit reason
-    recorded.
+    recorded. Logged when the browser process is started.
   </summary>
 </histogram>
 
