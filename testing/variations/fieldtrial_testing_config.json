@@ -21428,6 +21428,25 @@
                     "enable_features": [
                         "ScriptStreamingForNonHTTP"
                     ]
+                },
+                {
+                    "name": "Enabled_CodeCache",
+                    "params": {
+                        "RestrictedWebUICodeCacheResources": "/new_tab_page.js,/shared.rollup.js,/lit/v3_0/lit.rollup.js,/mojo/mojo/public/js/bindings.js,/polymer/v3_0/polymer/polymer_bundled.min.js,/new_tab_page.mojom-webui.js,/cr_components/searchbox/searchbox.mojom-webui.js,/cr_components/most_visited/most_visited.mojom-webui.js,/lazy_load.js,/tab_search.js"
+                    },
+                    "enable_features": [
+                        "RestrictedWebUICodeCache",
+                        "ScriptStreamingForNonHTTP",
+                        "WebUICodeCache"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "RestrictedWebUICodeCache",
+                        "ScriptStreamingForNonHTTP",
+                        "WebUICodeCache"
+                    ]
                 }
             ]
         }
@@ -26681,46 +26700,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebRtcThreadsUseResourceEfficientType"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebUICodeCache": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Restricted",
-                    "params": {
-                        "RestrictedWebUICodeCacheResources": "/new_tab_page.js,/shared.rollup.js,/lit/v3_0/lit.rollup.js,/mojo/mojo/public/js/bindings.js,/polymer/v3_0/polymer/polymer_bundled.min.js,/new_tab_page.mojom-webui.js,/cr_components/searchbox/searchbox.mojom-webui.js,/cr_components/most_visited/most_visited.mojom-webui.js,/lazy_load.js,/tab_search.js"
-                    },
-                    "enable_features": [
-                        "RestrictedWebUICodeCache",
-                        "WebUICodeCache"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "RestrictedWebUICodeCache",
-                        "WebUICodeCache"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebUICodeCache"
                     ]
                 }
             ]
