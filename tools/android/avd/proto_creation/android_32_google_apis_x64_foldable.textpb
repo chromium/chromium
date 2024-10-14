@@ -87,6 +87,50 @@ avd_settings {
     value: "884"
   }
 }
+avd_variants {
+  key: "swarming"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "swarming_landscape"
+  value {
+    screen {
+      height: 1768
+      width: 2208
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "local"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
+avd_variants {
+  key: "local_landscape"
+  value {
+    screen {
+      height: 1768
+      width: 2208
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
 
 min_sdk: 32
 additional_apk {
