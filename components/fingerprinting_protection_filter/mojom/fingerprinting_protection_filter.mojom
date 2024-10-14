@@ -37,5 +37,5 @@ interface FingerprintingProtectionRulesetObserver {
   // Sends a read-only mode file handle with the ruleset data to a renderer
   // process, containing the filtering rules to be consulted for all
   // subsequent document loads that have filtering activated.
-  SetRulesetForProcess(mojo_base.mojom.File ruleset_file);
+  SetRulesetForProcess(mojo_base.mojom.ReadOnlyFile ruleset_file);
 };
