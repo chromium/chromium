@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
@@ -142,13 +143,14 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   [handler closeSettingsUIAndOpenURL:command];
 }
 
-- (void)showBrowsingDataPage {
+- (void)showBrowsingDataPageWithTimeRange:(browsing_data::TimePeriod)timeRange {
   [_browsingDataCoordinator stop];
 
   QuickDeleteBrowsingDataCoordinator* browsingDataCoordinator =
       [[QuickDeleteBrowsingDataCoordinator alloc]
           initWithBaseViewController:_viewController
-                             browser:self.browser];
+                             browser:self.browser
+                           timeRange:timeRange];
   _browsingDataCoordinator = browsingDataCoordinator;
   [_browsingDataCoordinator start];
   _browsingDataCoordinator.delegate = self;

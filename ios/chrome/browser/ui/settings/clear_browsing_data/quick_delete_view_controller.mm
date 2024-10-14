@@ -218,7 +218,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   base::UmaHistogramEnumeration(
       browsing_data::kDeleteBrowsingDataDialogHistogram,
       DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
-  [self.presentationHandler showBrowsingDataPage];
+  [self.presentationHandler showBrowsingDataPageWithTimeRange:_timeRange];
 }
 
 - (UIView*)tableView:(UITableView*)tableView

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
 
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -28,9 +29,21 @@
   UINavigationController* _navigationController;
   QuickDeleteMediator* _mediator;
   SignoutActionSheetCoordinator* _signoutCoordinator;
+  browsing_data::TimePeriod _initialTimeRange;
 }
 
 #pragma mark - ChromeCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                 timeRange:
+                                     (browsing_data::TimePeriod)timeRange {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
+    _initialTimeRange = timeRange;
+  }
+  return self;
+}
 
 - (void)start {
   ProfileIOS* profile = self.browser->GetProfile();
@@ -51,7 +64,7 @@
                                          identityManager:identityManager
                                      browsingDataRemover:browsingDataRemover
                                      discoverFeedService:discoverFeedService
-                          canPerformTabsClosureAnimation:NO];
+                                               timeRange:_initialTimeRange];
 
   _viewController = [[QuickDeleteBrowsingDataViewController alloc] init];
   _viewController.delegate = self;

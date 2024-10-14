@@ -185,6 +185,36 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   return self;
 }
 
+- (instancetype)initWithPrefs:(PrefService*)prefs
+    browsingDataCounterWrapperProducer:
+        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
+                       identityManager:(signin::IdentityManager*)identityManager
+                   browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                             timeRange:(browsing_data::TimePeriod)timeRange {
+  if ((self = [super init])) {
+    _prefs = prefs;
+    _counterWrapperProducer = counterWrapperProducer;
+    _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
+    _browsingDataRemover = browsingDataRemover;
+    _discoverFeedService = discoverFeedService;
+
+    _prefChangeRegistrar.Init(_prefs);
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+
+    _selectedTimeRange = timeRange;
+
+    // Start observing preferences.
+    [self observePreferences];
+
+    _canPerformTabsClosureAnimation = NO;
+  }
+  return self;
+}
+
 - (void)setConsumer:(id<QuickDeleteConsumer>)consumer {
   if (_consumer == consumer) {
     return;
