@@ -874,6 +874,71 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
   browser2->tab_strip_model()->CloseAllTabs();
 }
 
+TEST_F(TabsApiUnitTest, TabsMoveAcrossWindowsShouldRespectGroupContiguity) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveAcrossWindowWithInvalidIndexTest").Build();
+
+  // Add several web contents to the original browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    GetTabStripModel()->AppendWebContents(std::move(contents),
+                                          /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, GetTabStripModel()->count());
+
+  // Create a new window and add a few tabs, getting the ID of the last tab.
+  auto window2 = std::make_unique<TestBrowserWindow>();
+  Browser::CreateParams params(profile(), /* user_gesture */ true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = window2.get();
+  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
+  // |window2|.
+  new TestBrowserWindowOwner(std::move(window2));
+  std::unique_ptr<Browser> browser2(Browser::Create(params));
+  BrowserList::SetLastActive(browser2.get());
+  int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
+
+  constexpr int kNumTabs2 = 3;
+  for (int i = 0; i < kNumTabs2; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+    CreateSessionServiceTabHelper(contents.get());
+    browser2->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                   /*foreground=*/true);
+  }
+  browser2->tab_strip_model()->AddToNewGroup({0, 1});
+  ASSERT_EQ(kNumTabs2, browser2->tab_strip_model()->count());
+
+  content::WebContents* web_contents2 = GetTabStripModel()->GetWebContentsAt(2);
+  int tab_extension_id =
+      sessions::SessionTabHelper::IdForTab(web_contents2).id();
+
+  // Use the TabsMoveFunction to move tab at index 2 from browser2 to the middle
+  // of a group in browser1.
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d], {"windowId": %d, "index": 1}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_extension_id, window_id2);
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kInvalidTabIndexBreaksGroupContiguity, error);
+
+  // Clean up.
+  browser2->tab_strip_model()->CloseAllTabs();
+}
+
 // Tests that calling chrome.tabs.move doesn't move a saved tab.
 TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabAllowed) {
   scoped_refptr<const Extension> extension =

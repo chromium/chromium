@@ -332,14 +332,6 @@ int MoveTabToWindow(ExtensionFunction* function,
     return -1;
   }
 
-  std::unique_ptr<TabModel> detached_tab =
-      source_tab_strip->DetachTabAtForInsertion(source_index);
-  if (!detached_tab) {
-    *error = ErrorUtils::FormatErrorMessage(tabs_constants::kTabNotFoundError,
-                                            base::NumberToString(tab_id));
-    return -1;
-  }
-
   TabStripModel* target_tab_strip =
       ExtensionTabUtil::GetEditableTabStripModel(target_browser);
   DCHECK(target_tab_strip);
@@ -348,8 +340,31 @@ int MoveTabToWindow(ExtensionFunction* function,
   // This is ">" because it can append to a new index position.
   // -1 means set the move location to the last position.
   int target_index = new_index;
-  if (target_index > target_tab_strip->count() || target_index < 0)
+  if (target_index > target_tab_strip->count() || target_index < 0) {
     target_index = target_tab_strip->count();
+  }
+
+  if (target_tab_strip->SupportsTabGroups()) {
+    std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(target_index);
+    std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(target_index - 1);
+
+    // Group contiguity is not respected in the target tabstrip.
+    if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+        next_tab_dst_group == prev_tab_dst_group) {
+      *error = tabs_constants::kInvalidTabIndexBreaksGroupContiguity;
+      return -1;
+    }
+  }
+
+  std::unique_ptr<TabModel> detached_tab =
+      source_tab_strip->DetachTabAtForInsertion(source_index);
+  if (!detached_tab) {
+    *error = ErrorUtils::FormatErrorMessage(tabs_constants::kTabNotFoundError,
+                                            base::NumberToString(tab_id));
+    return -1;
+  }
 
   return target_tab_strip->InsertDetachedTabAt(
       target_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
@@ -1806,8 +1821,9 @@ bool TabsMoveFunction::MoveTab(int tab_id,
     Browser* target_browser = target_controller->GetBrowser();
     int inserted_index =
         MoveTabToWindow(this, tab_id, target_browser, *new_index, error);
-    if (inserted_index < 0)
+    if (inserted_index < 0) {
       return false;
+    }
 
     *new_index = inserted_index;
 
@@ -1834,12 +1850,14 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   // Clamp move location to the last position.
   // This is ">=" because the move must be to an existing location.
   // -1 means set the move location to the last position.
-  if (*new_index >= source_tab_strip->count() || *new_index < 0)
+  if (*new_index >= source_tab_strip->count() || *new_index < 0) {
     *new_index = source_tab_strip->count() - 1;
+  }
 
-  if (*new_index != tab_index)
+  if (*new_index != tab_index) {
     *new_index =
         source_tab_strip->MoveWebContentsAt(tab_index, *new_index, false);
+  }
 
   if (has_callback()) {
     tab_values.Append(CreateTabObjectHelper(contents, extension(),
@@ -2016,8 +2034,9 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   Browser* target_browser = nullptr;
   tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
   if (params->options.group_id) {
-    if (params->options.create_properties)
+    if (params->options.create_properties) {
       return RespondNow(Error(tabs_constants::kGroupParamsError));
+    }
 
     group_id = *params->options.group_id;
     if (!ExtensionTabUtil::GetGroupById(
@@ -2041,8 +2060,9 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   }
 
   DCHECK(target_browser);
-  if (!target_browser->window()->IsTabStripEditable())
+  if (!target_browser->window()->IsTabStripEditable()) {
     return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+  }
 
   // Get all tab IDs from parameters.
   std::vector<int> tab_ids;
