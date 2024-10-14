@@ -24,15 +24,20 @@ public class ActionConfirmationDelegate {
     private ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     private Profile mProfile;
     private PrefService mPrefService;
+    private boolean mIncognito;
 
     /**
      * @param actionConfirmationManager The {@link ActionConfirmationManager} that is being handled.
      * @param toolbarContainerView The {@link View} that hosts the tab strip's drag and drop events.
+     * @param incognito Whether this tab strip is incognito.
      */
     ActionConfirmationDelegate(
-            ActionConfirmationManager actionConfirmationManager, View toolbarContainerView) {
+            ActionConfirmationManager actionConfirmationManager,
+            View toolbarContainerView,
+            boolean incognito) {
         mActionConfirmationManager = actionConfirmationManager;
         mToolbarContainerView = toolbarContainerView;
+        mIncognito = incognito;
     }
 
     /**
@@ -76,9 +81,12 @@ public class ActionConfirmationDelegate {
 
     /**
      * @return Whether or not we should show the confirmation dialog when a tab is removed from the
-     *     group.
+     *     group. Dialog is always skipped in incognito.
      */
     boolean isTabRemoveDialogSkipped() {
+        // `UserPrefs` should only be accessed in non-incognito mode, as they are not applicable in
+        // incognito.
+        if (mIncognito) return true;
         if (mPrefService == null) mPrefService = UserPrefs.get(mProfile);
         return mPrefService.getBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE);
     }

@@ -657,7 +657,8 @@ public class StripLayoutHelper
         mTabMenu.setModal(true);
 
         mActionConfirmationDelegate =
-                new ActionConfirmationDelegate(actionConfirmationManager, mToolbarContainerView);
+                new ActionConfirmationDelegate(
+                        actionConfirmationManager, mToolbarContainerView, mIncognito);
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
 
         mIsFirstLayoutPass = true;
@@ -4028,7 +4029,8 @@ public class StripLayoutHelper
                             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
                         });
             } else if (StripLayoutUtils.getNumOfTabsInGroup(mTabGroupModelFilter, targetGroupTitle)
-                    > 1) {
+                            > 1
+                    || mIncognito) {
                 mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
                 RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
             }
@@ -4926,10 +4928,11 @@ public class StripLayoutHelper
         if (selectedTab != null
                 && findTabById(selectedTab.getTabId()) != null
                 && selectedTab.isDraggedOffStrip()) {
+
             // Rebuild tab groups to unhide the interacting tab group as tab is restored back on tab
             // strip.
-            if (mActionConfirmationDelegate.isTabRemoveDialogSkipped()
-                    && isLastTabInGroup(selectedTab.getTabId())) {
+            if (isLastTabInGroup(selectedTab.getTabId())
+                    && mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
                 mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
             }
             dragActiveClickedTabOntoStrip(LayoutManagerImpl.time(), 0.0f, false);
@@ -5027,13 +5030,15 @@ public class StripLayoutHelper
         // Show group delete dialog when the last tab in group is being dragged off tab strip.
         boolean draggingLastTabInGroup = isLastTabInGroup(tabId);
         if (draggingLastTabInGroup && !mIncognito) {
-            mActionConfirmationDelegate.handleDeleteGroupAction(
-                    tab.getRootId(),
-                    /* draggingLastTabOffStrip= */ true,
-                    /* tabClosing= */ false,
-                    () -> {
-                        mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, false);
-                    });
+            if (!mIncognito) {
+                mActionConfirmationDelegate.handleDeleteGroupAction(
+                        tab.getRootId(),
+                        /* draggingLastTabOffStrip= */ true,
+                        /* tabClosing= */ false,
+                        () -> {
+                            mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, false);
+                        });
+            }
         }
 
         // Store reorder state, then exit reorder mode.
