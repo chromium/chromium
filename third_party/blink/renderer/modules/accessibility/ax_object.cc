@@ -887,6 +887,15 @@ void AXObject::SetParent(AXObject* new_parent) {
 }
 
 bool AXObject::IsMissingParent() const {
+  // This method should not be called on a detached object.
+  if (IsDetached()) {
+    // TODO(a11y): Upgrade to NOTREACHED once all hits of
+    // crbug.com/337178753 have been addressed.
+    DUMP_WILL_BE_NOTREACHED()
+        << "Checking for parent on detached object: " << this;
+    return false;
+  }
+
   if (!parent_) {
     // Do not attempt to repair the ParentObject() of a validation message
     // object, because hidden ones are purposely kept around without being in
@@ -898,9 +907,8 @@ bool AXObject::IsMissingParent() const {
   }
 
   if (parent_->IsDetached()) {
-    CHECK(!AXObjectCache().IsFrozen())
+    DUMP_WILL_BE_CHECK(!AXObjectCache().IsFrozen())
         << "Should not have detached parent in frozen tree: " << this;
-
     return true;
   }
 
