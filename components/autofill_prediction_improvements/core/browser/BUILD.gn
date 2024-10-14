@@ -10,7 +10,11 @@ static_library("features") {
     "autofill_prediction_improvements_features.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/prefs",
+  ]
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
@@ -49,6 +53,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "autofill_prediction_improvements_features_unittest.cc",
       "autofill_prediction_improvements_filling_engine_impl_unittest.cc",
       "autofill_prediction_improvements_manager_test_api.h",
       "autofill_prediction_improvements_manager_unittest.cc",
@@ -64,6 +69,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/optimization_guide/core",
       "//components/optimization_guide/core:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/prefs:test_support",
       "//components/user_annotations:test_support",
       "//components/user_annotations:user_annotations",
       "//testing/gmock",

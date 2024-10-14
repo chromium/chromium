@@ -9,6 +9,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
+class PrefService;
+
 namespace autofill_prediction_improvements {
 
 BASE_DECLARE_FEATURE(kAutofillPredictionImprovements);
@@ -43,6 +45,10 @@ inline constexpr base::FeatureParam<bool> kExtractAXTreeForPredictions{
     &kAutofillPredictionImprovements,
     /*name=*/"extract_ax_tree_for_predictions",
     /*default_value=*/false};
+
+// Indicates whether Autofill Prediction Improvements are available (but not
+// necessary enabled). This considers the AutofillPredictionSettings policy.
+bool IsAutofillPredictionImprovementsSupported(const PrefService* prefs);
 
 }  // namespace autofill_prediction_improvements
 

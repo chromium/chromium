@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
-import type {SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
@@ -163,6 +164,36 @@ suite('PasswordsAndForms', function() {
 
       destroyPrefs(prefs);
     });
+  });
+
+  test('autofillPredictionImprovementsEnabled', async function() {
+    loadTimeData.overrideValues({
+      autofillPredictionImprovementsEnabled: true,
+    });
+    const prefs = await createPrefs(true, true);
+    const element = createAutofillElement(prefs);
+    const autofillPredictionImprovementsManagerButton =
+        element.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#autofillPredictionImprovementsManagerButton');
+    assertTrue(autofillPredictionImprovementsManagerButton !== null);
+    element.remove();
+    flush();
+    destroyPrefs(prefs);
+  });
+
+  test('autofillPredictionImprovementsDisabled', async function() {
+    loadTimeData.overrideValues({
+      autofillPredictionImprovementsEnabled: false,
+    });
+    const prefs = await createPrefs(true, true);
+    const element = createAutofillElement(prefs);
+    const autofillPredictionImprovementsManagerButton =
+        element.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#autofillPredictionImprovementsManagerButton');
+    assertTrue(autofillPredictionImprovementsManagerButton === null);
+    element.remove();
+    flush();
+    destroyPrefs(prefs);
   });
 
   test('loadAddressesAsync', function() {

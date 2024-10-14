@@ -471,8 +471,7 @@ bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
   if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     return false;
   }
-  if (!decider_ ||
-      !base::FeatureList::IsEnabled(kAutofillPredictionImprovements)) {
+  if (!decider_) {
     return false;
   }
   if (kSkipAllowlist.Get()) {

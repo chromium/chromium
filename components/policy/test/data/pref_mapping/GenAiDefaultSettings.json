@@ -11,6 +11,9 @@
           "GenAiDefaultSettings": 0
         },
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 0
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 0
           },
@@ -36,6 +39,9 @@
           "GenAiDefaultSettings": 1
         },
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 1
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 1
           },
@@ -61,6 +67,9 @@
           "GenAiDefaultSettings": 2
         },
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 2
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 2
           },
@@ -84,6 +93,9 @@
       {
         "policies": {},
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "default_value": 0
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "default_value": 0
           },
@@ -107,6 +119,7 @@
       {
         "policies": {
           "GenAiDefaultSettings": 1,
+          "AutofillPredictionSettings": 2,
           "HelpMeWriteSettings": 2,
           "TabOrganizerSettings": 2,
           "CreateThemesSettings": 2,
@@ -115,6 +128,9 @@
           "TabCompareSettings": 2
         },
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 2
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 2
           },
@@ -148,6 +164,9 @@
           "GenAiDefaultSettings": 0
         },
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 0
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 0
           },
@@ -180,6 +199,9 @@
       {
         "policies": {},
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 1
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 1
           },
@@ -212,6 +234,7 @@
       {
         "policies": {
           "GenAiDefaultSettings": 0,
+          "AutofillPredictionSettings": 2,
           "HelpMeWriteSettings": 2,
           "TabOrganizerSettings": 2,
           "CreateThemesSettings": 2,
@@ -223,6 +246,9 @@
           "HelpMeReadSettings": 2
         },
         "prefs": {
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 2
+          },
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 2
           },

@@ -35,20 +35,15 @@
 
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
-        content::WebContents* web_contents)
+        content::WebContents* web_contents,
+        Profile* profile)
     : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
           *web_contents),
-      prefs_(CHECK_DEREF(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
-              ->GetPrefs())),
+      prefs_(CHECK_DEREF(profile->GetPrefs())),
       prediction_improvements_manager_{
           this,
-          OptimizationGuideKeyedServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  GetWebContents().GetBrowserContext())),
-          autofill::StrikeDatabaseFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  GetWebContents().GetBrowserContext())),
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+          autofill::StrikeDatabaseFactory::GetForProfile(profile),
       } {}
 
 ChromeAutofillPredictionImprovementsClient::
@@ -58,12 +53,14 @@ ChromeAutofillPredictionImprovementsClient::
 std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
 ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(
-          autofill_prediction_improvements::kAutofillPredictionImprovements)) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsSupported(profile->GetPrefs())) {
     return nullptr;
   }
   return base::WrapUnique<ChromeAutofillPredictionImprovementsClient>(
-      new ChromeAutofillPredictionImprovementsClient(web_contents));
+      new ChromeAutofillPredictionImprovementsClient(web_contents, profile));
 }
 
 void ChromeAutofillPredictionImprovementsClient::GetAXTree(

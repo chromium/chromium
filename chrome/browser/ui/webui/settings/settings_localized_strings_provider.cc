@@ -1394,8 +1394,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean(
       "autofillPredictionImprovementsEnabled",
-      base::FeatureList::IsEnabled(
-          autofill_prediction_improvements::kAutofillPredictionImprovements));
+      autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsSupported(profile->GetPrefs()));
+
   html_source->AddString(
       "autofillPredictionImprovementsToggleSubLabel",
       l10n_util::GetStringFUTF16(

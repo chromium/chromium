@@ -279,10 +279,6 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
 AutofillPredictionImprovementsDelegate*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          autofill_prediction_improvements::kAutofillPredictionImprovements)) {
-    return nullptr;
-  }
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
           web_contents()->GetOutermostWebContents())) {
     ChromeAutofillPredictionImprovementsClient* client =

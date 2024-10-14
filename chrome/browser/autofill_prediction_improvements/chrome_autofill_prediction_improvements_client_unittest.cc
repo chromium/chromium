@@ -44,7 +44,7 @@ class ChromeAutofillPredictionImprovementsClientTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ChromeAutofillPredictionImprovementsClient::CreateForWebContents(
-        web_contents());
+        web_contents(), profile());
   }
 
   ChromeAutofillPredictionImprovementsClient* client() {

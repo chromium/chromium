@@ -259,6 +259,7 @@ source_set("policy_specific_browser_tests") {
   if (!is_android) {
     sources += [
       "test/autofill_policy_browsertest.cc",
+      "test/autofill_prediction_improvements_policy_browsertest.cc",
       "test/automatic_fullscreen_policy_browsertest.cc",
       "test/autoplay_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
@@ -287,6 +288,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
       "//components/autofill/content/browser:test_support",
+      "//components/autofill_prediction_improvements/core/browser",
       "//components/bookmarks/common:common",
       "//components/enterprise",
       "//components/enterprise:test_support",

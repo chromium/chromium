@@ -10,6 +10,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class Profile;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -50,7 +52,8 @@ class ChromeAutofillPredictionImprovementsClient
 
  protected:
   explicit ChromeAutofillPredictionImprovementsClient(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      Profile* profile);
 
  private:
   friend class content::WebContentsUserData<
