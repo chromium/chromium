@@ -690,11 +690,12 @@
     </message>
 
     <!-- Supervised user profile signin IPH -->
-    <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
-    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE"
-      desc="Title of the IPH bubble when a supervised user signs-in in a new or existing local profile."
-      translateable="false">
+    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE" desc="Title of a reminder message, which is intended to help supervised users understand that they have been signed in to Chrome.">
       Welcome <ph name="CHILD_NAME">$1<ex>Charlie</ex></ph>
+    </message>
+
+    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT" desc="Body text of a reminder message, which is intended to help supervised users understand that they have been signed in to Chrome. This body text string comes after the 'Welcome back, USER_NAME' string. It motivates kids to get their parents' help to stay safer online.">
+      Your parent's choices will now keep you safer online
     </message>
 
     <!-- Profile Picker -->
