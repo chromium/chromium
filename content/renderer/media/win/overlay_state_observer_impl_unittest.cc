@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "content/renderer/media/win/overlay_state_observer_impl.h"
+
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
+#include "content/renderer/media/win/overlay_state_service_provider.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,6 +43,9 @@ class MockOverlayStateService : public OverlayStateServiceProvider {
     }
   }
 
+ protected:
+  ~MockOverlayStateService() override = default;
+
  private:
   mojo::Remote<gpu::mojom::OverlayStateObserver> overlay_state_observer_;
   gpu::Mailbox mailbox_;
@@ -48,7 +53,10 @@ class MockOverlayStateService : public OverlayStateServiceProvider {
 
 class OverlayStateObserverImplTest : public testing::Test {
  public:
-  OverlayStateObserverImplTest() = default;
+  OverlayStateObserverImplTest() {
+    mock_overlay_state_service_ =
+        base::MakeRefCounted<MockOverlayStateService>();
+  }
   ~OverlayStateObserverImplTest() override = default;
 
   void OnStateChanged(bool promoted) {
@@ -58,7 +66,7 @@ class OverlayStateObserverImplTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockOverlayStateService mock_overlay_state_service;
+  scoped_refptr<MockOverlayStateService> mock_overlay_state_service_;
   int callback_count_ = 0;
   bool promoted_ = false;
 };
@@ -67,27 +75,27 @@ TEST_F(OverlayStateObserverImplTest, StateChange) {
   // Create a OverlayStateObserverImpl & register a mailbox to listen to
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   auto overlay_state_observer_subscription = OverlayStateObserverImpl::Create(
-      &mock_overlay_state_service, mailbox,
+      mock_overlay_state_service_.get(), mailbox,
       base::BindRepeating(&OverlayStateObserverImplTest::OnStateChanged,
                           base::Unretained(this)));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(callback_count_, 0);
 
   // Set overlay state to false
-  mock_overlay_state_service.SetOverlayState(mailbox, false);
+  mock_overlay_state_service_->SetOverlayState(mailbox, false);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(callback_count_, 1);
   EXPECT_EQ(promoted_, false);
 
   // Set overlay state to true
-  mock_overlay_state_service.SetOverlayState(mailbox, true);
+  mock_overlay_state_service_->SetOverlayState(mailbox, true);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(callback_count_, 2);
   EXPECT_EQ(promoted_, true);
 
   // Set overlay state for another mailbox & ensure no callback
   gpu::Mailbox mailbox2 = gpu::Mailbox::Generate();
-  mock_overlay_state_service.SetOverlayState(mailbox2, false);
+  mock_overlay_state_service_->SetOverlayState(mailbox2, false);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(callback_count_, 2);
   EXPECT_EQ(promoted_, true);

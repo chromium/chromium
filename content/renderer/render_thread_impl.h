@@ -265,7 +265,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // The OverlayStateService is only available where Media Foundation for
   // clear is supported, otherwise GetOverlayStateServiceProvider will return
   // nullptr.
-  OverlayStateServiceProvider* GetOverlayStateServiceProvider();
+  scoped_refptr<OverlayStateServiceProvider> GetOverlayStateServiceProvider();
 #endif
 
   blink::WebVideoCaptureImplManager* video_capture_impl_manager() const {
@@ -542,7 +542,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
-  std::unique_ptr<OverlayStateServiceProviderImpl>
+  scoped_refptr<OverlayStateServiceProviderImpl>
       overlay_state_service_provider_;
 #endif
 

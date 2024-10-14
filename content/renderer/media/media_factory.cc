@@ -685,8 +685,7 @@ MediaFactory::CreateRendererFactorySelector(
 
     media::ObserveOverlayStateCB observe_overlay_state_cb = base::BindRepeating(
         &OverlayStateObserverImpl::Create,
-        base::UnsafeDanglingUntriaged(
-            render_thread->GetOverlayStateServiceProvider()));
+        base::RetainedRef(render_thread->GetOverlayStateServiceProvider()));
 
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
