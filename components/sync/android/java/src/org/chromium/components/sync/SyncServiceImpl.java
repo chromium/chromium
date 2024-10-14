@@ -328,7 +328,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     public boolean isUsingExplicitPassphrase() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
-        assert isEngineInitialized();
         return SyncServiceImplJni.get().isUsingExplicitPassphrase(mSyncServiceAndroidBridge);
     }
 
