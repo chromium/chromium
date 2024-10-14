@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.base;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -13,26 +14,36 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 
+import dagger.hilt.internal.GeneratedComponentManager;
+import dagger.hilt.internal.GeneratedComponentManagerHolder;
+
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.IdentifierNameString;
 
 /**
- * Application class to use for Chrome when //chrome code is in an isolated split. This class will
- * perform any necessary initialization for non-browser processes without loading code from the
- * chrome split. In the browser process, the necessary logic is loaded from the chrome split using
+ * Application class for Chrome that knows how to deal with isolated splits. This class will perform
+ * any necessary initialization for non-browser processes without loading code from the chrome
+ * split. In the browser process, the necessary logic is loaded from the chrome split using
  * reflection.
- *
- * This class will be used when isolated splits are enabled.
  */
-public class SplitChromeApplication extends SplitCompatApplication {
+public class SplitChromeApplication extends SplitCompatApplication
+        implements GeneratedComponentManagerHolder {
+
+    public interface HiltInitHook {
+        GeneratedComponentManager<?> onCreate(Application a);
+    }
+
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
 
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;
+
+    private static GeneratedComponentManager<?> sHiltComponentManager;
 
     private String mChromeApplicationClassName;
 
@@ -174,5 +185,24 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
+    }
+
+    @Override
+    public GeneratedComponentManager<?> componentManager() {
+        if (sHiltComponentManager == null) {
+            HiltInitHook hiltInstance = ServiceLoaderUtil.maybeCreate(HiltInitHook.class);
+            if (hiltInstance != null) {
+                sHiltComponentManager = hiltInstance.onCreate(this);
+            }
+        }
+        return sHiltComponentManager;
+    }
+
+    @Override
+    public Object generatedComponent() {
+        if (componentManager() != null) {
+            return componentManager().generatedComponent();
+        }
+        return null;
     }
 }
