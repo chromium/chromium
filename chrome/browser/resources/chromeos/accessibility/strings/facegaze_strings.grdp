@@ -114,4 +114,10 @@
   <message name="IDS_FACEGAZE_DISPLAY_TEXT" desc="This text is the finalized text that shows up in the FaceGaze bubble UI when a gesture triggers an action. It contains the facial gesture that was recognized and the action that it triggered.">
     <ph name="action">$1<ex>Left-click the mouse</ex></ph> (<ph name="gesture">$2<ex>Smile</ex></ph>)
   </message>
+  <message name="IDS_FACEGAZE_STATE_PAUSED" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze is currently paused.">
+    Face control paused
+  </message>
+  <message name="IDS_FACEGAZE_STATE_SCROLL_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that scroll mode is currently active.">
+    Scroll mode active
+  </message>
 </grit-part>

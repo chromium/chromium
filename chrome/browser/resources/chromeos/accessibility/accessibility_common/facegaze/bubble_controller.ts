@@ -38,12 +38,12 @@ export class BubbleController {
   resetBubble(): void {
     this.baseText_ = [];
     const {paused, scrollModeActive} = this.getState_();
-    // TODO(b/341770655): Localize these strings.
     if (paused) {
-      this.baseText_.push('FaceGaze paused');
+      this.baseText_.push(chrome.i18n.getMessage('facegaze_state_paused'));
     }
     if (scrollModeActive) {
-      this.baseText_.push('Scroll mode active');
+      this.baseText_.push(
+          chrome.i18n.getMessage('facegaze_state_scroll_active'));
     }
 
     chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));

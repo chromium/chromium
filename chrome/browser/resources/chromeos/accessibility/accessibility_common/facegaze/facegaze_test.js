@@ -1727,7 +1727,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
   // timeout has elapsed.
   this.triggerBubbleControllerTimeout();
   assertEquals(
-      'FaceGaze paused, Scroll mode active',
+      'Face control paused, Scroll mode active',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 
@@ -1763,7 +1763,8 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   // timeout has elapsed.
   this.triggerBubbleControllerTimeout();
   assertEquals(
-      'FaceGaze paused', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+      'Face control paused',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // Send another result. Note that since FaceGaze is paused, no action
   // will be taken.
@@ -1772,7 +1773,8 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   this.processFaceLandmarkerResult(result);
 
   assertEquals(
-      'FaceGaze paused', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+      'Face control paused',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
