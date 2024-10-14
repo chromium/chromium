@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
@@ -50,6 +50,7 @@
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -159,12 +160,14 @@ std::u16string ExpectedPasskeyLabel() {
   if (device::kWebAuthnGpmPin.Get()) {
     // In this case GPM should be enabled by default.
     return l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER);
-  } else {
-    // Otherwise the label will mention the priority phone.
-    return l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-                                      kPhoneName);
+        IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW);
   }
+  // Otherwise the label will mention the priority phone.
+  return l10n_util::GetStringFUTF16(
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
+          ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
+          : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
+      kPhoneName);
 }
 
 // Autofill integration tests. This file contains end-to-end tests for
@@ -773,7 +776,9 @@ class WebAuthnWindowsAutofillIntegrationTest
 
   std::u16string GetDeviceString() override {
     return l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO);
+        base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
+            ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
+            : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO);
   }
 
  protected:

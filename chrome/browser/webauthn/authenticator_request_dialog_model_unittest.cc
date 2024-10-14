@@ -2946,9 +2946,13 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
     EXPECT_EQ(passkey.credential_id(), kPhoneCred1.cred_id);
     EXPECT_EQ(passkey.display_name(), "");
     EXPECT_EQ(passkey.username(), kPhoneCred1.user.name);
-    EXPECT_EQ(passkey.GetAuthenticatorLabel(),
-              l10n_util::GetStringFUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, u"Phone from sync"));
+    EXPECT_EQ(
+        passkey.GetAuthenticatorLabel(),
+        l10n_util::GetStringFUTF16(
+            base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
+                ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
+                : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
+            u"Phone from sync"));
     EXPECT_EQ(passkey.user_id(), kPhoneCred1.user.id);
     EXPECT_EQ(passkey.rp_id(), kPhoneCred1.rp_id);
     EXPECT_EQ(passkey.source(),

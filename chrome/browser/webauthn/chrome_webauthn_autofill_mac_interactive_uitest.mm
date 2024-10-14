@@ -25,6 +25,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "device/fido/features.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -47,6 +48,10 @@ navigator.credentials.get({
 
 class WebAuthnMacAutofillIntegrationTest : public CertVerifierBrowserTest {
  protected:
+  WebAuthnMacAutofillIntegrationTest() {
+    feature_.InitAndEnableFeature(device::kWebAuthnEnclaveAuthenticator);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CertVerifierBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
@@ -92,6 +97,7 @@ class WebAuthnMacAutofillIntegrationTest : public CertVerifierBrowserTest {
     touch_id_test_environment_->SimulateTouchIdPromptSuccess();
   }
 
+  base::test::ScopedFeatureList feature_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   device::fido::mac::AuthenticatorConfig config_;
   std::unique_ptr<device::fido::mac::ScopedTouchIdTestEnvironment>
@@ -137,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
   EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
             l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE));
+                IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW));
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.

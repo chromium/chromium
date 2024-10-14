@@ -296,6 +296,7 @@ source_set("passkey_credential") {
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//device/fido:fido",
     "//ui/base",
   ]
   if (is_android) {

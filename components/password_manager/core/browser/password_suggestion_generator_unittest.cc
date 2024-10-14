@@ -23,6 +23,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/mock_sync_service.h"
+#include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -505,6 +506,13 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_DontShowPasskey) {
 
 // Verify the passkey suggestion content.
 TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({device::kWebAuthnEnclaveAuthenticator}, {});
+  bool use_new_strings = true;
+#else
+  bool use_new_strings = false;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   const auto passkey =
       passkey_credential(PasskeyCredential::Source::kWindowsHello, "username");
   const auto passkeys = std::optional(std::vector<PasskeyCredential>{passkey});
@@ -522,7 +530,9 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
           EqualsPasskeySuggestion(
               u"username",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO),
+                  use_new_strings
+                      ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
+                      : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO),
               favicon(),
               Suggestion::Guid(base::Base64Encode(passkey.credential_id()))),
           EqualsSuggestion(SuggestionType::kSeparator),
@@ -533,6 +543,13 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
 // Verify that passkey suggestions are not sorted by username.
 TEST_F(PasswordSuggestionGeneratorTest,
        PasskeySuggestions_MultipleSavedPasskeys) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({device::kWebAuthnEnclaveAuthenticator}, {});
+  bool use_new_strings = true;
+#else
+  bool use_new_strings = false;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   const auto foo_passkey =
       passkey_credential(PasskeyCredential::Source::kTouchId, "foo");
   const auto bar_passkey =
@@ -549,23 +566,28 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(EqualsPasskeySuggestion(
-                      u"foo",
-                      l10n_util::GetStringUTF16(
-                          IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE),
-                      favicon(),
-                      Suggestion::Guid(
-                          base::Base64Encode(foo_passkey.credential_id()))),
-                  EqualsPasskeySuggestion(
-                      u"bar",
-                      l10n_util::GetStringUTF16(
-                          IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN),
-                      favicon(),
-                      Suggestion::Guid(
-                          base::Base64Encode(bar_passkey.credential_id()))),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsManagePasswordsSuggestion(
-                      /*has_webauthn_credential=*/true)));
+      ElementsAre(
+          EqualsPasskeySuggestion(
+              u"foo",
+              l10n_util::GetStringUTF16(
+                  use_new_strings
+                      ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW
+                      : IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE),
+              favicon(),
+              Suggestion::Guid(
+                  base::Base64Encode(foo_passkey.credential_id()))),
+          EqualsPasskeySuggestion(
+              u"bar",
+              l10n_util::GetStringUTF16(
+                  use_new_strings
+                      ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW
+                      : IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN),
+              favicon(),
+              Suggestion::Guid(
+                  base::Base64Encode(bar_passkey.credential_id()))),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsManagePasswordsSuggestion(
+              /*has_webauthn_credential=*/true)));
 }
 
 // Test that the password generation suggestion is not added if there're no
@@ -599,6 +621,13 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPassword) {
 // Test that the password generation suggestion is added when the user has a
 // saved passkey for the current domain.
 TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({device::kWebAuthnEnclaveAuthenticator}, {});
+  bool use_new_strings = true;
+#else
+  bool use_new_strings = false;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   const auto passkey =
       passkey_credential(PasskeyCredential::Source::kWindowsHello, "username");
   const auto passkeys = std::optional(std::vector<PasskeyCredential>{passkey});
@@ -616,7 +645,9 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
           EqualsPasskeySuggestion(
               u"username",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO),
+                  use_new_strings
+                      ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
+                      : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO),
               favicon(),
               Suggestion::Guid(base::Base64Encode(passkey.credential_id()))),
           EqualsGeneratePasswordSuggestion(),
@@ -757,7 +788,11 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kSyncWebauthnCredentials);
+  feature_list.InitWithFeatures({device::kWebAuthnEnclaveAuthenticator},
+                                {syncer::kSyncWebauthnCredentials});
+  bool use_new_strings = true;
+#else
+  bool use_new_strings = false;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   ON_CALL(*client().GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn)
       .WillByDefault(Return(true));
@@ -775,14 +810,18 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
           EqualsPasskeySuggestion(
               u"foo",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE),
+                  use_new_strings
+                      ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW
+                      : IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE),
               favicon(),
               Suggestion::Guid(
                   base::Base64Encode(foo_passkey.credential_id()))),
           EqualsPasskeySuggestion(
               u"bar",
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN),
+                  use_new_strings
+                      ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW
+                      : IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN),
               favicon(),
               Suggestion::Guid(
                   base::Base64Encode(bar_passkey.credential_id()))),
