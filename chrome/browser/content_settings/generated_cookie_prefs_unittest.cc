@@ -28,6 +28,8 @@ namespace {
 
 namespace settings_api = ::extensions::api::settings_private;
 namespace settings_private = ::extensions::settings_private;
+using settings_api::ControlledBy;
+using enum settings_api::Enforcement;
 
 typedef extensions::settings_private::GeneratedPrefTestBase
     GeneratedCookiePrefsTest;
@@ -106,8 +108,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
       map, std::move(provider), ProviderType::kCustomExtensionProvider);
   std::optional<extensions::api::settings_private::PrefObject> pref_object =
       pref->GetPrefObject();
-  EXPECT_EQ(pref_object->controlled_by, settings_api::ControlledBy::kExtension);
-  EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref_object->controlled_by, ControlledBy::kExtension);
+  EXPECT_EQ(pref_object->enforcement, kEnforced);
 
   provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
@@ -118,9 +120,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), ProviderType::kSupervisedProvider);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->controlled_by,
-            settings_api::ControlledBy::kChildRestriction);
-  EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref_object->controlled_by, ControlledBy::kChildRestriction);
+  EXPECT_EQ(pref_object->enforcement, kEnforced);
 
   provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
@@ -131,9 +132,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 ProviderType::kPolicyProvider);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->controlled_by,
-            settings_api::ControlledBy::kDevicePolicy);
-  EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref_object->controlled_by, ControlledBy::kDevicePolicy);
+  EXPECT_EQ(pref_object->enforcement, kEnforced);
 
   // Ensure the preference cannot be changed when it is enforced.
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("block").get()),
@@ -217,9 +217,68 @@ TEST_P(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
   auto [third_party_blocking_setting, cookie_controls_mode] = GetParam();
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        base::Value(static_cast<int>(cookie_controls_mode)));
-  EXPECT_EQ(static_cast<ThirdPartyCookieBlockingSetting>(
-                pref->GetPrefObject().value->GetInt()),
-            third_party_blocking_setting);
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(
+      static_cast<ThirdPartyCookieBlockingSetting>(pref_object.value->GetInt()),
+      third_party_blocking_setting);
+  EXPECT_EQ(pref_object.enforcement, settings_api::Enforcement::kNone);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kNone);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForExtensionPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetExtensionPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kEnforced);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kExtension);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForManagedPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetManagedPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kEnforced);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kDevicePolicy);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForSupervisedPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetSupervisedUserPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kParentSupervised);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kChildRestriction);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForRecommendedPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetRecommendedPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kRecommended);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kNone);
 }
 
 INSTANTIATE_TEST_SUITE_P(

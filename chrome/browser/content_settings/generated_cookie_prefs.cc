@@ -19,6 +19,8 @@ namespace {
 
 namespace settings_api = ::extensions::api::settings_private;
 namespace settings_private = ::extensions::settings_private;
+using settings_api::ControlledBy;
+using enum settings_api::Enforcement;
 
 bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
   content_settings::ProviderType content_setting_provider;
@@ -28,6 +30,21 @@ bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
       content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   return content_setting_source == SettingSource::kUser;
+}
+
+settings_api::Enforcement GetEnforcement(
+    const PrefService::Preference* cookie_controls_mode_pref) {
+  if (cookie_controls_mode_pref->IsManaged() ||
+      cookie_controls_mode_pref->IsExtensionControlled()) {
+    return kEnforced;
+  }
+  if (cookie_controls_mode_pref->IsManagedByCustodian()) {
+    return kParentSupervised;
+  }
+  if (cookie_controls_mode_pref->IsRecommended()) {
+    return kRecommended;
+  }
+  return settings_api::Enforcement::kNone;
 }
 }  // namespace
 
@@ -103,16 +120,16 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
       content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   if (content_setting_source == SettingSource::kPolicy) {
-    pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
-    pref_object.enforcement = settings_api::Enforcement::kEnforced;
+    pref_object.controlled_by = ControlledBy::kDevicePolicy;
+    pref_object.enforcement = kEnforced;
   }
   if (content_setting_source == SettingSource::kExtension) {
-    pref_object.controlled_by = settings_api::ControlledBy::kExtension;
-    pref_object.enforcement = settings_api::Enforcement::kEnforced;
+    pref_object.controlled_by = ControlledBy::kExtension;
+    pref_object.enforcement = kEnforced;
   }
   if (content_setting_source == SettingSource::kSupervised) {
-    pref_object.controlled_by = settings_api::ControlledBy::kChildRestriction;
-    pref_object.enforcement = settings_api::Enforcement::kEnforced;
+    pref_object.controlled_by = ControlledBy::kChildRestriction;
+    pref_object.enforcement = kEnforced;
   }
 
   return pref_object;
@@ -169,11 +186,15 @@ GeneratedThirdPartyCookieBlockingSettingPref::SetPref(
 settings_api::PrefObject
 GeneratedThirdPartyCookieBlockingSettingPref::GetPrefObject() const {
   settings_api::PrefObject pref_object;
+  const PrefService::Preference* cookie_controls_mode_pref =
+      profile_->GetPrefs()->FindPreference(prefs::kCookieControlsMode);
 
   pref_object.value = base::Value(static_cast<int>(GetValue()));
-
-  // TODO(b:370008370): Set enforcement if controlled by a policy, extension, or
-  // supervision
+  pref_object.enforcement = GetEnforcement(cookie_controls_mode_pref);
+  if (!cookie_controls_mode_pref->IsUserModifiable()) {
+    GeneratedPref::ApplyControlledByFromPref(&pref_object,
+                                             cookie_controls_mode_pref);
+  }
 
   return pref_object;
 }
