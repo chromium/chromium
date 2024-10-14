@@ -1197,6 +1197,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/365818844
+      name: "CSSRelativeColorPreserveNone",
+      status: "stable",
+    },
+    {
       // crbug.com/325309578
       name: "CSSRelativeColorSupportsCurrentcolor",
       status: "stable",

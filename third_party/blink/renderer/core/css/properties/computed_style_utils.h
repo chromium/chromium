@@ -50,7 +50,6 @@ class CORE_EXPORT ComputedStyleUtils {
     return ZoomAdjustedPixelValue(length.Value(), style);
   }
 
-  static const CSSValue* ValueForColor(const StyleColor&);
   static const CSSValue* ValueForColor(const StyleColor&,
                                        const ComputedStyle&,
                                        const Color* override_current_color,

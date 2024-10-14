@@ -238,17 +238,6 @@ CSSValue* ComputedStyleUtils::ValueForOffset(const ComputedStyle& style,
 }
 
 const CSSValue* ComputedStyleUtils::ValueForColor(
-    const StyleColor& style_color) {
-  if (style_color.IsUnresolvedColorFunction()) {
-    return style_color.GetUnresolvedColorFunction().ToCSSValue();
-  }
-  if (style_color.IsCurrentColor()) {
-    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
-  }
-  return cssvalue::CSSColor::Create(style_color.GetColor());
-}
-
-const CSSValue* ComputedStyleUtils::ValueForColor(
     const StyleColor& style_color,
     const ComputedStyle& style,
     const Color* override_current_color,

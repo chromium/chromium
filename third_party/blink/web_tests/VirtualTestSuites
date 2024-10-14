@@ -3785,6 +3785,16 @@
     "expires": "Jan 1, 2025"
   },
   {
+    "prefix": "css-relative-preservenone-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-color/parsing/color-computed-relative-color.html"
+    ],
+    "args": ["--disable-blink-features=CSSRelativeColorPreserveNone"],
+    "owners": ["kbabbitt@microsoft.com"],
+    "expires": "Mar 1, 2025"
+  },
+  {
     "prefix": "partitioned-popins-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/partitioned-popins/"],

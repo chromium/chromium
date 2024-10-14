@@ -320,7 +320,8 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
 
   Color result = Color::FromColorSpace(color_interpolation_space_, params[0],
                                        params[1], params[2], param_alpha);
-  if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+  if (Color::IsLegacyColorSpace(result.GetColorSpace()) &&
+      !RuntimeEnabledFeatures::CSSRelativeColorPreserveNoneEnabled()) {
     result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
   }
   return result;
@@ -350,8 +351,13 @@ Color StyleColor::Resolve(const Color& current_color,
                           mojom::blink::ColorScheme color_scheme,
                           bool* is_current_color) const {
   if (IsUnresolvedColorFunction()) {
-    return color_or_unresolved_color_function_.unresolved_color_function
-        ->Resolve(current_color);
+    Color result =
+        color_or_unresolved_color_function_.unresolved_color_function->Resolve(
+            current_color);
+    if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+      result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+    }
+    return result;
   }
 
   if (is_current_color) {
@@ -388,6 +394,16 @@ StyleColor StyleColor::ResolveSystemColor(
   Color color = ColorFromKeyword(color_keyword_, color_scheme, color_provider,
                                  is_in_web_app_scope);
   return StyleColor(color, color_keyword_);
+}
+
+const CSSValue* StyleColor::ToCSSValue() const {
+  if (IsUnresolvedColorFunction()) {
+    return GetUnresolvedColorFunction().ToCSSValue();
+  }
+  if (IsCurrentColor()) {
+    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+  }
+  return cssvalue::CSSColor::Create(GetColor());
 }
 
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,

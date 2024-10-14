@@ -2092,8 +2092,8 @@ void Color::ApplyValue(StyleResolverState& state,
       // currentColor should have been preserved for values in
       // computedStyleMap().
       // See crbug.com/1099874
-      color = StyleColor(color.GetUnresolvedColorFunction().Resolve(
-          state.ParentStyle()->Color().GetColor()));
+      color = StyleColor(color.Resolve(state.ParentStyle()->Color().GetColor(),
+                                       mojom::blink::ColorScheme::kLight));
     } else if (color.IsCurrentColor()) {
       // As per the spec, 'color: currentColor' is treated as 'color: inherit'
       ApplyInherit(state);
@@ -4308,8 +4308,8 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
     StyleColor color =
         StyleBuilderConverter::ConvertStyleColor(state, value, true);
     if (color.IsUnresolvedColorFunction()) {
-      color = StyleColor(color.GetUnresolvedColorFunction().Resolve(
-          state.ParentStyle()->Color().GetColor()));
+      color = StyleColor(color.Resolve(state.ParentStyle()->Color().GetColor(),
+                                       mojom::blink::ColorScheme::kLight));
     }
     builder.SetInternalVisitedColor(color);
   }
