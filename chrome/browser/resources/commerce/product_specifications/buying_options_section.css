@@ -17,6 +17,11 @@ cr-icon {
   cursor: pointer;
   display: inline-block;
   font-size: 11px;
+  margin-top: 8px;
+}
+
+#link[hidden] {
+  display: none;
 }
 
 .link-text {

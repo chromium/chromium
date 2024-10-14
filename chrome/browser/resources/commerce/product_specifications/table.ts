@@ -22,7 +22,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Content, TableColumn} from './app.js';
-import type {BuyingOptionsLink} from './buying_options_section.js';
+import type {BuyingOptions} from './buying_options_section.js';
 import type {ProductDescription} from './description_section.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
 import type {SectionType} from './product_selection_menu.js';
@@ -244,7 +244,7 @@ export class TableElement extends PolymerElement {
         column => column.productDetails && column.productDetails[rowIndex]);
 
     return rowDetails.some(
-        detail => detail && this.contentIsBuyingOptionsLink_(detail.content));
+        detail => detail && this.contentIsBuyingOptions_(detail.content));
   }
 
   private filterProductDescription_(
@@ -276,12 +276,12 @@ export class TableElement extends PolymerElement {
     return false;
   }
 
-  private contentIsBuyingOptionsLink_(content: Content):
-      content is BuyingOptionsLink {
+  private contentIsBuyingOptions_(content: Content): content is BuyingOptions {
     if (content) {
-      const buyingOptions = content as BuyingOptionsLink;
-      return (buyingOptions.jackpotUrl &&
-              buyingOptions.jackpotUrl.length > 0) as boolean;
+      const buyingOptions = content as BuyingOptions;
+      return (buyingOptions.price !== undefined &&
+              buyingOptions.jackpotUrl !== undefined &&
+              buyingOptions.price.length > 0) as boolean;
     }
     return false;
   }

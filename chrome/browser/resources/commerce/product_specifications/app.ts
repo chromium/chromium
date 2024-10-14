@@ -29,7 +29,7 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import type {BuyingOptionsLink} from './buying_options_section.js';
+import type {BuyingOptions} from './buying_options_section.js';
 import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
@@ -52,7 +52,7 @@ interface LoadingState {
   urlCount: number;
 }
 
-export type Content = string|ProductDescription|BuyingOptionsLink|null;
+export type Content = string|ProductDescription|BuyingOptions|null;
 
 interface ProductDetail {
   title: string|null;
@@ -112,11 +112,14 @@ function getProductDetails(
     productInfo: ProductInfo|null): ProductDetail[] {
   const productDetails: ProductDetail[] = [];
 
-  // First add rows that don't come directly from the product
-  // specifications backend.
+  // First add rows that don't come directly from the product specifications
+  // backend. This includes the current price and buying options URL.
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
-    content: productInfo?.currentPrice || null,
+    content: {
+      price: productInfo?.currentPrice || '',
+      jackpotUrl: product?.buyingOptionsUrl.url || '',
+    },
   });
 
   // The second row is the product-level summary.
@@ -153,14 +156,6 @@ function getProductDetails(
         },
       });
     }
-  });
-
-  // The last row is buying options.
-  productDetails.push({
-    title: null,
-    content: {
-      jackpotUrl: product?.buyingOptionsUrl.url || '',
-    },
   });
 
   return productDetails;

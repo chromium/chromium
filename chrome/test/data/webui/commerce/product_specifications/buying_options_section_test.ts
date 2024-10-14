@@ -6,30 +6,48 @@ import 'chrome://compare/buying_options_section.js';
 
 import type {BuyingOptionsSectionElement} from 'chrome://compare/buying_options_section.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {$$} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('BuyingOptionsSectionTest', () => {
   let buyingOptionsElement: BuyingOptionsSectionElement;
   let mockOpenWindowProxy: TestOpenWindowProxy;
 
-  setup(async () => {
+  setup(() => {
     mockOpenWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(mockOpenWindowProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     buyingOptionsElement = document.createElement('buying-options-section');
+    buyingOptionsElement.price = '$123.45';
     buyingOptionsElement.jackpotUrl = 'http://example.com/jackpot';
     document.body.appendChild(buyingOptionsElement);
   });
 
+  test('price is displayed', () => {
+    const price = buyingOptionsElement.$.price;
+    assertEquals(price.textContent?.trim(), buyingOptionsElement.price);
+  });
+
   test('link opens jackpot URL when clicked', async () => {
-    const link = $$<HTMLElement>(buyingOptionsElement, '#link');
-    assertTrue(!!link);
+    const link = buyingOptionsElement.$.link;
+    assertTrue(isVisible(link));
     link.click();
 
     const arg = await mockOpenWindowProxy.whenCalled('openUrl');
     assertEquals('http://example.com/jackpot', arg);
   });
+
+  test(
+      'price is displayed even when jackpot URL is not available', async () => {
+        buyingOptionsElement.jackpotUrl = '';
+        await microtasksFinished();
+
+        const link = buyingOptionsElement.$.link;
+        assertFalse(isVisible(link));
+
+        const price = buyingOptionsElement.$.price;
+        assertEquals(price.textContent?.trim(), buyingOptionsElement.price);
+      });
 });
