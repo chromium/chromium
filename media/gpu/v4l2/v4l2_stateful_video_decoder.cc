@@ -973,6 +973,8 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       CHECK(frame);
 
       frame->set_timestamp(TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
+      frame->set_color_space(config_.color_space_info().ToGfxColorSpace());
+      frame->set_hdr_metadata(config_.hdr_metadata());
 
       //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |frame| to return
       //  |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled". For a
