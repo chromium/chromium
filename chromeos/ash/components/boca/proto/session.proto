@@ -45,6 +45,8 @@ message Session {
 
   TeacherCaptionsConfig teacher_captions_config = 12;
 
+  string tachyon_group_id = 13;
+
   bool save_transcript = 9;
 
   enum SessionState {
@@ -110,6 +112,8 @@ message StudentStatus {
   map<string, StudentDevice> devices = 3;
 
   Timestamp raised_hand_time = 4;
+
+  bool in_tachyon_group = 5;
 }
 
 message StudentDevice {
