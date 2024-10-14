@@ -9,6 +9,7 @@
 #import "base/containers/to_vector.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/observer_list.h"
 #import "components/autofill/core/browser/autofill_driver_router.h"
@@ -93,6 +94,7 @@ AutofillDriverIOS::AutofillDriverIOS(
 
 AutofillDriverIOS::~AutofillDriverIOS() {
   Unregister();
+  RecordTriggeredFormExtractionMetrics();
 }
 
 LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
@@ -589,6 +591,10 @@ void AutofillDriverIOS::Unregister() {
   unregistered_ = true;
 }
 
+void AutofillDriverIOS::OnDidTriggerFormFetch() {
+  ++form_extraction_trigger_count_;
+}
+
 void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
   CHECK(last_interacted_form_);
 
@@ -625,6 +631,27 @@ void AutofillDriverIOS::RecordFormRemoval(bool submission_detected,
       /*name=*/kFormRemovalRemovedUnownedFieldsHistogram,
       /*sample=*/removed_unowned_fields_count);
 
+}
+
+void AutofillDriverIOS::RecordTriggeredFormExtractionMetrics() {
+  if (form_extraction_trigger_count_ < 1) {
+    // Do not record anything if no extraction was performed to not pollute
+    // the data with 0 extraction cases that don't really mean anything.
+    // We usually expect at least one extraction to be triggered in the frame
+    // when its content is loaded. We are not interested in tracking the cases
+    // where extraction didn't happen, not for these metrics at least.
+    return;
+  }
+
+  base::UmaHistogramCounts100(
+      "Autofill.iOS.TriggeredFormExtractionFromDriver.SmallRange",
+      form_extraction_trigger_count_);
+  base::UmaHistogramCounts1000(
+      "Autofill.iOS.TriggeredFormExtractionFromDriver.MediumRange",
+      form_extraction_trigger_count_);
+  base::UmaHistogramCounts10000(
+      "Autofill.iOS.TriggeredFormExtractionFromDriver.LargeRange",
+      form_extraction_trigger_count_);
 }
 
 }  // namespace autofill

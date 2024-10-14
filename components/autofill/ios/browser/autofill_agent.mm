@@ -1215,6 +1215,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   GURL frameOrigin =
       frame ? frame->GetSecurityOrigin() : pageURL.DeprecatedGetOriginAsURL();
 
+  if (auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+          _webState, frame)) {
+    driver->OnDidTriggerFormFetch();
+  }
+
   const scoped_refptr<FieldDataManager> fieldDataManager =
       FieldDataManagerFactoryIOS::GetRetainable(frame);
   const auto callback = [](FetchFormsCompletionHandler completion,

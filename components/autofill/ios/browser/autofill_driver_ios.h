@@ -172,6 +172,10 @@ class AutofillDriverIOS final : public AutofillDriver,
   // re-registered after being unregistered.
   void Unregister();
 
+  // Called when form extraction was triggered on the driver's frame. Called
+  // as soon as the extraction request is started regardless of the results.
+  void OnDidTriggerFormFetch();
+
  private:
   friend class AutofillDriverIOSTestApi;
 
@@ -230,6 +234,9 @@ class AutofillDriverIOS final : public AutofillDriver,
                          int removed_forms_count,
                          int removed_unowned_fields_count);
 
+  // Logs metrics related to triggered form extraction.
+  void RecordTriggeredFormExtractionMetrics();
+
   // The WebState with which this object is associated.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
@@ -272,6 +279,11 @@ class AutofillDriverIOS final : public AutofillDriver,
 
   // True if the drive was once unregistered.
   bool unregistered_ = false;
+
+  // Counter for the number of form extractions that were triggered during the
+  // driver's lifetime. The counter doesn't care whether the extraction
+  // actually happened for real where it focuses on the trigger.
+  int form_extraction_trigger_count_ = 0;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

@@ -3174,6 +3174,26 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.iOS.TriggeredFormExtractionFromDriver.{Range}"
+    units="count" expires_after="2025-06-11">
+  <owner>vincb@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the number of form extractions that were triggered on a frame during
+    its driver lifetime. Covers a {Range} of possible counts to balance between
+    coverage and precision by offering different levels of granularity. Each
+    driver (aka each frame), records their count. Recorded when the driver is
+    deleted and if there was at least one extraction done.
+  </summary>
+  <token key="Range">
+    <variant name="LargeRange" summary="large range of possible counts"/>
+    <variant name="MediumRange" summary="medium range of possible counts"/>
+    <variant name="SmallRange" summary="small range of possible counts"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2025-02-10">
   <owner>battre@chromium.org</owner>
