@@ -68,7 +68,7 @@ GURL GetContactUrl(const NewContactAction& contact) {
 // Must be called on the same sequence that called `HandleScannerAction`.
 void OpenInBrowserTab(base::WeakPtr<ScannerCommandDelegate> delegate,
                       const GURL& gurl,
-                      base::OnceCallback<void(bool)> callback) {
+                      ScannerCommandCallback callback) {
   if (delegate == nullptr) {
     std::move(callback).Run(false);
     return;
@@ -81,7 +81,7 @@ void OpenInBrowserTab(base::WeakPtr<ScannerCommandDelegate> delegate,
 
 void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
                          const ScannerAction& action,
-                         base::OnceCallback<void(bool)> callback) {
+                         ScannerCommandCallback callback) {
   std::visit(base::Overloaded{
                  [&](const NewCalendarEventAction& action) {
                    OpenInBrowserTab(std::move(delegate),

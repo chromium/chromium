@@ -16,6 +16,10 @@ namespace ash {
 
 class ScannerCommandDelegate;
 
+// The callback which is called when a command to the system is finished. A
+// boolean is provided to signify whether the command succeeded or not.
+using ScannerCommandCallback = base::OnceCallback<void(bool success)>;
+
 // Given a ScannerAction this method will apply the contained command to the
 // system. The callback passed will be invoked after the action has completed,
 // with a bool specifying if the command was completed successfully.
@@ -32,7 +36,7 @@ class ScannerCommandDelegate;
 ASH_EXPORT void HandleScannerAction(
     base::WeakPtr<ScannerCommandDelegate> delegate,
     const ScannerAction& action,
-    base::OnceCallback<void(bool success)> callback);
+    ScannerCommandCallback callback);
 
 }  // namespace ash
 

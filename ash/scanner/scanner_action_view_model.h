@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/scanner/scanner_action_handler.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
@@ -24,8 +25,6 @@ class ScannerCommandDelegate;
 // to a user-facing text string, icon, and a callback.
 class ASH_EXPORT ScannerActionViewModel {
  public:
-  using ActionFinishedCallback = base::OnceCallback<void(bool success)>;
-
   explicit ScannerActionViewModel(
       ScannerAction action,
       base::WeakPtr<ScannerCommandDelegate> delegate);
@@ -51,7 +50,7 @@ class ASH_EXPORT ScannerActionViewModel {
   // closure, explicitly create a copy:
   //     ScannerActionViewModel(action).ToCallback(std::move(on_finished))
   base::OnceClosure ToCallback(
-      ActionFinishedCallback action_finished_callback) &&;
+      ScannerCommandCallback action_finished_callback) &&;
 
  private:
   ScannerAction action_;

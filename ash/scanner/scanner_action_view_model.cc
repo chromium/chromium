@@ -41,8 +41,7 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
 }
 
 base::OnceClosure ScannerActionViewModel::ToCallback(
-    ScannerActionViewModel::ActionFinishedCallback
-        action_finished_callback) && {
+    ScannerCommandCallback action_finished_callback) && {
   return base::BindOnce(&HandleScannerAction, std::move(delegate_),
                         std::move(action_),
                         std::move(action_finished_callback));
