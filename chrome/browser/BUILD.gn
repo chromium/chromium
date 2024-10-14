@@ -3146,6 +3146,8 @@ static_library("browser") {
       "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_survey_bridge.cc",
+      "privacy_sandbox/privacy_sandbox_activity_types_service.cc",
+      "privacy_sandbox/privacy_sandbox_activity_types_service.h",
       "profiles/android/profile_manager_utils.cc",
       "profiles/android/profile_resolver.cc",
       "profiles/android/profile_resolver.h",
