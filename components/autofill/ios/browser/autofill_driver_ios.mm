@@ -241,7 +241,11 @@ void AutofillDriverIOS::ExtractForm(
 }
 
 void AutofillDriverIOS::SendTypePredictionsToRenderer(
-    const base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::test::kAutofillShowTypePredictions)) {
+    return;
+  }
   std::vector<FormDataPredictions> preds =
       FormStructure::GetFieldTypePredictions(forms);
 

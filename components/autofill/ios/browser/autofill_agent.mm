@@ -528,10 +528,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)fillFormDataPredictions:
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::test::kAutofillShowTypePredictions)) {
-    return;
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      autofill::features::test::kAutofillShowTypePredictions));
 
   base::Value::Dict predictionData;
   for (const auto& form : forms) {
