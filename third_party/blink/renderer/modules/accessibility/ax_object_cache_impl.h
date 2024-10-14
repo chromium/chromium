@@ -668,6 +668,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   }
   HeapHashMap<AXID, Member<AXObject>>& GetObjects() { return objects_; }
 
+#if DCHECK_IS_ON()
+  // TODO(https://crbug.com/372508699): Remove after bug fixed.
+  bool can_mark_all_dirty_ = true;
+#endif
+
   // Used to turn on accessibility checks for internal Web UI, e.g. history,
   // preferences, etc. Will trigger DCHECKS so that WebUI with basic a11y errors
   // fail tests.

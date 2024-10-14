@@ -3113,6 +3113,10 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
   // Upon exiting this function, listen for tree updates again.
   absl::Cleanup lifecycle_returns_to_queueing_updates = [this] {
     lifecycle_.EnsureStateAtMost(AXObjectCacheLifecycle::kDeferTreeUpdates);
+#if DCHECK_IS_ON()
+    // TODO(https://crbug.com/372508699): Remove after bug fixed.
+    can_mark_all_dirty_ = true;
+#endif
   };
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
@@ -3177,6 +3181,11 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
 #endif
 
       mark_all_dirty_ = false;
+#if DCHECK_IS_ON()
+      // TODO(https://crbug.com/372508699): Remove after bug fixed.
+      // Do not mark document dirty after the point that we expect to.
+      can_mark_all_dirty_ = false;
+#endif
 
       // All tree updates have been processed.
       DUMP_WILL_BE_CHECK(!IsMainDocumentDirty());
@@ -4968,6 +4977,11 @@ void AXObjectCacheImpl::MarkSubtreeDirty(Node* node) {
 
 void AXObjectCacheImpl::MarkDocumentDirty() {
   CHECK(!IsFrozen());
+  // TODO(https://crbug.com/372508699): Remove after bug fixed.
+#if DCHECK_IS_ON()
+  CHECK(can_mark_all_dirty_);
+#endif
+
   mark_all_dirty_ = true;
 
   ScheduleAXUpdate();
