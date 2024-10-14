@@ -27,7 +27,7 @@ import './update_warning_dialog.js';
 import '../crostini_page/crostini_settings_card.js';
 
 import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -41,9 +41,11 @@ import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import type {AboutPageBrowserProxy, AboutPageUpdateInfo, BrowserChannel, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxyImpl, browserChannelToI18nId, UpdateStatus} from './about_page_browser_proxy.js';
 import {getTemplate} from './os_about_page.html.js';
 
 declare global {

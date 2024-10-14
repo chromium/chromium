@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './consumer_auto_update_toggle_dialog.html.js';
