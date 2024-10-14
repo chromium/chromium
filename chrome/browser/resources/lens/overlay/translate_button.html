@@ -477,7 +477,8 @@
     </cr-button>
   </div>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
-      aria-label="$i18n{languagePickerAriaLabel}">
+      aria-label="$i18n{languagePickerAriaLabel}"
+      on-keydown="handleLanguagePickerKeyDown">
     <div class="language-picker-menu-title-section">
       <cr-icon-button id="sourceLanguagePickerBackButton"
           iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
@@ -525,7 +526,8 @@
     </div>
   </div>
   <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
-      aria-label="$i18n{languagePickerAriaLabel}">
+      aria-label="$i18n{languagePickerAriaLabel}"
+      on-keydown="handleLanguagePickerKeyDown">
     <div class="language-picker-menu-title-section">
       <cr-icon-button id="targetLanguagePickerBackButton"
           iron-icon="cr:arrow-back" class="language-picker-menu-back-button"

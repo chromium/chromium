@@ -196,6 +196,38 @@ export class TranslateButtonElement extends PolymerElement {
     return this.$.translateEnableButton;
   }
 
+  private handleLanguagePickerKeyDown(event: KeyboardEvent) {
+    // A language picker must be focused and visible in order to receive this
+    // event.
+    assert(this.sourceLanguageMenuVisible || this.targetLanguageMenuVisible);
+    // The key must be of length 1 if it is a character.
+    if (event.key.length !== 1) {
+      return;
+    }
+
+    let scrollLanguageIndex = -1;
+    const startingChar = event.key.toLowerCase();
+    for (let i = 0; i < this.translateLanguageList.length; i++) {
+      const language = this.translateLanguageList[i];
+      const languageStartingChar = language.displayName.charAt(0).toLowerCase();
+      if (startingChar === languageStartingChar) {
+        scrollLanguageIndex = i;
+        break;
+      }
+    }
+
+    if (scrollLanguageIndex >= 0) {
+      const pickerMenu = this.sourceLanguageMenuVisible ?
+          this.$.sourceLanguagePickerMenu :
+          this.$.targetLanguagePickerMenu;
+      const menuItems = pickerMenu.querySelectorAll<CrButtonElement>(
+          'cr-button:not(#sourceAutoDetectButton)');
+      const languageElement = menuItems[scrollLanguageIndex];
+      languageElement.scrollIntoView();
+      languageElement.focus();
+    }
+  }
+
   private onLanguageListRetrieved(
       languageList: chrome.languageSettingsPrivate.Language[]) {
     this.translateLanguageList = languageList.filter((language) => {

@@ -12,7 +12,7 @@ import {ShimmerControlRequester} from 'chrome-untrusted://lens-overlay/selection
 import type {TranslateButtonElement} from 'chrome-untrusted://lens-overlay/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -749,5 +749,98 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         overlayTranslateButtonElement.shadowRoot!.activeElement,
         overlayTranslateButtonElement.$.translateEnableButton);
+  });
+
+  test('SourceLanguageFocusedWithKeyPress', async () => {
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+
+    // The source language button should be visible but the language picker menu
+    // should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // Clicking the source language button should open the picker menu.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+
+    // The source language picker menu is visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+
+    const sourceLanguageMenuItems =
+        overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+            .querySelectorAll<CrButtonElement>('cr-button');
+    const swahiliMenuItem: CrButtonElement =
+        Array.from(sourceLanguageMenuItems).filter((item: CrButtonElement) => {
+          return item.innerText === 'Swahili';
+        })[0] as CrButtonElement;
+    assertTrue(swahiliMenuItem !== undefined);
+    assertNotEquals(
+        swahiliMenuItem,
+        overlayTranslateButtonElement.shadowRoot!.activeElement);
+
+    // Get a menu item button from the source language picker menu.
+    const keyDownEvent = new KeyboardEvent('keydown', {
+      key: 's',
+      code: 'KeyS',
+    });
+    overlayTranslateButtonElement.$.sourceLanguagePickerMenu.dispatchEvent(
+        keyDownEvent);
+
+    assertTrue(isVisible(swahiliMenuItem));
+    assertEquals(
+        swahiliMenuItem,
+        overlayTranslateButtonElement.shadowRoot!.activeElement);
+  });
+
+  test('TargetLanguageFocusedWithKeyPress', async () => {
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+
+    // The target language button should be visible but the language picker menu
+    // should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    // Clicking the target language button should open the picker menu.
+    overlayTranslateButtonElement.$.targetLanguageButton.click();
+
+    // The target language picker menu is visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    const targetLanguageMenuItems =
+        overlayTranslateButtonElement.$.targetLanguagePickerMenu
+            .querySelectorAll<CrButtonElement>('cr-button');
+    const swahiliMenuItem: CrButtonElement =
+        Array.from(targetLanguageMenuItems).filter((item: CrButtonElement) => {
+          return item.innerText === 'Swahili';
+        })[0] as CrButtonElement;
+    assertTrue(swahiliMenuItem !== undefined);
+    assertNotEquals(
+        swahiliMenuItem,
+        overlayTranslateButtonElement.shadowRoot!.activeElement);
+
+    // Get a menu item button from the target language picker menu.
+    const keyDownEvent = new KeyboardEvent('keydown', {
+      key: 's',
+      code: 'KeyS',
+    });
+    overlayTranslateButtonElement.$.targetLanguagePickerMenu.dispatchEvent(
+        keyDownEvent);
+
+    assertTrue(isVisible(swahiliMenuItem));
+    assertEquals(
+        swahiliMenuItem,
+        overlayTranslateButtonElement.shadowRoot!.activeElement);
   });
 });
