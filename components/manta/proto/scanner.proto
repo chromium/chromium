@@ -7,5 +7,45 @@ option optimize_for = LITE_RUNTIME;
 
 package manta.proto;
 
-// TODO: b/363101024 - Populate fields.
-message ScannerResponse {}
+message ScannerInput {
+  // A user selected region of their device screen as a serialized jpeg.
+  bytes image = 1;
+}
+
+message ScannerOutput {
+  // The objects detected within the selected region, as well as actions the
+  // user may perform on them.
+  repeated ScannerObject objects = 1;
+}
+
+message ScannerObject {
+  // The actions that can be performed on this object.
+  repeated ScannerAction actions = 1;
+}
+
+message ScannerAction {
+  oneof action {
+    NewEventAction new_event = 1;
+    NewContactAction new_contact = 2;
+  }
+}
+
+// Details on how to create a new Google Calendar event.
+message NewEventAction {
+  string title = 1;
+  string description = 2;
+  // The start and end dates of the event. The format should be either:-
+  // 1. "yyyymmdd/yyyymmdd"
+  // 2. "yyyymmddThhmmss/yyyymmddThhmmss"
+  string dates = 3;
+  string location = 4;
+}
+
+// Details on how to create a new Google contact.
+message NewContactAction {
+  // At least one of the following fields must be specified.
+  string given_name = 1;
+  string family_name = 2;
+  string email = 3;
+  string phone = 4;
+}

@@ -19,6 +19,13 @@
 
 namespace manta {
 
+inline constexpr char kScannerInputTypeUrl[] =
+    "type.googleapis.com/"
+    "mdi.aratea.cros.scanner.ScannerInput";
+inline constexpr char kScannerOutputTypeUrl[] =
+    "type.googleapis.com/"
+    "mdi.aratea.cros.scanner.ScannerOutput";
+
 // The Scanner provider for the Manta project. Provides a method for clients to
 // call the relevant google API, handling OAuth and http fetching.
 // IMPORTANT: This class depends on `IdentityManager`.
@@ -39,7 +46,7 @@ class COMPONENT_EXPORT(MANTA) ScannerProvider : virtual public BaseProvider {
   ~ScannerProvider() override;
 
   using ScannerProtoResponseCallback =
-      base::OnceCallback<void(std::unique_ptr<manta::proto::ScannerResponse>,
+      base::OnceCallback<void(std::unique_ptr<manta::proto::ScannerOutput>,
                               MantaStatus)>;
 
   // Calls the google service endpoint with the http POST request payload.
@@ -48,8 +55,8 @@ class COMPONENT_EXPORT(MANTA) ScannerProvider : virtual public BaseProvider {
   // In demo mode, it uses the Google API key for authentication, otherwise uses
   // `IdentityManager`, in this case it will give an empty response if
   // `IdentityManager` is no longer valid.
-  // TODO: b/363101024 - Determine the params to send.
-  void Call(ScannerProtoResponseCallback done_callback);
+  void Call(const manta::proto::ScannerInput& scanner_input,
+            ScannerProtoResponseCallback done_callback);
 
  private:
   friend class FakeScannerProvider;
