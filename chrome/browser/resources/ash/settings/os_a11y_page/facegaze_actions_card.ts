@@ -184,38 +184,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
 
     const keyCombo = commandPair.assignedKeyCombo.keyCombo;
-    const keys: string[] = [];
-
-    if (keyCombo.modifiers?.ctrl) {
-      keys.push(this.i18n('faceGazeKeyboardKeyCtrl'));
-    }
-    if (keyCombo.modifiers?.alt) {
-      keys.push(this.i18n('faceGazeKeyboardKeyAlt'));
-    }
-    if (keyCombo.modifiers?.shift) {
-      keys.push(this.i18n('faceGazeKeyboardKeyShift'));
-    }
-    if (keyCombo.modifiers?.search) {
-      keys.push(this.i18n('faceGazeKeyboardKeySearch'));
-    }
-
-    keys.push(keyCombo.keyDisplay);
-
-    switch (keys.length) {
-      case 2:
-        return this.i18n('faceGazeKeyboardLabelOneModifier', ...keys);
-      case 3:
-        return this.i18n('faceGazeKeyboardLabelTwoModifiers', ...keys);
-      case 4:
-        return this.i18n('faceGazeKeyboardLabelThreeModifiers', ...keys);
-      case 5:
-        return this.i18n('faceGazeKeyboardLabelFourModifiers', ...keys);
-      default:
-        // keyDisplay comes directly from the original KeyEvent and should be
-        // preserved as-is since keys may appear differently on keyboards
-        // depending on locale and layout.
-        return keyCombo.keyDisplay;
-    }
+    return FaceGazeUtils.getKeyComboDisplayText(keyCombo);
   }
 
   // When an action is removed from the list, update the pref and then update

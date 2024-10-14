@@ -192,9 +192,10 @@
     <div slot="body">
       <div id="customKeyboardContainer">
         <div id="customKeyboardLabel">$i18n{faceGazeActionsDialogKeyCombinationLabel}</div>
-        <div id="shortcutInputContainer">
+        <div id="shortcutInputContainer" aria-live="polite">
           <shortcut-input id="shortcutInput"
               shortcut-input-provider="[[getShortcutInputProvider()]]"
+              aria-label="[[shortcutInputLabel_]]"
               ignore-blur>
           </shortcut-input>
         </div>

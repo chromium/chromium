@@ -352,11 +352,30 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         assertShortcutInput();
 
+        const keyEvent = {
+          vkey: VKey.kKeyC,
+          domCode: 0,
+          domKey: 0,
+          modifiers: Modifier.CONTROL,
+          keyDisplay: 'c',
+        };
+
+        shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+        shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+        await flushTasks();
+
         const previousButton = getCustomKeyboardPreviousButton();
         previousButton.click();
         flush();
 
         assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+        nextButton.click();
+        flush();
+
+        // Assert that the key combo has been reset.
+        const keyboardNextButton = getCustomKeyboardNextButton();
+        assertTrue(keyboardNextButton.disabled);
       });
 
   test(
@@ -512,7 +531,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
         await flushTasks();
 
-        const keyboardNextButton = getCustomKeyboardNextButton();
+        let keyboardNextButton = getCustomKeyboardNextButton();
         assertFalse(keyboardNextButton.disabled);
         keyboardNextButton.click();
         flush();
@@ -526,6 +545,11 @@ suite('<facegaze-actions-add-dialog>', () => {
         flush();
 
         assertShortcutInput();
+        flush();
+
+        // Assert that the key combo has been reset.
+        keyboardNextButton = getCustomKeyboardNextButton();
+        assertTrue(keyboardNextButton.disabled);
       });
 
   test(

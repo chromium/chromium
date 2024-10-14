@@ -4,6 +4,7 @@
 
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 export const FACE_GAZE_GESTURE_TO_MACROS_PREF =
     'prefs.settings.a11y.face_gaze.gestures_to_macros.value';
@@ -279,6 +280,50 @@ export class FaceGazeUtils {
       default:
         // Other macros do not have a sub-label, return null to indicate this.
         return null;
+    }
+  }
+
+  /**
+   * @param keyCombo The KeyCombination for which to return the display text.
+   * @return the string containing the user-friendly display text for the key
+   *     combination.
+   */
+  static getKeyComboDisplayText(keyCombo: KeyCombination): string {
+    const keys: string[] = [];
+
+    if (keyCombo.modifiers?.ctrl) {
+      keys.push(loadTimeData.getString('faceGazeKeyboardKeyCtrl'));
+    }
+    if (keyCombo.modifiers?.alt) {
+      keys.push(loadTimeData.getString('faceGazeKeyboardKeyAlt'));
+    }
+    if (keyCombo.modifiers?.shift) {
+      keys.push(loadTimeData.getString('faceGazeKeyboardKeyShift'));
+    }
+    if (keyCombo.modifiers?.search) {
+      keys.push(loadTimeData.getString('faceGazeKeyboardKeySearch'));
+    }
+
+    keys.push(keyCombo.keyDisplay);
+
+    switch (keys.length) {
+      case 2:
+        return loadTimeData.getStringF(
+            'faceGazeKeyboardLabelOneModifier', ...keys);
+      case 3:
+        return loadTimeData.getStringF(
+            'faceGazeKeyboardLabelTwoModifiers', ...keys);
+      case 4:
+        return loadTimeData.getStringF(
+            'faceGazeKeyboardLabelThreeModifiers', ...keys);
+      case 5:
+        return loadTimeData.getStringF(
+            'faceGazeKeyboardLabelFourModifiers', ...keys);
+      default:
+        // keyDisplay comes directly from the original KeyEvent and should be
+        // preserved as-is since keys may appear differently on keyboards
+        // depending on locale and layout.
+        return keyCombo.keyDisplay;
     }
   }
 }

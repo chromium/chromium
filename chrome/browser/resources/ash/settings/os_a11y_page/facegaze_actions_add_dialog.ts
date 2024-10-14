@@ -178,6 +178,11 @@ export class FaceGazeAddActionDialogElement extends
         type: Object,
       },
 
+      shortcutInputLabel_: {
+        type: String,
+        computed: 'getShortcutInputLabel_(keyCombination_)',
+      },
+
       localizedSelectGestureTitle_: {
         type: String,
         computed: 'getLocalizedSelectGestureTitle_(selectedAction_)',
@@ -324,6 +329,15 @@ export class FaceGazeAddActionDialogElement extends
     }
 
     return newKeyCombination;
+  }
+
+  private getShortcutInputLabel_(): string {
+    // If there is a user-entered key combination, return the key combination as
+    // a label. Otherwise, return instructions on how to input a key
+    // combination.
+    return this.keyCombination_ ?
+        FaceGazeUtils.getKeyComboDisplayText(this.keyCombination_) :
+        this.i18n('faceGazeActionsDialogKeyCombinationLabel');
   }
 
   private getLocalizedSelectGestureTitle_(): string {
@@ -561,6 +575,8 @@ export class FaceGazeAddActionDialogElement extends
     if (this.currentPage_ !== AddDialogPage.CUSTOM_KEYBOARD) {
       return;
     }
+
+    this.keyCombination_ = null;
     this.focusTitle_();
     // Start observing for input events the moment `shortcutInput` is available.
     this.shortcutInput =
