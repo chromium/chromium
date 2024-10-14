@@ -7,8 +7,13 @@ source_set("model") {
     "share_kit_service.h",
     "share_kit_service.mm",
     "share_kit_service_configuration.h",
+    "share_kit_service_configuration.mm",
   ]
-  deps = [ "//components/keyed_service/core" ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
+    "//ios/chrome/browser/saved_tab_groups/favicon/ui",
+  ]
   public_deps = [ "//base" ]
 }
 
@@ -23,6 +28,9 @@ source_set("factory") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/data_sharing/model:features",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:forward",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
@@ -51,6 +59,9 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//components/data_sharing/public",
+    "//components/saved_tab_groups/test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
   ]

@@ -7,9 +7,23 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/data_sharing/public/features.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/platform_test.h"
+
+namespace {
+
+// Creates a MockTabGroupSyncService.
+std::unique_ptr<KeyedService> CreateMockSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<
+      ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+}
+
+}  // namespace
 
 // Test fixture for the share kit service factory.
 class ShareKitServiceFactoryTest : public PlatformTest {
@@ -19,7 +33,15 @@ class ShareKitServiceFactoryTest : public PlatformTest {
         {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
          data_sharing::features::kDataSharingFeature},
         {});
-    profile_ = TestProfileIOS::Builder().Build();
+
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
