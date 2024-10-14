@@ -759,6 +759,13 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_20241010",
+                    "enable_features": [
+                        "CrosMall",
+                        "CrosMallSwa"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "AppInstallServiceUri",
@@ -769,13 +776,6 @@
                     "name": "Enabled_20240619",
                     "enable_features": [
                         "AppInstallServiceUri",
-                        "CrosMall",
-                        "CrosMallSwa"
-                    ]
-                },
-                {
-                    "name": "Enabled_20241010",
-                    "enable_features": [
                         "CrosMall",
                         "CrosMallSwa"
                     ]
