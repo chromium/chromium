@@ -30,7 +30,7 @@ source_set("headless") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/chrome_elf" ]
+    deps += [ "//chrome/chrome_elf:chrome_elf_main_include" ]
   }
 }
 
