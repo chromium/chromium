@@ -17,6 +17,24 @@
 
 namespace autofill {
 
+// Returns whether user interacted with the bubble, based on its closed reason.
+bool GetUserInteractionFromPredictionImprovementsBubbleClosedReason(
+    SaveAutofillPredictionImprovementsController::
+        PredictionImprovementsBubbleClosedReason closed_reason) {
+  using enum SaveAutofillPredictionImprovementsController::
+      PredictionImprovementsBubbleClosedReason;
+  switch (closed_reason) {
+    case kAccepted:
+    case kCancelled:
+    case kClosed:
+      return true;
+    case kUnknown:
+    case kNotInteracted:
+    case kLostFocus:
+      return false;
+  }
+}
+
 SaveAutofillPredictionImprovementsControllerImpl::
     SaveAutofillPredictionImprovementsControllerImpl(
         content::WebContents* web_contents)
@@ -44,7 +62,7 @@ SaveAutofillPredictionImprovementsController::GetOrCreate(
 void SaveAutofillPredictionImprovementsControllerImpl::OfferSave(
     std::vector<optimization_guide::proto::UserAnnotationsEntry>
         new_prediction_improvements,
-    PromptAcceptanceCallback prompt_acceptance_callback,
+    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
     LearnMoreClickedCallback learn_more_clicked_callback,
     UserFeedbackCallback user_feedback_callback) {
   // Don't show the bubble if it's already visible.
@@ -69,8 +87,12 @@ void SaveAutofillPredictionImprovementsControllerImpl::OnBubbleClosed(
   UpdatePageActionIcon();
   if (!prompt_acceptance_callback_.is_null()) {
     std::move(prompt_acceptance_callback_)
-        .Run(/*prompt_was_accepted=*/closed_reason ==
-             PredictionImprovementsBubbleClosedReason::kAccepted);
+        .Run({/*prompt_was_accepted=*/closed_reason ==
+                  PredictionImprovementsBubbleClosedReason::kAccepted,
+              /*did_user_interact=*/
+              GetUserInteractionFromPredictionImprovementsBubbleClosedReason(
+                  closed_reason),
+              did_trigger_thumbs_up_, did_trigger_thumbs_down_});
   }
 }
 
@@ -79,18 +101,23 @@ void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsUpClicked() {
     std::move(user_feedback_callback_)
         .Run(AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp);
   }
+  did_trigger_thumbs_up_ = true;
 }
+
 void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsDownClicked() {
   if (!user_feedback_callback_.is_null()) {
     std::move(user_feedback_callback_)
         .Run(AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsDown);
   }
+  did_trigger_thumbs_down_ = true;
 }
+
 void SaveAutofillPredictionImprovementsControllerImpl::OnLearnMoreClicked() {
   if (!learn_more_clicked_callback_.is_null()) {
     std::move(learn_more_clicked_callback_).Run();
   }
 }
+
 PageActionIconType
 SaveAutofillPredictionImprovementsControllerImpl::GetPageActionIconType() {
   // TODO(crbug.com/362227379): Update icon.

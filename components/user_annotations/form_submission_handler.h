@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/user_annotations/user_annotations_service.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill {
 class FormStructure;
@@ -37,7 +38,7 @@ class FormSubmissionHandler {
                         const std::string& title,
                         optimization_guide::proto::AXTreeUpdate ax_tree_update,
                         std::unique_ptr<autofill::FormStructure> form,
-                        UserAnnotationsService::ImportFormCallback callback);
+                        ImportFormCallback callback);
   ~FormSubmissionHandler();
 
   FormSubmissionHandler(const FormSubmissionHandler&) = delete;
@@ -70,7 +71,7 @@ class FormSubmissionHandler {
   void OnImportFormConfirmation(
       FormSubmissionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
-      bool prompt_was_accepted);
+      PromptAcceptanceResult prompt_acceptance_result);
 
   // Called when the timeout is triggered.
   void OnCompletionTimeout();
@@ -82,7 +83,7 @@ class FormSubmissionHandler {
   std::string title_;
   optimization_guide::proto::AXTreeUpdate ax_tree_update_;
   std::unique_ptr<autofill::FormStructure> form_;
-  UserAnnotationsService::ImportFormCallback callback_;
+  ImportFormCallback callback_;
 
   // Guaranteed to outlive `this`.
   raw_ptr<UserAnnotationsService> user_annotations_service_;

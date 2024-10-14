@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -50,7 +51,7 @@ class MockAutofillPredictionImprovementsDelegate
   MOCK_METHOD(void,
               MaybeImportForm,
               (std::unique_ptr<autofill::FormStructure> form,
-               ImportFormCallback callback),
+               user_annotations::ImportFormCallback callback),
               (override));
   MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
   MOCK_METHOD(bool,

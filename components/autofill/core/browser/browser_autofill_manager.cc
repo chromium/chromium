@@ -1140,8 +1140,7 @@ void BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound(
     std::unique_ptr<FormStructure> submitted_form,
     std::vector<optimization_guide::proto::UserAnnotationsEntry>
         to_be_upserted_entries,
-    base::OnceCallback<void(bool prompt_was_accepted)>
-        prompt_acceptance_callback) {
+    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
   const bool should_show_prediction_improvements_bubble =
       !to_be_upserted_entries.empty();
   if (should_show_prediction_improvements_bubble) {

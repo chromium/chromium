@@ -5,5 +5,6 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/os_crypt/async",
+  "+components/prefs",
   "+sql",
 ];

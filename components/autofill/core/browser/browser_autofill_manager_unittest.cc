@@ -565,8 +565,7 @@ class MockAutofillClient : public TestAutofillClient {
       ShowSaveAutofillPredictionImprovementsBubble,
       (const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
            to_be_upserted_entries,
-       base::OnceCallback<void(bool prompt_was_accepted)>
-           prompt_acceptance_callback),
+       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback),
       (override));
 };
 
@@ -715,8 +714,9 @@ void ExpectFilledForm(
       std::string exp_year = card_fill_data->expiration_year;
       std::string exp_month = card_fill_data->expiration_month;
       std::string date;
-      if (!exp_year.empty() && !exp_month.empty())
+      if (!exp_year.empty() && !exp_month.empty()) {
         date = exp_year + "-" + exp_month;
+      }
 
       ExpectFilledField("Expiration Date", "ccmonth", date.c_str(),
                         FormControlType::kInputMonth,
@@ -1367,9 +1367,11 @@ class BrowserAutofillManagerTest : public testing::Test {
 
  private:
   int ToHistogramSample(autofill_metrics::CardUploadDecision metric) {
-    for (int sample = 0; sample < metric + 1; ++sample)
-      if (metric & (1 << sample))
+    for (int sample = 0; sample < metric + 1; ++sample) {
+      if (metric & (1 << sample)) {
         return sample;
+      }
+    }
 
     NOTREACHED_IN_MIGRATION();
     return 0;
@@ -3204,8 +3206,9 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
   // Advance time and possibly submit the form.
   base::TimeDelta time_delta = base::Seconds(42);
   task_environment_.FastForwardBy(time_delta);
-  if (params.submit_form)
+  if (params.submit_form) {
     FormSubmitted(form);
+  }
 
   // Flush FormEventLoggers.
   test_api(*browser_autofill_manager_).Reset();
@@ -7256,8 +7259,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
-  AutofillPredictionImprovementsDelegate::ImportFormCallback
-      import_form_callback;
+  user_annotations::ImportFormCallback import_form_callback;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
@@ -7311,15 +7313,13 @@ TEST_F(BrowserAutofillManagerTest,
   // This simulates that UserAnnotations failed to import data from the
   // submitted form.
   ON_CALL(delegate, MaybeImportForm)
-      .WillByDefault(
-          [](std::unique_ptr<autofill::FormStructure> form,
-             AutofillPredictionImprovementsDelegate::ImportFormCallback
-                 callback) {
-            std::move(callback).Run(
-                std::move(form),
-                /*to_be_upserted_entries=*/{},
-                /*prompt_acceptance_callback=*/base::DoNothing());
-          });
+      .WillByDefault([](std::unique_ptr<autofill::FormStructure> form,
+                        user_annotations::ImportFormCallback callback) {
+        std::move(callback).Run(
+            std::move(form),
+            /*to_be_upserted_entries=*/{},
+            /*prompt_acceptance_callback=*/base::DoNothing());
+      });
 
   // Fill the form.
   FormData response_data =

@@ -30,13 +30,14 @@ class MockSaveAutofillPredictionImprovementsController
     : public SaveAutofillPredictionImprovementsController {
  public:
   MockSaveAutofillPredictionImprovementsController() = default;
-  MOCK_METHOD(void,
-              OfferSave,
-              (std::vector<optimization_guide::proto::UserAnnotationsEntry>,
-               PromptAcceptanceCallback PromptAcceptanceCallback,
-               LearnMoreClickedCallback,
-               UserFeedbackCallback),
-              (override));
+  MOCK_METHOD(
+      void,
+      OfferSave,
+      (std::vector<optimization_guide::proto::UserAnnotationsEntry>,
+       user_annotations::PromptAcceptanceCallback PromptAcceptanceCallback,
+       LearnMoreClickedCallback,
+       UserFeedbackCallback),
+      (override));
   MOCK_METHOD(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&,
       GetPredictionImprovements,

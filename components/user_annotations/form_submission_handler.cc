@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/forms_annotations.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
@@ -20,7 +21,7 @@ FormSubmissionHandler::FormSubmissionHandler(
     const std::string& title,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
-    UserAnnotationsService::ImportFormCallback callback)
+    ImportFormCallback callback)
     : url_(url),
       title_(title),
       ax_tree_update_(std::move(ax_tree_update)),
@@ -103,10 +104,7 @@ void FormSubmissionHandler::SendFormSubmissionResult(
       result.error_or(UserAnnotationsExecutionResult::kSuccess));
   if (!result.has_value()) {
     CHECK_NE(result.error(), UserAnnotationsExecutionResult::kSuccess);
-
-    if (log_entry) {
-      optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
-    }
+    optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
     if (callback_) {
       std::move(callback_).Run(
           std::move(form_),
@@ -122,6 +120,7 @@ void FormSubmissionHandler::SendFormSubmissionResult(
     std::move(callback_).Run(std::move(form_),
                              /*to_be_upserted_entries=*/{},
                              /*prompt_acceptance_callback=*/base::DoNothing());
+    NotifyCompletion();
     return;
   }
 
@@ -137,10 +136,36 @@ void FormSubmissionHandler::SendFormSubmissionResult(
 void FormSubmissionHandler::OnImportFormConfirmation(
     FormSubmissionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
-    bool prompt_was_accepted) {
-  // TODO: b/370039073 - Drop if no explicit action on prompt.
+    PromptAcceptanceResult prompt_acceptance_result) {
+  if (!prompt_acceptance_result.did_user_interact &&
+      !prompt_acceptance_result.did_thumbs_down_triggered &&
+      !prompt_acceptance_result.did_thumbs_up_triggered) {
+    // Drop the log entry, when the user did no interaction with the save prompt
+    // bubble.
+    optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
+    NotifyCompletion();
+    return;
+  }
+  if (log_entry) {
+    auto* quality_entry = log_entry->quality_data<
+        optimization_guide::FormsAnnotationsFeatureTypeMap>();
+    if (prompt_acceptance_result.did_thumbs_down_triggered) {
+      quality_entry->set_user_feedback(
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN);
+    } else if (prompt_acceptance_result.did_thumbs_up_triggered) {
+      quality_entry->set_user_feedback(
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP);
+    }
+    quality_entry->set_save_prompt_action(
+        prompt_acceptance_result.prompt_was_accepted
+            ? optimization_guide::proto::FormsAnnotationsSavePromptAction::
+                  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_ACCEPTED
+            : optimization_guide::proto::FormsAnnotationsSavePromptAction::
+                  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_REJECTED);
+    optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
+  }
 
-  if (!prompt_was_accepted) {
+  if (!prompt_acceptance_result.prompt_was_accepted) {
     NotifyCompletion();
     return;
   }

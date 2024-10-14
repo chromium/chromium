@@ -14,7 +14,7 @@ MockAutofillPredictionImprovementsDelegate::
   // user annotations so that Autofill's usual import logic will run in tests.
   ON_CALL(*this, MaybeImportForm)
       .WillByDefault([](std::unique_ptr<autofill::FormStructure> form,
-                        ImportFormCallback callback) {
+                        user_annotations::ImportFormCallback callback) {
         std::move(callback).Run(
             std::move(form),
             /*to_be_upserted_entries=*/{},

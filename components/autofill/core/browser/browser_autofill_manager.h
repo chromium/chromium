@@ -110,8 +110,7 @@ class BrowserAutofillManager : public AutofillManager {
       std::optional<autofill_metrics::SuggestionRankingContext>
           ranking_context)>;
 
-  BrowserAutofillManager(AutofillDriver* driver,
-                         const std::string& app_locale);
+  BrowserAutofillManager(AutofillDriver* driver, const std::string& app_locale);
 
   BrowserAutofillManager(const BrowserAutofillManager&) = delete;
   BrowserAutofillManager& operator=(const BrowserAutofillManager&) = delete;
@@ -485,8 +484,7 @@ class BrowserAutofillManager : public AutofillManager {
       std::unique_ptr<FormStructure> submitted_form,
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback);
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback);
 
   // Method containing logic to be run in `OnFormSubmittedImpl()` after any
   // import attempts of the submitted form occurred.

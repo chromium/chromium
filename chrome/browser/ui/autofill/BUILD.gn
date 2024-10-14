@@ -41,6 +41,7 @@ source_set("autofill") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager",
+    "//components/user_annotations:types",
     "//components/zoom",
     "//content/public/browser",
     "//ui/gfx",

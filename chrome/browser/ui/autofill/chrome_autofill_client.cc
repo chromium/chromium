@@ -851,8 +851,7 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
     const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
         to_be_upserted_entries,
-    SaveAutofillPredictionImprovementsController::PromptAcceptanceCallback
-        prompt_acceptance_callback) {
+    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (SaveAutofillPredictionImprovementsController* controller =
           SaveAutofillPredictionImprovementsController::GetOrCreate(
@@ -890,7 +889,7 @@ void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_acceptance_callback).Run(/*prompt_was_accepted=*/false);
+  std::move(prompt_acceptance_callback).Run({/*prompt_was_accepted=*/false});
 }
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)

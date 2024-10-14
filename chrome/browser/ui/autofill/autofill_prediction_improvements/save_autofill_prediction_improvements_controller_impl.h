@@ -35,11 +35,12 @@ class SaveAutofillPredictionImprovementsControllerImpl
   ~SaveAutofillPredictionImprovementsControllerImpl() override;
 
   // SaveAutofillPredictionImprovementsController:
-  void OfferSave(std::vector<optimization_guide::proto::UserAnnotationsEntry>
-                     prediction_improvements,
-                 PromptAcceptanceCallback prompt_acceptance_callback,
-                 LearnMoreClickedCallback learn_more_clicked_callback,
-                 UserFeedbackCallback user_feedback_callback) override;
+  void OfferSave(
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          prediction_improvements,
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
+      LearnMoreClickedCallback learn_more_clicked_callback,
+      UserFeedbackCallback user_feedback_callback) override;
   void OnSaveButtonClicked() override;
   const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetPredictionImprovements() const override;
@@ -73,7 +74,12 @@ class SaveAutofillPredictionImprovementsControllerImpl
 
   // Callback to notify the data provider about the user decision for the save
   // prompt.
-  PromptAcceptanceCallback prompt_acceptance_callback_ = base::NullCallback();
+  user_annotations::PromptAcceptanceCallback prompt_acceptance_callback_ =
+      base::NullCallback();
+
+  // Represents whether the user interacted with the thumbs up/down buttons.
+  bool did_trigger_thumbs_up_ = false;
+  bool did_trigger_thumbs_down_ = false;
 
   // Callback to notify that the user clicked the button to learn more about the
   // feature.

@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 
 namespace optimization_guide::proto {
@@ -21,10 +22,6 @@ namespace autofill {
 // improvements bubble.
 class SaveAutofillPredictionImprovementsController {
  public:
-  // Callback to notify the data provider (`UserAnnotationsService`) about the
-  // user decision for the save prompt.
-  using PromptAcceptanceCallback =
-      base::OnceCallback<void(bool prompt_was_accepted)>;
   using LearnMoreClickedCallback = base::RepeatingCallback<void()>;
   using UserFeedbackCallback = base::RepeatingCallback<void(
       AutofillPredictionImprovementsDelegate::UserFeedback)>;
@@ -59,7 +56,7 @@ class SaveAutofillPredictionImprovementsController {
   virtual void OfferSave(
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           prediction_improvements,
-      PromptAcceptanceCallback prompt_acceptance_callback,
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
       LearnMoreClickedCallback learn_more_clicked_callback,
       UserFeedbackCallback user_feedback_callback) = 0;
 

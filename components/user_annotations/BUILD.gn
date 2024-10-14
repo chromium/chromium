@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("types") {
+  sources = [ "user_annotations_types.h" ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
 static_library("user_annotations") {
   sources = [
     "form_submission_handler.cc",
@@ -12,10 +20,10 @@ static_library("user_annotations") {
     "user_annotations_features.h",
     "user_annotations_service.cc",
     "user_annotations_service.h",
-    "user_annotations_types.h",
   ]
 
   public_deps = [
+    ":types",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -56,6 +64,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/os_crypt/async/browser:test_support",
+    "//components/prefs:test_support",
     "//testing/gtest",
     "//url",
   ]

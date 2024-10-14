@@ -21,11 +21,13 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,13 +63,14 @@ class UserAnnotationsServiceTest : public testing::Test,
   void SetUp() override {
     InitializeFeatureList();
     CHECK(temp_dir_.CreateUniqueTempDir());
+    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
     os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
     logs_service_ = std::make_unique<
-        optimization_guide::TestModelQualityLogsUploaderService>(
-        /*pref_service=*/nullptr);
+        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
     service_ = std::make_unique<UserAnnotationsService>(
         &model_executor_, temp_dir_.GetPath(), os_crypt_.get(),
         optimization_guide_decider_.get());
@@ -93,12 +96,13 @@ class UserAnnotationsServiceTest : public testing::Test,
     service()->AddFormSubmission(
         GURL("example.com"), "title", ax_tree_update, std::move(form),
         base::BindLambdaForTesting(
-            [&entries](
-                std::unique_ptr<autofill::FormStructure> form,
-                UserAnnotationsEntries upserted_entries,
-                base::OnceCallback<void(bool)> prompt_acceptance_callback) {
+            [&entries](std::unique_ptr<autofill::FormStructure> form,
+                       UserAnnotationsEntries upserted_entries,
+                       PromptAcceptanceCallback prompt_acceptance_callback) {
               entries = upserted_entries;
-              std::move(prompt_acceptance_callback).Run(true);
+              std::move(prompt_acceptance_callback)
+                  .Run({/*prompt_was_accepted=*/true,
+                        /*did_user_interact=*/true});
             }));
     task_environment_.RunUntilIdle();
     return entries;
@@ -135,6 +139,7 @@ class UserAnnotationsServiceTest : public testing::Test,
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
       logs_service_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
@@ -458,8 +463,9 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
       base::BindLambdaForTesting(
           [](std::unique_ptr<autofill::FormStructure> form,
              UserAnnotationsEntries upserted_entries,
-             base::OnceCallback<void(bool)> prompt_acceptance_callback) {
-            std::move(prompt_acceptance_callback).Run(false);
+             PromptAcceptanceCallback prompt_acceptance_callback) {
+            std::move(prompt_acceptance_callback)
+                .Run({/*prompt_was_accepted=*/false});
           }));
 
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
@@ -471,7 +477,7 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       first_execute_callback,
       second_execute_callback;
-  base::OnceCallback<void(bool)> first_prompt_acceptance_callback,
+  PromptAcceptanceCallback first_prompt_acceptance_callback,
       second_prompt_acceptance_callback;
   EXPECT_CALL(
       *model_executor(),
@@ -490,7 +496,7 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
           [&first_prompt_acceptance_callback](
               std::unique_ptr<autofill::FormStructure> form,
               UserAnnotationsEntries upserted_entries,
-              base::OnceCallback<void(bool)> callback) {
+              PromptAcceptanceCallback callback) {
             first_prompt_acceptance_callback = std::move(callback);
           }));
 
@@ -514,7 +520,7 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
           [&second_prompt_acceptance_callback](
               std::unique_ptr<autofill::FormStructure> form,
               UserAnnotationsEntries upserted_entries,
-              base::OnceCallback<void(bool)> callback) {
+              PromptAcceptanceCallback callback) {
             second_prompt_acceptance_callback = std::move(callback);
           }));
 
@@ -529,7 +535,8 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(second_execute_callback);
   EXPECT_TRUE(first_prompt_acceptance_callback);
-  std::move(first_prompt_acceptance_callback).Run(true);
+  std::move(first_prompt_acceptance_callback)
+      .Run({/*prompt_was_accepted=*/true, /*did_user_interact=*/true});
   histogram_tester.ExpectUniqueSample("UserAnnotations.AddFormSubmissionResult",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       1);
@@ -546,7 +553,8 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   std::move(second_execute_callback)
       .Run(second_test_request.forms_annotations_response, CreateLogEntry());
   task_environment_.RunUntilIdle();
-  std::move(second_prompt_acceptance_callback).Run(true);
+  std::move(second_prompt_acceptance_callback)
+      .Run({/*prompt_was_accepted=*/true, /*did_user_interact=*/true});
 
   histogram_tester.ExpectUniqueSample("UserAnnotations.AddFormSubmissionResult",
                                       UserAnnotationsExecutionResult::kSuccess,

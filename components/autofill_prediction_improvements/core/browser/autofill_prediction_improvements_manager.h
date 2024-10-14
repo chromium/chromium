@@ -84,7 +84,7 @@ class AutofillPredictionImprovementsManager
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) override;
   void MaybeImportForm(std::unique_ptr<autofill::FormStructure> form,
-                       ImportFormCallback callback) override;
+                       user_annotations::ImportFormCallback callback) override;
   void HasDataStored(HasDataCallback callback) override;
   bool ShouldDisplayIph(const autofill::FormStructure& form,
                         const autofill::AutofillField& field) const override;
@@ -166,7 +166,7 @@ class AutofillPredictionImprovementsManager
       const GURL& url,
       const std::string& title,
       std::unique_ptr<autofill::FormStructure> form,
-      ImportFormCallback callback,
+      user_annotations::ImportFormCallback callback,
       optimization_guide::proto::AXTreeUpdate ax_tree_update);
 
   // Creates a suggestion that calls `OnClickedTriggerSuggestion()` when

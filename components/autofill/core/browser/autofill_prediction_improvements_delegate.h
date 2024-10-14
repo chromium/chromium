@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace optimization_guide::proto {
 class UserAnnotationsEntry;
@@ -35,17 +36,6 @@ class AutofillPredictionImprovementsDelegate {
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    autofill::AutofillSuggestionTriggerSource)>;
-  // `ImportFormCallback` carries `to_be_upserted_entries` that will be shown in
-  // the Autofill prediction improvements prompt. The prompt then notifies the
-  // `UserAnnotationsService` about the user decision by running
-  // `prompt_acceptance_callback`, that is also provided by
-  // `ImportFormCallback`.
-  using ImportFormCallback = base::OnceCallback<void(
-      std::unique_ptr<FormStructure> form,
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>
-          to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback)>;
 
   virtual ~AutofillPredictionImprovementsDelegate() = default;
 
@@ -87,7 +77,7 @@ class AutofillPredictionImprovementsDelegate {
   // `callback` with its response.
   virtual void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form_structure,
-      ImportFormCallback callback) = 0;
+      user_annotations::ImportFormCallback callback) = 0;
 
   // Checks if there is any data stored in the profile's user annotations that
   // can be used for filling and runs the `callback` accordingly.

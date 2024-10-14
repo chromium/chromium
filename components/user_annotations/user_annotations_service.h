@@ -48,18 +48,6 @@ struct Entry;
 
 class UserAnnotationsService : public KeyedService {
  public:
-  // `ImportFormCallback` carries `to_be_upserted_entries` that will be shown in
-  // the Autofill prediction improvements prompt. The prompt then notifies the
-  // `UserAnnotationsService` about the user decision by running
-  // `prompt_acceptance_callback`, that is also provided by
-  // `ImportFormCallback`. Note that `form` is always expected to be non-null.
-  using ImportFormCallback = base::OnceCallback<void(
-      std::unique_ptr<autofill::FormStructure> form,
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>
-          to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback)>;
-
   UserAnnotationsService(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
       const base::FilePath& storage_dir,

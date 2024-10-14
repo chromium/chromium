@@ -10,6 +10,14 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
+}
+
+namespace autofill {
+class FormStructure;
+}  // namespace autofill
+
 namespace user_annotations {
 
 typedef int64_t EntryID;
@@ -44,6 +52,29 @@ enum class UserAnnotationsExecutionResult {
 using UserAnnotationsEntryRetrievalResult =
     base::expected<std::vector<optimization_guide::proto::UserAnnotationsEntry>,
                    UserAnnotationsExecutionResult>;
+
+// Encapsulates the result of user interaction with the prediction improvements
+// prompt.
+struct PromptAcceptanceResult {
+  bool prompt_was_accepted = false;
+  bool did_user_interact = false;
+  bool did_thumbs_up_triggered = false;
+  bool did_thumbs_down_triggered = false;
+};
+
+using PromptAcceptanceCallback =
+    base::OnceCallback<void(PromptAcceptanceResult result)>;
+
+// `ImportFormCallback` carries `to_be_upserted_entries` that will be shown
+// in the Autofill prediction improvements prompt. The prompt then notifies
+// the `UserAnnotationsService` about the user decision by running
+// `prompt_acceptance_callback`, that is also provided by
+// `ImportFormCallback`.
+using ImportFormCallback = base::OnceCallback<void(
+    std::unique_ptr<autofill::FormStructure> form,
+    std::vector<optimization_guide::proto::UserAnnotationsEntry>
+        to_be_upserted_entries,
+    PromptAcceptanceCallback prompt_acceptance_callback)>;
 
 }  // namespace user_annotations
 

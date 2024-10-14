@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -67,8 +68,7 @@ enum class SuggestionType;
 // implementations of ContentAutofillClient without causing invalid casts to
 // ChromeAutofillClient.
 class ChromeAutofillClient : public ContentAutofillClient,
-                             public content::WebContentsObserver
-{
+                             public content::WebContentsObserver {
  public:
   // Creates a new ChromeAutofillClient for the given `web_contents` if no
   // ContentAutofillClient is associated with the `web_contents` yet. Otherwise,
@@ -188,8 +188,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowSaveAutofillPredictionImprovementsBubble(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
           to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback) override;
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
+      override;
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
   PasswordFormClassification ClassifyAsPasswordForm(

@@ -15,6 +15,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/profile_metrics",
   "+components/policy",
+  "+components/user_annotations",
   "+components/resources",
   "+components/security_state",
   "+components/security_interstitials/core/insecure_form_util.h",

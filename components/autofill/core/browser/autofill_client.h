@@ -37,6 +37,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/window_open_disposition.h"
@@ -531,8 +532,7 @@ class AutofillClient {
   virtual void ShowSaveAutofillPredictionImprovementsBubble(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
           to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback);
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback);
 
   // Stores test addresses provided by devtools and used to help developers
   // debug their forms with a list of well formatted addresses. Differently from

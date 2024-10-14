@@ -641,7 +641,7 @@ void AutofillPredictionImprovementsManager::UpdateSuggestions(
 
 void AutofillPredictionImprovementsManager::MaybeImportForm(
     std::unique_ptr<autofill::FormStructure> form,
-    ImportFormCallback callback) {
+    user_annotations::ImportFormCallback callback) {
   user_annotations::UserAnnotationsService* annotation_service =
       client_->GetUserAnnotationsService();
 
@@ -693,7 +693,7 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
     const GURL& url,
     const std::string& title,
     std::unique_ptr<autofill::FormStructure> form,
-    ImportFormCallback callback,
+    user_annotations::ImportFormCallback callback,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {

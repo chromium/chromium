@@ -895,9 +895,7 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
 #endif
-  base::MockCallback<
-      autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
-      import_form_callback;
+  base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
   if (ShouldExtractAXTree()) {
     EXPECT_CALL(client_, GetAXTree)
@@ -951,9 +949,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
 #endif
-  base::MockCallback<
-      autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
-      import_form_callback;
+  base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
   user_annotations_service_.SetShouldImportFormData(
       /*should_import_form_data=*/true);
 
@@ -977,9 +973,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       user_annotations::kUserAnnotations,
       {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
-  base::MockCallback<
-      autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
-      import_form_callback;
+  base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
 
   std::vector<optimization_guide::proto::UserAnnotationsEntry>
       user_annotations_entries;
