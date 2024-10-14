@@ -37,7 +37,8 @@
 @interface RootDriveFilePickerCoordinator () <
     UIAdaptivePresentationControllerDelegate,
     DriveFilePickerMediatorDelegate,
-    BrowseDriveFilePickerCoordinatorDelegate>
+    BrowseDriveFilePickerCoordinatorDelegate,
+    UIGestureRecognizerDelegate>
 
 @end
 
@@ -60,6 +61,8 @@
   BOOL _presentationControllerShouldDismiss;
   // A helper class to report metrics.
   DriveFilePickerMetricsHelper* _metricsHelper;
+  // Gesture recognizer to properly handle tap-to-dismiss.
+  UITapGestureRecognizer* _tapToDismissGestureRecognizer;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -132,10 +135,22 @@
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
+
+  // Add tap gesture recognizer to window, to handle tap-to-dismiss.
+  _tapToDismissGestureRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(didTapToDismiss:)];
+  _tapToDismissGestureRecognizer.numberOfTapsRequired = 1;
+  _tapToDismissGestureRecognizer.cancelsTouchesInView = NO;
+  _tapToDismissGestureRecognizer.delegate = self;
+  [self.baseViewController.view.window
+      addGestureRecognizer:_tapToDismissGestureRecognizer];
 }
 
 - (void)stop {
   [_metricsHelper reportMetrics];
+  [self.baseViewController.view.window
+      removeGestureRecognizer:_tapToDismissGestureRecognizer];
   [_mediator disconnect];
   _mediator = nil;
   [_navigationController.presentingViewController
@@ -177,22 +192,10 @@
 
 - (void)presentationControllerDidAttemptToDismiss:
     (UIPresentationController*)presentationController {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock discardSelectionBlock = ^{
-    [weakSelf userInterrupted];
-  };
-  UIAlertController* discardSelectionAlertController =
-      DiscardSelectionAlertController(discardSelectionBlock, nil);
-  discardSelectionAlertController.popoverPresentationController.sourceView =
-      _navigationController.view;
-  discardSelectionAlertController.popoverPresentationController.sourceRect =
-      CGRectMake(CGRectGetMidX(_navigationController.view.bounds),
-                 CGRectGetMidY(_navigationController.view.bounds), 0, 0);
-  discardSelectionAlertController.popoverPresentationController
-      .permittedArrowDirections = 0;
-  [_navigationController presentViewController:discardSelectionAlertController
-                                      animated:YES
-                                    completion:nil];
+  // If this is called then it means the user attempted to dismiss the Drive
+  // file picker while `_presentationControllerShouldDismiss` was NO. This means
+  // the 'Discard selection' alert should be presented.
+  [self showDiscardSelectionAlert];
 }
 
 #pragma mark - DriveFilePickerMediatorDelegate
@@ -292,6 +295,14 @@
   _presentationControllerShouldDismiss = allowDismiss;
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
+}
+
 #pragma mark - Private
 
 // Initiate the add account flow.
@@ -332,6 +343,42 @@
                          completion:^{
                            [driveFilePickerHandler hideDriveFilePicker];
                          }];
+}
+
+// Called when a tap is detected in the window. This should present the 'Discard
+// selection' alert if the tap is outside the Drive file picker and if the
+// presentation controller is not allowed to dismiss the Drive file picker by
+// itself (`_presentationControllerShouldDismiss` is NO).
+- (void)didTapToDismiss:(UITapGestureRecognizer*)sender {
+  if (sender.state != UIGestureRecognizerStateEnded) {
+    return;
+  }
+  CGPoint tapLocation = [sender locationInView:_navigationController.view];
+  if ([_navigationController.view pointInside:tapLocation withEvent:nil]) {
+    // If the tap occurred within the Drive file picker, ignore it.
+    return;
+  }
+  if (_presentationControllerShouldDismiss) {
+    // If the presentation controller should already dismiss when the user taps
+    // outside the presented view controller, do nothing here as it will dismiss
+    // itself.
+    return;
+  }
+  // Otherwise present 'Discard selection' alert.
+  [self showDiscardSelectionAlert];
+}
+
+// Shows the 'Discard selection' alert on top of `_navigationController`.
+- (void)showDiscardSelectionAlert {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock discardSelectionBlock = ^{
+    [weakSelf stopAnimated];
+  };
+  UIAlertController* discardSelectionAlertController =
+      DiscardSelectionAlertController(discardSelectionBlock, nil);
+  [_navigationController presentViewController:discardSelectionAlertController
+                                      animated:YES
+                                    completion:nil];
 }
 
 @end

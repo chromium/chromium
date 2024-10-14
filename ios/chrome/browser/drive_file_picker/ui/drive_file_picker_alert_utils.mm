@@ -6,6 +6,7 @@
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 UIAlertController* FailAlertController(ProceduralBlock retry_block,
@@ -51,12 +52,17 @@ UIAlertController* FailAlertController(ProceduralBlock retry_block,
 UIAlertController* DiscardSelectionAlertController(
     ProceduralBlock discard_block,
     ProceduralBlock cancel_block) {
+  UIAlertControllerStyle style =
+      (ui::GetDeviceFormFactor() ==
+       ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET)
+          ? UIAlertControllerStyleAlert
+          : UIAlertControllerStyleActionSheet;
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:
           l10n_util::GetNSString(
               IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION_TITLE)
                        message:nil
-                preferredStyle:UIAlertControllerStyleActionSheet];
+                preferredStyle:style];
 
   void (^discardHandler)(UIAlertAction*) = ^(UIAlertAction* action) {
     if (discard_block) {
