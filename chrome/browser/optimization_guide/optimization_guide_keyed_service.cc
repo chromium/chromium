@@ -651,7 +651,6 @@ void OptimizationGuideKeyedService::ExecuteModel(
         nullptr);
     return;
   }
-  // TODO: crbug.com/372395424 - Propagate from feature.
   model_execution_manager_->ExecuteModel(
       feature, request_metadata, execution_timeout,
       /*log_ai_data_request=*/nullptr, std::move(callback));
