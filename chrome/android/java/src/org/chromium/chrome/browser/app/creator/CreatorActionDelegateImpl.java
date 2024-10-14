@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -126,10 +126,10 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                         mActivity,
                         mProfile,
                         strings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                         signinAccessPoint,
                         /* selectedCoreAccountId= */ null);
     }
@@ -155,10 +155,11 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                             mActivity,
                             mProfile,
                             strings,
-                            SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                            SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                            BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                             signinAccessPoint,
                             /* selectedCoreAccountId= */ null);
             return;

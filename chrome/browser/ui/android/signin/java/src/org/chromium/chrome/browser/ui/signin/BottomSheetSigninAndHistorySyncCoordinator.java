@@ -51,7 +51,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
-public class SigninAndHistorySyncCoordinator
+public class BottomSheetSigninAndHistorySyncCoordinator
         implements SigninAccountPickerCoordinator.Delegate,
                 HistorySyncCoordinator.HistorySyncDelegate {
     private final WindowAndroid mWindowAndroid;
@@ -159,7 +159,7 @@ public class SigninAndHistorySyncCoordinator
     }
 
     /**
-     * Creates an instance of {@link SigninAndHistorySyncCoordinator} and shows the sign-in bottom
+     * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} and shows the sign-in bottom
      * sheet.
      *
      * @param windowAndroid The window that hosts the sign-in & history opt-in flow.
@@ -174,7 +174,7 @@ public class SigninAndHistorySyncCoordinator
      * @param accountId If not null, the identifier of the default account to display on the signin
      *     bottom sheet.
      */
-    public SigninAndHistorySyncCoordinator(
+    public BottomSheetSigninAndHistorySyncCoordinator(
             @NonNull WindowAndroid windowAndroid,
             @NonNull ComponentActivity activity,
             @NonNull Delegate delegate,
@@ -205,7 +205,7 @@ public class SigninAndHistorySyncCoordinator
         mContainerView =
                 (ViewGroup)
                         LayoutInflater.from(mActivity)
-                                .inflate(R.layout.signin_history_sync_container, null);
+                                .inflate(R.layout.bottom_sheet_signin_history_sync_container, null);
 
         // TODO(crbug.com/41493768): Implement the loading state UI.
     }
