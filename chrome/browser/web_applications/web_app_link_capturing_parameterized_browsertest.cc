@@ -569,9 +569,19 @@ class WebAppLinkCapturingParameterizedBrowserTest
         features::kPwaNavigationCapturing, parameters);
   }
 
-  // Returns the expectations JSON file name without extension
+  // Returns the expectations JSON file name without extension.
   virtual std::string GetExpectationsFileBaseName() const {
+    // TODO(finnur): Rename to 'navigation_capture_test_expectation'.
     return "link_capture_test_input";
+  }
+
+  bool UseOutputFileForCaptureOn() const {
+    // First check if the cleanup test supplies its own override value.
+    if (test_supplied_capture_on_flag_.has_value()) {
+      return test_supplied_capture_on_flag_.value();
+    }
+
+    return GetLinkCapturing() == LinkCapturing::kEnabled;
   }
 
   // This function allows derived test suites to configure custom
@@ -601,9 +611,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
   base::FilePath GetExpectationsFile() const {
+    std::string filename =
+        (UseOutputFileForCaptureOn()
+             ? GetExpectationsFileBaseName() + ""
+             : "navigation_capture_test_expectation_capture_off") +
+        ".json";
     return base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
         .AppendASCII(kLinkCaptureTestInputPathPrefix)
-        .AppendASCII(GetExpectationsFileBaseName() + ".json");
+        .AppendASCII(filename);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> SimulateRedirectHandler(
@@ -723,16 +738,21 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   base::ScopedClosureRunner LockExpectationsFile() {
     CHECK(ShouldRebaseline());
+
+    base::FilePath lock_file_path =
+        base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
+            .AppendASCII(GetExpectationsFileBaseName() + "_lock_file.lock");
+
     // Lock the results file to support using `--test-launcher-jobs=X` when
     // doing a rebaseline.
     base::File exclusive_file = base::File(
-        lock_file_path_, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+        lock_file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
 
 // Fuchsia doesn't support file locking.
 #if !BUILDFLAG(IS_FUCHSIA)
     {
       SCOPED_TRACE("Attempting to gain exclusive lock of " +
-                   lock_file_path_.MaybeAsASCII());
+                   lock_file_path.MaybeAsASCII());
       base::test::RunUntil([&]() {
         return exclusive_file.Lock(base::File::LockMode::kExclusive) ==
                base::File::FILE_OK;
@@ -919,10 +939,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
 
-    // Parses the corresponding json file for test expectations given the
-    // respective test suite.
-    InitializeTestExpectations();
-
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
         base::Unretained(this)));
@@ -952,18 +968,33 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // no longer exist in code but still exist in the expectations json file.
   // Additionally if this test is run with the --rebaseline-link-capturing-test
   // flag any left-over expectations will be cleaned up.
-  void PerformTestCleanupIfNeeded() {
+  void PerformTestCleanupIfNeeded(bool capture_on = true) {
+    test_supplied_capture_on_flag_ = capture_on;
+
+    InitializeTestExpectations();
+
+    // Iterate over all the tests in all the test suites (even unrelated ones)
+    // to obtain a list of the test cases that belong to our test class.
     std::set<std::string> test_cases;
     const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
     for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
       const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
       // We only care about link capturing parameterized tests.
-      if (std::string_view(test_suite->name()).find(GetTestClassName()) ==
-          std::string::npos) {
+      if (!base::Contains(std::string(test_suite->name()),
+                          GetTestClassName())) {
         continue;
       }
       for (int j = 0; j < test_suite->total_test_count(); ++j) {
         const char* name = test_suite->GetTestInfo(j)->name();
+        // Ensure CaptureOn and CaptureOff tests are filtered out as
+        // appropriate.
+        std::string capture_label =
+            capture_on
+                ? std::string(ToParamString(LinkCapturing::kEnabled)) + "_"
+                : std::string(ToParamString(LinkCapturing::kDisabled)) + "_";
+        if (!base::Contains(std::string(name), capture_label)) {
+          continue;
+        }
         auto parts = base::SplitStringOnce(name, '/');
         if (!parts.has_value()) {
           // Not a parameterized test.
@@ -1001,11 +1032,16 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
   base::Value::Dict& test_expectations() {
-    CHECK(test_expectations_.has_value() && test_expectations_->is_dict());
+    CHECK(test_expectations_.has_value());
+    CHECK(test_expectations_->is_dict());
     return test_expectations_->GetDict();
   }
 
   void RunTest() {
+    // Parses the corresponding json file for test expectations given the
+    // respective test suite.
+    InitializeTestExpectations();
+
     if (ShouldSkipCurrentTest()) {
       GTEST_SKIP()
           << "Skipped as test is marked as disabled in the expectations file. "
@@ -1201,6 +1237,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // Parses the json test expectation file. Note that if the expectations file
   // doesn't exist during rebaselining, a dummy json file is used.
   void InitializeTestExpectations() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
     std::string json_data;
     bool success = ReadFileToString(GetExpectationsFile(), &json_data);
     if (!ShouldRebaseline()) {
@@ -1220,12 +1258,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 
-  base::FilePath lock_file_path_ =
-      base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
-          .AppendASCII(GetExpectationsFileBaseName() + "_lock_file.lock");
-
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
+
+  // Whether capture should be considered on for the Cleanup test.
+  std::optional<bool> test_supplied_capture_on_flag_;
 
   // Prevent multiple redirections from triggering for an intermediate step in a
   // redirection that matches the end site, preventing an infinite loop and a
@@ -1255,7 +1292,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedBrowserTest,
                        MAYBE_CleanupExpectations) {
-  PerformTestCleanupIfNeeded();
+  PerformTestCleanupIfNeeded(/*capture_on=*/true);
+  PerformTestCleanupIfNeeded(/*capture_on=*/false);
 }
 
 // Pro-tip: To run only one combination from the below list, supply this...
@@ -1477,7 +1515,7 @@ INSTANTIATE_TEST_SUITE_P(
 class NavigationCapturingTestWithAppBLaunched
     : public WebAppLinkCapturingParameterizedBrowserTest {
  public:
-  // Returns the expectations JSON file name without extension
+  // Returns the expectations JSON file name without extension.
   std::string GetExpectationsFileBaseName() const override {
     return "navigation_capture_test_launch_app_b";
   }
