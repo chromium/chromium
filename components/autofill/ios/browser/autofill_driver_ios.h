@@ -109,7 +109,7 @@ class AutofillDriverIOS final : public AutofillDriver,
       base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
           response_callback) override;
   void SendTypePredictionsToRenderer(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
+      const base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
       override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldTriggerSuggestions(

@@ -2327,12 +2327,15 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
 
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     const FormData& form) {
-  FormStructure* form_structure = FindCachedFormById(form.global_id());
+  raw_ptr<FormStructure, VectorExperimental> form_structure =
+      FindCachedFormById(form.global_id());
   if (!form_structure) {
     return;
   }
 
-  driver().SendTypePredictionsToRenderer({form_structure});
+  driver().SendTypePredictionsToRenderer(
+      base::span_from_ref<raw_ptr<FormStructure, VectorExperimental>>(
+          form_structure));
 
   if (form_filler_->ShouldTriggerRefill(
           *form_structure, RefillTriggerReason::kSelectOptionsChanged)) {

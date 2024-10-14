@@ -274,7 +274,7 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
 
 // static
 std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>&
+    base::span<const raw_ptr<FormStructure, VectorExperimental>>
         form_structures) {
   std::vector<FormDataPredictions> forms;
   forms.reserve(form_structures.size());

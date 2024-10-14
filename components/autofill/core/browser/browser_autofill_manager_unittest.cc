@@ -804,11 +804,10 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FieldGlobalId& field_id,
                const std::u16string& value),
               (override));
-  MOCK_METHOD(
-      void,
-      SendTypePredictionsToRenderer,
-      ((const std::vector<raw_ptr<FormStructure, VectorExperimental>>&)),
-      (override));
+  MOCK_METHOD(void,
+              SendTypePredictionsToRenderer,
+              ((base::span<const raw_ptr<FormStructure, VectorExperimental>>)),
+              (override));
 };
 
 }  // namespace
@@ -1497,6 +1496,8 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
 // Test that when forms are seen, the renderer is updated with the predicted
 // field types
 TEST_F(BrowserAutofillManagerTest, OnFormsSeen_SendTypePredictionsToRenderer) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::test::kAutofillShowTypePredictions);
   // Set up a queryable form.
   FormData form1 = CreateTestAddressFormData();
 

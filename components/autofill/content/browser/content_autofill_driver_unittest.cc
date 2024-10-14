@@ -717,6 +717,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
 }
 
 TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::test::kAutofillShowTypePredictions);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kShowAutofillTypePredictions);
 

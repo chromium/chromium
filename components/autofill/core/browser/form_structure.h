@@ -78,7 +78,7 @@ class FormStructure {
   // Returns predictions using the details from the given |form_structures| and
   // their fields' predicted types.
   static std::vector<FormDataPredictions> GetFieldTypePredictions(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>&
+      base::span<const raw_ptr<FormStructure, VectorExperimental>>
           form_structures);
 
   // Creates FormStructure that has bare minimum information for uploading
