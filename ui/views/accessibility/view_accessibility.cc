@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
@@ -1017,10 +1016,6 @@ void ViewAccessibility::set_accessibility_events_callback(
 
 void ViewAccessibility::CompleteCacheInitializationRecursive() {
   internal::ScopedChildrenLock lock(view_);
-  if (initialization_state_ == State::kInitialized) {
-    return;
-  }
-
   initialization_state_ = State::kInitializing;
 
   ui::AXNodeData data;
@@ -1101,10 +1096,6 @@ void ViewAccessibility::CompleteCacheInitialization() {
   }
 
   CompleteCacheInitializationRecursive();
-}
-
-bool ViewAccessibility::IsAccessibilityEnabled() const {
-  return ui::AXPlatform::GetInstance().GetMode() == ui::AXMode::kNativeAPIs;
 }
 
 void ViewAccessibility::PruneSubtree() {

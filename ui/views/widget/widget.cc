@@ -21,7 +21,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/hit_test.h"
@@ -488,8 +487,6 @@ void Widget::Init(InitParams params) {
   // accordingly.
   AddObserver(&root_view_->GetViewAccessibility());
 
-  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-
   // Copy the elements of params that will be used after it is moved.
   const InitParams::Type type = params.type;
   const gfx::Rect bounds = params.bounds;
@@ -840,8 +837,6 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   SaveWindowPlacement();
   ClearFocusFromWidget();
 
-  ax_mode_observation_.Reset();
-
   observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
 
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
@@ -861,8 +856,6 @@ void Widget::CloseNow() {
   // Set this so that Widget::Close() early outs. In general this operation is
   // a one-way and can't be undone.
   widget_closed_ = true;
-
-  ax_mode_observation_.Reset();
 
   observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
@@ -2110,19 +2103,6 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   ThemeChanged();
 }
 
-void Widget::OnAXModeAdded(ui::AXMode mode) {
-  if (mode == ui::AXMode::kNativeAPIs) {
-    auto* root_view = GetRootView();
-    if (root_view) {
-      // The root view's accessibility cache is always fully initialized, so we
-      // only have to recursively complete for its descendants.
-      for (View* child : root_view->children()) {
-        child->GetViewAccessibility().CompleteCacheInitialization();
-      }
-    }
-  }
-}
-
 void Widget::SetColorModeOverride(
     std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
@@ -2399,8 +2379,6 @@ void Widget::HandleWidgetDestroyed() {
   if (native_widget_destroyed_) {
     return;
   }
-
-  ax_mode_observation_.Reset();
 
   observers_.Notify(&WidgetObserver::OnWidgetDestroyed, this);
 

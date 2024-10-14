@@ -942,7 +942,6 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/accessibility:test_support",
     "//ui/base",
     "//ui/events",
   ]

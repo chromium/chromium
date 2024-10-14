@@ -2967,11 +2967,11 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // inherit the visibility of the owner View.
   view->UpdateLayerVisibility();
 
-  // We initialize any attributes in the accessible cache that might be
-  // expensive to compute so we only compute them when accessibility is enabled.
-  if (GetViewAccessibility().IsAccessibilityEnabled()) {
-    view->GetViewAccessibility().CompleteCacheInitialization();
-  }
+  // TODO(https://crbug.com/325137417): We should only complete the
+  // initialization of the accessible cache when we know an accessibility API
+  // client fetches information from the browser. Add a condition for the
+  // kNativeAPIs mode after doing some testing.
+  view->GetViewAccessibility().CompleteCacheInitialization();
 
   // Make sure that the accessible focusable state of the descendants of the
   // `view` is correct, and make sure they are ready to send event

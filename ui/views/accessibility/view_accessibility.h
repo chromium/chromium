@@ -498,8 +498,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void CompleteCacheInitialization();
 
-  bool IsAccessibilityEnabled() const;
-
   bool is_initialized() const {
     return initialization_state_ == State::kInitialized;
   }
