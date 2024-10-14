@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -44,6 +46,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Tests for ArchivedTabModelOrchestrator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -94,6 +97,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
+    @Mock private TabArchiver.Clock mClock;
 
     private Profile mProfile;
     private FakeTaskRunner mTaskRunner;
@@ -168,6 +172,47 @@ public class ArchivedTabModelOrchestratorTest {
         CriteriaHelper.pollUiThread(() -> 2 == mTaskRunner.mDelayedTasks.size());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testDeclutterInactiveTabs() {
+        finishLoading();
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(
+                () -> {
+                    doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
+                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
+                    mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                    mOrchestrator.resetBeginDeclutterForTesting();
+                    mOrchestrator.maybeBeginDeclutter();
+                });
+
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(
+                () ->
+                        mOrchestrator
+                                .getTabArchiver()
+                                .unarchiveAndRestoreTab(
+                                        mRegularTabCreator,
+                                        mArchivedTabModel.getTabAt(0),
+                                        /* updateTimestamp= */ true));
+
+        // Now the timestamp has been updated, no tabs should get archived.
+        runOnUiThreadBlocking(
+                () -> {
+                    mOrchestrator.resetBeginDeclutterForTesting();
+                    mOrchestrator.maybeBeginDeclutter();
+                });
+        CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
     }
 
     @Test

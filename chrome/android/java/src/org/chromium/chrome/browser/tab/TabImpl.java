@@ -2109,7 +2109,8 @@ class TabImpl implements Tab {
         return mTimestampMillis;
     }
 
-    private void setTimestampMillis(long timestampMillis) {
+    @Override
+    public void setTimestampMillis(long timestampMillis) {
         mTimestampMillis = timestampMillis;
         for (TabObserver tabObserver : mObservers) {
             tabObserver.onTimestampChanged(this, timestampMillis);

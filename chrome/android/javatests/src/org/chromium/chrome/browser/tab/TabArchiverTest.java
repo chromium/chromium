@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -173,16 +174,72 @@ public class TabArchiverTest {
                                 mArchivedTabModel.getTabAt(0).getId(),
                                 mArchivedTabModel.getTabAt(0).getRootId()));
 
+        long previousTimestampMillis =
+                runOnUiThreadBlocking(() -> mArchivedTabModel.getTabAt(0).getTimestampMillis());
         runOnUiThreadBlocking(
                 () ->
                         mTabArchiver.unarchiveAndRestoreTab(
-                                mRegularTabCreator, mArchivedTabModel.getTabAt(0)));
+                                mRegularTabCreator,
+                                mArchivedTabModel.getTabAt(0),
+                                /* updateTimestamp= */ true));
         assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabRestored"));
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
         runOnUiThreadBlocking(
                 () -> assertEquals(Tab.INVALID_TAB_ID, mRegularTabModel.getTabAt(1).getParentId()));
+        runOnUiThreadBlocking(
+                () ->
+                        assertNotEquals(
+                                previousTimestampMillis,
+                                mRegularTabModel.getTabAt(1).getTimestampMillis()));
+    }
+
+    @Test
+    @MediumTest
+    public void testArchiveThenUnarchiveTab_NoTimestampUpdate() throws Exception {
+        Tab tab =
+                sActivityTestRule.loadUrlInNewTab(
+                        sActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        runOnUiThreadBlocking(() -> mTabArchiver.archiveAndRemoveTab(mRegularTabModel, tab));
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.TabArchived"));
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                Tab.INVALID_TAB_ID, mArchivedTabModel.getTabAt(0).getParentId()));
+        runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                mArchivedTabModel.getTabAt(0).getId(),
+                                mArchivedTabModel.getTabAt(0).getRootId()));
+
+        long previousTimestampMillis =
+                runOnUiThreadBlocking(() -> mArchivedTabModel.getTabAt(0).getTimestampMillis());
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.unarchiveAndRestoreTab(
+                                mRegularTabCreator,
+                                mArchivedTabModel.getTabAt(0),
+                                /* updateTimestamp= */ false));
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabRestored"));
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(
+                () -> assertEquals(Tab.INVALID_TAB_ID, mRegularTabModel.getTabAt(1).getParentId()));
+        runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                previousTimestampMillis,
+                                mRegularTabModel.getTabAt(1).getTimestampMillis()));
     }
 
     @Test

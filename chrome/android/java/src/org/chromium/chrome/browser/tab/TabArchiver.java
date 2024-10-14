@@ -49,8 +49,8 @@ public class TabArchiver implements TabWindowManager.Observer {
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final TabWindowManager mTabWindowManager;
     private final TabArchiveSettings mTabArchiveSettings;
-    private final Clock mClock;
 
+    private Clock mClock;
     private boolean mDeclutterInitCalled;
     private int mSelectorsQueuedForDeclutter;
 
@@ -158,7 +158,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.assertOnUiThread();
         while (mArchivedTabModel.getCount() > 0) {
             Tab tab = mArchivedTabModel.getTabAt(0);
-            unarchiveAndRestoreTab(regularTabCreator, tab);
+            unarchiveAndRestoreTab(regularTabCreator, tab, /* updateTimestamp= */ false);
             RecordUserAction.record("Tabs.ArchivedTabRescued");
         }
     }
@@ -198,9 +198,15 @@ public class TabArchiver implements TabWindowManager.Observer {
      *
      * @param tabCreator The {@link TabCreator} to use when recreating the tabs.
      * @param tab The {@link Tab} to unarchive.
+     * @param updateTimestamp Whether the Tab's timestamp should be updated.
      */
-    public void unarchiveAndRestoreTab(TabCreator tabCreator, Tab tab) {
+    public void unarchiveAndRestoreTab(TabCreator tabCreator, Tab tab, boolean updateTimestamp) {
         ThreadUtils.assertOnUiThread();
+        // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
+        if (updateTimestamp) {
+            tab.setTimestampMillis(System.currentTimeMillis());
+        }
+
         TabState tabState = prepareTabState(tab);
         mArchivedTabModel.removeTab(tab);
         mAsyncTabParamsManager.add(tab.getId(), new TabReparentingParams(tab, null));
@@ -324,5 +330,11 @@ public class TabArchiver implements TabWindowManager.Observer {
             archivedTab.setRootId(archivedTab.getId());
             archivedTab.setParentId(Tab.INVALID_TAB_ID);
         }
+    }
+
+    // Testing-specific methods.
+
+    public void setClockForTesting(Clock clock) {
+        mClock = clock;
     }
 }

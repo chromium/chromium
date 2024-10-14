@@ -85,7 +85,8 @@ public class CloseAllTabsHelper {
         while (archivedTabModel.getCount() > 0) {
             Tab archivedTab = archivedTabModel.getTabAt(0);
             previouslyArchivedTabIds.add(archivedTab.getId());
-            archiver.unarchiveAndRestoreTab(regularTabCreator, archivedTab);
+            archiver.unarchiveAndRestoreTab(
+                    regularTabCreator, archivedTab, /* updateTimestamp= */ false);
         }
         return previouslyArchivedTabIds;
     }

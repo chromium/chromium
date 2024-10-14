@@ -155,6 +155,7 @@ public class MockTab extends TabImpl {
         return mTimestampMillis;
     }
 
+    @Override
     public void setTimestampMillis(long timestampMillis) {
         mTimestampMillis = timestampMillis;
     }

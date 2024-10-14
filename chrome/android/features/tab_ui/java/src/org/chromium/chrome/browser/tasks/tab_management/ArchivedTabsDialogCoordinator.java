@@ -182,7 +182,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     Tab tab = mArchivedTabModel.getTabById(tabId);
                     mArchivedTabModelOrchestrator
                             .getTabArchiver()
-                            .unarchiveAndRestoreTab(mRegularTabCreator, tab);
+                            .unarchiveAndRestoreTab(
+                                    mRegularTabCreator, tab, /* updateTimestamp= */ true);
 
                     hide(
                             ANIM_DURATION_MS,
@@ -614,7 +615,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         for (Tab tab : tabs) {
             mArchivedTabModelOrchestrator
                     .getTabArchiver()
-                    .unarchiveAndRestoreTab(mRegularTabCreator, tab);
+                    .unarchiveAndRestoreTab(mRegularTabCreator, tab, /* updateTimestamp= */ true);
         }
     }
 
