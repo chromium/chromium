@@ -730,13 +730,14 @@
                 }
                 throw err;
             }
+            // Wait for the new target to be attached and to be added to the browsing context
+            // storage.
+            const context = await this.#browsingContextStorage.waitForContext(result.targetId);
             // Wait for the new tab to be loaded to avoid race conditions in the
             // `browsingContext` events, when the `browsingContext.domContentLoaded` and
             // `browsingContext.load` events from the initial `about:blank` navigation
             // are emitted after the next navigation is started.
             // Details: https://github.com/web-platform-tests/wpt/issues/35846
-            const contextId = result.targetId;
-            const context = this.#browsingContextStorage.getContext(contextId);
             await context.lifecycleLoaded();
             return { context: context.id };
         }
@@ -803,23 +804,34 @@
             if (!context.isTopLevelContext()) {
                 throw new InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
             }
+            // Parent session of a page target session can be a `browser` or a `tab` session.
+            const parentCdpClient = context.cdpTarget.parentCdpClient;
             try {
                 const detachedFromTargetPromise = new Promise((resolve) => {
                     const onContextDestroyed = (event) => {
                         if (event.targetId === params.context) {
-                            this.#browserCdpClient.off('Target.detachedFromTarget', onContextDestroyed);
+                            parentCdpClient.off('Target.detachedFromTarget', onContextDestroyed);
                             resolve();
                         }
                     };
-                    this.#browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
+                    parentCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
                 });
-                if (params.promptUnload) {
-                    await context.close();
+                try {
+                    if (params.promptUnload) {
+                        await context.close();
+                    }
+                    else {
+                        await parentCdpClient.sendCommand('Target.closeTarget', {
+                            targetId: params.context,
+                        });
+                    }
                 }
-                else {
-                    await this.#browserCdpClient.sendCommand('Target.closeTarget', {
-                        targetId: params.context,
-                    });
+                catch (error) {
+                    // Swallow error that arise from the session being destroyed. Rely on the
+                    // `detachedFromTargetPromise` event to be resolved.
+                    if (!parentCdpClient.isCloseError(error)) {
+                        throw error;
+                    }
                 }
                 // Sometimes CDP command finishes before `detachedFromTarget` event,
                 // sometimes after. Wait for the CDP command to be finished, and then wait
@@ -4441,6 +4453,12 @@
                 // keep-sorted start block=yes
                 case 'bluetooth.handleRequestDevicePrompt':
                     return await this.#bluetoothProcessor.handleRequestDevicePrompt(this.#parser.parseHandleRequestDevicePromptParams(command.params));
+                case 'bluetooth.simulateAdapter':
+                    return await this.#bluetoothProcessor.simulateAdapter(command.params);
+                case 'bluetooth.simulateAdvertisement':
+                    return await this.#bluetoothProcessor.simulateAdvertisement(command.params);
+                case 'bluetooth.simulatePreconnectedPeripheral':
+                    return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(command.params);
                 // keep-sorted end
                 // Browser domain
                 // keep-sorted start block=yes
@@ -4634,6 +4652,30 @@
         constructor(eventManager, browsingContextStorage) {
             this.#eventManager = eventManager;
             this.#browsingContextStorage = browsingContextStorage;
+        }
+        async simulateAdapter(params) {
+            const context = this.#browsingContextStorage.getContext(params.context);
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.enable', {
+                state: params.state,
+            });
+            return {};
+        }
+        async simulatePreconnectedPeripheral(params) {
+            const context = this.#browsingContextStorage.getContext(params.context);
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.simulatePreconnectedPeripheral', {
+                address: params.address,
+                name: params.name,
+                knownServiceUuids: params.knownServiceUuids,
+                manufacturerData: params.manufacturerData,
+            });
+            return {};
+        }
+        async simulateAdvertisement(params) {
+            const context = this.#browsingContextStorage.getContext(params.context);
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.simulateAdvertisement', {
+                entry: params.scanEntry,
+            });
+            return {};
         }
         onCdpTargetCreated(cdpTarget) {
             cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
@@ -5521,7 +5563,14 @@
                     value: {
                         type: 'event',
                         method: BrowsingContext$2.EventNames.ContextCreated,
-                        params: context.serializeToBidiValue(),
+                        params: {
+                            ...context.serializeToBidiValue(),
+                            // Hack to provide the initial URL of the context, as it can be changed
+                            // between the page target is attached and unblocked, as the page is not
+                            // fully paused in MPArch session (https://crbug.com/372842894).
+                            // TODO: remove once https://crbug.com/372842894 is addressed.
+                            url,
+                        },
                     },
                 };
             }, (error) => {
@@ -7167,10 +7216,12 @@
         #id;
         #cdpClient;
         #browserCdpClient;
+        #parentCdpClient;
         #realmStorage;
         #eventManager;
         #preloadScriptStorage;
         #browsingContextStorage;
+        #prerenderingDisabled;
         #networkStorage;
         #unblocked = new Deferred();
         #unhandledPromptBehavior;
@@ -7183,8 +7234,8 @@
             response: false,
             auth: false,
         };
-        static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, unhandledPromptBehavior, logger) {
-            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, unhandledPromptBehavior, logger);
+        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger) {
+            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger);
             LogManager.create(cdpTarget, realmStorage, eventManager, logger);
             cdpTarget.#setEventListeners();
             // No need to await.
@@ -7192,15 +7243,17 @@
             void cdpTarget.#unblock();
             return cdpTarget;
         }
-        constructor(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, unhandledPromptBehavior, logger) {
+        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger) {
             this.#id = targetId;
             this.#cdpClient = cdpClient;
             this.#browserCdpClient = browserCdpClient;
+            this.#parentCdpClient = parentCdpClient;
             this.#eventManager = eventManager;
             this.#realmStorage = realmStorage;
             this.#preloadScriptStorage = preloadScriptStorage;
             this.#networkStorage = networkStorage;
             this.#browsingContextStorage = browsingContextStorage;
+            this.#prerenderingDisabled = prerenderingDisabled;
             this.#unhandledPromptBehavior = unhandledPromptBehavior;
             this.#logger = logger;
         }
@@ -7213,6 +7266,9 @@
         }
         get cdpClient() {
             return this.#cdpClient;
+        }
+        get parentCdpClient() {
+            return this.#parentCdpClient;
         }
         get browserCdpClient() {
             return this.#browserCdpClient;
@@ -7244,6 +7300,15 @@
                     this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
                         enabled: true,
                     }),
+                    this.#cdpClient
+                        .sendCommand('Page.setPrerenderingAllowed', {
+                        isAllowed: !this.#prerenderingDisabled,
+                    })
+                        .catch(() => {
+                        // Ignore CDP errors, as the command is not supported by iframe targets or
+                        // prerendered pages. Generic catch, as the error can vary between CdpClient
+                        // implementations: Tab vs Puppeteer.
+                    }),
                     this.toggleNetworkIfNeeded(),
                     this.#cdpClient.sendCommand('Target.setAutoAttach', {
                         autoAttach: true,
@@ -7252,6 +7317,8 @@
                     }),
                     this.#initAndEvaluatePreloadScripts(),
                     this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+                    // Resume tab execution as well if it was paused by the debugger.
+                    this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.toggleDeviceAccessIfNeeded(),
                 ]);
             }
@@ -7395,8 +7462,9 @@
          */
         #isExpectedError(err) {
             const error = err;
-            return (error.code === -32001 &&
-                error.message === 'Session with given id not found.');
+            return ((error.code === -32001 &&
+                error.message === 'Session with given id not found.') ||
+                this.#cdpClient.isCloseError(err));
         }
         #setEventListeners() {
             this.#cdpClient.on('*', (event, params) => {
@@ -7464,7 +7532,8 @@
         #defaultUserContextId;
         #logger;
         #unhandledPromptBehavior;
-        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, unhandledPromptBehavior, logger) {
+        #prerenderingDisabled;
+        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, prerenderingDisabled, unhandledPromptBehavior, logger) {
             this.#cdpConnection = cdpConnection;
             this.#browserCdpClient = browserCdpClient;
             this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -7476,6 +7545,7 @@
             this.#bluetoothProcessor = bluetoothProcessor;
             this.#realmStorage = realmStorage;
             this.#defaultUserContextId = defaultUserContextId;
+            this.#prerenderingDisabled = prerenderingDisabled;
             this.#unhandledPromptBehavior = unhandledPromptBehavior;
             this.#logger = logger;
             this.#setEventListeners(browserCdpClient);
@@ -7526,44 +7596,60 @@
                     .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
                     .catch((error) => this.#logger?.(LogType.debugError, error));
             };
-            if (this.#selfTargetId !== targetInfo.targetId) {
-                // Service workers are special case because they attach to the
-                // browser target and the page target (so twice per worker) during
-                // the regular auto-attach and might hang if the CDP session on
-                // the browser level is not detached. The logic to detach the
-                // right session is handled in the switch below.
-                const targetKey = targetInfo.type === 'service_worker'
-                    ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
-                    : targetInfo.targetId;
-                // Mapper generally only needs one session per target. If we
-                // receive additional auto-attached sessions, that is very likely
-                // coming from custom CDP sessions.
-                if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
-                    // Return to leave the session untouched.
-                    return;
-                }
-                this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
+            // Do not attach to the Mapper target.
+            if (this.#selfTargetId === targetInfo.targetId) {
+                void detach();
+                return;
             }
+            // Service workers are special case because they attach to the
+            // browser target and the page target (so twice per worker) during
+            // the regular auto-attach and might hang if the CDP session on
+            // the browser level is not detached. The logic to detach the
+            // right session is handled in the switch below.
+            const targetKey = targetInfo.type === 'service_worker'
+                ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+                : targetInfo.targetId;
+            // Mapper generally only needs one session per target. If we
+            // receive additional auto-attached sessions, that is very likely
+            // coming from custom CDP sessions.
+            if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
+                // Return to leave the session untouched.
+                return;
+            }
+            this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
             switch (targetInfo.type) {
+                case 'tab':
+                    // Tab targets are required only to handle page targets beneath them.
+                    this.#setEventListeners(targetCdpClient);
+                    // Auto-attach to the page target. No need in resuming tab target debugger, as it
+                    // should preserve the page target debugger state, and will be resumed by the page
+                    // target.
+                    void (async () => {
+                        await targetCdpClient.sendCommand('Target.setAutoAttach', {
+                            autoAttach: true,
+                            waitForDebuggerOnStart: true,
+                            flatten: true,
+                        });
+                    })();
+                    return;
                 case 'page':
                 case 'iframe': {
-                    if (this.#selfTargetId === targetInfo.targetId) {
-                        void detach();
-                        return;
-                    }
-                    const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo);
                     const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
                     if (maybeContext && targetInfo.type === 'iframe') {
                         // OOPiF.
                         maybeContext.updateCdpTarget(cdpTarget);
                     }
                     else {
+                        // If attaching to existing browser instance, there could be OOPiF targets. This
+                        // case is handled by the `findFrameParentId` method.
+                        const parentId = this.#findFrameParentId(targetInfo, parentSessionCdpClient.sessionId);
                         const userContext = targetInfo.browserContextId &&
                             targetInfo.browserContextId !== this.#defaultUserContextId
                             ? targetInfo.browserContextId
                             : 'default';
                         // New context.
-                        BrowsingContextImpl.create(targetInfo.targetId, null, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
+                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
                         // Hack: when a new target created, CDP emits targetInfoChanged with an empty
                         // url, and navigates it to about:blank later. When the event is emitted for
                         // an existing target (reconnect), the url is already known, and navigation
@@ -7586,7 +7672,7 @@
                         void detach();
                         return;
                     }
-                    const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo);
                     this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
                     return;
                 }
@@ -7595,7 +7681,7 @@
                 // behave like service workers (emits on both browser and frame targets),
                 // we can remove this block and merge service workers with the above one.
                 case 'shared_worker': {
-                    const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo);
                     this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
                     return;
                 }
@@ -7604,9 +7690,24 @@
             // debugger and ignore them.
             void detach();
         }
-        #createCdpTarget(targetCdpClient, targetInfo) {
+        /** Try to find the parent browsing context ID for the given attached target. */
+        #findFrameParentId(targetInfo, parentSessionId) {
+            if (targetInfo.type !== 'iframe') {
+                return null;
+            }
+            const parentId = targetInfo.openerFrameId ?? targetInfo.openerId;
+            if (parentId !== undefined) {
+                return parentId;
+            }
+            if (parentSessionId !== undefined) {
+                return (this.#browsingContextStorage.findContextBySession(parentSessionId)
+                    ?.id ?? null);
+            }
+            return null;
+        }
+        #createCdpTarget(targetCdpClient, parentCdpClient, targetInfo) {
             this.#setEventListeners(targetCdpClient);
-            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#unhandledPromptBehavior, this.#logger);
+            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#prerenderingDisabled, this.#unhandledPromptBehavior, this.#logger);
             this.#networkStorage.onCdpTargetCreated(target);
             this.#bluetoothProcessor.onCdpTargetCreated(target);
             return target;
@@ -7676,6 +7777,9 @@
     class BrowsingContextStorage {
         /** Map from context ID to context implementation. */
         #contexts = new Map();
+        /** Event emitter for browsing context storage eventsis not expected to be exposed to
+         * the outside world. */
+        #eventEmitter = new EventEmitter();
         /** Gets all top-level contexts, i.e. those with no parent. */
         getTopLevelContexts() {
             return this.getAllContexts().filter((context) => context.isTopLevelContext());
@@ -7695,6 +7799,23 @@
         /** Tracks the given context. */
         addContext(context) {
             this.#contexts.set(context.id, context);
+            this.#eventEmitter.emit("added" /* BrowsingContextStorageEvents.Added */, {
+                browsingContext: context,
+            });
+        }
+        /**
+         * Waits for a context with the given ID to be added and returns it.
+         */
+        waitForContext(browsingContextId) {
+            return new Promise((resolve) => {
+                const listener = (event) => {
+                    if (event.browsingContext.id === browsingContextId) {
+                        this.#eventEmitter.off("added" /* BrowsingContextStorageEvents.Added */, listener);
+                        resolve(event.browsingContext);
+                    }
+                };
+                this.#eventEmitter.on("added" /* BrowsingContextStorageEvents.Added */, listener);
+            });
         }
         /** Returns true whether there is an existing context with the given ID. */
         hasContext(id) {
@@ -9501,7 +9622,7 @@
                 await browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: options.acceptInsecureCerts ?? false,
                 });
-                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, options?.unhandledPromptBehavior, logger);
+                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, options?.['goog:prerenderingDisabled'] ?? false, options?.unhandledPromptBehavior, logger);
                 // Needed to get events about new targets.
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
                     discover: true,
@@ -9511,6 +9632,15 @@
                     autoAttach: true,
                     waitForDebuggerOnStart: true,
                     flatten: true,
+                    // Browser session should attach to tab instead of the page, so that
+                    // prerendering is not blocked.
+                    filter: [
+                        {
+                            type: 'page',
+                            exclude: true,
+                        },
+                        {},
+                    ],
                 });
                 await this.#topLevelContextsLoaded();
             }, this.#logger);
@@ -9652,6 +9782,7 @@
             return new Promise((resolve, reject) => {
                 const id = this.#nextId++;
                 this.#commandCallbacks.set(id, {
+                    sessionId,
                     resolve,
                     reject,
                     error: new CloseError(`${method} ${JSON.stringify(params)} ${sessionId ?? ''} call rejected because the connection has been closed.`),
@@ -9702,6 +9833,12 @@
                     if (client) {
                         this.#sessionCdpClients.delete(sessionId);
                         client.removeAllListeners();
+                    }
+                    // Reject all the pending commands for the detached session.
+                    for (const callback of this.#commandCallbacks.values()) {
+                        if (callback.sessionId === sessionId) {
+                            callback.reject(callback.error);
+                        }
                     }
                 }
             }
@@ -13977,6 +14114,15 @@
     // @ts-nocheck Some types may be circular.
     var Bluetooth$1;
     (function (Bluetooth) {
+        Bluetooth.BluetoothServiceUuidSchema = z.lazy(() => z.string());
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.BluetoothManufacturerDataSchema = z.lazy(() => z.object({
+            key: z.number().int().nonnegative(),
+            data: z.string(),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
         Bluetooth.RequestDeviceSchema = z.lazy(() => z.string());
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
@@ -13987,6 +14133,16 @@
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
         Bluetooth.RequestDevicePromptSchema = z.lazy(() => z.string());
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.ScanRecordSchema = z.lazy(() => z.object({
+            name: z.string().optional(),
+            uuids: z.array(Bluetooth.BluetoothServiceUuidSchema).optional(),
+            appearance: z.number().optional(),
+            manufacturerData: z
+                .array(Bluetooth.BluetoothManufacturerDataSchema)
+                .optional(),
+        }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
         Bluetooth.HandleRequestDevicePromptSchema = z.lazy(() => z.object({
@@ -14014,6 +14170,52 @@
     (function (Bluetooth) {
         Bluetooth.HandleRequestDevicePromptCancelParametersSchema = z.lazy(() => z.object({
             accept: z.literal(false),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateAdapterSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.simulateAdapter'),
+            params: Bluetooth.SimulateAdapterParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateAdapterParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
+            state: z.enum(['absent', 'powered-off', 'powered-on']),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulatePreconnectedPeripheralSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.simulatePreconnectedPeripheral'),
+            params: Bluetooth.SimulatePreconnectedPeripheralParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulatePreconnectedPeripheralParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
+            address: z.string(),
+            name: z.string(),
+            manufacturerData: z.array(Bluetooth.BluetoothManufacturerDataSchema),
+            knownServiceUuids: z.array(Bluetooth.BluetoothServiceUuidSchema),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateAdvertisementSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.simulateAdvertisement'),
+            params: Bluetooth.SimulateAdvertisementParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateAdvertisementParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
+            scanEntry: Bluetooth.SimulateAdvertisementScanEntryParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateAdvertisementScanEntryParametersSchema = z.lazy(() => z.object({
+            deviceAddress: z.string(),
+            rssi: z.number(),
+            scanRecord: Bluetooth.ScanRecordSchema,
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
