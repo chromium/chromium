@@ -728,6 +728,12 @@ void PickerController::OnInsertCompleted(
 }
 
 PickerCapsLockPosition PickerController::GetCapsLockPosition() {
+  // Always put the caps lock entry point at the top if the user has caps lock
+  // enabled, since it is they will likely want to disable it.
+  if (GetImeKeyboard().IsCapsLockEnabled()) {
+    return PickerCapsLockPosition::kTop;
+  }
+
   PrefService* prefs = GetPrefs();
   if (prefs == nullptr) {
     return PickerCapsLockPosition::kTop;

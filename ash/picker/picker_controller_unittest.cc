@@ -1169,6 +1169,14 @@ TEST_F(PickerControllerTest,
             PickerCapsLockPosition::kBottom);
 }
 
+TEST_F(PickerControllerTest, ReturnCapsLockPositionTopWhenCapsLockIsEnabled) {
+  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
+  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  GetImeKeyboard()->SetCapsLockEnabled(true);
+
+  EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
+}
+
 struct ActionTestCase {
   PickerSearchResult result;
   std::optional<PickerActionType> unfocused_action;
