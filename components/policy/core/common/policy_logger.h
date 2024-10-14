@@ -136,7 +136,7 @@ class POLICY_EXPORT PolicyLogger {
     ~LogHelper();
 
     template <typename T>
-    LogHelper& operator<<(T message) {
+    LogHelper& operator<<(const T& message) {
       message_buffer_ << message;
       return *this;
     }
