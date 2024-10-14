@@ -8,6 +8,7 @@
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace views {
 class View;
@@ -22,7 +23,7 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
   ShelfMenuModelAdapter(const std::string& app_id,
                         std::unique_ptr<ui::SimpleMenuModel> model,
                         views::View* menu_owner,
-                        ui::MenuSourceType source_type,
+                        ui::mojom::MenuSourceType source_type,
                         base::OnceClosure on_menu_closed_callback,
                         bool is_tablet_mode,
                         bool for_application_menu_items);

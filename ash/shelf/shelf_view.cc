@@ -73,6 +73,7 @@
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -659,7 +660,7 @@ void ShelfView::OnMouseEvent(ui::MouseEvent* event) {
       if (!event->IsOnlyLeftMouseButton()) {
         if (event->IsOnlyRightMouseButton()) {
           ShowContextMenuForViewImpl(this, location_in_screen,
-                                     ui::MENU_SOURCE_MOUSE);
+                                     ui::mojom::MenuSourceType::kMouse);
           event->SetHandled();
         }
         return;
@@ -827,9 +828,10 @@ views::View* ShelfView::GetDefaultFocusableChild() {
                                        : FindFirstFocusableChild();
 }
 
-void ShelfView::ShowContextMenuForViewImpl(views::View* source,
-                                           const gfx::Point& point,
-                                           ui::MenuSourceType source_type) {
+void ShelfView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   // Prevent concurrent requests that may show application or context menus.
   const ShelfItem* item = ShelfItemForView(source);
   if (!item_awaiting_response_.IsNull()) {
@@ -2599,7 +2601,7 @@ void ShelfView::ShowShelfContextMenu(
     const ShelfID& shelf_id,
     const gfx::Point& point,
     views::View* source,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> model) {
   if (!model) {
     const int64_t display_id = GetDisplayIdForView(this);
@@ -2615,7 +2617,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
                          const ShelfID& shelf_id,
                          const gfx::Point& click_point,
                          bool context_menu,
-                         ui::MenuSourceType source_type) {
+                         ui::mojom::MenuSourceType source_type) {
   // Delayed callbacks to show context and application menus may conflict; hide
   // the old menu before showing a new menu in that case.
   if (IsShowingMenu())
@@ -2638,8 +2640,8 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   const ShelfItem* item = ShelfItemForView(source);
 
-  if ((source_type == ui::MENU_SOURCE_MOUSE ||
-       source_type == ui::MENU_SOURCE_KEYBOARD) &&
+  if ((source_type == ui::mojom::MenuSourceType::kMouse ||
+       source_type == ui::mojom::MenuSourceType::kKeyboard) &&
       item) {
     views::InkDrop::Get(source)->GetInkDrop()->AnimateToState(
         views::InkDropState::ACTIVATED);
@@ -2647,7 +2649,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   // Only selected shelf items with context menu opened can be dragged.
   if (context_menu && item && ShelfButtonIsInDrag(item->type, source) &&
-      source_type == ui::MENU_SOURCE_TOUCH) {
+      source_type == ui::mojom::MenuSourceType::kTouch) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 

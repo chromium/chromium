@@ -30,7 +30,7 @@
 #include "base/scoped_observation_traits.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_target.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -904,7 +904,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // Shows the context menu for the wallpaper or shelf at |location_in_screen|.
   void ShowContextMenu(const gfx::Point& location_in_screen,
-                       ui::MenuSourceType source_type);
+                       ui::mojom::MenuSourceType source_type);
 
   void AddShellObserver(ShellObserver* observer);
   void RemoveShellObserver(ShellObserver* observer);

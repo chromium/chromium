@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/views/animation/ink_drop_observer.h"
@@ -124,7 +125,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // views::Button overrides:
   void ShowContextMenu(const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
   bool ShouldEnterPushedState(const ui::Event& event) override;
 
   // views::View overrides:

@@ -284,6 +284,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -593,7 +594,7 @@ void Shell::DoInitialWorkspaceAnimation() {
 }
 
 void Shell::ShowContextMenu(const gfx::Point& location_in_screen,
-                            ui::MenuSourceType source_type) {
+                            ui::mojom::MenuSourceType source_type) {
   // Bail with no active user session, in the lock screen, or in app/kiosk mode.
   if (session_controller_->NumberOfLoggedInUsers() < 1 ||
       session_controller_->IsScreenLocked() ||

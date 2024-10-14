@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
@@ -176,10 +177,11 @@ void KioskAppsButton::DisplayMenu() {
   const gfx::Point origin(point.x() - width(), point.y() - height());
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
-  menu_runner_->RunMenuAt(
-      GetWidget()->GetTopLevelWidget(), menu_button_controller_,
-      gfx::Rect(origin, gfx::Size()),
-      views::MenuAnchorPosition::kBubbleBottomLeft, ui::MENU_SOURCE_NONE);
+  menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(),
+                          menu_button_controller_,
+                          gfx::Rect(origin, gfx::Size()),
+                          views::MenuAnchorPosition::kBubbleBottomLeft,
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 bool KioskAppsButton::IsMenuOpened() const {

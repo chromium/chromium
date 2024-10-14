@@ -99,6 +99,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -424,7 +425,7 @@ class ShelfMenuModelAdapter : public AppMenuModelAdapter {
  public:
   ShelfMenuModelAdapter(std::unique_ptr<ui::SimpleMenuModel> model,
                         views::Widget* widget_owner,
-                        ui::MenuSourceType source_type,
+                        ui::mojom::MenuSourceType source_type,
                         base::OnceClosure on_menu_closed_callback,
                         bool is_tablet_mode)
       : AppMenuModelAdapter(std::string(),
@@ -448,21 +449,22 @@ class ShelfMenuModelAdapter : public AppMenuModelAdapter {
     UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Desktop",
                         user_journey_time);
     UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.Desktop",
-                              source_type(), ui::MENU_SOURCE_TYPE_LAST);
+                              source_type(),
+                              ui::mojom::MenuSourceType::kMaxValue);
     if (is_tablet_mode()) {
       UMA_HISTOGRAM_TIMES(
           "Apps.ContextMenuUserJourneyTimeV2.Desktop.TabletMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
           "Apps.ContextMenuShowSourceV2.Desktop.TabletMode", source_type(),
-          ui::MENU_SOURCE_TYPE_LAST);
+          ui::mojom::MenuSourceType::kMaxValue);
     } else {
       UMA_HISTOGRAM_TIMES(
           "Apps.ContextMenuUserJourneyTimeV2.Desktop.ClamshellMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
           "Apps.ContextMenuShowSourceV2.Desktop.ClamshellMode", source_type(),
-          ui::MENU_SOURCE_TYPE_LAST);
+          ui::mojom::MenuSourceType::kMaxValue);
     }
   }
 };
@@ -837,8 +839,9 @@ void RootWindowController::SetTouchAccessibilityAnchorPoint(
   }
 }
 
-void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
-                                           ui::MenuSourceType source_type) {
+void RootWindowController::ShowContextMenu(
+    const gfx::Point& location_in_screen,
+    ui::mojom::MenuSourceType source_type) {
   // Show birch bar context menu for the primary user in clamshell mode Overview
   // without a partial split screen.
   if (features::IsForestFeatureEnabled() &&
@@ -1421,7 +1424,7 @@ RootWindowController::GetAccessibilityPanelLayoutManager() const {
 
 std::unique_ptr<AppMenuModelAdapter>
 RootWindowController::BuildBirchMenuModelAdapter(
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   const bool is_birch_bar_showing =
       BirchBarController::Get()->GetShowBirchSuggestions();
 
@@ -1439,7 +1442,7 @@ RootWindowController::BuildBirchMenuModelAdapter(
 
 std::unique_ptr<AppMenuModelAdapter>
 RootWindowController::BuildShelfMenuModelAdapter(
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
   const int64_t display_id = display::Screen::GetScreen()
                                  ->GetDisplayNearestWindow(GetRootWindow())

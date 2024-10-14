@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -678,7 +679,7 @@ void ShelfAppButton::OnMenuClosed() {
 }
 
 void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
-                                     ui::MenuSourceType source_type) {
+                                     ui::mojom::MenuSourceType source_type) {
   // Return early if:
   // 1. the context menu controller is not set; or
   // 2. `context_menu_target_visibility_` is already true.

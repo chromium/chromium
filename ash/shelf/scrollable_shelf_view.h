@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/linear_gradient.h"
@@ -267,9 +268,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void OnAppButtonActivated(const ShelfButton* button) override;
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,

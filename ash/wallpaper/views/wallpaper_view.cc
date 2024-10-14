@@ -16,6 +16,7 @@
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -124,9 +125,10 @@ void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
-void WallpaperView::ShowContextMenuForViewImpl(views::View* source,
-                                               const gfx::Point& point,
-                                               ui::MenuSourceType source_type) {
+void WallpaperView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   Shell::Get()->ShowContextMenu(point, source_type);
 }
 
