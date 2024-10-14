@@ -16,14 +16,18 @@ export const SELECTOR_MAP = {
   barcodeChipText: '.barcode-chip-text',
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   barcodeChipURL: '#barcode-chip-url',
+  barcodeChipUrl: '#barcode-chip-url',
   barcodeChipWifi: '#barcode-chip-wifi',
   barcodeCopyTextButton: '#barcode-chip-text-container .barcode-copy-button',
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   barcodeCopyURLButton: '#barcode-chip-url-container .barcode-copy-button',
+  barcodeCopyUrlButton: '#barcode-chip-url-container .barcode-copy-button',
   bitrateMultiplierRangeInput: '#bitrate-slider input[type=range]',
   cancelResultButton: 'button[i18n-label=cancel_review_button]',
   confirmResultButton: 'button[i18n-label=confirm_review_button]',
@@ -69,8 +73,11 @@ export const SELECTOR_MAP = {
       '#view-low-storage-dialog button.dialog-negative-button',
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   lowStorageDialogOKButton:
+      '#view-low-storage-dialog button.dialog-positive-button',
+  lowStorageDialogOkButton:
       '#view-low-storage-dialog button.dialog-positive-button',
   lowStorageWarning: '#nudge',
   mirrorOptionOff: 'span[i18n-aria=aria_mirror_off]',
@@ -80,8 +87,10 @@ export const SELECTOR_MAP = {
   openMirrorPanelButton: '#open-mirror-panel',
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   openPTZPanelButton: '#open-ptz-panel',
+  openPtzPanelButton: '#open-ptz-panel',
   openTimerPanelButton: '#open-timer-panel',
   panLeftButton: '#pan-left',
   panRightButton: '#pan-right',

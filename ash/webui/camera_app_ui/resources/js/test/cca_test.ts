@@ -154,12 +154,7 @@ function resolveVisibleElement(component: UiComponent, index = 0): HTMLElement {
 /**
  * Return test functionalities to be used in Tast automation test.
  */
-// This is used by tast side and name needs to be keep as is for backward
-// compatibility.
-// TODO(b/371112908): Have alias of these names, update tast, then remove the
-// old names.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export class CCATest {
+export class CcaTest {
   /**
    * Checks if mojo connection could be constructed without error. In this check
    * we only check if the path works and does not check for the correctness of
@@ -255,21 +250,41 @@ export class CCATest {
   /**
    * Returns the number of ui elements of the specified component.
    */
+  static countUi(component: UiComponent): number {
+    return getElementList(component).length;
+  }
+
+  /**
+   * Returns the number of ui elements of the specified component.
+   *
+   * @deprecated Use countUi instead.
+   */
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   static countUI(component: UiComponent): number {
-    return getElementList(component).length;
+    return CcaTest.countUi(component);
   }
 
   /**
    * Returns the number of visible ui elements of the specified component.
    */
+  static countVisibleUi(component: UiComponent): number {
+    return getVisibleElementList(component).length;
+  }
+
+  /**
+   * Returns the number of visible ui elements of the specified component.
+   *
+   * @deprecated Use countVisibleUi instead.
+   */
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   static countVisibleUI(component: UiComponent): number {
-    return getVisibleElementList(component).length;
+    return CcaTest.countVisibleUi(component);
   }
 
   /**
@@ -389,11 +404,22 @@ export class CCATest {
    * Returns current PTZ settings. Throws an error if PTZ is not enabled, or
    * any of the pan, tilt, or zoom values are missing.
    */
+  static getPtzSettings(): StrictPtzSettings {
+    return Preview.getPtzSettingsForTest();
+  }
+
+  /**
+   * Returns current PTZ settings. Throws an error if PTZ is not enabled, or
+   * any of the pan, tilt, or zoom values are missing.
+   *
+   * @deprecated Use getPtzSettings instead.
+   */
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   static getPTZSettings(): StrictPtzSettings {
-    return Preview.getPtzSettingsForTest();
+    return CcaTest.getPtzSettings();
   }
 
   static getScreenOrientation(): OrientationType {
@@ -403,10 +429,7 @@ export class CCATest {
   /**
    * Gets screen x, y of the center of |index|'th ui component.
    */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static getScreenXY(component: UiComponent, index?: number): Coordinate {
+  static getScreenXy(component: UiComponent, index?: number): Coordinate {
     const element = resolveVisibleElement(component, index);
     const rect = element.getBoundingClientRect();
     const actionBarH = window.outerHeight - window.innerHeight;
@@ -414,6 +437,19 @@ export class CCATest {
       x: Math.round(rect.x + window.screenX),
       y: Math.round(rect.y + actionBarH + window.screenY),
     };
+  }
+
+  /**
+   * Gets screen x, y of the center of |index|'th ui component.
+   *
+   * @deprecated Use getScreenXy instead.
+   */
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static getScreenXY(component: UiComponent, index?: number): Coordinate {
+    return CcaTest.getScreenXy(component, index);
   }
 
   /**
@@ -450,13 +486,23 @@ export class CCATest {
   /**
    * Gets the cover image URL of the gallery button.
    */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static getGalleryButtonCoverURL(): string {
+  static getGalleryButtonCoverUrl(): string {
     const galleryButton =
         assertInstanceof(resolveElement('galleryButton'), GalleryButton);
     return galleryButton.getCoverUrlForTesting();
+  }
+
+  /**
+   * Gets the cover image URL of the gallery button.
+   *
+   * @deprecated Use getGalleryButtonCoverUrl instead.
+   */
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static getGalleryButtonCoverURL(): string {
+    return CcaTest.getGalleryButtonCoverUrl();
   }
 
   /**
@@ -551,11 +597,21 @@ export class CCATest {
   /**
    * Hides all toasts, nudges and tooltips.
    */
+  static hideFloatingUi(): void {
+    state.set(state.State.HIDE_FLOATING_UI_FOR_TESTING, true);
+  }
+
+  /**
+   * Hides all toasts, nudges and tooltips.
+   *
+   * @deprecated Use hideFloatingUi instead.
+   */
   // This is used by tast side and name needs to be keep as is for backward
   // compatibility.
+  // TODO(b/371112908): Remove this after tast is updated
   // eslint-disable-next-line @typescript-eslint/naming-convention
   static hideFloatingUI(): void {
-    state.set(state.State.HIDE_FLOATING_UI_FOR_TESTING, true);
+    CcaTest.hideFloatingUi();
   }
 
   /**
@@ -675,3 +731,11 @@ export class CCATest {
     return getDocumentReview().getLastFileProcessingTime();
   }
 }
+
+// This is used by tast side and name needs to be keep as is for backward
+// compatibility.
+// TODO(b/371112908): Remove this after tast is updated
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const CCATest = CcaTest;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export type CCATest = CcaTest;
