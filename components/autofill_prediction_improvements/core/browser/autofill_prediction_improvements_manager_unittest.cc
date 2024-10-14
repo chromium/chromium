@@ -107,7 +107,7 @@ class MockAutofillPredictionImprovementsClient
               (),
               (override));
   MOCK_METHOD(bool,
-              IsAutofillPredictionImprovementsSupported,
+              IsAutofillPredictionImprovementsEnabledPref,
               (),
               (const override));
   MOCK_METHOD(void,
@@ -163,7 +163,7 @@ class MockAutofillPredictionImprovementsFillingEngine
 class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
  public:
   BaseAutofillPredictionImprovementsManagerTest() {
-    ON_CALL(client_, IsAutofillPredictionImprovementsSupported)
+    ON_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
         .WillByDefault(Return(true));
     ON_CALL(client_, IsUserEligible).WillByDefault(Return(true));
   }
@@ -772,7 +772,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   EXPECT_CALL(import_form_callback, Run)
       .WillOnce(SaveArg<1>(&user_annotations_entries));
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  EXPECT_CALL(client_, IsAutofillPredictionImprovementsSupported)
+  EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
       .WillOnce(Return(false));
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             import_form_callback.Get());
@@ -1027,7 +1027,7 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
 
-  EXPECT_CALL(client_, IsAutofillPredictionImprovementsSupported)
+  EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
       .WillOnce(Return(false));
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();

@@ -120,7 +120,7 @@ ChromeAutofillPredictionImprovementsClient::GetUserAnnotationsService() {
 }
 
 bool ChromeAutofillPredictionImprovementsClient::
-    IsAutofillPredictionImprovementsSupported() const {
+    IsAutofillPredictionImprovementsEnabledPref() const {
   return prefs_->GetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled);
 }

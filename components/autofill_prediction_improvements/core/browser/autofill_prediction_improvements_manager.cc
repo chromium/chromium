@@ -468,7 +468,7 @@ bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
   if (!IsUserEligible()) {
     return false;
   }
-  if (!client_->IsAutofillPredictionImprovementsSupported()) {
+  if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     return false;
   }
   if (!decider_ ||
@@ -566,7 +566,7 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled()) {
     // The import is skipped because importing is done by a different path.
     skip_import = true;
-  } else if (!client_->IsAutofillPredictionImprovementsSupported()) {
+  } else if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     // `autofill::prefs::kAutofillPredictionImprovementsEnabled` is disabled.
     skip_import = true;
   } else if (!annotation_service) {
@@ -637,7 +637,7 @@ void AutofillPredictionImprovementsManager::HasDataStored(
 bool AutofillPredictionImprovementsManager::ShouldDisplayIph(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
-  return !client_->IsAutofillPredictionImprovementsSupported() &&
+  return !client_->IsAutofillPredictionImprovementsEnabledPref() &&
          IsFormAndFieldEligible(form, field);
 }
 

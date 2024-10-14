@@ -54,11 +54,13 @@ class AutofillPredictionImprovementsClient {
   virtual user_annotations::UserAnnotationsService*
   GetUserAnnotationsService() = 0;
 
-  // Indicates whether or not the client supports Autofill Prediction
-  // Improvements.
-  // For example, it may be disallowed by a policy (e.g., in an enterprise
-  // context).
-  virtual bool IsAutofillPredictionImprovementsSupported() const = 0;
+  // Returns whether the feature is enabled in the prefs
+  // (`autofill::prefs::kAutofillPredictionImprovementsEnabled`).
+  //
+  // This is different from `IsAutofillPredictionImprovementsSupported()`, which
+  // checks if the user could enable the feature in the first case (if not, the
+  // client is not instantiated in the first place).
+  virtual bool IsAutofillPredictionImprovementsEnabledPref() const = 0;
 
   // Opens the feedback page if the feature is allowed for feedback.
   virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;

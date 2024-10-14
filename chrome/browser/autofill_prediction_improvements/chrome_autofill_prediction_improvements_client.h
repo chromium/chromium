@@ -43,7 +43,7 @@ class ChromeAutofillPredictionImprovementsClient
   std::string GetTitle() override;
   user_annotations::UserAnnotationsService* GetUserAnnotationsService()
       override;
-  bool IsAutofillPredictionImprovementsSupported() const override;
+  bool IsAutofillPredictionImprovementsEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
   void OpenPredictionImprovementsSettings() override;
   bool IsUserEligible() override;
