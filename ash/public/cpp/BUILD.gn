@@ -517,6 +517,7 @@ component("cpp") {
     "//components/version_info:channel",
     "//ui/base/ime/ash",
     "//ui/base/ime/ash:ime_types",
+    "//ui/base/mojom:ui_base_types",
     "//ui/chromeos/resources:resources",
     "//ui/chromeos/resources:resources_grit",
     "//ui/gfx",
