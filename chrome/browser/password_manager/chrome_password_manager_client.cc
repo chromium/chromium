@@ -374,6 +374,11 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
+  // TODO(crbug.com/372873259): This suddenly started being called/being null,
+  // in the Chrome sign-in flow in M129. Find out why.
+  if (!manage_passwords_ui_controller) {
+    return false;
+  }
   if (update_password) {
     manage_passwords_ui_controller->OnUpdatePasswordSubmitted(
         std::move(form_to_save));
