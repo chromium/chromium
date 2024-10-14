@@ -689,6 +689,10 @@ const base::FeatureParam<size_t>
     kAutofillLogDeduplicationMetricsMaxProfilesSizeParam{
         &kAutofillLogDeduplicationMetrics, "max_profiles_size",
         100};
+const base::FeatureParam<size_t>
+    kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam{
+        &kAutofillLogDeduplicationMetrics, "max_field_value_length_for_merging",
+        100};
 
 // Currently, the importing logic offers new profile creation if the observed
 // profile is non-mergeable with any existing profile. With this feature, low-

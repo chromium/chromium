@@ -225,6 +225,9 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<size_t>
     kAutofillLogDeduplicationMetricsMaxProfilesSizeParam;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<size_t>
+    kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam;
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUpdateLowQualityTokenOnImport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUKMExperimentalFields);

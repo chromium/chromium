@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
@@ -719,6 +720,18 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   }
   FieldTypeSet setting_visible_types = GetUserVisibleTypes();
   FieldTypeSet non_mergeable_types;
+  // If one the fields have too long value, do not merge this profile.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogDeduplicationMetrics) &&
+      std::ranges::any_of(setting_visible_types, [&](FieldType t) {
+        return std::max(a.GetRawInfo(t).size(), b.GetRawInfo(t).size()) >
+               features::
+                   kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam
+                       .Get();
+      })) {
+    return std::nullopt;
+  }
+
   auto maybe_add_type = [&](FieldType type, bool is_mergeable) {
     // Ensure that `type` is actually a setting-visible type.
     CHECK_EQ(setting_visible_types.erase(type), 1u);

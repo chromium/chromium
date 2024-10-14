@@ -209,6 +209,9 @@ class AutofillProfileComparator {
   // nullopt is returned, since profiles of different countries are generally
   // not considered mergeable due to the differences in the underlying address
   // model.
+  // If `a` or `b` has a field value which length is greater than
+  // `kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam` it is not
+  // considered mergeable.
   std::optional<FieldTypeSet> NonMergeableSettingVisibleTypes(
       const AutofillProfile& a,
       const AutofillProfile& b) const;
