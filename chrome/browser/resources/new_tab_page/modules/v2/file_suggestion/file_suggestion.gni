@@ -6,9 +6,11 @@
 file_suggestion_v2_web_component_files = [
   "modules/v2/file_suggestion/file_suggestion.ts",
   "modules/v2/file_suggestion/drive_module.ts",
+  "modules/v2/file_suggestion/sharepoint_module.ts",
 ]
 
 file_suggestion_v2_css_files = [
   "modules/v2/file_suggestion/file_suggestion.css",
   "modules/v2/file_suggestion/drive_module.css",
+  "modules/v2/file_suggestion/sharepoint_module.css",
 ]

@@ -1,0 +1,21 @@
+<ntp-module-header-v2
+    id="moduleHeaderElementV2"
+    header-text="$i18n{modulesSharepointTitle}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesSharePointSentence')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
+</ntp-module-header-v2>
+<!-- TODO(crbug.com/372725915): Render files and their icons. -->
+<ntp-file-suggestion module-name="Sharepoint">
+</ntp-file-suggestion>
+${this.showInfoDialog_ ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesSharepointInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

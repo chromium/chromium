@@ -111,6 +111,7 @@ suite('DriveModuleV2', () => {
     assertTrue(!!driveModule);
     document.body.append(driveModule);
     await microtasksFinished();
+    assertFalse(!!$$(driveModule, 'ntp-info-dialog'));
 
     // Act.
     const infoButton = driveModule.$.moduleHeaderElementV2.shadowRoot!

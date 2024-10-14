@@ -43,6 +43,13 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
   }
 
+  // TODO(crbug.com/372722777): Implement something similar to
+  // `IsDriveModuleEnabledForProfile()` that limits who can see the sharepoint
+  // module.
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
+    details.emplace_back("sharepoint", IDS_NTP_MODULES_SHAREPOINT_SENTENCE);
+  }
+
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionModule)) {
     details.emplace_back("tab_resumption",

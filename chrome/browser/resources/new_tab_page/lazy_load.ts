@@ -42,6 +42,7 @@ export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/
 // </if>
 export {DriveModuleElement as DriveModuleV2Element, driveModuleV2Descriptor} from './modules/v2/file_suggestion/drive_module.js';
 export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestion.js';
+export {sharepointModuleDescriptor, SharepointModuleElement} from './modules/v2/file_suggestion/sharepoint_module.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';

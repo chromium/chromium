@@ -129,7 +129,7 @@ export class DriveModuleElement extends DriveModuleElementBase {
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);
 
-async function createFileElement(): Promise<DriveModuleElement|null> {
+async function createDriveElement(): Promise<DriveModuleElement|null> {
   const {files} = await FileProxy.getHandler().getFiles();
   if (files.length === 0) {
     return null;
@@ -140,4 +140,4 @@ async function createFileElement(): Promise<DriveModuleElement|null> {
 }
 
 export const driveModuleV2Descriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id*/ 'drive', createFileElement);
+    /*id*/ 'drive', createDriveElement);
