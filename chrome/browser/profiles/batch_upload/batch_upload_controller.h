@@ -18,6 +18,7 @@ class Browser;
 // dialog.
 // Ordered by priority as the enum will be used in a map. The priority order
 // controls the order in which the data type section is displayed in the dialog.
+// This enum will be iterated over to get the `BatchUploadDataContainers`.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class BatchUploadDataType {

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
@@ -25,98 +27,48 @@ namespace {
 constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
     base::Seconds(3);
 
-// Temporary Dummy implementation. All IDs provided are arbitrary.
+// Returns a dummy implementation of container through `on_container_ready`.
 // TODO(b/359146556): remove when actual providers are implemented.
-class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
- public:
-  explicit DummyBatchUploadDataProvider(BatchUploadDataType type,
-                                        int title_id,
-                                        int item_count)
-      : BatchUploadDataProvider(type),
-        title_id_(title_id),
-        item_count_(item_count) {}
-
-  bool HasLocalData() const override { return item_count_ > 0; }
-
-  BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(GetDataType(),
-                                       /*section_name_id=*/title_id_);
-    for (int i = 0; i < item_count_; ++i) {
-      BatchUploadDataItemModel item;
-      item.id = BatchUploadDataItemModel::DataId(base::ToString(i));
-      item.icon_url = GetDataType() == BatchUploadDataType::kPasswords
-                          ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
-                          : GURL();
-      item.title = "title_" + base::UTF16ToUTF8(base::FormatNumber(i));
-      item.subtitle = "subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
-      container.items.push_back(std::move(item));
-    }
-    return container;
-  }
-
-  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::DataId>&
-                                item_ids_to_move) override {
-    // TODO(b/359146556): temporary output until there is the real
-    // implementations.
-    LOG(ERROR) << "XXX: Moving items:";
-    for (auto& id : item_ids_to_move) {
-      LOG(ERROR) << "XXX: id: " << id;
-    }
-    return true;
-  }
-
- private:
-  int title_id_ = 0;
-  int item_count_ = 0;
-};
-
-// Returns a dummy implementation.
-// TODO(b/359146556): remove when actual providers are implemented.
-std::unique_ptr<BatchUploadDataProvider> MakeDummyBatchUploadDataProvider(
+void MakeDummyBatchUploadDataContainerGetter(
     BatchUploadDataType type,
     int title_id,
-    int item_count) {
-  return std::make_unique<DummyBatchUploadDataProvider>(type, title_id,
-                                                        item_count);
+    int item_count,
+    base::OnceCallback<void(BatchUploadDataContainer)> on_container_ready) {
+  BatchUploadDataContainer container(type,
+                                     /*section_name_id=*/title_id);
+  for (int i = 0; i < item_count; ++i) {
+    BatchUploadDataItemModel item;
+    item.id = BatchUploadDataItemModel::DataId(base::ToString(i));
+    item.icon_url = type == BatchUploadDataType::kPasswords
+                        ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
+                        : GURL();
+    item.title = "title_" + base::UTF16ToUTF8(base::FormatNumber(i));
+    item.subtitle = "subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
+    container.items.push_back(std::move(item));
+  }
+  std::move(on_container_ready).Run(std::move(container));
 }
 
-// Gets the `BatchUploadDataProvider` of a single data type. Can also be used in
-// order to know if a specific data type entry point for the BatchUpload should
-// be visible or not, without needing to create the whole BatchUpload logic.
-// The returned `BatchUploadDataProvider` should not be null.
-std::unique_ptr<BatchUploadDataProvider> GetBatchUploadDataProvider(
+// Triggers the asynchronous request of `BatchUploadDataContainer` for `type`.
+// `on_container_ready` should always return a value even if empty.
+void RequestBatchUploadDataContainer(
     Profile& profile,
-    BatchUploadDataType type) {
-  // TODO(b/359146556): real implementations to be added per data type.
+    BatchUploadDataType type,
+    base::OnceCallback<void(BatchUploadDataContainer)> on_container_ready) {
+  // TODO(crbug.com/359146556): real implementations to be added per data type
+  // and linked to the sync service underlying type.
   switch (type) {
     case BatchUploadDataType::kPasswords:
-      return MakeDummyBatchUploadDataProvider(
-          type, IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS, 2);
+      MakeDummyBatchUploadDataContainerGetter(
+          type, IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS, 2,
+          std::move(on_container_ready));
+      break;
     case BatchUploadDataType::kAddresses:
-      return MakeDummyBatchUploadDataProvider(
-          type, IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES, 20);
+      MakeDummyBatchUploadDataContainerGetter(
+          type, IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES, 20,
+          std::move(on_container_ready));
+      break;
   }
-}
-
-// Helper function to get the map of all `BatchUploadDataContainer` of all data
-// types that can have local data that can be displayed by the BatchUpload
-// dialog.
-base::flat_map<BatchUploadDataType, BatchUploadDataContainer>
-GetBatchUploadDataContainers(Profile& profile) {
-  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> data_containers;
-
-  // TODO(crbug.com/372701325): When removing the BatchUploadDataProvider
-  // interface, get the BatchUploadDataContainers from the SyncService.
-  data_containers.insert_or_assign(
-      BatchUploadDataType::kPasswords,
-      GetBatchUploadDataProvider(profile, BatchUploadDataType::kPasswords)
-          ->GetLocalData());
-  data_containers.insert_or_assign(
-      BatchUploadDataType::kAddresses,
-      GetBatchUploadDataProvider(profile, BatchUploadDataType::kAddresses)
-          ->GetLocalData());
-
-  return data_containers;
 }
 
 }  // namespace
@@ -128,28 +80,67 @@ BatchUploadService::BatchUploadService(
 
 BatchUploadService::~BatchUploadService() = default;
 
-bool BatchUploadService::OpenBatchUpload(Browser* browser) {
+void BatchUploadService::OpenBatchUpload(
+    Browser* browser,
+    base::OnceCallback<void(bool)> success_callback) {
   if (!IsUserEligibleToOpenDialog()) {
-    return false;
+    std::move(success_callback).Run(false);
+    return;
   }
 
   // Do not allow to have more than one controller/dialog shown at a time.
   if (IsDialogOpened()) {
     // TODO(b/361330952): give focus to the browser that is showing the dialog
     // currently.
-    return false;
+    std::move(success_callback).Run(false);
+    return;
   }
 
-  // Create the controller with all the implementations of available local data
-  // providers.
+  // Create the controller in preparation for showing the dialog once all the
+  // containers are ready in `OnBatchUploadContainerReady()`. Allows to make
+  // sure that while getting the containers, no other dialog opening is
+  // triggered.
   controller_ = std::make_unique<BatchUploadController>();
   browser_ = browser;
+  dialog_shown_callback_ = std::move(success_callback);
 
-  return controller_->ShowDialog(
-      *delegate_, browser,
-      GetBatchUploadDataContainers(profile_.get()), /*done_callback=*/
+  RequestBatchUploadDataContainers();
+}
+
+void BatchUploadService::RequestBatchUploadDataContainers() {
+  size_t total_data_type_count =
+      static_cast<size_t>(BatchUploadDataType::kMaxValue) + 1;
+  auto barrier_callback = base::BarrierCallback<BatchUploadDataContainer>(
+      total_data_type_count,
+      base::BindOnce(&BatchUploadService::OnBatchUploadContainersReady,
+                     base::Unretained(this)));
+
+  // Iterate over all available enums. Should not use
+  // `requested_data_types_remaining_count_` to iterate as it may be changed
+  // during the loop execution if the callback is called synchronously.
+  for (size_t enum_index = 0; enum_index < total_data_type_count;
+       ++enum_index) {
+    RequestBatchUploadDataContainer(
+        profile_.get(), static_cast<BatchUploadDataType>(enum_index),
+        barrier_callback);
+  }
+}
+
+void BatchUploadService::OnBatchUploadContainersReady(
+    std::vector<BatchUploadDataContainer> data_containers) {
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer>
+      data_containers_map;
+  for (BatchUploadDataContainer& container : data_containers) {
+    BatchUploadDataType type = container.type;
+    data_containers_map.insert_or_assign(type, std::move(container));
+  }
+
+  bool opened = controller_->ShowDialog(
+      *delegate_, browser_,
+      std::move(data_containers_map), /*selected_items_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
                      base::Unretained(this)));
+  std::move(dialog_shown_callback_).Run(opened);
 }
 
 void BatchUploadService::OnBatchUplaodDialogResult(
@@ -176,17 +167,6 @@ void BatchUploadService::OnBatchUplaodDialogResult(
   }
 
   TriggerAvatarButtonSavingDataText(browser);
-}
-
-bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(
-    BatchUploadDataType type) {
-  if (!IsUserEligibleToOpenDialog()) {
-    return false;
-  }
-
-  std::unique_ptr<BatchUploadDataProvider> local_data_provider =
-      GetBatchUploadDataProvider(profile_.get(), type);
-  return local_data_provider->HasLocalData();
 }
 
 bool BatchUploadService::IsUserEligibleToOpenDialog() const {

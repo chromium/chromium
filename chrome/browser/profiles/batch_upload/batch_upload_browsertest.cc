@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
@@ -65,19 +66,27 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
   }
 
   // Opens the batch upload dialog using `batch_upload_service` in `browser.
-  // Waits for the batch upload url to load if opening the view was successful.
+  // Waits for the batch upload url to load if opening the view was successful
+  // and `wait_for_url_load`.
   bool OpenBatchUpload(BatchUploadService* batch_upload_service,
-                       Browser* browser) {
+                       Browser* browser,
+                       bool wait_for_url_load = true) {
     content::TestNavigationObserver observer{
         GURL(chrome::kChromeUIBatchUploadURL)};
     observer.StartWatchingNewWebContents();
 
-    bool is_opened = batch_upload_service->OpenBatchUpload(browser);
-    if (is_opened) {
+    base::RunLoop run_loop;
+    batch_upload_service->OpenBatchUpload(
+        browser,
+        base::BindOnce(&BatchUploadBrowserTest::OnBatchUploadShownResult,
+                       base::Unretained(this), run_loop.QuitClosure()));
+
+    run_loop.Run();
+    if (wait_for_url_load && dialog_shown_) {
       observer.Wait();
     }
 
-    return is_opened;
+    return dialog_shown_;
   }
 
   void SigninWithFullInfo() {
@@ -97,6 +106,12 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  void OnBatchUploadShownResult(base::OnceClosure closure, bool shown) {
+    dialog_shown_ = shown;
+    std::move(closure).Run();
+  }
+
+  bool dialog_shown_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -142,30 +157,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       ShouldShowBatchUploadEntryPointForDataTypePasswords) {
-  SigninWithFullInfo();
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-
-  EXPECT_TRUE(batch_upload->ShouldShowBatchUploadEntryPointForDataType(
-      BatchUploadDataType::kPasswords));
-}
-
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       ShouldShowBatchUploadEntryPointForDataTypeAddresses) {
-  SigninWithFullInfo();
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-
-  EXPECT_TRUE(batch_upload->ShouldShowBatchUploadEntryPointForDataType(
-      BatchUploadDataType::kAddresses));
-}
-
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
                        SignedOutUserShouldNotBeAbleToOpenTheDialog) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -175,12 +166,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(batch_upload);
-
-  EXPECT_FALSE(batch_upload->ShouldShowBatchUploadEntryPointForDataType(
-      BatchUploadDataType::kPasswords));
-  EXPECT_FALSE(batch_upload->ShouldShowBatchUploadEntryPointForDataType(
-      BatchUploadDataType::kAddresses));
-  EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
@@ -202,12 +189,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(batch_upload);
-
-  EXPECT_FALSE(batch_upload->ShouldShowBatchUploadEntryPointForDataType(
-      BatchUploadDataType::kPasswords));
-  EXPECT_FALSE(batch_upload->ShouldShowBatchUploadEntryPointForDataType(
-      BatchUploadDataType::kAddresses));
-  EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
@@ -230,7 +213,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
   EXPECT_FALSE(batch_upload->IsDialogOpened());
 
   // Opening the dialog again should fail as we are still in signin pending.
-  EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
 
   // Resolve the signin pending state.
   signin::SetRefreshTokenForPrimaryAccount(identity_manager);
@@ -258,7 +242,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
   EXPECT_FALSE(batch_upload->IsDialogOpened());
 
   // Opening the dialog again should fail as we are still signed out.
-  EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
+  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
 
   // Sign in again.
   SigninWithFullInfo();
@@ -347,6 +332,14 @@ class BatchUploadWithFakeDelegateBrowserTest : public BatchUploadBrowserTest {
 
   BatchUploadDelegateFake* GetFakeDelegate() { return delegate_; }
 
+  // The fake delegate will never show the actual content, so we should not wait
+  // for the url to load.
+  bool OpenBatchUploadWithFakeDelegate(BatchUploadService* batch_upload_service,
+                                       Browser* browser) {
+    return OpenBatchUpload(batch_upload_service, browser,
+                           /*wait_for_url_load=*/false);
+  }
+
  private:
   // Override the creation of the BatchUploadService to use the fake delegate.
   std::unique_ptr<KeyedService> CreateBatchUploadServiceWithFakeDelegate(
@@ -375,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   ASSERT_TRUE(batch_upload);
   ASSERT_FALSE(batch_upload->IsDialogOpened());
 
-  ASSERT_TRUE(batch_upload->OpenBatchUpload(browser()));
+  ASSERT_TRUE(OpenBatchUploadWithFakeDelegate(batch_upload, browser()));
   ASSERT_TRUE(batch_upload->IsDialogOpened());
 
   BatchUploadDelegateFake* delegate = GetFakeDelegate();
@@ -395,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   ASSERT_TRUE(batch_upload);
   ASSERT_FALSE(batch_upload->IsDialogOpened());
 
-  ASSERT_TRUE(batch_upload->OpenBatchUpload(browser()));
+  ASSERT_TRUE(OpenBatchUploadWithFakeDelegate(batch_upload, browser()));
   ASSERT_TRUE(batch_upload->IsDialogOpened());
 
   BatchUploadDelegateFake* delegate = GetFakeDelegate();

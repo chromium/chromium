@@ -35,20 +35,28 @@ class BatchUploadService : public KeyedService {
   // Attempts to open the Batch Upload modal dialog that allows uploading the
   // local profile data. The dialog will only be opened if there are some local
   // data (of any type) to show and the dialog is not shown already in the
-  // profile. Retrurns whether the dialog was shown or not.
-  bool OpenBatchUpload(Browser* browser);
-
-  // Allows to know if a specific data type should have its BatchUpload entry
-  // point (access to the Batch Upload dialog) displayed. This performs the
-  // check on the specific requested type, and not the rest of the available
-  // types, meaning that if other types have local data to be displayed but not
-  // the requested one, the entry point should not be shown.
-  bool ShouldShowBatchUploadEntryPointForDataType(BatchUploadDataType type);
+  // profile. `dialog_shown_callback` returns whether the dialog was shown or
+  // not.
+  void OpenBatchUpload(
+      Browser* browser,
+      base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing());
 
   // Returns whether the dialog is currently showing on a browser.
   bool IsDialogOpened() const;
 
  private:
+  // Iterates over all available types that can be displayed in the dialog and
+  // request the container. Result of each containers is returned in
+  // `OnBatchUploadContainerReady()` asynchronously.
+  void RequestBatchUploadDataContainers();
+
+  // Barrier callback aggregating the `BatchUploadDataContainer`s. It is
+  // expected to return a container per data type in `BatchUploadDataType` even
+  // if the returned container is empty. Once all the containers are available,
+  // triggers showing the dialog.
+  void OnBatchUploadContainersReady(
+      std::vector<BatchUploadDataContainer> data_containers);
+
   // Callback of the dialog view closing, contains the IDs of the selected items
   // per data type. Selected items will be processed to be moved to the account
   // storage. Empty map means the dialog was closed explicitly not to move any
@@ -82,6 +90,10 @@ class BatchUploadService : public KeyedService {
   // Timer to clear the avatar override text. Triggered after accepting the
   // bubble.
   base::OneShotTimer avatar_override_timer_;
+
+  // Called when the decision about showing the dialog is made.
+  // Returns whether it was shown or not.
+  base::OnceCallback<void(bool)> dialog_shown_callback_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_
