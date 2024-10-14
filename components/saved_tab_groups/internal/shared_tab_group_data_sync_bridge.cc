@@ -232,20 +232,75 @@ std::string ExtractCollaborationId(
   return it->second->collaboration().collaboration_id();
 }
 
+// Tries to parse the unique position from the metadata. Returns an invalid
+// position if the metadata is not found.
+syncer::UniquePosition ParseUniquePositionFromMetadata(
+    const syncer::EntityMetadataMap& sync_metadata,
+    const std::string& storage_key) {
+  auto it = sync_metadata.find(storage_key);
+  if (it == sync_metadata.end()) {
+    return syncer::UniquePosition();
+  }
+
+  return syncer::UniquePosition::FromProto(it->second->unique_position());
+}
+
+// Sorts stored entries by their unique position. The resulting order is:
+// 1. Tabs with valid unique positions, ordered by their unique position.
+// 2. Tabs with invalid unique positions, ordered by their update time.
+// 3. Groups preserved in the original order.
+void SortStoredEntriesByUniquePosition(
+    std::vector<proto::SharedTabGroupData>& stored_entries,
+    const syncer::EntityMetadataMap& sync_metadata) {
+  base::ranges::stable_sort(
+      stored_entries, [&sync_metadata](const proto::SharedTabGroupData& left,
+                                       const proto::SharedTabGroupData& right) {
+        // Tabs are sorted before groups.
+        if (left.specifics().has_tab() != right.specifics().has_tab()) {
+          return left.specifics().has_tab();
+        }
+
+        // Compare tabs by their unique position.
+        if (left.specifics().has_tab() && right.specifics().has_tab()) {
+          syncer::UniquePosition left_unique_position =
+              ParseUniquePositionFromMetadata(sync_metadata,
+                                              left.specifics().guid());
+          syncer::UniquePosition right_unique_position =
+              ParseUniquePositionFromMetadata(sync_metadata,
+                                              right.specifics().guid());
+          if (left_unique_position.IsValid() !=
+              right_unique_position.IsValid()) {
+            return left_unique_position.IsValid();
+          }
+          if (left_unique_position.IsValid()) {
+            return left_unique_position.LessThan(right_unique_position);
+          }
+
+          // Order tabs with invalid unique positions by their update time for
+          // consistency.
+          return left.specifics().update_time_windows_epoch_micros() <
+                 right.specifics().update_time_windows_epoch_micros();
+        }
+
+        // Consider all the groups equal.
+        return false;
+      });
+}
+
 // Parses stored entries and populates the result to the `on_load_callback`.
 std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
-    const std::vector<proto::SharedTabGroupData>& stored_entries,
+    std::vector<proto::SharedTabGroupData> stored_entries,
     SyncBridgeTabGroupModelWrapper* model_wrapper,
     const syncer::EntityMetadataMap& sync_metadata) {
   DVLOG(2) << "Loading SharedTabGroupData entries from the disk: "
            << stored_entries.size();
 
   std::vector<SavedTabGroup> groups;
-  std::unordered_set<std::string> group_guids;
+  std::unordered_map<std::string, size_t> group_guid_to_next_tab_position;
 
   // `stored_entries` is not ordered such that groups are guaranteed to be
   // at the front of the vector. As such, we can run into the case where we
-  // try to add a tab to a group that does not exist for us yet.
+  // try to add a tab to a group that does not exist yet.
   for (const proto::SharedTabGroupData& proto : stored_entries) {
     const sync_pb::SharedTabGroupDataSpecifics& specifics = proto.specifics();
     if (!specifics.has_tab_group()) {
@@ -267,10 +322,16 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
           LocalTabGroupIDFromString(proto.local_group_data().local_group_id()));
     }
     // TODO(crbug.com/364910060): resolve duplicate GUIDs.
-    group_guids.emplace(specifics.guid());
+    group_guid_to_next_tab_position.emplace(specifics.guid(), 0);
   }
 
-  // Parse tabs and find tabs missing groups.
+  // Order all entries by their unique position. Do not distinguish between
+  // groups and tabs for simplicity (groups don't have unique positions) and
+  // order tabs with invalid unique positions to the end.
+  SortStoredEntriesByUniquePosition(stored_entries, sync_metadata);
+
+  // Parse tabs and find tabs missing groups. This code relies on the order of
+  // the tab entries to calculate tab positions.
   std::vector<sync_pb::SharedTabGroupDataSpecifics> tabs_missing_groups;
   std::vector<SavedTabGroupTab> tabs;
   for (const proto::SharedTabGroupData& proto : stored_entries) {
@@ -284,10 +345,14 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
       // collaboration IDs) but check it here for consistency anyway.
       DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;
     }
-    if (group_guids.contains(specifics.tab().shared_tab_group_guid())) {
-      // TODO(crbug.com/351357559): calculate the position based on unique
-      // positions from metadata.
-      tabs.emplace_back(SpecificsToSharedTabGroupTab(specifics, 0));
+    if (group_guid_to_next_tab_position.contains(
+            specifics.tab().shared_tab_group_guid())) {
+      size_t tab_position =
+          group_guid_to_next_tab_position[specifics.tab()
+                                              .shared_tab_group_guid()];
+      tabs.emplace_back(SpecificsToSharedTabGroupTab(specifics, tab_position));
+      group_guid_to_next_tab_position[specifics.tab()
+                                          .shared_tab_group_guid()]++;
       continue;
     }
     tabs_missing_groups.push_back(specifics);
