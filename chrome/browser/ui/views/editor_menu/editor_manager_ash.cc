@@ -7,12 +7,10 @@
 #include <string_view>
 
 #include "base/observer_list.h"
-#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/editor_menu/utils/mojo.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
-#include "content/public/browser/browser_context.h"
 
 namespace chromeos::editor_menu {
 namespace {
@@ -34,11 +32,10 @@ EditorMode ToEditorMode(ash::input_method::EditorMode mode) {
 
 }  // namespace
 
-EditorManagerAsh::EditorManagerAsh(content::BrowserContext* context)
-    : panel_manager_(ash::input_method::EditorMediatorFactory::GetInstance()
-                         ->GetForProfile(Profile::FromBrowserContext(context))
-                         ->panel_manager()),
-      ash_observer_(this) {
+EditorManagerAsh::EditorManagerAsh(
+    ash::input_method::EditorPanelManager* panel_manager)
+    : panel_manager_(panel_manager), ash_observer_(this) {
+  CHECK(panel_manager_);
   panel_manager_->AddObserver(&ash_observer_);
 }
 

@@ -15,13 +15,13 @@
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ui/views/editor_menu/editor_manager.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
-#include "content/public/browser/browser_context.h"
 
 namespace chromeos::editor_menu {
 
 class EditorManagerAsh : public EditorManager {
  public:
-  explicit EditorManagerAsh(content::BrowserContext* context);
+  explicit EditorManagerAsh(
+      ash::input_method::EditorPanelManager* panel_manager);
   ~EditorManagerAsh() override;
 
   // EditorManager overrides

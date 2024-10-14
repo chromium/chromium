@@ -155,10 +155,17 @@ void EditorMenuControllerImpl::OnEditorMenuVisibilityChanged(bool visible) {
   }
 }
 
-void EditorMenuControllerImpl::SetBrowserContext(
+bool EditorMenuControllerImpl::SetBrowserContext(
     content::BrowserContext* context) {
-  card_session_ =
-      std::make_unique<EditorCardSession>(this, CreateEditorManager(context));
+  std::unique_ptr<EditorManager> editor_manager = CreateEditorManager(context);
+
+  if (editor_manager) {
+    card_session_ =
+        std::make_unique<EditorCardSession>(this, std::move(editor_manager));
+    return true;
+  }
+  card_session_ = nullptr;
+  return false;
 }
 
 void EditorMenuControllerImpl::DismissCard() {

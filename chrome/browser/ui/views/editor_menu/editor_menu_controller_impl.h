@@ -51,7 +51,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
       views::Widget::ClosedReason closed_reason) override;
   void OnEditorMenuVisibilityChanged(bool visible) override;
 
-  void SetBrowserContext(content::BrowserContext* context);
+  bool SetBrowserContext(content::BrowserContext* context);
   void LogEditorMode(const EditorMode& editor_mode);
   void GetEditorContext(
       base::OnceCallback<void(const EditorContext&)> callback);
