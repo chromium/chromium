@@ -40,7 +40,7 @@ void GpuTaskSchedulerHelper::ScheduleGpuTask(
     SingleTaskSequence::ReportingCallback report_callback) {
   // There are two places where this function is called: inside
   // SkiaOutputSurface, where |using_command_buffer_| is false, or by other
-  // users when sharing with command buffer, where we should ahve
+  // users when sharing with command buffer, where we should have
   // |command_buffer_helper_| already set up.
   DCHECK(!using_command_buffer_ || command_buffer_helper_);
   DCHECK(initialized_);
