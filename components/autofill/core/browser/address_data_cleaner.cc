@@ -225,6 +225,17 @@ AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
 }
 
 // static
+std::vector<DifferingProfileWithTypeSet>
+AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
+    const AutofillProfile& profile,
+    base::span<const AutofillProfile> existing_profiles,
+    const AutofillProfileComparator& comparator) {
+  return CalculateMinimalIncompatibleProfileWithTypeSets(
+      profile, base::ToVector(existing_profiles, [](auto& x) { return &x; }),
+      comparator);
+}
+
+// static
 bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
     const AutofillProfile& profile,
     FieldType type) {

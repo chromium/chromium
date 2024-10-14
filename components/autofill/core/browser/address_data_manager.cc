@@ -817,30 +817,30 @@ void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
 }
 
 void AddressDataManager::LogStoredDataMetrics() const {
-  const std::vector<const AutofillProfile*> profiles = GetProfiles();
-  autofill_metrics::LogStoredProfileMetrics(profiles);
-  autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
+  const std::vector<const AutofillProfile*> profile_pointers = GetProfiles();
+  std::vector<AutofillProfile> profiles = base::ToVector(
+      profile_pointers, [](const AutofillProfile* p) { return *p; });
+
+  autofill_metrics::LogStoredProfileMetrics(profile_pointers);
+  autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogDeduplicationMetrics)) {
     // Since the computation of deduplication metrics is expensive, the
-    // recording is delayed by 30 seconds (arbitrary number) to prevent startup
+    // recording is delayed by 15 seconds (arbitrary number) to prevent startup
     // time regressions.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
-            [](base::WeakPtr<const AddressDataManager> adm) {
-              if (!adm) {
-                return;
-              }
+            [](std::vector<AutofillProfile> profiles, std::string app_locale) {
               autofill_metrics::LogDeduplicationStartupMetrics(
-                  adm->GetProfiles(), adm->app_locale());
+                  std::move(profiles), std::move(app_locale));
             },
-            weak_factory_.GetWeakPtr()),
-        base::Seconds(30));
+            profiles, app_locale_),
+        base::Seconds(15));
   }
 
-  autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
+  autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profile_pointers),
                                                    app_locale_);
 }
 

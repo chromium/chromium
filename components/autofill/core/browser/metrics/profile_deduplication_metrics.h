@@ -33,9 +33,8 @@ int GetDuplicationRank(
 // Logs various metrics around quasi duplicates (= profiles that are duplicates
 // except for a small number of types) for the `profiles` a user has stored at
 // browser startup.
-void LogDeduplicationStartupMetrics(
-    base::span<const AutofillProfile* const> profiles,
-    std::string_view app_locale);
+void LogDeduplicationStartupMetrics(std::vector<AutofillProfile> profiles,
+                                    std::string app_locale);
 
 // Logs various metrics around quasi duplicates after the user was shown a
 // new profile prompt for the `import_candidate`. `existing_profiles` are the

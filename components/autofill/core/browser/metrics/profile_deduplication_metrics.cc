@@ -18,6 +18,7 @@
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -193,19 +194,14 @@ void LogDeduplicationStartupMetricsForProfile(
       duplication_rank);
   LogTypeOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, duplication_rank,
                                      min_incompatible_differing_sets);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogDeduplicationMetricsFollowup)) {
-    // TODO(crbug.com/325452461): Implement more metrics.
-    LogEditingDistanceOfQuasiDuplicateToken(profile, duplication_rank,
-                                            min_incompatible_differing_sets,
-                                            std::string(app_locale));
-    LogQualityOfQuasiDuplicateTokenMetric(
-        kStartupHistogramPrefix, profile, duplication_rank,
-        min_incompatible_differing_sets, /*is_import=*/false);
-    LogQuasiDuplicateAdoption(profile, duplication_rank,
-                              min_incompatible_differing_sets);
-  }
+  LogEditingDistanceOfQuasiDuplicateToken(profile, duplication_rank,
+                                          min_incompatible_differing_sets,
+                                          std::string(app_locale));
+  LogQualityOfQuasiDuplicateTokenMetric(
+      kStartupHistogramPrefix, profile, duplication_rank,
+      min_incompatible_differing_sets, /*is_import=*/false);
+  LogQuasiDuplicateAdoption(profile, duplication_rank,
+                            min_incompatible_differing_sets);
 }
 
 void LogPercentageOfNonQuasiDuplicates(
@@ -228,6 +224,47 @@ void LogPercentageOfNonQuasiDuplicates(
   }
 }
 
+// Performs a deduplication metrics recording for one profile versus all of the
+// rest. `current_profile_index` stores the index to the currently used profile
+// and `profiles` store the copy of the profiles that there were present on
+// startup. After evaluating each profile is finished it's deduplication rank is
+// added to the `deduplication_ranks` which is used after all iterations are
+// done.
+// After each profile is done recording the metrics it schedules the next
+// one with a delay.
+void PerformNextBatchOfDedupliactonMetricsRecording(
+    size_t current_profile_index,
+    std::vector<AutofillProfile> profiles,
+    std::string app_locale,
+    std::vector<int> deduplication_ranks) {
+  // When all batches are complete, record the metric combining the results from
+  // them.
+  if (current_profile_index == profiles.size()) {
+    LogPercentageOfNonQuasiDuplicates(deduplication_ranks);
+    return;
+  }
+  CHECK_LT(current_profile_index, profiles.size());
+
+  AutofillProfileComparator comparator(app_locale);
+  std::vector<DifferingProfileWithTypeSet> min_incompatible_differential_sets =
+      AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
+          profiles[current_profile_index], profiles, comparator);
+  deduplication_ranks.push_back(
+      GetDuplicationRank(min_incompatible_differential_sets));
+  LogDeduplicationStartupMetricsForProfile(profiles[current_profile_index],
+                                           min_incompatible_differential_sets,
+                                           app_locale);
+
+  // Next batch is delayed by 1 second (arbitrary number) to free up the UI
+  // thread.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PerformNextBatchOfDedupliactonMetricsRecording,
+                     /*index=*/++current_profile_index, std::move(profiles),
+                     std::move(app_locale), std::move(deduplication_ranks)),
+      base::Seconds(1));
+}
+
 }  // namespace
 
 int GetDuplicationRank(
@@ -238,9 +275,8 @@ int GetDuplicationRank(
              : min_incompatible_sets.back().field_type_set.size();
 }
 
-void LogDeduplicationStartupMetrics(
-    base::span<const AutofillProfile* const> profiles,
-    std::string_view app_locale) {
+void LogDeduplicationStartupMetrics(std::vector<AutofillProfile> profiles,
+                                    std::string app_locale) {
   if (profiles.size() <= 1) {
     // Don't pollute metrics with cases where obviously no duplicates exists.
     return;
@@ -251,22 +287,15 @@ void LogDeduplicationStartupMetrics(
     // most 100 profiles (which covers the vast majority of users).
     return;
   }
-  AutofillProfileComparator comparator(app_locale);
-  std::vector<int> profile_duplicaton_ranks;
-  for (const AutofillProfile* profile : profiles) {
-    std::vector<DifferingProfileWithTypeSet>
-        min_incompatible_differential_sets =
-            AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
-                *profile, profiles, comparator);
-    profile_duplicaton_ranks.push_back(
-        GetDuplicationRank(min_incompatible_differential_sets));
-    LogDeduplicationStartupMetricsForProfile(
-        *profile, min_incompatible_differential_sets, app_locale);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogDeduplicationMetricsFollowup)) {
-    LogPercentageOfNonQuasiDuplicates(profile_duplicaton_ranks);
-  }
+
+  // Since this logic requires a lot of computing it is split into batches not
+  // to block the UI thread for too long. Each batch performs
+  // O(`profiles.size()`) operations at a time. This logic cannot be moved to
+  // the background thread due to dependencies that don't handle it.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PerformNextBatchOfDedupliactonMetricsRecording,
+                                /*index=*/0, std::move(profiles),
+                                std::move(app_locale), std::vector<int>()));
 }
 
 void LogDeduplicationImportMetrics(
@@ -300,12 +329,9 @@ void LogDeduplicationImportMetrics(
       duplication_rank);
   LogTypeOfQuasiDuplicateTokenMetric(metric_name_prefix, duplication_rank,
                                      min_incompatible_sets);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogDeduplicationMetricsFollowup)) {
-    LogQualityOfQuasiDuplicateTokenMetric(
-        metric_name_prefix, import_candidate, duplication_rank,
-        min_incompatible_sets, /*is_import=*/true);
-  }
+  LogQualityOfQuasiDuplicateTokenMetric(metric_name_prefix, import_candidate,
+                                        duplication_rank, min_incompatible_sets,
+                                        /*is_import=*/true);
 }
 
 }  // namespace autofill::autofill_metrics

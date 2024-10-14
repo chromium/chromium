@@ -686,13 +686,6 @@ BASE_FEATURE(kAutofillLogDeduplicationMetrics,
              "AutofillLogDeduplicationMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, various deduplication related metrics are logged on startup
-// and on import. Used only if `kAutofillLogDeduplicationMetrics` is enabled.
-// TODO(crbug.com/325452461): Remove once rolled out.
-BASE_FEATURE(kAutofillLogDeduplicationMetricsFollowup,
-             "AutofillLogDeduplicationMetricsFollowup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Currently, the importing logic offers new profile creation if the observed
 // profile is non-mergeable with any existing profile. With this feature, low-
 // quality tokens receive special treatment and can bypass this requirement.
