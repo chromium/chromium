@@ -76,6 +76,7 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/version_info.h"
 #include "url/origin.h"
@@ -253,7 +254,7 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
     ParsingContext& context) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableImprovedPredictionParser)) {
+          autofill_prediction_improvements::kAutofillPredictionImprovements)) {
     // Run the parser for the prediction improvements.
     context.pattern_file = PatternFile::kPredictionImprovements;
     AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),

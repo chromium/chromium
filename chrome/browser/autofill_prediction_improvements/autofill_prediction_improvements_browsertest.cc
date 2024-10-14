@@ -295,10 +295,7 @@ class AutofillPredictionImprovementsBrowserBaseTest
                                {{"allowed_hosts_for_form_submissions",
                                  "a.com"}}},
                               {kAutofillPredictionImprovements,
-                               {{"skip_allowlist", "true"}}},
-                              {autofill::features::
-                                   kAutofillEnableImprovedPredictionParser,
-                               {}}},
+                               {{"skip_allowlist", "true"}}}},
         /*disabled_features=*/{});
   }
 

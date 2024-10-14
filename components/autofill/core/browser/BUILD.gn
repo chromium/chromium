@@ -753,6 +753,7 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
+    "//components/autofill_prediction_improvements/core/browser:features",
     "//components/device_reauth",
     "//components/feature_engagement",
     "//components/google/core/common",

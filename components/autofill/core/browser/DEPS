@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h",
   "+components/browser_ui/device_lock/android",
   "+components/device_reauth/device_authenticator.h",
   "+components/feature_engagement",
