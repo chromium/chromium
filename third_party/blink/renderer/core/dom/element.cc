@@ -4205,38 +4205,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
             .EnsureContainerQueryData()
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
-        evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
-        if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
-            RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
-          switch (evaluator->ApplyScrollState()) {
-            case ContainerQueryEvaluator::Change::kNone:
-              break;
-            case ContainerQueryEvaluator::Change::kNearestContainer:
-              child_change = child_change.ForceRecalcStateContainer();
-              break;
-            case ContainerQueryEvaluator::Change::kDescendantContainers:
-              child_change =
-                  child_change.ForceRecalcDescendantStateContainers();
-              break;
-          }
-        }
-        if (diff != ComputedStyle::Difference::kEqual &&
-            (!base::ValuesEquivalent(old_style->InheritedVariables(),
-                                     new_style->InheritedVariables()) ||
-             !base::ValuesEquivalent(old_style->NonInheritedVariables(),
-                                     new_style->NonInheritedVariables()))) {
-          switch (evaluator->StyleContainerChanged()) {
-            case ContainerQueryEvaluator::Change::kNone:
-              break;
-            case ContainerQueryEvaluator::Change::kNearestContainer:
-              child_change = child_change.ForceRecalcStyleContainerChildren();
-              break;
-            case ContainerQueryEvaluator::Change::kDescendantContainers:
-              child_change =
-                  child_change.ForceRecalcStyleContainerDescendants();
-              break;
-          }
-        }
+        child_change = evaluator->ApplyStateAndStyleChanges(
+            child_change, *old_style, *new_style,
+            diff != ComputedStyle::Difference::kEqual);
       }
     }
   }

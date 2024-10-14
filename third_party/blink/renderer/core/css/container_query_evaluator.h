@@ -59,6 +59,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   std::optional<double> Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
   bool DependsOnStyle() const { return depends_on_style_; }
+  bool DependsOnStuck() const { return depends_on_snapped_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
 
   enum class Change : uint8_t {
@@ -81,12 +82,14 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // unchanged otherwise).
   Change SizeContainerChanged(PhysicalSize, PhysicalAxes contained_axes);
 
-  // Re-evaluate the cached results and clear any results which are affected.
-  Change StyleContainerChanged();
-
-  // Update the ContainerValues for the evaluator if necessary based on the
-  // latest snapshots for stuck and snapped states.
-  Change ApplyScrollState();
+  // To be called during style recalc to make any necessary invalidation of
+  // container queries based on computed style changes on the container.
+  // style_changed is true if there is a diff between old_style and new_style.
+  StyleRecalcChange ApplyStateAndStyleChanges(
+      const StyleRecalcChange& child_change,
+      const ComputedStyle& old_style,
+      const ComputedStyle& new_style,
+      bool style_changed);
 
   // Set the pending snapped state when updating scroll snapshots.
   // ApplyScrollState() will set the snapped state from the pending snapped
@@ -98,21 +101,27 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // when e.g. the rem unit changes.
   void UpdateContainerValuesFromUnitChanges(StyleRecalcChange);
 
-  // If size container queries are expressed in font-relative units, the query
-  // evaluation may change even if the size of the container in pixels did not
-  // change. If the old and new style use different font properties, and there
-  // are existing queries that depend on font relative units, mark the
-  // evaluator as requiring size query re-evaluation even if the size does not
-  // change.
-  void MarkFontDirtyIfNeeded(const ComputedStyle& old_style,
-                             const ComputedStyle& new_style);
-
   Element* ContainerElement() const;
 
   void Trace(Visitor*) const;
 
  private:
   friend class ContainerQueryEvaluatorTest;
+
+  // Reconstruct CSSContainerValues based on the current ComputedStyle stored on
+  // the container element, but otherwise keep other values the same.
+  void UpdateContainerValues();
+
+  // Re-evaluate the cached results and clear any results which are affected.
+  Change StyleContainerChanged();
+
+  // Update the ContainerValues for the evaluator if necessary based on the
+  // latest snapshots for stuck and snapped states.
+  Change ApplyScrollState();
+
+  // Re-evaluate results of size queries which may have changed for computed
+  // style changes like font and writing direction.
+  Change StyleAffectingSizeChanged();
 
   // Update the CSSContainerValues with the new size and contained axes to be
   // used for queries.
@@ -187,7 +196,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // ContainerQueryEvaluator.
   unsigned unit_flags_ = 0;
   bool referenced_by_unit_ = false;
-  bool font_dirty_ = false;
   bool depends_on_style_ = false;
   bool depends_on_stuck_ = false;
   bool depends_on_snapped_ = false;
