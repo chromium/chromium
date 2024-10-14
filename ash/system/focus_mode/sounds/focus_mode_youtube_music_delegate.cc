@@ -38,10 +38,11 @@ constexpr char kYouTubeMusicTrackNotExplicit[] = "EXPLICIT_TYPE_NOT_EXPLICIT";
 // Converts from google_api errors to FocusMode errors.
 constexpr FocusModeApiError::Type ToErrorType(
     google_apis::ApiErrorCode http_error_code) {
-  // TODO(crbug.com/372029553): Handle Update error
   switch (http_error_code) {
     case google_apis::ApiErrorCode::HTTP_BAD_REQUEST:
       return FocusModeApiError::Type::kFatal;
+    case google_apis::ApiErrorCode::YOUTUBE_MUSIC_UPDATE_REQUIRED:
+      return FocusModeApiError::Type::kUpdate;
     default:
       break;
   }
