@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -64,7 +65,7 @@ void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
 void AppsGridContextMenu::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // Build the menu model and save it to `context_menu_model_`.
   BuildMenuModel();
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
@@ -78,8 +79,10 @@ void AppsGridContextMenu::ShowContextMenuForViewImpl(
   int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
-  if (source_type == ui::MENU_SOURCE_TOUCH && owner_touch_dragging_)
+  if (source_type == ui::mojom::MenuSourceType::kTouch &&
+      owner_touch_dragging_) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
       std::move(root_menu_item_view), run_types);

@@ -14,6 +14,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ash {
@@ -43,7 +44,7 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
   AppListMenuModelAdapter(const std::string& app_id,
                           std::unique_ptr<ui::SimpleMenuModel> menu_model,
                           views::Widget* widget_owner,
-                          ui::MenuSourceType source_type,
+                          ui::mojom::MenuSourceType source_type,
                           const AppLaunchedMetricParams& metric_params,
                           AppListViewAppType type,
                           base::OnceClosure on_menu_closed_callback,

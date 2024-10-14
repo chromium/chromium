@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -122,8 +123,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
                                    GetContextMenuModelCallback callback) = 0;
 
   // Show wallpaper context menu from the specified onscreen location.
-  virtual void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
-                                        ui::MenuSourceType source_type) = 0;
+  virtual void ShowWallpaperContextMenu(
+      const gfx::Point& onscreen_location,
+      ui::mojom::MenuSourceType source_type) = 0;
 
   // Returns True if the last event passing through app list was a key event.
   // This is stored in the controller and managed by the presenter.

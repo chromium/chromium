@@ -61,6 +61,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -536,7 +537,7 @@ class AppsCollectionsMenuModelAdapter : public AppListMenuModelAdapter {
       const std::string& app_id,
       std::unique_ptr<ui::SimpleMenuModel> menu_model,
       views::Widget* widget_owner,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       const AppLaunchedMetricParams& metric_params,
       AppListViewAppType type,
       base::OnceClosure on_menu_closed_callback,
@@ -1229,7 +1230,7 @@ void AppListItemView::SetItemAccessibleName(const std::u16string& name) {
 
 void AppListItemView::OnContextMenuModelReceived(
     const gfx::Point& point,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> menu_model) {
   waiting_for_context_menu_options_ = false;
   if (!menu_model || IsShowingAppMenu()) {
@@ -1244,7 +1245,8 @@ void AppListItemView::OnContextMenuModelReceived(
     return;
   }
 
-  menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
+  menu_show_initiated_from_key_ =
+      source_type == ui::mojom::MenuSourceType::kKeyboard;
 
   // Clear the existing focus in other elements to prevent having a focus
   // indicator on other non-selected views.
@@ -1269,8 +1271,9 @@ void AppListItemView::OnContextMenuModelReceived(
                   views::MenuRunner::FIXED_ANCHOR |
                   views::MenuRunner::CONTEXT_MENU;
 
-  if (source_type == ui::MENU_SOURCE_TOUCH && touch_dragging_)
+  if (source_type == ui::mojom::MenuSourceType::kTouch && touch_dragging_) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
 
   // Screen bounds don't need RTL flipping.
   gfx::Rect anchor_rect = GetBoundsInScreen();
@@ -1332,7 +1335,7 @@ void AppListItemView::OnContextMenuModelReceived(
 void AppListItemView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   if (IsShowingAppMenu()) {
     return;
   }
@@ -1624,7 +1627,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       // Handle the long press event on long press to avoid RootView to
       // trigger View::DoDrag for this view before the item is dragged.
       View::ConvertPointToScreen(this, &screen_location);
-      ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
+      ShowContextMenu(screen_location, ui::mojom::MenuSourceType::kTouch);
       event->SetHandled();
       break;
     case ui::EventType::kGestureTwoFingerTap:

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
@@ -19,7 +20,7 @@ AppListMenuModelAdapter::AppListMenuModelAdapter(
     const std::string& app_id,
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     views::Widget* widget_owner,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     const AppLaunchedMetricParams& metric_params,
     AppListViewAppType type,
     base::OnceClosure on_menu_closed_callback,

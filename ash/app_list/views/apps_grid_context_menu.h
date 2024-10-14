@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace views {
@@ -53,9 +54,10 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
 
  private:
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // Builds and saves a SimpleMenuModel to `context_menu_model_`;
   void BuildMenuModel();

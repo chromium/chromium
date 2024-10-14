@@ -23,6 +23,7 @@
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace ash {
 namespace test {
@@ -87,7 +88,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                            AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
-                                ui::MenuSourceType source_type) override;
+                                ui::mojom::MenuSourceType source_type) override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
   ash::AssistantViewDelegate* GetAssistantViewDelegate() override;

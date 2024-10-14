@@ -72,6 +72,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -1376,7 +1377,7 @@ void AppListControllerImpl::GetContextMenuModel(
 
 void AppListControllerImpl::ShowWallpaperContextMenu(
     const gfx::Point& onscreen_location,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   Shell::Get()->ShowContextMenu(onscreen_location, source_type);
 }
 

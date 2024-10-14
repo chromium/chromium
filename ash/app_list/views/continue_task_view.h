@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 
@@ -91,9 +92,10 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   void OnButtonPressed(const ui::Event& event);
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // Opens the search result related to the view.
   void OpenResult(int event_flags);

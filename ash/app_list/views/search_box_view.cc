@@ -65,6 +65,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -426,7 +427,8 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     filter_menu_runner_->RunMenuAt(
         search_box->GetWidget(), nullptr /*button_controller*/,
         search_box->filter_button()->GetBoundsInScreen(),
-        views::MenuAnchorPosition::kBubbleBottomRight, ui::MENU_SOURCE_NONE);
+        views::MenuAnchorPosition::kBubbleBottomRight,
+        ui::mojom::MenuSourceType::kNone);
   }
 
   // Returns true if the category filter menu is opened.

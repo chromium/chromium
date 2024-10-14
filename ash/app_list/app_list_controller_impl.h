@@ -40,6 +40,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
@@ -186,7 +187,7 @@ class ASH_EXPORT AppListControllerImpl
                            AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
-                                ui::MenuSourceType source_type) override;
+                                ui::mojom::MenuSourceType source_type) override;
   bool KeyboardTraversalEngaged() override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
