@@ -176,6 +176,13 @@
   };
   UIAlertController* discardSelectionAlertController =
       DiscardSelectionAlertController(discardSelectionBlock, nil);
+  discardSelectionAlertController.popoverPresentationController.sourceView =
+      _navigationController.view;
+  discardSelectionAlertController.popoverPresentationController.sourceRect =
+      CGRectMake(CGRectGetMidX(_navigationController.view.bounds),
+                 CGRectGetMidY(_navigationController.view.bounds), 0, 0);
+  discardSelectionAlertController.popoverPresentationController
+      .permittedArrowDirections = 0;
   [_navigationController presentViewController:discardSelectionAlertController
                                       animated:YES
                                     completion:nil];
