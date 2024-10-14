@@ -15,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/prefix_delegate.h"
@@ -181,7 +182,7 @@ class VIEWS_EXPORT Combobox : public View,
   void ArrowButtonPressed(const ui::Event& event);
 
   // Show the drop down list
-  void ShowDropDownMenu(ui::MenuSourceType source_type);
+  void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);
 
   // Cleans up after the menu as closed
   void OnMenuClosed(Button::ButtonState original_button_state);

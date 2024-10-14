@@ -18,6 +18,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -448,10 +449,10 @@ void TreeView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TreeView::ShowContextMenu(const gfx::Point& p,
-                               ui::MenuSourceType source_type) {
+                               ui::mojom::MenuSourceType source_type) {
   if (!model_)
     return;
-  if (source_type == ui::MENU_SOURCE_MOUSE) {
+  if (source_type == ui::mojom::MenuSourceType::kMouse) {
     // Only invoke View's implementation (which notifies the
     // ContextMenuController) if over a node.
     gfx::Point local_point(p);
@@ -514,7 +515,7 @@ bool TreeView::HandleAccessibleAction(const ui::AXActionData& action_data) {
       if (!HasFocus())
         RequestFocus();
       ShowContextMenu(GetBoundsInScreen().CenterPoint(),
-                      ui::MENU_SOURCE_KEYBOARD);
+                      ui::mojom::MenuSourceType::kKeyboard);
       break;
 
     default:

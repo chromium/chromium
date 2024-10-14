@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -247,7 +247,7 @@ TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
   scrollbar()->set_context_menu_controller(scrollbar());
   // Disabled on Mac because Mac's native menu is synchronous.
   scrollbar()->ShowContextMenu(scrollbar()->GetBoundsInScreen().CenterPoint(),
-                               ui::MENU_SOURCE_MOUSE);
+                               ui::mojom::MenuSourceType::kMouse);
   EXPECT_NE(nullptr, scrollbar()->menu_model_);
   EXPECT_NE(nullptr, scrollbar()->menu_runner_);
 }

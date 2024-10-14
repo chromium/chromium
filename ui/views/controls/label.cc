@@ -23,6 +23,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -1093,7 +1094,7 @@ void Label::VisibilityChanged(View* starting_from, bool is_visible) {
 
 void Label::ShowContextMenuForViewImpl(View* source,
                                        const gfx::Point& point,
-                                       ui::MenuSourceType source_type) {
+                                       ui::mojom::MenuSourceType source_type) {
   if (!GetRenderTextForSelectionController())
     return;
 

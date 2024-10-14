@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/gfx/canvas.h"
@@ -321,7 +322,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
         std::move(menu_item_view_owning), MenuRunner::USE_ASH_SYS_UI_LAYOUT);
     menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
                             MenuAnchorPosition::kTopLeft,
-                            ui::MENU_SOURCE_KEYBOARD);
+                            ui::mojom::MenuSourceType::kKeyboard);
   }
 
   void TearDown() override {
@@ -523,7 +524,7 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   SkBitmap bitmap;
   gfx::Size size = menu_item_view()->GetMirroredBounds().size();
@@ -564,7 +565,7 @@ TEST_F(MenuItemViewPaintUnitTest, CustomColorAssertionCoverage) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   SkBitmap bitmap;
   gfx::Size size = menu_item_view()->GetMirroredBounds().size();
@@ -584,7 +585,7 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   ImageView* submenu_arrow_image_view =
       TestMenuItemView::submenu_arrow_image_view(submenu_item);
@@ -611,7 +612,7 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   // Show both the root and nested menus.
   SubmenuView* submenu = submenu_item->GetSubmenu();
@@ -666,7 +667,7 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
   child_menu_item->SetSelected(true);
@@ -688,7 +689,7 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedDuringDragAndDrop) {
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   // Show both the root and nested menus.
   SubmenuView* submenu = submenu_item->GetSubmenu();
@@ -839,7 +840,7 @@ TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
       menu_item_view()->AppendSubMenu(1, u"Submenu");
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::MENU_SOURCE_KEYBOARD);
+                           ui::mojom::MenuSourceType::kKeyboard);
 
   // Pre-conditions: An expandable submenu item.
   ASSERT_TRUE(submenu_item_view->HasSubmenu());

@@ -19,6 +19,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -74,9 +75,10 @@ class TestContextMenuController : public ContextMenuController {
   ~TestContextMenuController() override = default;
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {}
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {}
 };
 
 class TestButton : public Button {
@@ -558,7 +560,7 @@ TEST_F(ButtonTest, HideInkDropWhenShowingContextMenu) {
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
 
-  button()->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button()->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_FALSE(ink_drop->is_hovered());
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
@@ -573,7 +575,7 @@ TEST_F(ButtonTest, DontHideInkDropWhenShowingContextMenu) {
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
 
-  button()->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button()->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_TRUE(ink_drop->is_hovered());
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
@@ -618,7 +620,7 @@ TEST_F(ButtonTest, InkDropAfterTryingToShowContextMenu) {
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
 
-  button()->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button()->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_TRUE(ink_drop->is_hovered());
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());

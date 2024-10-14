@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 namespace gfx {
 class Rect;
@@ -28,7 +28,7 @@ class VIEWS_EXPORT MenuRunnerHandler {
                          MenuButtonController* button_controller,
                          const gfx::Rect& bounds,
                          MenuAnchorPosition anchor,
-                         ui::MenuSourceType source_type,
+                         ui::mojom::MenuSourceType source_type,
                          int32_t types) = 0;
 };
 
