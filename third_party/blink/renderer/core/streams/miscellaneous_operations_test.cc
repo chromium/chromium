@@ -327,14 +327,13 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1ThrowingMethod) {
   ASSERT_TRUE(underlying_value.IsObject());
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
   v8::Local<v8::Value> arg0 = v8::Number::New(scope.GetIsolate(), 17);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
-  auto maybe_result =
-      CallOrNoop1(scope.GetScriptState(), underlying_object, "transform",
-                  "transformer.transform", arg0, exception_state);
-  ASSERT_TRUE(exception_state.HadException());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto maybe_result = CallOrNoop1(scope.GetScriptState(), underlying_object,
+                                  "transform", "transformer.transform", arg0,
+                                  PassThroughException(scope.GetIsolate()));
+  ASSERT_TRUE(try_catch.HasCaught());
   EXPECT_TRUE(maybe_result.IsEmpty());
-  EXPECT_TRUE(exception_state.GetException()->IsBoolean());
+  EXPECT_TRUE(try_catch.Exception()->IsBoolean());
 }
 
 v8::Local<v8::Promise> PromiseCallFromText(V8TestingScope* scope,
