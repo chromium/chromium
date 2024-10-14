@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -21,7 +23,7 @@ class ScannerDelegate;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
-class ASH_EXPORT ScannerController {
+class ASH_EXPORT ScannerController : public ScannerCommandDelegate {
  public:
   using FetchActionsCallback =
       base::OnceCallback<void(std::vector<ScannerActionViewModel> actions)>;
@@ -29,7 +31,7 @@ class ASH_EXPORT ScannerController {
   explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
-  ~ScannerController();
+  ~ScannerController() override;
 
   static bool IsEnabled();
 
@@ -52,6 +54,9 @@ class ASH_EXPORT ScannerController {
   // scanner session.
   void OnSessionUIClosed();
 
+  // ScannerCommandDelegate:
+  void OpenUrl(const GURL& url) override;
+
   bool HasActiveSessionForTesting() const;
 
   ScannerDelegate* delegate_for_testing() { return delegate_.get(); }
@@ -61,6 +66,8 @@ class ASH_EXPORT ScannerController {
 
   // May hold an active Scanner session, to allow access to the Scanner feature.
   std::unique_ptr<ScannerSession> scanner_session_;
+
+  base::WeakPtrFactory<ScannerController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

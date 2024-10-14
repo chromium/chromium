@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -17,13 +18,17 @@ struct VectorIcon;
 
 namespace ash {
 
+class ScannerCommandDelegate;
+
 // A view model wrapper around a `ScannerAction`, which handles the conversion
 // to a user-facing text string, icon, and a callback.
 class ASH_EXPORT ScannerActionViewModel {
  public:
   using ActionFinishedCallback = base::OnceCallback<void(bool success)>;
 
-  explicit ScannerActionViewModel(ScannerAction action);
+  explicit ScannerActionViewModel(
+      ScannerAction action,
+      base::WeakPtr<ScannerCommandDelegate> delegate);
   ScannerActionViewModel(const ScannerActionViewModel&);
   ScannerActionViewModel& operator=(const ScannerActionViewModel&);
   ~ScannerActionViewModel();
@@ -50,6 +55,7 @@ class ASH_EXPORT ScannerActionViewModel {
 
  private:
   ScannerAction action_;
+  base::WeakPtr<ScannerCommandDelegate> delegate_;
 };
 
 }  // namespace ash

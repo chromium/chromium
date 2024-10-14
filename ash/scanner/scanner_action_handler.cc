@@ -11,9 +11,11 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/scanner/scanner_command_delegate.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
 #include "url/gurl.h"
 
@@ -60,24 +62,35 @@ GURL GetContactUrl(const NewContactAction& contact) {
   return GetGoogleContactsNewUrl().ReplaceComponents(replacements);
 }
 
-void OpenInBrowserTab(const GURL& gurl) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      gurl, NewWindowDelegate::OpenUrlFrom::kUnspecified,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
+// Opens the supplied URL in a browser tab using the provided
+// `ScannerCommandDelegate`. Calls the callback depending on whether the
+// URL was opened or not (if the delegate was null).
+// Must be called on the same sequence that called `HandleScannerAction`.
+void OpenInBrowserTab(base::WeakPtr<ScannerCommandDelegate> delegate,
+                      const GURL& gurl,
+                      base::OnceCallback<void(bool)> callback) {
+  if (delegate == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+  delegate->OpenUrl(gurl);
+  std::move(callback).Run(true);
 }
 
 }  // namespace
 
-void HandleScannerAction(const ScannerAction& action,
+void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
+                         const ScannerAction& action,
                          base::OnceCallback<void(bool)> callback) {
   std::visit(base::Overloaded{
                  [&](const NewCalendarEventAction& action) {
-                   OpenInBrowserTab(GetCalendarEventUrl(action));
-                   std::move(callback).Run(true);
+                   OpenInBrowserTab(std::move(delegate),
+                                    GetCalendarEventUrl(action),
+                                    std::move(callback));
                  },
                  [&](const NewContactAction& action) {
-                   OpenInBrowserTab(GetContactUrl(action));
-                   std::move(callback).Run(true);
+                   OpenInBrowserTab(std::move(delegate), GetContactUrl(action),
+                                    std::move(callback));
                  },
              },
              action);

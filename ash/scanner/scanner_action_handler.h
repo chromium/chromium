@@ -10,13 +10,27 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
+
+class ScannerCommandDelegate;
 
 // Given a ScannerAction this method will apply the contained command to the
 // system. The callback passed will be invoked after the action has completed,
 // with a bool specifying if the command was completed successfully.
+//
+// Requires a `ScannerCommandDelegate` to perform the actions given. All calls
+// to `delegate`'s methods are guaranteed to be on the same sequence as the
+// sequence which called this function.
+//
+// As `delegate`'s methods may be called asynchronously from this function, this
+// function expects a weak pointer to it to ensure that use after free errors do
+// not occur. If at any point `delegate` is null when this function attempts to
+// call methods on `delegate`, `callback` will be called with a success value of
+// false.
 ASH_EXPORT void HandleScannerAction(
+    base::WeakPtr<ScannerCommandDelegate> delegate,
     const ScannerAction& action,
     base::OnceCallback<void(bool success)> callback);
 

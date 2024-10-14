@@ -4,13 +4,12 @@
 
 #include "ash/scanner/scanner_action_handler.h"
 
-#include <memory>
 #include <string>
 #include <string_view>
-#include <utility>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
-#include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/scanner/scanner_command_delegate.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,19 +22,16 @@ namespace {
 using ::testing::AllOf;
 using ::testing::Property;
 
-class TestUrlNewWindowDelegate : public TestNewWindowDelegate {
+class TestScannerCommandDelegate : public ScannerCommandDelegate {
  public:
-  GURL TakeLastOpenedUrl() { return last_opened_url_future_.Take(); }
+  MOCK_METHOD(void, OpenUrl, (const GURL& url), (override));
 
- private:
-  // TestNewWindowDelegate:
-  void OpenUrl(const GURL& url,
-               OpenUrlFrom from,
-               Disposition disposition) override {
-    last_opened_url_future_.SetValue(url);
+  base::WeakPtr<TestScannerCommandDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
   }
 
-  base::test::TestFuture<GURL> last_opened_url_future_;
+ private:
+  base::WeakPtrFactory<TestScannerCommandDelegate> weak_factory_{this};
 };
 
 constexpr std::string_view kGoogleCalendarHost = "calendar.google.com";
@@ -44,71 +40,100 @@ constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 constexpr std::string_view kGoogleContactsHost = "contacts.google.com";
 constexpr std::string_view kGoogleContactsNewPath = "/new";
 
-TEST(ScannerActionHandlerTest, NewCalendarEventWithNoFieldsOpensUrl) {
+TEST(ScannerActionHandlerTest, NewCalendarEventWithoutDelegateReturnsFalse) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  TestUrlNewWindowDelegate delegate;
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerAction(NewCalendarEventAction(/*title=*/""),
+  HandleScannerAction(nullptr, NewCalendarEventAction(/*title=*/""),
+                      done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest, NewCalendarEventWithNoFieldsOpensUrl) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      OpenUrl(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
+          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
+          Property("query_piece", &GURL::query_piece, "action=TEMPLATE"))))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(delegate.GetWeakPtr(),
+                      NewCalendarEventAction(/*title=*/""),
                       done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Get());
-  EXPECT_THAT(
-      delegate.TakeLastOpenedUrl(),
-      AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
-          Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece, "action=TEMPLATE")));
 }
 
 TEST(ScannerActionHandlerTest, NewCalendarEventWithTitleOpensUrl) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  TestUrlNewWindowDelegate delegate;
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(NewCalendarEventAction("Test title?"),
-                      done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
-  EXPECT_THAT(
-      delegate.TakeLastOpenedUrl(),
-      AllOf(
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      OpenUrl(AllOf(
           Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
           Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
           Property("query_piece", &GURL::query_piece,
-                   "action=TEMPLATE&text=Test+title%3F")));
+                   "action=TEMPLATE&text=Test+title%3F"))))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(delegate.GetWeakPtr(),
+                      NewCalendarEventAction("Test title?"),
+                      done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest, NewContactWithoutDelegateReturnsFalse) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(nullptr, NewContactAction(/*given_name=*/""),
+                      done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
 }
 
 TEST(ScannerActionHandlerTest, NewContactWithNoFieldsOpensUrl) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  TestUrlNewWindowDelegate delegate;
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      OpenUrl(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece, ""))))
+      .Times(1);
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerAction(NewContactAction(/*given_name=*/""),
+  HandleScannerAction(delegate.GetWeakPtr(),
+                      NewContactAction(/*given_name=*/""),
                       done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Get());
-  EXPECT_THAT(
-      delegate.TakeLastOpenedUrl(),
-      AllOf(Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-            Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-            Property("query_piece", &GURL::query_piece, "")));
 }
 
 TEST(ScannerActionHandlerTest, NewContactWithGivenNameOpensUrl) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  TestUrlNewWindowDelegate delegate;
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(NewContactAction("Léa"), done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
-  EXPECT_THAT(
-      delegate.TakeLastOpenedUrl(),
-      AllOf(
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      OpenUrl(AllOf(
           Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
           Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece, "given_name=L%C3%A9a")));
+          Property("query_piece", &GURL::query_piece, "given_name=L%C3%A9a"))))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(delegate.GetWeakPtr(), NewContactAction("Léa"),
+                      done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
 }
 
 }  // namespace

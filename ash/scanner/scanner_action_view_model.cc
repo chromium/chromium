@@ -10,13 +10,17 @@
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
+#include "ash/scanner/scanner_command_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
-ScannerActionViewModel::ScannerActionViewModel(ScannerAction action)
-    : action_(std::move(action)) {}
+ScannerActionViewModel::ScannerActionViewModel(
+    ScannerAction action,
+    base::WeakPtr<ScannerCommandDelegate> delegate)
+    : action_(std::move(action)), delegate_(std::move(delegate)) {}
 
 ScannerActionViewModel::ScannerActionViewModel(const ScannerActionViewModel&) =
     default;
@@ -39,7 +43,8 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
 base::OnceClosure ScannerActionViewModel::ToCallback(
     ScannerActionViewModel::ActionFinishedCallback
         action_finished_callback) && {
-  return base::BindOnce(&HandleScannerAction, std::move(action_),
+  return base::BindOnce(&HandleScannerAction, std::move(delegate_),
+                        std::move(action_),
                         std::move(action_finished_callback));
 }
 
