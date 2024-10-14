@@ -29,7 +29,6 @@ void FidoChromeOSDiscovery::set_require_power_button_mode(bool require) {
 }
 
 void FidoChromeOSDiscovery::Start() {
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery::Start()";
   DCHECK(!authenticator_);
   if (!observer()) {
     return;
@@ -41,8 +40,6 @@ void FidoChromeOSDiscovery::Start() {
 }
 
 void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery::OnU2FServiceAvailable()="
-                  << u2f_service_available;
   if (!u2f_service_available) {
     FIDO_LOG(DEBUG) << "Device does not support ChromeOSAuthenticator";
     observer()->DiscoveryStarted(this, /*success=*/false);
@@ -81,19 +78,15 @@ void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
 }
 
 void FidoChromeOSDiscovery::OnPowerButtonEnabled(bool enabled) {
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery::OnPowerButtonEnabled()="
-                  << enabled;
   power_button_enabled_ = enabled;
   OnRequestComplete();
 }
 void FidoChromeOSDiscovery::OnUvAvailable(bool available) {
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery::OnUvAvailable()=" << available;
   uv_available_ = available;
   OnRequestComplete();
 }
 
 void FidoChromeOSDiscovery::OnLacrosSupported(bool supported) {
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery::OnLacrosSupported()=" << supported;
   lacros_supported_ = supported;
   OnRequestComplete();
 }
@@ -106,7 +99,6 @@ void FidoChromeOSDiscovery::OnRequestComplete() {
 }
 
 void FidoChromeOSDiscovery::MaybeAddAuthenticator() {
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery::MaybeAddAuthenticator()";
   bool uv_available = uv_available_;
 
 // If u2fd doesn't support Lacros WebAuthn, user verification won't work.
@@ -121,7 +113,6 @@ void FidoChromeOSDiscovery::MaybeAddAuthenticator() {
   }
 
   if (!uv_available && !power_button_enabled_) {
-    FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery failed";
     observer()->DiscoveryStarted(this, /*success=*/false);
     return;
   }
@@ -131,7 +122,6 @@ void FidoChromeOSDiscovery::MaybeAddAuthenticator() {
           .uv_available = uv_available,
           .power_button_enabled = power_button_enabled_});
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
-  FIDO_LOG(DEBUG) << "FidoChromeOSDiscovery complete and added authenticator";
 }
 
 }  // namespace device

@@ -79,7 +79,6 @@ ChromeOSAuthenticator::AuthenticatorTransport() const {
 
 void ChromeOSAuthenticator::InitializeAuthenticator(
     base::OnceClosure callback) {
-  FIDO_LOG(DEBUG) << "ChromeOSAuthenticator::InitializeAuthenticator()";
   auto barrier = base::BarrierClosure(2, std::move(callback));
 
   u2f::GetAlgorithmsRequest request;
@@ -95,7 +94,6 @@ void ChromeOSAuthenticator::InitializeAuthenticator(
 void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
     base::OnceClosure callback,
     std::optional<u2f::GetAlgorithmsResponse> response) {
-  FIDO_LOG(DEBUG) << "ChromeOSAuthenticator::OnGetAlgorithmsResponse()";
   if (response && response->status() ==
                       u2f::GetAlgorithmsResponse_GetAlgorithmsStatus_SUCCESS) {
     supported_algorithms_ = std::vector<int32_t>();
@@ -115,8 +113,6 @@ void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
 void ChromeOSAuthenticator::OnIsPowerButtonModeEnabled(
     base::OnceClosure callback,
     bool enabled) {
-  FIDO_LOG(DEBUG) << "ChromeOSAuthenticator::OnIsPowerButtonModeEnabled()="
-                  << enabled;
   u2f_enabled_ = enabled;
   std::move(callback).Run();
 }
@@ -286,8 +282,6 @@ void ChromeOSAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
     GetPlatformCredentialInfoForRequestCallback callback) {
-  FIDO_LOG(DEBUG)
-      << "ChromeOSAuthenticator::GetPlatformCredentialInfoForRequest()";
   u2f::HasCredentialsRequest req;
   req.set_rp_id(request.rp_id);
   if (request.app_id) {
@@ -308,10 +302,6 @@ void ChromeOSAuthenticator::GetPlatformCredentialInfoForRequest(
 void ChromeOSAuthenticator::OnHasCredentialInformationForRequest(
     GetPlatformCredentialInfoForRequestCallback callback,
     std::optional<u2f::HasCredentialsResponse> response) {
-  FIDO_LOG(DEBUG)
-      << "ChromeOSAuthenticator::OnHasCredentialInformationForRequest() status="
-      << static_cast<int>(response->status())
-      << " size=" << response->credential_id().size();
   std::move(callback).Run(
       /*credentials=*/{},
       response &&
@@ -430,7 +420,6 @@ void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
       [](base::OnceCallback<void(bool is_uvpaa)> callback,
          bool is_u2f_service_available) {
         if (!is_u2f_service_available) {
-          FIDO_LOG(DEBUG) << "CrOS::IsUVPAA() !is_u2f_service_available";
           std::move(callback).Run(false);
           return;
         }
@@ -440,9 +429,8 @@ void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
             base::BindOnce(
                 [](base::OnceCallback<void(bool is_available)> callback,
                    std::optional<u2f::IsUvpaaResponse> response) {
-                  const bool is_uvpaa = response && !response->not_available();
-                  FIDO_LOG(DEBUG) << "CrOS::IsUVPAA()=" << is_uvpaa;
-                  std::move(callback).Run(is_uvpaa);
+                  std::move(callback).Run(response &&
+                                          !response->not_available());
                 },
                 std::move(callback)));
       },
@@ -456,9 +444,7 @@ void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
       base::BindOnce(
           [](base::OnceCallback<void(bool is_enabled)> callback,
              std::optional<u2f::IsU2fEnabledResponse> response) {
-            const bool enabled = response && response->enabled();
-            FIDO_LOG(DEBUG) << "CrOS::U2fEnabled()=" << enabled;
-            std::move(callback).Run(enabled);
+            std::move(callback).Run(response && response->enabled());
           },
           std::move(callback)));
 }

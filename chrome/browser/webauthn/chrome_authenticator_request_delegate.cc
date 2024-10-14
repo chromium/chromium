@@ -1525,16 +1525,12 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
 
 void ChromeAuthenticatorRequestDelegate::ShowUI(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
-  FIDO_LOG(DEBUG) << "ShowUI() tai=" << tai;
-
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       (can_use_synced_phone_passkeys_ ||
        (enclave_controller_ && enclave_controller_->is_active()))) {
     GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
   }
-  FIDO_LOG(DEBUG) << "with phone contactable tai=" << tai;
   FilterRecognizedCredentials(&tai);
-  FIDO_LOG(DEBUG) << "Post filter tai=" << tai;
 
   if (g_observer) {
     g_observer->OnTransportAvailabilityEnumerated(this, &tai);
@@ -1660,21 +1656,17 @@ void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
       tai->has_empty_allow_list &&
       base::ranges::any_of(tai->recognized_credentials,
                            IsCredentialFromPlatformAuthenticator)) {
-    const size_t pre_filter_size = tai->recognized_credentials.size();
     // Regrettably, Chrome will create webauthn credentials for things other
     // than authentication (e.g. credit card autofill auth) under the rp id
     // "google.com". To differentiate those credentials from actual passkeys you
     // can use to sign in, Google adds a prefix to the user id.
     // This code filter passkeys that do not match that prefix.
     FilterGoogleAuthPasskeys(&tai->recognized_credentials);
-    FIDO_LOG(DEBUG) << "Google auth cred filter before: " << pre_filter_size
-                    << ", after: " << tai->recognized_credentials.size();
     if (tai->has_platform_authenticator_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
                 kHasRecognizedCredential &&
         base::ranges::none_of(tai->recognized_credentials,
                               IsCredentialFromPlatformAuthenticator)) {
-      FIDO_LOG(DEBUG) << "(No platform creds remain after filtering)";
       tai->has_platform_authenticator_credential = device::
           FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }
@@ -1690,9 +1682,6 @@ void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
         }
       }
     }
-    FIDO_LOG(DEBUG) << "Allow list filter before: "
-                    << tai->recognized_credentials.size()
-                    << ", after: " << filtered_list.size();
     tai->recognized_credentials = std::move(filtered_list);
   }
 }

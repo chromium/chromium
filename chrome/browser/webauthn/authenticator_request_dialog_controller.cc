@@ -572,9 +572,6 @@ void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
 
 void AuthenticatorRequestDialogController::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
-  FIDO_LOG(DEBUG) << "Starting UI flow for most likely mechanism. tai="
-                  << transport_availability_ << ", prio_mech="
-                  << model_->priority_mechanism_index.value_or(999);
   const bool enclave_will_do_uv = GpmWillDoUserVerification(
       transport_availability_.user_verification_requirement,
       transport_availability_.platform_has_biometrics);
@@ -1968,22 +1965,7 @@ void AuthenticatorRequestDialogController::SortRecognizedCredentials() {
                             std::ref(user_name_comparator));
 }
 
-namespace {
-
-std::string TransportsToString(
-    const base::flat_set<device::FidoTransportProtocol>& transports) {
-  std::vector<std::string> strings;
-  base::ranges::transform(transports, std::back_inserter(strings), [](auto t) {
-    return base::NumberToString(static_cast<int>(t));
-  });
-  return base::JoinString(strings, ",");
-}
-
-}  // namespace
-
 void AuthenticatorRequestDialogController::PopulateMechanisms() {
-  FIDO_LOG(DEBUG) << "PopulateMechanisms() transport_availability_="
-                  << transport_availability_;
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
   SetPriorityPhoneIndex(GetIndexOfMostRecentlyUsedPhoneFromSync());
@@ -2054,8 +2036,6 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         break;
     }
   }
-  FIDO_LOG(DEBUG) << "did_enumerate_local_passkeys="
-                  << did_enumerate_local_passkeys;
   if (!did_enumerate_local_passkeys &&
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal)) {
@@ -2216,20 +2196,12 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         AuthenticatorTransport::kUsbHumanInterfaceDevice);
   }
 
-  FIDO_LOG(DEBUG) << "transports_to_list_if_active="
-                  << TransportsToString(transports_to_list_if_active)
-                  << " available_transport="
-                  << TransportsToString(
-                         transport_availability_.available_transports);
   for (const auto transport : transports_to_list_if_active) {
     if (!base::Contains(transport_availability_.available_transports,
                         transport)) {
       continue;
     }
 
-    FIDO_LOG(DEBUG) << "Adding mechanism: "
-                    << GetTransportDescription(transport) << "("
-                    << static_cast<int>(transport) << ")";
     model_->mechanisms.emplace_back(
         Mechanism::Transport(transport), GetTransportDescription(transport),
         GetTransportShortDescription(transport), GetTransportIcon(transport),
