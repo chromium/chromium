@@ -13,6 +13,13 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "I47f011c59d7a238e738c18bf5b5d7e9c15676ee2",
+      "bugs": [
+        "b/373373506"
+      ],
+      "comment": "Global state mutation through a local (allow_server_migration) which can cause undefined behavior."
+    },
+    {
       "bad_change_id": "Id3987d4c3662d674fab99cc92e40efdd859015d2",
       "good_change_id": "I722bc4085cf789b85d05b962f7e8d5a984f30653",
       "bugs": ["b/361725824"],
