@@ -8,7 +8,7 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js'
 
 import {CrRadioButtonMixin} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import type {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './multidevice_radio_button.html.js';

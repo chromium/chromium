@@ -18,9 +18,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from './multidevice_constants.js';
-import {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.js';
+import type {MultiDeviceBrowserProxy} from './multidevice_browser_proxy.js';
+import {MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import type {MultiDevicePageContentData} from './multidevice_constants.js';
+import {MultiDeviceFeature, MultiDeviceSettingsMode} from './multidevice_constants.js';
+import type {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.js';
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_smartlock_item.html.js';
 
