@@ -116,7 +116,6 @@ source_set("protocols") {
 
 source_set("constants") {
   sources = [
-    "accounts_table_view_controller_constants.h",
     "manage_accounts_table_view_controller_constants.h",
     "manage_accounts_table_view_controller_constants.mm",
   ]
