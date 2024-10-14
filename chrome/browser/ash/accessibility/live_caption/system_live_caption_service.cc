@@ -35,7 +35,8 @@ static constexpr base::TimeDelta kStopDelay = base::Seconds(5);
 
 namespace ash {
 
-SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
+SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile,
+                                                   AudioSource source)
     : profile_(profile),
       controller_(
           ::captions::LiveCaptionControllerFactory::GetForProfile(profile)),
@@ -43,16 +44,19 @@ SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
       // caption bubble that uses this callback.
       context_(
           base::BindRepeating(&SystemLiveCaptionService::OpenCaptionSettings,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      source_(source) {
   DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
   // The controller handles all SODA installation / languages etc. for us. We
   // just subscribe to the interface that informs us when we're ready to go.
-  SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
-      ->BindSpeechRecognitionBrowserObserver(
-          browser_observer_receiver_.BindNewPipeAndPassRemote());
-  source_language_ =
-      profile_->GetPrefs()->GetString(prefs::kLiveCaptionLanguageCode);
-  CrasAudioHandler::Get()->AddAudioObserver(this);
+  BindToBrowserInterface();
+  source_language_ = GetPrimaryLanguageCode();
+
+  // Ignore these events when listening to mic audio.  When the session
+  // begins OnNonChromeOutputStarted gets called automatically.
+  if (source_ == AudioSource::kLoopback) {
+    CrasAudioHandler::Get()->AddAudioObserver(this);
+  }
 }
 
 SystemLiveCaptionService::~SystemLiveCaptionService() {
@@ -169,7 +173,6 @@ void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
       base::RepeatingClosure(),
       base::BindRepeating(
           [](::captions::CaptionBubbleErrorType error_type, bool checked) {}));
-
   StopRecognizing();
   client_.reset();
 }
@@ -287,15 +290,23 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
 }
 
 void SystemLiveCaptionService::CreateClient() {
+  std::string device_desc;
+  switch (source_) {
+    case AudioSource::kLoopback:
+      device_desc = media::AudioDeviceDescription::kLoopbackWithoutChromeId;
+      break;
+    case AudioSource::kUserMicrophone:
+      device_desc = media::AudioDeviceDescription::kDefaultDeviceId;
+      break;
+  }
+
   // We must reset to detach everything first, and then reattach.
   client_.reset();
   client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
-      weak_ptr_factory_.GetWeakPtr(), profile_,
-      media::AudioDeviceDescription::kLoopbackWithoutChromeId,
+      weak_ptr_factory_.GetWeakPtr(), profile_, device_desc,
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true,
-          prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
+          /*enable_formatting=*/true, GetPrimaryLanguageCode(),
           /*is_server_based=*/false,
           media::mojom::RecognizerClientType::kLiveCaption,
           /*skip_continuously_empty_audio=*/true));
@@ -341,6 +352,30 @@ void SystemLiveCaptionService::OnTranslationCallback(
   }
 }
 
+void SystemLiveCaptionService::BindToBrowserInterface() {
+  switch (source_) {
+    case AudioSource::kLoopback:
+      SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
+          ->BindSpeechRecognitionBrowserObserver(
+              browser_observer_receiver_.BindNewPipeAndPassRemote());
+      break;
+    case AudioSource::kUserMicrophone:
+      SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
+          ->BindBabelOrcaSpeechRecognitionBrowserObserver(
+              browser_observer_receiver_.BindNewPipeAndPassRemote());
+      break;
+  }
+}
+
+std::string SystemLiveCaptionService::GetPrimaryLanguageCode() const {
+  switch (source_) {
+    case AudioSource::kLoopback:
+      return prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
+    case AudioSource::kUserMicrophone:
+      return prefs::GetUserMicrophoneCaptionLanguage(profile_->GetPrefs());
+  }
+}
+
 void SystemLiveCaptionService::OpenCaptionSettings() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kAudioAndCaptionsSubpagePath);
@@ -349,6 +384,14 @@ void SystemLiveCaptionService::OpenCaptionSettings() {
 uint32_t SystemLiveCaptionService::GetNumberOfNonChromeOutputStreams() {
   if (num_output_streams_for_testing_.has_value()) {
     return num_output_streams_for_testing_.value();
+  }
+
+  // If we're listening to non loopback source then we always have to assume
+  // there is some sort of interesting audio.  Babel Orca which utilizes
+  // the microphone audio and therefore triggers this condition notifies
+  // users of the impact it will have on their battery and cpu.
+  if (source_ != AudioSource::kLoopback) {
+    return 1;
   }
 
   return CrasAudioHandler::Get()->NumberOfNonChromeOutputStreams();

@@ -56,7 +56,14 @@ class SystemLiveCaptionService
       public media::mojom::SpeechRecognitionBrowserObserver,
       public CrasAudioHandler::AudioObserver {
  public:
-  explicit SystemLiveCaptionService(Profile* profile);
+  enum class AudioSource {
+    kLoopback,
+    kUserMicrophone,
+  };
+
+  explicit SystemLiveCaptionService(
+      Profile* profile,
+      AudioSource source = AudioSource::kLoopback);
   ~SystemLiveCaptionService() override;
 
   SystemLiveCaptionService(const SystemLiveCaptionService&) = delete;
@@ -108,6 +115,12 @@ class SystemLiveCaptionService
                              const std::string& target_language,
                              bool is_final,
                              const std::string& result);
+
+  // Binds to the correct observer list based on `source_`
+  void BindToBrowserInterface();
+  // Gets language code based on the preference this keyed_service
+  // is listening to.
+  std::string GetPrimaryLanguageCode() const;
   // The source language code of the audio stream.
   std::string source_language_;
   SpeechRecognizerStatus current_recognizer_status_ =
@@ -136,6 +149,9 @@ class SystemLiveCaptionService
   ash::captions::CaptionBubbleContextAsh context_;
 
   std::unique_ptr<SpeechRecognitionRecognizerClientImpl> client_;
+
+  // Which audio source this service is listening to.
+  const AudioSource source_;
 
   // The number of characters sent to the translation service.
   int characters_translated_ = 0;

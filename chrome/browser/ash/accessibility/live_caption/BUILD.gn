@@ -12,6 +12,8 @@ static_library("live_caption") {
     "system_live_caption_service.h",
     "system_live_caption_service_factory.cc",
     "system_live_caption_service_factory.h",
+    "user_microphone_caption_service_factory.cc",
+    "user_microphone_caption_service_factory.h",
   ]
 
   deps = [
