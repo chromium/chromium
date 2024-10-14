@@ -18449,21 +18449,6 @@
             ]
         }
     ],
-    "ProcessBoundStringEncryption": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProcessBoundStringEncryption"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProcessHtmlDataImmediately": [
         {
             "platforms": [
