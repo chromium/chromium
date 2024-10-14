@@ -453,6 +453,15 @@ export class TranscriptionView extends ReactiveLitElement {
           startTimeRange === null ? '?' : formatDuration({
             milliseconds: startTimeRange.startMs,
           });
+        const startTimeDisplayLabel = startTimeRange === null ?
+          '?' :
+          formatDuration(
+            {
+              milliseconds: startTimeRange.startMs,
+            },
+            /* digits= */ 0,
+            /* fullDigitalFormat= */ true,
+          );
         // TODO(pihsun): Check if there's any case that timestamp will be
         // missing.
         // TODO(pihsun): Handle keyboard event / a11y on the timestamp.
@@ -466,6 +475,7 @@ export class TranscriptionView extends ReactiveLitElement {
               tabindex=${this.seekable ? 0 : -1}
               data-start-ms=${ifDefined(startTimeRange?.startMs)}
               role="button"
+              aria-label=${startTimeDisplayLabel}
             >
               ${startTimeDisplay}
               ${this.seekable ? html`<md-focus-ring></md-focus-ring>` : nothing}

@@ -14,6 +14,7 @@ import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
 import '../components/transcription-view.js';
 import '../components/transcription-consent-dialog.js';
+import '../components/time-duration.js';
 
 import {
   classMap,
@@ -56,7 +57,6 @@ import {
   assertInstanceof,
 } from '../core/utils/assert.js';
 import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
-import {formatDuration} from '../core/utils/datetime.js';
 
 function getDefaultTitle(): string {
   // The default title is always in English and not translated, since it's also
@@ -760,17 +760,16 @@ export class RecordPage extends ReactiveLitElement {
     if (this.recordingSession.value === null) {
       return nothing;
     }
-
-    const recordingLength = formatDuration(
-      {
-        seconds: this.recordingSession.value.progress.value.length,
-      },
-      1,
-    );
+    const recordingDuration = {
+      seconds: this.recordingSession.value.progress.value.length,
+    };
     return html`<svg viewbox="0 0 12 12">
         <circle cx="6" cy="6" r="6" fill="currentColor" />
       </svg>
-      <span>${recordingLength}</span>`;
+      <time-duration
+        digits=1
+        .duration=${recordingDuration}
+      ></time-duration>`;
   }
 
   private renderStopRecordButton() {

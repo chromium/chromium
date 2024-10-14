@@ -20,7 +20,11 @@ function padZero(num: number): string {
 /**
  * A Intl.DurationFormat style API to convert duration into digital format.
  */
-export function formatDuration(duration: Duration, digits = 0): string {
+export function formatDuration(
+  duration: Duration,
+  digits = 0,
+  fullDigitalFormat = false,
+): string {
   // TODO(shik): Add unit test.
   // TODO(shik): Use Intl.DurationFormat when Chrome supports it.
   let secs = (duration.seconds ?? 0) + (duration.milliseconds ?? 0) / 1000;
@@ -32,11 +36,14 @@ export function formatDuration(duration: Duration, digits = 0): string {
   const hours = Math.floor(mins / 60);
   mins %= 60;
 
+  // Always include millisecond digit in full format.
+  digits = digits === 0 && fullDigitalFormat ? 1 : digits;
+
   // There's no '.' in `secsStr` when digits === 0.
   const secsStr =
     secs.toFixed(digits).padStart(digits === 0 ? 2 : 3 + digits, '0');
 
-  if (hours > 0) {
+  if (hours > 0 || fullDigitalFormat) {
     return `${hours}:${padZero(mins)}:${secsStr}`;
   } else {
     return `${padZero(mins)}:${secsStr}`;

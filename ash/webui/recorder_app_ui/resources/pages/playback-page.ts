@@ -19,6 +19,7 @@ import '../components/secondary-button.js';
 import '../components/spoken-message.js';
 import '../components/summarization-view.js';
 import '../components/transcription-view.js';
+import '../components/time-duration.js';
 
 import {
   Slider as CrosSlider,
@@ -61,7 +62,9 @@ import {
   assertInstanceof,
 } from '../core/utils/assert.js';
 import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
-import {formatDuration} from '../core/utils/datetime.js';
+import {
+  formatDuration,
+} from '../core/utils/datetime.js';
 import {InteriorMutableArray} from '../core/utils/interior_mutable_array.js';
 import {sleep} from '../core/utils/utils.js';
 
@@ -197,7 +200,7 @@ export class PlaybackPage extends ReactiveLitElement {
       flex-flow: column;
       justify-content: center;
 
-      & > div {
+      & > time-duration {
         color: var(--cros-sys-on_surface_variant);
         font: 440 24px/32px var(--monospace-font-family);
         letter-spacing: 0.03em;
@@ -493,14 +496,12 @@ export class PlaybackPage extends ReactiveLitElement {
       return nothing;
     }
     const currentTime = this.audioPlayer.currentTime.value;
-    const currentTimeString = formatDuration(
-      {
-        seconds: currentTime,
-      },
-      1,
-    );
+    const duration = {seconds: currentTime};
     return html`
-      <div>${currentTimeString}</div>
+      <time-duration
+        digits=1
+        .duration=${duration}
+      ></time-duration>
       <audio-waveform
         .values=${new InteriorMutableArray(this.powers.value)}
         .currentTime=${currentTime}
@@ -693,7 +694,7 @@ export class PlaybackPage extends ReactiveLitElement {
     }
 
     return html`<spoken-message aria-live="polite" role="status">
-      ${formatDuration({seconds: spokenTime}, 1)}
+      ${formatDuration({seconds: spokenTime}, 1, true)}
     </spoken-message>`;
   }
 
@@ -702,13 +703,12 @@ export class PlaybackPage extends ReactiveLitElement {
       return nothing;
     }
     const currentTime = this.audioPlayer.currentTime.value;
-
-    const currentTimeString = formatDuration({
-      seconds: currentTime,
-    });
-    const totalTimeString = formatDuration({
+    const currentTimeStringLabel =
+      formatDuration({seconds: currentTime}, 0, true);
+    const currentDuration = {seconds: currentTime};
+    const totalDuration = {
       milliseconds: this.recordingMetadata.value.durationMs,
-    });
+    };
 
     // TODO(pihsun): The "step" variable controls both the smallest unit of the
     // slider, and what left/right key would step backward/forward, but we
@@ -721,11 +721,16 @@ export class PlaybackPage extends ReactiveLitElement {
         step="0.1"
         .value=${currentTime}
         @input=${this.onTimelineInput}
+        aria-valuetext=${currentTimeStringLabel}
         aria-label=${i18n.playbackSeekSliderAriaLabel}
       ></cros-slider>
       <div>
-        <span>${currentTimeString}</span>
-        <span>${totalTimeString}</span>
+        <time-duration
+          .duration=${currentDuration}
+        ></time-duration>
+        <time-duration
+          .duration=${totalDuration}
+        ></time-duration>
       </div>
       ${this.renderTimeSpokenStatus()}
     </div>`;

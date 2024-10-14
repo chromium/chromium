@@ -5,6 +5,7 @@
 import 'chrome://resources/cros_components/card/card.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './time-duration.js';
 
 import {Card} from 'chrome://resources/cros_components/card/card.js';
 import {
@@ -30,7 +31,6 @@ import {
 import {assertExhaustive, assertExists} from '../core/utils/assert.js';
 import {
   formatDate,
-  formatDuration,
   formatTime,
 } from '../core/utils/datetime.js';
 import {stopPropagation} from '../core/utils/event_handler.js';
@@ -383,12 +383,10 @@ export class RecordingFileListItem extends ReactiveLitElement {
   }
 
   private renderRecordingTimeline(recording: RecordingMetadata) {
-    const recordingDurationDisplay = formatDuration({
-      milliseconds: recording.durationMs,
-    });
     // Transcription off colors are compatible with colors when there's a single
     // speaker.
     const numSpeakerClass = getNumSpeakerClass(recording.numSpeakers ?? 1);
+    const recordingDuration = {milliseconds: recording.durationMs};
     return [
       html`<div id="timeline" class=${numSpeakerClass}>
         ${this.renderRecordingTimelineColors(recording)}
@@ -399,7 +397,9 @@ export class RecordingFileListItem extends ReactiveLitElement {
           •
           ${formatTime(this.platformHandler.getLocale(), recording.recordedAt)}
         </span>
-        <span>${recordingDurationDisplay}</span>
+        <time-duration
+          .duration=${recordingDuration}
+        ></time-duration>
       </div>`,
     ];
   }

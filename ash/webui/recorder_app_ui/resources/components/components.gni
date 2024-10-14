@@ -41,6 +41,7 @@ component_files = [
   "summarization-view.ts",
   "summary-consent-card.ts",
   "system-audio-consent-dialog.ts",
+  "time-duration.ts",
   "transcription-consent-dialog.ts",
   "transcription-view.ts",
 ]
