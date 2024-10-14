@@ -10,6 +10,10 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
+:host {
+  --collapse-transition-duration: 300ms;
+}
+
 .data-section {
   background-color: var(--color-batch-upload-data-background);
   border-radius: 10px;
@@ -80,5 +84,5 @@
 }
 
 cr-collapse {
-  --iron-collapse-transition-duration: 300ms;
+  --iron-collapse-transition-duration: var(--collapse-transition-duration);
 }

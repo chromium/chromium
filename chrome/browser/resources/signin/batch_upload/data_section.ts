@@ -86,7 +86,7 @@ export class DataSectionElement extends CrLitElement {
   // Animation variables used to update the main view height based on the
   // collapse animation duration. Initialized to 0 and gets their values in
   // `firstUpdated()` which are not expected to be modified later.
-  private intervalDurationOfUpdateHeightRequests_: number = 0;
+  private intervalDurationOfUpdateHeightRequests_: number|null = null;
   private collapseAnimationDuration_: number = 0;
 
   override connectedCallback() {
@@ -97,8 +97,9 @@ export class DataSectionElement extends CrLitElement {
 
   override firstUpdated() {
     // Compute the animation duration/intervals once on startup.
-    this.collapseAnimationDuration_ = parseInt(
-        this.style.getPropertyValue('--iron-collapse-transition-duration'));
+    this.collapseAnimationDuration_ =
+        parseInt(getComputedStyle(this).getPropertyValue(
+            '--collapse-transition-duration'));
     this.intervalDurationOfUpdateHeightRequests_ =
         this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
   }
@@ -110,10 +111,14 @@ export class DataSectionElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedPrivateProperties.has('expanded_')) {
+    // Make sure not to trigger updates before
+    // `intervalDurationOfUpdateHeightRequests_` is initialized. `willUpdate`
+    // may be called before `firstUpdated`.
+    if (changedPrivateProperties.has('expanded_') &&
+        this.intervalDurationOfUpdateHeightRequests_) {
       setTimeout(() => {
         this.updateViewHeightInterval_(
-            this.intervalDurationOfUpdateHeightRequests_);
+            this.intervalDurationOfUpdateHeightRequests_!);
       }, this.intervalDurationOfUpdateHeightRequests_);
     }
 
@@ -176,8 +181,8 @@ export class DataSectionElement extends CrLitElement {
     // Trigger next update interval with the updated elapsed time.
     setTimeout(() => {
       this.updateViewHeightInterval_(
-          timeElapsed + this.intervalDurationOfUpdateHeightRequests_);
-    }, this.intervalDurationOfUpdateHeightRequests_);
+          timeElapsed + this.intervalDurationOfUpdateHeightRequests_!);
+    }, this.intervalDurationOfUpdateHeightRequests_!);
   }
 
   // Needs to react to both property change (through a reset) and user action.

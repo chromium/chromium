@@ -154,11 +154,12 @@ void BatchUploadDialogView::OnDialogSelectionMade(
 }
 
 void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
+  views::Widget* widget = GetWidget();
   // This might happen if an update was requested after a close event happens
   // externally such as signing out or signin pending that triggers the closing
   // of the widget. The widget does not get destroyed right away but is in
   // closing mode.
-  if (GetWidget()->IsClosed()) {
+  if (widget->IsClosed()) {
     return;
   }
 
@@ -166,13 +167,19 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
   web_view_->SetPreferredSize(
       gfx::Size(kBatchUploadDialogFixedWidth,
                 std::min(height, kBatchUploadDialogMaxHeight)));
-  GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
-  GetWidget()->Show();
+  widget->SetSize(widget->non_client_view()->GetPreferredSize());
 
-  // Enforce the web view round corners to match the native view. Since we set
-  // the view margin to 0 in the constructor, it leads to the webview
-  // overlapping on the native view in the corners.
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+  // `SetHeightAndShowWidget()` may be called multiple times, only show the view
+  // and set the static values once.
+  if (!widget->IsVisible()) {
+    // Enforce the web view round corners to match the native view. Since we set
+    // the view margin to 0 in the constructor, it leads to the webview
+    // overlapping on the native view in the corners.
+    web_view_->holder()->SetCornerRadii(
+        gfx::RoundedCornersF(GetCornerRadius()));
+
+    widget->Show();
+  }
 }
 
 void BatchUploadDialogView::OnPrimaryAccountChanged(
