@@ -15,13 +15,19 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/widget_test.h"
 
 namespace {
 
@@ -64,6 +70,24 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
  private:
   bool has_local_data_ = false;
 };
+
+// Unable to use `content::SimulateKeyPress()` helper function since it sets
+// `event.skip_if_unhandled` to true which stops the propagation of the event to
+// the delegate web view.
+void SimulateEscapeKeyPress(content::WebContents* web_content) {
+  // Create the escape key press event.
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  event.dom_key = ui::DomKey::ESCAPE;
+  event.dom_code = static_cast<int>(ui::DomCode::ESCAPE);
+
+  // Send the event to the Web Contents.
+  web_content->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
+}
 
 }  // namespace
 
@@ -155,6 +179,25 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
     ASSERT_TRUE(widget);
     widget->Close();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
+                       OpenBatchUploadDialogViewDismiss) {
+  SigninWithFullInfo();
+
+  base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
+  BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
+  fake_provider.SetHasLocalData(true);
+  std::vector<BatchUploadDataContainer> containers;
+  containers.push_back(fake_provider.GetLocalData());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->profile(), std::move(containers), mock_callback.Get());
+
+  // Pressing the escape key should dismiss the dialog and return empty result.
+  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_view->GetWidget());
+  SimulateEscapeKeyPress(dialog_view->GetWebViewForTesting()->GetWebContents());
+  destroyed_waiter.Wait();
 }
 
 // Fails on Mac only.  http://crbug.com/372194892

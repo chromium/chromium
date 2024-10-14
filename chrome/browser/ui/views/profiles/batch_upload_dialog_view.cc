@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -94,6 +95,8 @@ BatchUploadDialogView::BatchUploadDialogView(
       std::make_unique<views::WebView>(profile);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIBatchUploadURL));
   web_view_ = web_view.get();
+  web_view_->GetWebContents()->SetDelegate(this);
+  SetInitiallyFocusedView(web_view_);
   // Set initial height to max height in order not to have an empty window.
   web_view_->SetPreferredSize(
       gfx::Size(kBatchUploadDialogFixedWidth, kBatchUploadDialogMaxHeight));
@@ -105,7 +108,6 @@ BatchUploadDialogView::BatchUploadDialogView(
 
   BatchUploadUI* web_ui = GetBatchUploadUI(web_view_);
   CHECK(web_ui);
-
   // Initializes the UI that will initialize the handler when ready.
   web_ui->Initialize(
       primary_account_info_, std::move(data_containers_list),
@@ -142,15 +144,8 @@ void BatchUploadDialogView::OnDialogSelectionMade(
     const base::flat_map<BatchUploadDataType,
                          std::vector<BatchUploadDataItemModel::DataId>>&
         selected_map) {
-  // Take ownership of the callback, as closing the widget will attempt to
-  // execute it with an empty map.
-  SelectedDataTypeItemsCallback complete_callback(
-      std::move(complete_callback_));
-  // The widget should be closed before running the callback as the ui and
-  // handler contain data that will be destroyed when `complete_callback`
-  // executes.
+  std::move(complete_callback_).Run(selected_map);
   GetWidget()->Close();
-  std::move(complete_callback).Run(selected_map);
 }
 
 void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
@@ -201,6 +196,24 @@ void BatchUploadDialogView::OnErrorStateOfRefreshTokenUpdatedForAccount(
   if (account_info == primary_account_info_ && error.IsPersistentError()) {
     GetWidget()->Close();
   }
+}
+
+bool BatchUploadDialogView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  // TODO(crbug.com/373297250): Look into using
+  // `views::UnhandledKeyboardEventHandler` to properly handle all
+  // shortcut/unhandled keyboard events.
+  if (event.dom_key == ui::DomKey::ESCAPE) {
+    GetWidget()->Close();
+    return true;
+  }
+
+  return false;
+}
+
+views::WebView* BatchUploadDialogView::GetWebViewForTesting() {
+  return web_view_;
 }
 
 // BatchUploadUIDelegate -------------------------------------------------------

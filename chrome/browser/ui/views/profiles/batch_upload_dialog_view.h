@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -24,6 +25,7 @@ class WebView;
 // It needs to adapt the height size based on the web ui content that is
 // displayed, which is dynamic.
 class BatchUploadDialogView : public views::DialogDelegateView,
+                              public content::WebContentsDelegate,
                               public signin::IdentityManager::Observer {
   METADATA_HEADER(BatchUploadDialogView, views::DialogDelegateView)
 
@@ -38,6 +40,8 @@ class BatchUploadDialogView : public views::DialogDelegateView,
       Browser& browser,
       std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback);
+
+  views::WebView* GetWebViewForTesting();
 
  private:
   friend class BatchUploadDialogViewBrowserTest;
@@ -67,6 +71,10 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // to clear any data until the view is actually closed, given that closing the
   // view fully is asynchronous.
   void OnClose();
+
+  // content::WebContentsDelegate:
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
