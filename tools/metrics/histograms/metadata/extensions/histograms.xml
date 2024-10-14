@@ -43,6 +43,14 @@ chromium-metrics-reviews@google.com.
   <variant name="DeveloperModeOn" summary="developer mode on"/>
 </variants>
 
+<variants name="ExtensionBackgroundType">
+  <variant name="EventPage" summary="event page"/>
+  <variant name="None" summary="no background page"/>
+  <variant name="PersistentBackgroundPage"
+      summary="persistent background page"/>
+  <variant name="ServiceWorker" summary="service worker"/>
+</variants>
+
 <variants name="ExtensionFunctionExecutionTime">
   <variant name=".1msTo5ms"
       summary="Execution took between 1ms and 5ms (tolerable)."/>
@@ -3916,6 +3924,62 @@ This is emitted for two scenarios when a worker may be unregistered:
     extensions installed).
   </summary>
   <token key="ManifestLocation" variants="ManifestLocationGroupWithCombos"/>
+</histogram>
+
+<histogram
+    name="Extensions.MessagePipeline.MessageCompleted.{ExtensionBackgroundType}"
+    enum="Boolean" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the overall success/failure of messages as they progress through the
+    messaging process to background page destination type
+    {ExtensionBackgroundType}.
+
+    It is emitted either:
+
+    *) when a message has progressed through entire expected process
+    successfully (true)
+
+    *) when a message has stayed in a given stage for ~30 seconds (false) and is
+    now considered &quot;stale&quot;
+  </summary>
+  <token key="ExtensionBackgroundType" variants="ExtensionBackgroundType"/>
+</histogram>
+
+<histogram
+    name="Extensions.MessagePipeline.MessageCompletedTime.{ExtensionBackgroundType}"
+    units="microseconds" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks how long it took for an extension message to successfully complete
+    the messaging process to background page destination type
+    {ExtensionBackgroundType}.
+
+    It is emitted when
+    Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
+    is true.
+
+    This is only emitted for users with high resolution clocks.
+  </summary>
+  <token key="ExtensionBackgroundType" variants="ExtensionBackgroundType"/>
+</histogram>
+
+<histogram
+    name="Extensions.MessagePipeline.MessageStaleAtStage.{ExtensionBackgroundType}"
+    enum="MessageDeliveryStage" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the stage where the an extension message to the background context
+    became stale to background page destination type {ExtensionBackgroundType}.
+
+    It is emitted when
+    Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
+    is false.
+  </summary>
+  <token key="ExtensionBackgroundType" variants="ExtensionBackgroundType"/>
 </histogram>
 
 <histogram
