@@ -37,6 +37,7 @@
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
@@ -1515,8 +1516,7 @@ void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
   // TODO(crbug.com/369871205): Also check other restrictions (e.g. user hasn't
   // seen other mobile promos recently, user hasn't seen this module too many
   // times, user hasn't dismissed this promo).
-  if (sync_service_ && sync_service_->IsSyncFeatureActive() &&
-      sync_service_->GetActiveDataTypes().Has(syncer::PREFERENCES)) {
+  if (promos_utils::ShouldShowIOSDesktopNtpPromo(profile_, sync_service_)) {
     auto input_context =
         base::MakeRefCounted<segmentation_platform::InputContext>();
     input_context->metadata_args.emplace(
@@ -1549,4 +1549,18 @@ void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
   }
 
   std::move(callback).Run("");
+}
+
+void NewTabPageHandler::OnMobilePromoShown() {
+  promos_utils::IOSDesktopNtpPromoShown(profile_->GetPrefs());
+}
+
+void NewTabPageHandler::OnDismissMobilePromo() {
+  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
+                                   true);
+}
+
+void NewTabPageHandler::OnUndoDismissMobilePromo() {
+  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
+                                   false);
 }

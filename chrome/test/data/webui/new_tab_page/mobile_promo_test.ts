@@ -86,6 +86,7 @@ suite('MobilePromoTest', () => {
 
     assertFalse(isVisible(mobilePromo.$.promoContainer));
     assertTrue(mobilePromo.$.dismissPromoButtonToast.open);
+    assertEquals(1, newTabPageHandler.getCallCount('onDismissMobilePromo'));
   });
 
   test('mobile promo dismissed can undo', async () => {
@@ -105,6 +106,7 @@ suite('MobilePromoTest', () => {
 
     assertFalse(isVisible(mobilePromo.$.promoContainer));
     assertTrue(mobilePromo.$.dismissPromoButtonToast.open);
+    assertEquals(1, newTabPageHandler.getCallCount('onDismissMobilePromo'));
 
     mobilePromo.$.undoDismissPromoButton.click();
 
@@ -112,5 +114,6 @@ suite('MobilePromoTest', () => {
 
     assertTrue(isVisible(mobilePromo.$.promoContainer));
     assertFalse(mobilePromo.$.dismissPromoButtonToast.open);
+    assertEquals(1, newTabPageHandler.getCallCount('onUndoDismissMobilePromo'));
   });
 });

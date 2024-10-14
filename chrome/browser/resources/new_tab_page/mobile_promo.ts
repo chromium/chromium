@@ -55,15 +55,15 @@ export class MobilePromoElement extends CrLitElement {
   }
 
   protected onDismissButtonClick_() {
+    NewTabPageProxy.getInstance().handler.onDismissMobilePromo();
     this.$.promoContainer.hidden = true;
     this.$.dismissPromoButtonToast.show();
-    // TODO(crbub.com/372306118): Handle dismiss in C++.
   }
 
   protected onUndoDismissPromoButtonClick_() {
+    NewTabPageProxy.getInstance().handler.onUndoDismissMobilePromo();
     this.$.promoContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
-    // TODO(crbub.com/372306118): Handle dismiss in C++.
   }
 }
 

@@ -25,6 +25,7 @@
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
+#include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -1255,6 +1256,28 @@ TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode_EmptyWhenNoSync) {
   run_loop.Run();
 
   EXPECT_EQ("", encodedQrCode);
+}
+
+TEST_F(NewTabPageHandlerTest, OnDismissMobilePromo) {
+  handler_->OnDismissMobilePromo();
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
+      promos_prefs::kDesktopToiOSNtpPromoDismissed));
+}
+
+TEST_F(NewTabPageHandlerTest, OnUndoDismissMobilePromo) {
+  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
+                                   true);
+  handler_->OnUndoDismissMobilePromo();
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
+      promos_prefs::kDesktopToiOSNtpPromoDismissed));
+}
+
+TEST_F(NewTabPageHandlerTest, OnMobilePromoShown) {
+  handler_->OnMobilePromoShown();
+  EXPECT_FALSE(
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .empty());
 }
 
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {

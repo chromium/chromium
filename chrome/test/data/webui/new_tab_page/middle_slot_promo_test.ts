@@ -293,6 +293,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(!!middleSlotPromo.shadowRoot!.querySelector('#mobilePromo'));
+      assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 
     test(`mobile promo shows if default promo doesn't render`, async () => {
@@ -302,6 +303,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
+      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 
     test(`default promo doesn't render if mobile promo rendered`, async () => {
@@ -349,6 +351,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
           const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
           assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
           assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
+          assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
         });
 
     test('mobile promo shows if it gets a QR code later', async () => {
@@ -359,6 +362,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const mobilePromo = middleSlotPromo.$.mobilePromo;
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(isVisible(mobilePromo));
+      assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
+
       const loaded =
           eventToPromise('ntp-middle-slot-promo-loaded', document.body);
 
@@ -372,6 +377,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       assertTrue(!!loadedEvent);
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(mobilePromo));
+      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 
     test('mobile promo hides if QR code gets removed later', async () => {
@@ -382,6 +388,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const mobilePromo = middleSlotPromo.$.mobilePromo;
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(mobilePromo));
+      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
+
       mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
         bubbles: true,
         composed: true,
@@ -391,6 +399,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(isVisible(mobilePromo));
+      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
   });
 });
