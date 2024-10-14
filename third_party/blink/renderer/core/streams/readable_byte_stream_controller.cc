@@ -840,8 +840,8 @@ void ReadableByteStreamController::SetUp(
   if (!start_algorithm->Run(script_state, exception_state)
            .ToLocal(&start_promise)) {
     if (!exception_state.HadException()) {
-      exception_state.ThrowException(
-          static_cast<int>(DOMExceptionCode::kInvalidStateError),
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
           "start algorithm failed with no exception thrown");
     }
     return;

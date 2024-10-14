@@ -521,15 +521,13 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
     for (const XRLayer* layer : *init->layers()) {
       // Check for duplicate layers.
       if (!unique_layers.insert(layer).is_new_entry) {
-        exception_state.ThrowException(ToExceptionCode(ESErrorType::kTypeError),
-                                       kDuplicateLayer);
+        exception_state.ThrowTypeError(kDuplicateLayer);
         return;
       }
 
       // Validate that all layers were created with this session.
       if (layer->session() != this) {
-        exception_state.ThrowException(ToExceptionCode(ESErrorType::kTypeError),
-                                       kIncompatibleLayer);
+        exception_state.ThrowTypeError(kIncompatibleLayer);
         return;
       }
     }

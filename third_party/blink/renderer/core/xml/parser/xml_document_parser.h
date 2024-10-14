@@ -92,12 +92,11 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
     return is_currently_parsing8_bit_chunk_;
   }
 
-  static bool ParseDocumentFragment(
-      const String&,
-      DocumentFragment*,
-      Element* parent = nullptr,
-      ParserContentPolicy = kAllowScriptingContent,
-      ExceptionState* exeption_state = nullptr);
+  static bool ParseDocumentFragment(const String&,
+                                    DocumentFragment*,
+                                    Element* parent,
+                                    ParserContentPolicy,
+                                    ExceptionState&);
 
   // Used by the XMLHttpRequest to check if the responseXML was well formed.
   bool WellFormed() const override { return !saw_error_; }
@@ -238,30 +237,6 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   typedef HashMap<AtomicString, AtomicString> PrefixForNamespaceMap;
   PrefixForNamespaceMap prefix_to_namespace_map_;
   SegmentedString pending_src_;
-
-  // exception_copy_ is used in some cases where we need to pass exceptions
-  // back to callers of XMLDocumentParser methods, but we lose the
-  // ExceptionContext passed in on the stack because we are calling libxml
-  // methods which call back into XMLDocumentParser.
-  class ExceptionCopy {
-   public:
-    void CopyFrom(ExceptionState& state) {
-      had_exception_ = true;
-      message_ = state.Message();
-      code_ = state.Code();
-    }
-    void ApplyTo(ExceptionState& state) {
-      CHECK(had_exception_);
-      state.ThrowException(code_, message_);
-    }
-    bool HadException() { return had_exception_; }
-
-   private:
-    String message_;
-    ExceptionCode code_;
-    bool had_exception_ = false;
-  };
-  std::optional<ExceptionCopy> exception_copy_;
 };
 
 xmlDocPtr XmlDocPtrForString(Document*,

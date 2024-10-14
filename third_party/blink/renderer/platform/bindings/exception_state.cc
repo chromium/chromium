@@ -54,53 +54,6 @@ void ExceptionState::SetCreateDOMExceptionFunction(
   DCHECK(s_create_dom_exception_func_);
 }
 
-void ExceptionState::ThrowException(ExceptionCode exception_code,
-                                    const String& message) {
-  // SecurityError is thrown via ThrowSecurityError, and _careful_ consideration
-  // must be given to the data exposed to JavaScript via |sanitized_message|.
-  DCHECK_NE(exception_code, ToExceptionCode(DOMExceptionCode::kSecurityError));
-
-#if DCHECK_IS_ON()
-  DCHECK_AT(!assert_no_exceptions_, file_, line_)
-      << "ThrowException must not be called.";
-#endif
-  if (!isolate_) {
-    SetException(exception_code, message, v8::Local<v8::Value>());
-    return;
-  }
-
-  v8::Local<v8::Value> exception;
-  switch (static_cast<ESErrorType>(exception_code)) {
-    case ESErrorType::kError:
-      exception = V8ThrowException::CreateError(isolate_, message);
-      break;
-    case ESErrorType::kRangeError:
-      exception = V8ThrowException::CreateRangeError(isolate_, message);
-      break;
-    case ESErrorType::kReferenceError:
-      exception = V8ThrowException::CreateReferenceError(isolate_, message);
-      break;
-    case ESErrorType::kSyntaxError:
-      exception = V8ThrowException::CreateSyntaxError(isolate_, message);
-      break;
-    case ESErrorType::kTypeError:
-      exception = V8ThrowException::CreateTypeError(isolate_, message);
-      break;
-    default:
-      if (IsDOMExceptionCode(exception_code)) {
-        exception = s_create_dom_exception_func_(
-            isolate_, static_cast<DOMExceptionCode>(exception_code), message,
-            String());
-      } else {
-        NOTREACHED_IN_MIGRATION();
-        exception = s_create_dom_exception_func_(
-            isolate_, DOMExceptionCode::kUnknownError, message, String());
-      }
-  }
-
-  SetException(exception_code, message, exception);
-}
-
 NOINLINE void ExceptionState::ThrowSecurityError(
     const char* sanitized_message,
     const char* unsanitized_message) {

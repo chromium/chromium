@@ -968,7 +968,7 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(int element_id,
     if (is_html_document && contextElement)
       fragment->ParseHTML(markup, contextElement, kAllowScriptingContent);
     else
-      fragment->ParseXML(markup, contextElement, kAllowScriptingContent);
+      fragment->ParseXML(markup, contextElement, IGNORE_EXCEPTION);
     return DynamicTo<Element>(fragment->firstChild());
   };
 

@@ -108,10 +108,6 @@ class PLATFORM_EXPORT ExceptionState {
     }
   }
 
-  // Throws an appropriate exception due to the given exception code. The
-  // exception will be either of ECMAScript Error object or DOMException.
-  NOINLINE void ThrowException(ExceptionCode, const String& message);
-
   // Throws a DOMException due to the given exception code.
   NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
 

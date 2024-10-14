@@ -142,8 +142,8 @@ void WritableStreamDefaultController::SetUp(
            .ToLocal(&start_promise)) {
     if (!exception_state.HadException()) {
       // Is this block really needed? Can we make this a DCHECK?
-      exception_state.ThrowException(
-          static_cast<int>(DOMExceptionCode::kInvalidStateError),
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
           "start algorithm failed with no exception thrown");
     }
     return;

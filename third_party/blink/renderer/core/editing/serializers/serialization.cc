@@ -707,8 +707,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     return fragment;
   }
 
-  bool was_valid = fragment->ParseXML(markup, context_element,
-                                      parser_content_policy, &exception_state);
+  bool was_valid = fragment->ParseXML(markup, context_element, exception_state,
+                                      parser_content_policy);
   if (!was_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -745,7 +745,7 @@ DocumentFragment* CreateFragmentForTransformToFragment(
     fragment->ParserAppendChild(Text::Create(output_doc, source_string));
   } else {
     bool successful_parse =
-        fragment->ParseXML(source_string, nullptr,
+        fragment->ParseXML(source_string, nullptr, IGNORE_EXCEPTION,
                            kAllowScriptingContentAndDoNotMarkAlreadyStarted);
     if (!successful_parse)
       return nullptr;

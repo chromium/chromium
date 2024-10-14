@@ -124,7 +124,7 @@ Node* DOMPatchSupport::PatchNode(Node* node,
   if (IsA<HTMLDocument>(GetDocument()))
     fragment->ParseHTML(markup, target_element);
   else
-    fragment->ParseXML(markup, target_element);
+    fragment->ParseXML(markup, target_element, IGNORE_EXCEPTION);
 
   // Compose the old list.
   ContainerNode* parent_node = node->parentNode();
