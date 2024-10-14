@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/badge.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -55,7 +56,7 @@ void BadgeExample::CreateExampleView(View* container) {
 
     example->menu_runner_->RunMenuAt(menu_button->GetWidget(), nullptr, bounds,
                                      MenuAnchorPosition::kTopLeft,
-                                     ui::MENU_SOURCE_NONE);
+                                     ui::mojom::MenuSourceType::kNone);
   };
 
   auto view =

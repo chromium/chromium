@@ -21,6 +21,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -183,7 +184,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
         location.SetToMax(parent_bounds.origin());
         location.SetToMin(parent_bounds.bottom_right());
       }
-      v->ShowContextMenu(location, ui::MENU_SOURCE_KEYBOARD);
+      v->ShowContextMenu(location, ui::mojom::MenuSourceType::kKeyboard);
       event->StopPropagation();
     }
 #endif
@@ -235,7 +236,8 @@ class PostEventDispatchHandler : public ui::EventHandler {
          event->type() == ui::EventType::kGestureTwoFingerTap)) {
       gfx::Point screen_location(location);
       View::ConvertPointToScreen(target, &screen_location);
-      target->ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
+      target->ShowContextMenu(screen_location,
+                              ui::mojom::MenuSourceType::kTouch);
       event->StopPropagation();
     }
   }

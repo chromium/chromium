@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/views_export.h"
 
@@ -38,16 +39,17 @@ class VIEWS_EXPORT ContextMenuController {
   // coordinates. This method also prevents reentrant calls.
   void ShowContextMenuForView(View* source,
                               const gfx::Point& point,
-                              ui::MenuSourceType source_type);
+                              ui::mojom::MenuSourceType source_type);
 
  protected:
   virtual ~ContextMenuController();
 
  private:
   // Subclasses should override this method.
-  virtual void ShowContextMenuForViewImpl(View* source,
-                                          const gfx::Point& point,
-                                          ui::MenuSourceType source_type) = 0;
+  virtual void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) = 0;
 
   // Used as a flag to prevent a re-entrancy in ShowContextMenuForView().
   // This is most relevant to Linux, where spawning the textfield context menu

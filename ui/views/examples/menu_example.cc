@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -208,7 +209,7 @@ void ExampleMenuButton::ButtonPressed() {
 
   menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(), button_controller(),
                           bounds, MenuAnchorPosition::kTopLeft,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 ui::SimpleMenuModel* ExampleMenuButton::GetMenuModel() {

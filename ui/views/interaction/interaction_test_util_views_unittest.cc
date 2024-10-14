@@ -25,6 +25,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -164,7 +165,7 @@ class InteractionTestUtilViewsTest
         std::make_unique<MenuRunner>(menu_model_.get(), MenuRunner::NO_FLAGS);
     menu_runner_->RunMenuAt(
         widget_.get(), nullptr, gfx::Rect(gfx::Point(), gfx::Size(200, 200)),
-        MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
+        MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
 
     menu_item_ = AsViewClass<MenuItemView>(ElementToView(
         ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(

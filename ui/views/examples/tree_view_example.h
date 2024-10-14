@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/tree/tree_view.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
@@ -58,9 +59,10 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
   bool CanEdit(TreeView* tree_view, ui::TreeModelNode* node) override;
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;

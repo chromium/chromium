@@ -5,6 +5,7 @@
 #include "ui/views/dialog_model_context_menu_controller.h"
 
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -29,7 +30,7 @@ DialogModelContextMenuController::~DialogModelContextMenuController() {
 void DialogModelContextMenuController::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   DCHECK_EQ(source, host_);
 
   menu_model_ = std::make_unique<ui::DialogModelMenuModelAdapter>(

@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -25,7 +26,7 @@ TestMenuDelegate::~TestMenuDelegate() = default;
 bool TestMenuDelegate::ShowContextMenu(MenuItemView* source,
                                        int id,
                                        const gfx::Point& p,
-                                       ui::MenuSourceType source_type) {
+                                       ui::mojom::MenuSourceType source_type) {
   show_context_menu_count_++;
   show_context_menu_source_ = source;
   return true;

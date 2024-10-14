@@ -5,6 +5,7 @@
 #include "ui/views/context_menu_controller.h"
 
 #include "base/auto_reset.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 namespace views {
 
@@ -15,7 +16,7 @@ ContextMenuController::~ContextMenuController() = default;
 void ContextMenuController::ShowContextMenuForView(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // Use a boolean flag to early-exit out of re-entrant behavior.
   if (is_opening_)
     return;

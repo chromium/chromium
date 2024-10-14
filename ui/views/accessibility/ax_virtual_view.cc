@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/layout.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/accessibility/ax_event_manager.h"
@@ -476,7 +477,7 @@ bool AXVirtualView::HandleAccessibleAction(
           nullptr /* offscreen_result */);
       if (!screen_bounds.IsEmpty()) {
         GetOwnerView()->ShowContextMenu(screen_bounds.CenterPoint(),
-                                        ui::MENU_SOURCE_KEYBOARD);
+                                        ui::mojom::MenuSourceType::kKeyboard);
         return true;
       }
       break;

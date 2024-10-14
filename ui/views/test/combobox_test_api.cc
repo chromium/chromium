@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
@@ -32,7 +33,7 @@ class TestMenuRunnerHandler : public MenuRunnerHandler {
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
-                 ui::MenuSourceType source_type,
+                 ui::mojom::MenuSourceType source_type,
                  int32_t types) override {
     *show_counter_ += 1;
   }

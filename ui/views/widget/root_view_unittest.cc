@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -136,18 +137,21 @@ class TestContextMenuController : public ContextMenuController {
 
   int show_context_menu_calls() const { return show_context_menu_calls_; }
   View* menu_source_view() const { return menu_source_view_; }
-  ui::MenuSourceType menu_source_type() const { return menu_source_type_; }
+  ui::mojom::MenuSourceType menu_source_type() const {
+    return menu_source_type_;
+  }
 
   void Reset() {
     show_context_menu_calls_ = 0;
     menu_source_view_ = nullptr;
-    menu_source_type_ = ui::MENU_SOURCE_NONE;
+    menu_source_type_ = ui::mojom::MenuSourceType::kNone;
   }
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
     show_context_menu_calls_++;
     menu_source_view_ = source;
     menu_source_type_ = source_type;
@@ -156,7 +160,8 @@ class TestContextMenuController : public ContextMenuController {
  private:
   int show_context_menu_calls_ = 0;
   raw_ptr<View> menu_source_view_ = nullptr;
-  ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
+  ui::mojom::MenuSourceType menu_source_type_ =
+      ui::mojom::MenuSourceType::kNone;
 };
 
 // Tests that context menus are shown for certain key events (Shift+F10
@@ -182,7 +187,7 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(0, controller.show_context_menu_calls());
   EXPECT_EQ(nullptr, controller.menu_source_view());
-  EXPECT_EQ(ui::MENU_SOURCE_NONE, controller.menu_source_type());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kNone, controller.menu_source_type());
   controller.Reset();
 
   // A context menu should be shown for a keypress of Shift+F10.
@@ -193,7 +198,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, controller.show_context_menu_calls());
   EXPECT_EQ(focused_view, controller.menu_source_view());
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, controller.menu_source_type());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            controller.menu_source_type());
   controller.Reset();
 
   // A context menu should be shown for a keypress of VKEY_APPS.
@@ -204,7 +210,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, controller.show_context_menu_calls());
   EXPECT_EQ(focused_view, controller.menu_source_view());
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, controller.menu_source_type());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            controller.menu_source_type());
   controller.Reset();
 #endif
 }
