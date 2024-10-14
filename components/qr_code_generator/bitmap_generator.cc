@@ -9,7 +9,6 @@
 
 #include "components/qr_code_generator/bitmap_generator.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -333,13 +332,8 @@ base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
                                                LocatorStyle locator_style,
                                                CenterImage center_image,
                                                QuietZone quiet_zone) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Sharing.QRCodeGeneration.Duration");
-
   GeneratedCode qr_code;
   {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Sharing.QRCodeGeneration.Duration.BytesToQrPixels2");
-
     // The QR version (i.e. size) must be >= 5 because otherwise the dino
     // painted over the middle covers too much of the code to be decodable.
     constexpr int kMinimumQRVersion = 5;
@@ -357,8 +351,6 @@ base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
   }
 
   {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2");
     gfx::Size data_size = {qr_code.qr_size, qr_code.qr_size};
     return RenderBitmap(base::make_span(qr_code.data), data_size, module_style,
                         locator_style, center_image, quiet_zone);

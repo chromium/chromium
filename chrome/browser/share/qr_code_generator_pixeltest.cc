@@ -5,7 +5,6 @@
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "content/public/common/content_switches.h"
@@ -23,7 +22,6 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
                   const qr_code_generator::CenterImage& center_image,
                   const qr_code_generator::ModuleStyle& module_style,
                   const qr_code_generator::LocatorStyle& locator_style) {
-    base::HistogramTester histograms;
     auto response = qr_code_generator::GenerateBitmap(
         base::as_byte_span(data), module_style, locator_style, center_image,
         qr_code_generator::QuietZone::kIncluded);
@@ -38,11 +36,6 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
 
     // The QR code should be a square.
     ASSERT_EQ(response->width(), response->height());
-
-    // Verify that the expected UMA metrics got logged.
-    // TODO(crbug.com/40789042): Cover BytesToQrPixels and QrPixelsToQrImage as
-    // well.
-    histograms.ExpectTotalCount("Sharing.QRCodeGeneration.Duration", 1);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
