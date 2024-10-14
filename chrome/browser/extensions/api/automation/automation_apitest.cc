@@ -553,7 +553,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ForceLayout) {
+// Flaky on Win: crbug.com/335553730
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ForceLayout DISABLED_ForceLayout
+#else
+#define MAYBE_ForceLayout ForceLayout
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_ForceLayout) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/force_layout.js")) << message_;
 }
