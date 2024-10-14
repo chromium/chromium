@@ -66,6 +66,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -370,6 +372,15 @@ std::optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
 bool IsInImmersiveFullscreen() {
   WindowState* active_window = WindowState::ForActiveWindow();
   return active_window && active_window->IsInImmersiveFullscreen();
+}
+
+void RecordGrowthCampaignsHoverEvent() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  // Campaigns manager may be null in tests.
+  if (campaigns_manager) {
+    campaigns_manager->RecordEvent(growth::kGrowthCampaignsEventHotseatHover,
+                                   /*trigger_campaigns=*/true);
+  }
 }
 
 // Forwards gesture events to ShelfLayoutManager to hide the hotseat
@@ -1662,6 +1673,12 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state,
   }
 
   if (previous_hotseat_state != hotseat_state()) {
+    // Record showing the home launcher in tablet mode as the equivalent of
+    // hovering over the shelf, since there's no hover on a
+    // touch-only device.
+    if (hotseat_state() == HotseatState::kShownHomeLauncher) {
+      RecordGrowthCampaignsHoverEvent();
+    }
     if (hotseat_state() == HotseatState::kExtended)
       hotseat_event_handler_ = std::make_unique<HotseatEventHandler>(this);
     else

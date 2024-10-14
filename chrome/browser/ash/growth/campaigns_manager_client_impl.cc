@@ -53,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -141,7 +142,11 @@ bool CampaignsManagerClientImpl::IsAppIconOnShelf(
                  shelf->GetAutoHideState() ==
                      ash::ShelfAutoHideState::SHELF_AUTO_HIDE_SHOWN));
 
-  if (!is_shelf_visible) {
+  // Shelf is always considered hidden when in tablet mode, but the Hotseat can
+  // still be expanded.
+  const bool is_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+
+  if (!is_shelf_visible && !is_tablet_mode) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kShelfInvisibleAtMatching);
     CAMPAIGNS_LOG(ERROR) << "Matching hotseat state when shelf is not visible.";
