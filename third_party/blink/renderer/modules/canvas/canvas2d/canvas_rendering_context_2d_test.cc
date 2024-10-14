@@ -2094,6 +2094,19 @@ class CanvasRenderingContext2DTestAccelerated
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       GetResourceProviderAfterContextLoss) {
+  CreateContext(kNonOpaque);
+
+  EXPECT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
+      RasterModeHint::kPreferGPU));
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+
+  test_context_provider_->TestContextGL()->set_context_lost(true);
+  EXPECT_EQ(nullptr, CanvasElement().GetOrCreateCanvasResourceProvider(
+                         RasterModeHint::kPreferGPU));
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   CreateContext(kNonOpaque);
 

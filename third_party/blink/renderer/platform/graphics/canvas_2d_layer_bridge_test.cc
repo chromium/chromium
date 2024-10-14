@@ -141,16 +141,6 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, GetResourceProviderWhenContextIsLost) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  EXPECT_TRUE(Host()->IsResourceValid());
-  cc::PaintFlags flags;
-  EXPECT_TRUE(bridge->GetOrCreateResourceProvider());
-  test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_EQ(nullptr, bridge->GetOrCreateResourceProvider());
-}
-
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
