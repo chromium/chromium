@@ -33,9 +33,9 @@ export class PrivacySandboxNoticeRestrictedDialogAppElement extends
 
     this.resizeAndShowNativeDialog().then(() => {
       this.updateScrollableContents();
-      this.maybeShowMoreButton().then(
-          () => this.promptActionOccurred(
-              PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN));
+      this.promptActionOccurred(
+          PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
+      this.maybeShowMoreButton();
     });
   }
 

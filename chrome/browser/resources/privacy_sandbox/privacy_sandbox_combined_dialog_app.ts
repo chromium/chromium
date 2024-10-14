@@ -72,11 +72,11 @@ export class PrivacySandboxCombinedDialogAppElement extends
     // After the initial step was loaded, resize the native dialog to fit it.
     this.navigateToStep_(firstStep)
         .then(() => this.resizeAndShowNativeDialog())
-        .then(() => this.updateScrollableContentsCurrentStep_())
         .then(
             () => this.promptActionOccurred(
                 startWithNotice ? PrivacySandboxPromptAction.NOTICE_SHOWN :
-                                  PrivacySandboxPromptAction.CONSENT_SHOWN));
+                                  PrivacySandboxPromptAction.CONSENT_SHOWN))
+        .then(() => this.updateScrollableContentsCurrentStep_());
   }
 
   disableAnimationsForTesting() {
@@ -87,12 +87,12 @@ export class PrivacySandboxCombinedDialogAppElement extends
     const savingDurationMs = this.animationsEnabled_ ? 1500 : 0;
     this.navigateToStep_(PrivacySandboxCombinedDialogStep.SAVING)
         .then(() => new Promise(r => setTimeout(r, savingDurationMs)))
-        .then(() => {
-          this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE);
-          this.updateScrollableContentsCurrentStep_().then(
-              () => this.promptActionOccurred(
-                  PrivacySandboxPromptAction.NOTICE_SHOWN));
-        });
+        .then(
+            () => this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE))
+        .then(
+            () => this.promptActionOccurred(
+                PrivacySandboxPromptAction.NOTICE_SHOWN))
+        .then(() => this.updateScrollableContentsCurrentStep_());
   }
 
   private navigateToStep_(step: PrivacySandboxCombinedDialogStep):

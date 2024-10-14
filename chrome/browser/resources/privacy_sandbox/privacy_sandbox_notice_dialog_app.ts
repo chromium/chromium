@@ -44,9 +44,8 @@ export class PrivacySandboxNoticeDialogAppElement extends
 
     this.resizeAndShowNativeDialog().then(() => {
       this.updateScrollableContents();
-      this.maybeShowMoreButton().then(
-          () => this.promptActionOccurred(
-              PrivacySandboxPromptAction.NOTICE_SHOWN));
+      this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);
+      this.maybeShowMoreButton();
     });
   }
 }

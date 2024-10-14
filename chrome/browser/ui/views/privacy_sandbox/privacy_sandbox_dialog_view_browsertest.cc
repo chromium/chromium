@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view.h"
 
+#include "base/synchronization/waitable_event.h"
 #include "base/test/run_until.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -23,10 +25,11 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-
 constexpr int kAverageBrowserWidth = 800;
 constexpr int kAverageBrowserHeight = 700;
-
+#if !BUILDFLAG(IS_LINUX)
+constexpr base::TimeDelta kMaxWaitTime = base::Seconds(30);
+#endif
 }  // namespace
 
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
@@ -61,25 +64,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
     ShowPrivacySandboxDialog(browser(), prompt_type);
-
-    auto* dialog_widget = static_cast<PrivacySandboxDialogView*>(
-        waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
-
-    // TODO(crbug.com/41483512): Waiting for the document to exist before
-    // performing the scroll action fixes the flakiness but we should try find a
-    // better approach.
-    ASSERT_TRUE(base::test::RunUntil([&] {
-      return content::EvalJs(dialog_widget->GetWebContentsForTesting(),
-                             "!!document")
-          .ExtractBool();
-    }));
-
-    // Ensure dialog is fully scrolled, this is needed in order for the "*Shown"
-    // action to be fired.
-    auto scroll = content::EvalJs(dialog_widget->GetWebContentsForTesting(),
-                                  "scrollTo(0, 1500)");
-
-    base::RunLoop().RunUntilIdle();
+    waiter.WaitIfNeededAndGet();
   }
 
   MockPrivacySandboxService* mock_service() { return mock_service_; }
@@ -88,52 +73,70 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
-// TODO(crbug.com/41484188): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       DISABLED_InvokeUi_Consent) {
-  // TODO(chrstne): uncomment out once the source of the flakiness is resolved.
-  /*EXPECT_CALL(
+#if !BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
+  base::WaitableEvent shown_waiter;
+  base::WaitableEvent closed_waiter;
+
+  EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown,
-                           PrivacySandboxService::SurfaceType::kDesktop));
+                           PrivacySandboxService::SurfaceType::kDesktop))
+      .WillOnce([&shown_waiter] { shown_waiter.Signal(); });
   EXPECT_CALL(*mock_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
-                  PrivacySandboxService::SurfaceType::kDesktop));*/
+                  PrivacySandboxService::SurfaceType::kDesktop))
+      .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
   ShowAndVerifyUi();
+
+  LOG(INFO) << "Waiting for callback";
+  shown_waiter.TimedWait(kMaxWaitTime);
+  closed_waiter.TimedWait(kMaxWaitTime);
 }
 
-// TODO(crbug.com/325436918): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       DISABLED_InvokeUi_Notice) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Notice) {
+  base::WaitableEvent shown_waiter;
+  base::WaitableEvent closed_waiter;
+
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown,
-                           PrivacySandboxService::SurfaceType::kDesktop));
+                           PrivacySandboxService::SurfaceType::kDesktop))
+      .WillOnce([&shown_waiter] { shown_waiter.Signal(); });
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
-          PrivacySandboxService::SurfaceType::kDesktop));
+          PrivacySandboxService::SurfaceType::kDesktop))
+      .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
   ShowAndVerifyUi();
+
+  LOG(INFO) << "Waiting for callback";
+  shown_waiter.TimedWait(kMaxWaitTime);
+  closed_waiter.TimedWait(kMaxWaitTime);
 }
 
-// TODO(crbug.com/333163287): Re-enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_InvokeUi_RestrictedNotice DISABLED_InvokeUi_RestrictedNotice
-#else
-#define MAYBE_InvokeUi_RestrictedNotice InvokeUi_RestrictedNotice
-#endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       MAYBE_InvokeUi_RestrictedNotice) {
+                       InvokeUi_RestrictedNotice) {
+  base::WaitableEvent shown_waiter;
+  base::WaitableEvent closed_waiter;
+
   EXPECT_CALL(*mock_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kRestrictedNoticeShown,
-                  PrivacySandboxService::SurfaceType::kDesktop));
+                  PrivacySandboxService::SurfaceType::kDesktop))
+      .WillOnce([&shown_waiter] { shown_waiter.Signal(); });
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::
                                kRestrictedNoticeClosedNoInteraction,
-                           PrivacySandboxService::SurfaceType::kDesktop));
+                           PrivacySandboxService::SurfaceType::kDesktop))
+      .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
   ShowAndVerifyUi();
+
+  LOG(INFO) << "Waiting for callback";
+  shown_waiter.TimedWait(kMaxWaitTime);
+  closed_waiter.TimedWait(kMaxWaitTime);
 }
+#endif

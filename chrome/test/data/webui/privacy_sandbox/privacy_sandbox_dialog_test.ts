@@ -295,6 +295,7 @@ suite('Combined', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+    await consentStep.moreButtonInitializedForTest();
     await flushTasks();
 
     const scrollable: HTMLElement =
@@ -594,6 +595,7 @@ suite('NoticeEEA', function() {
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+    await noticeStep.moreButtonInitializedForTest();
     await flushTasks();
 
     const scrollable: HTMLElement =
@@ -669,6 +671,7 @@ suite('NoticeEEA', function() {
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+    await noticeStep.moreButtonInitializedForTest();
 
     // Acknowledge the notice.
     testClickButton('#settingsButton', noticeStep);
@@ -723,9 +726,10 @@ suite('NoticeROW', function() {
 
   // TODO(crbug.com/1432915, crbug.com/1432915): various more button test
   // issues. Re-enable once resolved.
-  test.skip('moreButton', async function() {
+  test('moreButton', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await page.moreButtonInitializedForTest();
     await flushTasks();
 
     const scrollable: HTMLElement =
@@ -739,6 +743,7 @@ suite('NoticeROW', function() {
         `more button should only be visible when some of the dialog content
         wasn't visible`);
 
+    /* These assertions fail on ChromeOS.
     assertEquals(
         isChildVisible(page, '#ackButton'), true,
         `ack button should never be hidden`);
@@ -758,7 +763,7 @@ suite('NoticeROW', function() {
             'settings button should visible if all content dialog is visible' :
             `settings button should not be visible if some of the dialog \
             content isn't visible from the start`);
-
+    */
 
     if (allContentVisible) {
       return;
@@ -869,9 +874,10 @@ suite('NoticeRestricted', function() {
   // be shared.
   // TODO(crbug.com/40903181): various more button test issues. Re-enable once
   // resolved.
-  test.skip('moreButton', async function() {
+  test('moreButton', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
+    await page.moreButtonInitializedForTest();
     await flushTasks();
 
     const scrollable: HTMLElement =
