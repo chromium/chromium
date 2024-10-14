@@ -841,7 +841,7 @@ BASE_FEATURE_PARAM(double,
 
 BASE_FEATURE(kExemptSpeculationRulesHeaderFromCSP,
              "ExemptSpeculationRulesHeaderFromCSP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExpandCompositedCullRect,
              "ExpandCompositedCullRect",
