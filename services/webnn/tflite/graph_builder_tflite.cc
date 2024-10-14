@@ -436,6 +436,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
        /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
        /*reshape_input=*/SupportedDataTypes::All(),
+       // TODO(crbug.com/370538329): Implement scatterElements.
+       /*scatter_elements_input=*/{},
+       /*scatter_elements_indices=*/{},
        // TODO(crbug.com/363677532): Implement scatterND.
        /*scatter_nd_input=*/{},
        /*scatter_nd_indices=*/{},
@@ -837,6 +840,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kCumulativeSum:
     case mojom::Operation::Tag::kGatherElements:
     case mojom::Operation::Tag::kGatherNd:
+    case mojom::Operation::Tag::kScatterElements:
     case mojom::Operation::Tag::kScatterNd:
       return base::unexpected(NotSupportedOperatorError(op));
   }

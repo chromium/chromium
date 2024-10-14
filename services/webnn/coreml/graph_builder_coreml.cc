@@ -749,6 +749,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
        /*reshape_input=*/kFloatsAndInt32,
+       // TODO(crbug.com/370535834): Implement ScatterElements.
+       /*scatter_elements_input=*/{},
+       /*scatter_elements_indices=*/{},
        // TODO(crbug.com/363544348): Implement ScatterND.
        /*scatter_nd_input=*/{},
        /*scatter_nd_indices=*/{},
@@ -1042,6 +1045,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
+      case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
       case mojom::Operation::Tag::kTriangular:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));

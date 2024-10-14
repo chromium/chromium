@@ -2494,6 +2494,78 @@ base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
   return OperandDescriptor::Create(input.data_type(), output_shape);
 }
 
+base::expected<OperandDescriptor, std::string>
+ValidateScatterElementsAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const OperandDescriptor& indices,
+    const OperandDescriptor& updates,
+    const uint32_t axis,
+    std::string_view label) {
+  if (!context_properties.data_type_limits.scatter_elements_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(),
+            context_properties.data_type_limits.scatter_elements_input)));
+  }
+
+  static constexpr char kIndicesParam[] = "indices";
+  if (!context_properties.data_type_limits.scatter_elements_indices.Has(
+          indices.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentTypeError(
+            kIndicesParam, indices.data_type(),
+            context_properties.data_type_limits.scatter_elements_indices)));
+  }
+
+  if (input.data_type() != updates.data_type()) {
+    return base::unexpected(
+        ErrorWithLabel(label,
+                       "The updates tensor data type should be the same as "
+                       "input data type."));
+  }
+
+  if (input.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+
+  if (input.Rank() <= axis) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor."));
+  }
+
+  if (indices.Rank() != input.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The indices and input tensors should have the same rank."));
+  }
+
+  for (uint32_t i = 0; i < input.Rank(); ++i) {
+    if (i == axis) {
+      continue;
+    }
+    if (input.shape()[i] != indices.shape()[i]) {
+      return base::unexpected(
+          ErrorWithLabel(label,
+                         "Except on the axis dimension, the input and indices "
+                         "tensor must have the same dimension size."));
+    }
+  }
+
+  if (indices.shape() != updates.shape()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The updates and indices tensors should have the same shape."));
+  }
+
+  // The output tensor has the same data type and shape as input's.
+  return input;
+}
+
 base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,

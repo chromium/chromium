@@ -838,6 +838,17 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
   op_support_limits->setReshape(reshape);
 
+  MLScatterSupportLimits* scatter_elements = MLScatterSupportLimits::Create();
+  scatter_elements->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.scatter_elements_input));
+  scatter_elements->setIndices(SupportedDataTypesToSupportLimits(
+      data_type_limits.scatter_elements_indices));
+  scatter_elements->setUpdates(SupportedDataTypesToSupportLimits(
+      data_type_limits.scatter_elements_input));
+  scatter_elements->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.scatter_elements_input));
+  op_support_limits->setScatterElements(scatter_elements);
+
   MLScatterSupportLimits* scatter_nd = MLScatterSupportLimits::Create();
   scatter_nd->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.scatter_nd_input));

@@ -253,6 +253,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.resample2d_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.scatter_elements_indices
+      .RetainAll(DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.scatter_nd_indices.RetainAll(
       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.sigmoid_input.RetainAll(

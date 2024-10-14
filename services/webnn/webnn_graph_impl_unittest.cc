@@ -6027,6 +6027,178 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
   }
 }
 
+struct ScatterElementsTester {
+  OperandInfo input;
+  OperandInfo indices;
+  OperandInfo updates;
+  OperandInfo output;
+  uint32_t axis = 0;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", indices.dimensions, indices.type);
+    uint64_t updates_operand_id =
+        builder.BuildInput("updates", updates.dimensions, updates.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildScatterElements(input_operand_id, indices_operand_id,
+                                 updates_operand_id, output_operand_id, axis);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ScatterElementsTest) {
+  {
+    // ScatterElements to 2-D input along axis 0.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .axis = 0,
+        .expected = true}
+        .Test();
+  }
+  {
+    // ScatterElements to 2-D input along axis 1.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {1, 5}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 2}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {1, 2}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {1, 5}},
+        .axis = 1,
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements that axis is greater than input rank.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .axis = 2,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements that the updates tensor data type is not
+    // the same as input data type.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3}},
+        .updates = {.type = OperandDataType::kFloat16, .dimensions = {2, 3}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements with scalar input, indices and updates
+    // tensors.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements whose indices tensor rank is not the same
+    // as input rank.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3, 3}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 3}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements whose indices size is not the same as
+    // input size along axis 1.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 4}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .axis = 0,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements whose indices size is not the same as
+    // input size along axis 0.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 2}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 2}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .axis = 1,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements whose updates tensor's shape is not the
+    // same as indices tensor's.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements whose output shape is not the same as
+    // input.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements whose output data type is not the same as
+    // input.
+    ScatterElementsTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {2, 3}},
+        .updates = {.type = OperandDataType::kFloat32, .dimensions = {2, 3}},
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid ScatterElements where the output is the same as the
+    // input.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {3, 3}, OperandDataType::kFloat32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 3}, OperandDataType::kUint32);
+    uint64_t updates_operand_id =
+        builder.BuildInput("updates", {2, 3}, OperandDataType::kFloat32);
+    builder.BuildScatterElements(input_operand_id, indices_operand_id,
+                                 updates_operand_id, input_operand_id,
+                                 /*axis=*/0);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct ScatterNDTester {
   OperandInfo input;
   OperandInfo indices;

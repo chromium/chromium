@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -2273,6 +2274,32 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
       MLOperand::CreateOutput(this, std::move(output_descriptor), resample2d);
 
   resample2d->Connect({input}, {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::scatterElements(const MLOperand* input,
+                                           const MLOperand* indices,
+                                           const MLOperand* updates,
+                                           const MLScatterOptions* options,
+                                           ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+
+  HeapVector<Member<const MLOperand>> inputs = {input, indices, updates};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateScatterElementsAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          indices->Descriptor(), updates->Descriptor(), options->axis(),
+          options->label().Utf8()));
+
+  auto* scatter_elements = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kScatterElements, options);
+  MLOperand* output = MLOperand::CreateOutput(
+      this, std::move(output_descriptor), scatter_elements);
+
+  scatter_elements->Connect(std::move(inputs), {output});
   return output;
 }
 

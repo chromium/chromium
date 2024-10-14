@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -1540,6 +1541,27 @@ OperationPtr CreateReshapeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReshape(std::move(reshape_mojo));
 }
 
+OperationPtr CreateScatterElementsOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* scatter_elements) {
+  auto scatter_elements_mojo = webnn::mojom::blink::ScatterElements::New();
+  scatter_elements_mojo->input_operand_id =
+      GetOperatorInputId(scatter_elements, operand_to_id_map, 0);
+  scatter_elements_mojo->indices_operand_id =
+      GetOperatorInputId(scatter_elements, operand_to_id_map, 1);
+  scatter_elements_mojo->updates_operand_id =
+      GetOperatorInputId(scatter_elements, operand_to_id_map, 2);
+  scatter_elements_mojo->output_operand_id =
+      GetOperatorOutputId(scatter_elements, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const MLScatterOptions*>(scatter_elements->Options());
+  scatter_elements_mojo->axis = options->axis();
+  scatter_elements_mojo->label = options->label();
+  return webnn::mojom::blink::Operation::NewScatterElements(
+      std::move(scatter_elements_mojo));
+}
+
 OperationPtr CreateScatterNDOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* scatter_nd) {
   auto scatter_nd_mojo = webnn::mojom::blink::ScatterND::New();
@@ -1887,6 +1909,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kReshape:
       graph_info->operations.push_back(
           CreateReshapeOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kScatterElements:
+      graph_info->operations.push_back(
+          CreateScatterElementsOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kScatterNd:
       graph_info->operations.push_back(

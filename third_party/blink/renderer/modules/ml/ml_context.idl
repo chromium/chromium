@@ -255,6 +255,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits relu;
   MLSingleInputSupportLimits resample2d;
   MLSingleInputSupportLimits reshape;
+  MLScatterSupportLimits scatterElements;
   MLScatterSupportLimits scatterND;
   MLSingleInputSupportLimits sigmoid;
   MLSingleInputSupportLimits slice;

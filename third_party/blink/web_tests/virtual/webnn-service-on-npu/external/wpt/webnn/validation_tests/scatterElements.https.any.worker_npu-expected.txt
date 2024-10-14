@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [scatterElements] Test scatterElements with default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'scatterElements' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [scatterElements] Test scatterElements with axis = 0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'scatterElements' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [scatterElements] Test scatterElements with axis = 1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'scatterElements' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

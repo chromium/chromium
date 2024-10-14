@@ -152,6 +152,10 @@ struct DataTypeLimits {
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
 
+  // ScatterElements.
+  SupportedDataTypes scatter_elements_input;
+  SupportedDataTypes scatter_elements_indices;
+
   // ScatterND.
   SupportedDataTypes scatter_nd_input;
   SupportedDataTypes scatter_nd_indices;

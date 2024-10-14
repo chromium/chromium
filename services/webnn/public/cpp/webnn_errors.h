@@ -45,6 +45,7 @@ inline constexpr char kQuantizeLinear[] = "quantizeLinear";
 inline constexpr char kRelu[] = "relu";
 inline constexpr char kResample2d[] = "resample2d";
 inline constexpr char kReshape[] = "reshape";
+inline constexpr char kScatterElements[] = "scatterElements";
 inline constexpr char kScatterND[] = "scatterND";
 inline constexpr char kSigmoid[] = "sigmoid";
 inline constexpr char kSlice[] = "slice";

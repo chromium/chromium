@@ -1928,6 +1928,43 @@ bool ValidateReshape(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateScatterElements(const ContextProperties& context_properties,
+                             const IdToOperandMap& id_to_operand_map,
+                             const mojom::ScatterElements& scatter_elements,
+                             base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(scatter_elements.input_operand_id) ||
+      !processed_operands.contains(scatter_elements.indices_operand_id) ||
+      !processed_operands.contains(scatter_elements.updates_operand_id)) {
+    return false;
+  }
+  processed_operands.insert(scatter_elements.output_operand_id);
+
+  auto* input =
+      GetMojoOperand(id_to_operand_map, scatter_elements.input_operand_id);
+  auto* indices =
+      GetMojoOperand(id_to_operand_map, scatter_elements.indices_operand_id);
+  auto* updates =
+      GetMojoOperand(id_to_operand_map, scatter_elements.updates_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, scatter_elements.output_operand_id);
+  if (!input || !indices || !updates || !output || output == input ||
+      output == indices || output == updates) {
+    return false;
+  }
+
+  auto validated_output = ValidateScatterElementsAndInferOutput(
+      context_properties, input->descriptor, indices->descriptor,
+      updates->descriptor, scatter_elements.axis, scatter_elements.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateScatterND(const ContextProperties& context_properties,
                        const IdToOperandMap& id_to_operand_map,
                        const mojom::ScatterND& scatter_nd,
@@ -2351,6 +2388,10 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_relu(),
           context_properties.data_type_limits.relu_input, processed_operands);
+    case mojom::Operation::Tag::kScatterElements:
+      return ValidateScatterElements(context_properties, id_to_operand_map,
+                                     *operation.get_scatter_elements(),
+                                     processed_operands);
     case mojom::Operation::Tag::kScatterNd:
       return ValidateScatterND(context_properties, id_to_operand_map,
                                *operation.get_scatter_nd(), processed_operands);

@@ -197,6 +197,10 @@ dictionary MLResample2dOptions : MLOperatorOptions {
   sequence<[EnforceRange] unsigned long> axes;
 };
 
+dictionary MLScatterOptions : MLOperatorOptions {
+  [EnforceRange] unsigned long axis = 0;
+};
+
 dictionary MLTransposeOptions : MLOperatorOptions {
   sequence<[EnforceRange] unsigned long> permutation;
 };
@@ -359,6 +363,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
     RaisesException
   ] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 
+  [RaisesException] MLOperand scatterElements(MLOperand input, MLOperand indices, MLOperand updates, optional MLScatterOptions options = {});
   [RaisesException] MLOperand scatterND(MLOperand input, MLOperand indices, MLOperand updates, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand sigmoid(MLOperand input, optional MLOperatorOptions options = {});

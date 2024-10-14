@@ -387,6 +387,18 @@ void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
       mojom::Operation::NewReshape(std::move(reshape)));
 }
 
+void GraphInfoBuilder::BuildScatterElements(uint64_t input_operand_id,
+                                            uint64_t indices_operand_id,
+                                            uint64_t updates_operand_id,
+                                            uint64_t output_operand_id,
+                                            uint32_t axis) {
+  mojom::ScatterElementsPtr scatter_elements = mojom::ScatterElements::New(
+      input_operand_id, indices_operand_id, updates_operand_id,
+      output_operand_id, axis, "");
+  graph_info_->operations.push_back(
+      mojom::Operation::NewScatterElements(std::move(scatter_elements)));
+}
+
 void GraphInfoBuilder::BuildScatterND(uint64_t input_operand_id,
                                       uint64_t indices_operand_id,
                                       uint64_t updates_operand_id,
@@ -621,6 +633,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*relu_input=*/SupportedDataTypes::All(),
        /*resample2d_input=*/SupportedDataTypes::All(),
        /*reshape_input=*/SupportedDataTypes::All(),
+       /*scatter_elements_input=*/SupportedDataTypes::All(),
+       /*scatter_elements_indices=*/SupportedDataTypes::All(),
        /*scatter_nd_input=*/SupportedDataTypes::All(),
        /*scatter_nd_indices=*/SupportedDataTypes::All(),
        /*sigmoid_input=*/SupportedDataTypes::All(),

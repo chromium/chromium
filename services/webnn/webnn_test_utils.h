@@ -495,6 +495,12 @@ class GraphInfoBuilder final {
 
   void BuildReshape(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildScatterElements(uint64_t input_operand_id,
+                            uint64_t indices_operand_id,
+                            uint64_t updates_operand_id,
+                            uint64_t output_operand_id,
+                            uint32_t axis);
+
   void BuildScatterND(uint64_t input_operand_id,
                       uint64_t indices_operand_id,
                       uint64_t updates_operand_id,

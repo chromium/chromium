@@ -1023,6 +1023,65 @@ struct Reshape {
   string label;
 };
 
+// Represents ScatterElements operation that first copies the values of `input`
+// tensor to `output` tensor, and then overwrites the values of `output` tensor
+// to values specified by `updates` tensor at specific index positions specified
+// by `indices` tensor along `axis` dimension.
+//
+// Its calculation follows the pseudocode:
+// ```
+// output = input
+// // `input`, `indices` and `output` have the same rank, denoted as `r`.
+// output[i_{0}, ..., i_{axis-1},
+//        indices[i_{0}, ..., i_{r-1}],
+//        i_{axis+1}, ..., i_{r-1}] = updates[i_{0}, ..., i_{r-1}]
+// ```
+// The index value must be within the bounds [`-output.shape[axis]`,
+// `output.shape[axis]` - 1] and a negative index means indexing from the end of
+// the dimension.
+//
+// Example 1: Scatter elements along axis 0
+// input = [[0.0, 0.0, 0.0],
+//          [0.0, 0.0, 0.0],
+//          [0.0, 0.0, 0.0]]
+// indices = [[1, 0, 2],
+//            [0, 2, 1]]
+// updates = [[1.0, 1.1, 1.2],
+//            [2.0, 2.1, 2.2]]
+// output = [[2.0, 1.1, 0.0]
+//           [1.0, 0.0, 2.2]
+//           [0.0, 2.1, 1.2]]
+//
+// Example 2: Scatter elements along axis 1
+// input = [[1.0, 2.0, 3.0, 4.0, 5.0]]
+// indices = [[1, 3]]
+// updates = [[1.1, 2.1]]
+// output = [[1.0, 1.1, 3.0, 2.1, 5.0]]
+//
+// The values of `indices` tensor aren't known until graph execution, and may
+// cause out-of-bounds write issue. A backend implementation must guarantee the
+// index values do not cause invalid writes outside the output tensor, either by
+// the platform API (e.g. DML) or by introducing a `clamp` operator in the
+// compiled graph.
+// The out-of-bounds `indices` handling is being discussed in WG:
+// https://github.com/webmachinelearning/webnn/issues/486
+struct ScatterElements {
+  // The operand id is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  // The `input`, `indices` and `updates` are ScatterElements operator input
+  // operands.
+  // Their id must be distinct from the output operand id.
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 updates_operand_id;
+  uint64 output_operand_id;
+
+  // The axis of the output tensor to scatter on.
+  uint32 axis = 0;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents ScatterND operation that first copies the values of `input` to
 // `output` tensor, and then overwrites the values of `output` tensor to values
 // specified by `updates` tensor at specific index positions specified by
@@ -1317,6 +1376,7 @@ union Operation {
   Relu relu;
   Resample2d resample2d;
   Reshape reshape;
+  ScatterElements scatter_elements;
   ScatterND scatter_nd;
   Sigmoid sigmoid;
   Slice slice;

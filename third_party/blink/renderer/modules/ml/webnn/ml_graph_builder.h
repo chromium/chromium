@@ -50,6 +50,7 @@ class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
 class MLResample2dOptions;
+class MLScatterOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
 class MLTriangularOptions;
@@ -428,6 +429,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                         const MLOperand* input,
                         const MLResample2dOptions* options,
                         ExceptionState& exception_state);
+
+  MLOperand* scatterElements(const MLOperand* input,
+                             const MLOperand* indices,
+                             const MLOperand* updates,
+                             const MLScatterOptions* options,
+                             ExceptionState& exception_state);
 
   MLOperand* scatterND(const MLOperand* input,
                        const MLOperand* indices,

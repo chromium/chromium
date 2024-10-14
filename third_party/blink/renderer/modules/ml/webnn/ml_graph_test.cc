@@ -698,6 +698,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*relu_input=*/webnn::SupportedDataTypes::All(),
          /*resample2d_input=*/webnn::SupportedDataTypes::All(),
          /*reshape_input=*/webnn::SupportedDataTypes::All(),
+         /*scatter_elements_input=*/webnn::SupportedDataTypes::All(),
+         /*scatter_elements_indices=*/webnn::SupportedDataTypes::All(),
          /*scatter_nd_input=*/webnn::SupportedDataTypes::All(),
          /*scatter_nd_indices=*/webnn::SupportedDataTypes::All(),
          /*sigmoid_input=*/webnn::SupportedDataTypes::All(),
