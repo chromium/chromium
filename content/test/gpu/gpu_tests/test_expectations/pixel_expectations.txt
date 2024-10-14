@@ -464,6 +464,7 @@ crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer
 
 
 # Failures on fuchsia
+crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] Pixel_WebGLCopyImage [ RetryOnFailure ]
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_AV1 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
