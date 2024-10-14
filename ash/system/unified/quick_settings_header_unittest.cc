@@ -390,7 +390,7 @@ TEST_F(QuickSettingsHeaderTest, ShowManagementDisclosure) {
   ash::LockScreen::Get()->Destroy();
   LockScreen::Show(LockScreen::ScreenType::kLock);
 
-  QuickSettingsHeader::ShowEnterpriseInfo(controller_.get(), true);
+  QuickSettingsHeader::ShowEnterpriseInfo(controller_.get(), true, true, true);
   LockContentsViewTestApi lock_contents(
       LockScreen::TestApi(LockScreen::Get()).contents_view());
 
@@ -414,11 +414,29 @@ TEST_F(QuickSettingsHeaderTest, DoNotShowManagementDisclosure) {
   ash::LockScreen::Get()->Destroy();
   LockScreen::Show(LockScreen::ScreenType::kLock);
 
-  QuickSettingsHeader::ShowEnterpriseInfo(controller_.get(), false);
-  LockContentsViewTestApi lock_contents(
+  // Feature disabled.
+  QuickSettingsHeader::ShowEnterpriseInfo(
+      controller_.get(), /*showManagementDisclosureDialog*/ false,
+      /*IsUserSessionBlocked*/ true, /*hasEnterpriseDomainManager*/ true);
+  LockContentsViewTestApi lock_contents_1(
       LockScreen::TestApi(LockScreen::Get()).contents_view());
+  EXPECT_FALSE(lock_contents_1.management_disclosure_dialog());
 
-  EXPECT_FALSE(lock_contents.management_disclosure_dialog());
+  // User session not blocked.
+  QuickSettingsHeader::ShowEnterpriseInfo(
+      controller_.get(), /*showManagementDisclosureDialog*/ true,
+      /*IsUserSessionBlocked*/ false, /*hasEnterpriseDomainManager*/ true);
+  LockContentsViewTestApi lock_contents_2(
+      LockScreen::TestApi(LockScreen::Get()).contents_view());
+  EXPECT_FALSE(lock_contents_2.management_disclosure_dialog());
+
+  // Not enterprise enrolled device.
+  QuickSettingsHeader::ShowEnterpriseInfo(
+      controller_.get(), /*showManagementDisclosureDialog*/ true,
+      /*IsUserSessionBlocked*/ true, /*hasEnterpriseDomainManager*/ false);
+  LockContentsViewTestApi lock_contents_3(
+      LockScreen::TestApi(LockScreen::Get()).contents_view());
+  EXPECT_FALSE(lock_contents_3.management_disclosure_dialog());
 }
 
 }  // namespace ash

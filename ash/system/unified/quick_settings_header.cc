@@ -181,13 +181,20 @@ class QuickSettingsHeader::EnterpriseManagedView
 
  public:
   explicit EnterpriseManagedView(UnifiedSystemTrayController* controller)
-      : ManagedStateView(base::BindRepeating(
-                             &QuickSettingsHeader::ShowEnterpriseInfo,
-                             base::Unretained(controller),
-                             base::FeatureList::IsEnabled(
-                                 ash::features::kImprovedManagementDisclosure)),
-                         IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
-                         kQuickSettingsManagedIcon) {
+      : ManagedStateView(
+            base::BindRepeating(
+                &QuickSettingsHeader::ShowEnterpriseInfo,
+                base::Unretained(controller),
+                base::FeatureList::IsEnabled(
+                    ash::features::kImprovedManagementDisclosure),
+                Shell::Get()->session_controller()->IsUserSessionBlocked(),
+                !Shell::Get()
+                     ->system_tray_model()
+                     ->enterprise_domain()
+                     ->enterprise_domain_manager()
+                     .empty()),
+            IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
+            kQuickSettingsManagedIcon) {
     DCHECK(Shell::Get());
     SetID(VIEW_ID_QS_MANAGED_BUTTON);
     SetProperty(views::kElementIdentifierKey, kEnterpriseManagedView);
@@ -401,13 +408,15 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
 // static
 void QuickSettingsHeader::ShowEnterpriseInfo(
     UnifiedSystemTrayController* controller,
-    bool showManagementDisclosureDialog) {
+    bool show_management_disclosure_dialog,
+    bool is_user_session_blocked,
+    bool has_enterprise_domain_manager) {
   quick_settings_metrics_util::RecordQsButtonActivated(
       QsButtonCatalogName::kManagedButton);
   // Show the new disclosure when on the login/lock screen and feature is
   // enabled.
-  if (Shell::Get()->session_controller()->IsUserSessionBlocked() &&
-      showManagementDisclosureDialog) {
+  if (show_management_disclosure_dialog && is_user_session_blocked &&
+      has_enterprise_domain_manager) {
     LockScreen::Get()->ShowManagementDisclosureDialog();
   } else {
     controller->HandleEnterpriseInfoAction();

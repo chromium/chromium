@@ -44,7 +44,9 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
 
   // Shows enterprise managed device information.
   static void ShowEnterpriseInfo(UnifiedSystemTrayController* controller,
-                                 bool showManagementDisclosureDialog);
+                                 bool show_management_disclosure_dialog,
+                                 bool is_user_session_blocked,
+                                 bool has_enterprise_domain_manager);
 
   views::View* GetManagedButtonForTest();
   views::View* GetSupervisedButtonForTest();
