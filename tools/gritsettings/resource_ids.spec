@@ -1288,6 +1288,9 @@
   "third_party/blink/public/strings/blink_strings.grd": {
     "messages": [9600],
   },
+  "third_party/blink/public/strings/permission_element_strings.grd": {
+    "messages": [9620],
+  },
   "third_party/blink/renderer/modules/media_controls/resources/media_controls_resources.grd": {
     "includes": [9640],
     "structures": [9640],

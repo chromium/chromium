@@ -539,6 +539,7 @@ repack("pak") {
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
@@ -562,6 +563,7 @@ repack("pak") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:permission_element_strings",
     "//ui/resources",
     "//ui/strings",
   ]
