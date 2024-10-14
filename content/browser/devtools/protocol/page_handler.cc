@@ -1992,6 +1992,9 @@ DisableForRenderFrameHostReasonToProtocol(
         case back_forward_cache::DisabledReasonId::kRequestedByWebViewClient:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               RequestedByWebViewClient;
+        case back_forward_cache::DisabledReasonId::kPostMessageByWebViewClient:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              PostMessageByWebViewClient;
       }
   }
 }

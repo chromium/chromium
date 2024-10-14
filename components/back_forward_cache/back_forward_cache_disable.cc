@@ -37,6 +37,8 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "OomInterventionTabHelper";
     case DisabledReasonId::kRequestedByWebViewClient:
       return "RequestedByWebViewClient";
+    case DisabledReasonId::kPostMessageByWebViewClient:
+      return "PostMessageByWebViewClient";
   }
 }
 

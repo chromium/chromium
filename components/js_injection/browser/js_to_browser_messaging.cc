@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -74,7 +76,7 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
           java_to_js_messaging,
       mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory> factory)
-      : render_frame_host_(render_frame_host),
+      : document_(render_frame_host->GetWeakDocumentPtr()),
         java_to_js_messaging_(std::move(java_to_js_messaging)),
         factory_(std::move(factory)) {}
   ReplyProxyImpl(const ReplyProxyImpl&) = delete;
@@ -83,6 +85,21 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
 
   // WebMessageReplyProxy:
   void PostWebMessage(blink::WebMessagePayload message) override {
+    if (document_.AsRenderFrameHostIfValid() &&
+        document_.AsRenderFrameHostIfValid()->GetLifecycleState() ==
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
+      // If the document associated with the reply proxy is in BFCache, evict
+      // the page from BFCache. This is because the page can't process the
+      // message while frozen due to BFCaching, and if we queue the message,
+      // the callers might not expect the message to be delayed for a long
+      // time (or even not sent at all).
+      content::BackForwardCache::DisableForRenderFrameHost(
+          document_.AsRenderFrameHostIfValid(),
+          back_forward_cache::DisabledReason(
+              back_forward_cache::DisabledReasonId::
+                  kPostMessageByWebViewClient));
+      return;
+    }
     EnsureBrowserToJsMessaging();
     java_to_js_messaging_->OnPostMessage(std::move(message));
   }
@@ -94,10 +111,15 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
     }
   }
 
-  content::Page& GetPage() override { return render_frame_host_->GetPage(); }
+  content::Page& GetPage() override {
+    // We can't make up the Page if the document is already destructed. Callers
+    // of this function must ensure to not call this if we're in that state.
+    CHECK(document_.AsRenderFrameHostIfValid());
+    return document_.AsRenderFrameHostIfValid()->GetPage();
+  }
 
  private:
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  content::WeakDocumentPtr document_;
   mojo::AssociatedRemote<mojom::BrowserToJsMessaging> java_to_js_messaging_;
   mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory> factory_;
 };

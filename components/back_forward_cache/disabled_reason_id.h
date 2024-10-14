@@ -47,6 +47,9 @@ enum class DisabledReasonId : uint16_t {
   // Android WebView client requested to disable BFCache. See
   // NavigationWebMessageSender.
   kRequestedByWebViewClient = 16,
+  // Android WebView client sends postMessage on a JavaScriptReplyProxy that's
+  // associated with a page in BFCache.
+  kPostMessageByWebViewClient = 17,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.
