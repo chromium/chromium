@@ -32,7 +32,6 @@ class TestMetricsWebContentsObserverEmbedder
   std::unique_ptr<base::OneShotTimer> CreateTimer() override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
-  bool IsSidePanel(content::WebContents* web_contents) override;
   bool IsNonTabWebUI() override;
   PageLoadMetricsMemoryTracker* GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;

@@ -230,11 +230,6 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
-bool TestMetricsWebContentsObserverEmbedder::IsSidePanel(
-    content::WebContents* web_contents) {
-  return false;
-}
-
 bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI() {
   return false;
 }

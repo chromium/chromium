@@ -96,10 +96,6 @@ void SetSideSearchTabStateFromRestoreData(
   }
 }
 
-bool IsSidePanelWebContents(content::WebContents* web_contents) {
-  return !!SideSearchSideContentsHelper::FromWebContents(web_contents);
-}
-
 bool IsEnabledForBrowser(const Browser* browser) {
   return IsSideSearchEnabled(browser->profile()) && browser->is_type_normal();
 }

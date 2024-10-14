@@ -39,7 +39,6 @@ class PageLoadMetricsEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
-  bool IsSidePanel(content::WebContents* web_contents) override;
   bool IsNonTabWebUI() override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -76,11 +75,6 @@ bool PageLoadMetricsEmbedder::IsNoStatePrefetch(
 }
 
 bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
-  return false;
-}
-
-bool PageLoadMetricsEmbedder::IsSidePanel(content::WebContents* web_contents) {
-  // The side panel is not supported on Android so this always returns false.
   return false;
 }
 

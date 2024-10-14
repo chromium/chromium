@@ -77,10 +77,6 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // defined(TOOLKIT_VIEWS)
-
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -125,7 +121,6 @@ class PageLoadMetricsEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
-  bool IsSidePanel(content::WebContents* web_contents) override;
   bool IsNonTabWebUI() override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -283,14 +278,6 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 #else
   return false;
 #endif
-}
-
-bool PageLoadMetricsEmbedder::IsSidePanel(content::WebContents* web_contents) {
-#if defined(TOOLKIT_VIEWS)
-  return side_search::IsSidePanelWebContents(web_contents);
-#else
-  return false;
-#endif  // defined(TOOLKIT_VIEWS)
 }
 
 bool PageLoadMetricsEmbedder::IsNonTabWebUI() {
