@@ -58,15 +58,17 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
                                   const ui::ColorProviderKey& key) {
-  mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
-  mixer[kColorPageInfoBackgroundTonal] = {ui::kColorSysTonalContainer};
+  mixer[kColorOmniboxActionIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorOmniboxIconBackground] = {ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxIconBackgroundTonal] = {ui::kColorSysTonalContainer};
+  mixer[kColorOmniboxIconForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxIconForegroundTonal] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorOmniboxIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
+  mixer[kColorOmniboxIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
+
   mixer[kColorPageInfoForeground] = {ui::kColorSysOnSurface};
   mixer[kColorPageInfoSubtitleForeground] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorPageInfoForegroundTonal] = {ui::kColorSysOnTonalContainer};
-  mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
-  mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
-  mixer[kColorPageActionIcon] = {ui::kColorSysOnSurfaceSubtle};
 
   // Security chip.
   mixer[kColorOmniboxSecurityChipDangerousBackground] = {ui::kColorSysError};
@@ -391,21 +393,26 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   // Location bar icon colors for opaque page info elements. There is no
   // distinction between regular and tonal page info backgrounds or foregrounds
   // for CWS themes.
-  mixer[kColorPageInfoBackground] = {kColorToolbar};
-  mixer[kColorPageInfoBackgroundTonal] = {kColorPageInfoBackground};
+  mixer[kColorOmniboxIconBackground] = {kColorToolbar};
+  mixer[kColorOmniboxIconBackgroundTonal] = {kColorOmniboxIconBackground};
+  mixer[kColorOmniboxIconForeground] = {
+      ui::GetColorWithMaxContrast(kColorToolbar)};
+  mixer[kColorOmniboxIconForegroundTonal] = {kColorOmniboxIconForeground};
+
+  // PageInfo text colors.
   mixer[kColorPageInfoForeground] = {ui::kColorSysOnSurface};
   mixer[kColorPageInfoSubtitleForeground] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorPageInfoForegroundTonal] = {kColorPageInfoForeground};
+
   // Literal constants are `kOmniboxOpacityHovered` and
   // `kOmniboxOpacitySelected`. This is so that we can more cleanly use the
   // colors in the inkdrop instead of handling themes and non-themes separately
   // in-code as they have different opacity requirements.
-  mixer[kColorPageInfoIconHover] = {
+  mixer[kColorOmniboxActionIconHover] = {kColorOmniboxIconHover};
+  mixer[kColorOmniboxActionIcon] = {kColorOmniboxResultsIcon};
+  mixer[kColorOmniboxIconHover] = {
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.10f * 255.0f))};
-  mixer[kColorPageInfoIconPressed] = {
+  mixer[kColorOmniboxIconPressed] = {
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.16f * 255.0f))};
-  mixer[kColorPageActionIconHover] = {kColorPageInfoIconHover};
-  mixer[kColorPageActionIcon] = {kColorOmniboxResultsIcon};
 
   // Override omnibox colors per CR2023 spec.
   ApplyOmniboxCR2023Colors(mixer, key);

@@ -308,6 +308,8 @@
   E_CPONLY(kColorNewTabPageDoodleShareButtonBackground) \
   E_CPONLY(kColorNewTabPageDoodleShareButtonIcon) \
   /* Omnibox colors. */ \
+  E_CPONLY(kColorOmniboxActionIcon) \
+  E_CPONLY(kColorOmniboxActionIconHover) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Background) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Foreground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \
@@ -323,6 +325,12 @@
   E_CPONLY(kColorOmniboxChipInkDropRipple) \
   E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground) \
   E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground) \
+  E_CPONLY(kColorOmniboxIconBackground) \
+  E_CPONLY(kColorOmniboxIconBackgroundTonal) \
+  E_CPONLY(kColorOmniboxIconForeground) \
+  E_CPONLY(kColorOmniboxIconForegroundTonal) \
+  E_CPONLY(kColorOmniboxIconHover) \
+  E_CPONLY(kColorOmniboxIconPressed) \
   E_CPONLY(kColorOmniboxIntentChipBackground) \
   E_CPONLY(kColorOmniboxIntentChipIcon) \
   E_CPONLY(kColorOmniboxKeywordSelected) \
@@ -369,19 +377,11 @@
   E_CPONLY(kColorOmniboxText) \
   E_CPONLY(kColorOmniboxTextDimmed) \
   /* Page Info colors */ \
-  E_CPONLY(kColorPageActionIcon) \
-  E_CPONLY(kColorPageActionIconHover) \
-  E_CPONLY(kColorPageInfoBackground) \
-  E_CPONLY(kColorPageInfoBackgroundTonal) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
   E_CPONLY(kColorPageInfoForeground) \
   E_CPONLY(kColorPageInfoSubtitleForeground) \
-  E_CPONLY(kColorPageInfoForegroundTonal) \
-  E_CPONLY(kColorPageInfoIconHover) \
-  E_CPONLY(kColorPageInfoIconPressed) \
   E_CPONLY(kColorPageInfoPermissionBlockedOnSystemLevelDisabled) \
-  E_CPONLY(kColorPageInfoPermissionForeground) \
   E_CPONLY(kColorPageInfoPermissionUsedIcon) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentsFeedbackTipBackground) \

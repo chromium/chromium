@@ -404,7 +404,7 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
   }
 
-  params.icon_color = color_provider->GetColor(kColorPageActionIcon);
+  params.icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
   params.between_icon_spacing = 8;
   params.font_list = &page_action_font_list;
   params.browser = browser_;
@@ -924,7 +924,8 @@ void LocationBarView::OnThemeChanged() {
   if (!IsInitialized())
     return;
 
-  const SkColor icon_color = GetColorProvider()->GetColor(kColorPageActionIcon);
+  const SkColor icon_color =
+      GetColorProvider()->GetColor(kColorOmniboxActionIcon);
   page_action_icon_controller_->SetIconColor(icon_color);
   for (ContentSettingImageView* image_view : content_setting_views_) {
     image_view->SetIconColor(icon_color);
@@ -1011,7 +1012,7 @@ SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
   // will inherit the selected "surrounding foreground color".
   const auto color_id = ShouldShowKeywordBubble()
                             ? kColorOmniboxKeywordSeparator
-                            : kColorPageActionIcon;
+                            : kColorOmniboxActionIcon;
   return GetColorProvider()->GetColor(color_id);
 }
 

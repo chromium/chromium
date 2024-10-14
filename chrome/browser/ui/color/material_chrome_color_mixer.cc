@@ -96,7 +96,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // PageInfo colors.
   mixer[kColorPageInfoPermissionBlockedOnSystemLevelDisabled] = {
       ui::kColorSysStateDisabled};
-  mixer[kColorPageInfoPermissionForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorPageInfoPermissionUsedIcon] = {ui::kColorSysPrimary};
 
   // Permission Prompt colors.

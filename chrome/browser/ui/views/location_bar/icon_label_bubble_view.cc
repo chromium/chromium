@@ -294,8 +294,8 @@ SkColor IconLabelBubbleView::GetBackgroundColor() const {
     background_color_id = background_color_id_.value();
   } else if (PaintedOnSolidBackground()) {
     background_color_id = use_tonal_color_when_expanded_
-                              ? kColorPageInfoBackgroundTonal
-                              : kColorPageInfoBackground;
+                              ? kColorOmniboxIconBackgroundTonal
+                              : kColorOmniboxIconBackground;
   } else {
     // If background is not explicitly specified or we are not painting over a
     // solid background, seek the background color from the icon view's context.
@@ -310,8 +310,8 @@ SkColor IconLabelBubbleView::GetForegroundColor() const {
     foreground_color_id = foreground_color_id_.value();
   } else if (PaintedOnSolidBackground()) {
     foreground_color_id = use_tonal_color_when_expanded_
-                              ? kColorPageInfoForegroundTonal
-                              : kColorPageInfoForeground;
+                              ? kColorOmniboxIconForegroundTonal
+                              : kColorOmniboxIconForeground;
   } else {
     // If foreground is not explicitly specified or we are not painting over a
     // solid background, seek the foreground color from the icon view's context.
@@ -359,14 +359,14 @@ void IconLabelBubbleView::UpdateBackground() {
                     ? views::CreateRoundedRectBackground(
                           GetBackgroundColor(), GetPreferredSize().height())
                     : nullptr);
-  // TODO(pbos): Consider renaming kPageInfo/kPageAction color IDs to share the
-  // same prefix. Here PageInfo assumes to have a background and PageAction
-  // assumes to not have one.
+  // TODO(pbos): Consider renaming kOmniboxIcon/kOmniboxActionIcon color IDs to
+  // share the same prefix. Here OmniboxIcon assumes to have a background and
+  // OmniboxActionIcon assumes to not have one.
   ConfigureInkDropForRefresh2023(this,
                                  painted_on_solid_background
-                                     ? kColorPageInfoIconHover
-                                     : kColorPageActionIconHover,
-                                 kColorPageInfoIconPressed);
+                                     ? kColorOmniboxIconHover
+                                     : kColorOmniboxActionIconHover,
+                                 kColorOmniboxIconPressed);
 }
 
 void IconLabelBubbleView::SetUseTonalColorsWhenExpanded(bool use_tonal_colors) {

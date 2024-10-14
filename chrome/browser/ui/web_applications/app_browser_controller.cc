@@ -591,7 +591,7 @@ void AppBrowserController::AddColorMixers(
   mixer[kColorInfoBarButtonIcon] = {kColorPwaToolbarButtonIcon};
   mixer[kColorInfoBarButtonIconDisabled] = {kColorPwaToolbarButtonIconDisabled};
 
-  // Page info icon colors in PWA windows are used both for the LocationIconView
+  // Omnibox icon colors in PWA windows are used both for the LocationIconView
   // in the CustomTabBarView as well as page action and info icons in the title
   // bar. In case of LocationIconView, CustomTabBarView overrides the color ID
   // to use for its background, so here we define the colors to use for the
@@ -599,9 +599,9 @@ void AppBrowserController::AddColorMixers(
   // "background" colors, i.e. the color that is shown behind the icon/text.
   // Making them equal to the toolbar ink drop colors will make these icons look
   // similar to other icons in the PWA title bar.
-  mixer[kColorPageInfoBackground] = {kColorToolbarInkDropHover};
-  mixer[kColorPageInfoIconHover] = {kColorToolbarInkDropHover};
-  mixer[kColorPageInfoIconPressed] = {kColorToolbarInkDropRipple};
+  mixer[kColorOmniboxIconBackground] = {kColorToolbarInkDropHover};
+  mixer[kColorOmniboxIconHover] = {kColorToolbarInkDropHover};
+  mixer[kColorOmniboxIconPressed] = {kColorToolbarInkDropRipple};
 
   // The Material Design color mixer hardcodes various toolbar colors to certain
   // colors, ignoring the toolbar colors set in the BrowserThemePack. Since in
