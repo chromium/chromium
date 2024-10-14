@@ -540,7 +540,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   bool should_recreate_shared_image = false;
   if (gpu_factories != video_frame_init_data.buffer_context->gpu_factories()) {
-    DVLOG(1) << "GPU context changed; re-creating SharedImage objects";
     video_frame_init_data.buffer_context->SetGpuFactories(gpu_factories);
     should_recreate_shared_image = true;
   }
