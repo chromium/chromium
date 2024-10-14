@@ -3321,17 +3321,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.IsRenderedIconSufficientlyVisibleTime"
-    units="microseconds" expires_after="2019-12-01">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of elapsed time taken to render an icon against a specified
-    background color and determine whether it would be visible to the user.
-    Recorded every time the analysis code is called.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.LoadAll" units="units" expires_after="2023-07-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>

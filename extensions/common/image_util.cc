@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -70,22 +69,8 @@ bool IsIconAtPathSufficientlyVisible(const base::FilePath& path) {
 
 const SkColor kDefaultToolbarColor = SK_ColorWHITE;
 
-struct ScopedUmaMicrosecondHistogramTimer {
-  ScopedUmaMicrosecondHistogramTimer() : timer() {}
-
-  ~ScopedUmaMicrosecondHistogramTimer() {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.IsRenderedIconSufficientlyVisibleTime", timer.Elapsed(),
-        base::Microseconds(1), base::Seconds(5), 50);
-  }
-
-  const base::ElapsedTimer timer;
-};
-
 bool IsRenderedIconSufficientlyVisible(const SkBitmap& icon,
                                        SkColor background_color) {
-  const ScopedUmaMicrosecondHistogramTimer timer;
-
   // If any of a pixel's RGB values is greater than this number, the pixel is
   // considered visible.
   constexpr unsigned int kThreshold = 7;
