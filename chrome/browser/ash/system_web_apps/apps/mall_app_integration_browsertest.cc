@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, MallApp) {
   const GURL url{ash::kChromeUIMallUrl};
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(ash::SystemWebAppType::MALL, url,
-                              /*title=*/"Get Apps and Games"));
+                              /*title=*/"Apps & games"));
 }
 
 IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithContext) {
