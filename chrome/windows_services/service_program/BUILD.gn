@@ -87,5 +87,8 @@ source_set("delegate") {
     "service_delegate.h",
   ]
   public_deps = [ "//base" ]
-  sources = [ "factory_and_clsid.cc" ]
+  sources = [
+    "factory_and_clsid.cc",
+    "service_delegate.cc",
+  ]
 }

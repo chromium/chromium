@@ -50,11 +50,13 @@ Delegate::CreateClassFactories() {
   return base::ok(std::move(result));
 }
 
-void Delegate::PreRun() {
+bool Delegate::PreRun() {
   if (auto hresult = CleanupChromeRecoveryDirectory(); FAILED(hresult)) {
     LOG(WARNING) << "Failed to clean Chrome recovery directory; hresult = "
                  << std::hex << hresult;
   }
+
+  return false;  // This delegate does not implement `Run()`.
 }
 
 }  // namespace elevation_service

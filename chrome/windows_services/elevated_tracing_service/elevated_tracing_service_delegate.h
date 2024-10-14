@@ -21,7 +21,7 @@ class Delegate : public ServiceDelegate {
   uint32_t GetLogEventMessageId() override;
   base::expected<base::HeapArray<FactoryAndClsid>, HRESULT>
   CreateClassFactories() override;
-  void PreRun() override;
+  bool PreRun() override;
   void PostRun() override;
 
  private:

@@ -112,7 +112,7 @@ Delegate::CreateClassFactories() {
   return base::ok(std::move(result));
 }
 
-void Delegate::PreRun() {
+bool Delegate::PreRun() {
   // Run a ThreadPool.
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "elevated_tracing_service");
@@ -123,6 +123,8 @@ void Delegate::PreRun() {
 
   // Create the global SessionRegistry.
   session_registry_ = base::MakeRefCounted<SessionRegistry>();
+
+  return false;  // This delegate does not implement `Run()`.
 }
 
 void Delegate::PostRun() {

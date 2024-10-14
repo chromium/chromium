@@ -51,8 +51,12 @@ class Service {
   // the service.
   int RunAsService();
 
-  // Runs the service on the service thread.
-  void ServiceMainImpl();
+  // Runs the service on the service thread. `command_line` may be different
+  // from the command line with which the program was originally invoked.
+  // Specifically, when the service is invoked as a COM server, the
+  // `command_line` includes the `ServiceParameters` registered under the
+  // `AppId` key.
+  void ServiceMainImpl(const base::CommandLine& command_line);
 
   // Runs as a local server for testing purposes. RunInteractive returns an
   // HRESULT, not a Win32 error code.
@@ -69,7 +73,7 @@ class Service {
 
   // Handles object registration, message loop, and unregistration. Returns
   // when all registered objects are released.
-  HRESULT Run();
+  HRESULT Run(const base::CommandLine& command_line);
 
   // Calls ::CoInitializeSecurity to allow all users to create COM objects
   // within the server.

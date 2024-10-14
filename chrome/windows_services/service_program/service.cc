@@ -146,7 +146,7 @@ int Service::RunAsService() {
   return service_status_.dwWin32ExitCode;
 }
 
-void Service::ServiceMainImpl() {
+void Service::ServiceMainImpl(const base::CommandLine& command_line) {
   service_status_handle_ = ::RegisterServiceCtrlHandler(
       kWindowsServiceName, &Service::ServiceControlHandler);
   if (service_status_handle_ == nullptr) {
@@ -154,6 +154,7 @@ void Service::ServiceMainImpl() {
     return;
   }
   SetServiceStatus(SERVICE_RUNNING);
+  absl::Cleanup service_stopped = [this] { SetServiceStatus(SERVICE_STOPPED); };
 
   service_status_.dwWin32ExitCode = ERROR_SUCCESS;
   service_status_.dwCheckPoint = 0;
@@ -164,22 +165,19 @@ void Service::ServiceMainImpl() {
       base::win::ScopedCOMInitializer::kMTA);
   if (!com_initializer.Succeeded()) {
     PLOG(ERROR) << "Failed to initialize COM";
-    SetServiceStatus(SERVICE_STOPPED);
     return;
   }
 
   // When the Run function returns, the service has stopped.
-  const HRESULT hr = Run();
+  const HRESULT hr = Run(command_line);
   if (FAILED(hr)) {
     service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
     service_status_.dwServiceSpecificExitCode = hr;
   }
-
-  SetServiceStatus(SERVICE_STOPPED);
 }
 
 int Service::RunInteractive() {
-  return Run();
+  return Run(*base::CommandLine::ForCurrentProcess());
 }
 
 // static
@@ -188,6 +186,7 @@ void Service::ServiceControlHandler(DWORD control) {
   switch (control) {
     case SERVICE_CONTROL_STOP:
       self.SetServiceStatus(SERVICE_STOP_PENDING);
+      self.delegate_->OnServiceControlStop();
       self.SignalExit();
       break;
 
@@ -198,7 +197,7 @@ void Service::ServiceControlHandler(DWORD control) {
 
 // static
 void WINAPI Service::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
-  GetInstance().ServiceMainImpl();
+  GetInstance().ServiceMainImpl(base::CommandLine(argc, argv));
 }
 
 void Service::SetServiceStatus(DWORD state) {
@@ -206,14 +205,12 @@ void Service::SetServiceStatus(DWORD state) {
   ::SetServiceStatus(service_status_handle_, &service_status_);
 }
 
-HRESULT Service::Run() {
+HRESULT Service::Run(const base::CommandLine& command_line) {
   // Allow this thread to run tasks. Consider using a UI message pump if there
   // is a need to respond to window messages (e.g., WM_ENDSESSION).
   base::SingleThreadTaskExecutor task_executor;
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitWhenIdleClosure();
 
-  delegate_->PreRun();
+  const bool delegate_implements_run = delegate_->PreRun();
   absl::Cleanup post_run = [&delegate = *delegate_] { delegate.PostRun(); };
 
   HRESULT hr = InitializeComSecurity();
@@ -221,8 +218,18 @@ HRESULT Service::Run() {
     return hr;
   }
 
+  // If `PreRun` returns `true`, the delegate's `Run` method is expected to do
+  // all the logic of registering/unregistering classes and running the COM
+  // server.
+  if (delegate_implements_run) {
+    return delegate_->Run(command_line);
+  }
+
   hr = RegisterClassObjects();
   if (SUCCEEDED(hr)) {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitWhenIdleClosure();
+
     run_loop.Run();
     UnregisterClassObjects();
   }
