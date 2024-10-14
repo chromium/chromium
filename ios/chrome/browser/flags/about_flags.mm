@@ -598,12 +598,14 @@ const FeatureEntry::FeatureParam kModernTabStripBlackBackgroundOption[] = {
 const FeatureEntry::FeatureParam kModernTabStripCloseButtonVisibleOption[] = {
     {kModernTabStripCloseButtonsVisible, "true"},
     {kModernTabStripCloserNTB, "true"},
+    {kModernTabStripHighContrastNTB, "true"},
     {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam
     kModernTabStripInactiveTabsHighContrastOption[] = {
         {kModernTabStripInactiveTabsHighContrast, "true"},
         {kModernTabStripCloserNTB, "true"},
         {kModernTabStripDarkerBackgroundV3, "true"},
+        {kModernTabStripHighContrastNTB, "true"},
         {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam kModernTabStripHighContrastNTBOption[] = {
     {kModernTabStripHighContrastNTB, "true"},
@@ -622,6 +624,7 @@ const FeatureEntry::FeatureParam kModernTabStripDetachedTabsOptions[] = {
     {kModernTabStripCloseButtonsVisible, "true"},
     {kModernTabStripHighContrastNTB, "true"},
     {kModernTabStripInactiveTabsHighContrast, "true"},
+    {kModernTabStripDarkerBackgroundV3, "true"},
     {kModernTabStripDetachedTabs, "true"},
     {kModernTabStripCloserNTB, "true"},
     {kModernTabStripNTBNoBackground, "true"},
