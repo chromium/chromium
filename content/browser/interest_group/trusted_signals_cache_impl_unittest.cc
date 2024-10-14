@@ -87,7 +87,6 @@ struct FetcherBiddingPartitionArgs {
   int partition_id;
   std::set<std::string> interest_group_names;
   std::set<std::string> keys;
-  std::string hostname;
   base::Value::Dict additional_params;
 };
 
@@ -96,7 +95,6 @@ struct FetcherScoringPartitionArgs {
   int partition_id;
   GURL render_url;
   std::set<GURL> component_render_urls;
-  std::string hostname;
   base::Value::Dict additional_params;
 };
 
@@ -123,6 +121,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      std::string hostname;
       std::map<int, std::vector<FetcherBiddingPartitionArgs>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -135,6 +134,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      std::string hostname;
       std::map<int, std::vector<FetcherScoringPartitionArgs>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -152,6 +152,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
    private:
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        std::string_view hostname,
         const GURL& trusted_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
@@ -171,19 +172,19 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
           bidding_partitions_copy.emplace_back(
               bidding_partition.partition_id,
               *bidding_partition.interest_group_names, *bidding_partition.keys,
-              *bidding_partition.hostname,
               bidding_partition.additional_params->Clone());
         }
       }
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key,
+          trusted_signals_url, bidding_and_auction_key, std::string(hostname),
           std::move(compression_groups_copy), std::move(callback),
           weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        std::string_view hostname,
         const GURL& trusted_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<ScoringPartition>>& compression_groups,
@@ -203,13 +204,12 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
           scoring_partitions_copy.emplace_back(
               scoring_partition.partition_id, *scoring_partition.render_url,
               *scoring_partition.component_render_urls,
-              *scoring_partition.hostname,
               scoring_partition.additional_params->Clone());
         }
       }
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key,
+          trusted_signals_url, bidding_and_auction_key, std::string(hostname),
           std::move(compression_groups_copy), std::move(callback),
           weak_ptr_factory_.GetWeakPtr()));
     }
@@ -397,7 +397,6 @@ void ValidateFetchParamsForPartition(
     const FetcherBiddingPartitionArgs& partition,
     const BiddingParams& params,
     int expected_partition_id) {
-  EXPECT_EQ(partition.hostname, params.main_frame_origin.host());
   EXPECT_THAT(partition.interest_group_names,
               testing::ElementsAreArray(params.interest_group_names));
   if (!params.trusted_bidding_signals_keys) {
@@ -416,7 +415,6 @@ void ValidateFetchParamsForPartition(
     const FetcherScoringPartitionArgs& partition,
     const ScoringParams& params,
     int expected_partition_id) {
-  EXPECT_EQ(partition.hostname, params.main_frame_origin.host());
   EXPECT_EQ(partition.render_url, params.render_url);
   EXPECT_THAT(partition.component_render_urls,
               testing::ElementsAreArray(params.component_render_urls));
@@ -455,6 +453,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          const ParamType& params,
                          int expected_compression_group_id,
                          int expected_partition_id) {
+  EXPECT_EQ(fetch.hostname, params.main_frame_origin.host());
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
   EXPECT_EQ(fetch.bidding_and_auction_key.key, params.coordinator.Serialize());
   ASSERT_EQ(fetch.compression_groups.size(), 1u);

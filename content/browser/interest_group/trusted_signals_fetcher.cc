@@ -11,6 +11,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -126,10 +127,6 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
                                  cbor::Value(bidding_partition.partition_id));
 
   cbor::Value::MapValue metadata;
-  // Hostname isn't in `additional_params` since it's used by the caller to
-  // partition fetches.
-  metadata.try_emplace(cbor::Value("hostname"),
-                       cbor::Value(*bidding_partition.hostname));
   for (const auto param : *bidding_partition.additional_params) {
     // TODO(crbug.com/333445540): Consider switching to taking
     // `additional_params` as a cbor::Value, for greater flexibility. The
@@ -187,6 +184,7 @@ std::string CreateRequestBodyFromCbor(cbor::Value cbor_value) {
 }
 
 std::string BuildBiddingSignalsRequestBody(
+    std::string_view hostname,
     const std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>&
         compression_groups) {
   cbor::Value::MapValue request_map_value;
@@ -194,6 +192,11 @@ std::string BuildBiddingSignalsRequestBody(
                                              kAcceptCompression.end());
   request_map_value.emplace(cbor::Value("acceptCompression"),
                             cbor::Value(std::move(accept_compression)));
+
+  cbor::Value::MapValue metadata;
+  metadata.try_emplace(cbor::Value("hostname"), cbor::Value(hostname));
+  request_map_value.try_emplace(cbor::Value("metadata"),
+                                cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue partition_array;
   for (const auto& group_pair : compression_groups) {
@@ -216,12 +219,10 @@ TrustedSignalsFetcher::BiddingPartition::BiddingPartition(
     int partition_id,
     const std::set<std::string>* interest_group_names,
     const std::set<std::string>* keys,
-    const std::string* hostname,
     const base::Value::Dict* additional_params)
     : partition_id(partition_id),
       interest_group_names(*interest_group_names),
       keys(*keys),
-      hostname(*hostname),
       additional_params(*additional_params) {}
 
 TrustedSignalsFetcher::BiddingPartition::BiddingPartition(BiddingPartition&&) =
@@ -237,12 +238,10 @@ TrustedSignalsFetcher::ScoringPartition::ScoringPartition(
     int partition_id,
     const GURL* render_url,
     const std::set<GURL>* component_render_urls,
-    const std::string* hostname,
     const base::Value::Dict* additional_params)
     : partition_id(partition_id),
       render_url(*render_url),
       component_render_urls(*component_render_urls),
-      hostname(*hostname),
       additional_params(*additional_params) {}
 
 TrustedSignalsFetcher::ScoringPartition::ScoringPartition(ScoringPartition&&) =
@@ -272,17 +271,20 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    std::string_view hostname,
     const GURL& trusted_bidding_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
       url_loader_factory, trusted_bidding_signals_url, bidding_and_auction_key,
-      BuildBiddingSignalsRequestBody(compression_groups), std::move(callback));
+      BuildBiddingSignalsRequestBody(hostname, compression_groups),
+      std::move(callback));
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    std::string_view hostname,
     const GURL& trusted_scoring_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,

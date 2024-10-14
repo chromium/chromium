@@ -102,11 +102,12 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // and padding added:
   // {
   //   "acceptCompression": [ "none", "gzip" ],
+  //   "metadata": { "hostname": "host.test" },
   //   "partitions": [
   //     {
   //       "compressionGroupId": 0,
   //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
+  //       "metadata": {},
   //       "arguments": [
   //         {
   //           "tags": [ "interestGroupNames" ],
@@ -121,12 +122,12 @@ class TrustedSignalsFetcherTest : public testing::Test {
   //   ]
   // }
   const std::string_view kBasicBiddingSignalsRequestBody =
-      "00000000A9A26A706172746974696F6E7381A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
-      "0071616363657074436F6D7072657373696F6E82646E6F6E6564677A6970000000000000"
-      "000000000000000000000000000000000000000000";
+      "00000000B3A3686D65746164617461A168686F73746E616D6569686F73742E746573746A"
+      "706172746974696F6E7381A462696400686D65746164617461A069617267756D656E7473"
+      "82A26464617461816667726F75703164746167738172696E74657265737447726F75704E"
+      "616D6573A2646461746181646B657931647461677381646B65797372636F6D7072657373"
+      "696F6E47726F757049640071616363657074436F6D7072657373696F6E82646E6F6E6564"
+      "677A69700000000000000000000000000000000000";
 
   TrustedSignalsFetcherTest() {
     embedded_test_server_.SetSSLConfig(
@@ -172,7 +173,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
     bidding_partitions.emplace_back(
         /*partition_id=*/0, &kDefaultInterestGroupNames, &kDefaultKeys,
-        &kDefaultHostname, &kDefaultAdditionalParams);
+        &kDefaultAdditionalParams);
 
     std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
         bidding_signals_request;
@@ -189,7 +190,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(),
+        url_loader_factory_.get(), kDefaultHostname,
         signals_url ? *signals_url : TrustedBiddingSignalsUrl(),
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -516,11 +517,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -557,11 +559,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -592,11 +595,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -627,11 +631,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test", "foo": "bar" },
+               "metadata": { "foo": "bar" },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -664,12 +669,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
                "metadata": {
-                 "hostname": "host.test",
                  "foo": "bar",
                  "Foo": "bAr",
                  "oof": "rab",
@@ -699,7 +704,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
   bidding_partitions.emplace_back(/*partition_id=*/7,
                                   &kDefaultInterestGroupNames, &kDefaultKeys,
-                                  &kDefaultHostname, &kDefaultAdditionalParams);
+                                  &kDefaultAdditionalParams);
   std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
       bidding_signals_request;
   bidding_signals_request.emplace(3, std::move(bidding_partitions));
@@ -709,11 +714,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 3,
                "id": 7,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -760,14 +766,16 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
     size_t expected_body_length;
     size_t expected_padding;
   } kTestCases[] = {
-      {31, 256, 201, 1},
-      {32, 256, 201, 0},
-      {33, 512, 457, 255},
+      {22, 256, 201, 1},
+      {23, 256, 201, 0},
+      // This is 254 rather than 255 because the length prefix is 1 byte longer
+      // for a 24-character string than a 23-character one.
+      {24, 512, 457, 254},
 
-      // 286 is 1 less than 31+256 because strings in cbor are length-prefixed.
-      {286, 512, 457, 1},
-      {287, 512, 457, 0},
-      {288, 1024, 969, 511},
+      // 276 is less than 22+256 because strings in cbor are length-prefixed.
+      {276, 512, 457, 1},
+      {277, 512, 457, 0},
+      {278, 1024, 969, 511},
   };
 
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
@@ -794,13 +802,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
                                     R"(
                                     {
                                       "acceptCompression": [ "none", "gzip" ],
+                                      "metadata": { "hostname": "host.test" },
                                       "partitions": [
                                         {
                                           "compressionGroupId": 0,
                                           "id": 0,
-                                          "metadata": {
-                                            "hostname": "host.test"
-                                          },
+                                          "metadata": {},
                                           "arguments": [
                                             {
                                               "tags": [ "interestGroupNames" ],
@@ -1329,31 +1336,30 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
 
   const std::set<std::string> kInterestGroupNames2{"group2"};
   const std::set<std::string> kKeys2{"key2"};
-  const std::string kHostname2{"host2.test"};
   base::Value::Dict additional_params2;
   additional_params2.Set("foo", "bar");
   bidding_partitions->emplace_back(/*partition_id=*/1, &kInterestGroupNames2,
-                                   &kKeys2, &kHostname2, &additional_params2);
+                                   &kKeys2, &additional_params2);
 
   const std::set<std::string> kInterestGroupNames3{"group1", "group2",
                                                    "group3"};
   const std::set<std::string> kKeys3{"key1", "key2", "key3"};
-  const std::string kHostname3{"host3.test"};
   base::Value::Dict additional_params3;
   additional_params3.Set("foo2", "bar2");
   bidding_partitions->emplace_back(/*partition_id=*/2, &kInterestGroupNames3,
-                                   &kKeys3, &kHostname3, &additional_params3);
+                                   &kKeys3, &additional_params3);
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1368,7 +1374,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
              {
                "compressionGroupId": 0,
                "id": 1,
-               "metadata": { "hostname": "host2.test", "foo": "bar" },
+               "metadata": { "foo": "bar" },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1383,7 +1389,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
              {
                "compressionGroupId": 0,
                "id": 2,
-               "metadata": { "hostname": "host3.test", "foo2": "bar2"  },
+               "metadata": { "foo2": "bar2"  },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1435,12 +1441,11 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
 
   const std::set<std::string> kInterestGroupNames2{"group2"};
   const std::set<std::string> kKeys2{"key2"};
-  const std::string kHostname2{"host2.test"};
   base::Value::Dict additional_params2;
   additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions2;
   bidding_partitions2.emplace_back(/*partition_id=*/0, &kInterestGroupNames2,
-                                   &kKeys2, &kHostname2, &additional_params2);
+                                   &kKeys2, &additional_params2);
   bidding_signals_request.emplace(1, std::move(bidding_partitions2));
 
   const std::set<std::string> kInterestGroupNames3{"group1", "group2",
@@ -1451,7 +1456,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
   additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions3;
   bidding_partitions3.emplace_back(/*partition_id=*/0, &kInterestGroupNames3,
-                                   &kKeys3, &kHostname3, &additional_params3);
+                                   &kKeys3, &additional_params3);
   bidding_signals_request.emplace(2, std::move(bidding_partitions3));
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
@@ -1459,11 +1464,12 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1478,7 +1484,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
              {
                "compressionGroupId": 1,
                "id": 0,
-               "metadata": { "hostname": "host2.test", "foo": "bar" },
+               "metadata": { "foo": "bar" },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1493,7 +1499,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
              {
                "compressionGroupId": 2,
                "id": 0,
-               "metadata": { "hostname": "host3.test", "foo2": "bar2" },
+               "metadata": { "foo2": "bar2" },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1554,23 +1560,21 @@ TEST_F(TrustedSignalsFetcherTest,
 
   const std::set<std::string> kInterestGroupNames2{"group2"};
   const std::set<std::string> kKeys2{"key2"};
-  const std::string kHostname2{"host2.test"};
   base::Value::Dict additional_params2;
   additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions2;
   bidding_partitions2.emplace_back(/*partition_id=*/0, &kInterestGroupNames2,
-                                   &kKeys2, &kHostname2, &additional_params2);
+                                   &kKeys2, &additional_params2);
   bidding_signals_request.emplace(1, std::move(bidding_partitions2));
 
   const std::set<std::string> kInterestGroupNames3{"group1", "group2",
                                                    "group3"};
   const std::set<std::string> kKeys3{"key1", "key2", "key3"};
-  const std::string kHostname3{"host3.test"};
   base::Value::Dict additional_params3;
   additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions3;
   bidding_partitions3.emplace_back(/*partition_id=*/0, &kInterestGroupNames3,
-                                   &kKeys3, &kHostname3, &additional_params3);
+                                   &kKeys3, &additional_params3);
   bidding_signals_request.emplace(2, std::move(bidding_partitions3));
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
@@ -1578,11 +1582,12 @@ TEST_F(TrustedSignalsFetcherTest,
   const std::string_view kExpectedRequestBodyJson =
       R"({
            "acceptCompression": [ "none", "gzip" ],
+           "metadata": { "hostname": "host.test" },
            "partitions": [
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": { "hostname": "host.test" },
+               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1597,7 +1602,7 @@ TEST_F(TrustedSignalsFetcherTest,
              {
                "compressionGroupId": 1,
                "id": 0,
-               "metadata": { "hostname": "host2.test", "foo": "bar" },
+               "metadata": { "foo": "bar" },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1612,7 +1617,7 @@ TEST_F(TrustedSignalsFetcherTest,
              {
                "compressionGroupId": 2,
                "id": 0,
-               "metadata": { "hostname": "host3.test", "foo2": "bar2" },
+               "metadata": { "foo2": "bar2" },
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
