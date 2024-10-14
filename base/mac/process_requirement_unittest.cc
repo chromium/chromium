@@ -242,10 +242,24 @@ TEST_F(ProcessRequirementTest, Identifier) {
                 std::string(kExpectedDeveloperIdRequirementString));
 }
 
-TEST_F(ProcessRequirementTest, AdHocOrUnsigned) {
-  // CS_OPS_TEAMID returns ENOENT for an ad-hoc signed or unsigned process.
+TEST_F(ProcessRequirementTest, AdHocSigned) {
+  // CS_OPS_TEAMID returns ENOENT for an ad-hoc signed process.
   ON_CALL(csops_provider_, GetTeamIdentifier).WillByDefault(Return(ENOENT));
   csops_provider_.SetValidationCategory(CS_VALIDATION_CATEGORY_NONE);
+
+  std::optional<ProcessRequirement> requirement = ProcessRequirement::Builder()
+                                                      .HasSameTeamIdentifier()
+                                                      .HasSameCertificateType()
+                                                      .Build();
+  EXPECT_TRUE(requirement);
+  EXPECT_FALSE(requirement->AsSecRequirement());
+}
+
+TEST_F(ProcessRequirementTest, Unsigned) {
+  // CS_OPS_TEAMID and CS_OPS_VALIDATION_CATEGORY both return EINVAL for an
+  // unsigned process.
+  ON_CALL(csops_provider_, GetTeamIdentifier).WillByDefault(Return(EINVAL));
+  ON_CALL(csops_provider_, GetValidationCategory).WillByDefault(Return(EINVAL));
 
   std::optional<ProcessRequirement> requirement = ProcessRequirement::Builder()
                                                       .HasSameTeamIdentifier()

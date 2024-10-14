@@ -114,9 +114,10 @@ base::expected<std::string, int> TeamIdentifierOfCurrentProcess() {
   int result = CSOpsProvider()->csops(getpid(), CS_OPS_TEAMID, &result_data,
                                       sizeof(result_data));
   if (result < 0) {
-    if (errno != ENOENT) {
-      // Don't log an error for `ENOENT` as it is expected in unsigned or ad-hoc
-      // signed builds, such as during local development.
+    if (errno != ENOENT && errno != EINVAL) {
+      // Don't log an error for `ENOENT` or `EINVAL` as they are expected in
+      // ad-hoc signed builds and unsigned builds respectively, such as during
+      // local development.
       PLOG(ERROR) << "csops(CS_OPS_TEAMID) failed";
     }
 
@@ -132,7 +133,11 @@ base::expected<ValidationCategory, int> ValidationCategoryOfCurrentProcess() {
       CSOpsProvider()->csops(getpid(), CS_OPS_VALIDATION_CATEGORY,
                              &validation_category, sizeof(validation_category));
   if (result < 0) {
-    PLOG(ERROR) << "csops(CS_OPS_VALIDATION_CATEGORY) failed";
+    if (errno != EINVAL) {
+      // Don't log an error for `EINVAL` as it is expected in unsigned builds,
+      // such as during local development.
+      PLOG(ERROR) << "csops(CS_OPS_VALIDATION_CATEGORY) failed";
+    }
     return base::unexpected(errno);
   }
 
@@ -262,9 +267,10 @@ ProcessRequirement::Builder::HasSameTeamIdentifier() && {
   if (team_identifier.has_value()) {
     team_identifier_ = std::move(*team_identifier);
     return std::move(*this);
-  } else if (team_identifier.error() == ENOENT) {
-    // ENOENT is returned when the process has no team identifier,
-    // such as if it is unsigned or signed with an ad-hoc identity.
+  } else if (team_identifier.error() == ENOENT ||
+             team_identifier.error() == EINVAL) {
+    // ENOENT is returned when the process is ad-hoc signed and has no team
+    // identifier. EINVAL is returned when the process is unsigned.
     team_identifier_ = "";
     return std::move(*this);
   }
@@ -285,6 +291,11 @@ ProcessRequirement::Builder::HasSameCertificateType() && {
     auto validation_category = ValidationCategoryOfCurrentProcess();
     if (validation_category.has_value()) {
       validation_category_ = *validation_category;
+    } else if (validation_category.error() == EINVAL) {
+      // EINVAL on versions of macOS that support CS_OPS_VALIDATION_CATEGORY
+      // indicates that the process is unsigned or the process has an invalid
+      // code signature.
+      validation_category_ = ValidationCategory::None;
     } else {
       failed_ = true;
     }
@@ -648,11 +659,15 @@ void ProcessRequirement::GatherMetrics() {
   if (!all_fields_have_expected_values) {
     // Use `DumpWithoutCrashing` to understand unexpected values, except in
     // specific situations where "unexpected" values are expected.
-    if (validation_category == ValidationCategory::None &&
-        fallback_validation_category == ValidationCategory::None &&
-        team_id == base::unexpected(ENOENT)) {
+    if (fallback_validation_category == ValidationCategory::None &&
+        (team_id == base::unexpected(ENOENT) ||
+         team_id == base::unexpected(EINVAL))) {
       // A build with Chrome branding that is unsigned or ad-hoc signed,
       // such as for local development.
+    } else if (team_id_has_expected_value &&
+               fallback_validation_category ==
+                   ValidationCategory::Development) {
+      // A build with Chrome branding signed with the development identity.
     } else if (validation_category == ValidationCategory::Platform) {
       // Being reported as a platform binary indicates that
       // `amfi_get_out_of_my_way=1` is set in the boot arguments.
