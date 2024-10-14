@@ -1484,6 +1484,7 @@
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="7709918231054955894">Просматривайте все свои вкладки</translation>
 <translation id="7733878270780732638">Недостаточно места на устройстве.</translation>
+<translation id="7746817319925672889">Google Менеджер паролей скоро перестанет работать на этом устройстве</translation>
 <translation id="774876555279732384">Сервисами автозаполнения также можно управлять в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1511,6 +1512,7 @@
 <translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
 <translation id="7846296061357476882">Сервисы Google</translation>
 <translation id="784934925303690534">Временной диапазон</translation>
+<translation id="7850687713580657633">Сохраненные пароли скоро перестанут работать, потому что сервисы Google Play недоступны. Чтобы продолжить использовать эти пароли, войдите в текущий аккаунт на другом устройстве или откройте сайт passwords.google.com.</translation>
 <translation id="7851858861565204677">Другие устройства</translation>
 <translation id="7853202427316060426">Действия</translation>
 <translation id="7859988229622350291">Никогда не переводить</translation>

@@ -5684,6 +5684,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5068919226082848014">피자</translation>
 <translation id="5071295820492622726">최근 다운로드로 돌아가기</translation>
 <translation id="5071892329440114717">표준 보호 세부정보 표시</translation>
+<translation id="5072303130033714629">콘텐츠 전송 도구</translation>
 <translation id="5072500507106264618">시스템 서비스에서만 내 위치 정보를 사용할 수 있음</translation>
 <translation id="5072836811783999860">관리 북마크 표시</translation>
 <translation id="5072900412896857127">Google Play 서비스 약관을 로드할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
@@ -6636,6 +6637,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5780940414249100901">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK2_END" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">프로세스 우선순위</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />님의 계정에 동기화</translation>
+<translation id="5781120434102258025">학교 계정 데이터를 개인 계정으로 이전하세요.</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" />에 명령어 보내기</translation>
 <translation id="5782227691023083829">번역 중...</translation>
 <translation id="57838592816432529">음소거</translation>
@@ -11288,6 +11290,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />최적의 환경에서 이용하려면 <ph name="DEVICE_OS" />을 내부 디스크에 설치하세요. 나중에 로그인 화면에서 설치할 수도 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />아직 설치할 준비가 되지 않았다면 USB에서 실행하여 사용해 볼 수도 있습니다. 기존 OS와 데이터는 그대로 유지되지만 저장용량과 성능이 제한될 수 있습니다<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">툴바 맞춤설정</translation>
+<translation id="9120800848981545750">iOS용 Chrome을 다운로드하여 휴대전화에서 탭, 북마크, 비밀번호에 액세스하세요.</translation>
 <translation id="9121814364785106365">고정 탭으로 열기</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{탭을 닫고 그룹을 삭제하시겠습니까?}=1{탭을 닫고 그룹을 삭제하시겠습니까?}other{탭을 닫고 그룹을 삭제하시겠습니까?}}</translation>
 <translation id="9122788874051694311">시크릿 모드 외부에서 이 패스키를 저장하시겠습니까?</translation>

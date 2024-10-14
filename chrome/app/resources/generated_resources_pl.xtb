@@ -5649,6 +5649,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5071295820492622726">Wróć do ostatnio pobranych</translation>
 <translation id="5071892329440114717">Pokaż szczegóły standardowej ochrony</translation>
+<translation id="5072303130033714629">Narzędzie Przenoszenie treści</translation>
 <translation id="5072500507106264618">Z Twojej lokalizacji mogą korzystać tylko usługi systemowe</translation>
 <translation id="5072836811783999860">Pokaż zakładki zarządzane</translation>
 <translation id="5072900412896857127">Nie można wczytać Warunków korzystania z usługi Google Play. Sprawdź połączenie sieciowe i spróbuj ponownie.</translation>
@@ -6599,6 +6600,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5780940414249100901">Wysyłaj dane o użytkowaniu i diagnostyce. To urządzenie automatycznie wysyła do Google dane o diagnostyce i korzystaniu z urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, aby poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być na nim zapisywane. <ph name="BEGIN_LINK2" />Więcej informacji o danych<ph name="BEGIN_LINK2_END" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Priorytet procesu</translation>
 <translation id="5781092003150880845">Synchronizuj z kontem: <ph name="ACCOUNT_FULL_NAME" /></translation>
+<translation id="5781120434102258025">Przenieś dane z konta szkolnego na konto osobiste</translation>
 <translation id="5781865261247219930">Prześlij polecenia do: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="57838592816432529">Wycisz</translation>
@@ -11249,6 +11251,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />System operacyjny <ph name="DEVICE_OS" /> będzie działać najlepiej po zainstalowaniu na dysku wewnętrznym. Instalację możesz przeprowadzić też później z poziomu ekranu logowania.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jeśli nie wszystko jest gotowe do instalacji, możesz uruchomić system z nośnika USB, aby go wypróbować. W takim przypadku Twój obecny system operacyjny i dane zostaną zachowane, ale możesz zauważyć ograniczenia dotyczące pamięci i wydajności.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Dostosuj pasek narzędzi</translation>
+<translation id="9120800848981545750">Pobierz Chrome na iOS, aby uzyskać dostęp do kart, zakładek i haseł na telefonie.</translation>
 <translation id="9121814364785106365">Otwórz jako przypiętą kartę</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Zamknąć kartę i usunąć grupę?}=1{Zamknąć kartę i usunąć grupę?}few{Zamknąć karty i usunąć grupy?}many{Zamknąć karty i usunąć grupy?}other{Zamknąć karty i usunąć grupy?}}</translation>
 <translation id="9122788874051694311">Zapisać ten klucz dostępu poza trybem incognito?</translation>

@@ -1484,6 +1484,7 @@
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
 <translation id="7709918231054955894">Преглед на всичките ви раздели</translation>
 <translation id="7733878270780732638">Няма достатъчно място на устройството.</translation>
+<translation id="7746817319925672889">Google Мениджър на пароли скоро ще спре да работи на това устройство</translation>
 <translation id="774876555279732384">Услугите за автоматично попълване се управляват и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7762668264895820836">SD карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1511,6 +1512,7 @@
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Период от време</translation>
+<translation id="7850687713580657633">Паролите скоро ще спрат да работят, защото услугите за Google Play не са налице. За да използвате паролите, запазени в Google Мениджър на пароли, влезте в профила си на друго устройство или отворете passwords.google.com.</translation>
 <translation id="7851858861565204677">Други устройства</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>

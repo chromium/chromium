@@ -1589,6 +1589,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6352082849089527770">Xarxes desconegudes</translation>
 <translation id="6359587239691116345">Obtén les funcions i les millores de seguretat més recents. Si rebutges aquesta actualització, pot ser que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment.</translation>
 <translation id="6362833380917912748">Familiaritza't amb les aplicacions integrades</translation>
+<translation id="6364386432014869981">El ratolí tàctil integrat està activat</translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="6378515133128829137">Fixa la finestra a la dreta</translation>
 <translation id="6381109794406942707">Per desbloquejar el dispositiu, introdueix el PIN.</translation>
@@ -1689,6 +1690,8 @@ Instal·lació nova</translation>
 <translation id="6682029141988159141">Enganxa el contingut del porta-retalls</translation>
 <translation id="6683022854667115063">Auriculars</translation>
 <translation id="6686023075541098243">Configura la visualització de les notificacions del telèfon</translation>
+<translation id="6688019813898140556">Esc 5 vegades</translation>
+<translation id="6694462491298752106">El ratolí tàctil integrat està desactivat</translation>
 <translation id="6694973220096431421">Cerca a Google Drive</translation>
 <translation id="6696025732084565524">El teclat extraïble necessita una actualització crítica</translation>
 <translation id="6697913454192220372">Afegeix un escriptori nou</translation>

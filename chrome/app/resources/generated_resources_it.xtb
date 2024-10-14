@@ -5669,6 +5669,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5071295820492622726">Torna ai download recenti</translation>
 <translation id="5071892329440114717">Mostra dettagli della protezione standard</translation>
+<translation id="5072303130033714629">Strumento Trasferimento contenuti</translation>
 <translation id="5072500507106264618">Solo i servizi di sistema possono utilizzare la tua posizione</translation>
 <translation id="5072836811783999860">Mostra Preferiti gestiti</translation>
 <translation id="5072900412896857127">Impossibile caricare i Termini di servizio di Google Play. Controlla la connessione di rete e riprova.</translation>
@@ -6619,6 +6620,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5780940414249100901">Invia dati su utilizzo e diagnostica. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Priorità processo</translation>
 <translation id="5781092003150880845">Sincronizza come <ph name="ACCOUNT_FULL_NAME" /></translation>
+<translation id="5781120434102258025">Sposta i dati dell'account della scuola nel tuo account personale</translation>
 <translation id="5781865261247219930">Invia comandi a <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Traduzione in corso...</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
@@ -11270,6 +11272,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Per un'esperienza ottimale, installa <ph name="DEVICE_OS" /> sul disco interno. Puoi anche installarlo in un secondo momento dalla schermata di accesso.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non vuoi installarlo ora, puoi eseguirlo da un'unità USB per provarlo. In questo modo manterrai il tuo attuale sistema operativo e i tuoi dati, ma potresti riscontrare limiti relativi allo spazio di archiviazione e alle prestazioni.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Personalizza la barra degli strumenti</translation>
+<translation id="9120800848981545750">Scarica Chrome per iOS per accedere a schede, preferiti e password sul tuo smartphone.</translation>
 <translation id="9121814364785106365">Apri in una scheda bloccata</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Chiudere scheda ed eliminare gruppo?}=1{Chiudere scheda ed eliminare gruppo?}other{Chiudere le schede ed eliminare i gruppi?}}</translation>
 <translation id="9122788874051694311">Salvare la passkey al di fuori della modalità di navigazione in incognito?</translation>

@@ -5686,6 +5686,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5068919226082848014">Pitsa</translation>
 <translation id="5071295820492622726">Yn ôl i lawrlwythiadau diweddar</translation>
 <translation id="5071892329440114717">Dangos manylion amddiffyniad safonol</translation>
+<translation id="5072303130033714629">Offeryn Trosglwyddo Cynnwys</translation>
 <translation id="5072500507106264618">Dim ond gwasanaethau system all ddefnyddio'ch lleoliad</translation>
 <translation id="5072836811783999860">Dangos nodau tudalen a reolir</translation>
 <translation id="5072900412896857127">Ni ellir llwytho Telerau Gwasanaeth Google Play. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni.</translation>
@@ -6638,6 +6639,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5780940414249100901">Anfon data defnydd a diagnostig. Ar hyn o bryd mae'r ddyfais hon yn anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Ni ddefnyddir hyn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Gorfodir y <ph name="BEGIN_LINK1" />gosodiad<ph name="END_LINK1" /> hwn gan y perchennog. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w gyfrif Google. <ph name="BEGIN_LINK2" />Dysgu rhagor am fetrigau<ph name="BEGIN_LINK2_END" />Dysgu rhagor<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Blaenoriaeth prosesau</translation>
 <translation id="5781092003150880845">Cysoni fel <ph name="ACCOUNT_FULL_NAME" /></translation>
+<translation id="5781120434102258025">Symud eich data cyfrif ysgol i'ch cyfrif personol</translation>
 <translation id="5781865261247219930">Anfon gorchmynion i <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Wrthi'n cyfieithu...</translation>
 <translation id="57838592816432529">Distewi</translation>
@@ -11300,6 +11302,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Am y profiad gorau, gosodwch <ph name="DEVICE_OS" /> i'ch disg mewnol. Gallwch hefyd ei osod yn nes ymlaen o'r sgrîn mewngofnodi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os nad ydych yn barod i'w osod, gallwch ei redeg o USB i roi cynnig arni. Bydd hyn yn cadw eich data ac OS presennol, ond mae'n bosib y byddwch yn gweld cyfyngiadau o ran storfa a pherfformiad.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Addasu Bar Offer</translation>
+<translation id="9120800848981545750">Lawrlwythwch Chrome ar gyfer iOS i gael mynediad at eich tabiau, nodau tudalen a chyfrineiriau ar eich ffôn.</translation>
 <translation id="9121814364785106365">Ar agor fel tab a biniwyd</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Cau'r Tab a Dileu'r Grŵp?}=1{Cau'r Tabiau a Dileu'r Grŵp?}two{Cau'r Tabiau a Dileu'r Grwpiau?}few{Cau'r Tabiau a Dileu'r Grwpiau?}many{Cau'r Tabiau a Dileu'r Grwpiau?}other{Cau'r Tabiau a Dileu'r Grwpiau?}}</translation>
 <translation id="9122788874051694311">Cadw'r cod pas hwn y tu allan i'r modd Anhysbys?</translation>

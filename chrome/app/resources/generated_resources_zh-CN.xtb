@@ -5658,6 +5658,7 @@
 <translation id="5068919226082848014">披萨</translation>
 <translation id="5071295820492622726">返回至近期的下载内容</translation>
 <translation id="5071892329440114717">显示标准保护详情</translation>
+<translation id="5072303130033714629">Content Transfer 工具</translation>
 <translation id="5072500507106264618">只有系统服务才能使用您的位置信息</translation>
 <translation id="5072836811783999860">显示受管理的书签</translation>
 <translation id="5072900412896857127">无法加载《Google Play 服务条款》。请检查您的网络连接状况，然后重试。</translation>
@@ -6607,6 +6608,7 @@
 <translation id="5780940414249100901">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">进程优先级</translation>
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
+<translation id="5781120434102258025">将学校账号数据转移到个人账号</translation>
 <translation id="5781865261247219930">向“<ph name="EXTENSION_NAME" />”发送命令</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
 <translation id="57838592816432529">静音</translation>
@@ -11258,6 +11260,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">自定义工具栏</translation>
+<translation id="9120800848981545750">下载 iOS 版 Chrome，即可在手机上访问您的标签页、书签和密码。</translation>
 <translation id="9121814364785106365">在固定标签页中打开</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{要关闭该标签页并删除该分组吗？}=1{要关闭这些标签页并删除该分组吗？}other{要关闭这些标签页并删除这些分组吗？}}</translation>
 <translation id="9122788874051694311">要在无痕模式以外保存此通行密钥吗？</translation>
