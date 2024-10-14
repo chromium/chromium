@@ -151,7 +151,7 @@ export class TranscriptionView extends ReactiveLitElement {
           cursor: pointer;
 
           &:hover,
-          &:focus {
+          &:focus-visible {
             background: var(--cros-sys-highlight_shape);
             outline: none;
           }
