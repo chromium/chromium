@@ -71,16 +71,31 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
   bool fail_sync_ = false;
   // Overrides `fail_sync_`
   base::RepeatingClosure on_transfer_complete_callback_;
+  // Called when the copy task is starting/ongoing
+  base::RepeatingClosure on_copy_in_progress_callback_;
 
  private:
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const file_manager::io_task::ProgressStatus& status) override {
-    // Wait for the copy task to complete before starting the Drive sync.
     auto it = source_files_.find(status.sources[0].url.path());
-    if (status.type == file_manager::io_task::OperationType::kCopy &&
-        status.sources.size() == 1 && it != source_files_.end() &&
-        status.state == file_manager::io_task::State::kSuccess) {
+    if (status.type != file_manager::io_task::OperationType::kCopy ||
+        status.sources.size() != 1 || it == source_files_.end()) {
+      return;
+    }
+
+    // Invoke in progress callback if needed.
+    if (status.state == file_manager::io_task::State::kQueued ||
+        status.state == file_manager::io_task::State::kInProgress) {
+      if (on_copy_in_progress_callback_) {
+        on_copy_in_progress_callback_.Run();
+        // The callback might stop the IOTask, which would invalidate status
+        // which is still accessed below.
+        return;
+      }
+    }
+    // Wait for the copy task to complete before starting the Drive sync.
+    if (status.state == file_manager::io_task::State::kSuccess) {
       if (on_transfer_complete_callback_) {
         on_transfer_complete_callback_.Run();
       } else if (fail_sync_) {
@@ -282,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, NoConnection) {
   }
 }
 
-// Test that when connection to Drive fails during upload, the file is not moved
-// to Drive.
+// Test that when connection to Drive fails during upload, the file is not
+// moved to Drive.
 IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
   SetUpObservers();
   SetUpMyFiles();
@@ -306,6 +321,63 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
   EXPECT_EQ(future.Get(), MigrationUploadError::kServiceUnavailable);
 
   // Check that the source file has not been moved to Drive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
+    CheckPathNotFoundOnDrive(
+        observed_relative_drive_path(source_files_.find(source_file)->second));
+  }
+}
+
+// Test that the upload can be cancelled after Run.
+IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, Cancel) {
+  SetUpObservers();
+  SetUpMyFiles();
+
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file =
+      SetUpSourceFile(test_file_name, my_files_dir());
+
+  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
+      profile(), source_file, base::FilePath(kDestinationDirName),
+      future.GetCallback());
+  drive_upload_handler->Run();
+  drive_upload_handler->Cancel();
+
+  EXPECT_EQ(future.Get(), MigrationUploadError::kCancelled);
+
+  // Check that the source file has not been moved to Drive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
+    CheckPathNotFoundOnDrive(
+        observed_relative_drive_path(source_files_.find(source_file)->second));
+  }
+}
+
+// Test that the upload can be cancelled after the copy task already started.
+IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, CancelAfterCopyStarts) {
+  SetUpObservers();
+  SetUpMyFiles();
+
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file =
+      SetUpSourceFile(test_file_name, my_files_dir());
+
+  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
+      profile(), source_file, base::FilePath(kDestinationDirName),
+      future.GetCallback());
+
+  on_copy_in_progress_callback_ = base::BindLambdaForTesting(
+      [&drive_upload_handler] { drive_upload_handler->Cancel(); });
+
+  drive_upload_handler->Run();
+
+  EXPECT_EQ(future.Get(), MigrationUploadError::kCancelled);
+
+  // Check that the source file has not been deleted.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
