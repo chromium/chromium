@@ -13,13 +13,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import './guest_os_container_select.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
 
-import {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
+import type {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
+import {GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
 import {getTemplate} from './guest_os_shared_usb_devices_add_dialog.html.js';
 
 interface GuestOsSharedUsbDevicesAddDialog {
