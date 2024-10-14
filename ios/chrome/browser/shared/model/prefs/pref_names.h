@@ -567,6 +567,10 @@ inline constexpr char kPushNotificationAuthorizationStatus[] =
 inline constexpr char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";
 
+// Timestamp tracking the time in which Chrome was last backgrounded for the
+// purposes of locking incognito content.
+inline constexpr char kLastBackgroundedTime[] = "ios.last_backgrounded_time";
+
 // Timestamp set when a user signs in. It is used for policies that clear data
 // on sign-out only for the duration the user was signed in. It is also used for
 // user policies that should clear data only from the time of sign-in and not

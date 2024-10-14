@@ -11,11 +11,13 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -45,17 +47,27 @@
 // Tracks whether the user authenticated for incognito since last launch.
 @property(nonatomic, assign) BOOL authenticatedSinceLastForeground;
 
+// Tracks whether Chrome was backgrounded for more that the required threshold
+// to trigger soft lock.
+@property(nonatomic, assign) BOOL backgroundedForEnoughTime;
+
 // Container for observers.
 @property(nonatomic, strong) IncognitoReauthObserverList* observers;
+
+// Tracks the time in which Chrome was last backgrounded.
+@property(nonatomic, assign) base::Time lastBackgroundedTime;
 
 @end
 
 @implementation IncognitoReauthSceneAgent
 
+@synthesize lastBackgroundedTime = _lastBackgroundedTime;
+
 #pragma mark - class public
 
 + (void)registerLocalState:(PrefRegistrySimple*)registry {
   registry->RegisterBooleanPref(prefs::kIncognitoAuthenticationSetting, false);
+  registry->RegisterTimePref(prefs::kLastBackgroundedTime, base::Time());
 }
 
 #pragma mark - public
@@ -81,7 +93,8 @@
       !self.authenticatedSinceLastForeground) {
     if ([self isReauthFeatureEnabled]) {
       return IncognitoLockState::kReauth;
-    } else if ([self isSoftLockFeatureEnabled]) {
+    } else if ([self isSoftLockFeatureEnabled] &&
+               self.backgroundedForEnoughTime) {
       return IncognitoLockState::kSoftLock;
     }
   }
@@ -154,6 +167,26 @@
   }
 }
 
+- (void)updateBackgroundedForEnoughTime:(SceneActivationLevel)level {
+  if (!IsIOSSoftLockEnabled()) {
+    return;
+  }
+
+  if (level <= SceneActivationLevelBackground) {
+    self.lastBackgroundedTime = base::Time::Now();
+    self.backgroundedForEnoughTime = NO;
+    return;
+  }
+
+  if (self.lastBackgroundedTime.is_null()) {
+    self.backgroundedForEnoughTime = NO;
+    return;
+  }
+
+  base::TimeDelta duration = base::Time::Now() - self.lastBackgroundedTime;
+  self.backgroundedForEnoughTime = duration >= kSoftLockBackgroundThreshold;
+}
+
 - (void)setWindowHadIncognitoContentWhenBackgrounded:(BOOL)hadIncognitoContent {
   if (_windowHadIncognitoContentWhenBackgrounded == hadIncognitoContent) {
     return;
@@ -162,6 +195,35 @@
   if ([self areLockFeaturesEnabled]) {
     [self notifyObservers];
   }
+}
+
+- (void)setBackgroundedForEnoughTime:(BOOL)backgroundedForEnoughTime {
+  if (_backgroundedForEnoughTime == backgroundedForEnoughTime) {
+    return;
+  }
+
+  _backgroundedForEnoughTime = backgroundedForEnoughTime;
+
+  if ([self areLockFeaturesEnabled]) {
+    [self notifyObservers];
+  }
+}
+
+- (void)setLastBackgroundedTime:(base::Time)lastBackgroundedTime {
+  _lastBackgroundedTime = lastBackgroundedTime;
+
+  if (self.localState) {
+    self.localState->SetTime(prefs::kLastBackgroundedTime,
+                             lastBackgroundedTime);
+  }
+}
+
+- (base::Time)lastBackgroundedTime {
+  if (_lastBackgroundedTime.is_null() && self.localState) {
+    _lastBackgroundedTime =
+        self.localState->GetTime(prefs::kLastBackgroundedTime);
+  }
+  return _lastBackgroundedTime;
 }
 
 - (void)notifyObservers {
@@ -176,9 +238,11 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level <= SceneActivationLevelBackground) {
     [self updateWindowHasIncognitoContent:sceneState];
+    [self updateBackgroundedForEnoughTime:level];
     self.authenticatedSinceLastForeground = NO;
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
+    [self updateBackgroundedForEnoughTime:level];
     // Close media presentations when the app is foregrounded rather than
     // backgrounded to avoid freezes.
     [self closeMediaPresentations];

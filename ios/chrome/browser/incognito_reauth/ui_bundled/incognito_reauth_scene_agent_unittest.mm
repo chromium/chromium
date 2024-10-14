@@ -6,9 +6,12 @@
 
 #import "base/feature_list.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/scoped_mock_clock_override.h"
+#import "base/time/time.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -102,6 +105,14 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
   }
 
+  void AdvanceClock(const base::TimeDelta& delay) {
+    scoped_clock_.Advance(delay);
+  }
+
+  void RecordCurrentTimeInPref() {
+    pref_service_.SetTime(prefs::kLastBackgroundedTime, scoped_clock_.Now());
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 
@@ -116,6 +127,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   std::unique_ptr<TestBrowser> test_browser_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedMockClockOverride scoped_clock_;
 };
 
 // Test that when the feature pref is disabled, auth isn't required.
@@ -221,22 +233,14 @@ TEST_F(IncognitoReauthSceneAgentTest, AllFeaturesDisabled) {
                    /*reauth_enabled=*/false,
                    /*soft_lock_enabled=*/false);
 
+  // Satisfy soft lock conditions
+  RecordCurrentTimeInPref();
+  AdvanceClock(kSoftLockBackgroundThreshold);
+
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kNone);
-}
-
-// Test that the correct overlay is displayed when soft lock is enabled.
-TEST_F(IncognitoReauthSceneAgentTest, SoftLockEnabled) {
-  SetUpTestObjects(/*tab_count=*/1,
-                   /*reauth_enabled=*/false,
-                   /*soft_lock_enabled=*/true);
-
-  // Go foreground.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kSoftLock);
 }
 
 // Test that the correct overlay is displayed when both reauth and soft lock are
@@ -245,6 +249,10 @@ TEST_F(IncognitoReauthSceneAgentTest, AllFeaturesEnabled) {
   SetUpTestObjects(/*tab_count=*/1,
                    /*reauth_enabled=*/true,
                    /*soft_lock_enabled=*/true);
+
+  // Satisfy soft lock conditions
+  RecordCurrentTimeInPref();
+  AdvanceClock(kSoftLockBackgroundThreshold);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -258,6 +266,10 @@ TEST_F(IncognitoReauthSceneAgentTest, SuccessfulSoftUnlock) {
   SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
                    /*soft_lock_enabled=*/true);
 
+  // Satisfy soft lock conditions
+  RecordCurrentTimeInPref();
+  AdvanceClock(kSoftLockBackgroundThreshold);
+
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
@@ -270,6 +282,7 @@ TEST_F(IncognitoReauthSceneAgentTest, SuccessfulSoftUnlock) {
 
   // Auth required after backgrounding.
   scene_state_.activationLevel = SceneActivationLevelBackground;
+  AdvanceClock(kSoftLockBackgroundThreshold);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   EXPECT_TRUE(agent_.authenticationRequired);
 }
@@ -280,6 +293,10 @@ TEST_F(IncognitoReauthSceneAgentTest,
        SoftUnlockNotRequiredWhenNoIncognitoTabs) {
   SetUpTestObjects(/*tab_count=*/0, /*reauth_enabled=*/false,
                    /*soft_lock_enabled=*/true);
+
+  // Satisfy soft lock conditions
+  RecordCurrentTimeInPref();
+  AdvanceClock(kSoftLockBackgroundThreshold);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -294,6 +311,10 @@ TEST_F(IncognitoReauthSceneAgentTest,
   SetUpTestObjects(/*tab_count=*/0, /*reauth_enabled=*/false,
                    /*soft_lock_enabled*/ true);
 
+  // Satisfy soft lock conditions
+  RecordCurrentTimeInPref();
+  AdvanceClock(kSoftLockBackgroundThreshold);
+
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
@@ -305,6 +326,86 @@ TEST_F(IncognitoReauthSceneAgentTest,
       WebStateList::InsertionParams::AtIndex(0));
 
   EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that unlock is not required when we have not cached a value for the
+// pref.
+TEST_F(IncognitoReauthSceneAgentTest, SoftLockNotRequiredWithoutCachedPref) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
+  AdvanceClock(kSoftLockBackgroundThreshold);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that unlock is not required when we have saved a value for the pref,
+// that is less than the threshold.
+TEST_F(IncognitoReauthSceneAgentTest,
+       SoftLockNotRequiredWithPrefBeforeThreshold) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
+  RecordCurrentTimeInPref();
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that unlock is required when we have saved a value for the pref that is
+// more than the threshold.
+TEST_F(IncognitoReauthSceneAgentTest, SoftLockRequiredWithPrefAfterThreshold) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
+
+  // Satisfy soft lock conditions.
+  RecordCurrentTimeInPref();
+  AdvanceClock(kSoftLockBackgroundThreshold);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+}
+
+// Test that unlock is not required when we background the app and foreground
+// before the time threshold elapses.
+TEST_F(IncognitoReauthSceneAgentTest,
+       SoftLockNotRequiredWhenForegroundingBeforeThreshold) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
+
+  // Go background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Foreground the app.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that unlock is required when we background the app and foreground after
+// the time threshold elapses.
+TEST_F(IncognitoReauthSceneAgentTest,
+       SoftLockRequiredWhenForegroundingAfterThreshold) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
+
+  // Go background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Advance the clock and foreground the app.
+  AdvanceClock(kSoftLockBackgroundThreshold);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
 }
 
 }  // namespace
