@@ -110,8 +110,13 @@ public final class SafeBrowsingBridge {
         } else {
             packageName = "";
         }
-        SafeBrowsingBridgeJni.get()
-                .reportIntent(webContents, packageName, intent.getData().toString());
+
+        String uri = "";
+        if (intent.getData() != null) {
+            uri = intent.getData().toString();
+        }
+
+        SafeBrowsingBridgeJni.get().reportIntent(webContents, packageName, uri);
     }
 
     @NativeMethods
