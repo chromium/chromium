@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
 namespace ash::boca {
@@ -166,9 +165,9 @@ SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
   window_tracker->set_can_start_navigation_throttle(false);
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
   navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  base::WeakPtr<content::NavigationHandle> navigation_handle =
-      Navigate(&navigate_params);
-  content::WebContents* const tab = navigation_handle->GetWebContents();
+  Navigate(&navigate_params);
+  content::WebContents* const tab =
+      navigate_params.navigated_or_inserted_contents;
   window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
       tab, url, restriction_level);
   window_tracker->set_can_start_navigation_throttle(true);
