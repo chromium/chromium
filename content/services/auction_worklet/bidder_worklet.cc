@@ -58,6 +58,7 @@
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "content/services/auction_worklet/worklet_util.h"
@@ -340,6 +341,7 @@ BidderWorklet::BidderWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
+    TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
     const GURL& script_source_url,
     const std::optional<GURL>& wasm_helper_url,
     const std::optional<GURL>& trusted_bidding_signals_url,
@@ -350,6 +352,7 @@ BidderWorklet::BidderWorklet(
     mojom::TrustedSignalsPublicKeyPtr public_key)
     : join_origin_hash_salt_(base::NumberToString(base::RandUint64())),
       url_loader_factory_(std::move(pending_url_loader_factory)),
+      trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
       top_window_origin_(top_window_origin),
@@ -539,7 +542,19 @@ void BidderWorklet::BeginGenerateBid(
   generate_bid_task->trace_wait_deps_start = base::TimeTicks::Now();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_generate_bid_deps",
                                     trace_id);
-  if (trusted_signals_request_manager_) {
+  if (trusted_signals_cache_key) {
+    // A non-null `trusted_signals_cache_key` indicates that the
+    // TrustedSignalsCache should be used through the
+    // `trusted_signals_kvv2_manager_` interface.
+    generate_bid_task->trusted_bidding_signals_kvv2_request =
+        trusted_signals_kvv2_manager_->RequestSignals(
+            TrustedSignalsKVv2Manager::SignalsType::kBidding,
+            trusted_signals_cache_key->compression_group_token,
+            trusted_signals_cache_key->partition_id,
+            base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
+                           base::Unretained(this), generate_bid_task));
+    return;
+  } else if (trusted_signals_request_manager_) {
     if (trusted_signals_request_manager_->HasPublicKey()) {
       DCHECK(base::FeatureList::IsEnabled(
           blink::features::kFledgeTrustedSignalsKVv2Support));
@@ -2161,6 +2176,11 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
   task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
+
+  // If using TrustedSignalsRequestManager, the request is no longer needed, so
+  // delete it to save resources. If using TrustedSignalsKVv2Manager, however,
+  // that request keeps the reusable cached compression group alive, so keep the
+  // KVv2 request around until finished generating the bid.
   task->trusted_bidding_signals_request.reset();
 
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus

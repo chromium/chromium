@@ -245,7 +245,11 @@ AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
 }
 
 void AuctionWorkletServiceImpl::SetTrustedSignalsCache(
-    mojo::PendingRemote<mojom::TrustedSignalsCache> trusted_signals_cache) {}
+    mojo::PendingRemote<mojom::TrustedSignalsCache> trusted_signals_cache) {
+  DCHECK(!trusted_signals_kvv2_manager_);
+  DCHECK(!pending_trusted_signals_cache_);
+  pending_trusted_signals_cache_ = std::move(trusted_signals_cache);
+}
 
 void AuctionWorkletServiceImpl::LoadBidderWorklet(
     mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
@@ -279,8 +283,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
   auto bidder_worklet = std::make_unique<BidderWorklet>(
       std::move(v8_helpers), std::move(shared_storage_hosts),
       pause_for_debugger_on_start, std::move(pending_url_loader_factory),
-      std::move(auction_network_events_handler), script_source_url,
-      wasm_helper_url, trusted_bidding_signals_url,
+      std::move(auction_network_events_handler), GetTrustedSignalsKVv2Manager(),
+      script_source_url, wasm_helper_url, trusted_bidding_signals_url,
       trusted_bidding_signals_slot_size_param, top_window_origin,
       std::move(permissions_policy_state), experiment_group_id,
       std::move(public_key));
@@ -355,6 +359,28 @@ void AuctionWorkletServiceImpl::DisconnectBidderWorklet(
     const std::string& reason) {
   bidder_worklets_.RemoveWithReason(receiver_id, /*custom_reason_code=*/0,
                                     reason);
+}
+
+TrustedSignalsKVv2Manager*
+AuctionWorkletServiceImpl::GetTrustedSignalsKVv2Manager() {
+  if (!trusted_signals_kvv2_manager_ && pending_trusted_signals_cache_) {
+    // Check for bidder V8 context first, since sellers are automatically
+    // populated, and want use V8 contexts that will be used anyways, instead of
+    // using a separate V8 context to parse trusted signals. It's unclear if the
+    // V8 helper used here matters. The first generateBid() call can't run until
+    // signals have been parsed, so there should be no contention with that, at
+    // least.
+    scoped_refptr<AuctionV8Helper> v8_helper;
+    if (!auction_bidder_v8_helper_holders_.empty()) {
+      v8_helper = auction_bidder_v8_helper_holders_.front()->V8Helper();
+    } else {
+      CHECK(!auction_seller_v8_helper_holders_.empty());
+      v8_helper = auction_seller_v8_helper_holders_.front()->V8Helper();
+    }
+    trusted_signals_kvv2_manager_ = std::make_unique<TrustedSignalsKVv2Manager>(
+        std::move(pending_trusted_signals_cache_), std::move(v8_helper));
+  }
+  return trusted_signals_kvv2_manager_.get();
 }
 
 }  // namespace auction_worklet

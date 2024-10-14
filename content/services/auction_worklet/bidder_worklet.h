@@ -33,8 +33,10 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-forward.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -106,6 +108,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // occurred.
   //
   // Data is cached and will be reused by ReportWin().
+  //
+  // `trusted_signals_kvv2_manager` must remain valid for the lifetime of the
+  // BidderWorklet.
   BidderWorklet(
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
@@ -115,6 +120,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           pending_url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
+      TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
       const GURL& script_source_url,
       const std::optional<GURL>& bidding_wasm_helper_url,
       const std::optional<GURL>& trusted_bidding_signals_url,
@@ -270,9 +276,17 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // dependencies, used to compute start and end times for latency phase UKMs.
     base::TimeTicks generate_bid_start_time;
 
-    // Set while loading is in progress.
+    // Set while loading a trusted signals via the legacy
+    // TrustedSignalsRequestManager is in progress.
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_bidding_signals_request;
+
+    // Used when there's a KVv2 request managed by the
+    // TrustedSignalsKVv2Manager. Not cleared until the generateBid() call is
+    // complete, to keep the signals cached in the manager.
+    std::unique_ptr<TrustedSignalsKVv2Manager::Request>
+        trusted_bidding_signals_kvv2_request;
+
     // Results of loading trusted bidding signals.
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
     // True if failed loading valid trusted bidding signals.
@@ -768,6 +782,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   std::string join_origin_hash_salt_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  // Owned by the AuctionWorkletService that owns `this`.
+  const raw_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
   bool paused_;
 

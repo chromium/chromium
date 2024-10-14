@@ -11,6 +11,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,6 +26,8 @@ class Origin;
 }
 
 namespace auction_worklet {
+
+class TrustedSignalsKVv2Manager;
 
 namespace mojom {
 class BidderWorklet;
@@ -111,6 +114,17 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
+  // Returns `trusted_signals_manager_kvv2_`, populating it if needed. If
+  // SetTrustedSignalsCache() was never called, returns nullptr. Must be called
+  // only after the relevant V8HelperHolders have been created. Uses
+  // `auction_bidder_v8_helper_holders_` if they've been populated, otherwise
+  // uses `auction_seller_v8_helper_holders_`.
+  //
+  // TODO(mmenke): Consider making the caller declare if this is a service for
+  // bidders or sellers up front. Alternatively, use separate interfaces for
+  // sellers and bidders.
+  TrustedSignalsKVv2Manager* GetTrustedSignalsKVv2Manager();
+
   ProcessModel process_model_;
 
   // These should be before `bidder_worklets_` and `seller_worklets_` as they
@@ -119,6 +133,18 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   // helped by worklets not being around to produce more work.
   std::vector<scoped_refptr<V8HelperHolder>> auction_bidder_v8_helper_holders_;
   std::vector<scoped_refptr<V8HelperHolder>> auction_seller_v8_helper_holders_;
+
+  // Populated by SetTrustedSignalsCache(). Used to populate
+  // `trusted_signals_kvv2_manager_` on first access. Can't construct
+  // `trusted_signals_kvv2_manager_` in SetTrustedSignalsCache() because
+  // V8HelperHolders will not yet be populated, and it's unknown if this service
+  // will be for bidders or sellers.
+  mojo::PendingRemote<mojom::TrustedSignalsCache>
+      pending_trusted_signals_cache_;
+
+  // This must be above the bidder and seller worklets, as they my have raw
+  // pointers to it.
+  std::unique_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
   // This is bound when created via CreateForService(); in case of
   // CreateForRenderer() an external SelfOwnedReceiver is used instead.
