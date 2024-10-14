@@ -232,7 +232,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                                      action:^{
                                        [weakSelf handleErrorAlertCancellation];
                                      }
-                                      style:UIAlertActionStyleCancel];
+                                      style:UIAlertActionStyleDefault];
   }
 
   if (shouldDismissBottomSheet) {

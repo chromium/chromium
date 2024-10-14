@@ -24,6 +24,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
@@ -231,7 +232,7 @@ UIImageView* BrandingImageView() {
   // Disable the primary button until such time as the reservation is complete.
   // If reserving an address fails, we should inform the user and not attempt to
   // fill any fields on the page.
-  self.primaryActionButton.enabled = NO;
+  [self enablePrimaryActionButton:NO];
   if (!_errorAndLoadingStatesEnabled) {
     [_delegate reservePlusAddress];
     plus_addresses::metrics::RecordModalEvent(
@@ -257,7 +258,7 @@ UIImageView* BrandingImageView() {
 #pragma mark - PlusAddressBottomSheetConsumer
 
 - (void)didReservePlusAddress:(NSString*)plusAddress {
-  self.primaryActionButton.enabled = YES;
+  [self enablePrimaryActionButton:YES];
   if (_errorAndLoadingStatesEnabled) {
     _isGenerating = NO;
     if (!_refreshCount) {
@@ -291,7 +292,7 @@ UIImageView* BrandingImageView() {
   } else {
     // With any error, whether during the reservation step or the confirmation
     // step, disable submission of the modal.
-    self.primaryActionButton.enabled = NO;
+    [self enablePrimaryActionButton:NO];
 
     _reservedPlusAddressTableView.hidden = YES;
     [_reservedPlusAddressTableView reloadData];
@@ -402,7 +403,7 @@ UIImageView* BrandingImageView() {
 
 - (void)didTapTrailingButton {
   _refreshCount++;
-  self.primaryActionButton.enabled = NO;
+  [self enablePrimaryActionButton:NO];
   _isGenerating = _errorAndLoadingStatesEnabled;
   _reservedPlusAddress = l10n_util::GetNSString(
       _errorAndLoadingStatesEnabled
@@ -591,7 +592,7 @@ UIImageView* BrandingImageView() {
 
 // Called when the user chose to confirm the plus address.
 - (void)willConfirmPlusAddress {
-  self.primaryActionButton.enabled = NO;
+  [self enablePrimaryActionButton:NO];
   // Make sure the user perceives that something is happening via a spinner.
   if (_errorAndLoadingStatesEnabled) {
     self.isLoading = YES;
@@ -603,6 +604,14 @@ UIImageView* BrandingImageView() {
   plus_addresses::metrics::RecordModalEvent(
       plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
       [_delegate shouldShowNotice]);
+}
+
+// Enables/Disables the primary action button.
+- (void)enablePrimaryActionButton:(BOOL)enabled {
+  self.primaryActionButton.enabled = enabled;
+  if (_errorAndLoadingStatesEnabled) {
+    UpdateButtonColorOnEnableDisable(self.primaryActionButton);
+  }
 }
 
 @end
