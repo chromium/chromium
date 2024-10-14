@@ -672,10 +672,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP2, "Sets a fixed thread pool cap"),
         Flag.baseFeature("ThreadGroupSemaphore"),
         Flag.baseFeature(
-                BlinkFeatures.BEFOREUNLOAD_EVENT_CANCEL_BY_PREVENT_DEFAULT,
-                "Enables showing the cancel dialog by calling preventDefault() "
-                        + "on beforeunload event."),
-        Flag.baseFeature(
                 BlinkFeatures.CSS_LAZY_PARSING_FAST_PATH,
                 "Enables a fast-path for skipping lazily-parsed CSS declaration blocks"),
         Flag.baseFeature(

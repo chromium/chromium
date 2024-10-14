@@ -4707,26 +4707,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestScrollTo) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestPageIsAccessibleAfterCancellingReload) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBeforeunloadEventCancelByPreventDefault)) {
-    LoadInitialAccessibilityTreeFromHtml(
-        "data:text/html,"
-        "<script>"
-        "window.onbeforeunload = function (e) {"
-        "  e.preventDefault()"
-        "};"
-        "</script>"
-        "<input value='Test'>");
-  } else {
-    LoadInitialAccessibilityTreeFromHtml(
-        "data:text/html,"
-        "<script>"
-        "window.onbeforeunload = function () {"
-        "  return 'Not empty string';"
-        "};"
-        "</script>"
-        "<input value='Test'>");
-  }
+  LoadInitialAccessibilityTreeFromHtml(
+      "data:text/html,"
+      "<script>"
+      "window.onbeforeunload = function (e) {"
+      "  e.preventDefault()"
+      "};"
+      "</script>"
+      "<input value='Test'>");
 
   // When the before unload dialog shows, simulate the user clicking
   // cancel on that dialog.

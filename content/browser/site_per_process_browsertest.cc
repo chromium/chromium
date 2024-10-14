@@ -12979,16 +12979,9 @@ IN_PROC_BROWSER_TEST_P(InnerWebContentsAttachTest, PrepareFrame) {
   auto* child_node = web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, child_frame_url));
   if (test_beforeunload) {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kBeforeunloadEventCancelByPreventDefault)) {
-      EXPECT_TRUE(ExecJs(child_node,
-                         "window.addEventListener('beforeunload', (e) => {"
-                         "e.preventDefault(); return e; });"));
-    } else {
-      EXPECT_TRUE(ExecJs(child_node,
-                         "window.addEventListener('beforeunload', (e) => {"
-                         "e.returnValue = 'Not empty string'; return e; });"));
-    }
+    EXPECT_TRUE(ExecJs(child_node,
+                       "window.addEventListener('beforeunload', (e) => {"
+                       "e.preventDefault(); return e; });"));
   }
   auto* original_child_frame = child_node->current_frame_host();
   RenderFrameDeletedObserver original_child_frame_observer(

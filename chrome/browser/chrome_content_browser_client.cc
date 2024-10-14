@@ -1639,10 +1639,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       /*default_value=*/false);
 
   registry->RegisterBooleanPref(
-      policy::policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
-      true);
-
-  registry->RegisterBooleanPref(
       policy::policy_prefs::kKeyboardFocusableScrollersEnabled, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kStandardizedBrowserZoomEnabled, true);

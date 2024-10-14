@@ -124,13 +124,6 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // 2 - Forced. All pages/sessions are forced into Incognito.
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
-// A boolean indicating whether the new behavior for beforeunload show cancel
-// dialog is in effect. If true, then
-// 1. If event.preventDefault() is called, prompt cancel dialog.
-// 2. If event.returnValue is the empty string, do not prompt cancel dialog.
-const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
-    "policy.beforeunload_event_cancel_by_prevent_default_enabled";
-
 // A boolean indicating whether scrollers should be focusable. If true, then
 // scrollers without focusable children are keyboard-focusable by default.
 const char kKeyboardFocusableScrollersEnabled[] =

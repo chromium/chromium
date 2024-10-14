@@ -64,7 +64,6 @@ extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];
 extern const char kIncognitoModeAvailability[];
-extern const char kBeforeunloadEventCancelByPreventDefaultEnabled[];
 extern const char kKeyboardFocusableScrollersEnabled[];
 extern const char kStandardizedBrowserZoomEnabled[];
 extern const char kPolicyTestPageEnabled[];

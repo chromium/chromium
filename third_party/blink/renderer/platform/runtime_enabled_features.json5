@@ -527,22 +527,6 @@
       status: "stable",
     },
     {
-      // TODO(crbug.com/40586353) There are two different code changes guarded
-      // by this feature, both related to triggering a beforeunload cancel
-      // dialog.
-      //  1. If event.preventDefault() is called, prompt cancel dialog.
-      //  2. If event.returnValue is the empty string, do not prompt cancel
-      //     dialog.
-      // This flag was shipped to stable in M117, but there is an enterprise
-      // policy that allows this flag to be force-diabled. As a result, this
-      // flag should not be removed until at least M132.
-      // The enterprise policy has an extended expiration date of M130:
-      // https://groups.google.com/a/chromium.org/g/chromium-enterprise/c/52qHFoQF_mw/m/gw7e6qPlAAAJ
-      name: "BeforeunloadEventCancelByPreventDefault",
-      status: "stable",
-      public: true,
-    },
-    {
       name: "BidiCaretAffinity",
     },
     {

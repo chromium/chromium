@@ -1126,6 +1126,10 @@ inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
     "settings.a11y.face_gaze.cursor_smoothing";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 10/2024.
+const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
+    "policy.beforeunload_event_cancel_by_prevent_default_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1232,6 +1236,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2024
   registry->RegisterIntegerPref(kWhatsNewHatsActivationThreshold, 100);
 #endif
+
+  // Deprecated 10/2024.
+  registry->RegisterBooleanPref(kBeforeunloadEventCancelByPreventDefaultEnabled,
+                                true);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2518,6 +2526,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 10/2024
   local_state->ClearPref(kWhatsNewHatsActivationThreshold);
 #endif
+
+  // Added 10/2024.
+  local_state->ClearPref(kBeforeunloadEventCancelByPreventDefaultEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
