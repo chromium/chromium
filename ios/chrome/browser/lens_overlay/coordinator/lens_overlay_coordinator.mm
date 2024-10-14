@@ -14,6 +14,7 @@
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -159,6 +161,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   BOOL _firstInteractionRecorded;
   /// Indicates the Lens Overlay is in the exit flow.
   BOOL _isExiting;
+  /// Forces the device orientation in portrait mode.
+  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 }
 
 #pragma mark - public
@@ -346,6 +350,9 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   if (![self isUICreated]) {
     return;
   }
+
+  [self lockOrientationInPortrait:YES];
+
   _foregroundTime = base::TimeTicks::Now();
 
   __weak __typeof(self) weakSelf = self;
@@ -355,6 +362,18 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
                  completion:^{
                    [weakSelf onContainerViewControllerPresented];
                  }];
+}
+
+- (void)lockOrientationInPortrait:(BOOL)portraitLock {
+  AppState* appState = self.browser->GetSceneState().appState;
+  if (portraitLock) {
+    if (!appState) {
+      return;
+    }
+    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+  } else {
+    _scopedForceOrientation.reset();
+  }
 }
 
 - (void)onContainerViewControllerPresented {
@@ -381,6 +400,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   if (![self isUICreated]) {
     return;
   }
+  [self lockOrientationInPortrait:YES];
+
   // Add the foreground duration and reset the timer.
   _foregroundDuration =
       _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
@@ -907,6 +928,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   _mediator = nil;
   _consentViewController = nil;
   _isExiting = NO;
+  _scopedForceOrientation.reset();
 }
 
 // The tab helper for the active web state.
