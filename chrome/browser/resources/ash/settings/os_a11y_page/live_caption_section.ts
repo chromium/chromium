@@ -16,7 +16,8 @@ import '../controls/settings_toggle_button.js';
 import '../os_languages_page/add_items_dialog.js';
 import './live_translate_section.js';
 
-import {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
+import type {CaptionsBrowserProxy, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
+import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -26,9 +27,10 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {Item} from '../os_languages_page/add_items_dialog.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 

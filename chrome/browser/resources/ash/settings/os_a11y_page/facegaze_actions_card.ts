@@ -16,20 +16,23 @@ import 'chrome://resources/cros_components/chip/chip.js';
 import './facegaze_icons.html.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
+import type {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {AddDialogPage} from './facegaze_actions_add_dialog.js';
 import {getTemplate} from './facegaze_actions_card.html.js';
-import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF, FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
+import type {FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME} from './facegaze_constants.js';
+import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF, FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
 
 const FaceGazeActionsCardElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));

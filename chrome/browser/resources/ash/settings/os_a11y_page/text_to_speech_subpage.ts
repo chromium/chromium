@@ -19,12 +19,15 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy} from '../device_page/device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './text_to_speech_subpage.html.js';
-import {TextToSpeechSubpageBrowserProxy, TextToSpeechSubpageBrowserProxyImpl} from './text_to_speech_subpage_browser_proxy.js';
+import type {TextToSpeechSubpageBrowserProxy} from './text_to_speech_subpage_browser_proxy.js';
+import {TextToSpeechSubpageBrowserProxyImpl} from './text_to_speech_subpage_browser_proxy.js';
 
 /**
  * Numerical values should not be changed because they must stay in sync with

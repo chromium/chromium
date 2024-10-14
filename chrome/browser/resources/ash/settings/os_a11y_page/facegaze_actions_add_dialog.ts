@@ -16,26 +16,28 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../settings_shared.css.js';
 import './facegaze_icons.html.js';
 
-import {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
+import type {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
+import type {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_device_settings_types.js';
+import type {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_device_settings_types.js';
 import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_interface_provider.js';
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
-import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils, KeyCombination} from './facegaze_constants.js';
-import {FaceGazeSubpageBrowserProxy, FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
+import type {KeyCombination} from './facegaze_constants.js';
+import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils} from './facegaze_constants.js';
+import type {FaceGazeSubpageBrowserProxy} from './facegaze_subpage_browser_proxy.js';
+import {FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
 export interface FaceGazeAddActionDialogElement {
   $: {
