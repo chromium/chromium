@@ -29,9 +29,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_source_stats.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
@@ -1000,7 +1002,13 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
   }
 
   v8_stats->setId(String::FromUTF8(stat.id()));
-  v8_stats->setTimestamp(stat.timestamp().ms<double>());
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  DocumentLoadTiming& time_converter =
+      window->GetFrame()->Loader().GetDocumentLoader()->GetTiming();
+  v8_stats->setTimestamp(time_converter
+                             .MonotonicTimeToPseudoWallTime(
+                                 ConvertToBaseTimeTicks(stat.timestamp()))
+                             .InMillisecondsF());
   v8_stats->setType(String::FromUTF8(stat.type()));
   return v8_stats;
 }
