@@ -50,9 +50,10 @@ export class BubbleController {
   }
 
   static getDisplayText(gesture: FacialGesture, macroName: MacroName): string {
-    // TODO(b:341770655): Localize this string.
-    return `${BubbleController.getDisplayTextForMacro_(macroName)} (${
-        BubbleController.getDisplayTextForGesture_(gesture)})`;
+    return chrome.i18n.getMessage('facegaze_display_text', [
+      BubbleController.getDisplayTextForMacro_(macroName),
+      BubbleController.getDisplayTextForGesture_(gesture)
+    ]);
   }
 
   private static getDisplayTextForMacro_(macroName: MacroName): string {

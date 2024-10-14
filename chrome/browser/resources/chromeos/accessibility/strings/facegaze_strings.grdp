@@ -111,4 +111,7 @@
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should wrinkle their nose.">
     Wrinkle your nose
   </message>
+  <message name="IDS_FACEGAZE_DISPLAY_TEXT" desc="This text is the finalized text that shows up in the FaceGaze bubble UI when a gesture triggers an action. It contains the facial gesture that was recognized and the action that it triggered.">
+    <ph name="action">$1<ex>Left-click the mouse</ex></ph> (<ph name="gesture">$2<ex>Smile</ex></ph>)
+  </message>
 </grit-part>
