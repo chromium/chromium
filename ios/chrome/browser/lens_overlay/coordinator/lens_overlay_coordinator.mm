@@ -539,6 +539,14 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   return YES;
 }
 
+- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
+    (UISheetPresentationController*)presentationController {
+  BOOL isInLargestDetent = [presentationController.selectedDetentIdentifier
+      isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
+
+  [self disableSelectionInteraction:isInLargestDetent];
+}
+
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   UIViewController* presentedViewController =
@@ -999,17 +1007,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 
 - (void)showConsentViewController {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Show"));
-  // Block user interaction with the lens UI
-  UIView* containerView = _containerViewController.view;
-  UIView* blocker = [[UIView alloc] init];
-  blocker.backgroundColor = UIColor.clearColor;
-  blocker.userInteractionEnabled = YES;
-  [containerView addSubview:blocker];
-
-  blocker.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(containerView, blocker);
-  _selectionInteractionBlockingView = blocker;
-
+  [self disableSelectionInteraction:YES];
   // Configure sheet presentation
   UISheetPresentationController* sheet =
       _consentViewController.sheetPresentationController;
@@ -1022,10 +1020,32 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
                                        completion:nil];
 }
 
+// Blocks user interaction with the Lens UI.
+- (void)disableSelectionInteraction:(BOOL)disabled {
+  if (disabled) {
+    if (_selectionInteractionBlockingView) {
+      return;
+    }
+
+    UIView* containerView = _containerViewController.view;
+    UIView* blocker = [[UIView alloc] init];
+    blocker.backgroundColor = UIColor.clearColor;
+    blocker.userInteractionEnabled = YES;
+    [containerView addSubview:blocker];
+
+    blocker.translatesAutoresizingMaskIntoConstraints = NO;
+    AddSameConstraints(containerView, blocker);
+    _selectionInteractionBlockingView = blocker;
+  } else {
+    [_selectionInteractionBlockingView removeFromSuperview];
+    _selectionInteractionBlockingView = nil;
+  }
+}
+
 // Called after consent dialog was dismissed and TOS accepted.
 - (void)handleConsentViewControllerDismissed {
   CHECK([self termsOfServiceAccepted]);
-  [_selectionInteractionBlockingView removeFromSuperview];
+  [self disableSelectionInteraction:NO];
   [_selectionViewController start];
 }
 
