@@ -313,8 +313,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.bufferSize !== -1) {
-      await this.setPref(
-          MouseController.PREF_CURSOR_SMOOTHING, config.bufferSize);
+      faceGaze.mouseController_.setBufferSizeForTesting(config.bufferSize);
     }
 
     await this.setPref(MouseController.PREF_SPD_UP, config.speeds.up);

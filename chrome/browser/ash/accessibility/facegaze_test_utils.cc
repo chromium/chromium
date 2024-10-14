@@ -455,8 +455,9 @@ void FaceGazeTestUtils::SetCursorSpeeds(const CursorSpeeds& speeds) {
 }
 
 void FaceGazeTestUtils::SetBufferSize(int size) {
-  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSmoothing, size);
-  GetPrefs()->CommitPendingWrite();
+  std::string script =
+      base::StringPrintf("faceGazeTestSupport.setBufferSize(%d);", size);
+  ExecuteAccessibilityCommonScript(script);
 }
 
 void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {

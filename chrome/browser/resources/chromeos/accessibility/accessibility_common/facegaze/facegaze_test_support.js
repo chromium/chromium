@@ -78,6 +78,12 @@ class FaceGazeTestSupport {
     this.notifyCcTests_();
   }
 
+  /** @param {number} size */
+  setBufferSize(size) {
+    this.getMouseController_().setBufferSizeForTesting(size);
+    this.notifyCcTests_();
+  }
+
   /** Waits for a valid instance of the FaceLandmarker. */
   async waitForFaceLandmarker() {
     await this.getWebCamFaceLandmarker_().readyForTesting_;

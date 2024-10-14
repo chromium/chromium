@@ -1118,6 +1118,14 @@ inline constexpr char kWhatsNewHatsActivationThreshold[] =
     "browser.whats_new_hats_activation_threshold";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 10/2024
+// An integer pref which determines how much FaceGaze should smooth cursor
+// movements.
+inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
+    "settings.a11y.face_gaze.cursor_smoothing";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1584,6 +1592,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(kLacrosSecondaryProfilesAllowed, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 10/2024
+  registry->RegisterIntegerPref(kAccessibilityFaceGazeCursorSmoothing, 7);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2936,7 +2949,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 // Added 10/2024
 #if BUILDFLAG(IS_CHROMEOS)
   profile_prefs->ClearPref(kLacrosSecondaryProfilesAllowed);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 10/2024
+  profile_prefs->ClearPref(kAccessibilityFaceGazeCursorSmoothing);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

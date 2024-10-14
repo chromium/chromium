@@ -79,7 +79,6 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityFaceGazeCursorSpeedDown,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedLeft,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedRight,
-    ash::prefs::kAccessibilityFaceGazeCursorSmoothing,
     ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration,
     ash::prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
     ash::prefs::kAccessibilityFaceGazeGesturesToMacros,

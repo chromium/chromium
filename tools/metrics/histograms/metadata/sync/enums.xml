@@ -603,7 +603,7 @@ chromium-metrics-reviews@google.com.
   <int value="100264" label="AccessibilityFaceGazeCursorSpeedDown"/>
   <int value="100265" label="AccessibilityFaceGazeCursorSpeedLeft"/>
   <int value="100266" label="AccessibilityFaceGazeCursorSpeedRight"/>
-  <int value="100267" label="AccessibilityFaceGazeCursorSmoothing"/>
+  <int value="100267" label="(obsolete) AccessibilityFaceGazeCursorSmoothing"/>
   <int value="100268" label="AccessibilityFaceGazeCursorUseAcceleration"/>
   <int value="100269" label="FingerprintingProtectionEnabled"/>
   <int value="100270" label="AccessibilityFaceGazeGesturesToMacros"/>

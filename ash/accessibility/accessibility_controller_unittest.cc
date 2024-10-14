@@ -338,8 +338,6 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSpeedLeft));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSpeedRight));
-  EXPECT_TRUE(
-      prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSmoothing));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityFaceGazeCursorUseAcceleration));
   EXPECT_TRUE(

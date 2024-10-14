@@ -693,15 +693,6 @@ export class MouseController {
             this.calcVelocityThreshold_();
           }
           break;
-        case MouseController.PREF_CURSOR_SMOOTHING:
-          if (pref.value) {
-            this.targetBufferSize_ = pref.value;
-            this.calcSmoothKernel_();
-            while (this.buffer_.length > this.targetBufferSize_) {
-              this.buffer_.shift();
-            }
-          }
-          break;
         case MouseController.PREF_CURSOR_USE_ACCELERATION:
           if (pref.value !== undefined) {
             this.useMouseAcceleration_ = pref.value;
@@ -763,6 +754,14 @@ export class MouseController {
   setVelocityThresholdForTesting(useThreshold: boolean): void {
     this.useVelocityThreshold_ = useThreshold;
   }
+
+  setBufferSizeForTesting(size: number): void {
+    this.targetBufferSize_ = size;
+    this.calcSmoothKernel_();
+    while (this.buffer_.length > this.targetBufferSize_) {
+      this.buffer_.shift();
+    }
+  }
 }
 
 export namespace MouseController {
@@ -802,8 +801,6 @@ export namespace MouseController {
   export const PREF_SPD_DOWN = 'settings.a11y.face_gaze.cursor_speed_down';
   export const PREF_SPD_LEFT = 'settings.a11y.face_gaze.cursor_speed_left';
   export const PREF_SPD_RIGHT = 'settings.a11y.face_gaze.cursor_speed_right';
-  export const PREF_CURSOR_SMOOTHING =
-      'settings.a11y.face_gaze.cursor_smoothing';
   export const PREF_CURSOR_USE_ACCELERATION =
       'settings.a11y.face_gaze.cursor_use_acceleration';
   export const PREF_VELOCITY_THRESHOLD =

@@ -822,10 +822,6 @@ inline constexpr char kAccessibilityFaceGazeCursorSpeedLeft[] =
 // An integer pref which scales the cursor speed when moving right.
 inline constexpr char kAccessibilityFaceGazeCursorSpeedRight[] =
     "settings.a11y.face_gaze.cursor_speed_right";
-// An integer pref which determines how much FaceGaze should smooth cursor
-// movements.
-inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
-    "settings.a11y.face_gaze.cursor_smoothing";
 // A boolean pref which determines whether FaceGaze should use cursor
 // acceleration, which makes the cursor move faster when the tracked point moves
 // quickly.

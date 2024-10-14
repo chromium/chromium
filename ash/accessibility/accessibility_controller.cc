@@ -1490,10 +1490,6 @@ void AccessibilityController::RegisterProfilePrefs(
         prefs::kAccessibilityFaceGazeCursorSpeedRight,
         kDefaultFaceGazeCursorSpeed,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazeCursorSmoothing,
-        kDefaultFaceGazeCursorSmoothing,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterBooleanPref(
         prefs::kAccessibilityFaceGazeCursorUseAcceleration,
         kDefaultFaceGazeCursorUseAcceleration,

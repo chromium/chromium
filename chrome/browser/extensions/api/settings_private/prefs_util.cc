@@ -755,8 +755,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedRight] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSmoothing] =
-      settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeGesturesToKeyCombos] =
