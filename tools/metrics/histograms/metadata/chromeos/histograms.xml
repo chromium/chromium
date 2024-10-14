@@ -419,6 +419,18 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.Effects.NpuToGpuFallbackEvent" enum="Boolean"
+    expires_after="2025-02-15">
+  <owner>imranziad@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records events when NPU was not ready in NPU enabled devices in
+    EffectsStreamManipulator.
+
+    This metric is emitting once at the end of every session.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.Effects.NumConcurrentProcessedStreams"
     units="count" expires_after="2025-02-10">
   <owner>skyostil@chromium.org</owner>
