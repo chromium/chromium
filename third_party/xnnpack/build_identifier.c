@@ -613,7 +613,6 @@
 // - src/qs8-gavgpool/gen/qs8-gavgpool-7x-minmax-fp32-sse41-c8.c
 // - src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-scalar.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni.c
-// - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-scalar.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx-mul16-add16.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx2-mul32.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c
@@ -686,7 +685,7 @@
 // - src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-5x8c8-minmax-fp32-avxvnniint8-prfm.c
 // - src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-7x16c8-minmax-avx512vnni-prfm.c
 // - src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-7x16c8-minmax-fp32-avx512skx-prfm.c
-// - src/qs8-qu8-packw/gen/qs8-qu8-packw-x16c8-gemm-goi-scalar.c
+// - src/qs8-qu8-packw/gen/qs8-qu8-packw-x16c8-gemm-goi-avx256vnni.c
 // - src/qs8-qu8-packw/gen/qs8-qu8-packw-x8c8-gemm-goi-avxvnni.c
 // - src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx2-c64.c
 // - src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx512skx-c64.c
@@ -945,10 +944,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  247,  90,  76, 115, 211, 211,  92,  31,
-  127, 224, 149, 140,  61, 105,  88, 193,
-  108,  38, 248, 118, 196, 127,  84, 227,
-   16,  82, 191,  61,  98,  97, 221,   2
+  104,   3, 106,  70, 147, 199, 230,  97,
+  116,  82, 203,  18, 136, 103, 253, 151,
+  195, 236,   7,  27,  20, 248, 134, 191,
+  201, 255, 249, 159,  89, 190, 226,   7
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
