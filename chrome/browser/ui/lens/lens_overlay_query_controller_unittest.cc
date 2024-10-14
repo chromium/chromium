@@ -856,7 +856,7 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kPdf, 0);
   task_environment_.RunUntilIdle();
-  query_controller.SendTextOnlyQuery(
+  query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   task_environment_.RunUntilIdle();
@@ -884,7 +884,7 @@ TEST_F(LensOverlayQueryControllerTest,
   auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
-      sent_interaction_request.request_context().request_id().sequence_id(), 3);
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
       sent_interaction_request.interaction_request_metadata().type(),
       lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
@@ -953,7 +953,7 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kHtml, 0);
   task_environment_.RunUntilIdle();
-  query_controller.SendTextOnlyQuery(
+  query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   task_environment_.RunUntilIdle();
@@ -981,7 +981,7 @@ TEST_F(LensOverlayQueryControllerTest,
   auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
-      sent_interaction_request.request_context().request_id().sequence_id(), 3);
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
       sent_interaction_request.interaction_request_metadata().type(),
       lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
@@ -1050,7 +1050,7 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kPlainText, 0);
   task_environment_.RunUntilIdle();
-  query_controller.SendTextOnlyQuery(
+  query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   task_environment_.RunUntilIdle();
@@ -1078,7 +1078,7 @@ TEST_F(LensOverlayQueryControllerTest,
   auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
-      sent_interaction_request.request_context().request_id().sequence_id(), 3);
+      sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
       sent_interaction_request.interaction_request_metadata().type(),
       lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);

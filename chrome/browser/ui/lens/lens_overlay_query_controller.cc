@@ -364,6 +364,24 @@ void LensOverlayQueryController::SendRegionSearch(
                   additional_search_query_params, region_bytes);
 }
 
+void LensOverlayQueryController::SendContextualTextQuery(
+    const std::string& query_text,
+    lens::LensOverlaySelectionType lens_selection_type,
+    std::map<std::string, std::string> additional_search_query_params) {
+  if(underlying_content_bytes_.empty()) {
+    SendTextOnlyQuery(query_text, lens_selection_type,
+                      additional_search_query_params);
+    return;
+  }
+  // Include the vit to get contextualized results.
+  additional_search_query_params = AddVisualInputTypeQueryParam(
+      additional_search_query_params, underlying_content_type_);
+
+  SendInteraction(/*region=*/nullptr, query_text,
+                  /*object_id=*/std::nullopt, lens_selection_type,
+                  additional_search_query_params, std::nullopt);
+}
+
 void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
@@ -376,19 +394,6 @@ void LensOverlayQueryController::SendTextOnlyQuery(
           ->GetNextRequestId(RequestIdUpdateMode::kInteractionRequest)
           ->sequence_id(),
       /*query_start_time_ms=*/base::TimeTicks::Now());
-
-  // If content bytes exist on a text only query, contextualize the query via a
-  // Lens request, instead of going straight through GWS.
-  if (!underlying_content_bytes_.empty()) {
-    // Include the vit to get contextualized results.
-    additional_search_query_params = AddVisualInputTypeQueryParam(
-        additional_search_query_params, underlying_content_type_);
-
-    SendInteraction(/*region=*/nullptr, query_text,
-                    /*object_id=*/std::nullopt, lens_selection_type,
-                    additional_search_query_params, std::nullopt);
-    return;
-  }
 
   // Add the start time to the query params now, so that any additional
   // client processing time is included.

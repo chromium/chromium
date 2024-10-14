@@ -2472,7 +2472,13 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
   }
 
-  if (initialization_data_->selected_region_.is_null()) {
+  if (initialization_data_->selected_region_.is_null() &&
+      GetPageClassification() ==
+          metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+    lens_overlay_query_controller_->SendContextualTextQuery(
+        search_box_text, lens_selection_type_,
+        initialization_data_->additional_search_query_params_);
+  } else if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
