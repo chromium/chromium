@@ -365,7 +365,8 @@ bool DownloadQuery::AddFilter(DownloadQuery::FilterType type,
       std::vector<std::u16string> query_terms;
       return GetAs(value, &query_terms) &&
              (query_terms.empty() ||
-              AddFilter(base::BindRepeating(&MatchesQuery, query_terms)));
+              AddFilter(
+                  base::BindRepeating(&MatchesQuery, std::move(query_terms))));
     }
     case FILTER_ENDED_AFTER:
       return AddFilter(BuildFilter<std::string>(value, GT, &GetEndTime));
