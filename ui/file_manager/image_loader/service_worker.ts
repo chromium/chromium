@@ -54,7 +54,12 @@ async function sendToOffscreenDocument(
     msg: LoadImageRequest, senderOrigin: string,
     sendResponse: (r: LoadImageResponse) => void) {
   assert(msg);
-  await setupOffscreenDocument();
+  try {
+    await setupOffscreenDocument();
+  } catch (e) {
+    console.error('setupOffscreenDocument:', e);
+    return;
+  }
   msg.imageLoaderRequestId = senderOrigin + ':' + msg.taskId;
   chrome.runtime.sendMessage(
       null, msg, undefined, (response: LoadImageResponse) => {
