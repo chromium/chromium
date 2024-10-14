@@ -72,6 +72,10 @@ class GURL;
 
 // Resets the selection area to the initial position.
 - (void)resetSelectionAreaToInitialPosition:(void (^)())completion;
+
+// Updates the visibility of the top icons.
+- (void)setTopIconsHidden:(BOOL)hidden;
+
 @end
 
 namespace ios {

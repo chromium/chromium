@@ -352,6 +352,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   }
 
   [self lockOrientationInPortrait:YES];
+  [_selectionViewController setTopIconsHidden:self.shouldShowConsentFlow];
 
   _foregroundTime = base::TimeTicks::Now();
 
@@ -377,10 +378,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 }
 
 - (void)onContainerViewControllerPresented {
-  BOOL shouldShowConsentFlow =
-      !self.termsOfServiceAccepted ||
-      base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
-  if (shouldShowConsentFlow) {
+  if (self.shouldShowConsentFlow) {
     if (self.isResultsBottomSheetOpen) {
       [self stopResultPage];
     }
@@ -803,6 +801,11 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   return configuration;
 }
 
+- (BOOL)shouldShowConsentFlow {
+  return !self.termsOfServiceAccepted ||
+         base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
+}
+
 - (BOOL)termsOfServiceAccepted {
   return self.browser->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLensOverlayConditionsAccepted);
@@ -1068,6 +1071,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 - (void)handleConsentViewControllerDismissed {
   CHECK([self termsOfServiceAccepted]);
   [self disableSelectionInteraction:NO];
+  [_selectionViewController setTopIconsHidden:NO];
   [_selectionViewController start];
 }
 

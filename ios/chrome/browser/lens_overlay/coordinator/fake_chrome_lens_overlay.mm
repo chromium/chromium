@@ -90,6 +90,10 @@
   // NO-OP
 }
 
+- (void)setTopIconsHidden:(BOOL)hidden {
+  // NO-OP
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
