@@ -10359,21 +10359,6 @@
             ]
         }
     ],
-    "ForceMigrateSyncingUserToSignedIn": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ForceMigrateSyncingUserToSignedIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "ForestFeature": [
         {
             "platforms": [
