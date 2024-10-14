@@ -63,6 +63,10 @@ constexpr CGFloat kSectionFooterHeight = 0;
 // TableView's corner radius size.
 constexpr CGFloat kTableViewCornerRadius = 10;
 
+// Horizontal padding for the primary button.
+constexpr CGFloat kPrimaryButtonHorizontalPaddingIpad = 64.0;
+constexpr CGFloat kPrimaryButtonHorizontalPaddingIphone = 24.0;
+
 // Section identifiers in Quick Delete's table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierTimeRange = kSectionIdentifierEnumZero,
@@ -148,6 +152,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   [super viewDidLoad];
 
+  [self adjustPrimaryActionButtonHorizontalPadding];
   [self displayGradientView:NO];
 
   // Configure the color of the primary button to red in several states, as the
@@ -431,6 +436,24 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 #pragma mark - Private
+
+// Adjusts the primary action button horizontal padding. It affects the
+// padding of the content of the bottom sheet.
+- (void)adjustPrimaryActionButtonHorizontalPadding {
+  CGFloat buttonHorizontalPadding =
+      ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad
+           ? kPrimaryButtonHorizontalPaddingIpad
+           : kPrimaryButtonHorizontalPaddingIphone);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.primaryActionButton.leadingAnchor
+        constraintEqualToAnchor:(self.view.leadingAnchor)
+                       constant:buttonHorizontalPadding],
+    [self.primaryActionButton.trailingAnchor
+        constraintEqualToAnchor:(self.view.trailingAnchor)
+                       constant:-buttonHorizontalPadding],
+  ]];
+}
 
 // Updates the enabled status of the primary button. The primary button should
 // only be enabled if at least one browsing data type is selected for deletion.
