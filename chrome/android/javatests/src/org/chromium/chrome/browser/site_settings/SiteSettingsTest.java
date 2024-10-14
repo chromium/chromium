@@ -922,6 +922,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({@Policies.Item(key = "DefaultCookiesSetting", string = "1")})
+    @DisabledTest(message = "https://crbug.com/373414947")
     public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled() throws Exception {
         IncognitoUtils.setEnabledForTesting(false);
         setTriStateCookieToggle(CookieControlsMode.INCOGNITO_ONLY);
