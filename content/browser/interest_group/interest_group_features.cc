@@ -51,6 +51,18 @@ BASE_FEATURE(kFledgePrefetchBandAKeys,
              "FledgePrefetchBandAKeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables starting worklet processes at auction start time in anticipation
+// of needing them for future worklets.
+BASE_FEATURE(kFledgeStartAnticipatoryProcesses,
+             "FledgeStartAnticipatoryProcesses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// How long to hold onto anticipatory processes that are unused.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeStartAnticipatoryProcessExpirationTime,
+                   &kFledgeStartAnticipatoryProcesses,
+                   "AnticipatoryProcessHoldTime",
+                   base::Seconds(5));
+
 // Enable storing a retrieving B&A keys for the interest group
 // database.
 BASE_FEATURE(kFledgeStoreBandAKeysInDB,

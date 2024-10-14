@@ -436,6 +436,7 @@ class MockAuctionProcessManager
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override;
   bool TryUseSharedProcess(ProcessHandle* process_handle) override;
+  bool UsingDedicatedUtilityProcesses() override;
 
   // auction_worklet::mojom::AuctionWorkletService implementation:
   void SetTrustedSignalsCache(

@@ -574,8 +574,9 @@ MockAuctionProcessManager::LaunchProcess(const ProcessHandle* process_handle,
 
   receiver_display_name_map_[receiver_id] = display_name;
   return base::MakeRefCounted<WorkletProcess>(
-      this, /*render_process_host=*/nullptr, std::move(service),
-      process_handle->worklet_type(), process_handle->origin(),
+      this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
+      std::move(service), process_handle->worklet_type(),
+      process_handle->origin(),
       /*uses_shared_process=*/false);
 }
 
@@ -593,6 +594,10 @@ bool MockAuctionProcessManager::TryUseSharedProcess(
 void MockAuctionProcessManager::SetTrustedSignalsCache(
     mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
         trusted_signals_cache) {}
+
+bool MockAuctionProcessManager::UsingDedicatedUtilityProcesses() {
+  return false;
+}
 
 void MockAuctionProcessManager::LoadBidderWorklet(
     mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>

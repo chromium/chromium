@@ -747,8 +747,9 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
         auction_worklet::AuctionWorkletServiceImpl::CreateForService(
             service.InitWithNewPipeAndPassReceiver()));
     return base::MakeRefCounted<WorkletProcess>(
-        this, /*render_process_host=*/nullptr, std::move(service),
-        process_handle->worklet_type(), process_handle->origin(),
+        this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
+        std::move(service), process_handle->worklet_type(),
+        process_handle->origin(),
         /*uses_shared_process=*/false);
   }
 
@@ -761,6 +762,8 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
   bool TryUseSharedProcess(ProcessHandle* process_handle) override {
     return false;
   }
+
+  bool UsingDedicatedUtilityProcesses() override { return false; }
 
   std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
       auction_worklet_services_;
