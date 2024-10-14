@@ -257,6 +257,7 @@ constexpr int kThumbnailResizeDimension = 64;
   }
   _active = active;
   if (_active) {
+    [self.delegate mediator:self didActivateSearch:_shouldShowSearchItems];
     if (_shouldShowSearchItems) {
       if (_searchText.length) {
         _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchText;
@@ -625,6 +626,7 @@ constexpr int kThumbnailResizeDimension = 64;
   // When this line is reached, the mediator is switching between two modes:
   // showing search items and showing non-search items.
   _shouldShowSearchItems = shouldShowSearchItems;
+  [self.delegate mediator:self didActivateSearch:shouldShowSearchItems];
   if (_selectedFile && _selectedFileIsSearchItem && !_shouldShowSearchItems) {
     // If the selected item was a search item and search items are hidden, clear
     // the selection.

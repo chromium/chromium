@@ -210,6 +210,7 @@
                   ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                       sortingCriteria:(DriveItemsSortingType)sortingCriteria
                      sortingDirection:(DriveItemsSortingOrder)sortingDirection {
+  [_mediator setActive:NO];
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_navigationController
                                    browser:self.browser
@@ -254,12 +255,19 @@
   _presentationControllerShouldDismiss = allowDismiss;
 }
 
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didActivateSearch:(BOOL)searchActivated {
+  _navigationController.sheetPresentationController.prefersGrabberVisible =
+      !searchActivated;
+}
+
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
   CHECK(coordinator == _childBrowseCoordinator);
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
+  [_mediator setActive:YES];
 }
 
 - (void)browseDriveFilePickerCoordinator:

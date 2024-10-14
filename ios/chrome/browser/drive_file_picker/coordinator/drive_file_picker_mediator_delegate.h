@@ -49,6 +49,10 @@
 - (void)mediator:(DriveFilePickerMediator*)mediator
     didAllowDismiss:(BOOL)allowDismiss;
 
+// Called when the mediator has actives or stops the search.
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didActivateSearch:(BOOL)searchActivated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_DELEGATE_H_

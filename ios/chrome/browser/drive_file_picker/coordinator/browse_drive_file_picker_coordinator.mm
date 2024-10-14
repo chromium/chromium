@@ -135,6 +135,8 @@
   _mediator.delegate = self;
   _mediator.driveFilePickerHandler = driveFilePickerHandler;
   [_baseNavigationController pushViewController:_viewController animated:YES];
+  _baseNavigationController.sheetPresentationController.prefersGrabberVisible =
+      YES;
 }
 
 - (void)stop {
@@ -221,6 +223,12 @@
 - (void)mediator:(DriveFilePickerMediator*)mediator
     didAllowDismiss:(BOOL)allowDismiss {
   [self.delegate coordinator:self didAllowDismiss:allowDismiss];
+}
+
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didActivateSearch:(BOOL)searchActivated {
+  _baseNavigationController.sheetPresentationController.prefersGrabberVisible =
+      !searchActivated;
 }
 
 #pragma mark - DriveFilePickerTableViewControllerDelegate

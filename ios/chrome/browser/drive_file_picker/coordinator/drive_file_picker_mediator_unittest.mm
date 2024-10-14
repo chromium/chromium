@@ -93,6 +93,10 @@
     didAllowDismiss:(BOOL)allowDismiss {
 }
 
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didActivateSearch:(BOOL)searchActivated {
+}
+
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.
