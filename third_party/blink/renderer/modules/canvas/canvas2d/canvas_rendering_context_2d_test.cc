@@ -40,8 +40,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
-#include "gpu/command_buffer/client/test_shared_image_interface.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
@@ -2021,6 +2020,50 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   Context2D()->endLayer(exception_state);
   Context2D()->fillRect(0, 0, 1, 1);
   ASSERT_EQ(Context2D()->Recorder()->TotalOpCount(), initial_op_count);
+}
+
+TEST_P(CanvasRenderingContext2DTest,
+       SoftwareCanvasIsCompositedIfImageChromium) {
+  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
+
+  // Ensure that native support for BGRA GMBs is present, as otherwise
+  // compositing will not occur irrespective of whether
+  // `ScopedCanvas2dImageChromium` is enabled.
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
+                                     ->ContextProvider()
+                                     ->GetCapabilities())
+      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
+
+  CreateContext(kNonOpaque);
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+
+  // Draw to the canvas and verify that the canvas is composited.
+  Context2D()->fillRect(0, 0, 1, 1);
+  EXPECT_TRUE(CanvasElement().IsComposited());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+}
+
+TEST_P(CanvasRenderingContext2DTest,
+       SoftwareCanvasIsNotCompositedIfNotImageChromium) {
+  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(false);
+
+  CreateContext(kNonOpaque);
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+
+  // Ensure that native support for BGRA GMBs is present, as otherwise
+  // compositing will not occur irrespective of whether
+  // `ScopedCanvas2dImageChromium` is enabled.
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
+                                     ->ContextProvider()
+                                     ->GetCapabilities())
+      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
+
+  // Draw to the canvas and verify that the canvas is not composited.
+  Context2D()->fillRect(0, 0, 1, 1);
+  EXPECT_FALSE(CanvasElement().IsComposited());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
 class CanvasRenderingContext2DTestAccelerated
