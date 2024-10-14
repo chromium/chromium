@@ -18,12 +18,15 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {Route, routes} from '../router.js';
+import type {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import type {OsBluetoothDevicesSubpageBrowserProxy} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_saved_devices_subpage.html.js';
-import {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './settings_fast_pair_constants.js';
+import type {FastPairSavedDevice} from './settings_fast_pair_constants.js';
+import {FastPairSavedDevicesOptInStatus} from './settings_fast_pair_constants.js';
 
 const SettingsBluetoothSavedDevicesSubpageElementBase =
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
