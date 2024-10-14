@@ -109,6 +109,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoProperties.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoViewBinder.java",
