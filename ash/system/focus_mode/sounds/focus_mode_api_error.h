@@ -15,7 +15,18 @@ namespace ash {
 // Describes the last error received from one of the API backends.
 // `error_message` is suitable for display to the user.
 struct ASH_EXPORT FocusModeApiError {
-  bool fatal = false;
+  enum class Type {
+    // Unrecoverable error.
+    kFatal,
+    // Device requires update.
+    kUpdate,
+    // Everything else.
+    kOther,
+  };
+
+  bool IsFatal() const;
+
+  Type type = Type::kOther;
   std::string error_message;
 };
 

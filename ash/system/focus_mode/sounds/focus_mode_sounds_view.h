@@ -55,6 +55,9 @@ class ASH_EXPORT FocusModeSoundsView
 
  private:
   struct ToastData {
+    // Returns a `ToastData` for the YouTube Music update error.
+    static ToastData CreateYouTubeMusicUpdateToast();
+
     ToastData();
     ToastData(const ToastData&);
     ~ToastData();

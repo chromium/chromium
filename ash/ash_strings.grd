@@ -862,6 +862,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC" desc="The text for the error toast when the focus mode isn't connected to the YouTube Music">
         Couldn’t connect to YouTube Music
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_UPDATE" desc="The text for the error toast when YouTube Music requires an OS update">
+        Update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to use YouTube Music
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_FOCUS_SOUNDS" desc="The text for the error toast when the focus mode isn't connected to the Focus sounds">
         Couldn’t connect to Focus sounds
       </message>

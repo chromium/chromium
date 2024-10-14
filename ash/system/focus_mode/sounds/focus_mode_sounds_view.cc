@@ -25,10 +25,12 @@
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -159,6 +161,11 @@ std::unique_ptr<views::BoxLayoutView> CreateOfflineStateView() {
   return box_view;
 }
 
+// Display the about page so a user can start an OS update.
+void ShowAboutChromeOS() {
+  ash::Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
+}
+
 }  // namespace
 
 //---------------------------------------------------------------------
@@ -276,6 +283,19 @@ void FocusModeSoundsView::OnPlayerError() {
   ProcessError(data);
 }
 
+// static
+FocusModeSoundsView::ToastData
+FocusModeSoundsView::ToastData::CreateYouTubeMusicUpdateToast() {
+  FocusModeSoundsView::ToastData data;
+  data.source = focus_mode_util::SoundType::kYouTubeMusic;
+  data.message = l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_UPDATE,
+      ui::GetChromeOSDeviceName());
+  data.action_type = ErrorMessageToast::ButtonActionType::kSettings;
+  data.fatal = true;
+  return data;
+}
+
 FocusModeSoundsView::ToastData::ToastData() = default;
 FocusModeSoundsView::ToastData::ToastData(const ToastData&) = default;
 FocusModeSoundsView::ToastData::~ToastData() = default;
@@ -296,6 +316,15 @@ constexpr std::partial_ordering FocusModeSoundsView::ToastData::operator<=>(
     }
   }
 
+  if (action_type != other.action_type) {
+    constexpr auto kActionValue =
+        base::MakeFixedFlatMap<ErrorMessageToast::ButtonActionType, int>(
+            {{ErrorMessageToast::ButtonActionType::kReload, 0},
+             {ErrorMessageToast::ButtonActionType::kDismiss, 1},
+             {ErrorMessageToast::ButtonActionType::kSettings, 2}});
+    return kActionValue.at(action_type) <=> kActionValue.at(other.action_type);
+  }
+
   if (absl::holds_alternative<int>(message)) {
     if (absl::holds_alternative<std::u16string>(other.message)) {
       return std::partial_ordering::less;
@@ -304,22 +333,6 @@ constexpr std::partial_ordering FocusModeSoundsView::ToastData::operator<=>(
     if (absl::holds_alternative<int>(other.message)) {
       return std::partial_ordering::greater;
     }
-  }
-
-  switch (action_type) {
-    case ErrorMessageToast::ButtonActionType::kDismiss:
-      if (other.action_type == ErrorMessageToast::ButtonActionType::kReload) {
-        return std::partial_ordering::greater;
-      }
-      break;
-    case ErrorMessageToast::ButtonActionType::kReload:
-      if (other.action_type == ErrorMessageToast::ButtonActionType::kDismiss) {
-        return std::partial_ordering::less;
-      }
-      break;
-    case ErrorMessageToast::ButtonActionType::kSettings:
-      // TODO(crbug.com/372029553): Reimplement prioritization.
-      NOTREACHED();
   }
 
   if (message != other.message) {
@@ -508,6 +521,10 @@ void FocusModeSoundsView::ToggleYouTubeMusicAlternateView(bool show) {
 void FocusModeSoundsView::YouTubeMusicError(
     const FocusModeApiError& api_error) {
   const std::string& error_message = api_error.error_message;
+  if (api_error.type == FocusModeApiError::Type::kUpdate) {
+    ProcessError(ToastData::CreateYouTubeMusicUpdateToast());
+    return;
+  }
 
   ToastData data;
   data.source = focus_mode_util::SoundType::kYouTubeMusic;
@@ -517,8 +534,10 @@ void FocusModeSoundsView::YouTubeMusicError(
   } else {
     data.message = base::UTF8ToUTF16(error_message);
   }
+
   data.action_type = ErrorMessageToast::ButtonActionType::kDismiss;
-  data.fatal = api_error.fatal;
+  data.fatal = api_error.IsFatal();
+
   ProcessError(data);
 }
 
@@ -629,8 +648,8 @@ void FocusModeSoundsView::ShowErrorMessageForType(
                               weak_factory_.GetWeakPtr(), is_soundscape_type);
       break;
     case ErrorMessageToast::ButtonActionType::kSettings:
-      // TODO(crbug.com/372029553): Change this to open settings.
-      NOTREACHED();
+      callback = base::BindRepeating(&ShowAboutChromeOS);
+      break;
   }
 
   error_message_ = AddChildView(std::make_unique<ErrorMessageToast>(

@@ -35,8 +35,17 @@ constexpr char kFocusSupermixPlaylistId[] =
 constexpr char kYouTubeMusicSourceFormat[] = "YouTube Music ᐧ %s";
 constexpr char kYouTubeMusicTrackNotExplicit[] = "EXPLICIT_TYPE_NOT_EXPLICIT";
 
-constexpr bool IsErrorFatal(google_apis::ApiErrorCode http_error_code) {
-  return http_error_code == google_apis::ApiErrorCode::HTTP_BAD_REQUEST;
+// Converts from google_api errors to FocusMode errors.
+constexpr FocusModeApiError::Type ToErrorType(
+    google_apis::ApiErrorCode http_error_code) {
+  // TODO(crbug.com/372029553): Handle Update error
+  switch (http_error_code) {
+    case google_apis::ApiErrorCode::HTTP_BAD_REQUEST:
+      return FocusModeApiError::Type::kFatal;
+    default:
+      break;
+  }
+  return FocusModeApiError::Type::kOther;
 }
 
 bool ShouldRetryRequest(google_apis::ApiErrorCode http_error_code,
@@ -284,7 +293,7 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
     } else {
       // Error will not be retried we are giving up.
       ApiErrorEncountered(
-          {IsErrorFatal(http_error_code), playlist.error().error_message});
+          {ToErrorType(http_error_code), playlist.error().error_message});
     }
   }
 
@@ -357,7 +366,7 @@ void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
 
     // Error will not be retried we are giving up.
     ApiErrorEncountered(
-        {IsErrorFatal(http_error_code), playlists.error().error_message});
+        {ToErrorType(http_error_code), playlists.error().error_message});
   }
 
   // Do not record retry count and final result for non-premium users.
@@ -438,7 +447,8 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
       // Bail gracefully.
       std::move(next_track_state_.done_callback).Run(std::nullopt);
       next_track_state_.Reset();
-      ApiErrorEncountered({false, playback_context.error().error_message});
+      ApiErrorEncountered({ToErrorType(http_error_code),
+                           playback_context.error().error_message});
       return;
     }
 
@@ -463,8 +473,8 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
     next_track_state_.Reset();
 
     // Report the error.
-    ApiErrorEncountered({IsErrorFatal(http_error_code),
-                         playback_context.error().error_message});
+    ApiErrorEncountered(
+        {ToErrorType(http_error_code), playback_context.error().error_message});
     return;
   }
 
@@ -603,7 +613,7 @@ void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
     }
 
     // Error will not be retried we are giving up.
-    ApiErrorEncountered({IsErrorFatal(http_error_code),
+    ApiErrorEncountered({ToErrorType(http_error_code),
                          new_playback_reporting_token.error().error_message});
     return;
   }
@@ -635,7 +645,7 @@ void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
 }
 
 bool FocusModeYouTubeMusicDelegate::ContainsFatalError() const {
-  return last_error_.has_value() && last_error_->fatal;
+  return last_error_.has_value() && last_error_->IsFatal();
 }
 
 void FocusModeYouTubeMusicDelegate::RequestSuccessful() {
