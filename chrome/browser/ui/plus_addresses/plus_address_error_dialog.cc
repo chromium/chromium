@@ -58,10 +58,10 @@ std::unique_ptr<ui::DialogModel> CreateTimeoutErrorDialog(
 std::unique_ptr<ui::DialogModel> CreateQuotaErrorDialog(
     base::OnceClosure on_accepted) {
   return ui::DialogModel::Builder()
-      .SetTitle(
-          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE))
+      .SetTitle(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_TITLE))
       .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION)))
+          IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_DESCRIPTION)))
       .AddOkButton(std::move(on_accepted),
                    ui::DialogModel::Button::Params().SetId(
                        kPlusAddressErrorDialogAcceptButton))

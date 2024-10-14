@@ -506,6 +506,12 @@ if we want to translate this file.
         <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
           Try again
         </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_TITLE" desc="The title in the modal that is shown if a quota error is encountered during inline creation." translateable="false">
+          Too many Shielded Email addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a quota error is encountered during inline creation." translateable="false">
+          Can't create any more Shielded Email addresses for this site or app.
+        </message>
 
         <!-- Manual fallback strings -->
         <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
