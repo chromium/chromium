@@ -20026,6 +20026,7 @@
     "SafeBrowsingDeepScanningCriteria": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -20037,6 +20038,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingDeepScanningCriteria"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingExternalAppRedirectTelemetry": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingExternalAppRedirectTelemetry"
                     ]
                 }
             ]
