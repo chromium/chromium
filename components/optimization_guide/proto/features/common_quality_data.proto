@@ -218,6 +218,10 @@ message FormFieldData {
   // Whether the field is eligible for filling and importing. This flag does not
   // take the value of the field into consideration.
   bool is_eligible = 10;
+
+  // Uniquely identifies the DOM element that this field represents among the
+  // field DOM elements in the same frame.
+  string global_id = 11;
 }
 
 // Represents an option in a select field. See below for example.
