@@ -14,6 +14,7 @@
 
 enum class IOSPromoType;
 
+class PrefService;
 class Profile;
 
 namespace syncer {
@@ -132,6 +133,11 @@ bool ShouldShowIOSDesktopPromo(Profile* profile,
                                const syncer::SyncService* sync_service,
                                IOSPromoType promo_type);
 
+// Checks if the user should be shown the Desktop NTP promo based on the current
+// criteria.
+bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
+                                  const syncer::SyncService* sync_service);
+
 // Processes the results of the user classification to make sure there were
 // no errors and the user is not classified as a switcher from a mobile
 // device by the segmentation platform (i.e. return true if the promo should
@@ -150,6 +156,9 @@ void iOSPasswordPromoShown(Profile* profile);
 // increments the impression counter for the given iOS promo type and records
 // the necessary histogram.
 void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type);
+
+// Updates any necessary prefs for when the promo is shown.
+void IOSDesktopNtpPromoShown(PrefService* pref_service);
 
 }  // namespace promos_utils
 

@@ -367,6 +367,8 @@ enum {
   kDesktopToiOSPaymentPromoLastImpressionTimestamp = 100305,
   kDesktopToiOSPaymentPromoImpressionsCounter = 100306,
   kDesktopToiOSPaymentPromoOptOut = 100307,
+  kDesktopToiOSNtpPromoAppearanceTimestamps = 100308,
+  kDesktopToiOSNtpPromoDismissed = 100309,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1585,6 +1587,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {promos_prefs::kDesktopToiOSPaymentPromoOptOut,
      {syncable_prefs_ids::kDesktopToiOSPaymentPromoOptOut, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
+     {syncable_prefs_ids::kDesktopToiOSNtpPromoAppearanceTimestamps,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {promos_prefs::kDesktopToiOSNtpPromoDismissed,
+     {syncable_prefs_ids::kDesktopToiOSNtpPromoDismissed, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 });

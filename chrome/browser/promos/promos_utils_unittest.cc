@@ -4,6 +4,7 @@
 
 #include "chrome/browser/promos/promos_utils.h"
 
+#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/sync/test/test_sync_service.h"
@@ -28,12 +30,6 @@ namespace promos_utils {
 class IOSPromoOnDesktopTest : public ::testing::Test {
  public:
   void SetUp() override {
-    // Register the prefs when not on a branded build (they're automatically
-    // registered when on a branded build).
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    RegisterProfilePrefs(prefs()->registry());
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
     local_state_.registry()->RegisterBooleanPref(prefs::kPromotionsEnabled,
                                                  true);
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
@@ -849,6 +845,67 @@ TEST_F(IOSPromoOnDesktopTest,
                                          IOSPromoType::kPayment));
 }
 
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has
+// seen too many other promos and that the Desktop NTP promo only counts as 1,
+// no matter how many times it has actually shown.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseTooManyOtherPromos) {
+  // First, make sure that 10 is the limit.
+  prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
+                      10);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
+
+  prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
+                      9);
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
+
+  // Go two below the limit so adding Desktop NTP promo impressions pushes back
+  // to one below the limit.
+  prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
+                      8);
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
+
+  base::Time promo_time = base::Time::Now() - base::Days(1000);
+  base::Value::List desktop_ntp_promo_timestamps;
+  desktop_ntp_promo_timestamps.Append(base::TimeToValue(promo_time));
+  prefs()->SetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
+                   std::move(desktop_ntp_promo_timestamps));
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
+
+  // Add a second timestamp and the promo should still be able to be shown.
+  {
+    ScopedListPrefUpdate update(
+        prefs(), promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
+    update->Append(base::TimeToValue(promo_time + base::Seconds(1)));
+  }
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
+
+  // Setting another promo's count higher should block the promo again.
+  prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
+                      9);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has
+// seen the Desktop Ntp promo too recently.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseDesktopNtpPromoTooRecent) {
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
+
+  prefs()->SetList(
+      promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
+      base::Value::List().Append(base::TimeToValue(base::Time::Now())));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
+}
+
 // Tests that IOSDesktopPromoShown sets the correct prefs and records the
 // correct histogram for the first impression for the given payment promo
 // type.
@@ -1057,6 +1114,117 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest, PromoSyncPrefsSyncServiceNull) {
   EXPECT_FALSE(
       ShouldShowIOSDesktopPromo(profile(), nullptr, IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopNtpPromo returns true when no promo has yet
+// been shown.
+TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopNtpPromo) {
+  EXPECT_TRUE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
+}
+
+// Tests that ShouldShowIOSDesktopNtpPromo returns false when the promotions are
+// disabled.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopNtpPromoFalsePromotionsDisabled) {
+  local_state_.SetBoolean(prefs::kPromotionsEnabled, false);
+  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
+}
+
+// Tests that ShouldShowIOSDesktopNtpPromo returns false when sync service is
+// null.
+TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopNtpPromoSyncServiceNull) {
+  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), nullptr));
+}
+
+// Tests that ShouldShowIOSDesktopNtpPromo returns false when the user has
+// already seen 10 promos.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopNtpPromoTestFalseTooManyImpressions) {
+  base::Value::List timestamps;
+  for (int i = 0; i < 10; i++) {
+    timestamps.Append(base::TimeToValue(base::Time::Now() - base::Hours(1) +
+                                        base::Seconds(i)));
+  }
+  prefs()->SetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
+                   std::move(timestamps));
+  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
+}
+
+// Tests that ShouldShowIOSDesktopNtpPromo returns false when the user has
+// dismissed the promo.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopNtpPromoTestFalseUserDismissed) {
+  prefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed, true);
+  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
+}
+
+// Tests that ShouldShowIOSDesktopNtpPromo returns false when the another promo
+// type has a too recent last impression.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    ShouldShowIOSDesktopNtpPromoTestFalseLastImpressionTooRecentForOtherPromo) {
+  prefs()->SetTime(
+      promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
+      base::Time::Now());
+  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has already
+// seen 3 promos for the given password promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopNtpPromoTestFalseTooManyImpressionsForOtherPromos) {
+  prefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 12);
+  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
+}
+
+// Tests that IOSDesktopNtpPromoShown sets the correct prefs.
+TEST_F(IOSPromoOnDesktopTest, IOSDesktopNtpPromoShownTest) {
+  // First impression
+  base::Time before = base::Time::Now();
+  IOSDesktopNtpPromoShown(prefs());
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(
+      prefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size(),
+      1u);
+  ASSERT_GE(
+      base::ValueToTime(
+          prefs()
+              ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+              .back()),
+      before);
+  ASSERT_LE(
+      base::ValueToTime(
+          prefs()
+              ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+              .back()),
+      after);
+
+  // Second impression
+  before = base::Time::Now();
+  IOSDesktopNtpPromoShown(prefs());
+  after = base::Time::Now();
+
+  ASSERT_EQ(
+      prefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size(),
+      2u);
+  ASSERT_GE(
+      base::ValueToTime(
+          prefs()
+              ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+              .back()),
+      before);
+  ASSERT_LE(
+      base::ValueToTime(
+          prefs()
+              ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+              .back()),
+      after);
 }
 
 }  // namespace promos_utils

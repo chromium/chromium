@@ -58,6 +58,20 @@ inline constexpr char kDesktopToiOSPaymentPromoImpressionsCounter[] =
 inline constexpr char kDesktopToiOSPaymentPromoOptOut[] =
     "promos.ios_payment_opt_out";
 
+// iOS Desktop Ntp promo prefs.
+// List of timestamps when the "iOS Desktop Ntp" promo was shown. New timestamps
+// are appended to the end of the list, but the list is not otherwise sorted.
+// This constant uses "appearance" and not "impression" because its appearances
+// are different from the other promos' impressions. This promo shows a few
+// times in quick succession, but that only counts as one promo impression among
+// all Desktop to iOS promos.
+inline constexpr char kDesktopToiOSNtpPromoAppearanceTimestamps[] =
+    "promos.ios_desktop_ntp_appearance_timestamps";
+
+// Boolean that tracks whether the user has dismissed the promo.
+inline constexpr char kDesktopToiOSNtpPromoDismissed[] =
+    "promos.ios_desktop_ntp_dismissed";
+
 }  // namespace promos_prefs
 
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_PREF_NAMES_H_

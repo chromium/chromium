@@ -647,6 +647,8 @@ chromium-metrics-reviews@google.com.
   <int value="100305" label="DesktopToiOSPaymentPromoLastImpressionTimestamp"/>
   <int value="100306" label="DesktopToiOSPaymentPromoImpressionsCounter"/>
   <int value="100307" label="DesktopToiOSPaymentPromoOptOut"/>
+  <int value="100308" label="DesktopToiOSNtpPromoAppearanceTimestamps"/>
+  <int value="100309" label="DesktopToiOSNtpPromoDismissed"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

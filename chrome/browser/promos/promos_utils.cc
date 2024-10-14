@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -19,6 +20,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
@@ -64,10 +67,24 @@ std::string IOSDesktopPromoHistogramType(IOSPromoType promo_type) {
   }
 }
 
+base::Time GetMostRecentiOSDesktopNtpPromoTimestamp(PrefService* pref_service) {
+  const base::Value::List& timestamps = pref_service->GetList(
+      promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
+  base::Value::List::const_iterator most_recent_timestamp_iter =
+      std::max_element(timestamps.begin(), timestamps.end());
+  if (most_recent_timestamp_iter == timestamps.end()) {
+    return base::Time();
+  }
+  return base::ValueToTime(*most_recent_timestamp_iter).value_or(base::Time());
+}
+
 // VerifyIOSDesktopPromoTotalImpressions ensures that each individual user sees
 // no more than a maximum of these promos total in their lifetime. New promos
-// should add themselves to this check.
-bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile) {
+// should add themselves to this check. If `skip_ntp_promo` is true, then this
+// call will not include ntp promo data in its checks. This allows calling code
+// from the NTP promo to add special logic.
+bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile,
+                                           bool skip_ntp_promo = false) {
   int total_desktop_promo_impressions =
       profile->GetPrefs()->GetInteger(
           promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter) +
@@ -76,8 +93,16 @@ bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile) {
       profile->GetPrefs()->GetInteger(
           promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter);
 
-  return total_desktop_promo_impressions <=
-         kiOSDesktopPromoTotalImpressionCount;
+  if (!skip_ntp_promo) {
+    // The Desktop NTP promo shows 10 times in quick succession, but that only
+    // counts as 1 impression for Desktop to iOS promos in general.
+    const base::Value::List& ntp_promo_appearances =
+        profile->GetPrefs()->GetList(
+            promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
+    total_desktop_promo_impressions += (ntp_promo_appearances.empty()) ? 0 : 1;
+  }
+
+  return total_desktop_promo_impressions < kiOSDesktopPromoTotalImpressionCount;
 }
 
 // VerifyIOSDesktopPromoTotalOptOuts verifies that a user hasn't opted-out of
@@ -99,16 +124,25 @@ bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
 }
 
 // VerifyMostRecentPromoTimestamp ensures that each individual user sees a
-// iOS to Desktop promo a maximum of once per cooldown period. New promos should
-// add themselves to this check.
-bool VerifyMostRecentPromoTimestamp(Profile* profile) {
+// Desktop to iOS promo a maximum of once per cooldown period. New promos should
+// add themselves to this check. If `skip_ntp_promo` is true, then this call
+// will not include ntp promo data in its checks. This allows calling code from
+// the NTP promo to add special logic.
+bool VerifyMostRecentPromoTimestamp(Profile* profile,
+                                    bool skip_ntp_promo = false) {
   std::vector<base::Time> promos_timestamps = {
       profile->GetPrefs()->GetTime(
           promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       profile->GetPrefs()->GetTime(
           promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
       profile->GetPrefs()->GetTime(
-          promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp)};
+          promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+  };
+
+  if (!skip_ntp_promo) {
+    promos_timestamps.emplace_back(
+        GetMostRecentiOSDesktopNtpPromoTimestamp(profile->GetPrefs()));
+  }
 
   auto most_recent_promo_timestamp =
       std::max_element(promos_timestamps.begin(), promos_timestamps.end());
@@ -135,6 +169,21 @@ bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
       return sync_service.GetActiveDataTypes().Has(
           syncer::AUTOFILL_WALLET_DATA);
   }
+}
+
+// Checks whether promos in general can currently be shown.
+bool CanShowPromos() {
+  // Don't show the promo if the local state exists and `kPromotionsEnabled` is
+  // false (likely overridden by policy).
+  // TODO(crbug.com/372209715): Evaluate whether this needs to be behind an
+  // ifdef.
+#if !BUILDFLAG(IS_ANDROID)
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return true;
 }
 
 // TODO(crbug.com/339262105): Clean up the old password promo methods after
@@ -254,6 +303,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       promos_prefs::kDesktopToiOSPaymentPromoOptOut, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterListPref(
+      promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps, {},
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      promos_prefs::kDesktopToiOSNtpPromoDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 const base::Feature& GetIOSDesktopPromoFeatureEngagement(
@@ -325,14 +381,9 @@ bool ShouldShowIOSPasswordPromo(Profile* profile) {
 bool ShouldShowIOSDesktopPromo(Profile* profile,
                                const syncer::SyncService* sync_service,
                                IOSPromoType promo_type) {
-  // Don't show the promo if the local state exists and `kPromotionsEnabled` is
-  // false (likely overridden by policy).
-#if !BUILDFLAG(IS_ANDROID)
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+  if (!CanShowPromos()) {
     return false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   IOSPromoPrefsConfig promo_prefs(promo_type);
 
@@ -346,6 +397,38 @@ bool ShouldShowIOSDesktopPromo(Profile* profile,
          VerifyIOSDesktopPromoTotalImpressions(profile) &&
          VerifyIOSDesktopPromoTotalOptOuts(profile) &&
          !profile->GetPrefs()->GetBoolean(promo_prefs.promo_opt_out_pref_name);
+}
+
+bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
+                                  const syncer::SyncService* sync_service) {
+  if (!CanShowPromos()) {
+    return false;
+  }
+
+  PrefService* pref_service = profile->GetPrefs();
+
+  // Sync must be active because prefs to track promo display are synced.
+  bool sync_ok = sync_service &&
+                 sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES);
+
+  // This promo can appear 10 times itself.
+  int appearance_count =
+      pref_service
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  bool appearance_count_ok =
+      appearance_count < ntp_features::kNtpMobilePromoImpressionLimit.Get();
+
+  bool has_not_dismissed = !profile->GetPrefs()->GetBoolean(
+      promos_prefs::kDesktopToiOSNtpPromoDismissed);
+
+  bool other_promos_ok =
+      VerifyMostRecentPromoTimestamp(profile, /*skip_ntp_promo=*/true) &&
+      VerifyIOSDesktopPromoTotalImpressions(profile, /*skip_ntp_promo=*/true);
+
+  // Show the promo if the user hasn't opted out, is not in the cooldown
+  // period and is within the impression limit for this promo.
+  return sync_ok && appearance_count_ok && has_not_dismissed && other_promos_ok;
 }
 
 bool UserNotClassifiedAsMobileDeviceSwitcher(
@@ -396,6 +479,12 @@ void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type) {
       promo_prefs.promo_last_impression_timestamp_pref_name, base::Time::Now());
 
   RecordIOSDesktopPromoShownHistogram(promo_type, new_impression_count);
+}
+
+void IOSDesktopNtpPromoShown(PrefService* pref_service) {
+  ScopedListPrefUpdate update(
+      pref_service, promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
+  update->Append(base::TimeToValue(base::Time::Now()));
 }
 
 }  // namespace promos_utils
