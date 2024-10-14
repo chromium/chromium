@@ -50,6 +50,8 @@ namespace ash {
 namespace {
 
 constexpr size_t kMaxClusterCount = 2;
+// Persist post-login clusters for 15 minutes.
+constexpr base::TimeDelta kPostLoginClusterLifespan = base::Minutes(15);
 BirchCoralProvider* g_instance = nullptr;
 
 bool HasValidClusterCount(size_t num_clusters) {
@@ -258,6 +260,12 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     return;
   }
 
+  // Do not make additional requests to the backend if we have valid post login
+  // clusters.
+  if (HasValidPostLoginResponse()) {
+    return;
+  }
+
   // TODO(yulunwu) make appropriate data request, send data to backend.
   if (HasValidPostLoginData()) {
     HandlePostLoginDataRequest();
@@ -308,11 +316,11 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
     }
   }
 
-  // TODO(sammiequon): Implement item remover.
   request_.set_content(std::move(tab_app_data));
   Shell::Get()->coral_controller()->GenerateContentGroups(
-      request_, base::BindOnce(&BirchCoralProvider::HandleCoralResponse,
-                               weak_ptr_factory_.GetWeakPtr()));
+      request_,
+      base::BindOnce(&BirchCoralProvider::HandlePostLoginCoralResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BirchCoralProvider::HandleInSessionDataRequest() {
@@ -333,8 +341,30 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   FilterCoralContentItems(&active_tab_app_data);
   request_.set_content(std::move(active_tab_app_data));
   Shell::Get()->coral_controller()->GenerateContentGroups(
-      request_, base::BindOnce(&BirchCoralProvider::HandleCoralResponse,
-                               weak_ptr_factory_.GetWeakPtr()));
+      request_,
+      base::BindOnce(&BirchCoralProvider::HandleInSessionCoralResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool BirchCoralProvider::HasValidPostLoginResponse() {
+  return response_ && response_->groups().size() > 0 &&
+         !post_login_response_timestamp_.is_null() &&
+         base::Time::Now() - post_login_response_timestamp_ <
+             kPostLoginClusterLifespan;
+}
+
+void BirchCoralProvider::HandlePostLoginCoralResponse(
+    std::unique_ptr<CoralResponse> response) {
+  post_login_response_timestamp_ = base::Time::Now();
+  HandleCoralResponse(std::move(response_));
+}
+
+void BirchCoralProvider::HandleInSessionCoralResponse(
+    std::unique_ptr<CoralResponse> response) {
+  // Do not handle in-session responses while the post-login response is still
+  // valid.
+  CHECK(!HasValidPostLoginResponse());
+  HandleCoralResponse(std::move(response_));
 }
 
 void BirchCoralProvider::HandleCoralResponse(
@@ -345,7 +375,7 @@ void BirchCoralProvider::HandleCoralResponse(
     Shell::Get()->birch_model()->SetCoralItems(items);
     return;
   }
-  // TODO(yulunwu) update `birch_model_`
+
   response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->groups().size()));
   for (size_t i = 0; i < response_->groups().size(); ++i) {
