@@ -361,14 +361,13 @@ void ToastController::OnFullscreenStateChanged() {
 void ToastController::ClearTabScopedToasts() {
   toast_close_timer_.Stop();
   if (next_ephemeral_params_.has_value()) {
+    const ToastId toast_id = next_ephemeral_params_.value().toast_id_;
     const ToastSpecification* const specification =
-        toast_registry_->GetToastSpecification(
-            next_ephemeral_params_.value().toast_id_);
+        toast_registry_->GetToastSpecification(toast_id);
+    RecordToastDismissReason(toast_id, toasts::ToastCloseReason::kAbort);
     if (!specification->is_global_scope()) {
       next_ephemeral_params_ = std::nullopt;
     }
-    RecordToastDismissReason(next_ephemeral_params_.value().toast_id_,
-                             toasts::ToastCloseReason::kAbort);
   }
 
   if (current_ephemeral_params_.has_value()) {
