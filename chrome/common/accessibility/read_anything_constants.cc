@@ -30,6 +30,7 @@ const char kScrollEventHistogramName[] =
 const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
 const char kLanguageHistogramName[] = "Accessibility.ReadAnything.Language";
 
+const char kReadingModeName[] = "Reading mode";
 }  // namespace string_constants
 
 namespace fonts {

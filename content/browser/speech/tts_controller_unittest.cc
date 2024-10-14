@@ -135,6 +135,11 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
     utterance_id_ = utterance->GetId();
   }
 
+  void InstallLanguageRequest(BrowserContext* browser_context,
+                              const std::string& lang,
+                              const std::string& client_id,
+                              int source) override {}
+
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
 
   bool IsBuiltInTtsEngineInitialized(BrowserContext* browser_context) override {

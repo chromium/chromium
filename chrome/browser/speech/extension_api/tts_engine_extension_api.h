@@ -21,7 +21,14 @@ extern const char kOnSpeakWithAudioStream[];
 extern const char kOnStop[];
 extern const char kOnPause[];
 extern const char kOnResume[];
-}
+extern const char kOnInstallLanguageRequest[];
+
+// Specifying where events sent to the TTS Engine originated
+enum class TtsClientSource {
+  CHROMEFEATURE,  // The event originated from a feature within Chrome
+  EXTENSION       // The event originated from an extension
+};
+}  // namespace tts_engine_events
 
 // TtsEngineDelegate implementation used by TtsController.
 class TtsExtensionEngine : public content::TtsEngineDelegate {
@@ -47,6 +54,10 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
   void Stop(content::TtsUtterance* utterance) override;
   void Pause(content::TtsUtterance* utterance) override;
   void Resume(content::TtsUtterance* utterance) override;
+  void InstallLanguageRequest(content::BrowserContext* browser_context,
+                              const std::string& lang,
+                              const std::string& client_id,
+                              int source) override;
   void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
   bool IsBuiltInTtsEngineInitialized(
       content::BrowserContext* browser_context) override;
@@ -68,6 +79,10 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
  protected:
   base::Value::List BuildSpeakArgs(content::TtsUtterance* utterance,
                                    const content::VoiceData& voice);
+  base::Value::List BuildInstallLanguageArgs(
+      const std::string& lang,
+      const std::string& client_id,
+      tts_engine_events::TtsClientSource source);
 
   bool disable_built_in_tts_engine_for_testing_ = false;
 };

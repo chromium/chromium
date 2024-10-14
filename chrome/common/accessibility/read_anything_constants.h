@@ -25,7 +25,7 @@ extern const char kFontScaleHistogramName[];
 extern const char kScrollEventHistogramName[];
 extern const char kEmptyStateHistogramName[];
 extern const char kLanguageHistogramName[];
-
+extern const char kReadingModeName[];
 }  // namespace string_constants
 
 // When adding a new font, add info to ReadAnythingFont, kReadAnythingFonts,

@@ -17,6 +17,16 @@ declare global {
 
     export namespace ttsEngine {
 
+      export enum TtsClientSource {
+        CHROMEFEATURE = 'chromefeature',
+        EXTENSION = 'extension',
+      }
+
+      export interface TtsClient {
+        id: string;
+        source: TtsClientSource;
+      }
+
       export enum VoiceGender {
         MALE = 'male',
         FEMALE = 'female',
@@ -57,7 +67,7 @@ declare global {
           (utterance: string, options: SpeakOptions,
            audioStreamOptions: AudioStreamOptions,
            sendTtsAudio: (audioBufferParams: AudioBuffer) => void,
-           sendError: (errorMessage: string) => void) => void>;
+           sendError: (errorMessage?: string) => void) => void>;
 
       export const onStop: ChromeEvent<() => void>;
 
@@ -65,6 +75,8 @@ declare global {
 
       export const onResume: ChromeEvent<() => void>;
 
+      export const onInstallLanguageRequest:
+          ChromeEvent<(requestor: TtsClient, lang: string) => void>;
     }
   }
 }

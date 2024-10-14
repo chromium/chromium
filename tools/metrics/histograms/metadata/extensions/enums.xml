@@ -760,6 +760,7 @@ Called by update_extension_histograms.py.-->
   <int value="558"
       label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_GESTURE_INFO_FOR_SETTINGS"/>
   <int value="559" label="ACTION_ON_USER_SETTINGS_CHANGED"/>
+  <int value="560" label="TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST"/>
 </enum>
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">

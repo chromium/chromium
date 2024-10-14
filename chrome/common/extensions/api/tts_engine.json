@@ -8,6 +8,27 @@
     "description": "Use the <code>chrome.ttsEngine</code> API to implement a text-to-speech(TTS) engine using an extension. If your extension registers using this API, it will receive events containing an utterance to be spoken and other parameters when any extension or Chrome App uses the <a href='tts'>tts</a> API to generate speech. Your extension can then use any available web technology to synthesize and output the speech, and send events back to the calling function to report the status.",
     "types": [
       {
+        "id": "TtsClientSource",
+        "type": "string",
+        "description": "Type of requestor.",
+        "enum": ["chromefeature","extension"]
+      },
+      {
+        "id": "TtsClient",
+        "type": "object",
+        "description": "Identifier for the client requesting status.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Client making a language management request. For an extension, this is the unique extension ID. For Chrome features, this is the human-readable name of the feature."
+          },
+          "source": {
+              "$ref": "TtsClientSource",
+              "description": "Type of requestor."
+          }
+        }
+      },
+      {
         "id": "VoiceGender",
         "type": "string",
         "deprecated": "Gender is deprecated and will be ignored.",
@@ -236,6 +257,23 @@
         "name": "onResume",
         "type": "function",
         "description": "Optional: if an engine supports the pause event, it should also support the resume event, to continue speaking the current utterance, if any. Note that a stop event should also clear the paused state."
+      },
+      {
+        "name": "onInstallLanguageRequest",
+        "type": "function",
+        "description": "Fired when a TTS client requests to install a new language. The engine should attempt to download and install the language, and call ttsEngine.updateLanguage with the result. On success, the engine should also call ttsEngine.updateVoices to register the newly available voices.",
+        "parameters": [
+          {
+            "name": "requestor",
+            "$ref": "TtsClient",
+            "description": "Client requesting a language install."
+          },
+          {
+            "name": "lang",
+            "type": "string",
+            "description": "Language string to be installed in the form language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
+          }
+        ]
       }
     ]
   }

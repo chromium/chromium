@@ -64,6 +64,7 @@ const char kOnSpeakWithAudioStream[] = "ttsEngine.onSpeakWithAudioStream";
 const char kOnStop[] = "ttsEngine.onStop";
 const char kOnPause[] = "ttsEngine.onPause";
 const char kOnResume[] = "ttsEngine.onResume";
+const char kOnInstallLanguageRequest[] = "ttsEngine.onInstallLanguageRequest";
 }  // namespace tts_engine_events
 
 namespace {
@@ -203,6 +204,17 @@ bool GetTtsEventType(const std::string& event_type_string,
     return false;
   }
   return true;
+}
+
+std::string TtsClientSourceEnumToString(
+    tts_engine_events::TtsClientSource source) {
+  switch (source) {
+    case tts_engine_events::TtsClientSource::CHROMEFEATURE:
+      return "chromefeature";
+
+    case tts_engine_events::TtsClientSource::EXTENSION:
+      return "extension";
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -377,6 +389,25 @@ void TtsExtensionEngine::Resume(content::BrowserContext* browser_context,
   WarnIfMissingPauseOrResumeListener(profile, event_router, engine_id);
 }
 
+void TtsExtensionEngine::InstallLanguageRequest(
+    content::BrowserContext* browser_context,
+    const std::string& lang,
+    const std::string& client_id,
+    int source) {
+  tts_engine_events::TtsClientSource tts_client_source =
+      static_cast<tts_engine_events::TtsClientSource>(source);
+  base::Value::List args =
+      BuildInstallLanguageArgs(lang, client_id, tts_client_source);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST,
+      tts_engine_events::kOnInstallLanguageRequest, std::move(args), profile);
+  EventRouter* event_router = EventRouter::Get(profile);
+
+  event_router->BroadcastEvent(std::move(event));
+}
+
 void TtsExtensionEngine::LoadBuiltInTtsEngine(
     content::BrowserContext* browser_context) {
   // No built-in extension engines on non-Chrome OS.
@@ -386,6 +417,22 @@ bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
     content::BrowserContext* browser_context) {
   // Vacuously; no built in engines on other platforms yet. TODO: network tts?
   return true;
+}
+
+base::Value::List TtsExtensionEngine::BuildInstallLanguageArgs(
+    const std::string& lang,
+    const std::string& client_id,
+    tts_engine_events::TtsClientSource source) {
+  base::Value::List args;
+
+  base::Value::Dict tts_client =
+      base::Value::Dict()
+          .Set(constants::kIdKey, client_id)
+          .Set(constants::kSourceKey, TtsClientSourceEnumToString(source));
+
+  args.Append((std::move(tts_client)));
+  args.Append(lang);
+  return args;
 }
 
 base::Value::List TtsExtensionEngine::BuildSpeakArgs(

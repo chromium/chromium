@@ -69,6 +69,11 @@ class CONTENT_EXPORT TtsEngineDelegate {
   virtual void Pause(TtsUtterance* utterance) = 0;
   // Resume speaking this utterance.
   virtual void Resume(TtsUtterance* utterance) = 0;
+  // Sends an InstallLanguageRequest event to extensions.
+  virtual void InstallLanguageRequest(BrowserContext* browser_context,
+                                      const std::string& lang,
+                                      const std::string& client_id,
+                                      int source) = 0;
   // Load the built-in TTS engine.
   virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
 
@@ -143,6 +148,17 @@ class CONTENT_EXPORT TtsController {
 
   // Resume speaking.
   virtual void Resume() = 0;
+
+  // Requests to install a new voice for the language. For example, Reading Mode
+  // manages voice installation by sending an InstallLanguageRequest event to
+  // extensions, who can subscribe to this event and attempt to download a voice
+  // for this language.
+  // The "source" param can be defined by delegates and embedders. For example,
+  // Reading Mode uses the tts_engine_events::TtsClientSource
+  virtual void InstallLanguageRequest(BrowserContext* browser_context,
+                                      const std::string& lang,
+                                      const std::string& client_id,
+                                      int source) = 0;
 
   // Handle events received from the speech engine. Events are forwarded to
   // the callback function, and in addition, completion and error events

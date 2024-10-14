@@ -20,6 +20,25 @@ chrome.ttsEngine = {};
 
 /**
  * @enum {string}
+ * @see https://developer.chrome.com/extensions/ttsEngine#type-TtsClientSource
+ */
+chrome.ttsEngine.TtsClientSource = {
+  CHROMEFEATURE: 'chromefeature',
+  EXTENSION: 'extension',
+};
+
+/**
+ * Identifier for the client requesting status.
+ * @typedef {{
+ *   id: string,
+ *   source: !chrome.ttsEngine.TtsClientSource
+ * }}
+ * @see https://developer.chrome.com/extensions/ttsEngine#type-TtsClient
+ */
+chrome.ttsEngine.TtsClient;
+
+/**
+ * @enum {string}
  * @see https://developer.chrome.com/extensions/ttsEngine#type-VoiceGender
  */
 chrome.ttsEngine.VoiceGender = {
@@ -54,7 +73,7 @@ chrome.ttsEngine.AudioStreamOptions;
 /**
  * Parameters containing an audio buffer and associated data.
  * @typedef {{
- *   audioBuffer: Float32Array,
+ *   audioBuffer: ArrayBuffer,
  *   charIndex: (number|undefined),
  *   isLastBuffer: (boolean|undefined)
  * }}
@@ -65,7 +84,7 @@ chrome.ttsEngine.AudioBuffer;
 /**
  * Called by an engine to update its list of voices. This list overrides any
  * voices declared in this extension's manifest.
- * @param {!Array<!chrome.tts.TtsVoice>} voices Array of
+ * @param {!Array<!chrome.ttsEngine.tts.TtsVoice>} voices Array of
  *     $(ref:tts.TtsVoice) objects representing the available voices for speech
  *     synthesis.
  * @see https://developer.chrome.com/extensions/ttsEngine#method-updateVoices
@@ -75,7 +94,7 @@ chrome.ttsEngine.updateVoices = function(voices) {};
 /**
  * Routes a TTS event from a speech engine to a client.
  * @param {number} requestId
- * @param {!chrome.tts.TtsEvent} event The update event from the
+ * @param {!chrome.ttsEngine.tts.TtsEvent} event The update event from the
  *     text-to-speech engine indicating the status of this utterance.
  * @see https://developer.chrome.com/extensions/ttsEngine#method-sendTtsEvent
  */
@@ -135,3 +154,13 @@ chrome.ttsEngine.onPause;
  * @see https://developer.chrome.com/extensions/ttsEngine#event-onResume
  */
 chrome.ttsEngine.onResume;
+
+/**
+ * Fired when a TTS client requests to install a new language. The engine should
+ * attempt to download and install the language, and call
+ * ttsEngine.updateLanguage with the result. On success, the engine should also
+ * call ttsEngine.updateVoices to register the newly available voices.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/ttsEngine#event-onInstallLanguageRequest
+ */
+chrome.ttsEngine.onInstallLanguageRequest;
