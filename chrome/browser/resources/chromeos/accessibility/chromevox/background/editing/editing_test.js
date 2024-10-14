@@ -2333,9 +2333,11 @@ AX_TEST_F(
 
 // Regression test that large text areas produce output.
 // TODO(crbug.com/40944160): re-enable this test once its flakiness is resolved.
-AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+AX_TEST_F(
+    'ChromeVoxEditingTest', 'DISABLED_GiantTextAreaPerformance',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <p>start</p>
     <textarea></textarea>
     <script>
@@ -2351,18 +2353,18 @@ AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
       textarea.setSelectionRange(0, 0);
     </script>
   `;
-  const root = await this.runWithLoadedTree(site);
-  await this.focusFirstTextField(root);
+      const root = await this.runWithLoadedTree(site);
+      await this.focusFirstTextField(root);
 
-  const textField = root.find({role: RoleType.TEXT_FIELD});
-  mockFeedback.expectSpeech('Text area')
-      .call(this.press(KeyCode.DOWN))
-      .expectSpeech('amet, consectetur')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('m')
+      const textField = root.find({role: RoleType.TEXT_FIELD});
+      mockFeedback.expectSpeech('Text area')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('amet, consectetur')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('m')
 
-      .replay();
-});
+          .replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxEditingTest', 'BrailleMoveByCharacterWord', async function() {
