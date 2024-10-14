@@ -122,8 +122,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     // WebLayerImpl.java for more info.
     private static final int SHARED_LIBRARY_MAX_ID = 36;
 
-    // When true, WebView will return Resources from its own Context rather than using the embedding
-    // app's.
+    // Stores the value of the cached SharedPref denoting whether we should use WebView's own
+    // Context for querying resources.
     private static boolean sUseWebViewContext;
 
     /**
@@ -284,7 +284,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     void setWebViewContextExperimentValue(boolean enabled) {
-        if (enabled == sUseWebViewContext) return;
+        if (enabled == sUseWebViewContext
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) return;
         if (enabled) {
             mWebViewPrefs.edit().putBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, true).apply();
         } else {
@@ -337,8 +338,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 mWebViewPrefs = ctx.getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
                 // Read the experiment value and use it to determine which Context to use.
                 sUseWebViewContext =
-                        mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false)
-                                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+                        mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false);
             }
 
             if (shouldEnableContextExperiment(ctx)) {
@@ -904,6 +904,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
         // Disable for Samsung devices.
         if ("SAMSUNG".equalsIgnoreCase(Build.MANUFACTURER)) {
+            return false;
+        }
+
+        // Don't enable on V+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             return false;
         }
 
