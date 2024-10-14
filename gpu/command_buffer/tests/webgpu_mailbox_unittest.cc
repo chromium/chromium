@@ -660,7 +660,7 @@ TEST_P(WebGPUMailboxTextureTest, WriteToMailboxThenReadFromIt) {
                              wgpu::CallbackMode::AllowSpontaneous,
                              ToMockBufferMapCallback);
     EXPECT_CALL(*mock_buffer_map_callback,
-                Call(wgpu::MapAsyncStatus::Success, nullptr))
+                Call(wgpu::MapAsyncStatus::Success, testing::_))
         .Times(1);
 
     WaitForCompletion(device_);
@@ -953,7 +953,7 @@ TEST_P(WebGPUMailboxTextureTest,
                            wgpu::CallbackMode::AllowSpontaneous,
                            ToMockBufferMapCallback);
   EXPECT_CALL(*mock_buffer_map_callback,
-              Call(wgpu::MapAsyncStatus::Success, nullptr))
+              Call(wgpu::MapAsyncStatus::Success, testing::_))
       .Times(1);
 
   WaitForCompletion(device_);
@@ -992,7 +992,7 @@ TEST_P(WebGPUMailboxTextureTest,
                             wgpu::CallbackMode::AllowSpontaneous,
                             ToMockBufferMapCallback);
   EXPECT_CALL(*mock_buffer_map_callback,
-              Call(wgpu::MapAsyncStatus::Success, nullptr))
+              Call(wgpu::MapAsyncStatus::Success, testing::_))
       .Times(1);
 
   WaitForCompletion(device_);
@@ -1076,7 +1076,7 @@ TEST_P(WebGPUMailboxTextureTest,
                            wgpu::CallbackMode::AllowSpontaneous,
                            ToMockBufferMapCallback);
   EXPECT_CALL(*mock_buffer_map_callback,
-              Call(wgpu::MapAsyncStatus::Success, nullptr))
+              Call(wgpu::MapAsyncStatus::Success, testing::_))
       .Times(1);
 
   WaitForCompletion(device_);
@@ -1154,7 +1154,7 @@ TEST_P(
                            wgpu::CallbackMode::AllowSpontaneous,
                            ToMockBufferMapCallback);
   EXPECT_CALL(*mock_buffer_map_callback,
-              Call(wgpu::MapAsyncStatus::Success, nullptr))
+              Call(wgpu::MapAsyncStatus::Success, testing::_))
       .Times(1);
 
   WaitForCompletion(device_);

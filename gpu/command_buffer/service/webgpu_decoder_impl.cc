@@ -1396,9 +1396,10 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
       use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
     callback_info.callback(
         WGPURequestAdapterStatus_Unavailable, nullptr,
-        "WebGPU on Linux requires GLES compat, or command-line flag "
-        "--enable-features=Vulkan, or command-line flag "
-        "--enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)",
+        MakeStringView(
+            "WebGPU on Linux requires GLES compat, or command-line "
+            "flag --enable-features=Vulkan, or command-line flag "
+            "--enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)"),
         callback_info.userdata1, callback_info.userdata2);
     return {};
   }
