@@ -22,7 +22,9 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/live_caption/translation_dispatcher.h"
 #include "components/user_manager/user.h"
+#include "google_apis/google_api_keys.h"
 
 namespace ash {
 
@@ -40,22 +42,20 @@ BocaManager::BocaManager(
   AddObservers();
 }
 
-BocaManager::BocaManager(Profile* profile) {
-  session_client_impl_ = std::make_unique<boca::SessionClientImpl>();
+BocaManager::BocaManager(Profile* profile)
+    : session_client_impl_(std::make_unique<boca::SessionClientImpl>()) {
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), ash::BrowserContextHelper::Get()
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId());
-  babel_orca_manager_ = std::make_unique<boca::BabelOrcaManager>();
+  babel_orca_manager_ = std::make_unique<boca::BabelOrcaManager>(
+      std::make_unique<captions::TranslationDispatcher>(
+          google_apis::GetBocaAPIKey(), profile));
 
   if (ash::boca_util::IsConsumer()) {
-    auto on_task_system_web_app_manager =
-        std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile);
-    auto on_task_extensions_manager =
-        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile);
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
-        std::move(on_task_system_web_app_manager),
-        std::move(on_task_extensions_manager));
+        std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
+        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
   }
 
   gcm::GCMDriver* gcm_driver =

@@ -29,9 +29,11 @@ static_library("boca") {
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper",
     "//components/gcm_driver",
+    "//components/live_caption:live_translate",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//extensions/browser",
+    "//google_apis:google_apis",
     "//services/network/public/cpp",
   ]
 }

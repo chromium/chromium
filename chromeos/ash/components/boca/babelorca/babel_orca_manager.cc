@@ -11,7 +11,9 @@
 
 namespace ash::boca {
 
-BabelOrcaManager::BabelOrcaManager() = default;
+BabelOrcaManager::BabelOrcaManager(
+    std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher)
+    : translation_dispatcher_(std::move(translation_dispatcher)) {}
 BabelOrcaManager::~BabelOrcaManager() = default;
 
 void BabelOrcaManager::OnSessionStarted(const std::string& session_id,

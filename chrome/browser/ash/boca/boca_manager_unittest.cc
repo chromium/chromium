@@ -134,7 +134,8 @@ class BocaManagerProducerTest : public BocaManagerTest {
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
-        std::make_unique<boca::BabelOrcaManager>());
+        std::make_unique<boca::BabelOrcaManager>(
+            /*translation_dispatcher*/ nullptr));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -172,7 +173,8 @@ class BocaManagerConsumerTest : public BocaManagerTest {
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
-        std::make_unique<boca::BabelOrcaManager>());
+        std::make_unique<boca::BabelOrcaManager>(
+            /*translation_dispatcher*/ nullptr));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };

@@ -51,6 +51,7 @@ static_library("babelorca") {
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/services/boca/babelorca/mojom",
+    "//components/live_caption:live_translate",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//google_apis",
