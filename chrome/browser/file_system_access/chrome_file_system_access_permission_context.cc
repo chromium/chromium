@@ -2721,10 +2721,14 @@ std::vector<FileRequestData> ChromeFileSystemAccessPermissionContext::
       continue;
     }
     const base::Value::Dict& object_dict = dormant_grant->value;
+    base::FilePath path =
+        base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
+    std::string display_name =
+        StringOrEmpty(object_dict.FindString(kPermissionDisplayNameKey));
     FileRequestData file_request_data = {
-        content::PathInfo(
-            base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value(),
-            StringOrEmpty(object_dict.FindString(kPermissionDisplayNameKey))),
+        content::PathInfo(path, !display_name.empty()
+                                    ? display_name
+                                    : path.BaseName().AsUTF8Unsafe()),
         object_dict.FindBool(kPermissionIsDirectoryKey).value_or(false)
             ? HandleType::kDirectory
             : HandleType::kFile,
