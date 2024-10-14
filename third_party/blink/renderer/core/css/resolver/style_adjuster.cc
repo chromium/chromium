@@ -1094,6 +1094,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetForcesStackingContext(true);
   }
 
+  if (IsCanvasPlacedElement(element)) {
+    builder.SetForcesStackingContext(true);
+  }
+
   // Though will-change is not itself an inherited property, the intent
   // expressed by 'will-change: contents' includes descendants.
   // (We can't mark will-change as inherited and copy this in
