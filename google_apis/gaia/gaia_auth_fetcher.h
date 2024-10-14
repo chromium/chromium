@@ -73,15 +73,17 @@ class SharedURLLoaderFactory;
 
 class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
  public:
-  struct COMPONENT_EXPORT(GOOGLE_APIS) MultiloginTokenIDPair {
-    std::string token_;
-    std::string gaia_id_;
+  struct COMPONENT_EXPORT(GOOGLE_APIS) MultiloginAccountAuthCredentials {
+    std::string gaia_id;
+    std::string token;
+    std::string token_binding_assertion;
 
-    MultiloginTokenIDPair(const std::string& gaia_id,
-                          const std::string& token) {
-      gaia_id_ = gaia_id;
-      token_ = token;
-    }
+    MultiloginAccountAuthCredentials(std::string gaia_id,
+                                     std::string token,
+                                     std::string token_binding_assertion)
+        : gaia_id(std::move(gaia_id)),
+          token(std::move(token)),
+          token_binding_assertion(std::move(token_binding_assertion)) {}
   };
 
   // This will later be hidden behind an auth service which caches tokens.
@@ -131,9 +133,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
       const std::string& binding_registration_token = std::string());
 
   // Starts a request to get the cookie for list of accounts.
-  void StartOAuthMultilogin(gaia::MultiloginMode mode,
-                            const std::vector<MultiloginTokenIDPair>& accounts,
-                            const std::string& external_cc_result);
+  void StartOAuthMultilogin(
+      gaia::MultiloginMode mode,
+      const std::vector<MultiloginAccountAuthCredentials>& accounts,
+      const std::string& external_cc_result);
 
   // Starts a request to list the accounts in the GAIA cookie.
   void StartListAccounts();
@@ -212,23 +215,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   bool IsListAccountsUrl(const GURL& url);
 
  private:
-  // The format of the POST body to get OAuth2 token pair from auth code.
-  static const char kOAuth2CodeToTokenPairBodyFormat[];
-  // Additional params for the POST body to get OAuth2 token pair from auth
-  // code.
-  static const char kOAuth2CodeToTokenPairDeviceIdParam[];
-  static const char kOAuth2CodeToTokenPairBindingRegistrationTokenParam[];
-  // The format of the POST body to revoke an OAuth2 token.
-  static const char kOAuth2RevokeTokenBodyFormat[];
-
-  // Constants for parsing error responses.
-  static const char kErrorParam[];
-  static const char kErrorUrlParam[];
-
-  // Constants for request/response for OAuth2 requests.
-  static const char kOAuthHeaderFormat[];
-  static const char kOAuthMultiBearerHeaderFormat[];
-
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
   void OnOAuth2TokenPairFetched(const std::string& data,

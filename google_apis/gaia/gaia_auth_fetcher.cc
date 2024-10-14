@@ -4,11 +4,13 @@
 
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -25,6 +27,7 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "google_apis/credentials_mode.h"
+#include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -50,6 +53,24 @@ constexpr char kServiceUnavailableError[] = "ServiceUnavailable";
 constexpr char kServiceUnavailableShortError[] = "ire";
 constexpr char kFormEncodedContentType[] = "application/x-www-form-urlencoded";
 constexpr char kJsonContentType[] = "application/json;charset=UTF-8";
+
+constexpr char kOAuth2CodeToTokenPairBodyFormat[] =
+    "scope=%s&"
+    "grant_type=authorization_code&"
+    "client_id=%s&"
+    "client_secret=%s&"
+    "code=%s";
+constexpr char kOAuth2CodeToTokenPairDeviceIdParam[] =
+    "device_id=%s&device_type=chrome";
+constexpr char kOAuth2CodeToTokenPairBindingRegistrationTokenParam[] =
+    "bound_token_registration_jwt=%s";
+constexpr char kOAuth2RevokeTokenBodyFormat[] = "token=%s";
+
+constexpr char kErrorParam[] = "Error";
+constexpr char kErrorUrlParam[] = "Url";
+
+constexpr char kOAuthMultiBearerHeaderFormat[] =
+    "Authorization: MultiBearer %s";
 
 std::unique_ptr<const GaiaAuthConsumer::ClientOAuthResult>
 ExtractOAuth2TokenPairResponse(const std::string& data) {
@@ -143,6 +164,43 @@ GaiaAuthConsumer::ReAuthProofTokenStatus ErrorMessageToReAuthProofTokenStatus(
   return GaiaAuthConsumer::ReAuthProofTokenStatus::kUnknownError;
 }
 
+std::string CreateMultiBearerAuthorizationHeader(
+    const std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>&
+        accounts) {
+  std::vector<std::string> authorization_header_parts;
+  for (const auto& account : accounts) {
+    authorization_header_parts.push_back(base::StringPrintf(
+        "%s:%s", account.token.c_str(), account.gaia_id.c_str()));
+  }
+
+  return base::StringPrintf(
+      kOAuthMultiBearerHeaderFormat,
+      base::JoinString(authorization_header_parts, ",").c_str());
+}
+
+std::string CreateMultiOAuthAuthorizationHeader(
+    const std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>&
+        accounts) {
+  gaia::MultiOAuthHeader header;
+  for (const GaiaAuthFetcher::MultiloginAccountAuthCredentials& account :
+       accounts) {
+    gaia::MultiOAuthHeader::AccountRequest request;
+    request.set_gaia_id(account.gaia_id);
+    request.set_token(account.token);
+    if (!account.token_binding_assertion.empty()) {
+      request.set_token_binding_assertion(account.token_binding_assertion);
+    }
+    header.mutable_account_requests()->Add(std::move(request));
+  }
+
+  std::string base64_encoded_header;
+  base::Base64UrlEncode(header.SerializeAsString(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &base64_encoded_header);
+
+  return base::StrCat({"Authorization: MultiOAuth ", base64_encoded_header});
+}
+
 }  // namespace
 
 namespace gaia {
@@ -186,34 +244,6 @@ std::string GaiaSource::ToString() {
 }
 
 }  // namespace gaia
-
-// static
-const char GaiaAuthFetcher::kOAuth2CodeToTokenPairBodyFormat[] =
-    "scope=%s&"
-    "grant_type=authorization_code&"
-    "client_id=%s&"
-    "client_secret=%s&"
-    "code=%s";
-// static
-const char GaiaAuthFetcher::kOAuth2CodeToTokenPairDeviceIdParam[] =
-    "device_id=%s&device_type=chrome";
-// static
-const char
-    GaiaAuthFetcher::kOAuth2CodeToTokenPairBindingRegistrationTokenParam[] =
-        "bound_token_registration_jwt=%s";
-// static
-const char GaiaAuthFetcher::kOAuth2RevokeTokenBodyFormat[] = "token=%s";
-
-// static
-const char GaiaAuthFetcher::kErrorParam[] = "Error";
-// static
-const char GaiaAuthFetcher::kErrorUrlParam[] = "Url";
-
-// static
-const char GaiaAuthFetcher::kOAuthHeaderFormat[] = "Authorization: OAuth %s";
-// static
-const char GaiaAuthFetcher::kOAuthMultiBearerHeaderFormat[] =
-    "Authorization: MultiBearer %s";
 
 GaiaAuthFetcher::GaiaAuthFetcher(
     GaiaAuthConsumer* consumer,
@@ -505,22 +535,20 @@ void GaiaAuthFetcher::StartListAccounts() {
 
 void GaiaAuthFetcher::StartOAuthMultilogin(
     gaia::MultiloginMode mode,
-    const std::vector<MultiloginTokenIDPair>& accounts,
+    const std::vector<MultiloginAccountAuthCredentials>& accounts,
     const std::string& external_cc_result) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   UMA_HISTOGRAM_COUNTS_100("Signin.Multilogin.NumberOfAccounts",
                            accounts.size());
 
-  std::vector<std::string> authorization_header_parts;
-  for (const MultiloginTokenIDPair& account : accounts) {
-    authorization_header_parts.push_back(base::StringPrintf(
-        "%s:%s", account.token_.c_str(), account.gaia_id_.c_str()));
-  }
-
-  std::string authorization_header = base::StringPrintf(
-      kOAuthMultiBearerHeaderFormat,
-      base::JoinString(authorization_header_parts, ",").c_str());
+  bool has_binding_assertion = std::ranges::any_of(
+      accounts, [](const MultiloginAccountAuthCredentials& account) {
+        return !account.token_binding_assertion.empty();
+      });
+  std::string authorization_header =
+      has_binding_assertion ? CreateMultiOAuthAuthorizationHeader(accounts)
+                            : CreateMultiBearerAuthorizationHeader(accounts);
 
   std::string source_string = base::EscapeUrlEncodedData(source_, true);
   std::string parameters = base::StringPrintf(
