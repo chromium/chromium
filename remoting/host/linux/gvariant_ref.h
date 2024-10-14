@@ -175,13 +175,14 @@ namespace gvariant {
 // Strings:
 //
 // std::string (type code "s")
-// const char * (TryFrom() only, type code "s")
-// std::string_view (TryFrom() only, type code "s")
+// const char * ([Try]From() only, type code "s")
+// std::string_view ([Try]From() only, type code "s")
 //
-// Note: Strings must be valid UTF-8 for TryFrom() to succeed. From() is not
-// provided. When used at part of an aggregate type, strings may be converted
-// to a GVariantRef<"s"> ahead of time to be able to use From() for the
-// aggregate and ensure there are no other sources of fallibility.
+// Note: Strings must be valid UTF-8. For convenience, both From() and TryFrom()
+// are provided. If the string (or all strings in an aggregate type) are
+// known to be valid UTF-8, From() may be used. Otherwise TryFrom() should be
+// used. Calling From() with a string containing invalid UTF-8 will
+// result in a crash.
 //
 // Containers:
 //
@@ -1077,6 +1078,8 @@ struct Mapping<double> {
 template <>
 struct Mapping<std::string> {
   static constexpr Type kType{"s"};
+  // Crashes if string is not valid UTF-8.
+  static GVariantRef<kType> From(const std::string& value);
   // Fails if string is not valid UTF-8.
   static base::expected<GVariantRef<kType>, std::string> TryFrom(
       const std::string& value);
@@ -1086,6 +1089,8 @@ struct Mapping<std::string> {
 template <>
 struct Mapping<std::string_view> {
   static constexpr Type kType{"s"};
+  // Crashes if string is not valid UTF-8.
+  static GVariantRef<kType> From(std::string_view value);
   // Fails if string is not valid UTF-8.
   static base::expected<GVariantRef<kType>, std::string> TryFrom(
       std::string_view value);
@@ -1094,6 +1099,8 @@ struct Mapping<std::string_view> {
 template <>
 struct Mapping<const char*> {
   static constexpr Type kType{"s"};
+  // Crashes if string is not valid UTF-8.
+  static GVariantRef<kType> From(const char* value);
   // Fails if string is not valid UTF-8.
   static base::expected<GVariantRef<kType>, std::string> TryFrom(
       const char* value);

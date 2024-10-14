@@ -14,6 +14,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -288,6 +289,12 @@ static GVariantRef<C> CreateStringVariant(std::string_view value) {
 }
 
 // static
+auto Mapping<std::string>::From(const std::string& value)
+    -> GVariantRef<kType> {
+  return GVariantRef<kType>::From(std::string_view(value));
+}
+
+// static
 auto Mapping<std::string>::TryFrom(const std::string& value)
     -> base::expected<GVariantRef<kType>, std::string> {
   return GVariantRef<kType>::TryFrom(std::string_view(value));
@@ -301,6 +308,14 @@ std::string Mapping<std::string>::Into(const GVariantRef<kType>& variant) {
 }
 
 // static
+auto Mapping<std::string_view>::From(std::string_view value)
+    -> GVariantRef<kType> {
+  auto result = TryFrom(value);
+  CHECK(result.has_value()) << result.error();
+  return result.value();
+}
+
+// static
 auto Mapping<std::string_view>::TryFrom(std::string_view value)
     -> base::expected<GVariantRef<kType>, std::string> {
   if (!g_utf8_validate(value.data(), value.length(), nullptr)) {
@@ -308,6 +323,11 @@ auto Mapping<std::string_view>::TryFrom(std::string_view value)
   }
 
   return base::ok(CreateStringVariant<kType>(value));
+}
+
+// static
+auto Mapping<const char*>::From(const char* value) -> GVariantRef<kType> {
+  return GVariantRef<kType>::From(std::string_view(value));
 }
 
 // static
