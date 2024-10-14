@@ -41,7 +41,7 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
   };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
+  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
     app_ids.insert(app_ids.begin(), ash::kContainerAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

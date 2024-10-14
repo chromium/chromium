@@ -28,10 +28,6 @@
 #include "base/test/scoped_feature_list.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 // Aliases.
@@ -46,36 +42,23 @@ using ::testing::WithParamInterface;
 // ContainerAppTabHelperTest ---------------------------------------------------
 
 // Base class for tests of the `ContainerAppTabHelper` parameterized by:
-// (a) whether the container app preinstallation feature is enabled.
+// (a) whether the Gemini app preinstallation feature is enabled.
 // (b) whether the profile is off the record.
 class ContainerAppTabHelperTest
     : public ChromeRenderViewHostTestHarness,
       public WithParamInterface<
-          std::tuple</*is_container_app_preinstall_enabled=*/bool,
+          std::tuple</*is_gemini_app_preinstall_enabled=*/bool,
                      /*is_profile_off_the_record=*/bool>> {
  public:
   ContainerAppTabHelperTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatureStates({
-        {chromeos::features::kContainerAppPreinstall,
-         IsContainerAppPreinstallEnabled()},
-        {chromeos::features::kFeatureManagementContainerAppPreinstall,
-         IsContainerAppPreinstallEnabled()},
-    });
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_container_app_preinstall_enabled =
-        IsContainerAppPreinstallEnabled();
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif
+    scoped_feature_list_.InitWithFeatureState(
+        chromeos::features::kGeminiAppPreinstall,
+        IsGeminiAppPreinstallEnabled());
   }
 
-  // Returns whether the container app preinstallation feature is enabled given
+  // Returns whether the Gemini app preinstallation feature is enabled given
   // test parameterization.
-  bool IsContainerAppPreinstallEnabled() const {
-    return std::get<0>(GetParam());
-  }
+  bool IsGeminiAppPreinstallEnabled() const { return std::get<0>(GetParam()); }
 
   // Returns whether the profile is off the record given test parameterization.
   bool IsProfileOffTheRecord() const { return std::get<1>(GetParam()); }
@@ -101,7 +84,7 @@ class ContainerAppTabHelperTest
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Used to conditionally enable/disable the container app preinstallation
+  // Used to conditionally enable/disable the Gemini app preinstallation
   // feature based on test parameterization.
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -109,7 +92,7 @@ class ContainerAppTabHelperTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ContainerAppTabHelperTest,
-                         Combine(/*is_container_app_preinstall_enabled=*/Bool(),
+                         Combine(/*is_gemini_app_preinstall_enabled=*/Bool(),
                                  /*is_profile_off_the_record=*/Bool()));
 
 // Tests -----------------------------------------------------------------------
@@ -154,9 +137,9 @@ TEST_P(ContainerAppTabHelperTest, RecordsPageVisitHistograms) {
               BucketsAreArray(histogram_buckets));
 
   // Navigate to each `page` `url` and verify that histograms are recorded iff:
-  // (a) the container app preinstallation feature is enabled, and
+  // (a) the Gemini app preinstallation feature is enabled, and
   // (b) the profile is not off the record.
-  bool record = IsContainerAppPreinstallEnabled() && !IsProfileOffTheRecord();
+  bool record = IsGeminiAppPreinstallEnabled() && !IsProfileOffTheRecord();
   for (const auto& [url, page] : page_urls) {
     auto histogram_buckets_it = base::ranges::find(
         histogram_buckets, static_cast<base::HistogramBase::Sample>(page),

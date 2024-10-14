@@ -182,13 +182,6 @@ const char kComputePressureRateObfuscationMitigationDescription[] =
     "pressure is, but the Compute Pressure API can be susceptible to "
     "fingerprinting attacks.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kContainerName[] = "Container";
-const char kContainerDescription[] = "Enables container.";
-const char kContainerDebugName[] = "Container Debug";
-const char kContainerDebugDescription[] = "Enables container debug.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 const char kComputePressureBreakCalibrationMitigationName[] =
     "Enable mitigation algorithm to break calibration attempt in compute "
     "pressure";

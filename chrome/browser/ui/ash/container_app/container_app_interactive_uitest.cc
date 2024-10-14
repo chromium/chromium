@@ -212,11 +212,9 @@ class ContainerAppInteractiveUiTestBase
   ContainerAppInteractiveUiTestBase(
       std::optional<ash::LoggedInUserMixin::LogInType> login_type)
       : user_session_mixin_(CreateUserSessionMixin(login_type)) {
-    // Enable container app preinstallation.
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kContainerAppPreinstall,
-         chromeos::features::kFeatureManagementContainerAppPreinstall},
-        {});
+    // Enable Gemini app preinstallation.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kGeminiAppPreinstall);
 
     // Use a consistent context for element tracking. Otherwise each widget has
     // its own context, greatly increasing the complexity of tracking
@@ -359,7 +357,7 @@ class ContainerAppInteractiveUiTestBase
   absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
       user_session_mixin_;
 
-  // Used to enable the container app preinstallation.
+  // Used to enable the Gemini app preinstallation.
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Used to retrieve expected title/URL for the container app.
@@ -383,11 +381,11 @@ class ContainerAppInteractiveUiTest
   ContainerAppInteractiveUiTest()
       : ContainerAppInteractiveUiTestBase(
             ash::LoggedInUserMixin::LogInType::kConsumer) {
-    // Disable the container app during the PRE_ session so that the subsequent
+    // Disable the Gemini app during the PRE_ session so that the subsequent
     // session containing test logic is when the app preinstallation occurs.
     if (IsPreSession()) {
       scoped_feature_list_.InitAndDisableFeature(
-          chromeos::features::kContainerAppPreinstall);
+          chromeos::features::kGeminiAppPreinstall);
     }
   }
 
@@ -427,7 +425,7 @@ class ContainerAppInteractiveUiTest
   }
 
  private:
-  // Used to disable container app preinstallation for the PRE_ session.
+  // Used to disable Gemini app preinstallation for the PRE_ session.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -835,8 +833,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromShelf) {
 // Reasons why the user may be ineligible for container app preinstallation.
 enum class IneligibilityReason {
   kMinValue = 0,
-  kFeatureDebugAndManagementFlagsDisabled = kMinValue,
-  kFeatureFlagDisabled,
+  kFeatureFlagDisabled = kMinValue,
   kUserManaged,
   kUserTypeChild,
   kUserTypeGuest,
@@ -849,7 +846,6 @@ enum class IneligibilityReason {
 
 inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
   switch (reason) {
-    INELIGIBILITY_REASON_CASE(kFeatureDebugAndManagementFlagsDisabled);
     INELIGIBILITY_REASON_CASE(kFeatureFlagDisabled);
     INELIGIBILITY_REASON_CASE(kUserManaged);
     INELIGIBILITY_REASON_CASE(kUserTypeChild);
@@ -864,12 +860,8 @@ class ContainerAppInteractiveUiIneligibilityTest
  public:
   ContainerAppInteractiveUiIneligibilityTest()
       : ContainerAppInteractiveUiTestBase(GetLoginType()) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{chromeos::features::kContainerAppPreinstall, IsFeatureFlagEnabled()},
-         {chromeos::features::kContainerAppPreinstallDebug,
-          IsFeatureDebugFlagEnabled()},
-         {chromeos::features::kFeatureManagementContainerAppPreinstall,
-          IsFeatureManagementFlagEnabled()}});
+    scoped_feature_list_.InitWithFeatureState(
+        chromeos::features::kGeminiAppPreinstall, IsFeatureFlagEnabled());
   }
 
  private:
@@ -903,23 +895,9 @@ class ContainerAppInteractiveUiIneligibilityTest
     }
   }
 
-  // Returns whether the feature debug flag is enabled given test
-  // parameterization.
-  bool IsFeatureDebugFlagEnabled() const {
-    return GetParam() !=
-           IneligibilityReason::kFeatureDebugAndManagementFlagsDisabled;
-  }
-
   // Returns whether the feature flag is enabled given test parameterization.
   bool IsFeatureFlagEnabled() const {
     return GetParam() != IneligibilityReason::kFeatureFlagDisabled;
-  }
-
-  // Returns whether the feature management flag is enabled given test
-  // parameterization.
-  bool IsFeatureManagementFlagEnabled() const {
-    return GetParam() !=
-           IneligibilityReason::kFeatureDebugAndManagementFlagsDisabled;
   }
 
   // Used to enable/disable the container app preinstallation based on test

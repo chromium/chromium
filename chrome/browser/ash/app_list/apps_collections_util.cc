@@ -131,7 +131,7 @@ void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
+  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
       app_ids->push_back(ash::kContainerAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

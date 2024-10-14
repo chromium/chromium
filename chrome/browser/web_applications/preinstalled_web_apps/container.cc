@@ -27,18 +27,21 @@
 namespace web_app {
 namespace {
 
-// Returns the appropriate activation time threshold to use `for_debug`.
-base::Time::Exploded GetActivationTimeThreshold(bool for_debug) {
-  return for_debug ? base::Time::Exploded{.year = 2024,
-                                          .month = 10,
-                                          .day_of_month = 1}
-                   : base::Time::Exploded{
-                         .year = 2024, .month = 5, .day_of_month = 28};
+// Returns the appropriate activation time threshold to use.
+base::Time::Exploded GetActivationTimeThreshold(
+    bool feature_management_enabled) {
+  return feature_management_enabled
+             ? base::Time::Exploded{.year = 2024,
+                                    .month = 5,
+                                    .day_of_month = 28}
+             : base::Time::Exploded{
+                   .year = 2024, .month = 10, .day_of_month = 1};
 }
 
-// Returns the appropriate activation URL param to use `for_debug`.
-std::string GetActivationUrlParam(bool for_debug) {
-  return for_debug ? "cros_standard_activation=true" : "cros_activation=true";
+// Returns the appropriate activation URL param to use.
+std::string GetActivationUrlParam(bool feature_management_enabled) {
+  return feature_management_enabled ? "cros_activation=true"
+                                    : "cros_standard_activation=true";
 }
 
 // Returns launch query params given the specified `device_info`.
@@ -46,8 +49,8 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   std::vector<std::string> launch_query_params;
   launch_query_params.emplace_back("cros_source=c");
 
-  const bool for_debug =
-      chromeos::features::IsContainerAppPreinstallDebugEnabled();
+  const bool feature_management_enabled =
+      chromeos::features::IsGeminiAppPreinstallFeatureManagementEnabled();
 
   // Attempt to retrieve the activation time threshold from the command-line
   // switch. Note that this switch will only be used for testing purposes.
@@ -58,8 +61,9 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   // Fall back to the actual activation time threshold.
   // See PRD for more information re: the threshold (http://shortn/_a762eSA1pF).
   if (activation_time_threshold.is_null()) {
-    CHECK(base::Time::FromUTCExploded(GetActivationTimeThreshold(for_debug),
-                                      &activation_time_threshold));
+    CHECK(base::Time::FromUTCExploded(
+        GetActivationTimeThreshold(feature_management_enabled),
+        &activation_time_threshold));
   }
 
   // Assume activation time is now unless that can be confirmed not to be the
@@ -69,7 +73,8 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   if (device_info.value_or(DeviceInfo{})
           .oobe_timestamp.value_or(base::Time::Now()) >=
       activation_time_threshold) {
-    launch_query_params.emplace_back(GetActivationUrlParam(for_debug));
+    launch_query_params.emplace_back(
+        GetActivationUrlParam(feature_management_enabled));
   }
 
   return base::JoinString(launch_query_params, "&");
@@ -106,7 +111,7 @@ ExternalInstallOptions GetConfigForContainer(
       },
       device_info);
   options.expected_app_id = ash::kContainerAppId;
-  options.gate_on_feature = chromeos::features::kContainerAppPreinstall.name;
+  options.gate_on_feature = chromeos::features::kGeminiAppPreinstall.name;
   options.is_preferred_app_for_supported_links = true;
   options.only_use_app_info_factory = true;
   options.user_type_allowlist = {apps::kUserTypeUnmanaged};

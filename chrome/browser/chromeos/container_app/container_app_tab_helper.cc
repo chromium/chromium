@@ -47,7 +47,7 @@ ContainerAppTabHelper::~ContainerAppTabHelper() = default;
 // static
 void ContainerAppTabHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (chromeos::features::IsContainerAppPreinstallEnabled() &&
+  if (chromeos::features::IsGeminiAppPreinstallEnabled() &&
       !IsOffTheRecord(web_contents)) {
     ContainerAppTabHelper::CreateForWebContents(web_contents);
   }

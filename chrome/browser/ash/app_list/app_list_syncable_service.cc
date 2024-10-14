@@ -2223,7 +2223,7 @@ bool AppListSyncableService::IsAppDefaultPositionedForNewUsersOnly(
     return true;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsContainerAppPreinstallEnabled() &&
+  if (chromeos::features::IsGeminiAppPreinstallEnabled() &&
       app_id == ash::kContainerAppId) {
     return true;
   }

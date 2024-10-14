@@ -366,7 +366,7 @@ void AddContainerAppPinIfNeeded(
     ShelfControllerHelper* helper,
     app_list::AppListSyncableService* syncable_service) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!chromeos::features::IsContainerAppPreinstallEnabled()) {
+  if (!chromeos::features::IsGeminiAppPreinstallEnabled()) {
     return;
   }
 
