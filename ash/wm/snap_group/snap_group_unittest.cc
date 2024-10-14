@@ -29,7 +29,6 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/style/close_button.h"
-#include "ash/style/system_toast_style.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"

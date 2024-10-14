@@ -101,8 +101,6 @@ class TitleView : public views::View {
 
  public:
   explicit TitleView(PaletteTray* palette_tray) : palette_tray_(palette_tray) {
-    // TODO(tdanderson|jdufault): Use TriView to handle the layout of the title.
-    // See crbug.com/614453.
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kTitleViewPadding,
         kTitleViewChildSpacing);
@@ -552,10 +550,6 @@ void PaletteTray::ShowBubble() {
   TrayBubbleView::InitParams init_params = CreateInitParamsForTrayBubble(this);
   init_params.preferred_width = kPaletteWidth;
 
-  // TODO(tdanderson): Refactor into common row layout code.
-  // TODO(tdanderson|jdufault): Add material design ripple effects to the menu
-  // rows.
-
   // Create and customize bubble view.
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
   bubble_view->SetBorder(views::CreateEmptyBorder(
@@ -572,8 +566,6 @@ void PaletteTray::ShowBubble() {
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
 
   // Add palette tools.
-  // TODO(tdanderson|jdufault): Use SystemMenuButton to get the material design
-  // ripples.
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
     bubble_view->AddChildView(view.view.get());

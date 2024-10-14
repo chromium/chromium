@@ -1574,8 +1574,6 @@ component("ash") {
     "style/system_textfield.h",
     "style/system_textfield_controller.cc",
     "style/system_textfield_controller.h",
-    "style/system_toast_style.cc",
-    "style/system_toast_style.h",
     "style/tab_slider.cc",
     "style/tab_slider.h",
     "style/tab_slider_button.cc",
