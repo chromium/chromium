@@ -980,7 +980,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Fix problem with saved passwords
       </message>
       <message name="IDS_ACCESS_LOSS_FIX_PROBLEM_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings after failed local passwords migration to Google Play Services">
-        Some passwords saved only on this device will stop working soon. You can move these passwords to Google Password Manager.
+        Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.
       </message>
       <message name="IDS_ACCESS_LOSS_FIX_PROBLEM_POSITIVE_BUTTON_TEXT" desc="If the user has local passwords migration failed to Google Play services, they see the warning proposing them to fix this problem. This string is the agreement button text in the warning.">
         Fix now
