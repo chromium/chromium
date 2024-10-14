@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
@@ -17,6 +18,27 @@ MockOptimizationGuideModelExecutor::~MockOptimizationGuideModelExecutor() =
 
 MockSession::MockSession() = default;
 MockSession::~MockSession() = default;
+
+OptimizationGuideModelStreamingExecutionResult MockSession::SuccessResult(
+    proto::Any response) {
+  return OptimizationGuideModelStreamingExecutionResult(
+      base::ok(StreamingResponse{
+          .response = std::move(response),
+          .is_complete = true,
+      }),
+      /*provided_by_on_device=*/true,
+      /*log_entry*/ nullptr);
+}
+
+OptimizationGuideModelStreamingExecutionResult MockSession::FailResult() {
+  return OptimizationGuideModelStreamingExecutionResult(
+      base::unexpected(
+          OptimizationGuideModelExecutionError::FromModelExecutionError(
+              OptimizationGuideModelExecutionError::ModelExecutionError::
+                  kGenericFailure)),
+      /*provided_by_on_device=*/true,
+      /*log_entry*/ nullptr);
+}
 
 MockSessionWrapper::MockSessionWrapper(MockSession* session)
     : session_(session) {}

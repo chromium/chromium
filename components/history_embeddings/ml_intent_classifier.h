@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_ML_INTENT_CLASSIFIER_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_ML_INTENT_CLASSIFIER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/history_embeddings/intent_classifier.h"
@@ -17,6 +19,7 @@ using optimization_guide::OptimizationGuideModelExecutor;
 
 class MlIntentClassifier : public IntentClassifier {
  public:
+  class Execution;
   explicit MlIntentClassifier(OptimizationGuideModelExecutor* model_executor);
   ~MlIntentClassifier() override;
 
@@ -30,6 +33,8 @@ class MlIntentClassifier : public IntentClassifier {
   // `model_executor_` is owned by OptimizationGuideKeyedServiceFactory,
   // which HistoryEmbeddingsServiceFactory depends on.
   raw_ptr<OptimizationGuideModelExecutor> model_executor_;
+  // The current execution, cancelled if another is started.
+  std::unique_ptr<Execution> execution_;
 };
 
 }  // namespace history_embeddings

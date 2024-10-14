@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MOCK_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MOCK_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,6 +43,12 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
  public:
   MockSession();
   ~MockSession() override;
+
+  // Utility method to create a successful result.
+  static OptimizationGuideModelStreamingExecutionResult SuccessResult(
+      proto::Any response);
+  // Utility method to create a generic failure result.
+  static OptimizationGuideModelStreamingExecutionResult FailResult();
 
   MOCK_METHOD(const optimization_guide::TokenLimits&,
               GetTokenLimits,
