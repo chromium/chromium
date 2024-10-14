@@ -737,6 +737,11 @@ constexpr int kThumbnailResizeDimension = 64;
 - (void)loadItemsAppending:(BOOL)append
                    delayed:(BOOL)delayed
                   animated:(BOOL)animated {
+  if (!_driveList) {
+    // When disconnected, do nothing.
+    return;
+  }
+
   // If there is a timer programmed to fetch items, cancel it.
   _fetchTimer.Stop();
   // Cancel any pending fetch query.
