@@ -1260,6 +1260,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SaveGuestModeEligible" enum="BooleanEligible"
+    expires_after="2025-04-06">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records whether the guest profile that showed a search engine choice dialog
+    is eligible to save the chosen search engine for future guest sessions. Only
+    eligible profiles show a checkbox that allows users to save their selection.
+    Recorded when users confirm the search engine choice dialog in guest mode.
+  </summary>
+</histogram>
+
+<histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
+    expires_after="2025-04-06">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records whether users chose to save the Guest search engine. Recorded for
+    profiles that are eligible for saving the guest search engine when the
+    search engine choice dialog is confirmed.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
     units="ms" expires_after="2025-03-02">
   <owner>triploblastic@chromium.org</owner>

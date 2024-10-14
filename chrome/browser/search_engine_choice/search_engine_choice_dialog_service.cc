@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -195,9 +196,18 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
 
     NOTREACHED(base::NotFatalUntil::M127);
   } else {
-    if (search_engine_choice_service_
-            ->IsProfileEligibleForDseGuestPropagation() &&
-        save_guest_mode_selection) {
+    bool is_guest_mode_propagation_allowed =
+        search_engine_choice_service_
+            ->IsProfileEligibleForDseGuestPropagation();
+    if (profile_->IsGuestSession()) {
+      base::UmaHistogramBoolean("Search.SaveGuestModeEligible",
+                                is_guest_mode_propagation_allowed);
+    }
+    if (is_guest_mode_propagation_allowed) {
+      base::UmaHistogramBoolean("Search.SaveGuestModeSelection",
+                                save_guest_mode_selection);
+    }
+    if (is_guest_mode_propagation_allowed && save_guest_mode_selection) {
       search_engine_choice_service_->SetSavedSearchEngineBetweenGuestSessions(
           prepopulate_id);
     }

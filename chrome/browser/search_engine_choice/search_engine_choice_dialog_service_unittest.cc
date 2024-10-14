@@ -399,6 +399,48 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
+
+  histogram_tester().ExpectUniqueSample("Search.SaveGuestModeEligible", true,
+                                        1);
+  histogram_tester().ExpectUniqueSample("Search.SaveGuestModeSelection", false,
+                                        1);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       NotifyChoiceMade_Guest_SavingNotAvailable) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kSearchEngineChoiceGuestExperience};
+
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kDefaultSearchProviderGuestModePrepopulatedId));
+
+  TestingProfile* parent_guest = profile_manager()->CreateGuestProfile();
+  Profile* child_guest = parent_guest->GetOffTheRecordProfile(
+      Profile::OTRProfileID::PrimaryID(), false);
+
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
+      parent_guest,
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+
+  search_engines::SearchEngineChoiceServiceFactory::GetForProfile(child_guest)
+      ->SetIsProfileEligibleForDseGuestPropagationForTesting(false);
+
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(child_guest);
+  const int kPrepopulatedId =
+      search_engine_choice_dialog_service->GetSearchEngines()
+          .at(0)
+          ->prepopulate_id();
+
+  search_engine_choice_dialog_service->NotifyChoiceMade(
+      kPrepopulatedId, /*save_guest_mode_selection=*/false,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kDefaultSearchProviderGuestModePrepopulatedId));
+
+  histogram_tester().ExpectUniqueSample("Search.SaveGuestModeEligible", false,
+                                        1);
+  histogram_tester().ExpectTotalCount("Search.SaveGuestModeSelection", 0);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
