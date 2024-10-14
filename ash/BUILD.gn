@@ -3321,6 +3321,7 @@ component("ash") {
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_shared",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -4759,6 +4760,7 @@ test("ash_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
     "//ui/base/ime/ash",
+    "//ui/base/mojom:ui_base_types",
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
@@ -5358,6 +5360,7 @@ static_library("test_support") {
     "//google_apis/calendar",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display:display_manager_test_api",
     "//ui/lottie",
   ]

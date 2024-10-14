@@ -27,7 +27,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -147,7 +147,7 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
   controller->set_initial_item_selected_callback_for_test(
       run_loop.QuitClosure());
   EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::MENU_SOURCE_NONE,
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
       ClipboardHistoryControllerShowSource::kDefaultValue));
   run_loop.Run();
   EXPECT_TRUE(controller->IsMenuShowing());
@@ -204,7 +204,7 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
   auto* const controller = GetClipboardHistoryController();
   ASSERT_TRUE(controller);
   EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::MENU_SOURCE_NONE,
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
       ClipboardHistoryControllerShowSource::kDefaultValue));
   EXPECT_TRUE(controller->IsMenuShowing());
 
@@ -338,8 +338,8 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
   EXPECT_EQ(controller->history()->GetItems().size(), 2u);
 
   // Show the clipboard history menu.
-  EXPECT_TRUE(
-      controller->ShowMenu(gfx::Rect(), ui::MENU_SOURCE_NONE, GetSource()));
+  EXPECT_TRUE(controller->ShowMenu(
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone, GetSource()));
   EXPECT_TRUE(controller->IsMenuShowing());
 
   const auto time_since_menu_shown =

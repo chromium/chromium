@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
@@ -358,7 +359,7 @@ ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
 
 void ClipboardHistoryMenuModelAdapter::Run(
     const gfx::Rect& anchor_rect,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
     const std::optional<base::Time>& menu_last_time_shown,
     const std::optional<base::Time>& nudge_last_time_shown) {
