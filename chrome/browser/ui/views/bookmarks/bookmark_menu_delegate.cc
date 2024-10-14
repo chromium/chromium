@@ -10,9 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -30,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -106,8 +109,9 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
 
   void Drop(const ui::DropTargetEvent& event,
             ui::mojom::DragOperation& output_drag_op) {
-    if (!bookmark_model_)  // Don't drop
+    if (!bookmark_model_) {  // Don't drop
       return;
+    }
 
     bool copy = event.source_operations() == ui::DragDropTypes::DRAG_COPY;
     output_drag_op = chrome::DropBookmarks(
@@ -133,6 +137,29 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
   base::ScopedObservation<BookmarkModel, BaseBookmarkModelObserver>
       bookmark_model_observation_{this};
 };
+
+// TODO(crbug.com/364594278): Remove this when `BookmarkMenuDelegate`
+//  is migrated to use `BookmarkMergedSurfaceService`.
+BookmarkParentFolder GetBookmarkParentFolderForNode(
+    const BookmarkNode* parent_node) {
+  CHECK(parent_node->is_folder());
+  if (!parent_node->is_permanent_node()) {
+    return BookmarkParentFolder::FromNonPermanentNode(parent_node);
+  }
+  switch (parent_node->type()) {
+    case bookmarks::BookmarkNode::URL:
+      NOTREACHED();
+    case bookmarks::BookmarkNode::FOLDER:
+      return BookmarkParentFolder::ManagedFolder();
+    case bookmarks::BookmarkNode::BOOKMARK_BAR:
+      return BookmarkParentFolder::BookmarkBarFolder();
+    case bookmarks::BookmarkNode::OTHER_NODE:
+      return BookmarkParentFolder::OtherFolder();
+    case bookmarks::BookmarkNode::MOBILE:
+      return BookmarkParentFolder::MobileFolder();
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -373,7 +400,8 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
   }
   DCHECK(drop_parent);
   return chrome::GetBookmarkDropOperation(
-      profile_, event, drop_data_, drop_parent, index_to_drop_at);
+      profile_, event, drop_data_, GetBookmarkParentFolderForNode(drop_parent),
+      index_to_drop_at);
 }
 
 views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(

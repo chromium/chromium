@@ -51,6 +51,10 @@ struct BookmarkParentFolder {
   // Returns null if `this` is a permanent folder.
   const bookmarks::BookmarkNode* as_non_permanent_folder() const;
 
+  // Returns true if `node` is a direct child of `this`.
+  // `node` must not be null.
+  bool HasDirectChildNode(const bookmarks::BookmarkNode* node) const;
+
  private:
   explicit BookmarkParentFolder(
       std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
@@ -85,6 +89,16 @@ class BookmarkMergedSurfaceService : public KeyedService {
       const bookmarks::BookmarkNode* node,
       BookmarkParentFolder::PermanentFolderType folder);
 
+  // Returns the index of node with respect to its parent.
+  // `node` must not be null.
+  // TODO(crbug.com/364594278): When account nodes are supported within this
+  // class, `this` will return the index within `BookmarkParentFolder`.
+  size_t GetIndexOf(const bookmarks::BookmarkNode* node) const;
+
+  const bookmarks::BookmarkNode* GetNodeAtIndex(
+      const BookmarkParentFolder& folder,
+      size_t index) const;
+
   bool loaded() const;
 
   size_t GetChildrenCount(const BookmarkParentFolder& bookmark) const;
@@ -97,6 +111,12 @@ class BookmarkMergedSurfaceService : public KeyedService {
   void Move(const bookmarks::BookmarkNode* node,
             const BookmarkParentFolder& new_parent,
             size_t index);
+
+  // Returns true if `parent` is managed.
+  bool IsParentFolderManaged(const BookmarkParentFolder& parent) const;
+
+  // Returns true if `parent` is managed.
+  bool IsNodeManaged(const bookmarks::BookmarkNode* parent) const;
 
   bookmarks::BookmarkModel* bookmark_model() { return model_; }
 

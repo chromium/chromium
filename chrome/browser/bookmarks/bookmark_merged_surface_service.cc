@@ -112,6 +112,16 @@ const bookmarks::BookmarkNode* BookmarkParentFolder::as_non_permanent_folder()
   return nullptr;
 }
 
+bool BookmarkParentFolder::HasDirectChildNode(
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(node);
+  if (HoldsNonPermanentFolder()) {
+    return node->parent() == as_non_permanent_folder();
+  }
+
+  return GetIfPermanentFolderType(node->parent()) == as_permanent_folder();
+}
+
 // BookmarkMergedSurfaceService:
 BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
     bookmarks::BookmarkModel* model,
@@ -127,6 +137,23 @@ bool BookmarkMergedSurfaceService::IsPermanentNodeOfType(
     const BookmarkNode* node,
     PermanentFolderType folder) {
   return GetIfPermanentFolderType(node) == folder;
+}
+
+size_t BookmarkMergedSurfaceService::GetIndexOf(
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(node);
+  return *node->parent()->GetIndexOf(node);
+}
+
+const bookmarks::BookmarkNode* BookmarkMergedSurfaceService::GetNodeAtIndex(
+    const BookmarkParentFolder& folder,
+    size_t index) const {
+  const BookmarkNode* node =
+      folder.HoldsNonPermanentFolder()
+          ? folder.as_non_permanent_folder()
+          : PermanentFolderToNode(*folder.as_permanent_folder());
+  CHECK_LT(index, node->children().size());
+  return node->children()[index].get();
 }
 
 bool BookmarkMergedSurfaceService::loaded() const {
@@ -148,13 +175,27 @@ size_t BookmarkMergedSurfaceService::GetChildrenCount(
 void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         const BookmarkParentFolder& new_parent,
                                         size_t index) {
-  CHECK(new_parent.as_permanent_folder() != PermanentFolderType::kManagedNode);
+  CHECK(!IsParentFolderManaged(new_parent));
   if (new_parent.as_permanent_folder()) {
     model_->Move(node, PermanentFolderToNode(*new_parent.as_permanent_folder()),
                  index);
   } else {
     model_->Move(node, new_parent.as_non_permanent_folder(), index);
   }
+}
+
+bool BookmarkMergedSurfaceService::IsParentFolderManaged(
+    const BookmarkParentFolder& parent) const {
+  if (parent.HoldsNonPermanentFolder()) {
+    return IsNodeManaged(parent.as_non_permanent_folder());
+  }
+  return parent.as_permanent_folder() == PermanentFolderType::kManagedNode;
+}
+
+bool BookmarkMergedSurfaceService::IsNodeManaged(
+    const bookmarks::BookmarkNode* parent) const {
+  return managed_bookmark_service_ &&
+         managed_bookmark_service_->IsNodeManaged(parent);
 }
 
 const BookmarkNode* BookmarkMergedSurfaceService::PermanentFolderToNode(
