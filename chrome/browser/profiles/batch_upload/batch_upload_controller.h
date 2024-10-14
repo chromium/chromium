@@ -18,9 +18,13 @@ class Browser;
 // dialog.
 // Ordered by priority as the enum will be used in a map. The priority order
 // controls the order in which the data type section is displayed in the dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BatchUploadDataType {
-  kPasswords,
-  kAddresses,
+  kPasswords = 0,
+  kAddresses = 1,
+
+  kMaxValue = kAddresses,
 };
 
 // Controller that manages the information displayed in the Batch Upload dialog.

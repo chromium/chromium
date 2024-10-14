@@ -6,6 +6,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +30,9 @@ namespace {
 constexpr int kBatchUploadDialogFixedWidth = 512;
 constexpr int kBatchUploadDialogMaxHeight = 628;
 
+constexpr char kDataTypeInformationHistogramBase[] =
+    "Signin.BatchUpload.DataType";
+
 BatchUploadUI* GetBatchUploadUI(views::WebView* web_view) {
   return web_view->GetWebContents()
       ->GetWebUI()
@@ -45,11 +51,54 @@ AccountInfo GetBatchUploadPrimaryAccountInfo(
   return primary_account;
 }
 
+// Records the availability of all data types.
+void RecordAvailableDataTypes(
+    const base::flat_map<BatchUploadDataType, int>& data_item_count) {
+  for (const auto& [type, count] : data_item_count) {
+    CHECK_NE(count, 0);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kDataTypeInformationHistogramBase, "Available"}), type);
+  }
+}
+
+// Records whether at least one element was selected per data type. Will not
+// record for a specific data type if it is not in the map or has no items
+// selected. Also records the percentage of selected items vs available items.
+// Returns whether any data was selected.
+bool RecordSelectedDataTypes(
+    const base::flat_map<BatchUploadDataType,
+                         std::vector<BatchUploadDataItemModel::DataId>>&
+        selected_types,
+    const base::flat_map<BatchUploadDataType, int>& data_item_count_map) {
+  bool has_selected_data = false;
+  for (const auto& [type, selected_items] : selected_types) {
+    int selected_count = selected_items.size();
+    if (selected_count != 0) {
+      has_selected_data = true;
+      base::UmaHistogramEnumeration(
+          base::StrCat({kDataTypeInformationHistogramBase, "Selected"}), type);
+
+      int available_count = data_item_count_map.at(type);
+      CHECK_LE(selected_count, available_count);
+      base::UmaHistogramPercentage(
+          base::StrCat(
+              {kDataTypeInformationHistogramBase, "SelectedItemPercentage"}),
+          selected_count * 100 / available_count);
+    }
+  }
+  return has_selected_data;
+}
+
 }  // namespace
 
 BatchUploadDialogView::~BatchUploadDialogView() {
   // Makes sure that everything is cleaned up if it was not done before.
   OnClose();
+
+  // Records at view destruction to make sure it is recorded once only per
+  // dialog.
+  base::UmaHistogramEnumeration("Signin.BatchUpload.DialogCloseReason",
+                                close_reason_);
 }
 
 // static
@@ -106,6 +155,12 @@ BatchUploadDialogView::BatchUploadDialogView(
   CHECK(identity_manager);
   primary_account_info_ = GetBatchUploadPrimaryAccountInfo(*identity_manager);
 
+  for (const BatchUploadDataContainer& container : data_containers_list) {
+    const int item_count = container.items.size();
+    CHECK_NE(item_count, 0);
+    data_item_count_map_.insert_or_assign(container.type, item_count);
+  }
+
   BatchUploadUI* web_ui = GetBatchUploadUI(web_view_);
   CHECK(web_ui);
   // Initializes the UI that will initialize the handler when ready.
@@ -144,8 +199,13 @@ void BatchUploadDialogView::OnDialogSelectionMade(
     const base::flat_map<BatchUploadDataType,
                          std::vector<BatchUploadDataItemModel::DataId>>&
         selected_map) {
+  bool has_selected_data =
+      RecordSelectedDataTypes(selected_map, data_item_count_map_);
+
   std::move(complete_callback_).Run(selected_map);
-  GetWidget()->Close();
+  CloseWithReason(has_selected_data
+                      ? BatchUploadDialogCloseReason::kSaveClicked
+                      : BatchUploadDialogCloseReason::kCancelClicked);
 }
 
 void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
@@ -174,6 +234,9 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
         gfx::RoundedCornersF(GetCornerRadius()));
 
     widget->Show();
+
+    RecordAvailableDataTypes(data_item_count_map_);
+    base::UmaHistogramBoolean("Signin.BatchUpload.Opened", true);
   }
 }
 
@@ -181,7 +244,7 @@ void BatchUploadDialogView::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      GetWidget()->Close();
+      CloseWithReason(BatchUploadDialogCloseReason::kSignout);
       return;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
     case signin::PrimaryAccountChangeEvent::Type::kSet:
@@ -194,7 +257,7 @@ void BatchUploadDialogView::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (account_info == primary_account_info_ && error.IsPersistentError()) {
-    GetWidget()->Close();
+    CloseWithReason(BatchUploadDialogCloseReason::kSiginPending);
   }
 }
 
@@ -205,11 +268,17 @@ bool BatchUploadDialogView::HandleKeyboardEvent(
   // `views::UnhandledKeyboardEventHandler` to properly handle all
   // shortcut/unhandled keyboard events.
   if (event.dom_key == ui::DomKey::ESCAPE) {
-    GetWidget()->Close();
+    CloseWithReason(BatchUploadDialogCloseReason::kDismissed);
     return true;
   }
 
   return false;
+}
+
+void BatchUploadDialogView::CloseWithReason(
+    BatchUploadDialogCloseReason reason) {
+  close_reason_ = reason;
+  GetWidget()->Close();
 }
 
 views::WebView* BatchUploadDialogView::GetWebViewForTesting() {

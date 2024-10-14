@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -20,6 +21,20 @@ class BatchUploadDialogViewBrowserTest;
 namespace views {
 class WebView;
 }  // namespace views
+
+// Dialog closing reasons.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BatchUploadDialogCloseReason {
+  kSaveClicked = 0,
+  kCancelClicked = 1,
+  kDismissed = 2,
+  kWindowClosed = 3,
+  kSiginPending = 4,
+  kSignout = 5,
+
+  kMaxValue = kSignout,
+};
 
 // Native dialog view that holds the web ui component for the Batch Upload ui.
 // It needs to adapt the height size based on the web ui content that is
@@ -47,9 +62,13 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   friend class BatchUploadDialogViewBrowserTest;
 
   FRIEND_TEST_ALL_PREFIXES(BatchUploadDialogViewBrowserTest,
-                           OpenBatchUploadDialogViewWithCloseAction);
+                           OpenBatchUploadDialogViewWithCancelAction);
   FRIEND_TEST_ALL_PREFIXES(BatchUploadDialogViewBrowserTest,
                            OpenBatchUploadDialogViewWithDestroyed);
+  FRIEND_TEST_ALL_PREFIXES(BatchUploadDialogViewBrowserTest,
+                           OpenBatchUploadDialogViewWithSaveActionAllItems);
+  FRIEND_TEST_ALL_PREFIXES(BatchUploadDialogViewBrowserTest,
+                           OpenBatchUploadDialogViewWithSaveActionSomeItems);
 
   explicit BatchUploadDialogView(
       Profile* profile,
@@ -72,6 +91,10 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // view fully is asynchronous.
   void OnClose();
 
+  // Closes the dialog and sets the closing reason to be recorded in the
+  // destructor.
+  void CloseWithReason(BatchUploadDialogCloseReason reason);
+
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
@@ -90,6 +113,17 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   SelectedDataTypeItemsCallback complete_callback_;
 
   raw_ptr<views::WebView> web_view_;
+
+  // Count of items per data type. To be used for metrics purposes.
+  base::flat_map<BatchUploadDataType, int> data_item_count_map_;
+
+  // Reason for closing the dialog. This value used to record a histogram when
+  // the dialog is closed. Expected to be filled in `CloseWithReason()`.
+  // Defaulted to `kWindowClosed` as this value cannot be deduced and only
+  // happens if the dialog is closed without any user explicit action on the
+  // dialog.
+  BatchUploadDialogCloseReason close_reason_ =
+      BatchUploadDialogCloseReason::kWindowClosed;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

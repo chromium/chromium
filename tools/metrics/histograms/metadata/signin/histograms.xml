@@ -586,6 +586,61 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.BatchUpload.DataTypeAvailable" enum="BatchUploadTypes"
+    expires_after="2025-04-14">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the data types that are available in the Batch Upload. A data type
+    is available if it has local items displayed. Records when the dialog is
+    first shown.
+  </summary>
+</histogram>
+
+<histogram name="Signin.BatchUpload.DataTypeSelected" enum="BatchUploadTypes"
+    expires_after="2025-04-14">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the data types that are selected in the Batch Upload. A data type is
+    considered selected if some items are checked in the dialog when the user
+    saves the choices. Records when the dialog is closed only after the users
+    saves their choice - not for any other way the dialog is closed.
+  </summary>
+</histogram>
+
+<histogram name="Signin.BatchUpload.DataTypeSelectedItemPercentage"
+    units="selection" expires_after="2025-04-14">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the percentage of selected items versus the available items per data
+    type in the Batch Upload. It is recorded only for data types that are
+    available and that are selected. Records when the dialog is closed after the
+    users saves their choice - not for any other way the dialog is closed.
+  </summary>
+</histogram>
+
+<histogram name="Signin.BatchUpload.DialogCloseReason"
+    enum="BatchUploadDialogCloseReason" expires_after="2025-04-14">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the reason for closing the Batch Upload Dialog. Recorded when the
+    dialog is closed.
+  </summary>
+</histogram>
+
+<histogram name="Signin.BatchUpload.Opened" enum="BooleanHit"
+    expires_after="2025-04-14">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the Batch Upload Dialog was opened. Records when the dialog is
+    first shown.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Bookmarks.{ConsentLevel}.{BookmarkGroup}{AccessPoint}"
     units="count" expires_after="2025-03-23">
   <owner>rsult@google.com</owner>
