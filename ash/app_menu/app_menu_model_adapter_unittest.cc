@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/menu_test_utils.h"
 
@@ -22,7 +23,7 @@ class TestAppMenuModelAdapter : public AppMenuModelAdapter {
       : AppMenuModelAdapter("test-app-id",
                             std::move(model),
                             nullptr,
-                            ui::MENU_SOURCE_MOUSE,
+                            ui::mojom::MenuSourceType::kMouse,
                             base::OnceClosure(),
                             false) {}
   TestAppMenuModelAdapter(const TestAppMenuModelAdapter&) = delete;

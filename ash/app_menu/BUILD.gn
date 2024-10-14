@@ -26,6 +26,8 @@ component("app_menu") {
 
   defines = [ "APP_MENU_IMPLEMENTATION" ]
 
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",

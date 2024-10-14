@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -47,7 +48,7 @@ AppMenuModelAdapter::AppMenuModelAdapter(
     const std::string& app_id,
     std::unique_ptr<ui::SimpleMenuModel> model,
     views::Widget* widget_owner,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     base::OnceClosure on_menu_closed_callback,
     bool is_tablet_mode)
     : views::MenuModelAdapter(model.get()),

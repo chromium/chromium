@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -40,7 +41,7 @@ class TestAppMenuModelAdapter : public AppMenuModelAdapter {
       : AppMenuModelAdapter(app_id,
                             std::move(model),
                             nullptr,
-                            ui::MENU_SOURCE_TYPE_LAST,
+                            ui::mojom::MenuSourceType::kMaxValue,
                             base::OnceClosure(),
                             false /* is_tablet_mode */) {}
 
