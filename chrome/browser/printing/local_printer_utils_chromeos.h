@@ -17,26 +17,7 @@ class Printer;
 
 namespace printing {
 
-class PrintedDocument;
-class PrintJob;
 struct PrinterSemanticCapsAndDefaults;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Notify Ash Chrome of a new print job.
-// If `local_printer` is null, this method fails.
-void NotifyAshJobCreated(int job_id,
-                         const PrintedDocument& document,
-                         const crosapi::mojom::PrintJob::Source& source,
-                         const std::string& source_id,
-                         crosapi::mojom::LocalPrinter* local_printer);
-
-// Same as above but gets the LocalPrinter from LacrosService.
-void NotifyAshJobCreated(const PrintJob& job,
-                         int job_id,
-                         const PrintedDocument& document);
-
-#endif
 
 // Returns the platform-specific handle for the LocalPrinter interface.
 crosapi::mojom::LocalPrinter* GetLocalPrinterInterface();

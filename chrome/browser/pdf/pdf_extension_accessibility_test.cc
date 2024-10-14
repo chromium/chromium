@@ -72,9 +72,9 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Fake ScreenAI library returns empty results for all queries, so testing with
 // it is not helpful.
@@ -1185,9 +1185,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
   EXPECT_EQ("https://bing.com/", expected_url.spec());
 }
 
-// TODO(crbug.com/289010799): Revisit using `crosapi` in `PdfOcrUmaTest` for
-// Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test suite contains simple tests for the PDF OCR feature.
 class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
                       public ::testing::WithParamInterface<bool> {
@@ -1230,11 +1227,11 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
     GTEST_SKIP();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ::ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   EnableScreenReader(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::HistogramTester histograms;
   histograms.ExpectUniqueSample(
@@ -1254,7 +1251,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
       /*expected_bucket_count=*/1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithSelectToSpeak) {
   // TODO(crbug.com/289010799): Remove this once the metrics are added for OOPIF
   // PDF.
@@ -1310,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest,
       "Accessibility.PdfOcr.CrosSelectToSpeak.PagesOcred",
       /*expected_count=*/0);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfOcrUmaTest,
@@ -1319,7 +1316,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return base::StringPrintf(
                                "OOPIF_%s", info.param ? "Enabled" : "Disabled");
                          });
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.

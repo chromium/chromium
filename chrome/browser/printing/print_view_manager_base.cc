@@ -75,10 +75,6 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/printing/local_printer_utils_chromeos.h"
-#endif
-
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 #endif
@@ -945,9 +941,6 @@ bool PrintViewManagerBase::GetPrintingEnabledBooleanPref() const {
 }
 
 void PrintViewManagerBase::OnDocDone(int job_id, PrintedDocument* document) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(*print_job_, job_id, *document);
-#endif
 #if BUILDFLAG(IS_ANDROID)
   DCHECK_LE(number_pages(), kMaxPageCount);
   PdfWritingDone(base::checked_cast<int>(number_pages()));
