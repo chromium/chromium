@@ -31,7 +31,7 @@ namespace enterprise.platformKeysInternal {
   };
 
   // Invoked by <code>getTokens</code>.
-  // |tokenIds| The list of IDs of the avialable Tokens.
+  // |tokenIds| The list of IDs of the available Tokens.
   callback GetTokensCallback = void(DOMString[] tokenIds);
 
   // Invoked by <code>generateKey</code>.
@@ -40,11 +40,11 @@ namespace enterprise.platformKeysInternal {
   callback GenerateKeyCallback = void(ArrayBuffer publicKey);
 
   interface Functions {
-    // Internal version of entrprise.platformKeys.getTokens. Returns a list of
+    // Internal version of enterprise.platformKeys.getTokens. Returns a list of
     // token IDs instead of token objects.
     static void getTokens(GetTokensCallback callback);
 
-    // Internal version of Token.generateKey, currently supporting only
+    // Internal version of SubtleCrypto.generateKey, currently supporting only
     // RSASSA-PKCS1-v1_5 and ECDSA.
     // |tokenId| The id of a Token returned by |getTokens|.
     // |algorithm| The algorithm parameters as specified by WebCrypto.
