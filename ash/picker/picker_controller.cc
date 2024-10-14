@@ -489,63 +489,62 @@ PickerActionType PickerController::GetActionForResult(
   CHECK(session_);
   const PickerModeType mode = session_->model.GetMode();
   return std::visit(
-      base::Overloaded{
-          [mode](const PickerTextResult& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerEmojiResult& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerGifResult& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerClipboardResult& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerBrowsingHistoryResult& data) {
-            return mode == PickerModeType::kUnfocused
-                       ? PickerActionType::kOpen
-                       : PickerActionType::kInsert;
-          },
-          [mode](const PickerLocalFileResult& data) {
-            return mode == PickerModeType::kUnfocused
-                       ? PickerActionType::kOpen
-                       : PickerActionType::kInsert;
-          },
-          [mode](const PickerDriveFileResult& data) {
-            return mode == PickerModeType::kUnfocused
-                       ? PickerActionType::kOpen
-                       : PickerActionType::kInsert;
-          },
-          [](const PickerCategoryResult& data) {
-            return PickerActionType::kDo;
-          },
-          [](const PickerSearchRequestResult& data) {
-            return PickerActionType::kDo;
-          },
-          [](const PickerEditorResult& data) {
-            return PickerActionType::kCreate;
-          },
-          [](const PickerLobsterResult& data) {
-            return PickerActionType::kCreate;
-          },
-          [](const PickerNewWindowResult& data) {
-            return PickerActionType::kDo;
-          },
-          [](const PickerCapsLockResult& data) {
-            return PickerActionType::kDo;
-          },
-          [&](const PickerCaseTransformResult& data) {
-            return PickerActionType::kDo;
-          }},
+      base::Overloaded{[mode](const PickerTextResult& data) {
+                         CHECK(mode == PickerModeType::kNoSelection ||
+                               mode == PickerModeType::kHasSelection);
+                         return PickerActionType::kInsert;
+                       },
+                       [mode](const PickerEmojiResult& data) {
+                         CHECK(mode == PickerModeType::kNoSelection ||
+                               mode == PickerModeType::kHasSelection);
+                         return PickerActionType::kInsert;
+                       },
+                       [mode](const PickerGifResult& data) {
+                         CHECK(mode == PickerModeType::kNoSelection ||
+                               mode == PickerModeType::kHasSelection);
+                         return PickerActionType::kInsert;
+                       },
+                       [mode](const PickerClipboardResult& data) {
+                         CHECK(mode == PickerModeType::kNoSelection ||
+                               mode == PickerModeType::kHasSelection);
+                         return PickerActionType::kInsert;
+                       },
+                       [mode](const PickerBrowsingHistoryResult& data) {
+                         return mode == PickerModeType::kUnfocused
+                                    ? PickerActionType::kOpen
+                                    : PickerActionType::kInsert;
+                       },
+                       [mode](const PickerLocalFileResult& data) {
+                         return mode == PickerModeType::kUnfocused
+                                    ? PickerActionType::kOpen
+                                    : PickerActionType::kInsert;
+                       },
+                       [mode](const PickerDriveFileResult& data) {
+                         return mode == PickerModeType::kUnfocused
+                                    ? PickerActionType::kOpen
+                                    : PickerActionType::kInsert;
+                       },
+                       [](const PickerCategoryResult& data) {
+                         return PickerActionType::kDo;
+                       },
+                       [](const PickerSearchRequestResult& data) {
+                         return PickerActionType::kDo;
+                       },
+                       [](const PickerEditorResult& data) {
+                         return PickerActionType::kCreate;
+                       },
+                       [](const PickerLobsterResult& data) {
+                         return PickerActionType::kCreate;
+                       },
+                       [](const PickerNewWindowResult& data) {
+                         return PickerActionType::kDo;
+                       },
+                       [](const PickerCapsLockResult& data) {
+                         return PickerActionType::kDo;
+                       },
+                       [&](const PickerCaseTransformResult& data) {
+                         return PickerActionType::kDo;
+                       }},
       result);
 }
 
