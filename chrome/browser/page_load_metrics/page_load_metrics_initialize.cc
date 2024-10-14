@@ -78,7 +78,6 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/page_load_metrics/observers/side_search_page_load_metrics_observer.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
@@ -154,18 +153,6 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   // about WebUI chrome pages (such as visibility-related things),
   // or because they depend on objects that don't exist for WebUI pages
   // (namely `TabHelper`s).
-
-  // TODO(crbug.com/40823327): Integrate side panel metrics with UKM.
-  if (IsSidePanel(web_contents())) {
-#if defined(TOOLKIT_VIEWS)
-    if (auto side_search_observer =
-            SideSearchPageLoadMetricsObserver::CreateIfNeeded(
-                tracker->GetWebContents())) {
-      tracker->AddObserver(std::move(side_search_observer));
-    }
-#endif  // defined(TOOLKIT_VIEWS)
-    return;
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (IsNonTabWebUI()) {

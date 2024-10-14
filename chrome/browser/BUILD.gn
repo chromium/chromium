@@ -3887,8 +3887,6 @@ static_library("browser") {
       "page_info/about_this_site_side_panel_throttle.h",
       "page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.cc",
       "page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h",
-      "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
-      "page_load_metrics/observers/side_search_page_load_metrics_observer.h",
       "password_manager/generated_password_leak_detection_pref.cc",
       "password_manager/generated_password_leak_detection_pref.h",
       "password_manager/web_app_profile_switcher.cc",

@@ -6044,7 +6044,6 @@ test("unit_tests") {
   if (toolkit_views) {
     sources += [
       "../browser/bookmarks/bookmark_expanded_state_tracker_unittest.cc",
-      "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc",
       "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
       "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
     ]

@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
@@ -247,15 +247,11 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
   task_manager::WebContentsTags::CreateForTabContents(
       side_panel_contents_.get());
 
-  // Set helpers required for the side contents. We must add relevant tab
-  // helpers here explicitly as TabHelpers::AttachTabHelpers() is only called
-  // for tab WebContents. If called here it would add helpers that do not make
-  // sense / are not relevant for non-tab WebContents.
+  // Sets helpers required for the side contents.
   PrefsTabHelper::CreateForWebContents(side_panel_contents_.get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::TabHelper::CreateForWebContents(side_panel_contents_.get());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  chrome::InitializePageLoadMetricsForWebContents(side_panel_contents_.get());
   chrome::UMABrowsingActivityObserver::TabHelper::CreateForWebContents(
       side_panel_contents_.get());
 
