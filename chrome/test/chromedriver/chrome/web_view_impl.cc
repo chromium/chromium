@@ -50,6 +50,7 @@
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
+#include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -827,6 +828,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
     std::string function,
     base::Value::List args,
     const base::TimeDelta& timeout,
+    bool include_shadow_root,
     std::unique_ptr<base::Value>* result) {
   Status status{kOk};
 
@@ -993,7 +995,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   if (!status.IsOk()) {
     return status;
   }
-  status = CreateElementReferences(frame_id, loader_id, received_list,
+  status = CreateElementReferences(frame_id, received_list, include_shadow_root,
                                    *call_result_value);
   if (!status.IsOk()) {
     return status;
@@ -1036,6 +1038,7 @@ Status WebViewImpl::CallFunctionWithTimeout(
     const std::string& function,
     const base::Value::List& args,
     const base::TimeDelta& timeout,
+    const CallFunctionOptions& options,
     std::unique_ptr<base::Value>* result) {
   WebViewImplHolder target_holder(this);
   Status status{kOk};
@@ -1046,11 +1049,12 @@ Status WebViewImpl::CallFunctionWithTimeout(
       return Status(kTargetDetached);
     }
     return target->CallFunctionWithTimeout(frame, function, args, timeout,
-                                           result);
+                                           options, result);
   }
 
   return CallFunctionWithTimeoutInternal(frame, std::move(function),
-                                         args.Clone(), timeout, result);
+                                         args.Clone(), timeout,
+                                         options.include_shadow_root, result);
 }
 
 Status WebViewImpl::CallFunction(const std::string& frame,
@@ -1059,8 +1063,10 @@ Status WebViewImpl::CallFunction(const std::string& frame,
                                  std::unique_ptr<base::Value>* result) {
   // Timeout set to Max is treated as no timeout.
 
+  CallFunctionOptions options;
+  options.include_shadow_root = false;
   return CallFunctionWithTimeout(frame, function, args, base::TimeDelta::Max(),
-                                 result);
+                                 options, result);
 }
 
 Status WebViewImpl::CallUserSyncScript(const std::string& frame,
@@ -1083,8 +1089,8 @@ Status WebViewImpl::CallUserSyncScript(const std::string& frame,
   sync_args.Append(script);
   sync_args.Append(args.Clone());
 
-  return CallFunctionWithTimeoutInternal(frame, kExecuteScriptScript,
-                                         sync_args.Clone(), timeout, result);
+  return CallFunctionWithTimeoutInternal(
+      frame, kExecuteScriptScript, sync_args.Clone(), timeout, false, result);
 }
 
 Status WebViewImpl::CallUserAsyncFunction(
@@ -1112,8 +1118,8 @@ Status WebViewImpl::GetFrameByFunction(const std::string& frame,
   }
 
   std::unique_ptr<base::Value> result;
-  status = CallFunctionWithTimeoutInternal(frame, function, args.Clone(),
-                                           base::TimeDelta::Max(), &result);
+  status = CallFunctionWithTimeoutInternal(
+      frame, function, args.Clone(), base::TimeDelta::Max(), false, &result);
 
   if (status.IsError()) {
     return status;
@@ -1857,8 +1863,11 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   std::unique_ptr<base::Value> tmp;
   Timeout local_timeout(timeout);
   std::unique_ptr<base::Value> query_value;
-  Status status = CallFunctionWithTimeout(frame, kExecuteAsyncScriptScript,
-                                          async_args, timeout, &query_value);
+  CallFunctionOptions options;
+  options.include_shadow_root = false;
+  Status status =
+      CallFunctionWithTimeout(frame, kExecuteAsyncScriptScript, async_args,
+                              timeout, options, &query_value);
   if (status.IsError()) {
     return status;
   }
@@ -2234,78 +2243,109 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
 }
 
 Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
-                                            const std::string& loader_id,
                                             const base::Value::List& nodes,
+                                            bool include_shadow_root,
                                             base::Value& res) {
   Status status{kOk};
   if (res.is_list()) {
     base::Value::List& list = res.GetList();
     for (base::Value& elem : list) {
-      status = CreateElementReferences(frame_id, loader_id, nodes, elem);
+      status =
+          CreateElementReferences(frame_id, nodes, include_shadow_root, elem);
       if (status.IsError()) {
         return status;
       }
     }
     return status;
   }
-  if (res.is_dict()) {
-    base::Value::Dict& dict = res.GetDict();
-    std::optional<std::string> maybe_key =
-        GetElementIdKey(dict, w3c_compliant_);
-    if (maybe_key) {
-      std::optional<int> maybe_node_idx = dict.FindInt(*maybe_key);
-      if (!maybe_node_idx) {
-        return Status{kUnknownError, "node index is missing"};
-      }
-      if (*maybe_node_idx < 0 ||
-          static_cast<size_t>(*maybe_node_idx) >= nodes.size()) {
-        return Status{kUnknownError, "node index is out of range"};
-      }
-      if (!nodes[*maybe_node_idx].is_dict()) {
-        return Status{kUnknownError, "serialized node is not a dictionary"};
-      }
-      const base::Value::Dict& node = nodes[*maybe_node_idx].GetDict();
 
-      std::string shared_id;
-      std::string key = *maybe_key;
-      if (*maybe_key == kWindowKey) {
-        const std::string* context =
-            node.FindStringByDottedPath("value.context");
-        if (!context) {
-          return Status{kUnknownError, "context is missing in a node"};
-        }
-        shared_id = *context;
-        if (*context == client_->GetId() ||
-            GetTargetForFrame(*context) == nullptr) {
-          // The reference either points to the top level window/tab or to some
-          // dynamically created window.
-          key = kWindowKey;
-        } else {
-          key = kFrameKey;
-        }
-        dict.Remove(*maybe_key);
-      } else {
-        std::optional<int> maybe_backend_node_id =
-            node.FindIntByDottedPath("value.backendNodeId");
-        if (!maybe_backend_node_id) {
-          return Status{kUnknownError, "backendNodeId is missing in a node"};
-        }
-        shared_id =
-            base::StringPrintf("f.%s.d.%s.e.%d", frame_id.c_str(),
-                               loader_id.c_str(), *maybe_backend_node_id);
-      }
+  if (!res.is_dict()) {
+    return status;
+  }
 
-      dict.Set(std::move(key), std::move(shared_id));
-      return status;
-    }
+  base::Value::Dict& dict = res.GetDict();
+  std::optional<std::string> maybe_key = GetElementIdKey(dict, w3c_compliant_);
 
+  if (!maybe_key) {
     for (auto p : dict) {
-      status = CreateElementReferences(frame_id, loader_id, nodes, p.second);
+      status = CreateElementReferences(frame_id, nodes, include_shadow_root,
+                                       p.second);
       if (status.IsError()) {
         return status;
       }
     }
+    return status;
   }
+
+  std::optional<int> maybe_node_idx = dict.FindInt(*maybe_key);
+  if (!maybe_node_idx) {
+    return Status{kUnknownError, "node index is missing"};
+  }
+  if (*maybe_node_idx < 0 ||
+      static_cast<size_t>(*maybe_node_idx) >= nodes.size()) {
+    return Status{kUnknownError, "node index is out of range"};
+  }
+  if (!nodes[*maybe_node_idx].is_dict()) {
+    return Status{kUnknownError, "serialized node is not a dictionary"};
+  }
+  const base::Value::Dict& node = nodes[*maybe_node_idx].GetDict();
+
+  if (*maybe_key == kWindowKey) {
+    const std::string* context = node.FindStringByDottedPath("value.context");
+    if (!context) {
+      return Status{kUnknownError, "context is missing in a node"};
+    }
+    dict.Remove(*maybe_key);
+    if (*context == client_->GetId() ||
+        GetTargetForFrame(*context) == nullptr) {
+      // The reference either points to the top level window/tab or to some
+      // dynamically created window.
+      dict.Set(kWindowKey, *context);
+    } else {
+      dict.Set(kFrameKey, *context);
+    }
+    return status;
+  }
+
+  std::optional<int> maybe_backend_node_id =
+      node.FindIntByDottedPath("value.backendNodeId");
+  if (!maybe_backend_node_id) {
+    return Status{kUnknownError, "backendNodeId is missing in the node"};
+  }
+  const std::string* maybe_loader_id =
+      node.FindStringByDottedPath("value.loaderId");
+  if (maybe_loader_id == nullptr) {
+    return Status{kUnknownError, "loaderId is missing in the node"};
+  }
+
+  std::string shared_id =
+      base::StringPrintf("f.%s.d.%s.e.%d", frame_id.c_str(),
+                         maybe_loader_id->c_str(), *maybe_backend_node_id);
+
+  dict.Set(*maybe_key, std::move(shared_id));
+
+  const base::Value::Dict* shadow_root =
+      node.FindDictByDottedPath("value.shadowRoot");
+  if (include_shadow_root && shadow_root) {
+    maybe_backend_node_id =
+        shadow_root->FindIntByDottedPath("value.backendNodeId");
+    if (!maybe_backend_node_id) {
+      return Status{kUnknownError,
+                    "backendNodeId is missing in the node's shadowRoot"};
+    }
+    maybe_loader_id = shadow_root->FindStringByDottedPath("value.loaderId");
+    if (maybe_loader_id == nullptr) {
+      return Status{kUnknownError,
+                    "loaderId is missing in the node's shadowRoot"};
+    }
+    shared_id =
+        base::StringPrintf("f.%s.d.%s.e.%d", frame_id.c_str(),
+                           maybe_loader_id->c_str(), *maybe_backend_node_id);
+    base::Value::Dict shadow_root_dict;
+    shadow_root_dict.Set(kShadowRootKey, std::move(shared_id));
+    dict.Set("shadowRoot", std::move(shadow_root_dict));
+  }
+
   return status;
 }
 

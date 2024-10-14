@@ -85,10 +85,12 @@ base::Value::Dict CreateWeakNodeReference(int weak_local_object_reference) {
 }
 
 base::Value::Dict CreateNode(int backend_node_id,
+                             const std::string& loader_id,
                              int weak_local_object_reference = -1) {
   base::Value::Dict node;
   node.Set("type", "node");
   node.SetByDottedPath("value.backendNodeId", backend_node_id);
+  node.SetByDottedPath("value.loaderId", loader_id);
   if (weak_local_object_reference >= 0) {
     node.Set("weakLocalObjectReference", weak_local_object_reference);
   }
@@ -104,10 +106,11 @@ std::string WrapToJson(base::Value value, int status = 0) {
   return json;
 }
 
-base::Value::Dict GenerateResponse(int backend_node_id) {
+base::Value::Dict GenerateResponse(int backend_node_id,
+                                   const std::string& loader_id) {
   base::Value::Dict dict;
   dict.Set("value", WrapToJson(base::Value(CreateElementPlaceholder(0)), 0));
-  base::Value::Dict node = CreateNode(backend_node_id);
+  base::Value::Dict node = CreateNode(backend_node_id, loader_id);
   base::Value::List serialized_list;
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(node));
@@ -119,7 +122,8 @@ base::Value::Dict GenerateResponse(int backend_node_id) {
 
 base::Value::Dict GenerateResponseWithScriptArguments(
     base::Value::List args,
-    const std::string& element_key) {
+    const std::string& element_key,
+    const std::string& loader_id) {
   base::Value::List arr;
   base::Value::List nodes;
   for (base::Value& arg : args) {
@@ -135,7 +139,7 @@ base::Value::Dict GenerateResponseWithScriptArguments(
     }
 
     arr.Append(CreateElementPlaceholder(nodes.size(), element_key));
-    nodes.Append(CreateNode(object_id));
+    nodes.Append(CreateNode(object_id, loader_id));
   }
 
   base::Value::Dict dict;
@@ -166,6 +170,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
   void SetElementKey(std::string element_key) {
     element_key_ = std::move(element_key);
   }
+
+  void SetLoaderId(std::string loader_id) { loader_id_ = std::move(loader_id); }
 
   // Overridden from DevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
@@ -217,8 +223,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
         return Status{kInvalidArgument,
                       "arguments are not provided to Runtime.callFunctionOn"};
       }
-      *result =
-          GenerateResponseWithScriptArguments(args->Clone(), element_key_);
+      *result = GenerateResponseWithScriptArguments(args->Clone(), element_key_,
+                                                    loader_id_);
     } else {
       *result = result_.Clone();
     }
@@ -237,6 +243,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   base::Value::Dict result_;
   base::Value::List extra_child_frames_;
   std::string element_key_ = kElementKeyW3C;
+  std::string loader_id_ = "root_loader";
 };
 
 void AssertEvalFails(const base::Value::Dict& command_result) {
@@ -726,81 +733,81 @@ TEST(GetBackendNodeId, NonW3C) {
   }
 }
 
-TEST(CallUserSyncScript, ElementIdAsResultRootFrame) {
+class ParentToChildRouting
+    : public testing::TestWithParam<
+          std::tuple<std::string, std::string, std::string>> {
+ public:
+  const std::string& TargetFrame() { return std::get<0>(GetParam()); }
+
+  const std::string& ExpectedFrame() { return std::get<1>(GetParam()); }
+
+  const std::string& TargetLoader() { return std::get<2>(GetParam()); }
+};
+
+TEST_P(ParentToChildRouting, ElementIdAsResultRootFrame) {
   BrowserInfo browser_info;
   std::unique_ptr<base::Value> result;
   std::unique_ptr<FakeDevToolsClient> client_uptr =
       std::make_unique<FakeDevToolsClient>("root");
-  client_uptr->SetResult(GenerateResponse(4321));
+  client_uptr->SetResult(GenerateResponse(4321, TargetLoader()));
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
                    std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
-  {
-    EXPECT_TRUE(StatusOk(
-        view.CallUserSyncScript("root", "some_code", base::Value::List(),
-                                base::TimeDelta::Max(), &result)));
-    ASSERT_TRUE(result->is_dict());
-    EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq(ElementReference("root", "root_loader", "4321"))));
-  }
-  result.reset();
-  {
-    EXPECT_TRUE(
-        StatusOk(view.CallUserSyncScript("", "some_code", base::Value::List(),
-                                         base::TimeDelta::Max(), &result)));
-    ASSERT_TRUE(result->is_dict());
-    EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq(ElementReference("root", "root_loader", 4321))));
-  }
-  result.reset();
-  {
-    EXPECT_TRUE(StatusOk(
-        view.CallUserSyncScript("good", "some_code", base::Value::List(),
-                                base::TimeDelta::Max(), &result)));
-    ASSERT_TRUE(result->is_dict());
-    EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq(ElementReference("good", "good_loader", 4321))));
-  }
+
+  EXPECT_TRUE(StatusOk(
+      view.CallUserSyncScript(TargetFrame(), "some_code", base::Value::List(),
+                              base::TimeDelta::Max(), &result)));
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
+              Pointee(Eq(ElementReference(ExpectedFrame().c_str(),
+                                          TargetLoader().c_str(), "4321"))));
 }
 
-TEST(CallUserSyncScript, ElementIdAsResultChildFrame) {
+INSTANTIATE_TEST_SUITE_P(
+    CallUserSyncScript,
+    ParentToChildRouting,
+    ::testing::Values(std::make_tuple("root", "root", "root_loader"),
+                      std::make_tuple("", "root", "root_loader"),
+                      std::make_tuple("good", "good", "good_loader")));
+
+class ChildToParentRouting
+    : public testing::TestWithParam<
+          std::tuple<std::string, std::string, std::string>> {
+ public:
+  const std::string& TargetFrame() { return std::get<0>(GetParam()); }
+
+  const std::string& ExpectedFrame() { return std::get<1>(GetParam()); }
+
+  const std::string& TargetLoader() { return std::get<2>(GetParam()); }
+};
+
+TEST_P(ChildToParentRouting, ElementIdAsResultChildFrame) {
   BrowserInfo browser_info;
   std::unique_ptr<base::Value> result;
   std::unique_ptr<FakeDevToolsClient> client_uptr =
       std::make_unique<FakeDevToolsClient>("good");
-  client_uptr->SetResult(GenerateResponse(4321));
+  client_uptr->SetResult(GenerateResponse(4321, TargetLoader()));
   WebViewImpl view("good", true, nullptr, &browser_info, std::move(client_uptr),
                    std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
-  {
-    EXPECT_TRUE(StatusOk(
-        view.CallUserSyncScript("root", "some_code", base::Value::List(),
-                                base::TimeDelta::Max(), &result)));
-    ASSERT_TRUE(result->is_dict());
-    EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq(ElementReference("root", "root_loader", 4321))));
-  }
-  result.reset();
-  {
-    EXPECT_TRUE(
-        StatusOk(view.CallUserSyncScript("", "some_code", base::Value::List(),
-                                         base::TimeDelta::Max(), &result)));
-    ASSERT_TRUE(result->is_dict());
-    EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq(ElementReference("good", "good_loader", 4321))));
-  }
-  result.reset();
-  {
-    EXPECT_TRUE(StatusOk(
-        view.CallUserSyncScript("good", "some_code", base::Value::List(),
-                                base::TimeDelta::Max(), &result)));
-    ASSERT_TRUE(result->is_dict());
-    EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq(ElementReference("good", "good_loader", 4321))));
-  }
+
+  EXPECT_TRUE(StatusOk(
+      view.CallUserSyncScript(TargetFrame(), "some_code", base::Value::List(),
+                              base::TimeDelta::Max(), &result)));
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
+              Pointee(Eq(ElementReference(ExpectedFrame().c_str(),
+                                          TargetLoader().c_str(), "4321"))));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    CallUserSyncScript,
+    ChildToParentRouting,
+    ::testing::Values(std::make_tuple("root", "root", "root_loader"),
+                      std::make_tuple("", "good", "good_loader"),
+                      std::make_tuple("good", "good", "good_loader")));
 
 TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   BrowserInfo browser_info;
@@ -976,6 +983,7 @@ TEST_P(CallUserSyncScriptArgs, DeepElement) {
   args.Append(std::move(arg));
   std::unique_ptr<base::Value> result;
   client_ptr->SetElementKey(ElementKey());
+  client_ptr->SetLoaderId("good_loader");
   EXPECT_TRUE(
       StatusOk(view->CallUserSyncScript("good", "return nodes", std::move(args),
                                         base::TimeDelta::Max(), &result)));
@@ -1093,7 +1101,7 @@ INSTANTIATE_TEST_SUITE_P(References,
                                                           false)));
 
 TEST(CallUserSyncScript, WeakReference) {
-  base::Value::Dict node = CreateNode(557, 13);
+  base::Value::Dict node = CreateNode(557, "root_loader", 13);
   base::Value::Dict weak_ref = CreateWeakNodeReference(13);
   base::Value::Dict dict;
   base::Value::List placeholder_list;
@@ -1134,7 +1142,7 @@ TEST(CallUserSyncScript, WeakReference) {
 }
 
 TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
-  base::Value::Dict node = CreateNode(557, 13);
+  base::Value::Dict node = CreateNode(557, "root_loader", 13);
   base::Value::Dict weak_ref = CreateWeakNodeReference(13);
   base::Value::Dict dict;
   base::Value::List placeholder_list;

@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/chrome/navigation_tracker.h"
+
 #include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
-#include "chrome/test/chromedriver/chrome/navigation_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
 #include "chrome/test/chromedriver/chrome/stub_web_view.h"
+#include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,6 +112,7 @@ class EvaluateScriptWebView : public StubWebView {
       const std::string& function,
       const base::Value::List& args,
       const base::TimeDelta& timeout,
+      const CallFunctionOptions& options,
       std::unique_ptr<base::Value>* result) override {
     return Status{kOk};
   }

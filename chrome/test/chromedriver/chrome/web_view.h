@@ -28,6 +28,10 @@ struct MouseEvent;
 struct NetworkConditions;
 struct TouchEvent;
 
+struct CallFunctionOptions {
+  bool include_shadow_root = false;
+};
+
 class WebView {
  public:
   typedef base::RepeatingCallback<Status(bool* is_condition_met)>
@@ -281,11 +285,20 @@ class WebView {
 
   virtual bool IsDetached() const = 0;
 
+  // Calls a JavaScript function in a specified frame with the given args and
+  // returns the result. |frame| is a frame ID or an empty string for the main
+  // frame. |args| may contain IDs that refer to previously returned elements.
+  // These will be translated back to their referred objects before invoking the
+  // function. |timeout| is the time to wait before exiting the function
+  // abruptly with Timeout error. |options| allow tweaking the internal behavior
+  // like the way how the result is serialized.
+  // |result| will never be NULL on success.
   virtual Status CallFunctionWithTimeout(
       const std::string& frame,
       const std::string& function,
       const base::Value::List& args,
       const base::TimeDelta& timeout,
+      const CallFunctionOptions& options,
       std::unique_ptr<base::Value>* result) = 0;
 
   virtual bool IsDialogOpen() const = 0;

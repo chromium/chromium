@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "chrome/test/chromedriver/chrome/web_view.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -182,12 +183,14 @@ TEST_F(NavigationTrackerTest, SimpleNavigation) {
       StatusOk(web_view.Load(root_url.Resolve("test.html").spec(), &timeout)));
   web_view.WaitForPendingNavigations("", timeout, true);
   std::unique_ptr<base::Value> result;
+  CallFunctionOptions options;
+  options.include_shadow_root = false;
   EXPECT_TRUE(StatusOk(web_view.CallFunctionWithTimeout(
       "",
       "function(){"
       "  return document.querySelector('span').textContent;"
       "}",
-      base::Value::List(), timeout.GetRemainingTime(), &result)));
+      base::Value::List(), timeout.GetRemainingTime(), options, &result)));
   ASSERT_TRUE(result->is_string());
   const std::string text = result->GetString();
   EXPECT_EQ("DONE!", text);
