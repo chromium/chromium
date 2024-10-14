@@ -17,8 +17,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -55,10 +55,9 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @NonNull Context context,
             @NonNull Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId) {
         Intent intent =
@@ -78,9 +77,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @NonNull Context context,
             @NonNull Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent =
                 SigninAndHistorySyncActivity.createIntentForDedicatedFlow(
@@ -93,7 +91,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                 context,
                 profile,
                 intent,
-                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
+                SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                 signinAccessPoint);
     }
 
@@ -101,10 +99,10 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             Context context,
             Profile profile,
             Intent intent,
-            @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int accessPoint) {
-        if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
-                || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile, historyOptInMode)) {
             context.startActivity(intent);
             return true;
@@ -122,10 +120,9 @@ public final class SigninAndHistorySyncActivityLauncherImpl
 
     @Override
     public void launchFullscreenSigninActivityIfAllowed(Context context, Profile profile) {
-        if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
-                || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
-                        profile,
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
+        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+                        profile, SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
             Intent intent = SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context);
             context.startActivity(intent);
         }

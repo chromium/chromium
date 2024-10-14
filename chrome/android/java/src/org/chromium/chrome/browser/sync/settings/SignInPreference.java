@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
@@ -212,12 +212,11 @@ public class SignInPreference extends Preference
                                         getContext(),
                                         mProfile,
                                         bottomSheetStrings,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .NoAccountSigninMode.BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                                .OPTIONAL,
+                                        SigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                                .BOTTOM_SHEET,
+                                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
                                         SigninAccessPoint.SETTINGS,
                                         /* selectedCoreAccountId= */ null);
                     } else {

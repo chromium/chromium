@@ -30,8 +30,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -91,13 +91,11 @@ public class SafetyHubModuleDelegateTest {
                         eq(mContext),
                         eq(mProfile),
                         any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.SAFETY_CHECK),
                         isNull());
     }

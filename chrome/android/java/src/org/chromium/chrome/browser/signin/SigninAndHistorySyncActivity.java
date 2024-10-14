@@ -33,12 +33,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -64,7 +64,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * by the history sync opt-in. This is why the dependency on {@link FirstRunActivityBase} is needed.
  */
 public class SigninAndHistorySyncActivity extends FirstRunActivityBase
-        implements BottomSheetSigninAndHistorySyncCoordinator.Delegate,
+        implements SigninAndHistorySyncCoordinator.Delegate,
                 FullscreenSigninAndHistorySyncCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE =
@@ -95,7 +95,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     // null.
     // TODO(b/326019991): Consider making each of these implement a common interface to skip the
     // redundancy.
-    private BottomSheetSigninAndHistorySyncCoordinator mBottomSheetSigninCoordinator;
+    private SigninAndHistorySyncCoordinator mBottomSheetSigninCoordinator;
     private FullscreenSigninAndHistorySyncCoordinator mFullscreenSigninCoordinator;
 
     // Set to true when the add account activity is started, and is not persisted in saved instance
@@ -162,7 +162,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
 
         mBottomSheetSigninCoordinator =
-                new BottomSheetSigninAndHistorySyncCoordinator(
+                new SigninAndHistorySyncCoordinator(
                         getWindowAndroid(),
                         this,
                         this,
@@ -224,7 +224,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     }
 
     /**
-     * Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} and {@link
+     * Implements {@link SigninAndHistorySyncCoordinator.Delegate} and {@link
      * FullscreenSigninAndHistorySyncCoordinator.Delegate}.
      */
     @Override
@@ -235,13 +235,13 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         overridePendingTransition(0, R.anim.fast_fade_out);
     }
 
-    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link SigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public boolean isHistorySyncShownFullScreen() {
         return !isTablet();
     }
 
-    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link SigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public void setStatusBarColor(int statusBarColor) {
         StatusBarColorController.setStatusBarColor(getWindow(), statusBarColor);
@@ -360,7 +360,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
     /**
      * Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} and {@link
-     * BottomSheetSigninAndHistorySyncCoordinator.Delegate}
+     * SigninAndHistorySyncCoordinator.Delegate}
      */
     @Override
     public void addAccount() {

@@ -40,8 +40,8 @@ import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherIm
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -125,13 +125,11 @@ public final class FeedActionDelegateImplTest {
                         any(),
                         any(),
                         any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
                         isNull());
     }
@@ -146,13 +144,11 @@ public final class FeedActionDelegateImplTest {
                         any(),
                         any(),
                         any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
                         isNull());
     }
@@ -168,13 +164,11 @@ public final class FeedActionDelegateImplTest {
                         any(),
                         any(),
                         any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         isNull());
     }

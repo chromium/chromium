@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -371,12 +371,10 @@ public class IdentityDiscController
                                 mContext,
                                 mProfileSupplier.get().getOriginalProfile(),
                                 bottomSheetStrings,
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                        .OPTIONAL,
+                                SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
                                 SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                 /* selectedCoreAccountId= */ null);
             } else {

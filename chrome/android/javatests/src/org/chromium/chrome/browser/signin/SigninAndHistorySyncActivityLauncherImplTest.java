@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -98,12 +98,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     null);
                 });
@@ -123,12 +122,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     TestAccounts.ACCOUNT1.getId());
                 });
@@ -151,12 +149,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .REQUIRED,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     /* selectedCoreAccountId= */ null);
                 });
@@ -176,9 +173,9 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAccessPoint.RECENT_TABS);
                 });
@@ -201,12 +198,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .REQUIRED,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     /* selectedCoreAccountId= */ null);
                 });
@@ -229,12 +225,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .REQUIRED,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     /* selectedCoreAccountId= */ null);
                 });
@@ -258,12 +253,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     /* selectedCoreAccountId= */ null);
                 });
@@ -286,9 +280,9 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAccessPoint.RECENT_TABS);
                 });
@@ -315,12 +309,11 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     /* selectedCoreAccountId= */ null);
                 });
@@ -352,9 +345,9 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAccessPoint.RECENT_TABS);
                 });

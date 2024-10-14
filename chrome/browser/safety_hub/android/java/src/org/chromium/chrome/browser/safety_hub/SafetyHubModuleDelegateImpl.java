@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -110,10 +110,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
                     context,
                     mProfile,
                     strings,
-                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                    SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                     SigninAccessPoint.SAFETY_CHECK,
                     /* selectedCoreAccountId= */ null);
         } else {

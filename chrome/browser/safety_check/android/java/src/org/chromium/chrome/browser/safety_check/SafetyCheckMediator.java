@@ -49,8 +49,8 @@ import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperti
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.prefs.PrefService;
@@ -614,12 +614,10 @@ class SafetyCheckMediator {
                                     p.getContext(),
                                     mProfile,
                                     strings,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .ADD_ACCOUNT,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.SAFETY_CHECK,
                                     /* selectedCoreAccountId= */ null);
                         } else {
