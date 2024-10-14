@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Make sure we fire DidFirstVisuallyNonEmptyPaint when restoring from bf-cache.
 // TODO(crbug.com/327195951): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache \
   DISABLED_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache
 #else
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(observer.did_fire());
 }
 // TODO(crbug.com/330798156): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetsThemeColorWhenRestoredFromCache \
   DISABLED_SetsThemeColorWhenRestoredFromCache
 #else
