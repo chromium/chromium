@@ -147,6 +147,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_MOBILE_APP_MENU,
         Component.UI_BROWSER_MOBILE_CONTEXT_MENU,
         Component.UI_BROWSER_MOBILE_CUSTOM_TABS,
+        Component.UI_BROWSER_MOBILE_EDGE_TO_EDGE,
         Component.UI_BROWSER_MOBILE_HUB,
         Component.UI_BROWSER_MOBILE_MESSAGES,
         Component.UI_BROWSER_MOBILE_RECENT_TABS,
@@ -195,6 +196,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_MOBILE_APP_MENU = "UI>Browser>Mobile>AppMenu";
         String UI_BROWSER_MOBILE_CONTEXT_MENU = "UI>Browser>Mobile>ContextMenu";
         String UI_BROWSER_MOBILE_CUSTOM_TABS = "UI>Browser>Mobile>CustomTabs";
+        String UI_BROWSER_MOBILE_EDGE_TO_EDGE = "UI>Browser>Mobile>EdgeToEdge";
         String UI_BROWSER_MOBILE_HUB = "UI>Browser>Mobile>Hub";
         String UI_BROWSER_MOBILE_MESSAGES = "UI>Browser>Mobile>Messages";
         String UI_BROWSER_MOBILE_RECENT_TABS = "UI>Browser>Mobile>RecentTabs";
