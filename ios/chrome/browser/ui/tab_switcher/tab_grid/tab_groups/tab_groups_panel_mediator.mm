@@ -15,13 +15,14 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
@@ -89,14 +90,14 @@ NSString* CreationText(base::Time creation_date) {
   // The regular WebStateList, to check if there are tabs to go back to when
   // pressing the Done button.
   base::WeakPtr<WebStateList> _regularWebStateList;
-  // The object to retrieve tabs favicons.
-  raw_ptr<FaviconLoader> _faviconLoader;
   // Whether this screen is disabled by policy.
   BOOL _isDisabled;
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
   // A list of Browsers.
   raw_ptr<BrowserList> _browserList;
+  // Configures favicons for TabGroupFaviconsGrid objects.
+  std::unique_ptr<TabGroupFaviconsGridConfigurator> _faviconsGridConfigurator;
 }
 
 - (instancetype)initWithTabGroupSyncService:
@@ -115,9 +116,11 @@ NSString* CreationText(base::Time creation_date) {
             _syncServiceObserver.get());
     _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
     _regularWebStateList = regularWebStateList->AsWeakPtr();
-    _faviconLoader = faviconLoader;
     _isDisabled = disabled;
     _browserList = browserList;
+    _faviconsGridConfigurator =
+        std::make_unique<TabGroupFaviconsGridConfigurator>(_tabGroupSyncService,
+                                                           faviconLoader);
   }
   return self;
 }
@@ -155,6 +158,7 @@ NSString* CreationText(base::Time creation_date) {
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
   _regularWebStateList = nullptr;
+  _faviconsGridConfigurator = nullptr;
 }
 
 #pragma mark TabGridPageMutator
@@ -238,26 +242,9 @@ NSString* CreationText(base::Time creation_date) {
   return itemData;
 }
 
-- (void)fetchFaviconForItem:(TabGroupsPanelItem*)item
-                      index:(int)index
-                 completion:(void (^)(UIImage*))completion {
-  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
-  if (!group) {
-    return;
-  }
-  const auto saved_tabs = group->saved_tabs();
-  if (static_cast<size_t>(index) >= saved_tabs.size() || index < 0) {
-    return;
-  }
-
-  const auto saved_tab = saved_tabs[index];
-  _faviconLoader->FaviconForPageUrlOrHost(
-      saved_tab.url(), gfx::kFaviconSize, ^(FaviconAttributes* attributes) {
-        // Pass only the non-default image.
-        if (!attributes.usesDefaultImage) {
-          completion(attributes.faviconImage);
-        }
-      });
+- (void)fetchFaviconsForCell:(TabGroupsPanelCell*)cell {
+  _faviconsGridConfigurator->ConfigureFaviconsGrid(cell.faviconsGrid,
+                                                   cell.item.savedTabGroupID);
 }
 
 #pragma mark TabGroupsPanelMutator

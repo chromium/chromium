@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabGroupsPanelCell;
 @class TabGroupsPanelItem;
 @class TabGroupsPanelItemData;
 
@@ -17,11 +18,8 @@
 // Returns the data associated with the item.
 - (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item;
 
-// Fetches the favicon related to the tab at `index` in the group represented
-// by `item`.
-- (void)fetchFaviconForItem:(TabGroupsPanelItem*)item
-                      index:(int)index
-                 completion:(void (^)(UIImage*))completion;
+// Fetches the `cell` favicons.
+- (void)fetchFaviconsForCell:(TabGroupsPanelCell*)cell;
 
 @end
 

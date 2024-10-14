@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/saved_tab_groups/public",
+  "+ios/chrome/browser/favicon/model",
+]

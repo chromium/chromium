@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_FAVICONS_GRID_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_FAVICONS_GRID_H_
+#ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_FAVICON_UI_TAB_GROUP_FAVICONS_GRID_H_
+#define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_FAVICON_UI_TAB_GROUP_FAVICONS_GRID_H_
 
 #import <UIKit/UIKit.h>
+
+@class TabGroupFaviconsGridConfigurationToken;
 
 // A 2×2 grid of favicons.
 @interface TabGroupFaviconsGrid : UIView
@@ -21,8 +23,15 @@
 @property(nonatomic, strong) UIImage* favicon3;
 @property(nonatomic, strong) UIImage* favicon4;
 
+// An opaque pointer to track an in-progress configuration.
+@property(nonatomic, strong, readonly)
+    TabGroupFaviconsGridConfigurationToken* configurationToken;
+
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+// Reset all favicons and the `configurationToken`.
+- (void)resetFavicons;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_FAVICONS_GRID_H_
+#endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_FAVICON_UI_TAB_GROUP_FAVICONS_GRID_H_

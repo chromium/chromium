@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_favicons_grid.h"
+#import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -18,12 +17,27 @@ const CGFloat kImageContainerSize = 26;
 const CGFloat kFaviconCornerRadius = 4;
 const CGFloat kLabelFontSize = 11;
 
+NSString* const kGridBackgroundColor = @"grid_background_color";
+
 using LayoutSides::kBottom;
 using LayoutSides::kLeading;
 using LayoutSides::kTop;
 using LayoutSides::kTrailing;
 
 }  // namespace
+
+// An opaque pointer to track an in-progress configuration.
+// Each time a favicons grid is configured, such a token is created.
+// In asynchronous callbacks, keep a weak reference to it to make sure
+// the favicons grid is still waiting to be configured for the initial
+// call. If the weak reference has been nilled out, then avoid configuring
+// it. A new call to configure it has been made in the meantime (for
+// example cell reuse).
+@interface TabGroupFaviconsGridConfigurationToken : NSObject
+@end
+
+@implementation TabGroupFaviconsGridConfigurationToken
+@end
 
 @implementation TabGroupFaviconsGrid {
   UIView* _innerSquircle;
@@ -94,6 +108,14 @@ using LayoutSides::kTrailing;
     AddSameConstraints(_label, imageViewContainer4);
   }
   return self;
+}
+
+- (void)resetFavicons {
+  self.favicon1 = nil;
+  self.favicon2 = nil;
+  self.favicon3 = nil;
+  self.favicon4 = nil;
+  _configurationToken = [[TabGroupFaviconsGridConfigurationToken alloc] init];
 }
 
 - (void)setNumberOfTabs:(NSUInteger)numberOfTabs {
