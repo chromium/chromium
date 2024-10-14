@@ -8086,8 +8086,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   const std::vector<std::string> plus_addresses = {kPlusAddress};
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
-  EXPECT_CALL(plus_address_delegate(),
-              GetSuggestionsFromPlusAddresses(plus_addresses, _, _, _, _, _))
+  EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
+                                           plus_addresses, _, _, _, _, _, _, _))
       .Times(0);
   // Set up our form data.
   FormData form = test::GetFormData(
@@ -8122,8 +8122,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   const std::vector<std::string> plus_addresses = {kPlusAddress};
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
-  EXPECT_CALL(plus_address_delegate(),
-              GetSuggestionsFromPlusAddresses(plus_addresses, _, _, _, _, _))
+  EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
+                                           plus_addresses, _, _, _, _, _, _, _))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kFillExistingPlusAddress)}));
   // No single field form fill suggestions requests.
@@ -8306,8 +8306,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   const std::vector<std::string> plus_addresses = {kPlusAddress};
   EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
       .WillOnce(RunOnceCallback<1>(plus_addresses));
-  EXPECT_CALL(plus_address_delegate(),
-              GetSuggestionsFromPlusAddresses(plus_addresses, _, _, _, _, _))
+  EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses(
+                                           plus_addresses, _, _, _, _, _, _, _))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kFillExistingPlusAddress)}));
   // Single field form fill suggestions request.
@@ -8392,7 +8392,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
   EXPECT_CALL(
       plus_address_delegate(),
       GetSuggestionsFromPlusAddresses(
-          _, _, _, _, _,
+          _, _, _, _, _, _, _,
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));

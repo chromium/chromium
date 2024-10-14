@@ -328,8 +328,11 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses,
     const url::Origin& origin,
     bool is_off_the_record,
-    const PasswordFormClassification& focused_form_classification,
-    const FormFieldData& focused_field,
+    const autofill::FormData& focused_form,
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+        form_field_type_groups,
+    const autofill::PasswordFormClassification& focused_form_classification,
+    const autofill::FieldGlobalId& focused_field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!IsPlusAddressFillingEnabled(origin)) {
     return {};
@@ -341,20 +344,19 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
       PlusAddressSuggestionGenerator(
           &setting_service_.get(), plus_address_allocator_.get(),
           std::move(origin), GetPrimaryEmail().value_or(""))
-          .GetSuggestions(plus_addresses, is_creation_enabled,
-                          focused_form_classification, focused_field,
-                          trigger_source);
+          .GetSuggestions(plus_addresses, is_creation_enabled, focused_form,
+                          form_field_type_groups, focused_form_classification,
+                          focused_field_id, trigger_source);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 
+  using enum AutofillPlusAddressDelegate::SuggestionEvent;
   if (suggestion_types.contains(SuggestionType::kFillExistingPlusAddress)) {
-    RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
-                                      kExistingPlusAddressSuggested);
+    RecordAutofillSuggestionEvent(kExistingPlusAddressSuggested);
   } else if (suggestion_types.contains_any(
                  {SuggestionType::kCreateNewPlusAddress,
                   SuggestionType::kCreateNewPlusAddressInline})) {
-    RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
-                                      kCreateNewPlusAddressSuggested);
+    RecordAutofillSuggestionEvent(kCreateNewPlusAddressSuggested);
   }
   return suggestions;
 }

@@ -37,8 +37,11 @@ class FakePlusAddressService : public PlusAddressService {
       const std::vector<std::string>& plus_addresses,
       const url::Origin& origin,
       bool is_off_the_record,
+      const autofill::FormData& focused_form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+          form_field_type_groups,
       const autofill::PasswordFormClassification& focused_form_classification,
-      const autofill::FormFieldData& focused_field,
+      const autofill::FieldGlobalId& focused_field_id,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   autofill::Suggestion GetManagePlusAddressSuggestion() const override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;

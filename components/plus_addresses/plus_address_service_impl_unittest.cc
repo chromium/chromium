@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -210,9 +211,12 @@ class PlusAddressServiceTest : public ::testing::Test {
     service().GetAffiliatedPlusAddresses(origin, callback.Get());
     run_loop.Quit();
 
+    autofill::FormData form;
+    form.set_fields({focused_field});
     return service().GetSuggestionsFromPlusAddresses(
-        affiliated_plus_addresses, origin, is_off_the_record,
-        focused_form_classification, focused_field, trigger_source);
+        affiliated_plus_addresses, origin, is_off_the_record, form,
+        /*form_field_type_groups=*/{}, focused_form_classification,
+        focused_field.global_id(), trigger_source);
   }
 
  protected:
@@ -1676,6 +1680,9 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
 // Tests that the only password form on which create suggestions are offered on
 // click is a signup form if the username field is the focused field, but that
 // filling suggestions are always offered.
+// TODO(crbug.com/322279583): Move to
+// `plus_address_suggestion_generator_unittest`, since this should make it
+// easier to test.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(

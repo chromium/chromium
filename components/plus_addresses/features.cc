@@ -156,6 +156,17 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
     "minimum-size",
     10);
 
+// When enabled, plus address creation will be offered on forms that Password
+// Manager classifies as login forms if those forms have a predicted field
+// types that we believe not to be consistent with a login form - for example,
+// FIRST_NAME or LAST_NAME.
+// This therefore "refines" Password Manager predictions.
+// TODO(crbug.com/364555384): Eventually, this should either be removed or
+// integrated into Password Manager's own logic.
+BASE_FEATURE(kPlusAddressRefinedPasswordFormClassification,
+             "PlusAddressRefinedPasswordFormClassification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, creation suggestions do not contain a label prior to the user
 // acknowledging the notice.
 BASE_FEATURE(kPlusAddressSuggestionRedesign,

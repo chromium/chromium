@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
@@ -43,8 +44,11 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses,
     const url::Origin& last_committed_primary_main_frame_origin,
     bool is_off_the_record,
+    const autofill::FormData& focused_form,
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+        form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    const autofill::FormFieldData& focused_field,
+    const autofill::FieldGlobalId& focused_field_id,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   if (IsPlusAddressCreationEnabled(last_committed_primary_main_frame_origin,
                                    is_off_the_record)) {

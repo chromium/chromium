@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/password_form_classification.h"
@@ -21,6 +22,7 @@ class Origin;
 
 namespace autofill {
 
+class FormData;
 struct Suggestion;
 
 // The interface for communication from //components/autofill to
@@ -81,17 +83,20 @@ class AutofillPlusAddressDelegate {
       base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
   // Returns the suggestions to show for the given list of
-  // `plus_addresses`, `origin` and the `focused_field`. If
-  // `trigger_source` indicates that this is a manual fallback (e.g. the
+  // `plus_addresses`, `origin` and the `focused_field_id` in `focused_form`.
+  // If `trigger_source` indicates that this is a manual fallback (e.g. the
   // suggestions were triggered from the context menu on Desktop), then
-  // `focused_field` is ignored. Otherwise, only suggestions whose prefix
-  // matches `focused_field` are shown.
+  // information about the focused form and field is ignored. Otherwise, only
+  // suggestions whose prefix matches the value in the focused field are shown.
   virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
       const std::vector<std::string>& plus_addresses,
       const url::Origin& origin,
       bool is_off_the_record,
+      const FormData& focused_form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+          form_field_types,
       const PasswordFormClassification& focused_form_classification,
-      const FormFieldData& focused_field,
+      const FieldGlobalId& focused_field_id,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user

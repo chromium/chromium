@@ -693,6 +693,17 @@ std::optional<std::string> GetPlusAddressOverride(
   return plus_addresses[0];
 }
 
+base::flat_map<FieldGlobalId, FieldTypeGroup>
+GetFieldTypeGroupsFromFormStructure(const FormStructure* form_structure) {
+  return form_structure ? base::MakeFlatMap<FieldGlobalId, FieldTypeGroup>(
+                              form_structure->fields(), /*comp=*/{},
+                              [](const std::unique_ptr<AutofillField>& field) {
+                                return std::make_pair(field->global_id(),
+                                                      field->Type().group());
+                              })
+                        : base::flat_map<FieldGlobalId, FieldTypeGroup>();
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -1633,8 +1644,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            client().IsOffTheRecord(), password_form_classification, field,
-            trigger_source);
+            client().IsOffTheRecord(), form,
+            GetFieldTypeGroupsFromFormStructure(form_structure),
+            password_form_classification, field.global_id(), trigger_source);
 
     MixPlusAddressAndAddressSuggestions(
         std::move(plus_address_suggestions), std::move(suggestions),
@@ -1722,8 +1734,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            client().IsOffTheRecord(), password_form_classification, field,
-            trigger_source);
+            client().IsOffTheRecord(), form,
+            GetFieldTypeGroupsFromFormStructure(form_structure),
+            password_form_classification, field.global_id(), trigger_source);
     barrier_callback.Run(std::move(plus_address_suggestions));
   }
 

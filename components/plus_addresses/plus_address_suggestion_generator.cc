@@ -12,9 +12,11 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
@@ -41,6 +43,9 @@ using autofill::SuggestionType;
 // is different from the focused field, this is always `true`. Otherwise,
 // whether we offer plus address creation depends on the form type.
 bool ShouldOfferPlusAddressCreationOnForm(
+    const autofill::FormData& focused_form,
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+        form_field_type_groups,
     const PasswordFormClassification& form_classification,
     autofill::FieldGlobalId focused_field_id) {
   if ((!form_classification.username_field ||
@@ -49,11 +54,52 @@ bool ShouldOfferPlusAddressCreationOnForm(
           features::kPlusAddressOfferCreationOnAllNonUsernameFields)) {
     return true;
   }
+
+  auto form_has_unexpected_field_types_for_login_form = [&]() {
+    // This check can be eliminated once
+    // `kPlusAddressOfferCreationOnAllNonUsernameFields` is launched.
+    if (!form_classification.username_field) {
+      // This should not normally happen - but if it does, we might as well
+      // offer generation.
+      return true;
+    }
+    const autofill::FormGlobalId focused_renderer_form_id =
+        CHECK_DEREF(focused_form.FindFieldByGlobalId(focused_field_id))
+            .renderer_form_id();
+    if (!focused_renderer_form_id.renderer_id) {
+      // If the focused field is part of an unowned form, then we do not
+      // override the login form prediction - it seems likely that the unowned
+      // form consists of unrelated fields.
+      return false;
+    }
+    // If there are name or address fields in the form, there is a high chance
+    // that PWM got the classification incorrect.
+    static constexpr autofill::FieldTypeGroupSet
+        kUnexpectedFieldTypeGroupsInLoginForm = {
+            autofill::FieldTypeGroup::kName,
+            autofill::FieldTypeGroup::kAddress};
+    return std::ranges::any_of(
+        focused_form.fields(), [&](const FormFieldData& field) {
+          if (field.renderer_form_id() != focused_renderer_form_id) {
+            // Usually, PWM-forms are not spread across multiple frames -
+            // therefore disregard all form elements that come from a different
+            // renderer form.
+            return false;
+          }
+          auto it = form_field_type_groups.find(field.global_id());
+          return it != form_field_type_groups.end() &&
+                 kUnexpectedFieldTypeGroupsInLoginForm.contains(it->second);
+        });
+  };
+
   switch (form_classification.type) {
     case PasswordFormClassification::Type::kNoPasswordForm:
     case PasswordFormClassification::Type::kSignupForm:
       return true;
     case PasswordFormClassification::Type::kLoginForm:
+      return base::FeatureList::IsEnabled(
+                 features::kPlusAddressRefinedPasswordFormClassification) &&
+             form_has_unexpected_field_types_for_login_form();
     case PasswordFormClassification::Type::kChangePasswordForm:
     case PasswordFormClassification::Type::kResetPasswordForm:
       return false;
@@ -125,9 +171,14 @@ std::vector<autofill::Suggestion>
 PlusAddressSuggestionGenerator::GetSuggestions(
     const std::vector<std::string>& affiliated_plus_addresses,
     bool is_creation_enabled,
+    const autofill::FormData& focused_form,
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+        form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    const autofill::FormFieldData& focused_field,
+    const autofill::FieldGlobalId& focused_field_id,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
+  const autofill::FormFieldData& focused_field =
+      CHECK_DEREF(focused_form.FindFieldByGlobalId(focused_field_id));
   using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
@@ -142,8 +193,9 @@ PlusAddressSuggestionGenerator::GetSuggestions(
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&
         (!normalized_field_value.empty() ||
-         !ShouldOfferPlusAddressCreationOnForm(focused_form_classification,
-                                               focused_field.global_id()))) {
+         !ShouldOfferPlusAddressCreationOnForm(
+             focused_form, form_field_type_groups, focused_form_classification,
+             focused_field.global_id()))) {
       return {};
     }
 

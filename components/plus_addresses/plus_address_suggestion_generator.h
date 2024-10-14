@@ -14,7 +14,7 @@
 #include "url/origin.h"
 
 namespace autofill {
-class FormFieldData;
+class FormData;
 struct Suggestion;
 }  // namespace autofill
 
@@ -37,15 +37,20 @@ class PlusAddressSuggestionGenerator final {
       std::string primary_email);
   ~PlusAddressSuggestionGenerator();
 
-  // Returns the suggestions to be offered on the `focused_field` with Password
-  // Manager classification `focused_form_classification`. `affiliated_profiles`
-  // are assumed to be the plus profiles affiliated with the primary main frame
-  // origin.
+  // Returns the suggestions to be offered on the field in `focused_form` with
+  // `focused_field_id` with Password Manager classification
+  // `focused_form_classification`. `affiliated_profiles` are assumed to be the
+  // plus profiles affiliated with the primary main frame origin.
+  // Note that the method CHECKs that a field with `focused_field_id` is
+  // contained in `focused_form`.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<std::string>& affiliated_plus_addresses,
       bool is_creation_enabled,
+      const autofill::FormData& focused_form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+          form_field_type_groups,
       const autofill::PasswordFormClassification& focused_form_classification,
-      const autofill::FormFieldData& focused_field,
+      const autofill::FieldGlobalId& focused_field_id,
       autofill::AutofillSuggestionTriggerSource trigger_source);
 
   // Updates `suggestion` with a refreshed plus address by setting a new
