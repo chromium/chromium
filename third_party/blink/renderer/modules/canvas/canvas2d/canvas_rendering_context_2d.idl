@@ -108,10 +108,9 @@ interface CanvasRenderingContext2D {
 
     // path API (see also CanvasPath)
     [HighEntropy, NoAllocDirectCall] void beginPath();
-    [HighEntropy, NoAllocDirectCall] void fill();
-    [HighEntropy] void fill(CanvasFillRule winding);
+    [HighEntropy] void fill(optional CanvasFillRule winding);
     [HighEntropy] void fill(Path2D path, optional CanvasFillRule winding);
-    [HighEntropy, NoAllocDirectCall] void stroke();
+    [HighEntropy] void stroke();
     [HighEntropy] void stroke(Path2D path);
     // Focus rings
     void drawFocusIfNeeded(Element element);
