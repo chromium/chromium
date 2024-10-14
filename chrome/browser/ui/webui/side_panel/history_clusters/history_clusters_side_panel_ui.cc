@@ -132,7 +132,8 @@ void HistoryClustersSidePanelUI::BindInterface(
         pending_page_handler) {
   history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
       std::move(pending_page_handler),
-      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui());
+      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
+      /*for_side_panel=*/true);
 }
 
 base::WeakPtr<HistoryClustersSidePanelUI>

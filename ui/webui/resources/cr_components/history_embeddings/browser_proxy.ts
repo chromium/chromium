@@ -9,7 +9,9 @@ export interface HistoryEmbeddingsBrowserProxy {
   search(query: SearchQuery): void;
   sendQualityLog(selectedIndices: number[], numCharsForQuery: number): void;
   recordSearchResultsMetrics(
-      nonEmptyResults: boolean, userClickedResult: boolean): void;
+      nonEmptyResults: boolean, userClickedResult: boolean,
+      answerShown: boolean, answerCitationClicked: boolean,
+      otherHistoryResultClicked: boolean): void;
   setUserFeedback(userFeedback: UserFeedback): void;
   maybeShowFeaturePromo(): void;
   openSettingsPage(): void;
@@ -54,8 +56,12 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
   }
 
   recordSearchResultsMetrics(
-      nonEmptyResults: boolean, userClickedResult: boolean) {
-    this.handler.recordSearchResultsMetrics(nonEmptyResults, userClickedResult);
+      nonEmptyResults: boolean, userClickedResult: boolean,
+      answerShown: boolean, answerCitationClicked: boolean,
+      otherHistoryResultClicked: boolean) {
+    this.handler.recordSearchResultsMetrics(
+        nonEmptyResults, userClickedResult, answerShown, answerCitationClicked,
+        otherHistoryResultClicked);
   }
 
   setUserFeedback(userFeedback: UserFeedback) {

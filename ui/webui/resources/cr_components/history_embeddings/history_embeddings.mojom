@@ -105,7 +105,9 @@ interface PageHandler {
 
   // Records the results from an embeddings query: whether the UI received
   // non-empty embeddings results, and if the user clicked one of the results.
-  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult);
+  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult,
+                             bool answerShown, bool answerCitationClicked,
+                             bool otherHistoryResultClicked);
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);

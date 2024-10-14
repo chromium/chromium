@@ -2327,8 +2327,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Embeddings.UserActions" enum="EmbeddingsUserActions"
-    expires_after="2025-04-15">
+<histogram name="History.Embeddings.UserActions{UiSurface}"
+    enum="EmbeddingsUserActions" expires_after="2025-04-15">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2339,6 +2339,11 @@ chromium-metrics-reviews@google.com.
     Embeddings disabled too, to provide a baseline, and to serve as a guardian
     metric for the Embeddings experiments.
   </summary>
+  <token key="UiSurface">
+    <variant name="" summary="Unsliced"/>
+    <variant name=".HistoryPage" summary="History page"/>
+    <variant name=".SidePanel" summary="Side panel"/>
+  </token>
 </histogram>
 
 <histogram name="History.Embeddings.VisibilityModelAvailableAtQuery"

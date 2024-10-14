@@ -131,7 +131,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
-        profile_->GetWeakPtr(), web_ui());
+        profile_->GetWeakPtr(), web_ui(), false);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -228,7 +228,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
-  handler_->RecordSearchResultsMetrics(false, false);
+  handler_->RecordSearchResultsMetrics(false, false, false, false, false);
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsSearch, 1);
@@ -238,8 +238,17 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsResultClicked, 0);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kAnswerShown, 0);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kAnswerCitationClicked, 0);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kOtherHistoryResultClicked, 0);
 
-  handler_->RecordSearchResultsMetrics(true, true);
+  handler_->RecordSearchResultsMetrics(true, true, true, true, true);
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsSearch, 2);
@@ -249,6 +258,34 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsResultClicked, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kAnswerShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kAnswerCitationClicked, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kOtherHistoryResultClicked, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions.HistoryPage",
+      HistoryEmbeddingsUserActions::kEmbeddingsSearch, 2);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions.HistoryPage",
+      HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions.HistoryPage",
+      HistoryEmbeddingsUserActions::kEmbeddingsResultClicked, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions.HistoryPage",
+      HistoryEmbeddingsUserActions::kAnswerShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions.HistoryPage",
+      HistoryEmbeddingsUserActions::kAnswerCitationClicked, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions.HistoryPage",
+      HistoryEmbeddingsUserActions::kOtherHistoryResultClicked, 1);
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {

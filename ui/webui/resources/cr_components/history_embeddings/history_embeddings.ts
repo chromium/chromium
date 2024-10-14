@@ -391,7 +391,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }));
 
     this.clickedIndices_.add(e.model.index);
-    this.browserProxy_.recordSearchResultsMetrics(true, true);
+    this.browserProxy_.recordSearchResultsMetrics(
+        true, true, this.hasAnswer_(), false, false);
   }
 
   private onSearchQueryChanged_() {
@@ -492,7 +493,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     if (canLog && !userClickedResult) {
       const nonEmptyResults: boolean = !!this.searchResult_ &&
           this.searchResult_.items && this.searchResult_.items.length > 0;
-      this.browserProxy_.recordSearchResultsMetrics(nonEmptyResults, false);
+      this.browserProxy_.recordSearchResultsMetrics(
+          nonEmptyResults, false, this.hasAnswer_(), false, false);
     }
 
     if (!this.forceSuppressLogging && canLog) {

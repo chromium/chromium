@@ -464,10 +464,10 @@ base::WeakPtr<HistoryEmbeddingsService> HistoryEmbeddingsService::AsWeakPtr() {
 
 void HistoryEmbeddingsService::SendQualityLog(
     SearchResult& result,
-    optimization_guide::proto::UserFeedback user_feedback,
     std::set<size_t> selections,
     size_t num_entered_characters,
-    bool from_omnibox_history_scope) {
+    optimization_guide::proto::UserFeedback user_feedback,
+    optimization_guide::proto::UiSurface ui_surface) {
   // Exit early if logging is not enabled.
   if (!kSendQualityLog.Get() || !embedder_metadata_.has_value()) {
     return;
@@ -513,14 +513,7 @@ void HistoryEmbeddingsService::SendQualityLog(
     query_quality->set_query(result.query);
     query_quality->set_num_days(num_days);
     query_quality->set_num_entered_characters(num_entered_characters);
-
-    // For now, only two UI surfaces are planned, but if more are implemented
-    // then we can take the `UiSurface` directly as a parameter.
-    query_quality->set_ui_surface(
-        from_omnibox_history_scope
-            ? optimization_guide::proto::UiSurface::
-                  UI_SURFACE_OMNIBOX_HISTORY_SCOPE
-            : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
+    query_quality->set_ui_surface(ui_surface);
 
     bool any_document_clicked = false;
     for (size_t row_index = 0; row_index < result.scored_url_rows.size();

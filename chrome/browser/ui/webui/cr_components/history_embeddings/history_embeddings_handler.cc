@@ -66,8 +66,10 @@ HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
     mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
         pending_page_handler,
     base::WeakPtr<Profile> profile,
-    content::WebUI* web_ui)
+    content::WebUI* web_ui,
+    bool for_side_panel)
     : page_handler_(this, std::move(pending_page_handler)),
+      for_side_panel_(for_side_panel),
       profile_(std::move(profile)),
       web_ui_(web_ui) {}
 
@@ -181,25 +183,55 @@ void HistoryEmbeddingsHandler::SendQualityLog(
       HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
   std::set<size_t> indices_set(selected_indices.begin(),
                                selected_indices.end());
-  service->SendQualityLog(last_result_, user_feedback_, indices_set,
-                          num_chars_for_query, false);
+  service->SendQualityLog(
+      last_result_, indices_set, num_chars_for_query, user_feedback_,
+      for_side_panel_
+          ? optimization_guide::proto::UiSurface::UI_SURFACE_SIDE_PANEL
+          : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
 }
 
 void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
     bool non_empty_results,
-    bool user_clicked_results) {
-  base::UmaHistogramEnumeration(
-      "History.Embeddings.UserActions",
-      HistoryEmbeddingsUserActions::kEmbeddingsSearch);
-  if (non_empty_results) {
+    bool user_clicked_results,
+    bool answer_shown,
+    bool answer_citation_clicked,
+    bool other_history_result_clicked) {
+  auto record_histograms = [&](const std::string& histogram_name) {
     base::UmaHistogramEnumeration(
-        "History.Embeddings.UserActions",
-        HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown);
-  }
-  if (user_clicked_results) {
-    base::UmaHistogramEnumeration(
-        "History.Embeddings.UserActions",
-        HistoryEmbeddingsUserActions::kEmbeddingsResultClicked);
+        histogram_name, HistoryEmbeddingsUserActions::kEmbeddingsSearch);
+    if (non_empty_results) {
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown);
+    }
+    if (user_clicked_results) {
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          HistoryEmbeddingsUserActions::kEmbeddingsResultClicked);
+    }
+    if (answer_shown) {
+      base::UmaHistogramEnumeration(histogram_name,
+                                    HistoryEmbeddingsUserActions::kAnswerShown);
+    }
+    if (answer_citation_clicked) {
+      base::UmaHistogramEnumeration(
+          histogram_name, HistoryEmbeddingsUserActions::kAnswerCitationClicked);
+    }
+    if (other_history_result_clicked) {
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          HistoryEmbeddingsUserActions::kOtherHistoryResultClicked);
+    }
+  };
+
+  // Unsliced original user actions histogram.
+  record_histograms("History.Embeddings.UserActions");
+
+  // Sliced versions for side panel and history page.
+  if (for_side_panel_) {
+    record_histograms("History.Embeddings.UserActions.SidePanel");
+  } else {
+    record_histograms("History.Embeddings.UserActions.HistoryPage");
   }
 }
 

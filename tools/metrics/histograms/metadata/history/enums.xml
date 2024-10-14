@@ -193,6 +193,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Embeddings search"/>
   <int value="2" label="Embeddings non-empty results shown"/>
   <int value="3" label="Embeddings result clicked"/>
+  <int value="4" label="Answer shown"/>
+  <int value="5" label="Answer citation clicked"/>
+  <int value="6" label="Other history result clicked"/>
 </enum>
 
 <enum name="HistoryClustersInitialState">
