@@ -1673,6 +1673,9 @@
   <message name="IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION" desc="Description for a checkbox which enables reduced animations.">
     Limit movement on the screen
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_OVERLAY_SCROLLBAR_LABEL" desc="Label for a checkbox which enables overlay scrollbars.">
+    Always show scrollbars
+  </message>
   <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_LABEL" desc="The label for a slider that allows users to pick the blink rate of their text insertion cursor.">
     Text cursor blink rate
   </message>

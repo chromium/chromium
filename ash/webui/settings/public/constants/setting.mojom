@@ -333,6 +333,7 @@ enum Setting {
   kMagnifierFollowsChromeVox = 1549,
   kMainNodeAnnotationsEnabled = 1550,
   kFlashNotifications = 1551,
+  kOverlayScrollbarEnabled = 1552,
 
   // Reset section.
   kPowerwash = 1600,

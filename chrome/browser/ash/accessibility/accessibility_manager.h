@@ -212,6 +212,12 @@ class AccessibilityManager
   // Returns true if ReducedAnimations is enabled.
   bool IsReducedAnimationsEnabled() const;
 
+  // Enables or disables overlay scrollbar.
+  void EnableOverlayScrollbar(bool enabled);
+
+  // Returns true if overlay scrollbar is enabled.
+  bool IsOverlayScrollbarEnabled() const;
+
   // Enables or disables FaceGaze.
   void EnableFaceGaze(bool enabled);
 

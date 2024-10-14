@@ -31,6 +31,10 @@ BASE_FEATURE(kOverlayScrollbar,
 BASE_FEATURE(kOverlayScrollbarsOSSetting,
              "OverlayScrollbarsOSSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOverlayScrollbarOSSettingEnabled() {
+  return base::FeatureList::IsEnabled(features::kOverlayScrollbarsOSSetting);
+}
 #endif
 
 // Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay and

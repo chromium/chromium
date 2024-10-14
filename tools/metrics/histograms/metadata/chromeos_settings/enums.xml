@@ -369,6 +369,7 @@ chromium-metrics-reviews@google.com.
   <int value="1549" label="Magnifier follows ChromeVox focus"/>
   <int value="1550" label="Main node annotations enabled"/>
   <int value="1551" label="Flash screen for notifications"/>
+  <int value="1552" label="Always show scrollbars"/>
   <int value="1600" label="Powerwash"/>
   <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>

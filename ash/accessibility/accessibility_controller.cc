@@ -106,6 +106,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -285,6 +286,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityReducedAnimationsEnabled,
+    prefs::kAccessibilityOverlayScrollbarEnabled,
     prefs::kAccessibilityMouseKeysEnabled,
     prefs::kAccessibilityMouseKeysAcceleration,
     prefs::kAccessibilityMouseKeysMaxSpeed,
@@ -1538,6 +1540,10 @@ void AccessibilityController::RegisterProfilePrefs(
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
                                   kDefaultFlashNotificationsColor);
+  }
+  if (::features::IsOverlayScrollbarOSSettingEnabled()) {
+    registry->RegisterBooleanPref(prefs::kAccessibilityOverlayScrollbarEnabled,
+                                  false);
   }
 }
 

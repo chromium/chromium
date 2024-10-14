@@ -311,6 +311,12 @@
     deep-link-focus-id$="[[Setting.kReducedAnimationsEnabled]]">
   </settings-toggle-button>
 </template>
+<template is="dom-if" if="[[isAccessibilityOverlayScrollbarEnabled_]]">
+  <settings-toggle-button class="hr" id="enableOverlayScrollbar"
+    pref="{{prefs.settings.a11y.overlay_scrollbar.enabled}}" label="$i18n{overlayScrollbarLabel}"
+    deep-link-focus-id$="[[Setting.kOverlayScrollbarEnabled]]">
+  </settings-toggle-button>
+</template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="displaySubpageButton" class="hr"
       label="$i18n{displaySettingsTitle}" on-click="onDisplayClick_"

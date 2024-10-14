@@ -112,6 +112,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -950,6 +951,23 @@ bool AccessibilityManager::IsReducedAnimationsEnabled() const {
   return ::features::IsAccessibilityReducedAnimationsEnabled() && profile_ &&
          profile_->GetPrefs()->GetBoolean(
              prefs::kAccessibilityReducedAnimationsEnabled);
+}
+
+void AccessibilityManager::EnableOverlayScrollbar(bool enabled) {
+  if (!::features::IsOverlayScrollbarOSSettingEnabled() || !profile_) {
+    return;
+  }
+
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(prefs::kAccessibilityOverlayScrollbarEnabled,
+                           enabled);
+  pref_service->CommitPendingWrite();
+}
+
+bool AccessibilityManager::IsOverlayScrollbarEnabled() const {
+  return ::features::IsOverlayScrollbarOSSettingEnabled() && profile_ &&
+         profile_->GetPrefs()->GetBoolean(
+             prefs::kAccessibilityOverlayScrollbarEnabled);
 }
 
 void AccessibilityManager::EnableFaceGaze(bool enabled) {

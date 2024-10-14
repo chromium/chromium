@@ -65,6 +65,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace ash {
@@ -220,6 +221,14 @@ bool IsReducedAnimationsEnabled() {
   return AccessibilityManager::Get()->IsReducedAnimationsEnabled();
 }
 
+bool IsOverlayScrollbarEnabled() {
+  return AccessibilityManager::Get()->IsOverlayScrollbarEnabled();
+}
+
+void SetOverlayScrollbarEnabled(bool enabled) {
+  AccessibilityManager::Get()->EnableOverlayScrollbar(enabled);
+}
+
 void SetMouseKeysEnabled(bool enabled) {
   GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityMouseKeysEnabled,
                                    enabled);
@@ -326,6 +335,11 @@ void SetAutoclickEnabledPref(bool enabled) {
 void SetReducedAnimationsEnabledPref(bool enabled) {
   GetActiveUserPrefs()->SetBoolean(
       prefs::kAccessibilityReducedAnimationsEnabled, enabled);
+}
+
+void SetOverlayScrollbarEnabledPref(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityOverlayScrollbarEnabled,
+                                   enabled);
 }
 
 void SetMouseKeysEnabledPref(bool enabled) {
@@ -486,7 +500,8 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
          ::features::kAccessibilityMouseKeys,
-         ::features::kAccessibilityFaceGaze},
+         ::features::kAccessibilityFaceGaze,
+         ::features::kOverlayScrollbarsOSSetting},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -587,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -611,6 +627,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetReducedAnimationsEnabledPref(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
+
+  SetOverlayScrollbarEnabledPref(true);
+  EXPECT_TRUE(IsOverlayScrollbarEnabled());
 
   SetMouseKeysEnabledPref(true);
   EXPECT_TRUE(IsMouseKeysEnabled());
@@ -647,6 +666,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetReducedAnimationsEnabledPref(false);
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+
+  SetOverlayScrollbarEnabledPref(false);
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
 
   SetMouseKeysEnabledPref(false);
   EXPECT_FALSE(IsMouseKeysEnabled());
@@ -1772,7 +1794,8 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys},
+         ::features::kAccessibilityMouseKeys,
+         ::features::kOverlayScrollbarsOSSetting},
         {});
   }
 
@@ -1848,6 +1871,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
@@ -1861,6 +1885,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
@@ -1874,6 +1899,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsOverlayScrollbarEnabled());
   EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
@@ -1893,6 +1919,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
 
   SetReducedAnimationsEnabled(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
+
+  SetOverlayScrollbarEnabled(true);
+  EXPECT_TRUE(IsOverlayScrollbarEnabled());
 
   SetMouseKeysEnabled(true);
   EXPECT_TRUE(IsMouseKeysEnabled());

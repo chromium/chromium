@@ -92,7 +92,18 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'isAccessibilityReducedAnimationsEnabled');
+            'isAccessibilityReducedAnimationsEnabled');
+        },
+      },
+
+      /**
+       * Whether the overlay scrollbars is enabled.
+       */
+      isAccessibilityOverlayScrollbarEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+            'isAccessibilityOverlayScrollbarEnabled');
         },
       },
       /**
@@ -161,6 +172,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
           Setting.kFullscreenMagnifierFocusFollowing,
           Setting.kMagnifierFollowsChromeVox,
           Setting.kReducedAnimationsEnabled,
+          Setting.kOverlayScrollbarEnabled,
         ]),
       },
     };
@@ -170,6 +182,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
   private isAccessibilityReducedAnimationsEnabled_: boolean;
+  private isAccessibilityOverlayScrollbarEnabled_: boolean;
   private isAccessibilityMagnifierFollowsStsEnabled_: boolean;
   private isAccessibilityMagnifierFollowsChromeVoxEnabled_: boolean;
 

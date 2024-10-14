@@ -158,6 +158,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kReducedAnimationsEnabled,
     type: PrefType.BOOLEAN,
   },
+  'settings.a11y.overlay_scrollbar.enabled': {
+    setting: Setting.kOverlayScrollbarEnabled,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.screen_magnifier': {
     setting: Setting.kFullscreenMagnifier,
     type: PrefType.BOOLEAN,

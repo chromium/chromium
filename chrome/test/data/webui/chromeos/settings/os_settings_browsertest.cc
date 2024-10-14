@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/native_theme/native_theme_features.h"
 
 namespace ash::settings {
 
@@ -192,6 +193,19 @@ INSTANTIATE_TEST_SUITE_P(
     OSSettingsRevampMochaTestReducedAnimationsEnabled,
     testing::Bool(),
     OSSettingsRevampMochaTestReducedAnimationsEnabled::DescribeParams);
+
+class OSSettingsRevampMochaTestOverlayScrollbarEnabled
+    : public OSSettingsRevampMochaTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kOverlayScrollbarsOSSetting};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestOverlayScrollbarEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestOverlayScrollbarEnabled::DescribeParams);
 
 class OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled
     : public OSSettingsMochaTest {
@@ -1266,6 +1280,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestReducedAnimationsEnabled,
+                       OsA11yPageDisplayAndMagnificationSubpage) {
+  RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestOverlayScrollbarEnabled,
                        OsA11yPageDisplayAndMagnificationSubpage) {
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }
