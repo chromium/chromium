@@ -429,39 +429,227 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
           HasType(SuggestionType::kEditPredictionImprovementsInformation)));
 }
 
-// Tests that `autofill_suggestions` only contains the
-// triggering improved predictions suggestions if it was empty before calling
-// `MaybeUpdateSuggestions()`.
+struct GetSuggestionsFormNotEqualCachedFormTestData {
+  AutofillPredictionImprovementsManager::PredictionRetrievalState
+      prediction_retrieval_state;
+  bool trigger_automatically;
+  std::optional<autofill::SuggestionType> expected_suggestion_type;
+};
+
+class
+    AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest
+    : public BaseAutofillPredictionImprovementsManagerTest,
+      public ::testing::WithParamInterface<
+          GetSuggestionsFormNotEqualCachedFormTestData> {
+ public:
+  AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest() {
+    const GetSuggestionsFormNotEqualCachedFormTestData& test_data = GetParam();
+    feature_.InitAndEnableFeatureWithParameters(
+        kAutofillPredictionImprovements,
+        {{"skip_allowlist", "true"},
+         {"trigger_automatically",
+          test_data.trigger_automatically ? "true" : "false"}});
+    manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
+        &client_, &decider_, &strike_database_);
+  }
+};
+
+// Tests that `GetSuggestions()` returns suggestions as expected when the
+// requesting form doesn't match the cached form.
+TEST_P(
+    AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest,
+    GetSuggestions_ReturnsSuggestionsAsExpected) {
+  autofill::FormData cached_form =
+      autofill::test::GetFormData(autofill::test::FormDescription{});
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetPredictionRetrievalState(
+      GetParam().prediction_retrieval_state);
+  test_api(*manager_).SetLastQueriedFormGlobalId(cached_form.global_id());
+  if (GetParam().expected_suggestion_type) {
+    EXPECT_THAT(manager_->GetSuggestions({}, form, form.fields().front()),
+                ElementsAre(HasType(*GetParam().expected_suggestion_type)));
+  } else {
+    EXPECT_THAT(manager_->GetSuggestions({}, form, form.fields().front()),
+                ElementsAre());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest,
+    testing::Values(
+        GetSuggestionsFormNotEqualCachedFormTestData{
+            .prediction_retrieval_state =
+                AutofillPredictionImprovementsManager::
+                    PredictionRetrievalState::kIsLoadingPredictions,
+            .trigger_automatically = false,
+            .expected_suggestion_type = std::nullopt},
+        GetSuggestionsFormNotEqualCachedFormTestData{
+            .prediction_retrieval_state =
+                AutofillPredictionImprovementsManager::
+                    PredictionRetrievalState::kDoneSuccess,
+            .trigger_automatically = false,
+            .expected_suggestion_type =
+                SuggestionType::kRetrievePredictionImprovements},
+        GetSuggestionsFormNotEqualCachedFormTestData{
+            .prediction_retrieval_state =
+                AutofillPredictionImprovementsManager::
+                    PredictionRetrievalState::kDoneError,
+            .trigger_automatically = false,
+            .expected_suggestion_type =
+                SuggestionType::kRetrievePredictionImprovements},
+        GetSuggestionsFormNotEqualCachedFormTestData{
+            .prediction_retrieval_state =
+                AutofillPredictionImprovementsManager::
+                    PredictionRetrievalState::kIsLoadingPredictions,
+            .trigger_automatically = true,
+            .expected_suggestion_type = std::nullopt},
+        GetSuggestionsFormNotEqualCachedFormTestData{
+            .prediction_retrieval_state =
+                AutofillPredictionImprovementsManager::
+                    PredictionRetrievalState::kDoneSuccess,
+            .trigger_automatically = true,
+            .expected_suggestion_type =
+                SuggestionType::kPredictionImprovementsLoadingState},
+        GetSuggestionsFormNotEqualCachedFormTestData{
+            .prediction_retrieval_state =
+                AutofillPredictionImprovementsManager::
+                    PredictionRetrievalState::kDoneError,
+            .trigger_automatically = true,
+            .expected_suggestion_type =
+                SuggestionType::kPredictionImprovementsLoadingState}));
+
+// Tests that trigger suggestions are returned by `GetSuggestions()` when the
+// class is in `kReady` state.
 TEST_F(AutofillPredictionImprovementsManagerTest,
-       MaybeUpdateSuggestionsOnEmptyAddressSuggestionsAddsTriggerSuggestion) {
+       GetSuggestions_Ready_ReturnsTriggerSuggestion) {
   autofill::FormData form;
   autofill::FormFieldData field;
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::kReady);
   EXPECT_THAT(
       manager_->GetSuggestions({}, form, field),
       ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
-// Tests address suggestions will be replaced by the trigger suggestion if the
-// field is not cached.
+// Tests that loading suggestions are returned by `GetSuggestions()` when the
+// class is in `kIsLoadingPredictions` state.
 TEST_F(AutofillPredictionImprovementsManagerTest,
-       MaybeUpdateSuggestionsReplacesAddressSuggestionsWithTrigger) {
-  std::vector<Suggestion> autofill_suggestions = {
-      Suggestion(SuggestionType::kAddressEntry),
-      Suggestion(SuggestionType::kSeparator),
-      Suggestion(SuggestionType::kManageAddress)};
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
+       GetSuggestions_IsLoadingPredictions_ReturnsLoadingSuggestion) {
+  autofill::FormData form;
+  autofill::FormFieldData field;
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kIsLoadingPredictions);
   EXPECT_THAT(
-      manager_->GetSuggestions(autofill_suggestions, form,
-                               form.fields().front()),
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form, field),
+      ElementsAre(
+          HasType(SuggestionType::kPredictionImprovementsLoadingState)));
+}
+
+struct FallbackTestData {
+  AutofillPredictionImprovementsManager::PredictionRetrievalState
+      prediction_retrieval_state;
+  bool trigger_automatically;
+};
+
+class AutofillPredictionImprovementsManagerDoneFallbackTest
+    : public BaseAutofillPredictionImprovementsManagerTest,
+      public ::testing::WithParamInterface<FallbackTestData> {
+ public:
+  AutofillPredictionImprovementsManagerDoneFallbackTest() {
+    const FallbackTestData& test_data = GetParam();
+    feature_.InitAndEnableFeatureWithParameters(
+        kAutofillPredictionImprovements,
+        {{"skip_allowlist", "true"},
+         {"trigger_automatically",
+          test_data.trigger_automatically ? "true" : "false"}});
+    manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
+        &client_, &decider_, &strike_database_);
+  }
+};
+
+// Tests that an empty vector is returned by `GetSuggestions()` when the
+// class is in `kDoneSuccess` state, there are no prediction improvements for
+// the `field` but there are `autofill_suggestions` to fall back to. Note that
+// returning an empty vector would continue the regular Autofill flow in the
+// BrowserAutofillManager, i.e. show Autofill suggestions in this scenario.
+TEST_P(AutofillPredictionImprovementsManagerDoneFallbackTest,
+       GetSuggestions_NoPredictionsWithAutofillSuggestions_ReturnsEmptyVector) {
+  std::vector<Suggestion> autofill_suggestions = {
+      Suggestion(SuggestionType::kAddressEntry)};
+  autofill::FormData form;
+  autofill::FormFieldData field;
+  test_api(*manager_).SetPredictionRetrievalState(
+      GetParam().prediction_retrieval_state);
+  EXPECT_TRUE(
+      manager_->GetSuggestions(autofill_suggestions, form, field).empty());
+}
+
+// Tests that the no info / error suggestion is returned by `GetSuggestions()`
+// when the class is in `kDoneSuccess` state, there are neither prediction
+// improvements for the `field` nor `autofill_suggestions` to fall back to and
+// the no info suggestion wasn't shown yet.
+TEST_P(
+    AutofillPredictionImprovementsManagerDoneFallbackTest,
+    GetSuggestions_NoPredictionsNoAutofillSuggestions_ReturnsNoInfoOrErrorSuggestion) {
+  autofill::FormData form;
+  autofill::FormFieldData field;
+  test_api(*manager_).SetPredictionRetrievalState(
+      GetParam().prediction_retrieval_state);
+  const std::vector<autofill::Suggestion> suggestions =
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form, field);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_THAT(suggestions[0],
+              HasType(SuggestionType::kPredictionImprovementsError));
+}
+
+// Tests that the trigger suggestion is returned by `GetSuggestions()` when the
+// class is in `kDoneSuccess` state, there are neither prediction improvements
+// for the `field` nor `autofill_suggestions` to fall back to and the no info
+// suggestion was shown before.
+TEST_P(
+    AutofillPredictionImprovementsManagerDoneFallbackTest,
+    GetSuggestions_NoPredictionsNoAutofillSuggestionsNoInfoWasShown_ReturnsTriggerSuggestion) {
+  autofill::FormData form;
+  autofill::FormFieldData field;
+  test_api(*manager_).SetPredictionRetrievalState(
+      GetParam().prediction_retrieval_state);
+  test_api(*manager_).SetErrorOrNoInfoSuggestionShown(true);
+  EXPECT_THAT(
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form, field),
       ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillPredictionImprovementsManagerDoneFallbackTest,
+    testing::Values(
+        FallbackTestData{.prediction_retrieval_state =
+                             AutofillPredictionImprovementsManager::
+                                 PredictionRetrievalState::kDoneSuccess,
+                         .trigger_automatically = false},
+        FallbackTestData{.prediction_retrieval_state =
+                             AutofillPredictionImprovementsManager::
+                                 PredictionRetrievalState::kDoneSuccess,
+                         .trigger_automatically = true},
+        FallbackTestData{.prediction_retrieval_state =
+                             AutofillPredictionImprovementsManager::
+                                 PredictionRetrievalState::kDoneError,
+                         .trigger_automatically = false},
+        FallbackTestData{.prediction_retrieval_state =
+                             AutofillPredictionImprovementsManager::
+                                 PredictionRetrievalState::kDoneError,
+                         .trigger_automatically = true}));
+
 // Tests that cached filling suggestions for prediction improvements are shown
-// before address suggestions.
-TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
+// before autofill suggestions.
+TEST_F(
+    AutofillPredictionImprovementsManagerTest,
+    GetSuggestions_DoneSuccessWithAutofillSuggestions_PredictionImprovementsSuggestionsShownBeforeAutofill) {
   std::vector<Suggestion> autofill_suggestions = {
       Suggestion(SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
@@ -474,6 +662,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields().front().global_id(), {u"value", u"label"}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kDoneSuccess);
+
   EXPECT_THAT(
       manager_->GetSuggestions(autofill_suggestions, form,
                                form.fields().front()),
@@ -483,28 +675,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
-// Tests that filling predictions will be added to the empty
-// `autofill_suggestions` for a cached field.
-TEST_F(
-    AutofillPredictionImprovementsManagerTest,
-    MaybeUpdateSuggestionsAddsFillPredictionsWhenAutofillSuggestionsAreEmpty) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(*manager_).SetCache(PredictionsByGlobalId{
-      {form.fields().front().global_id(), {u"value", u"label"}}});
-  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
-  EXPECT_THAT(
-      manager_->GetSuggestions({}, form, form.fields().front()),
-      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
-}
-
-// Tests that the filling suggestion incl. its children is created as expected.
+// Tests that the filling suggestion incl. its children is created as expected
+// if state is `kDoneSuccess`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
-       FillingSuggestionIsCreatedAsExpected) {
+       GetSuggestions_DoneSuccess_ReturnsFillingSuggestions) {
   const std::u16string trigger_field_value = u"Jane";
   const std::u16string trigger_field_label = u"First name";
   const std::u16string select_field_value = u"33";
@@ -523,9 +697,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {form.fields()[1].global_id(),
        {select_field_value, select_field_label, select_field_option_text}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kDoneSuccess);
 
   EXPECT_THAT(
-      manager_->GetSuggestions({}, form, form.fields()[0]),
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form,
+                               form.fields()[0]),
       ElementsAre(
           AllOf(
               HasType(SuggestionType::kFillPredictionImprovements),
@@ -560,7 +738,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // filled.
 TEST_F(
     AutofillPredictionImprovementsManagerTest,
-    FillingSuggestion_OneFieldCanBeFilled_CreateLabelThatContainsOnlyOneFieldData) {
+    GetSuggestions_DoneSuccessOneFieldCanBeFilled_CreateLabelThatContainsOnlyOneFieldData) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
@@ -568,17 +746,22 @@ TEST_F(
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields()[0].global_id(), {u"Jane", u"First name"}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kDoneSuccess);
 
   const std::vector<autofill::Suggestion> suggestions =
-      manager_->GetSuggestions({}, form, form.fields()[0]);
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form,
+                               form.fields()[0]);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0], HasLabel(u"Fill First name"));
 }
 
 // Tests that the filling suggestion label is correct when 3 fields can be
 // filled.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       FillingSuggestion_ThreeFieldsCanBeFilled_UserSingularAndMoreString) {
+TEST_F(
+    AutofillPredictionImprovementsManagerTest,
+    GetSuggestions_DoneSuccessThreeFieldsCanBeFilled_UserSingularAndMoreString) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST},
@@ -593,9 +776,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {form.fields()[1].global_id(), {u"Country roads str", u"Street name"}},
       {form.fields()[2].global_id(), {u"33", u"state", u"West Virginia"}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kDoneSuccess);
 
   const std::vector<autofill::Suggestion> suggestions =
-      manager_->GetSuggestions({}, form, form.fields()[0]);
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form,
+                               form.fields()[0]);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0],
               HasLabel(u"Fill First name, Street name & 1 more field"));
@@ -605,7 +792,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // can be filled.
 TEST_F(
     AutofillPredictionImprovementsManagerTest,
-    FillingSuggestion_MoreThanThreeFieldsCanBeFilled_UserPluralAndMoreString) {
+    GetSuggestions_DoneSuccessMoreThanThreeFieldsCanBeFilled_UserPluralAndMoreString) {
   autofill::test::FormDescription form_description = {
       .fields = {
           {.role = autofill::NAME_FIRST,
@@ -623,6 +810,9 @@ TEST_F(
       {form.fields()[2].global_id(), {u"Country roads str", u"Street name"}},
       {form.fields()[3].global_id(), {u"33", u"state", u"West Virginia"}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kDoneSuccess);
 
   const std::vector<autofill::Suggestion> suggestions =
       manager_->GetSuggestions({}, form, form.fields()[0]);
@@ -946,6 +1136,19 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
     testing::Bool());
+
+// Tests that the loading suggestion is returned by `GetSuggestions()` when the
+// class is in `kReady` state.
+TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
+       GetSuggestions_Ready_ReturnsLoadingSuggestion) {
+  autofill::FormData form;
+  autofill::FormFieldData field;
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::kReady);
+  EXPECT_THAT(manager_->GetSuggestions({}, form, field),
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+}
 
 class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
     : public BaseAutofillPredictionImprovementsManagerTest {

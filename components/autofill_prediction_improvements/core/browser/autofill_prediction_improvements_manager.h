@@ -40,6 +40,21 @@ inline constexpr base::TimeDelta kMinTimeToShowLoading =
 class AutofillPredictionImprovementsManager
     : public autofill::AutofillPredictionImprovementsDelegate {
  public:
+  // Enum specifying the states of retrieving prediction improvements.
+  enum class PredictionRetrievalState {
+    // Ready for retrieving prediction improvements. This is the default state
+    // for this class. It's also set whenever a field of a non-cached form is
+    // focused while not loading.
+    kReady = 0,
+    // Prediction improvements are being retrieved right now.
+    kIsLoadingPredictions = 1,
+    // Prediction improvements were received successfully. Note that the
+    // predictions map might be empty.
+    kDoneSuccess = 2,
+    // Retrieving prediction improvements resulted in an error.
+    kDoneError = 3
+  };
+
   AutofillPredictionImprovementsManager(
       AutofillPredictionImprovementsClient* client,
       optimization_guide::OptimizationGuideDecider* decider,
@@ -89,18 +104,17 @@ class AutofillPredictionImprovementsManager
  private:
   friend class AutofillPredictionImprovementsManagerTestApi;
 
-  // Enum specifying the states of retrieving prediction improvements.
-  enum class PredictionRetrievalState {
-    // Ready for retrieving prediction improvements.
-    kReady = 0,
-    // Prediction improvements are being retrieved right now.
-    kIsLoadingPredictions = 1,
-    // Prediction improvements were received successfully. Note that the
-    // predictions map might be empty.
-    kDoneSuccess = 2,
-    // Retrieving prediction improvements resulted in an error.
-    kDoneError = 3
-  };
+  // Returns the suggestions the user sees first during a filling flow, i.e.
+  // when this class is in `kReady` state. This would either be trigger or
+  // loading suggestions, depending on `kTriggerAutomatically`.
+  //
+  // Also stores `autofill_suggestions`.
+  //
+  // Note that this is also called as a least-priority fallback when this class
+  // is in `kDoneSuccess` or `kDoneError` state. In this case, it will always
+  // return the trigger suggestion.
+  std::vector<autofill::Suggestion> GetTriggerOrLoadingSuggestions(
+      const std::vector<autofill::Suggestion>& autofill_suggestions);
 
   // Event handler called when the loading suggestion is shown. Used for the
   // automatic triggering path.
@@ -108,6 +122,10 @@ class AutofillPredictionImprovementsManager
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback);
+
+  // Event handler called when either error or no info suggestion is shown. Used
+  // for ensuring the respective popups are not shown more than once.
+  void OnErrorOrNoInfoSuggestionShown();
 
   // Receives prediction improvements for all fields in `form`, then calls
   // `update_suggestions_callback_`.
@@ -171,6 +189,10 @@ class AutofillPredictionImprovementsManager
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =
       PredictionRetrievalState::kReady;
+
+  // Used to ensure that then error / no info suggestions will only be shown
+  // once after a failed retrieval of predictions or one with an empty response.
+  bool error_or_no_info_suggestion_shown_ = false;
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.

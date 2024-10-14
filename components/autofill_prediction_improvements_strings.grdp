@@ -40,6 +40,11 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT" desc="Text displayed on the Autofill with AI error suggestions">
     Chrome had trouble getting your information
   </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_NO_INFO_POPUP_MAIN_TEXT"
+    desc="Text displayed when there are no suggestions from prediction improvements, Autofill or Autocomplete to show."
+    translateable="false">
+    Chrome didn't find info to fill this field.
+  </message>
 
   <!-- General -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" desc="Text displayed on different surfaces that is a link which will redirect the user to the settings page.">

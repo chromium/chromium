@@ -42,6 +42,17 @@ class AutofillPredictionImprovementsManagerTestApi {
     return manager_->loading_suggestion_timer_;
   }
 
+  void SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState
+          prediction_retrieval_state) {
+    manager_->prediction_retrieval_state_ = prediction_retrieval_state;
+  }
+
+  void SetErrorOrNoInfoSuggestionShown(bool error_or_no_info_suggestion_shown) {
+    manager_->error_or_no_info_suggestion_shown_ =
+        error_or_no_info_suggestion_shown;
+  }
+
  private:
   raw_ref<AutofillPredictionImprovementsManager> manager_;
 };

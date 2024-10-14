@@ -128,14 +128,14 @@ autofill::Suggestion CreateEditPredictionImprovementsInformation() {
   return edit_suggestion;
 }
 
-// Creates a suggestion shown when retrieving prediction improvements wasn't
-// successful.
-std::vector<autofill::Suggestion> CreateErrorSuggestions() {
+// Creates suggestions shown when retrieving prediction improvements wasn't
+// successful or there's nothing to fill (not even by Autofill or Autocomplete).
+std::vector<autofill::Suggestion> CreateErrorOrNoInfoSuggestions(
+    int message_id) {
   autofill::Suggestion error_suggestion(
       autofill::SuggestionType::kPredictionImprovementsError);
   error_suggestion.main_text = autofill::Suggestion::Text(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT),
+      l10n_util::GetStringUTF16(message_id),
       autofill::Suggestion::Text::IsPrimary(true),
       autofill::Suggestion::Text::ShouldTruncate(true));
   error_suggestion.highlight_on_select = false;
@@ -143,6 +143,20 @@ std::vector<autofill::Suggestion> CreateErrorSuggestions() {
   return {error_suggestion,
           autofill::Suggestion(autofill::SuggestionType::kSeparator),
           CreateFeedbackSuggestion()};
+}
+
+// Creates a suggestion shown when retrieving prediction improvements wasn't
+// successful.
+std::vector<autofill::Suggestion> CreateErrorSuggestions() {
+  return CreateErrorOrNoInfoSuggestions(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT);
+}
+
+// Creates suggestions shown when there's nothing to fill (not even by Autofill
+// or Autocomplete).
+std::vector<autofill::Suggestion> CreateNoInfoSuggestions() {
+  return CreateErrorOrNoInfoSuggestions(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_NO_INFO_POPUP_MAIN_TEXT);
 }
 
 }  // namespace
@@ -323,10 +337,32 @@ bool AutofillPredictionImprovementsManager::IsUserEligible() const {
 }
 
 std::vector<autofill::Suggestion>
+AutofillPredictionImprovementsManager::GetTriggerOrLoadingSuggestions(
+    const std::vector<autofill::Suggestion>& autofill_suggestions) {
+  // Store `autofill_suggestions` to potentially show them with prediction
+  // improvements later.
+  // TODO(crbug.com/370693653): Also store autocomplete suggestions.
+  autofill_suggestions_ = autofill_suggestions;
+  // Show the loading suggestion (instead of the trigger suggestion) if
+  // `kTriggerAutomatically` is enabled and `prediction_retrieval_state_` is
+  // `kReady`. The latter check is required to show the trigger suggestion also
+  // when `kTriggerAutomatically` is enabled if no predictions or fallbacks
+  // exist.
+  if (kTriggerAutomatically.Get() &&
+      prediction_retrieval_state_ == PredictionRetrievalState::kReady) {
+    return {CreateLoadingSuggestion()};
+  }
+  // Return the trigger suggestion.
+  return CreateTriggerSuggestion();
+}
+
+std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::GetSuggestions(
     const std::vector<autofill::Suggestion>& autofill_suggestions,
     const autofill::FormData& form,
     const autofill::FormFieldData& field) {
+  // If `form` is not the one currently cashed, `Reset()` the state unless
+  // predictions are currently retrieved.
   if (last_queried_form_global_id_ &&
       *last_queried_form_global_id_ != form.global_id()) {
     if (prediction_retrieval_state_ !=
@@ -344,34 +380,66 @@ AutofillPredictionImprovementsManager::GetSuggestions(
       return {};
     }
   }
-  // Keep showing the loading suggesiton while prediction improvements are being
-  // retrieved.
-  if (prediction_retrieval_state_ ==
-      PredictionRetrievalState::kIsLoadingPredictions) {
-    return {CreateLoadingSuggestion()};
+
+  switch (prediction_retrieval_state_) {
+    case PredictionRetrievalState::kReady:
+      return GetTriggerOrLoadingSuggestions(autofill_suggestions);
+    case PredictionRetrievalState::kIsLoadingPredictions:
+      // Keep showing the loading suggestion while prediction improvements are
+      // being retrieved.
+      return {CreateLoadingSuggestion()};
+    case PredictionRetrievalState::kDoneSuccess:
+      // Show a cached prediction improvements filling suggestion for `field` if
+      // it exists. This may contain additional `autofill_suggestions`, appended
+      // to the prediction improvements.
+      if (HasImprovedPredictionsForField(field)) {
+        return CreateFillingSuggestions(field, autofill_suggestions);
+      }
+      // If there are no cached predictions for the `field`, continue the
+      // regular Autofill flow if it has data to show.
+      // TODO(crbug.com/370695713): Add check for autocomplete.
+      else if (!autofill_suggestions.empty()) {
+        // Returning an empty vector will continue the regular Autofill flow
+        // (e.g. show Autofill or Autocomplete suggestions) in the
+        // `BrowserAutofillManager`.
+        return {};
+      }
+      // If no Autofill or Autocomplete data is available, show the no info
+      // suggestion exactly once.
+      else if (!error_or_no_info_suggestion_shown_) {
+        return CreateNoInfoSuggestions();
+        // Then fall back to the trigger suggestion.
+      } else {
+        return GetTriggerOrLoadingSuggestions(autofill_suggestions);
+      }
+    case PredictionRetrievalState::kDoneError:
+      // In the error state, continue the regular Autofill flow if it has data
+      // to show.
+      // TODO(crbug.com/370695713): Add check for autocomplete.
+      if (!autofill_suggestions.empty()) {
+        // Returning an empty vector will continue the regular Autofill flow
+        // (e.g. show Autofill or Autocomplete suggestions) in the
+        // `BrowserAutofillManager`.
+        return {};
+      }
+      // If no Autofill or Autocomplete data is available, show the error
+      // suggestion exactly once.
+      else if (!error_or_no_info_suggestion_shown_) {
+        return CreateErrorSuggestions();
+      }
+      // Then fall back to the trigger suggestion.
+      else {
+        return GetTriggerOrLoadingSuggestions(autofill_suggestions);
+      }
   }
-  // Show a cached prediction improvements filling suggestion for `field` if
-  // it exists.
-  if (HasImprovedPredictionsForField(field)) {
-    return CreateFillingSuggestions(field, autofill_suggestions);
-  }
-  // Store `autofill_suggestions` to show them with prediction improvements
-  // later if the trigger was accepted.
-  autofill_suggestions_ = autofill_suggestions;
-  // Show the loading suggestion (instead of the trigger suggestion) if
-  // `kTriggerAutomatically` is enabled.
-  if (kTriggerAutomatically.Get()) {
-    return {CreateLoadingSuggestion()};
-  }
-  // Return the trigger suggestion.
-  return CreateTriggerSuggestion();
 }
 
 void AutofillPredictionImprovementsManager::RetrievePredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
-  if (prediction_retrieval_state_ != PredictionRetrievalState::kReady) {
+  if (prediction_retrieval_state_ ==
+      PredictionRetrievalState::kIsLoadingPredictions) {
     return;
   }
   update_suggestions_callback_ = std::move(update_suggestions_callback);
@@ -532,6 +600,10 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
   }
 }
 
+void AutofillPredictionImprovementsManager::OnErrorOrNoInfoSuggestionShown() {
+  error_or_no_info_suggestion_shown_ = true;
+}
+
 void AutofillPredictionImprovementsManager::OnSuggestionsShown(
     const autofill::DenseSet<autofill::SuggestionType>& shown_suggestion_types,
     const autofill::FormData& form,
@@ -540,6 +612,9 @@ void AutofillPredictionImprovementsManager::OnSuggestionsShown(
   if (shown_suggestion_types.contains(
           autofill::SuggestionType::kPredictionImprovementsLoadingState)) {
     OnLoadingSuggestionShown(form, trigger_field, update_suggestions_callback);
+  } else if (shown_suggestion_types.contains(
+                 autofill::SuggestionType::kPredictionImprovementsError)) {
+    OnErrorOrNoInfoSuggestionShown();
   }
 }
 
@@ -550,6 +625,7 @@ void AutofillPredictionImprovementsManager::Reset() {
   feedback_id_ = std::nullopt;
   loading_suggestion_timer_.Stop();
   prediction_retrieval_state_ = PredictionRetrievalState::kReady;
+  error_or_no_info_suggestion_shown_ = false;
 }
 
 void AutofillPredictionImprovementsManager::UpdateSuggestions(
@@ -665,9 +741,11 @@ void AutofillPredictionImprovementsManager::OnFailedToGenerateSuggestions() {
   }
   // TODO(crbug.com/370693653): Also add logic to fallback to autocomplete
   // suggestions if possible.
-  // TODO(crbug.com/371924310): Parameterize the error suggestion depending on
-  // `prediction_retrieval_state_`.
-  UpdateSuggestions(CreateErrorSuggestions());
+  if (prediction_retrieval_state_ == PredictionRetrievalState::kDoneSuccess) {
+    UpdateSuggestions(CreateNoInfoSuggestions());
+  } else {
+    UpdateSuggestions(CreateErrorSuggestions());
+  }
 }
 
 }  // namespace autofill_prediction_improvements
