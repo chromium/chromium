@@ -20,6 +20,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -28,7 +31,8 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.url.GURL;
 
 /** Implements the content for the plus address creation bottom sheet. */
-public class PlusAddressCreationBottomSheetContent implements BottomSheetContent {
+public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObserver
+        implements BottomSheetContent {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
 
@@ -151,6 +155,20 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                         ? View.LAYOUT_DIRECTION_RTL
                         : View.LAYOUT_DIRECTION_LTR;
         mContentView.setLayoutDirection(layoutDirection);
+
+        mBottomSheetController.addObserver(this);
+    }
+
+    @Override
+    public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
+        // If we update the sheet contents while its animation is running it won't update its height
+        // to the updated text size. Request expansion again to fix this.
+        // TODO: crbug.com/354881207 - Check if this logic can be incorporated into the bottom
+        // sheet implementation.
+        if (newState == SheetState.FULL
+                && mBottomSheetController.getCurrentOffset() != mContentView.getHeight()) {
+            mBottomSheetController.expandSheet();
+        }
     }
 
     void setOnboardingNotice(String notice, GURL learnMoreUrl) {
@@ -248,10 +266,6 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         } else {
             mLoadingView.hideLoadingUI();
         }
-    }
-
-    void expandSheet() {
-        mBottomSheetController.expandSheet();
     }
 
     // BottomSheetContent implementation follows:

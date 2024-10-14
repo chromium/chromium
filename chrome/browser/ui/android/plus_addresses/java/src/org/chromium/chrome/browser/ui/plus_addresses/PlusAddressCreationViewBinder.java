@@ -160,9 +160,6 @@ class PlusAddressCreationViewBinder {
             cancelButton.setOnClickListener(unused -> delegate.onCanceled());
             cancelButton.setVisibility(View.VISIBLE);
         }
-
-        // Adjust the bottom sheet height after the error screen content is shown.
-        view.expandSheet();
     }
 
     private PlusAddressCreationViewBinder() {}
