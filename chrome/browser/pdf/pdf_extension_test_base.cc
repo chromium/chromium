@@ -134,26 +134,6 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdfAllowMultipleFrames(
       /*allow_multiple_frames=*/true);
 }
 
-// Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
-// for the loaded PDF. Returns nullptr if the load fails.
-MimeHandlerViewGuest* PDFExtensionTestBase::LoadPdfGetMimeHandlerView(
-    const GURL& url) {
-  if (!LoadPdf(url)) {
-    return nullptr;
-  }
-  return GetOnlyMimeHandlerView(GetActiveWebContents());
-}
-
-// Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
-// for the loaded PDF in a new tab. Returns nullptr if the load fails.
-MimeHandlerViewGuest* PDFExtensionTestBase::LoadPdfInNewTabGetMimeHandlerView(
-    const GURL& url) {
-  if (!LoadPdfInNewTab(url)) {
-    return nullptr;
-  }
-  return GetOnlyMimeHandlerView(GetActiveWebContents());
-}
-
 content::RenderFrameHost* PDFExtensionTestBase::LoadPdfGetExtensionHost(
     const GURL& url) {
   if (!LoadPdf(url)) {
@@ -232,8 +212,7 @@ content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
     return contents;
   }
 
-  MimeHandlerViewGuest* guest =
-      pdf_extension_test_util::GetOnlyMimeHandlerView(contents);
+  MimeHandlerViewGuest* guest = GetOnlyMimeHandlerView(contents);
   return guest ? guest->embedder_web_contents() : nullptr;
 }
 

@@ -54,7 +54,6 @@
 namespace {
 
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
-using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
 class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
