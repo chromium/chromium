@@ -22,7 +22,7 @@ namespace {
 // Debug NSUserDefaults key used to reset debug data. If the stored value of
 // this key is less than `resetDataValue`, then all of the foillowing debug
 // data counts are reset to 0.
-NSString* resetDebugDataKey = @"debug_number_of_triggered_background_refreshes";
+NSString* resetDebugDataKey = @"debug_data_reset";
 NSInteger resetDebugDataValue = 1;
 
 // Debug NSUserDefaults key used to collect debug data.
