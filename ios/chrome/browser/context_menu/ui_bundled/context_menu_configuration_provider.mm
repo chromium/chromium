@@ -738,10 +738,16 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   }
 
   if (IsSaveToPhotosActionImprovementEnabled() && saveToPhotosAvailable) {
+    UIImage* image;
+    if (@available(iOS 17, *)) {
+      image = DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,
+                                         kSymbolActionPointSize);
+    } else {
+      image = DefaultSymbolWithPointSize(kPhotoSymbol, kSymbolActionPointSize);
+    }
     UIMenu* saveImageInMenu = [UIMenu
         menuWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN)
-                image:DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,
-                                                 kSymbolActionPointSize)
+                image:image
            identifier:nil
               options:UIMenuOptionsSingleSelection
              children:imageSavingElements];
