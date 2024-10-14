@@ -298,11 +298,15 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // a non-test and need ports.
     CHECK(!has_mach_ports_for_rendezvous);
 #else
-    // If |options.mach_ports_for_rendezvous| is specified : the server's lock
-    // must be held for the duration of posix_spawnp() so that new child's PID
-    // can be recorded with the set of ports.
+    // If `options.mach_ports_for_rendezvous` or `options.process_requirement`
+    // is specified : the server's lock must be held for the duration of
+    // posix_spawnp() so that new child's PID can be recorded with the set of
+    // ports or process requirement.
+    bool needs_rendezvous_lock =
+        has_mach_ports_for_rendezvous || options.process_requirement;
+
     AutoLockMaybe rendezvous_lock(
-        has_mach_ports_for_rendezvous
+        needs_rendezvous_lock
             ? &MachPortRendezvousServerMac::GetInstance()->GetLock()
             : nullptr);
 #endif
@@ -311,11 +315,17 @@ Process LaunchProcess(const std::vector<std::string>& argv,
                       &argv_cstr[0], new_environ);
 
 #if !BUILDFLAG(IS_IOS)
-    if (has_mach_ports_for_rendezvous) {
+    if (needs_rendezvous_lock) {
       if (rv == 0) {
         MachPortRendezvousServerMac::GetInstance()->GetLock().AssertAcquired();
-        MachPortRendezvousServerMac::GetInstance()->RegisterPortsForPid(
-            pid, options.mach_ports_for_rendezvous);
+        if (has_mach_ports_for_rendezvous) {
+          MachPortRendezvousServerMac::GetInstance()->RegisterPortsForPid(
+              pid, options.mach_ports_for_rendezvous);
+        }
+        if (options.process_requirement) {
+          MachPortRendezvousServerMac::GetInstance()
+              ->SetProcessRequirementForPid(pid, *options.process_requirement);
+        }
       } else {
         // Because |options| is const-ref, the collection has to be copied here.
         // The caller expects to relinquish ownership of any strong rights if
