@@ -3353,6 +3353,11 @@ PaintLayerScrollableArea::EnsureSnappedQueryScrollSnapshot() {
   return *rare_data.snapped_query_snapshot_;
 }
 
+SnappedQueryScrollSnapshot*
+PaintLayerScrollableArea::GetSnappedQueryScrollSnapshot() {
+  return RareData() ? RareData()->snapped_query_snapshot_ : nullptr;
+}
+
 void PaintLayerScrollableArea::CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
     cc::TargetSnapAreaElementIds ids) {
   if (!RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {

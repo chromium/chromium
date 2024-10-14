@@ -104,13 +104,38 @@ Element* CachedContainer(Element* starting_element,
   return container;
 }
 
+PaintLayerScrollableArea* FindScrollContainerScrollableArea(
+    const Element& container) {
+  if (const LayoutObject* layout_object = container.GetLayoutObject()) {
+    if (const LayoutBox* snap_container =
+            layout_object->ContainingScrollContainer()) {
+      return snap_container->GetScrollableArea();
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
+  if (PaintLayerScrollableArea* scrollable_area =
+          FindScrollContainerScrollableArea(container)) {
+    if (SnappedQueryScrollSnapshot* snapshot =
+            scrollable_area->GetSnappedQueryScrollSnapshot()) {
+      ContainerSnappedFlags snapped =
+          static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
+      if (snapshot->GetSnappedTargetX() == container) {
+        snapped |= static_cast<ContainerSnappedFlags>(ContainerSnapped::kX);
+      }
+      if (snapshot->GetSnappedTargetY() == container) {
+        snapped |= static_cast<ContainerSnappedFlags>(ContainerSnapped::kY);
+      }
+      snapped_ = pending_snapped_ = snapped;
+    }
+  }
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container.GetDocument(), container, std::nullopt, std::nullopt,
-      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
-      static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone));
+      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped_);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -283,17 +308,9 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   if (!depends_on_snapped_) {
     depends_on_snapped_ = query.Selector().SelectsSnapContainers();
     if (depends_on_snapped_) {
-      Element* container_element = ContainerElement();
-      CHECK(container_element);
-      if (const LayoutObject* layout_object =
-              container_element->GetLayoutObject()) {
-        if (const LayoutBox* snap_container =
-                layout_object->ContainingScrollContainer()) {
-          if (PaintLayerScrollableArea* scrollable_area =
-                  snap_container->GetScrollableArea()) {
-            scrollable_area->EnsureSnappedQueryScrollSnapshot();
-          }
-        }
+      if (PaintLayerScrollableArea* scrollable_area =
+              FindScrollContainerScrollableArea(*ContainerElement())) {
+        scrollable_area->EnsureSnappedQueryScrollSnapshot();
       }
     }
   }

@@ -649,6 +649,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void DropCompositorScrollDeltaNextCommit() override;
 
   SnappedQueryScrollSnapshot& EnsureSnappedQueryScrollSnapshot();
+  SnappedQueryScrollSnapshot* GetSnappedQueryScrollSnapshot();
 
   // Return the Element, if any, that should currently match the
   // @container (snapped:...) query for the given axis.
