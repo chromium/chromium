@@ -818,15 +818,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
 // triggered from a different WebContents. Regression test for
 // https://crbug.com/1128495
 // Flaky on windows and mac: b/40896665.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_PopupTriggeredFromDifferentWebContents \
-  DISABLED_PopupTriggeredFromDifferentWebContents
-#else
-#define MAYBE_PopupTriggeredFromDifferentWebContents \
-  PopupTriggeredFromDifferentWebContents
-#endif
+// Flaky on linux Wayland: crbug.com/368578515
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       MAYBE_PopupTriggeredFromDifferentWebContents) {
+                       DISABLED_PopupTriggeredFromDifferentWebContents) {
   const GURL url(
       embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
