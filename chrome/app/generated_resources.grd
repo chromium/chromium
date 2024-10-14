@@ -13404,6 +13404,9 @@ This can include information about installed software, files, your browser, and 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL" desc="Label of the profile switch button in the web signin interception bubble">
           Ok
         </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC_SUPERVISED" desc="This string is the body of a dialog about signing in to Chrome with the user's Google Account. It appears when a kid tries to sign in to a Google service (like Gmail) with their account while using someone else’s Chrome profile. The message explains the overarching user benefit of signing in: Kids of a certain age are motivated to get their parents’ help staying safer online, so the tone should be motivating. The body text is after the 'Sign in to Chrome in a new profile?' string. We want users to understand why signing in to their own profile is beneficial, and click 'Continue as name' to sign in to their Google Account.">
+          To stay safer online with your parent’s choices, sign in to your own profile as <ph name="USER_EMAIL">$1<ex>john@gmail.com</ex></ph>
+        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_CONTINUE_BUTTON_LABEL" desc="This string is the button for a dialog that appears when the user is already signed in to Chrome, but they just tried to sign in to a Google service (like Gmail) with a different Google Account that already has its own Chrome profile on this device. The button is after the 'Switch to existing Chrome profile?' string. When the user clicks this button, they will open a different existing Chrome profile that is already signed in to the other Google Account. The tone should be inviting and helpful.">
           Continue
         </message>

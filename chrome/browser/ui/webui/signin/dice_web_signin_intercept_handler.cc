@@ -391,6 +391,14 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
   }
 
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    if (base::FeatureList::IsEnabled(
+            supervised_user::kCustomProfileStringsForSupervisedUsers) &&
+        intercepted_account().capabilities.is_subject_to_parental_controls() ==
+            signin::Tribool::kTrue) {
+      return l10n_util::GetStringFUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC_SUPERVISED,
+          base::UTF8ToUTF16(intercepted_account().email));
+    }
     return l10n_util::GetStringFUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
         base::UTF8ToUTF16(primary_account().given_name),
