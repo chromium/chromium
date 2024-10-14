@@ -26,6 +26,7 @@
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "crypto/process_bound_string.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -356,7 +357,7 @@ std::string MutableProfileOAuth2TokenServiceDelegate::GetTokenForMultilogin(
       GetAuthError(account_id) != GoogleServiceAuthError::AuthErrorNone()) {
     return std::string();
   }
-  const std::string& refresh_token = iter->second;
+  const auto refresh_token = iter->second.value();
   DCHECK(!refresh_token.empty());
   return refresh_token;
 }
@@ -371,7 +372,7 @@ std::string MutableProfileOAuth2TokenServiceDelegate::GetRefreshToken(
     const CoreAccountId& account_id) const {
   auto iter = refresh_tokens_.find(account_id);
   if (iter != refresh_tokens_.end()) {
-    const std::string refresh_token = iter->second;
+    const std::string refresh_token = iter->second.value();
     DCHECK(!refresh_token.empty());
     return refresh_token;
   }
@@ -623,7 +624,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
   RecordTokenBindingHistogramsOnCredentialsLoaded(
       token_binding_helper_.get(),
       std::ranges::count_if(refresh_tokens_, [](const auto& kv_pair) {
-        return kv_pair.second != GaiaConstants::kInvalidRefreshToken;
+        return kv_pair.second.value() != GaiaConstants::kInvalidRefreshToken;
       }));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::UmaHistogramBoolean("Signin.ReencryptTokensInDb", did_reencrypt);
@@ -642,8 +643,7 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
   DCHECK(!refresh_token.empty());
 
   ValidateAccountId(account_id);
-  const std::string& existing_token = GetRefreshToken(account_id);
-  if (existing_token != refresh_token) {
+  if (GetRefreshToken(account_id) != refresh_token) {
     UpdateCredentialsInMemory(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                               ,
@@ -685,7 +685,7 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInMemory(
   // If token present, and different from the new one, cancel its requests,
   // and clear the entries in cache related to that account.
   if (refresh_token_present) {
-    DCHECK_NE(refresh_token, refresh_tokens_[account_id]);
+    DCHECK_NE(refresh_token, refresh_tokens_.at(account_id).value());
     VLOG(1) << "MutablePO2TS::UpdateCredentials; Refresh Token was present. "
             << "account_id=" << account_id;
 
@@ -701,9 +701,10 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInMemory(
     // would also be invalidated server-side).
     // See http://crbug.com/865189 for more information about this regression.
     if (is_refresh_token_invalidated)
-      RevokeCredentialsOnServer(refresh_tokens_[account_id]);
+      RevokeCredentialsOnServer(refresh_tokens_.at(account_id).value());
 
-    refresh_tokens_[account_id] = refresh_token;
+    refresh_tokens_.insert_or_assign(account_id,
+                                     crypto::ProcessBoundString(refresh_token));
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     if (token_binding_helper_) {
       token_binding_helper_->SetBindingKey(account_id, wrapped_binding_key);
@@ -860,7 +861,8 @@ void MutableProfileOAuth2TokenServiceDelegate::AddAccountStatus(
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     const GoogleServiceAuthError& error) {
   DCHECK_EQ(0u, refresh_tokens_.count(account_id));
-  refresh_tokens_[account_id] = refresh_token;
+  refresh_tokens_.insert_or_assign(account_id,
+                                   crypto::ProcessBoundString(refresh_token));
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_) {
     token_binding_helper_->SetBindingKey(account_id, wrapped_binding_key);
@@ -883,7 +885,7 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsImpl(
   if (refresh_tokens_.count(account_id) > 0) {
     VLOG(1) << "MutablePO2TS::RevokeCredentials for account_id=" << account_id;
     if (revoke_on_server) {
-      RevokeCredentialsOnServer(refresh_tokens_[account_id]);
+      RevokeCredentialsOnServer(refresh_tokens_.at(account_id).value());
     }
     refresh_tokens_.erase(account_id);
     ClearAuthError(account_id);

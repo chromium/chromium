@@ -335,8 +335,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
   EXPECT_EQ(1U, oauth2_service_delegate_->refresh_tokens_.size());
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account_id));
-  EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
-            oauth2_service_delegate_->refresh_tokens_[primary_account_id]);
+  EXPECT_EQ(
+      GaiaConstants::kInvalidRefreshToken,
+      oauth2_service_delegate_->refresh_tokens_.at(primary_account_id).value());
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -479,7 +480,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // is in the refresh_token map.
   EXPECT_EQ(1U, oauth2_service_delegate_->refresh_tokens_.size());
   EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
-            oauth2_service_delegate_->refresh_tokens_[account_id]);
+            oauth2_service_delegate_->refresh_tokens_.at(account_id).value());
   // Setup a DB with tokens that don't require upgrade and clear memory.
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
