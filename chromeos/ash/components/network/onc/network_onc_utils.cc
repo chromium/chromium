@@ -520,6 +520,10 @@ int ImportNetworksForUser(const user_manager::User* user,
         GetString(normalized_network, ::onc::network_config::kType);
     ManagedNetworkConfigurationHandler* managed_network_config_handler =
         NetworkHandler::Get()->managed_network_configuration_handler();
+    // "type" might be removed if the imported onc has ::onc:kRemove field.
+    if (type.empty()) {
+      continue;
+    }
     if (type == ::onc::network_config::kEthernet) {
       // Ethernet has to be configured using an existing Ethernet service.
       const NetworkState* ethernet =
