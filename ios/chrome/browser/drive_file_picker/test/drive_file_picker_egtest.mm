@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -15,6 +16,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -153,6 +155,93 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
                           kDriveFilePickerRootTitleAccessibilityIdentifier)];
   [[EarlGrey selectElementWithMatcher:IdentityButtonMatcher(
                                           secondaryIdentity.userEmail)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests the sort button context menu options are present.
+- (void)testSortButtonContextMenuItems {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      DriveFilePickerNavigationViewControllerMatcher()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kDriveFilePickerMyDriveItemIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SortButtonMatcher(YES)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_DRIVE_SORT_BY_NAME)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_DRIVE_SORT_BY_MODIFICATION)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_DRIVE_SORT_BY_OPENING)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests the filter button context menu options are present.
+- (void)testFilterButtonContextMenuItems {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      DriveFilePickerNavigationViewControllerMatcher()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kDriveFilePickerMyDriveItemIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:FilterButtonMatcher(YES)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_DRIVE_FILE_PICKER_FILTER_MORE_OPTIONS))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_DRIVE_FILE_PICKER_FILTER_ARCHIVES))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_FILTER_AUDIO))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_FILTER_VIDEOS))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_FILTER_IMAGES))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_FILTER_PDF))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_DRIVE_FILE_PICKER_FILTER_ALL_FILES))]
       assertWithMatcher:grey_notNil()];
 }
 
