@@ -68,6 +68,10 @@ void FloatingSsoService::RegisterPolicyListeners() {
       base::BindRepeating(&FloatingSsoService::StartOrStop,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
+      syncer::prefs::internal::kSyncKeepEverythingSynced,
+      base::BindRepeating(&FloatingSsoService::StartOrStop,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
       syncer::prefs::internal::kSyncCookies,
       base::BindRepeating(&FloatingSsoService::StartOrStop,
                           base::Unretained(this)));
@@ -113,7 +117,9 @@ void FloatingSsoService::UpdateUrlMatchers() {
 
 void FloatingSsoService::StartOrStop() {
   if (IsFloatingSsoEnabled()) {
-    scoped_observation_.Observe(bridge_.get());
+    if (!scoped_observation_.IsObserving()) {
+      scoped_observation_.Observe(bridge_.get());
+    }
     MaybeStartListening();
   } else {
     scoped_observation_.Reset();
@@ -122,16 +128,20 @@ void FloatingSsoService::StartOrStop() {
 }
 
 bool FloatingSsoService::IsFloatingSsoEnabled() {
-  // FloatingSsoEnabled policy.
-  bool floating_sso_enabled = prefs_->GetBoolean(::prefs::kFloatingSsoEnabled);
-  // User selection in the Sync settings.
-  bool sync_cookies_user_selection =
-      prefs_->GetBoolean(syncer::prefs::internal::kSyncCookies);
-  // kSyncManaged maps to SyncDisabled policy.
-  bool sync_disabled =
-      prefs_->GetBoolean(syncer::prefs::internal::kSyncManaged);
-
-  return floating_sso_enabled && sync_cookies_user_selection && !sync_disabled;
+  // Check FloatingSsoEnabled policy.
+  if (!prefs_->GetBoolean(::prefs::kFloatingSsoEnabled)) {
+    return false;
+  }
+  // Check SyncDisabled policy (it maps to kSyncManaged pref).
+  if (prefs_->GetBoolean(syncer::prefs::internal::kSyncManaged)) {
+    return false;
+  }
+  // Check that user either syncs everything or has selected cookies as one of
+  // synced types.
+  if (!prefs_->GetBoolean(syncer::prefs::internal::kSyncKeepEverythingSynced)) {
+    return prefs_->GetBoolean(syncer::prefs::internal::kSyncCookies);
+  }
+  return true;
 }
 
 void FloatingSsoService::MaybeStartListening() {

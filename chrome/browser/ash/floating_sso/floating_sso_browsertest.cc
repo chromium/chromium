@@ -168,6 +168,11 @@ class FloatingSsoTest : public policy::PolicyTest {
     provider_.UpdateChromePolicy(policies_);
   }
 
+  void SetSyncEverythingPref(bool pref_value) {
+    profile()->GetPrefs()->SetBoolean(
+        syncer::prefs::internal::kSyncKeepEverythingSynced, pref_value);
+  }
+
   void SetSyncCookiesPref(bool pref_value) {
     profile()->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncCookies,
                                       pref_value);
@@ -359,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoPolicyDisabled) {
 IN_PROC_BROWSER_TEST_F(FloatingSsoTest, SyncCookiesPrefDisabled) {
   auto& service = floating_sso_service();
   SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
+  SetSyncEverythingPref(/*pref_value=*/false);
   SetSyncCookiesPref(/*pref_value=*/false);
   SetSyncDisabledPolicy(/*policy_value=*/false);
 
@@ -387,16 +393,24 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, SyncDisabled) {
   EXPECT_EQ(store_entries.size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoEnabled) {
+// Most Floating SSO tests rely on SyncCookies pref (user toggle) to enable the
+// feature, this test separately checks that we also respect the option to sync
+// everything.
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoRespectsSyncEverythingPref) {
   auto& service = floating_sso_service();
-  EnableAllFloatingSsoSettings();
+  SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
+  SetSyncEverythingPref(/*pref_value=*/true);
+  // When user selects to sync everything, the value of per-type prefs shouldn't
+  // matter.
+  SetSyncCookiesPref(/*pref_value=*/false);
+  SetSyncDisabledPolicy(/*policy_value=*/false);
   ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
 
   AddCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL,
                             kStandardCookieLine);
 
   // Cookie is added to store.
-  auto store_entries = GetStoreEntries();
+  const auto& store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 1u);
   EXPECT_TRUE(store_entries.contains(kCookieUniqueKey));
 }
