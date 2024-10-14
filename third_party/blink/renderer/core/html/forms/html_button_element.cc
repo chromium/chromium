@@ -294,23 +294,11 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
   }
 
-  if (auto* select = OwnerSelect()) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-    // For native popups, use HTMLSelectElement's codepath. For <datalist>
-    // popover popups, use the HTMLFormControlElement popover code path.
-    if (select->IsAppearanceBaseButton()) {
-      CHECK(!event.DefaultHandled())
-          << " We shouldn't run HTMLSelectElement::DefaultEventHandler here if "
-             "the default has already been handled. event.type(): "
-          << event.type();
-      select->DefaultEventHandler(event);
-      if (event.DefaultHandled()) {
-        return;
-      }
-    }
-  }
-
-  if (HandleKeyboardActivation(event)) {
+  // The OwnerSelect check is here in order to make sure that pressing the
+  // spacebar opens customizable <select>s.
+  // MenuListSelectType::DefaultEventHandler likes to see all more detailed
+  // events than the simulated click that HandleKeyboardActivation does.
+  if (!OwnerSelect() && HandleKeyboardActivation(event)) {
     return;
   }
 
@@ -409,19 +397,7 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
     return nullptr;
   }
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
-    for (auto* previous_sibling = previousSibling(); previous_sibling;
-         previous_sibling = previous_sibling->previousSibling()) {
-      if (IsA<HTMLButtonElement>(previous_sibling)) {
-        // Only the first child <button> of a <select>, which is the one that
-        // gets slotted into the button slot, should get the <select> opening
-        // behavior.
-        return nullptr;
-      }
-    }
-    return select;
-  }
-  if (auto* root = ContainingShadowRoot()) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(root->host())) {
+    if (select->SlottedButton() == this) {
       return select;
     }
   }

@@ -294,6 +294,37 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
   // some element to none which will cause a layout tree detach.
   select_->GetDocument().UpdateStyleAndLayoutTree();
 
+  // The purpose of this method is to handle events on the in-page part of the
+  // select and determining whether they should toggle the picker. However, it
+  // will also pick up events on the base appearance picker popover, and we
+  // don't want to do anything about those events, so the following code will
+  // return early in the case that the events are targeting nodes in the picker.
+  if (IsAppearanceBasePicker() && event.HasEventPath()) {
+    bool target_is_button = false;
+    if (auto* button = SlottedButton()) {
+      // In this case, we should see SlottedButton in the event path. If it
+      // isn't there, then the target must have been in the picker.
+      for (unsigned i = 0; i < event.GetEventPath().size(); i++) {
+        Node& node = event.GetEventPath()[i].GetNode();
+        if (node == select_) {
+          break;
+        } else if (node == button) {
+          target_is_button = true;
+          break;
+        }
+      }
+    } else {
+      // In this case the in-page part of the select should not have any child
+      // elements which could be the event target, so if the target isn't the
+      // select itself then the target must have been in the picker.
+      target_is_button =
+          event.target() == select_ || event.target() == &InnerElement();
+    }
+    if (!target_is_button) {
+      return false;
+    }
+  }
+
   const int ignore_modifiers = WebInputEvent::kShiftKey |
                                WebInputEvent::kControlKey |
                                WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
@@ -593,11 +624,17 @@ void MenuListSelectType::ManuallyAssignSlots() {
 
 HTMLButtonElement* MenuListSelectType::SlottedButton() const {
   if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    CHECK(!button_slot_);
     return nullptr;
   }
-  CHECK(button_slot_);
-  return To<HTMLButtonElement>(button_slot_->FirstAssignedNode());
+  // This code may be called while slot recalc is forbidden, so instead of
+  // looking at button_slot_'s FirstAssignedNode, just return the first button.
+  for (auto* child = select_->firstChild(); child;
+       child = child->nextSibling()) {
+    if (auto* button = DynamicTo<HTMLButtonElement>(child)) {
+      return button;
+    }
+  }
+  return nullptr;
 }
 
 HTMLElement* MenuListSelectType::PopoverForAppearanceBase() const {
