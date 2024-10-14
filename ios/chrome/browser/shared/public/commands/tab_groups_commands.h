@@ -55,6 +55,9 @@ class WebStateID;
 // Displays a snackbar after closing tab groups locally.
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:(int)numberOfClosedGroups;
 
+// Displays a half sheet of the recent activity in a shared tab group.
+- (void)showRecentActivity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_GROUPS_COMMANDS_H_

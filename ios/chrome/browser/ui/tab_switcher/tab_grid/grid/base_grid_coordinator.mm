@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
@@ -48,6 +49,9 @@
   // The coordinator to handle the confirmation dialog for the action taken for
   // a tab group.
   TabGroupConfirmationCoordinator* _tabGroupConfirmationCoordinator;
+  // The coordinator to handle the half sheet for the recent activity in a
+  // shared tab group.
+  RecentActivityCoordinator* _tabGroupRecentActivityCoordinator;
 }
 
 #pragma mark - Public
@@ -127,10 +131,10 @@
 }
 
 - (void)stopChildCoordinators {
-  if (_tabGroupConfirmationCoordinator) {
-    [_tabGroupConfirmationCoordinator stop];
-    _tabGroupConfirmationCoordinator = nil;
-  }
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+  [_tabGroupRecentActivityCoordinator stop];
+  _tabGroupRecentActivityCoordinator = nil;
   [self hideTabGroupCreationAnimated:NO];
   [self.tabGroupCoordinator stopChildCoordinators];
   [self.gridViewController dismissModals];
@@ -356,6 +360,13 @@
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessage:message];
+}
+
+- (void)showRecentActivity {
+  _tabGroupRecentActivityCoordinator = [[RecentActivityCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  [_tabGroupRecentActivityCoordinator start];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

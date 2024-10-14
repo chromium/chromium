@@ -5697,6 +5697,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE" desc="Accessibility label for the tab group indicator view. This is spoken by VoiceOver.">
         Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, Menu.
       </message>
+      <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE" desc="Title of a half sheet for recent activity logs in a shared tab group.">
+        Recent activity
+      </message>
       <message name="IDS_IOS_TAB_GROUP_SNACKBAR_ACTION" desc="Button to access the Tab Groups panel. [iOS only]">
         View
       </message>

@@ -4,6 +4,10 @@
 
 source_set("tab_groups") {
   sources = [
+    "recent_activity_coordinator.h",
+    "recent_activity_coordinator.mm",
+    "recent_activity_mediator.h",
+    "recent_activity_mediator.mm",
     "tab_group_coordinator.h",
     "tab_group_coordinator.mm",
     "tab_group_mediator.h",
@@ -101,6 +105,11 @@ source_set("tab_group_creation") {
 source_set("tab_groups_ui") {
   sources = [
     "create_or_edit_tab_group_view_controller_delegate.h",
+    "recent_activity_consumer.h",
+    "recent_activity_log_item.h",
+    "recent_activity_log_item.mm",
+    "recent_activity_view_controller.h",
+    "recent_activity_view_controller.mm",
     "tab_group_favicons_grid.h",
     "tab_group_favicons_grid.mm",
     "tab_group_view_controller.h",
@@ -130,6 +139,8 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",

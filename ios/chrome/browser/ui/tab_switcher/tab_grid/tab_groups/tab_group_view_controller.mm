@@ -557,7 +557,7 @@ constexpr CGFloat kSpace = 8;
 // Shows the recent activity of a shared tab group.
 - (void)showRecentActivity {
   CHECK(_shared);
-  // TODO(crbug.com/370897655): Create a half sheet with logs and show it.
+  [_handler showRecentActivity];
 }
 
 // Updates the safe area inset of the grid based on this VC safe areas and the
