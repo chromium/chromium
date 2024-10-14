@@ -1117,10 +1117,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       PathInfo path_info(data.data_case() == FileSystemAccessHandleData::kLocal
                              ? PathType::kLocal
                              : PathType::kExternal,
-                         root_path,
-                         !file_data.display_name().empty()
-                             ? file_data.display_name()
-                             : root_path.BaseName().AsUTF8Unsafe());
+                         root_path, file_data.display_name());
       storage::FileSystemURL root = CreateFileSystemURLFromPath(path_info);
 
       storage::FileSystemURL child = context()->CreateCrackedFileSystemURL(
