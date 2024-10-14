@@ -153,15 +153,14 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       mapping = client_shared_image_->Map();
     }
     LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
-    uint8_t* memory =
-        mapping ? static_cast<uint8_t*>(mapping->Memory(0)) : nullptr;
-    if (memory != nullptr) {
+    if (mapping) {
       gfx::Size size = mapping->Size();
       int stride = mapping->Stride(0);
       // Clear the buffer before usage, since it may be uninitialized.
       // (http://b/168735625)
       for (int i = 0; i < size.height(); ++i) {
-        memset(memory + i * stride, 0, size.width() * 4);
+        memset(static_cast<uint8_t*>(mapping->Memory(0)) + i * stride, 0,
+               size.width() * 4);
       }
     }
   }
