@@ -623,6 +623,7 @@ public class TabsTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
+    @DisabledTest(message = "https://crbug.com/373446108")
     public void testRequestFocusOnCloseTab() throws Exception {
         final View urlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
         final TabModel model =
