@@ -10,8 +10,10 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected_macros.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "net/http/http_status_code.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -19,6 +21,17 @@
 #endif
 
 namespace web_app {
+
+BundleInfo::BundleInfo() = default;
+BundleInfo::~BundleInfo() = default;
+BundleInfo::BundleInfo(BundleInfo&& other) = default;
+
+BundleInfo& BundleInfo::operator=(BundleInfo&& other) = default;
+BundleInfo::BundleInfo(
+    std::unique_ptr<BundledIsolatedWebApp> bundled_app,
+    std::optional<std::vector<UpdateChannel>> update_channels)
+    : bundle(std::move(bundled_app)),
+      update_channels(std::move(update_channels)) {}
 
 namespace {
 constexpr std::string_view kUpdateManifestFileName = "update_manifest.json";
@@ -52,19 +65,28 @@ GURL IsolatedWebAppUpdateServerMixin::GetUpdateManifestUrl(
 #if BUILDFLAG(IS_CHROMEOS)
 base::Value::Dict
 IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
-    const web_package::SignedWebBundleId& web_bundle_id) const {
-  return base::Value::Dict()
-      .Set(kPolicyWebBundleIdKey, web_bundle_id.id())
-      .Set(kPolicyUpdateManifestUrlKey,
-           GetUpdateManifestUrl(web_bundle_id).spec());
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::optional<UpdateChannel>& update_channel) const {
+  base::Value::Dict policy_entry =
+      base::Value::Dict()
+          .Set(kPolicyWebBundleIdKey, web_bundle_id.id())
+          .Set(kPolicyUpdateManifestUrlKey,
+               GetUpdateManifestUrl(web_bundle_id).spec());
+
+  if (update_channel) {
+    policy_entry.Set(kPolicyUpdateChannelKey, update_channel->ToString());
+  }
+
+  return policy_entry;
 }
 #endif
 
 void IsolatedWebAppUpdateServerMixin::AddBundle(
-    std::unique_ptr<BundledIsolatedWebApp> bundle) {
+    std::unique_ptr<BundledIsolatedWebApp> bundle,
+    std::optional<std::vector<UpdateChannel>> update_channels) {
   auto* bundle_ptr = bundle.get();
   bundle_versions_per_id_[bundle_ptr->web_bundle_id()][bundle_ptr->version()] =
-      std::move(bundle);
+      BundleInfo(std::move(bundle), update_channels);
 }
 
 void IsolatedWebAppUpdateServerMixin::RemoveBundle(
@@ -106,24 +128,34 @@ IsolatedWebAppUpdateServerMixin::HandleRequest(
     response->set_content_type("application/json");
     auto update_manifest = base::Value::Dict().Set(
         "versions",
-        base::ToValueList(*bundle_versions, [&](const auto& bundle_info) {
-          const auto& version = bundle_info.first;
+        base::ToValueList(*bundle_versions, [&](const auto& bundle_meta) {
+          const auto& [version, bundle_info] = bundle_meta;
+
           auto relative_bundle_path = base::StrCat(
               {"/", web_bundle_id.id(), "/", version.GetString(), ".swbn"});
-          return base::Value::Dict()
-              .Set("version", version.GetString())
-              .Set("src", iwa_server_.GetURL(relative_bundle_path).spec());
+          auto dict =
+              base::Value::Dict()
+                  .Set("version", version.GetString())
+                  .Set("src", iwa_server_.GetURL(relative_bundle_path).spec());
+
+          if (bundle_info.update_channels) {
+            dict.Set("channels",
+                     base::ToValueList(bundle_info.update_channels.value(),
+                                       &UpdateChannel::ToString));
+          }
+          return dict;
         }));
+
     response->set_content(*base::WriteJson(update_manifest));
     return response;
   } else if (path.ends_with(".swbn")) {
     base::Version version(path.substr(0, path.size() - 5));
     if (version.IsValid()) {
-      if (auto* bundle = base::FindPtrOrNull(*bundle_versions, version)) {
+      if (auto* bundle_info = base::FindOrNull(*bundle_versions, version)) {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
         response->set_content_type("application/octet-stream");
-        response->set_content(bundle->GetBundleData());
+        response->set_content(bundle_info->bundle->GetBundleData());
         return response;
       }
     }
