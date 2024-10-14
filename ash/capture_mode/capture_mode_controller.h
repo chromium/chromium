@@ -16,7 +16,6 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -51,6 +50,7 @@ class CaptureModeBehavior;
 class CaptureModeCameraController;
 class CaptureModeObserver;
 class BaseCaptureModeSession;
+class ScannerActionViewModel;
 
 // Defines a callback type that will be invoked when an attempt to delete the
 // given `path` is completed with the given status `delete_successful`.
@@ -484,7 +484,8 @@ class ASH_EXPORT CaptureModeController
 
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
-  void OnScannerActionsFetched(std::vector<ScannerAction> scanner_actions);
+  void OnScannerActionsFetched(
+      std::vector<ScannerActionViewModel> scanner_actions);
 
   // Called back when an attempt to save the image file has been completed, with
   // `file_saved_path` indicating whether the attempt succeeded or failed. If

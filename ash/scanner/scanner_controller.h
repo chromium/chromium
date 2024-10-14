@@ -6,6 +6,7 @@
 #define ASH_SCANNER_SCANNER_CONTROLLER_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_session.h"
@@ -15,12 +16,16 @@
 
 namespace ash {
 
+class ScannerActionViewModel;
 class ScannerDelegate;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
 class ASH_EXPORT ScannerController {
  public:
+  using FetchActionsCallback =
+      base::OnceCallback<void(std::vector<ScannerActionViewModel> actions)>;
+
   explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
@@ -40,7 +45,7 @@ class ASH_EXPORT ScannerController {
   // returned via `callback`. If no session is active, then `callback` will be
   // run with an empty list of actions.
   void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-                            ScannerSession::FetchActionsCallback callback);
+                            FetchActionsCallback callback);
 
   // Should be called when the user has finished interacting with a Scanner
   // session. This will trigger relevant cleanup and eventually destroy the

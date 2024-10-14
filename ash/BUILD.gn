@@ -1237,6 +1237,8 @@ component("ash") {
     "projector/ui/projector_color_button.h",
     "scanner/scanner_action_handler.cc",
     "scanner/scanner_action_handler.h",
+    "scanner/scanner_action_view_model.cc",
+    "scanner/scanner_action_view_model.h",
     "scanner/scanner_controller.cc",
     "scanner/scanner_controller.h",
     "scanner/scanner_session.cc",

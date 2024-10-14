@@ -12,6 +12,7 @@
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/auto_reset.h"
@@ -50,7 +51,7 @@ class ScannerControllerTest : public AshTestBase {
 };
 
 TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
-  base::test::TestFuture<std::vector<ScannerAction>> actions_future;
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -66,7 +67,7 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
 }
 
 TEST_F(ScannerControllerTest, NoActionsFetchedWhenNoActiveSession) {
-  base::test::TestFuture<std::vector<ScannerAction>> actions_future;
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
 

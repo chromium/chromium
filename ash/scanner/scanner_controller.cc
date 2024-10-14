@@ -13,11 +13,29 @@
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_session.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
+
+namespace {
+
+void OnActionsFetched(ScannerController::FetchActionsCallback callback,
+                      std::vector<ScannerAction> actions) {
+  std::vector<ScannerActionViewModel> action_view_models;
+
+  action_view_models.reserve(actions.size());
+  for (ScannerAction& action : actions) {
+    action_view_models.emplace_back(std::move(action));
+  }
+
+  std::move(callback).Run(std::move(action_view_models));
+}
+
+}  // namespace
 
 ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
     : delegate_(std::move(delegate)) {}
@@ -42,12 +60,13 @@ ScannerSession* ScannerController::StartNewSession() {
 
 void ScannerController::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-    ScannerSession::FetchActionsCallback callback) {
+    ScannerController::FetchActionsCallback callback) {
   if (!scanner_session_) {
-    std::move(callback).Run(std::vector<ScannerAction>());
+    std::move(callback).Run({});
     return;
   }
-  scanner_session_->FetchActionsForImage(jpeg_bytes, std::move(callback));
+  scanner_session_->FetchActionsForImage(
+      jpeg_bytes, base::BindOnce(&OnActionsFetched, std::move(callback)));
 }
 
 void ScannerController::OnSessionUIClosed() {

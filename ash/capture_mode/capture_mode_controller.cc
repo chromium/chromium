@@ -27,9 +27,9 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -70,6 +70,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -1716,13 +1717,16 @@ void CaptureModeController::OnImageCapturedForSearch(
 }
 
 void CaptureModeController::OnScannerActionsFetched(
-    std::vector<ScannerAction> scanner_actions) {
-  for (const ScannerAction& _ : scanner_actions) {
-    // TODO(b/369470078): Replace the placeholders with a real callback, text
-    // and icon.
-    capture_mode_util::AddActionButton(views::Button::PressedCallback(),
-                                       /*text=*/u"Placeholder action",
-                                       &kCaptureModeIcon);
+    std::vector<ScannerActionViewModel> scanner_actions) {
+  for (ScannerActionViewModel& action : scanner_actions) {
+    std::u16string text = action.GetText();
+    const gfx::VectorIcon& icon = action.GetIcon();
+    // TODO(b/369470078): Replace the placeholder action finished callback with
+    // a callback that closes the capture mode session.
+    capture_mode_util::AddActionButton(
+        std::move(action).ToCallback(
+            /*action_finished_callback=*/base::DoNothing()),
+        std::move(text), &icon);
   }
 }
 
