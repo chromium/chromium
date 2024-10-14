@@ -66,6 +66,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
@@ -1959,7 +1960,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryLongpressEnabledBrowserTest,
   // Show the clipboard history menu via the Ctrl+V long-press shortcut so that
   // the menu's educational footer shows.
   EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MENU_SOURCE_NONE,
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
       crosapi::mojom::ClipboardHistoryControllerShowSource::
           kControlVLongpress));
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());

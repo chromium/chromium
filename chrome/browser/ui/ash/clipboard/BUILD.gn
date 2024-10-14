@@ -124,6 +124,7 @@ source_set("browser_tests") {
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/data_transfer_policy",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events:event_constants",
     "//ui/events:events_base",
     "//ui/events:test_support",
