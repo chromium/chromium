@@ -6,6 +6,7 @@
 
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -38,7 +39,8 @@ bool IsAutofillPredictionImprovementsSupported(const PrefService* prefs) {
          prefs->GetInteger(
              optimization_guide::prefs::
                  kAutofillPredictionImprovementsEnterprisePolicyAllowed) !=
-             kAutofillPredictionSettingsDisabled;
+             kAutofillPredictionSettingsDisabled &&
+         prefs->GetBoolean(autofill::prefs::kAutofillProfileEnabled);
 }
 
 }  // namespace autofill_prediction_improvements

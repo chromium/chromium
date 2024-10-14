@@ -25,6 +25,7 @@ using optimization_guide::model_execution::prefs::
 struct GetAutofillPredictionSettingsPolicyParam {
   ModelExecutionEnterprisePolicyValue policy =
       ModelExecutionEnterprisePolicyValue::kAllow;
+  bool autofill_enabled = true;
   bool expectation = true;
 };
 
@@ -45,23 +46,41 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         GetAutofillPredictionSettingsPolicyParam{
             .policy = ModelExecutionEnterprisePolicyValue::kAllow,
+            .autofill_enabled = true,
             .expectation = true},
         GetAutofillPredictionSettingsPolicyParam{
             .policy = ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging,
+            .autofill_enabled = true,
             .expectation = true},
         GetAutofillPredictionSettingsPolicyParam{
             .policy = ModelExecutionEnterprisePolicyValue::kDisable,
+            .autofill_enabled = true,
+            .expectation = false},
+        GetAutofillPredictionSettingsPolicyParam{
+            .policy = ModelExecutionEnterprisePolicyValue::kAllow,
+            .autofill_enabled = false,
+            .expectation = false},
+        GetAutofillPredictionSettingsPolicyParam{
+            .policy = ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging,
+            .autofill_enabled = false,
+            .expectation = false},
+        GetAutofillPredictionSettingsPolicyParam{
+            .policy = ModelExecutionEnterprisePolicyValue::kDisable,
+            .autofill_enabled = false,
             .expectation = false}));
 
 TEST_P(AutofillPredictionSettingsPolicyTest,
        IsAutofillPredictionImprovementsSupported) {
   const char* kEnterprisePref = optimization_guide::prefs::
       kAutofillPredictionImprovementsEnterprisePolicyAllowed;
+  const char* kAutofillPref = autofill::prefs::kAutofillProfileEnabled;
 
   prefs().registry()->RegisterIntegerPref(kEnterprisePref, 0);
+  prefs().registry()->RegisterBooleanPref(kAutofillPref, true);
 
   prefs().SetManagedPref(kEnterprisePref,
                          base::Value(base::to_underlying(GetParam().policy)));
+  prefs().SetUserPref(kAutofillPref, base::Value(GetParam().autofill_enabled));
 
   EXPECT_EQ(IsAutofillPredictionImprovementsSupported(&prefs()),
             GetParam().expectation);
