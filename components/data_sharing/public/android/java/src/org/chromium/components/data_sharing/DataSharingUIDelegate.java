@@ -18,7 +18,6 @@ import org.chromium.components.data_sharing.configs.AvatarConfig;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
-import org.chromium.components.data_sharing.configs.GroupMemberConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
 
@@ -84,22 +83,6 @@ public interface DataSharingUIDelegate {
             List<String> emails,
             Callback<Boolean> success,
             AvatarConfig config) {}
-
-    /**
-     * Method to create group member list view.
-     *
-     * @param activity Used to associate with the given view group.
-     * @param view The UI will be drawn inside the provided view.
-     * @param groupId Used to associate the view with the group members.
-     * @param tokenSecret Used to authenticate the user for whom the group member list is shown.
-     * @param config Used to set properties for the API.
-     */
-    default void createGroupMemberListView(
-            @NonNull Activity activity,
-            @NonNull ViewGroup view,
-            String groupId,
-            String tokenSecret,
-            GroupMemberConfig config) {}
 
     /**
      * Handle the intercepted URL to show relevant data sharing group information.

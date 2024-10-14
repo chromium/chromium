@@ -21,7 +21,6 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
-import org.chromium.components.data_sharing.configs.GroupMemberConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
 
@@ -81,19 +80,6 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
             AvatarConfig config) {
         if (mInternalDelegate != null) {
             mInternalDelegate.showAvatars(context, views, emails, success, config);
-        }
-    }
-
-    @Override
-    public void createGroupMemberListView(
-            @NonNull Activity activity,
-            @NonNull ViewGroup view,
-            String groupId,
-            String tokenSecret,
-            GroupMemberConfig config) {
-        if (mInternalDelegate != null) {
-            mInternalDelegate.createGroupMemberListView(
-                    activity, view, groupId, tokenSecret, config);
         }
     }
 
