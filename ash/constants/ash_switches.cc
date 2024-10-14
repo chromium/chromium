@@ -681,8 +681,11 @@ const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
 
-// Forces a chip with fake coral data to be shown.
-const char kForceBirchFakeCoral[] = "force-birch-fake-coral";
+// Forces a fake backend to generate coral groups.
+const char kForceBirchFakeCoralBackend[] = "force-birch-fake-coral-backend";
+
+// Forces a chip with fake coral group to be shown.
+const char kForceBirchFakeCoralGroup[] = "force-birch-fake-coral-group";
 
 // Forces a fetch of Birch data whenever an informed restore session starts.
 const char kForceBirchFetch[] = "force-birch-fetch";

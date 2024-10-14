@@ -181,9 +181,10 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
   Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
   coral_item_remover_ = std::make_unique<CoralItemRemover>();
 
-  // Using a default fake response when --force-birch-fake-coral is enabled.
+  // Using a default fake response when --force-birch-fake-coral-group is
+  // enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceBirchFakeCoral)) {
+          switches::kForceBirchFakeCoralGroup)) {
     auto fake_response = std::make_unique<CoralResponse>();
     // TODO(owenzhang): Remove placeholder page_urls.
     auto fake_group = coral::mojom::Group::New();

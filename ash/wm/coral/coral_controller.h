@@ -15,6 +15,8 @@
 
 namespace ash {
 
+class FakeCoralService;
+
 class ASH_EXPORT CoralRequest {
  public:
   using ContentItem = coral::mojom::EntityPtr;
@@ -83,7 +85,9 @@ class ASH_EXPORT CoralController {
  private:
   using CoralService = coral::mojom::CoralService;
 
-  void EnsureCoralService();
+  // Requests coral service from service manager and returns the pointer of the
+  // service instance.
+  CoralService* EnsureCoralService();
 
   // Used as the callback of mojom::CoralService::Group.
   void HandleGroupResult(CoralResponseCallback callback,
@@ -98,6 +102,8 @@ class ASH_EXPORT CoralController {
       coral::mojom::CacheEmbeddingsResultPtr result);
 
   mojo::Remote<CoralService> coral_service_;
+
+  std::unique_ptr<FakeCoralService> fake_service_;
 
   base::WeakPtrFactory<CoralController> weak_factory_{this};
 };

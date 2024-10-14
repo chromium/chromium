@@ -82,7 +82,7 @@ class CoralBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kForceBirchFakeCoral);
+    command_line->AppendSwitch(switches::kForceBirchFakeCoralGroup);
   }
 
  private:
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_OpenNewDesk) {
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
 
   // TODO(sammiequon): This title is currently hardcoded in ash for
-  // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
+  // `switches::kForceBirchFakeCoralGroup`. Update to use a test coral provider
   // instead.
   EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
                                desks_controller->GetActiveDeskIndex()));

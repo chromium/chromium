@@ -4,9 +4,12 @@
 
 #include "ash/wm/coral/coral_controller.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/shell.h"
+#include "ash/wm/coral/fake_coral_service.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -67,8 +70,8 @@ void CoralController::GenerateContentGroups(const CoralRequest& request,
     return;
   }
 
-  EnsureCoralService();
-  if (!coral_service_) {
+  CoralService* coral_service = EnsureCoralService();
+  if (!coral_service) {
     LOG(ERROR) << "Failed to connect to coral service.";
     std::move(callback).Run(nullptr);
     return;
@@ -87,7 +90,7 @@ void CoralController::GenerateContentGroups(const CoralRequest& request,
   for (size_t i = 0; i < items_in_request; i++) {
     group_request->entities.push_back(request.content()[i]->Clone());
   }
-  coral_service_->Group(
+  coral_service->Group(
       std::move(group_request),
       base::BindOnce(&CoralController::HandleGroupResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -95,8 +98,8 @@ void CoralController::GenerateContentGroups(const CoralRequest& request,
 
 void CoralController::CacheEmbeddings(const CoralRequest& request,
                                       base::OnceCallback<void(bool)> callback) {
-  EnsureCoralService();
-  if (!coral_service_) {
+  CoralService* coral_service = EnsureCoralService();
+  if (!coral_service) {
     LOG(ERROR) << "Failed to connect to coral service.";
     std::move(callback).Run(false);
     return;
@@ -109,21 +112,30 @@ void CoralController::CacheEmbeddings(const CoralRequest& request,
     cache_embeddings_request->entities.push_back(entity->Clone());
   }
 
-  coral_service_->CacheEmbeddings(
+  coral_service->CacheEmbeddings(
       std::move(cache_embeddings_request),
       base::BindOnce(&CoralController::HandleCacheEmbeddingsResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CoralController::EnsureCoralService() {
-  if (coral_service_) {
-    return;
+CoralController::CoralService* CoralController::EnsureCoralService() {
+  // Generate a fake service if --force-birch-fake-coral-backend is enabled.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchFakeCoralBackend)) {
+    if (!fake_service_) {
+      fake_service_ = std::make_unique<FakeCoralService>();
+    }
+    return fake_service_.get();
   }
-  auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
-  coral_service_.reset_on_disconnect();
-  ash::mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosCoralService, std::nullopt,
-      std::move(pipe_handle));
+
+  if (!coral_service_) {
+    auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
+    coral_service_.reset_on_disconnect();
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosCoralService, std::nullopt,
+        std::move(pipe_handle));
+  }
+  return coral_service_.get();
 }
 
 void CoralController::HandleGroupResult(CoralResponseCallback callback,

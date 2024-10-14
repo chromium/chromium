@@ -214,7 +214,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFakeDriveFsLauncherSocketPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFingerprintSensorLocation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFirstExecAfterBoot[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchFakeCoral[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchFakeCoralBackend[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchFakeCoralGroup[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchFetch[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchReleaseNotes[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

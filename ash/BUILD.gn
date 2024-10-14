@@ -2835,6 +2835,8 @@ component("ash") {
     "wm/container_finder.h",
     "wm/coral/coral_controller.cc",
     "wm/coral/coral_controller.h",
+    "wm/coral/fake_coral_service.cc",
+    "wm/coral/fake_coral_service.h",
     "wm/cursor_manager_chromeos.cc",
     "wm/cursor_manager_chromeos.h",
     "wm/default_state.cc",

@@ -39,6 +39,7 @@ struct TabsAndApps {
 
 // Splits an entity pointer vector `content` into its tab and app components.
 // This is so we can use EXPECT_THAT in tests.
+// TODO(sammiequon|zxdan): move this to coral_util.
 TabsAndApps SplitContentData(const std::vector<EntityPtr>& content) {
   TabsAndApps split;
 
