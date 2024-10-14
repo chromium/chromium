@@ -118,9 +118,7 @@ class DownloadBubbleRowView : public views::View,
  private:
   void AddMainPageButton(DownloadCommands::Command command,
                          const std::u16string& button_string);
-  views::ImageButton* AddQuickAction(DownloadCommands::Command command);
-  views::ImageButton* GetActionButtonForCommand(
-      DownloadCommands::Command command);
+  void AddQuickAction(DownloadCommands::Command command);
   std::u16string GetAccessibleNameForQuickAction(
       DownloadCommands::Command command);
   std::u16string GetAccessibleNameForMainPageButton(
@@ -191,11 +189,8 @@ class DownloadBubbleRowView : public views::View,
       main_page_buttons_;
 
   // Quick Actions on the main page.
-  raw_ptr<views::ImageButton> resume_action_ = nullptr;
-  raw_ptr<views::ImageButton> pause_action_ = nullptr;
-  raw_ptr<views::ImageButton> show_in_folder_action_ = nullptr;
-  raw_ptr<views::ImageButton> cancel_action_ = nullptr;
-  raw_ptr<views::ImageButton> open_when_complete_action_ = nullptr;
+  base::flat_map<DownloadCommands::Command, raw_ptr<views::ImageButton>>
+      quick_actions_;
 
   // Holder for the main button.
   raw_ptr<views::FlexLayoutView> main_button_holder_ = nullptr;
