@@ -528,9 +528,7 @@ signin::AccountsInCookieJarInfo GaiaCookieManagerService::ListAccounts() {
     }
   }
 
-  return signin::AccountsInCookieJarInfo(
-      /*accounts_are_fresh=*/!list_accounts_stale_,
-      /*accounts=*/accounts_);
+  return CreateAccountsInCookieJarInfo();
 }
 
 void GaiaCookieManagerService::TriggerListAccounts() {
@@ -608,9 +606,7 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
 
   if (gaia_accounts_updated_in_cookie_callback_) {
     gaia_accounts_updated_in_cookie_callback_.Run(
-        signin::AccountsInCookieJarInfo(
-            /*accounts_are_fresh=*/!list_accounts_stale_,
-            /*accounts=*/accounts_),
+        CreateAccountsInCookieJarInfo(),
         GoogleServiceAuthError::AuthErrorNone());
   }
 }
@@ -728,7 +724,8 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
   // ListAccounts request is still sitting in queue.
   if (gaia_accounts_updated_in_cookie_callback_) {
     gaia_accounts_updated_in_cookie_callback_.Run(
-        ListAccounts(), GoogleServiceAuthError::AuthErrorNone());
+        CreateAccountsInCookieJarInfo(),
+        GoogleServiceAuthError::AuthErrorNone());
   }
 }
 
@@ -761,9 +758,11 @@ void GaiaCookieManagerService::OnListAccountsFailure(
   }
 
   RecordListAccountsFailure(error.state());
+  list_accounts_stale_ = true;
 
   if (gaia_accounts_updated_in_cookie_callback_) {
-    gaia_accounts_updated_in_cookie_callback_.Run(ListAccounts(), error);
+    gaia_accounts_updated_in_cookie_callback_.Run(
+        CreateAccountsInCookieJarInfo(), error);
   }
 
   HandleNextRequest();
@@ -922,4 +921,11 @@ void GaiaCookieManagerService::OptimizeListAccounts() {
     requests_.pop_front();
     requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
   }
+}
+
+signin::AccountsInCookieJarInfo
+GaiaCookieManagerService::CreateAccountsInCookieJarInfo() {
+  return signin::AccountsInCookieJarInfo(
+      /*accounts_are_fresh=*/!list_accounts_stale_,
+      /*accounts=*/accounts_);
 }

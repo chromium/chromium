@@ -342,6 +342,11 @@ class GaiaCookieManagerService
   // execution.
   void OptimizeListAccounts();
 
+  // Helper method to construct `AccountsInCookieJarInfo` from
+  // `list_accounts_stale_` and `accounts_`. Similar to `ListAccounts`, but
+  // doesn't trigger the actual request to refresh the list.
+  signin::AccountsInCookieJarInfo CreateAccountsInCookieJarInfo();
+
   const raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   raw_ptr<SigninClient> signin_client_;
