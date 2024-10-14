@@ -3794,7 +3794,7 @@
       // only <option>, <optgroup>, and <hr>.
       // https://github.com/whatwg/html/issues/10310
       name: "SelectParserRelaxation",
-      status: "experimental",
+      status: "stable",
     },
     {
       // This flag is a performance optimization which reorganizes some code
