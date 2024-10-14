@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck"
 description = "A crate for mucking around with piles of bytes."
-version = "1.18.0"
+version = "1.19.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"
@@ -13,10 +13,16 @@ exclude = ["/pedantic.bat"]
 
 [features]
 # In v2 we'll fix these names to be more "normal".
+
+# Enable deriving the various `bytemuck` traits.
 derive = ["bytemuck_derive"]
+# Enable features requiring items from `extern crate alloc`.
 extern_crate_alloc = []
+# Enable features requiring items from `extern crate std`.
 extern_crate_std = ["extern_crate_alloc"]
+# Implement `Zeroable` for `MaybeUninit`.
 zeroable_maybe_uninit = []
+# Implement `Zeroable` for `std::sync::atomic` types.
 zeroable_atomics = []
 
 # All MSRV notes below are GUIDELINES and future versions may require even more
@@ -39,6 +45,9 @@ const_zeroed = [] # MSRV 1.75.0: support const `zeroed()`
 # Do not use if you can avoid it, because this is **unsound**!!!!
 unsound_ptr_pod_impl = []
 
+# MSRV 1.46.0: adds the `#[track_caller]` attribute to functions which may panic
+track_caller = []
+
 # Enables all features that are both sound and supported on the latest stable
 # version of Rust, with the exception of `extern_crate_alloc` and
 # `extern_crate_std`.
@@ -51,13 +60,17 @@ latest_stable_rust = [
   "derive",
   "min_const_generics",
   "must_cast",
+  "track_caller",
   "wasm_simd",
   "zeroable_atomics",
   "zeroable_maybe_uninit",
 ]
 
-# NOT SEMVER SUPPORTED! TEMPORARY ONLY!
+# ALL FEATURES BELOW THIS ARE NOT SEMVER SUPPORTED! TEMPORARY ONLY!
+
+# Enable support for `std::simd` types.
 nightly_portable_simd = []
+# Enable support for unstable `std::arch` types (such as the AVX512 types).
 nightly_stdsimd = []
 # Enable `f16` and `f128`
 nightly_float = []

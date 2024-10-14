@@ -292,7 +292,7 @@ pub fn try_pod_read_unaligned<T: CheckedBitPattern>(
   }
 }
 
-/// Try to cast `T` into `U`.
+/// Try to cast `A` into `B`.
 ///
 /// Note that for this particular type of cast, alignment isn't a factor. The
 /// input value is semantically copied into the function and then returned to a
@@ -316,7 +316,7 @@ pub fn try_cast<A: NoUninit, B: CheckedBitPattern>(
   }
 }
 
-/// Try to convert a `&T` into `&U`.
+/// Try to convert a `&A` into `&B`.
 ///
 /// ## Failure
 ///
@@ -336,7 +336,7 @@ pub fn try_cast_ref<A: NoUninit, B: CheckedBitPattern>(
   }
 }
 
-/// Try to convert a `&mut T` into `&mut U`.
+/// Try to convert a `&mut A` into `&mut B`.
 ///
 /// As [`try_cast_ref`], but `mut`.
 #[inline]
@@ -413,6 +413,7 @@ pub fn try_cast_slice_mut<
 ///
 /// This is [`try_from_bytes`] but will panic on error.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn from_bytes<T: CheckedBitPattern>(s: &[u8]) -> &T {
   match try_from_bytes(s) {
     Ok(t) => t,
@@ -426,6 +427,7 @@ pub fn from_bytes<T: CheckedBitPattern>(s: &[u8]) -> &T {
 ///
 /// This is [`try_from_bytes_mut`] but will panic on error.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn from_bytes_mut<T: NoUninit + CheckedBitPattern>(s: &mut [u8]) -> &mut T {
   match try_from_bytes_mut(s) {
     Ok(t) => t,
@@ -438,6 +440,7 @@ pub fn from_bytes_mut<T: NoUninit + CheckedBitPattern>(s: &mut [u8]) -> &mut T {
 /// ## Panics
 /// * This is like `try_pod_read_unaligned` but will panic on failure.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn pod_read_unaligned<T: CheckedBitPattern>(bytes: &[u8]) -> T {
   match try_pod_read_unaligned(bytes) {
     Ok(t) => t,
@@ -445,12 +448,13 @@ pub fn pod_read_unaligned<T: CheckedBitPattern>(bytes: &[u8]) -> T {
   }
 }
 
-/// Cast `T` into `U`
+/// Cast `A` into `B`
 ///
 /// ## Panics
 ///
 /// * This is like [`try_cast`], but will panic on a size mismatch.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn cast<A: NoUninit, B: CheckedBitPattern>(a: A) -> B {
   match try_cast(a) {
     Ok(t) => t,
@@ -458,12 +462,13 @@ pub fn cast<A: NoUninit, B: CheckedBitPattern>(a: A) -> B {
   }
 }
 
-/// Cast `&mut T` into `&mut U`.
+/// Cast `&mut A` into `&mut B`.
 ///
 /// ## Panics
 ///
 /// This is [`try_cast_mut`] but will panic on error.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn cast_mut<
   A: NoUninit + AnyBitPattern,
   B: NoUninit + CheckedBitPattern,
@@ -476,12 +481,13 @@ pub fn cast_mut<
   }
 }
 
-/// Cast `&T` into `&U`.
+/// Cast `&A` into `&B`.
 ///
 /// ## Panics
 ///
 /// This is [`try_cast_ref`] but will panic on error.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn cast_ref<A: NoUninit, B: CheckedBitPattern>(a: &A) -> &B {
   match try_cast_ref(a) {
     Ok(t) => t,
@@ -495,6 +501,7 @@ pub fn cast_ref<A: NoUninit, B: CheckedBitPattern>(a: &A) -> &B {
 ///
 /// This is [`try_cast_slice`] but will panic on error.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn cast_slice<A: NoUninit, B: CheckedBitPattern>(a: &[A]) -> &[B] {
   match try_cast_slice(a) {
     Ok(t) => t,
@@ -502,12 +509,13 @@ pub fn cast_slice<A: NoUninit, B: CheckedBitPattern>(a: &[A]) -> &[B] {
   }
 }
 
-/// Cast `&mut [T]` into `&mut [U]`.
+/// Cast `&mut [A]` into `&mut [B]`.
 ///
 /// ## Panics
 ///
 /// This is [`try_cast_slice_mut`] but will panic on error.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn cast_slice_mut<
   A: NoUninit + AnyBitPattern,
   B: NoUninit + CheckedBitPattern,

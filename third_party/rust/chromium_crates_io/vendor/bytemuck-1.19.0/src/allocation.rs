@@ -891,6 +891,7 @@ pub fn box_bytes_of<T: sealed::BoxBytesOf + ?Sized>(input: Box<T>) -> BoxBytes {
 /// This is [`try_from_box_bytes`] but will panic on error and the input will be
 /// dropped.
 #[inline]
+#[cfg_attr(feature = "track_caller", track_caller)]
 pub fn from_box_bytes<T: sealed::FromBoxBytes + ?Sized>(
   input: BoxBytes,
 ) -> Box<T> {

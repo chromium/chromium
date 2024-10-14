@@ -118,6 +118,7 @@ pub unsafe trait Contiguous: Copy + 'static {
   /// This is undefined behavior regardless, so it could have been the nasal
   /// demons at that point anyway ;).
   #[inline]
+  #[cfg_attr(feature = "track_caller", track_caller)]
   fn from_integer(value: Self::Int) -> Option<Self> {
     // Guard against an illegal implementation of Contiguous. Annoyingly we
     // can't rely on `transmute` to do this for us (see below), but
@@ -153,6 +154,7 @@ pub unsafe trait Contiguous: Copy + 'static {
   /// This is undefined behavior regardless, so it could have been the nasal
   /// demons at that point anyway ;).
   #[inline]
+  #[cfg_attr(feature = "track_caller", track_caller)]
   fn into_integer(self) -> Self::Int {
     // Guard against an illegal implementation of Contiguous. Annoyingly we
     // can't rely on `transmute` to do the size check for us (see

@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.18.0"
+version = "1.19.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = ["/pedantic.bat"]
@@ -107,6 +107,7 @@ latest_stable_rust = [
     "derive",
     "min_const_generics",
     "must_cast",
+    "track_caller",
     "wasm_simd",
     "zeroable_atomics",
     "zeroable_maybe_uninit",
@@ -117,6 +118,7 @@ nightly_docs = []
 nightly_float = []
 nightly_portable_simd = []
 nightly_stdsimd = []
+track_caller = []
 unsound_ptr_pod_impl = []
 wasm_simd = []
 zeroable_atomics = []
