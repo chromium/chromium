@@ -157,6 +157,8 @@ source_set("web_applications") {
     "isolated_web_apps/isolation_data.h",
     "isolated_web_apps/iwa_identity_validator.cc",
     "isolated_web_apps/iwa_identity_validator.h",
+    "isolated_web_apps/jobs/get_isolated_web_app_size_job.cc",
+    "isolated_web_apps/jobs/get_isolated_web_app_size_job.h",
     "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.cc",
     "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h",
     "isolated_web_apps/pending_install_info.cc",

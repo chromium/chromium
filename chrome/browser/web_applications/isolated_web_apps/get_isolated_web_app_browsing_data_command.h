@@ -23,6 +23,8 @@ class Origin;
 
 namespace web_app {
 
+class GetIsolatedWebAppSizeJob;
+
 // Computes the total browsing data usage in bytes of every installed Isolated
 // Web App.
 class GetIsolatedWebAppBrowsingDataCommand
@@ -39,15 +41,10 @@ class GetIsolatedWebAppBrowsingDataCommand
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
 
  private:
-  void StoragePartitionSizeFetched(const url::Origin& iwa_origin, int64_t size);
-  void MaybeCompleteCommand();
-
-  raw_ptr<Profile> profile_ = nullptr;
-
+  void CompleteCommand(CommandResult command_result,
+                       base::flat_map<url::Origin, int64_t> results);
   std::unique_ptr<AllAppsLock> lock_;
-
-  int pending_task_count_ = 0;
-  base::flat_map<url::Origin, int64_t> browsing_data_;
+  std::unique_ptr<GetIsolatedWebAppSizeJob> get_isolated_web_app_size_job_;
 
   base::WeakPtrFactory<GetIsolatedWebAppBrowsingDataCommand> weak_factory_{
       this};
