@@ -39,6 +39,7 @@ class VirtualTrackpadView : public views::View {
   static void Toggle();
 
   // views::View:
+  void AddedToWidget() override;
   void Layout(PassKey) override;
 
   static ASH_EXPORT views::Widget* GetWidgetForTesting();
