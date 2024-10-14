@@ -685,6 +685,10 @@ const base::FeatureParam<int>
 BASE_FEATURE(kAutofillLogDeduplicationMetrics,
              "AutofillLogDeduplicationMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<size_t>
+    kAutofillLogDeduplicationMetricsMaxProfilesSizeParam{
+        &kAutofillLogDeduplicationMetrics, "max_profiles_size",
+        100};
 
 // Currently, the importing logic offers new profile creation if the observed
 // profile is non-mergeable with any existing profile. With this feature, low-
