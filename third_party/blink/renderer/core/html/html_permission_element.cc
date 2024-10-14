@@ -951,14 +951,14 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
 
   switch (result) {
     case EmbeddedPermissionControlResult::kDismissed:
-      DispatchEvent(*Event::Create(event_type_names::kDismiss));
+      DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kDismiss));
       return;
     case EmbeddedPermissionControlResult::kGranted:
       aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
-      DispatchEvent(*Event::Create(event_type_names::kResolve));
+      DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
-      DispatchEvent(*Event::Create(event_type_names::kResolve));
+      DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kNotSupported:
       AddConsoleError(String::Format(
@@ -985,7 +985,8 @@ void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
 
   // Always keep `clicking_enabled_state_` up-to-date
   clicking_enabled_state_ = state;
-  DispatchEvent(*Event::Create(event_type_names::kValidationstatuschange));
+  DispatchEvent(*Event::CreateCancelableBubble(
+      event_type_names::kValidationstatuschange));
 }
 
 void HTMLPermissionElement::UpdateSnapshot() {
