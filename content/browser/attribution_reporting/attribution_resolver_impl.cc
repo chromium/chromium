@@ -139,6 +139,36 @@ void RecordAttributionResult(const bool has_event_level_report,
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DebugKeyUsage)
+enum class DebugKeyUsage {
+  kNone = 0,
+  kSourceOnly = 1,
+  kTriggerOnly = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportDebugKeyUsage)
+
+void RecordDebugKeyUsage(const AttributionReport& report) {
+  bool has_source_debug_key = report.GetSourceDebugKey().has_value();
+  bool has_trigger_debug_key = report.attribution_info().debug_key.has_value();
+
+  DebugKeyUsage usage = DebugKeyUsage::kNone;
+  if (has_source_debug_key && has_trigger_debug_key) {
+    usage = DebugKeyUsage::kBoth;
+  } else if (has_source_debug_key) {
+    usage = DebugKeyUsage::kSourceOnly;
+  } else if (has_trigger_debug_key) {
+    usage = DebugKeyUsage::kTriggerOnly;
+  }
+
+  base::UmaHistogramEnumeration("Conversions.AttributionReportDebugKeyUsage",
+                                usage);
+}
+
 }  // namespace
 
 AttributionResolverImpl::AttributionResolverImpl(
@@ -520,6 +550,13 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
         if (event_level_status == EventLevelResult::kInternalError ||
             aggregatable_status == AggregatableResult::kInternalError) {
           min_null_aggregatable_report_time.reset();
+        }
+
+        if (new_event_level_report.has_value()) {
+          RecordDebugKeyUsage(*new_event_level_report);
+        }
+        if (new_aggregatable_report.has_value()) {
+          RecordDebugKeyUsage(*new_aggregatable_report);
         }
 
         return CreateReportResult(

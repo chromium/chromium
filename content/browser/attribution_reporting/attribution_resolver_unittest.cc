@@ -5320,4 +5320,44 @@ TEST_F(AttributionResolverTest, TriggerAttributesOnMatchingScope) {
           Field(&AttributionReport::EventLevelData::source_event_id, 1u))));
 }
 
+TEST_F(AttributionResolverTest, DebugKey) {
+  const struct {
+    std::optional<uint64_t> source_debug_key;
+    std::optional<uint64_t> trigger_debug_key;
+    int expected_metric;
+  } kTestCases[] = {
+      {
+          std::nullopt, std::nullopt,
+          0,  // kNone
+      },
+      {
+          1, std::nullopt,
+          1,  // kSourceOnly
+      },
+      {
+          std::nullopt, 1,
+          2,  // kTriggerOnly
+      },
+      {
+          1, 2,
+          3,  // kBoth
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    storage()->StoreSource(TestAggregatableSourceProvider()
+                               .GetBuilder()
+                               .SetDebugKey(test_case.source_debug_key)
+                               .SetDebugCookieSet(true)
+                               .Build());
+    storage()->MaybeCreateAndStoreReport(
+        DefaultAggregatableTriggerBuilder()
+            .SetDebugKey(test_case.trigger_debug_key)
+            .Build());
+    histograms.ExpectBucketCount("Conversions.AttributionReportDebugKeyUsage",
+                                 test_case.expected_metric, 2);
+  }
+}
+
 }  // namespace content

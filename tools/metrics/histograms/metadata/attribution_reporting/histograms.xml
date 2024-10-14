@@ -366,6 +366,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AttributionReportDebugKeyUsage"
+    enum="ConversionReportDebugKeyUsage" expires_after="2025-04-10">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the usage of debug keys in event-level and aggregatable attribution
+    reports. Recorded once for each event-level and aggregatable attribution
+    report created, not recorded for fake event-level reports or null
+    aggregatable reports.
+
+    Note that the debug keys are only set in the report body if both source and
+    trigger debug keys are present.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AttributionResult"
     enum="ConversionAttributionResult" expires_after="2025-03-30">
   <owner>linnan@chromium.org</owner>

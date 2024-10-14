@@ -300,6 +300,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/attribution_reporting/registrar_info.h:RegistrarIssue) -->
 
+<!-- LINT.IfChange(ConversionReportDebugKeyUsage) -->
+
+<enum name="ConversionReportDebugKeyUsage">
+  <int value="0" label="None"/>
+  <int value="1" label="Source only"/>
+  <int value="2" label="Trigger only"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:DebugKeyUsage) -->
+
 <!-- LINT.IfChange(ConversionReportSendOutcome) -->
 
 <enum name="ConversionReportSendOutcome">
