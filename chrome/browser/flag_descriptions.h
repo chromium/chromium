@@ -3678,6 +3678,9 @@ extern const char kCrostiniGpuSupportDescription[];
 extern const char kCrostiniResetLxdDbName[];
 extern const char kCrostiniResetLxdDbDescription[];
 
+extern const char kCrostiniContainerlessName[];
+extern const char kCrostiniContainerlessDescription[];
+
 extern const char kCrostiniMultiContainerName[];
 extern const char kCrostiniMultiContainerDescription[];
 

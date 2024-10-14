@@ -1886,6 +1886,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "crostini-containerless",
+    "owners": [ "clumptini@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "crostini-gpu-support",
     "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
     "expiry_milestone": 150

@@ -23816,6 +23816,7 @@ from previous Chrome versions.
   <int value="1444324195" label="ForceReSyncDrive:enabled"/>
   <int value="1444347795"
       label="PageInfoAboutThisSiteDescriptionPlaceholder:enabled"/>
+  <int value="1444527172" label="CrostiniContainerless:disabled"/>
   <int value="1444542845" label="ClayBlocking:disabled"/>
   <int value="1444634753" label="OsFeedbackJelly:disabled"/>
   <int value="1444719196"
@@ -25257,6 +25258,7 @@ from previous Chrome versions.
   <int value="2005009211" label="OmniboxAdaptiveSuggestionsCount:disabled"/>
   <int value="2005245012" label="SecurityInterstitialsDarkMode:disabled"/>
   <int value="2005344314" label="AutofillEnableServerIban:disabled"/>
+  <int value="2005475213" label="CrostiniContainerless:enabled"/>
   <int value="2005614493" label="tab-management-experiment-type-dill"/>
   <int value="2006374447" label="EnableAIRewriterAPI:enabled"/>
   <int value="2006413281"

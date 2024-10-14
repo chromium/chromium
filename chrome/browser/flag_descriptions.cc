@@ -6407,6 +6407,10 @@ const char kCrostiniResetLxdDbName[] = "Crostini Reset LXD DB on launch";
 const char kCrostiniResetLxdDbDescription[] =
     "Recreates the LXD database every time we launch it";
 
+const char kCrostiniContainerlessName[] = "Crostini without LXD containers";
+const char kCrostiniContainerlessDescription[] =
+    "Experimental support for Crostini without LXD containers (aka Baguette)";
+
 const char kCrostiniMultiContainerName[] = "Allow multiple Crostini containers";
 const char kCrostiniMultiContainerDescription[] =
     "Experimental UI for creating and managing multiple Crostini containers";

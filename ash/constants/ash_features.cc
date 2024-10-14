@@ -486,6 +486,11 @@ BASE_FEATURE(kCryptauthAttestationSyncing,
              "CryptauthAttestationSyncing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables experimental containerless Crostini VMs.
+BASE_FEATURE(kCrostiniContainerless,
+             "CrostiniContainerless",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Crostini GPU support.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE virtio_gpu flag.
