@@ -182,7 +182,6 @@ TEST(CompleteTest, RejectCompletePromiseAfterTimeout) {
       ->OnPaymentResponse(BuildPaymentResponseForTest());
   request->OnCompleteTimeoutForTesting();
 
-  String error_message;
   request->Complete(scope.GetScriptState(),
                     PaymentStateResolver::PaymentComplete::kSuccess,
                     scope.GetExceptionState());

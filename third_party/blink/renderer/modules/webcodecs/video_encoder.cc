@@ -1064,7 +1064,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0u);
 
-  String js_error_message;
   if (request->encodeOpts->hasUpdateBuffer()) {
     auto* buffer = request->encodeOpts->updateBuffer();
     if (buffer->owner() != this) {

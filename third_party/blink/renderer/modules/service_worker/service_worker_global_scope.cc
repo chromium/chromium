@@ -2634,7 +2634,6 @@ void ServiceWorkerGlobalScope::ExecuteScriptForTest(
   }
 
   base::Value value;
-  String exception;
 
   // TODO(devlin): Is this thread-safe? Platform::Current() is set during
   // blink initialization and the created V8ValueConverter is constructed
