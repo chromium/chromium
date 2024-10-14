@@ -61,6 +61,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnStyle() const { return depends_on_style_; }
   bool DependsOnStuck() const { return depends_on_snapped_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
+  bool DependsOnSize() const { return depends_on_size_; }
+  bool MayDependOnWritingDirection() const {
+    return DependsOnSize() || DependsOnStuck() || DependsOnSnapped();
+  }
 
   enum class Change : uint8_t {
     // The update has no effect on the evaluation of queries associated with
@@ -122,6 +126,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Re-evaluate results of size queries which may have changed for computed
   // style changes like font and writing direction.
   Change StyleAffectingSizeChanged();
+
+  // Re-evaluate results of scroll-state() queries which may have changed for
+  // computed style changes like writing direction.
+  Change StyleAffectingScrollStateChanged();
 
   // Update the CSSContainerValues with the new size and contained axes to be
   // used for queries.
@@ -199,6 +207,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool depends_on_style_ = false;
   bool depends_on_stuck_ = false;
   bool depends_on_snapped_ = false;
+  bool depends_on_size_ = false;
 };
 
 }  // namespace blink

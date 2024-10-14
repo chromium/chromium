@@ -264,6 +264,9 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative) {
     match_result.SetDependsOnRootFontContainerQueries();
   }
+  if (!depends_on_size_) {
+    depends_on_size_ = query.Selector().SelectsSizeContainers();
+  }
   if (!depends_on_style_) {
     depends_on_style_ = query.Selector().SelectsStyleContainers();
   }
@@ -405,6 +408,19 @@ ContainerQueryEvaluator::StyleAffectingSizeChanged() {
     ClearResults(change, kSizeContainer);
   }
   return change;
+}
+
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::StyleAffectingScrollStateChanged() {
+  Change snap_change = ComputeSnapChange();
+  if (snap_change != Change::kNone) {
+    ClearResults(snap_change, kSnapContainer);
+  }
+  Change sticky_change = ComputeStickyChange();
+  if (sticky_change != Change::kNone) {
+    ClearResults(sticky_change, kStickyContainer);
+  }
+  return std::max(snap_change, sticky_change);
 }
 
 void ContainerQueryEvaluator::UpdateContainerValues() {
@@ -649,13 +665,20 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyStateAndStyleChanges(
       (unit_flags_ & MediaQueryExpValue::kFontRelative) &&
       old_style.GetFont() != new_style.GetFont();
 
-  if (invalidate_for_font) {
-    // Font sizing is cached on CSSContainerValues. Need to recreate the values
-    // based on the current ComputedStyle.
+  // Writing direction changes may affect how logical queries match for size and
+  // scroll-state() queries even when the physical size or scroll-state do not
+  // change.
+  bool invalidate_for_writing_direction =
+      MayDependOnWritingDirection() &&
+      old_style.GetWritingDirection() != new_style.GetWritingDirection();
+
+  if (invalidate_for_writing_direction || invalidate_for_font) {
+    // Writing direction and font sizing are cached on CSSContainerValues. Need
+    // to recreate the values based on the current ComputedStyle.
     UpdateContainerValues();
   }
 
-  if (invalidate_for_font) {
+  if (invalidate_for_writing_direction || invalidate_for_font) {
     switch (StyleAffectingSizeChanged()) {
       case ContainerQueryEvaluator::Change::kNone:
         break;
@@ -665,6 +688,21 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyStateAndStyleChanges(
       case ContainerQueryEvaluator::Change::kDescendantContainers:
         recalc_change = recalc_change.ForceRecalcDescendantSizeContainers();
         break;
+    }
+  }
+  if (invalidate_for_writing_direction) {
+    if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
+        RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
+      switch (StyleAffectingScrollStateChanged()) {
+        case ContainerQueryEvaluator::Change::kNone:
+          break;
+        case ContainerQueryEvaluator::Change::kNearestContainer:
+          recalc_change = recalc_change.ForceRecalcStateContainer();
+          break;
+        case ContainerQueryEvaluator::Change::kDescendantContainers:
+          recalc_change = recalc_change.ForceRecalcDescendantStateContainers();
+          break;
+      }
     }
   }
   if (!base::ValuesEquivalent(old_style.InheritedVariables(),
