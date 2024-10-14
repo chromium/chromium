@@ -8816,6 +8816,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_ERROR_MESSAGE_TOAST_RELOAD" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button within said notification in order to reload the contents.">
         Reload
       </message>
+      <message name="IDS_ASH_ERROR_MESSAGE_TOAST_SETTINGS" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button when the action is to upgrade the operating system (by opening settings).">
+        Settings
+      </message>
      </messages>
     </release>
 </grit>

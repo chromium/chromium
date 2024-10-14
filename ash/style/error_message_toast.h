@@ -28,7 +28,7 @@ class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
 
  public:
   // Used for `action_button_` that indicates what to expect on click.
-  enum class ButtonActionType { kDismiss, kReload };
+  enum class ButtonActionType { kDismiss, kReload, kSettings };
 
   ErrorMessageToast(
       views::Button::PressedCallback callback,

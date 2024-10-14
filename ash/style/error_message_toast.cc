@@ -47,6 +47,9 @@ class ActionLabelButton : public views::LabelButton {
       case ErrorMessageToast::ButtonActionType::kReload:
         string_id = IDS_ASH_ERROR_MESSAGE_TOAST_RELOAD;
         break;
+      case ErrorMessageToast::ButtonActionType::kSettings:
+        string_id = IDS_ASH_ERROR_MESSAGE_TOAST_SETTINGS;
+        break;
     }
     SetText(l10n_util::GetStringUTF16(string_id));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);

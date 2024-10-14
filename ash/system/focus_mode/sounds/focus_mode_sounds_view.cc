@@ -317,6 +317,9 @@ constexpr std::partial_ordering FocusModeSoundsView::ToastData::operator<=>(
         return std::partial_ordering::less;
       }
       break;
+    case ErrorMessageToast::ButtonActionType::kSettings:
+      // TODO(crbug.com/372029553): Reimplement prioritization.
+      NOTREACHED();
   }
 
   if (message != other.message) {
@@ -625,6 +628,9 @@ void FocusModeSoundsView::ShowErrorMessageForType(
           base::BindRepeating(&FocusModeSoundsView::DownloadPlaylistsForType,
                               weak_factory_.GetWeakPtr(), is_soundscape_type);
       break;
+    case ErrorMessageToast::ButtonActionType::kSettings:
+      // TODO(crbug.com/372029553): Change this to open settings.
+      NOTREACHED();
   }
 
   error_message_ = AddChildView(std::make_unique<ErrorMessageToast>(
