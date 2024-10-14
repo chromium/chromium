@@ -279,12 +279,18 @@ CreateCompressionSession(VideoCodec codec,
       /*compressedDataAllocator=*/nullptr, output_callback,
       reinterpret_cast<void*>(accelerator), session.InitializeInto());
   if (status != noErr) {
-    // IMPORTANT: ScopedCFTypeRef::release() doesn't call CFRelease(). In case
-    // of an error VTCompressionSessionCreate() is not supposed to write a
-    // non-null value into compression_session_, but just in case, we'll clear
-    // it without calling CFRelease() because it can be unsafe to call
-    // VTCompressionSessionInvalidate() on a not fully created session.
-    std::ignore = session.release();
+#if BUILDFLAG(IS_MAC)
+    if (@available(macOS 13, iOS 16, *)) {
+      // No extra steps required.
+    } else {
+      // IMPORTANT: ScopedCFTypeRef::release() doesn't call CFRelease(). In
+      // case of an error VTCompressionSessionCreate() is not supposed to write
+      // a non-null value into compression_session_, but just in case, we'll
+      // clear it without calling CFRelease() because it can be unsafe to call
+      // VTCompressionSessionInvalidate() on a not fully created session.
+      std::ignore = session.release();
+    }
+#endif  // BUILDFLAG(IS_MAC)
     return base::unexpected(status);
   }
   DVLOG(3) << " VTCompressionSession created with input size="
