@@ -9,12 +9,14 @@
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
 external/wpt/preload/*
+external/wpt/resource-timing/*
 external/wpt/selection/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 
 virtual/gpu/external/wpt/*
 virtual/longtask-from-loaf/external/wpt/*
+virtual/plz-dedicated-worker-disabled/external/wpt/resource-timing/*
 virtual/single-renderer-process/external/wpt/*
 virtual/webauthn-remote-desktop-client-override/*
 
