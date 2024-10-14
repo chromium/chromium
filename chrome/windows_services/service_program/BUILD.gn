@@ -73,6 +73,7 @@ source_set("lib") {
   visibility = [
     ":service_program",
     "//chrome/elevation_service:elevation_service_unittests",
+    "//chrome/updater:base",
     "//chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests",
   ]
 }

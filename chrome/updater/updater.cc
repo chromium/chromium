@@ -51,7 +51,7 @@
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
-#include "chrome/updater/app/server/win/service_main.h"
+#include "chrome/updater/app/server/win/updater_service_delegate.h"
 #include "chrome/updater/util/win_util.h"
 #endif
 
@@ -175,7 +175,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
 #if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kWindowsServiceSwitch)) {
-    return ServiceMain::RunWindowsService(command_line);
+    return UpdaterServiceDelegate::RunWindowsService();
   }
 
   if (command_line->HasSwitch(kHealthCheckSwitch)) {
