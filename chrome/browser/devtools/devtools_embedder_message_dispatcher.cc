@@ -458,7 +458,15 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandlerWithCallback("showSurvey", &Delegate::ShowSurvey, delegate);
   d->RegisterHandlerWithCallback("canShowSurvey", &Delegate::CanShowSurvey,
                                  delegate);
-  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) ||
+      base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood) ||
+      base::FeatureList::IsEnabled(::features::kDevToolsFreestyler) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsExplainThisResourceDogfood) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsAiAssistancePerformanceAgentDogfood) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsAiAssistanceFileAgentDogfood)) {
     d->RegisterHandlerWithCallback("doAidaConversation",
                                    &Delegate::DoAidaConversation, delegate);
     d->RegisterHandlerWithCallback("registerAidaClientEvent",
