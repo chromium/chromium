@@ -264,7 +264,7 @@ bool IsAccessibilityDisableTrackpadEnabled() {
 
 BASE_FEATURE(kAccessibilityFlashScreenFeature,
              "AccessibilityFlashScreenFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityFlashScreenFeatureEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityFlashScreenFeature);
