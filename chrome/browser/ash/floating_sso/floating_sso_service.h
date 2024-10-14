@@ -76,7 +76,6 @@ class FloatingSsoService : public KeyedService,
   bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
   void OnConnectionError();
   bool IsDomainAllowed(const net::CanonicalCookie& cookie) const;
-  bool IsFloatingWorkspaceEnabled() const;
 
   raw_ptr<PrefService> prefs_ = nullptr;
   const raw_ptr<network::mojom::CookieManager> cookie_manager_;

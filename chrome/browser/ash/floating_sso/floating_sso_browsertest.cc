@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
@@ -203,6 +204,13 @@ class FloatingSsoTest : public policy::PolicyTest {
     SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
     SetSyncCookiesPref(/*pref_value=*/true);
     SetSyncDisabledPolicy(/*policy_value=*/false);
+  }
+
+  void EnableFloatingWorkspace() {
+    policy::PolicyTest::SetPolicy(
+        &policies_, policy::key::kFloatingWorkspaceEnabled, base::Value(true));
+    provider_.UpdateChromePolicy(policies_);
+    ASSERT_TRUE(ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled());
   }
 
   bool IsFloatingSsoServiceRegistered() {
@@ -779,46 +787,24 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, ApplyingChangesFromSync) {
                                  net::CookieChangeCause::INSERTED)));
 }
 
-class FloatingSsoWithFloatingWorkspaceTest : public FloatingSsoTest {
- public:
-  FloatingSsoWithFloatingWorkspaceTest() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {features::kFloatingSso, features::kFloatingWorkspaceV2},
-        /*disabled_features=*/{});
-  }
-
-  void SetUp() override {
-    // Disable Floating Workspace functionality because there is something in
-    // the implementation that is making this test crash.
-    // TODO(b/354907485): Investigate what is causing the crash and remove this
-    // command line argument.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ash::switches::kSafeMode);
-
-    PolicyTest::SetUp();
-  }
-
- protected:
-  void EnableFloatingWorkspace() {
-    policy::PolicyTest::SetPolicy(&policies_,
-                                  policy::key::kFloatingWorkspaceV2Enabled,
-                                  base::Value(true));
-    provider_.UpdateChromePolicy(policies_);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(FloatingSsoWithFloatingWorkspaceTest,
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest,
                        KeepsSessionCookiesIfFloatingWorkspaceEnabled) {
   auto& service = floating_sso_service();
   EnableAllFloatingSsoSettings();
+  // Note that we enable Floating Workspace only here - when browser is
+  // already initialized during fixture setup. As such, this test
+  // doesn't test any Floating Workspace functionality on session
+  // startup. This would require additional test setup because if we just enable
+  // Floating Workspace we will end up with uninitialized browser and
+  // InProcessBrowserTest::browser() will return nullptr resulting in crashes.
   EnableFloatingWorkspace();
   ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
 
+  const auto& store_entries = GetStoreEntries();
+  ASSERT_TRUE(store_entries.empty());
+
   AddCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL,
                             "CookieName=CookieValue");
-
-  auto store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 1u);
 }
 

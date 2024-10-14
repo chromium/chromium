@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -265,7 +266,8 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
 bool FloatingSsoService::ShouldSyncCookie(
     const net::CanonicalCookie& cookie) const {
   // Filter out session cookies (except when Floating Workspace is enabled).
-  if (!cookie.IsPersistent() && !IsFloatingWorkspaceEnabled()) {
+  if (!cookie.IsPersistent() &&
+      !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     return false;
   }
 
@@ -295,13 +297,6 @@ bool FloatingSsoService::IsDomainAllowed(
 
   // The domain is not blocked if it doesn't have matches in the blocklist.
   return block_url_matcher_->MatchURL(cookie_domain_url).empty();
-}
-
-bool FloatingSsoService::IsFloatingWorkspaceEnabled() const {
-  bool floating_workspace_policy_enabled =
-      prefs_->GetBoolean(ash::prefs::kFloatingWorkspaceV2Enabled);
-  return floating_workspace_policy_enabled &&
-         ash::features::IsFloatingWorkspaceV2Enabled();
 }
 
 void FloatingSsoService::OnConnectionError() {

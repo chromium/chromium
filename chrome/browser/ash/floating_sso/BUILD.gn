@@ -21,6 +21,7 @@ static_library("floating_sso") {
   deps = [
     "//ash/constants:constants",
     "//base",
+    "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/common",
@@ -82,6 +83,7 @@ source_set("browser_tests") {
     ":floating_sso",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:sync",
