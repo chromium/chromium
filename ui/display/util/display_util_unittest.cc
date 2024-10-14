@@ -282,7 +282,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                             .fGX = 0.23240f,
                                                             .fGY = 0.71870f,
                                                             .fBX = 0.13965f,
-                                                            .fBY = 0.04400f,
+                                                            .fBY = 0.04390f,
                                                             .fWX = 0.31250f,
                                                             .fWY = 0.32910f};
   skcms_Matrix3x3 expected_hdr_toXYZ50_matrix;
