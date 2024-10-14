@@ -254,15 +254,24 @@ class OptimizationGuideTestServer {
   BuildFormsPredictionsResponse(
       const optimization_guide::proto::FormsPredictionsRequest& request) {
     optimization_guide::proto::FormsPredictionsResponse response;
-    for (const auto& entry : request.entries()) {
-      const std::string& field_label = entry.key();
-      const std::string& field_value = entry.value();
+    for (int i = 0; i < request.form_data().fields().size(); ++i) {
+      const optimization_guide::proto::FormFieldData& field =
+          request.form_data().fields(i);
+      auto it = base::ranges::find(
+          request.entries(), field.field_label(),
+          &optimization_guide::proto::UserAnnotationsEntry::key);
+      if (it == request.entries().end()) {
+        continue;
+      }
+      const std::string& field_label = it->key();
+      const std::string& field_value = it->value();
       optimization_guide::proto::FilledFormFieldData* filled_field =
           response.mutable_form_data()->add_filled_form_field_data();
       optimization_guide::proto::PredictedValue* predicted_value =
           filled_field->add_predicted_values();
       predicted_value->set_value(field_value);
       filled_field->set_normalized_label(field_label);
+      filled_field->set_request_field_index(i);
       optimization_guide::proto::FormFieldData* filled_field_data =
           filled_field->mutable_field_data();
       filled_field_data->set_field_label(field_label);

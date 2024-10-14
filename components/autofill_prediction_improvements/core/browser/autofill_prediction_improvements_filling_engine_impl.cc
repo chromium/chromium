@@ -126,52 +126,57 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
       continue;
     }
 
-    // TODO(crbug.com/357098401): Change it to look by renderer ID which is
-    // unique rather than label.
-    if (auto it = base::ranges::find(
-            fields,
-            base::UTF8ToUTF16(
-                filled_form_field_proto.field_data().field_label()),
-            &autofill::FormFieldData::label);
-        it != fields.end()) {
-      const autofill::FormFieldData& field = *it;
-      const std::u16string predicted_value = base::UTF8ToUTF16(
-          filled_form_field_proto.predicted_values()[0].value());
-      std::optional<std::u16string> select_option_text = std::nullopt;
+    size_t request_field_index =
+        static_cast<size_t>(filled_form_field_proto.request_field_index());
+    if (request_field_index >= fields.size()) {
+      // Execution returned an out-of-bounds field index.
+      continue;
+    }
 
-      if (field.IsSelectElement()) {
-        // Reject the prediction if it equals the currently selected option.
-        if (field.selected_option().has_value() &&
-            field.selected_option()->value == predicted_value) {
-          continue;
-        }
+    const autofill::FormFieldData& field = fields.at(request_field_index);
+    if (base::UTF8ToUTF16(filled_form_field_proto.field_data().field_label()) !=
+        field.label()) {
+      // Skip over if the label is no longer the same and the execution provided
+      // a wrong index.
+      continue;
+    }
 
-        // Ensure that the predicted value actually is one of the select
-        // options.
-        auto predicted_select_option_it = base::ranges::find(
-            field.options(), predicted_value, &autofill::SelectOption::value);
-        if (predicted_select_option_it == field.options().end()) {
-          continue;
-        }
+    std::u16string predicted_value = base::UTF8ToUTF16(
+        filled_form_field_proto.predicted_values()[0].value());
+    std::optional<std::u16string> select_option_text = std::nullopt;
 
-        // Sets `Prediction::select_option_text` below which will then be shown
-        // in the suggestion as the main text.
-        select_option_text = predicted_select_option_it->text;
-      }
-      // Skip predictions for non-empty text fields.
-      else if (field.IsTextInputElement() && !field.value().empty()) {
+    if (field.IsSelectElement()) {
+      // Reject the prediction if it equals the currently selected option.
+      if (field.selected_option().has_value() &&
+          field.selected_option()->value == predicted_value) {
         continue;
       }
 
-      const std::u16string label =
-          filled_form_field_proto.normalized_label().empty()
-              ? (field.label().empty() ? field.placeholder() : field.label())
-              : base::UTF8ToUTF16(filled_form_field_proto.normalized_label());
+      // Ensure that the predicted value actually is one of the select
+      // options.
+      auto predicted_select_option_it = base::ranges::find(
+          field.options(), predicted_value, &autofill::SelectOption::value);
+      if (predicted_select_option_it == field.options().end()) {
+        continue;
+      }
 
-      predictions.emplace_back(
-          field.global_id(), Prediction{std::move(predicted_value),
-                                        std::move(label), select_option_text});
+      // Sets `Prediction::select_option_text` below which will then be shown
+      // in the suggestion as the main text.
+      select_option_text = predicted_select_option_it->text;
     }
+    // Skip predictions for non-empty text fields.
+    else if (field.IsTextInputElement() && !field.value().empty()) {
+      continue;
+    }
+
+    std::u16string label =
+        filled_form_field_proto.normalized_label().empty()
+            ? (field.label().empty() ? field.placeholder() : field.label())
+            : base::UTF8ToUTF16(filled_form_field_proto.normalized_label());
+
+    predictions.emplace_back(field.global_id(),
+                             Prediction{std::move(predicted_value),
+                                        std::move(label), select_option_text});
   }
   return predictions;
 }

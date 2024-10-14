@@ -36,7 +36,8 @@ void AddFieldToResponse(
     optimization_guide::proto::FormsPredictionsResponse& response,
     const std::string& label,
     const std::string& normalized_label,
-    const std::string& value) {
+    const std::string& value,
+    int request_field_index = 0) {
   optimization_guide::proto::FilledFormFieldData* filled_field =
       response.mutable_form_data()->add_filled_form_field_data();
   filled_field->mutable_field_data()->set_field_label(label);
@@ -44,6 +45,7 @@ void AddFieldToResponse(
   optimization_guide::proto::PredictedValue* predicted_value =
       filled_field->add_predicted_values();
   predicted_value->set_value(value);
+  filled_field->set_request_field_index(request_field_index);
 }
 
 MATCHER_P(HasPrediction, expected_prediction, "") {
@@ -98,17 +100,17 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
 
   // Set up mock.
   optimization_guide::proto::FormsPredictionsResponse response;
-  AddFieldToResponse(response, "label", "normalized label", "value");
-  AddFieldToResponse(response, "empty", "", "");
+  AddFieldToResponse(response, "label", "normalized label", "value", 0);
+  AddFieldToResponse(response, "empty", "", "", 2);
   AddFieldToResponse(response, "notinform", "", "doesntmatter");
-  AddFieldToResponse(response, "State", "", "33");
+  AddFieldToResponse(response, "State", "", "33", 3);
   AddFieldToResponse(
       response, "Country Code - response not in select options, not filled", "",
-      "-2");
+      "-2", 4);
   AddFieldToResponse(response,
                      "Country - response equals selected value, not filled", "",
-                     "2");
-  AddFieldToResponse(response, "Field has value, not filled", "", "value");
+                     "2", 5);
+  AddFieldToResponse(response, "Field has value, not filled", "", "value", 6);
   optimization_guide::proto::Any any;
   any.set_type_url(response.GetTypeName());
   response.SerializeToString(any.mutable_value());
