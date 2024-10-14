@@ -1436,7 +1436,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // recorded, because the IPH configuration limits how many times the IPH can
   // be shown.
   if (IsAutofillManuallyTriggered(trigger_source)) {
-    client().NotifyAutofillManualFallbackUsed();
+    client().NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback);
   }
 
   external_delegate_->SetCurrentDataListValues(field.datalist_options());

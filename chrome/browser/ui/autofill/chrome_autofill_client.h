@@ -184,7 +184,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const FormFieldData& field,
       AutofillClient::IphFeature feature) override;
   void HideAutofillFieldIph() override;
-  void NotifyAutofillManualFallbackUsed() override;
+  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override;
   void ShowSaveAutofillPredictionImprovementsBubble(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
           to_be_upserted_entries,
@@ -210,7 +210,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
           keep_popup_open_for_testing);
     }
   }
-  void SetAutofillFieldPromoControllerManualFallbackForTesting(
+  void SetAutofillFieldPromoTesting(
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
     autofill_field_promo_controller_ = std::move(test_controller);
   }

@@ -24,11 +24,18 @@ namespace autofill {
 enum class SuggestionHidingReason;
 class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
  public:
-  AutofillFieldPromoControllerImpl(
+  // Returns nullptr if trying to show `feature_promo` would fail.
+  // Internally calls `CanShowFeaturePromo(). Use this method if you want to
+  // know beforehand whether calling `Show()` would succeed.
+  static std::unique_ptr<AutofillFieldPromoControllerImpl> MaybeCreate(
       content::WebContents* web_contents,
       const base::Feature& feature_promo,
       ui::ElementIdentifier promo_element_identifier);
 
+  AutofillFieldPromoControllerImpl(
+      content::WebContents* web_contents,
+      const base::Feature& feature_promo,
+      ui::ElementIdentifier promo_element_identifier);
   AutofillFieldPromoControllerImpl(const AutofillFieldPromoControllerImpl&) =
       delete;
   AutofillFieldPromoControllerImpl& operator=(

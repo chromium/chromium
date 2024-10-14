@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -118,6 +119,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -171,6 +173,28 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
   return AutoselectFirstSuggestion(
       source == AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
+  switch (iph_feature) {
+    case AutofillClient::IphFeature::kManualFallback:
+      return feature_engagement::kIPHAutofillManualFallbackFeature;
+    case AutofillClient::IphFeature::kPredictionImprovements:
+      return feature_engagement::kIPHAutofillPredictionImprovementsFeature;
+  }
+  NOTREACHED();
+}
+
+ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
+  switch (iph_feature) {
+    case AutofillClient::IphFeature::kManualFallback:
+      return kAutofillManualFallbackElementId;
+    case AutofillClient::IphFeature::kPredictionImprovements:
+      return kAutofillPredictionImprovementsIphElementId;
+  }
+  NOTREACHED();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -783,24 +807,24 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 
 void ChromeAutofillClient::ShowAutofillFieldIphForFeature(
     const FormFieldData& field,
-    AutofillClient::IphFeature feature) {
+    IphFeature autofill_feature) {
 #if !BUILDFLAG(IS_ANDROID)
   if (autofill_field_promo_controller_ &&
       autofill_field_promo_controller_->IsMaybeShowing()) {
     return;
   }
-  const std::string_view feature_name =
-      feature_engagement::kIPHAutofillManualFallbackFeature.name;
 
+  const base::Feature& feature = GetFeature(autofill_feature);
+
+  // [Re]create the controller if `autofill_feature` isn't the current one.
   if (!autofill_field_promo_controller_ ||
       autofill_field_promo_controller_->GetFeaturePromo().name !=
-          feature_name) {
+          feature.name) {
     autofill_field_promo_controller_ =
         std::make_unique<AutofillFieldPromoControllerImpl>(
-            web_contents(),
-            feature_engagement::kIPHAutofillManualFallbackFeature,
-            kAutofillManualFallbackElementId);
+            web_contents(), feature, GetElementId(autofill_feature));
   }
+
   autofill_field_promo_controller_->Show(field.bounds());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -811,16 +835,16 @@ void ChromeAutofillClient::HideAutofillFieldIph() {
   }
 }
 
-void ChromeAutofillClient::NotifyAutofillManualFallbackUsed() {
+void ChromeAutofillClient::NotifyIphFeatureUsed(
+    AutofillClient::IphFeature feature) {
 #if !BUILDFLAG(IS_ANDROID)
   // Based on the feature config, the IPH will not be shown ever again once the
-  // user has used the manual fallback feature. If the user is aware that the
-  // manual fallback feature exists, then they shouldn't be spammed with IPHs.
-  // The IPH code cannot know if the feature was used or not unless explicitly
-  // notified.
+  // user has used the `feature`. If the user is aware of it, then they
+  // shouldn't be spammed with IPHs. The IPH code cannot know if the feature was
+  // used or not unless explicitly notified.
   feature_engagement::TrackerFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext())
-      ->NotifyUsedEvent(feature_engagement::kIPHAutofillManualFallbackFeature);
+      ->NotifyUsedEvent(GetFeature(feature));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

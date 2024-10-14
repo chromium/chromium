@@ -552,7 +552,10 @@ class MockAutofillClient : public TestAutofillClient {
               (const FormFieldData& field, AutofillClient::IphFeature feature),
               (override));
   MOCK_METHOD(void, HideAutofillFieldIph, (), (override));
-  MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
+  MOCK_METHOD(void,
+              NotifyIphFeatureUsed,
+              (AutofillClient::IphFeature),
+              (override));
   MOCK_METHOD(MockAutofillPredictionImprovementsDelegate*,
               GetAutofillPredictionImprovementsDelegate,
               (),
@@ -1838,7 +1841,9 @@ TEST_F(BrowserAutofillManagerTest, AutofillManualFallback_NotifyFeatureUsed) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  EXPECT_CALL(autofill_client_, NotifyAutofillManualFallbackUsed()).Times(2);
+  EXPECT_CALL(autofill_client_,
+              NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback))
+      .Times(2);
   GetAutofillSuggestions(
       form, form.fields()[0],
       AutofillSuggestionTriggerSource::kManualFallbackAddress);

@@ -165,7 +165,7 @@ void AutofillClient::ShowAutofillFieldIphForFeature(
 
 void AutofillClient::HideAutofillFieldIph() {}
 
-void AutofillClient::NotifyAutofillManualFallbackUsed() {}
+void AutofillClient::NotifyIphFeatureUsed(AutofillClient::IphFeature feature) {}
 
 void AutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
     const std::vector<optimization_guide::proto::UserAnnotationsEntry>&

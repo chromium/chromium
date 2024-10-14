@@ -144,6 +144,7 @@ class AutofillClient {
   // Describes the types of Iph shown by Autofill and anchored to a field.
   enum class IphFeature {
     kManualFallback,
+    kPredictionImprovements,
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.
@@ -512,17 +513,18 @@ class AutofillClient {
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
   GetDeviceAuthenticator();
 
-  // Attaches the IPH for the manual fallback feature to the `field`, on
-  // platforms that support manual fallback.
+  // Attaches the IPH for `feature` to the `field`, on
+  // platforms that it. If another IPH has been shown for the tab, the IPH is
+  // granteed not to be shown.
   virtual void ShowAutofillFieldIphForFeature(
       const FormFieldData& field,
       AutofillClient::IphFeature feature);
 
-  // Hides the IPH for the manual fallback feature.
+  // Hides any open IPH.
   virtual void HideAutofillFieldIph();
 
-  // Notifies the IPH code that the manual fallback feature was used.
-  virtual void NotifyAutofillManualFallbackUsed();
+  // Notifies the IPH code that `feature` was used.
+  virtual void NotifyIphFeatureUsed(AutofillClient::IphFeature feature);
 
   // Shows a bubble asking whether the user wants to save prediction
   // improvements data.
