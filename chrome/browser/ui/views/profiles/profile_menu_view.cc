@@ -552,7 +552,7 @@ void ProfileMenuView::BuildIdentity() {
         badge_image_model = *icon;
       } else {
         badge_image_model = ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
+            vector_icons::kBusinessIcon, ui::kColorMenuIcon, 24);
       }
     }
 

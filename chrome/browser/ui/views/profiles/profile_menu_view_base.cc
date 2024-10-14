@@ -92,6 +92,7 @@ constexpr int kMenuWidth = 328;
 constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
 constexpr int kBadgeSize = 16;
+constexpr int kManagementBadgeSize = 24;
 constexpr int kCircularImageButtonSize = 28;
 constexpr int kCircularImageButtonRefreshSize = 32;
 constexpr int kCircularImageButtonTransparentRefreshSize = 24;
@@ -408,9 +409,14 @@ class AvatarImageView : public views::ImageView {
         AddCircularBackground(sized_avatar_image, GetBackgroundColor(),
                               image_size_ + 2 * border_size_);
 
-    gfx::ImageSkia sized_badge = AddCircularBackground(
-        SizeImage(management_badge_.Rasterize(GetColorProvider()), kBadgeSize),
-        GetBackgroundColor(), kBadgeSize + 6 * kBadgePadding);
+    gfx::ImageSkia sized_badge =
+        management_badge_.IsEmpty()
+            ? gfx::ImageSkia()
+            : AddCircularBackground(
+                  SizeImageModel(management_badge_, kManagementBadgeSize)
+                      .Rasterize(GetColorProvider()),
+                  GetBackgroundColor(),
+                  kManagementBadgeSize + 6 * kBadgePadding);
     gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
         sized_avatar_image, sized_badge);
     SetImage(ui::ImageModel::FromImageSkia(badged_image));
