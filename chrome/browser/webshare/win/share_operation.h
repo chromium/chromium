@@ -43,6 +43,7 @@ class ShowShareUIForWindowOperation;
 
 class ShareOperation final {
  public:
+  using SharedFiles = std::vector<blink::mojom::SharedFilePtr>;
   static void SetMaxFileBytesForTesting(uint64_t max_file_bytes);
 
   // Test hook for overriding the base RoGetActivationFactory function
@@ -52,30 +53,33 @@ class ShareOperation final {
   ShareOperation(const std::string& title,
                  const std::string& text,
                  const GURL& url,
-                 std::vector<blink::mojom::SharedFilePtr> files,
                  content::WebContents* web_contents);
   ShareOperation(const ShareOperation&) = delete;
   ShareOperation& operator=(const ShareOperation&) = delete;
   ~ShareOperation();
 
   base::WeakPtr<ShareOperation> AsWeakPtr();
-
-  // Starts this Windows Share operation for the previously provided content.
-  // The |callback| will be invoked upon completion of the operation with a
-  // value indicating the success of the operation, or if the returned instance
-  // is destroyed before the operation is completed the |callback| will be
-  // invoked with a CANCELLED value and the underlying Windows operation will be
-  // aborted.
-  void Run(blink::mojom::ShareService::ShareCallback callback);
+  // Starts this Windows Share operation for the previously provided content
+  // and a set of files. The |callback| will be invoked upon completion of the
+  // operation with a value indicating the success of the operation, or if the
+  // returned instance is destroyed before the operation is completed the
+  // |callback| will be invoked with a CANCELLED value and the underlying
+  // Windows operation will be aborted.
+  void Run(SharedFiles files,
+           blink::mojom::ShareService::ShareCallback callback);
 
  private:
   void OnDataRequested(
+      SharedFiles files,
       ABI::Windows::ApplicationModel::DataTransfer::IDataRequestedEventArgs* e);
   bool PutShareContentInDataPackage(
+      SharedFiles files,
       ABI::Windows::ApplicationModel::DataTransfer::IDataRequest* data_request);
   bool PutShareContentInEventArgs(
+      SharedFiles files,
       ABI::Windows::ApplicationModel::DataTransfer::IDataRequestedEventArgs* e);
   void OnStreamedFileCreated(
+      uint32_t expected_file_count,
       Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageFile> storage_file);
   void Complete(const blink::mojom::ShareError share_error);
 
@@ -83,7 +87,6 @@ class ShareOperation final {
   const std::string title_;
   const std::string text_;
   const GURL url_;
-  const std::vector<blink::mojom::SharedFilePtr> files_;
 
   std::vector<Microsoft::WRL::ComPtr<IUnknown>> async_operations_;
   blink::mojom::ShareService::ShareCallback callback_;
