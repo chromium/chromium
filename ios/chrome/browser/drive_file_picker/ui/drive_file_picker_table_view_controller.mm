@@ -768,6 +768,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:animated];
 }
 
+- (void)setNextPageAvailable:(BOOL)nextPageAvailable {
+  _nextPageAvailable = nextPageAvailable;
+}
+
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
   _accountButton.menu = emailsMenu;
 }

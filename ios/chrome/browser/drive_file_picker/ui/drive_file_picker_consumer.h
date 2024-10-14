@@ -41,6 +41,10 @@
            nextPageAvailable:(BOOL)nextPageAvailable
                     animated:(BOOL)animated;
 
+// If `nextPageAvailable` is YES then scrolling to the end of the list of items
+// should fetch the next page.
+- (void)setNextPageAvailable:(BOOL)nextPageAvailable;
+
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;
 

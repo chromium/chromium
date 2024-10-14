@@ -106,7 +106,7 @@ constexpr int kThumbnailResizeDimension = 64;
   // parameters are modified frequently or if queries fail several times.
   base::OneShotTimer _fetchTimer;
   // The page token to use to continue the current list/search.
-  NSString* _pageToken;
+  NSString* _nextPageToken;
   // A filter that has been set externally. The value will be applied the next
   // time the mediator is active.
   std::optional<DriveFilePickerFilter> _pendingFilter;
@@ -370,7 +370,7 @@ constexpr int kThumbnailResizeDimension = 64;
 }
 
 - (void)loadNextPage {
-  CHECK(_pageToken);
+  CHECK(_nextPageToken);
   [self loadItemsAppending:YES delayed:NO animated:YES];
 }
 
@@ -388,6 +388,7 @@ constexpr int kThumbnailResizeDimension = 64;
                                   sortingDirection:direction
                                ignoreAcceptedTypes:_ignoreAcceptedTypes];
   [self.consumer setSortingCriteria:criteria direction:direction];
+  [self.consumer setEnabledItems:nil];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
@@ -490,6 +491,7 @@ constexpr int kThumbnailResizeDimension = 64;
                                   sortingDirection:_sortingDirection
                                ignoreAcceptedTypes:_ignoreAcceptedTypes];
   [self.consumer setFilter:filter];
+  [self.consumer setEnabledItems:nil];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
@@ -588,7 +590,7 @@ constexpr int kThumbnailResizeDimension = 64;
 // Populates the consumer with root items e.g. "My Drive", "Shared Drives", etc.
 - (void)populateRootItemsAnimated:(BOOL)animated {
   // There is no next page at the root.
-  _pageToken = nil;
+  [self setNextPageToken:nil];
   NSArray<DriveFilePickerItem*>* primaryItems = @[
     [DriveFilePickerItem myDriveItem], [DriveFilePickerItem sharedDrivesItem],
     [DriveFilePickerItem starredItem]
@@ -792,13 +794,13 @@ constexpr int kThumbnailResizeDimension = 64;
   }
 
   if (!append) {
-    // If this is a new query, then `_pageToken` can be reset.
-    _pageToken = nil;
+    // If this is a new query, then `_nextPageToken` can be reset.
+    [self setNextPageToken:nil];
   }
 
   DriveListQuery query = CreateDriveListQuery(
       _collectionType, _folderIdentifier, _filter, _sortingCriteria,
-      _sortingDirection, _shouldShowSearchItems, _searchText, _pageToken);
+      _sortingDirection, _shouldShowSearchItems, _searchText, _nextPageToken);
 
   __weak __typeof(self) weakSelf = self;
   auto completion = base::BindOnce(
@@ -824,7 +826,7 @@ constexpr int kThumbnailResizeDimension = 64;
 - (void)handleListItemsResponse:(const DriveListResult&)result
                    delayToRetry:(base::TimeDelta)delayToRetry
                        animated:(BOOL)animated {
-  const BOOL append = _pageToken != nil;
+  const BOOL append = _nextPageToken != nil;
   if (result.error) {
     // If there is an error, try again with twice the delay at the next attempt.
     [self fetchItemsAppending:append
@@ -856,7 +858,6 @@ constexpr int kThumbnailResizeDimension = 64;
     // Otherwise this is a first page so existing items are replaced.
     _fetchedDriveItems = result.items;
   }
-  _pageToken = result.next_page_token;
 
   NSMutableArray<DriveFilePickerItem*>* res = [[NSMutableArray alloc] init];
   NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
@@ -889,15 +890,13 @@ constexpr int kThumbnailResizeDimension = 64;
   }
   // Showing the "Recent" search header in zero-state search.
   BOOL showSearchHeader = _shouldShowSearchItems && _searchText.length == 0;
-  // If the next page token is nil, then the consumer does not need to try and
-  // fetch new items when the end of the list is reached.
-  BOOL nextPageAvailable = _pageToken != nil;
   [self.consumer populatePrimaryItems:res
                        secondaryItems:nil
                                append:append
                      showSearchHeader:showSearchHeader
-                    nextPageAvailable:nextPageAvailable
+                    nextPageAvailable:NO
                              animated:animated];
+  [self setNextPageToken:result.next_page_token];
   // If some items were already in the previous list, reconfigure these items.
   [self.consumer reconfigureItemsWithIdentifiers:itemsToReconfigure];
   // Update background of the file picker view.
@@ -1089,6 +1088,15 @@ constexpr int kThumbnailResizeDimension = 64;
   return _collectionType != DriveFilePickerCollectionType::kRoot &&
          _collectionType != DriveFilePickerCollectionType::kRecent &&
          _collectionType != DriveFilePickerCollectionType::kSharedDrives;
+}
+
+// Sets `_nextPageToken` and updates consumer accordingly.
+- (void)setNextPageToken:(NSString*)nextPageToken {
+  // Storing the token as-is so no need to call `isEqualToString:`.
+  if (_nextPageToken != nextPageToken) {
+    _nextPageToken = nextPageToken;
+    [self.consumer setNextPageAvailable:(_nextPageToken != nil)];
+  }
 }
 
 @end

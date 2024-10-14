@@ -146,6 +146,9 @@
   }
 }
 
+- (void)setNextPageAvailable:(BOOL)nextPageAvailable {
+}
+
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
 }
 
