@@ -207,7 +207,6 @@ std::string GetTopicsSettingsText(bool did_consent,
         string_ids.begin() + 5,
         IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED);
   } else if (!has_current_topics) {
-    // TODO(crbug.com/369853368): Remove V2 suffix from variables/code/strings.
     string_ids.insert(
         string_ids.begin() + 5,
         IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2);

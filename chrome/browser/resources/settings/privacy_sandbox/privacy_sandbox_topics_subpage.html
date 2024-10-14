@@ -5,8 +5,7 @@
     padding: 0 var(--cr-section-padding);
   }
 
-  /* TODO(crbug.com/369853368): Remove V2 suffix from variables/code/strings.*/
-  .topics-empty-text-v2 {
+  .topics-empty-text {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -56,12 +55,6 @@
   }
 
   #blockedTopicsDescription {
-    min-height: auto;
-    padding-block-end: 16px;
-    padding-block-start: 16px;
-  }
-
-  #blockedTopicsDescriptionV2 {
     color: var(--cr-secondary-text-color);
   }
 
@@ -96,7 +89,7 @@
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
     label="$i18n{topicsPageToggleLabel}"
-    sub-label="$i18n{topicsPageToggleSubLabelV2}"
+    sub-label="$i18n{topicsPageToggleSubLabel}"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
 <div id="disclaimer">
@@ -122,15 +115,15 @@
               </privacy-sandbox-interest-item>
             </template>
           </div>
-          <div id="currentTopicsEmptyTextV2"
-              class="topics-empty-text-v2"
-              hidden="[[!isTopicsListEmptyV2_(topicsList_.length)]]">
+          <div id="currentTopicsEmptyText"
+              class="topics-empty-text"
+              hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
             <span id="currentTopicsDescriptionEmptyTextHeading">
               $i18n{topicsPageCurrentTopicsDescriptionEmptyTextHeading}
             </span>
-            <span id="currentTopicsDescriptionEmptyTextV2"
+            <span id="currentTopicsDescriptionEmptyText"
                 class="cr-secondary-text">
-              $i18n{topicsPageCurrentTopicsDescriptionEmptyTextV2}
+              $i18n{topicsPageCurrentTopicsDescriptionEmptyText}
             </span>
           </div>
         </template>
@@ -144,21 +137,21 @@
   </template>
    <cr-expand-button id="blockedTopicsRow" class="cr-row"
       expanded="{{blockedTopicsExpanded_}}">
-      $i18n{topicsPageBlockedTopicsHeadingNew}
-    <div id="blockedTopicsDescriptionV2">
-      $i18n{topicsPageBlockedTopicsDescriptionNew}
+      $i18n{topicsPageBlockedTopicsHeading}
+    <div id="blockedTopicsDescription">
+      $i18n{topicsPageBlockedTopicsDescription}
     </div>
   </cr-expand-button>
   <cr-collapse opened="[[blockedTopicsExpanded_]]">
     <div id="blockedTopicsEmptyText"
-        class="topics-empty-text-v2"
-        hidden="[[!isBlockedTopicsListEmptyV2_(blockedTopicsList_.length)]]">
+        class="topics-empty-text"
+        hidden="[[!isBlockedTopicsListEmpty_(blockedTopicsList_.length)]]">
       <span id="blockedTopicsDescriptionEmptyTextHeading">
           $i18n{topicsPageBlockedTopicsDescriptionEmptyTextHeading}
       </span>
-      <span id="blockedTopicsDescriptionEmptyTextV2"
+      <span id="blockedTopicsDescriptionEmptyText"
           class="cr-secondary-text">
-        $i18n{topicsPageBlockedTopicsDescriptionEmptyTextV2}
+        $i18n{topicsPageBlockedTopicsDescriptionEmptyText}
       </span>
     </div>
     <div id="blockedTopicsList" role="region"
@@ -178,8 +171,8 @@
       </cr-link-row>
   </div>
 </template>
-<div id="footerV2" class="cr-secondary-text hr footer">
-  $i18nRaw{topicsPageFooterV2}
+<div id="footer" class="cr-secondary-text hr footer">
+  $i18nRaw{topicsPageFooter}
 </div>
 <cr-toast id="unblockTopicToast" duration="10000">
   <div id="unblockTopicToastBody">$i18n{unblockTopicToastBody}</div>

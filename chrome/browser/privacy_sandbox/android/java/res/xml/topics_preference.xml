@@ -50,7 +50,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="topics_page_footer"
-        android:summary="@string/settings_topics_page_footer"
+        android:summary="@string/settings_topics_page_footer_new"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>

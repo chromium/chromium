@@ -343,7 +343,7 @@ suite('TopicsSubpage', function() {
     assertFalse(page.$.topicsToggle.checked);
     assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
-        loadTimeData.getString('topicsPageToggleSubLabelV2'),
+        loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     // Assert V2 Layout for ids to be hidden.
     const idsToBeHidden = [
@@ -352,18 +352,18 @@ suite('TopicsSubpage', function() {
       '#currentTopicsDescription',
       '#currentTopicsDescriptionEmpty',
       '#currentTopicsDescriptionEmptyTextHeading',
-      '#currentTopicsDescriptionEmptyTextV2',
+      '#currentTopicsDescriptionEmptyText',
       '#currentTopicsDescriptionDisabled',
       '#blockedTopicsRow',
-      '#blockedTopicsDescriptionV2',
+      '#blockedTopicsDescription',
       '#blockedTopicsDescriptionEmptyTextHeading',
-      '#blockedTopicsDescriptionEmptyTextV2',
+      '#blockedTopicsDescriptionEmptyText',
       '#blockedTopicsList',
       '#manageTopicsSection',
     ];
     idsToBeHidden.forEach(id => assertFalse(isChildVisible(page, id)));
-    // FooterV2 should be visible if pref is on or not.
-    assertTrue(isChildVisible(page, '#footerV2'));
+    // footer should be visible if pref is on or not.
+    assertTrue(isChildVisible(page, '#footer'));
     assertEquals(
         0, testPrivacySandboxBrowserProxy.getCallCount('topicsToggleChanged'));
 
@@ -379,7 +379,7 @@ suite('TopicsSubpage', function() {
     assertTrue(page.$.topicsToggle.checked);
     assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
-        loadTimeData.getString('topicsPageToggleSubLabelV2'),
+        loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertTrue(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
     // Non V2 empty text should not be visible
@@ -393,24 +393,22 @@ suite('TopicsSubpage', function() {
         'Settings.PrivacySandbox.Topics.BlockedTopicsOpened',
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
-    // Non V2 blocked topics description should not be visible
-    assertFalse(isChildVisible(page, '#blockedTopicsDescription'));
     // The blocked topic list is NOT empty after re-enabling the toggle
     assertFalse(
         isChildVisible(page, '#blockedTopicsDescriptionEmptyTextHeading'));
-    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyTextV2'));
+    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyText'));
     // Assert V2 Layout for ids to be shown.
     const idsToBeShown = [
       '#currentTopicsSection',
       '#currentTopicsHeading',
       '#currentTopicsDescription',
       '#currentTopicsDescriptionEmptyTextHeading',
-      '#currentTopicsDescriptionEmptyTextV2',
+      '#currentTopicsDescriptionEmptyText',
       '#blockedTopicsRow',
-      '#blockedTopicsDescriptionV2',
+      '#blockedTopicsDescription',
       '#blockedTopicsList',
       '#manageTopicsSection',
-      '#footerV2',
+      '#footer',
     ];
     idsToBeShown.forEach(id => assertTrue(isChildVisible(page, id)));
   });
@@ -420,12 +418,12 @@ suite('TopicsSubpage', function() {
     assertTrue(page.$.topicsToggle.checked);
     assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
-        loadTimeData.getString('topicsPageToggleSubLabelV2'),
+        loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertFalse(
         isChildVisible(page, '#currentTopicsDescriptionEmptyTextHeading'));
-    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmptyTextV2'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmptyText'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
     const blockedTopicsRow =
         page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow');
@@ -434,22 +432,20 @@ suite('TopicsSubpage', function() {
         'Settings.PrivacySandbox.Topics.BlockedTopicsOpened',
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
-    // Non V2 blocked topics description should not be visible
-    assertFalse(isChildVisible(page, '#blockedTopicsDescription'));
     // Blocked topics list is not empty
     assertFalse(
         isChildVisible(page, '#blockedTopicsDescriptionEmptyTextHeading'));
-    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyTextV2'));
+    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyText'));
     // Assert V2 Layout for ids to be shown.
     const idsToBeShown = [
       '#currentTopicsSection',
       '#currentTopicsHeading',
       '#currentTopicsDescription',
       '#blockedTopicsRow',
-      '#blockedTopicsDescriptionV2',
+      '#blockedTopicsDescription',
       '#blockedTopicsList',
       '#manageTopicsSection',
-      '#footerV2',
+      '#footer',
     ];
     idsToBeShown.forEach(id => assertTrue(isChildVisible(page, id)));
 
@@ -467,7 +463,7 @@ suite('TopicsSubpage', function() {
     assertFalse(page.$.topicsToggle.checked);
     assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
-        loadTimeData.getString('topicsPageToggleSubLabelV2'),
+        loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     // Assert V2 Layout for ids to be hidden.
     const idsToBeHidden = [
@@ -476,13 +472,12 @@ suite('TopicsSubpage', function() {
       '#currentTopicsDescription',
       '#currentTopicsDescriptionEmpty',
       '#currentTopicsDescriptionEmptyTextHeading',
-      '#currentTopicsDescriptionEmptyTextV2',
+      '#currentTopicsDescriptionEmptyText',
       '#currentTopicsDescriptionDisabled',
       '#blockedTopicsRow',
       '#blockedTopicsDescription',
-      '#blockedTopicsDescriptionV2',
       '#blockedTopicsDescriptionEmptyTextHeading',
-      '#blockedTopicsDescriptionEmptyTextV2',
+      '#blockedTopicsDescriptionEmptyText',
       '#blockedTopicsList',
       '#manageTopicsSection',
     ];
@@ -541,7 +536,7 @@ suite('TopicsSubpage', function() {
     assertFalse(isVisible(currentTopicsSection.querySelector(
         '#currentTopicsDescriptionEmptyTextHeading')));
     assertFalse(isVisible(currentTopicsSection.querySelector(
-        '#currentTopicsDescriptionEmptyTextV2')));
+        '#currentTopicsDescriptionEmptyText')));
     assert(!!currentTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
         'test-topic-1',
@@ -570,10 +565,10 @@ suite('TopicsSubpage', function() {
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     const blockedTopicsDescription =
         page.shadowRoot!.querySelector<HTMLElement>(
-            '#blockedTopicsDescriptionV2')!;
+            '#blockedTopicsDescription')!;
     assertTrue(isVisible(blockedTopicsDescription));
     assertEquals(
-        loadTimeData.getString('topicsPageBlockedTopicsDescriptionNew'),
+        loadTimeData.getString('topicsPageBlockedTopicsDescription'),
         blockedTopicsDescription.innerText);
     assertEquals(1, blockedTopics.length);
     assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
@@ -713,7 +708,7 @@ suite('TopicsSubpage', function() {
     assertTrue(isVisible(currentTopicsSection.querySelector(
         '#currentTopicsDescriptionEmptyTextHeading')));
     assertTrue(isVisible(currentTopicsSection.querySelector(
-        '#currentTopicsDescriptionEmptyTextV2')));
+        '#currentTopicsDescriptionEmptyText')));
 
     // Check that the focus is not lost after blocking the last item.
     await waitAfterNextRender(page);
@@ -839,7 +834,7 @@ suite('TopicsSubpage', function() {
     // Check that blocked topics empty text appears
     assertTrue(
         isChildVisible(page, '#blockedTopicsDescriptionEmptyTextHeading'));
-    assertTrue(isChildVisible(page, '#blockedTopicsDescriptionEmptyTextV2'));
+    assertTrue(isChildVisible(page, '#blockedTopicsDescriptionEmptyText'));
   });
 
   test('topicsManaged', async function() {
@@ -856,9 +851,9 @@ suite('TopicsSubpage', function() {
   });
 
   test('footerLinks', async function() {
-    assertTrue(isChildVisible(page, '#footerV2'));
-    const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
-        '#footerV2 a[href]');
+    assertTrue(isChildVisible(page, '#footer'));
+    const links =
+        page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
     assertEquals(links.length, 3, 'footer should contains three links');
     links.forEach(
         link => assertEquals(

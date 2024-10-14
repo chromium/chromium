@@ -32,12 +32,10 @@ import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmati
 import type {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_topics_subpage.html.js';
-
-// TODO(crbug.com/369853368): Remove V2 suffix from variables/code/strings.
 export interface SettingsPrivacySandboxTopicsSubpageElement {
   $: {
     topicsToggle: SettingsToggleButtonElement,
-    footerV2: HTMLElement,
+    footer: HTMLElement,
   };
 }
 
@@ -148,7 +146,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.privacySandboxBrowserProxy_.getTopicsState().then(
         state => this.onTopicsStateChanged_(state));
 
-    this.$.footerV2.querySelectorAll('a').forEach(
+    this.$.footer.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }
@@ -196,11 +194,11 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         this.isTopicsListLoaded_;
   }
 
-  private isTopicsListEmptyV2_(): boolean {
+  private isTopicsListEmpty_(): boolean {
     return this.topicsList_.length === 0;
   }
 
-  private isBlockedTopicsListEmptyV2_(): boolean {
+  private isBlockedTopicsListEmpty_(): boolean {
     return this.blockedTopicsList_.length === 0;
   }
 
@@ -264,9 +262,12 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     });
   }
 
-  // In the V2 of the ad topics page, this function is invoked by
-  // onInterestedChanged_ to handle the blocking/allowing and updating state.
-  private async onInterestChangedV2_() {
+  // This function is run anytime the interest item changes. Which means that it
+  // runs when a user blocks/allows a topic.
+  private async onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
+    this.currentInterest_ = e.detail;
+    assert(!this.currentInterest_.site);
+
     assert(this.currentInterest_!.topic);
     assert(this.currentInterest_!.topic!.displayString);
 
@@ -298,14 +299,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     // Update topics state.
     this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
     this.blockedTopicsExpanded_ = true;
-  }
-
-  // This function is run anytime the interest item changes. Which means that it
-  // runs when a user blocks/allows a topic.
-  private onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
-    this.currentInterest_ = e.detail;
-    assert(!this.currentInterest_.site);
-    this.onInterestChangedV2_();
   }
 
   private onBlockedTopicsExpanded_() {
