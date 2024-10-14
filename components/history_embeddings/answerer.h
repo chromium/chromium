@@ -65,6 +65,10 @@ struct AnswererResult {
   ~AnswererResult();
   AnswererResult& operator=(AnswererResult&&);
 
+  // Utility method to add scroll to text fragment directive to result.
+  // The `passages` are the relevant portion of context for answer URL.
+  void PopulateScrollToTextFragment(const std::vector<std::string>& passages);
+
   ComputeAnswerStatus status = ComputeAnswerStatus::kUnspecified;
   std::string query;
   optimization_guide::proto::Answer answer;

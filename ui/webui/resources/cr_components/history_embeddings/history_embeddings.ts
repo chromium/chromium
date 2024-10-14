@@ -242,8 +242,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     const textDirectives = this.answerSource_.answerData?.answerTextDirectives;
     if (textDirectives && textDirectives.length > 0) {
       // Only the first directive is used for now until there's a way to show
-      // multiple links in the UI.
-      sourceUrl.hash = `:~:text=${encodeURIComponent(textDirectives[0])}`;
+      // multiple links in the UI. If the directive contains a comma, it is
+      // intended to be part of the start,end syntax and should not be encoded.
+      sourceUrl.hash = `:~:text=${
+          textDirectives[0].split(',').map(encodeURIComponent).join(',')}`;
     }
     return sourceUrl.toString();
   }

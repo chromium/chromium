@@ -188,9 +188,12 @@ class MlAnswerer::SessionManager {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
-      FinishCallback(AnswererResult(
+      AnswererResult answerer_result(
           ComputeAnswerStatus::kSuccess, query_, response->answer(),
-          std::move(result.log_entry), urls_[session_index], {}));
+          std::move(result.log_entry), urls_[session_index], {});
+      answerer_result.PopulateScrollToTextFragment(
+          context_.url_passages_map[answerer_result.url]);
+      FinishCallback(std::move(answerer_result));
     }
   }
 

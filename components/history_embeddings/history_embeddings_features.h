@@ -156,6 +156,9 @@ extern const base::FeatureParam<int> kWordMatchLimit;
 extern const base::FeatureParam<int> kWordMatchSmoothingFactor;
 extern const base::FeatureParam<int> kWordMatchMaxTermCount;
 
+// Whether to include scroll to text fragment directives with answer citations.
+extern const base::FeatureParam<bool> kScrollTagsEnabled;
+
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.

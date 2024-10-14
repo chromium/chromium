@@ -91,7 +91,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
           {{"SearchPassageMinimumWordCount", "3"},
-           {"WordMatchMinEmbeddingScore", "0"}}},
+           {"WordMatchMinEmbeddingScore", "0"},
+           {"ScrollTagsEnabled", "true"}}},
          {kHistoryEmbeddingsAnswers, {}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
@@ -286,14 +287,14 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchSetsValidSessionId) {
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
   OverrideVisibilityScoresForTesting({
-      {"passage with answer", 1},
+      {"A passage with five words.", 1},
   });
 
   auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
     AddTestHistoryPage("http://answertest.com");
     ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
     scored_url_row.passages_embeddings.url_passages.passages.add_passages(
-        "passage with answer");
+        "A passage with five words.");
     scored_url_row.passages_embeddings.url_embeddings.embeddings.emplace_back(
         std::vector<float>(768, 1.0f));
     scored_url_row.scores.push_back(score);
@@ -326,6 +327,11 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
   SearchResult final_result = future.Take();
   EXPECT_EQ(final_result.answerer_result.status, ComputeAnswerStatus::kSuccess);
   EXPECT_FALSE(final_result.AnswerText().empty());
+
+  // Citation with scroll directive pointing to passage text.
+  EXPECT_EQ(final_result.answerer_result.text_directives.size(), 1u);
+  EXPECT_EQ(final_result.answerer_result.text_directives[0],
+            "A passage,five words.");
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {

@@ -24,11 +24,20 @@ void MockAnswerer::ComputeAnswer(std::string query,
   optimization_guide::proto::Answer answer;
   answer.set_text(std::string("This is the answer to query '") + query +
                   std::string("'."));
+  AnswererResult result(ComputeAnswerStatus::kSuccess, query, answer);
+
+  // Set URL and passage citation if available.
+  auto it = context.url_passages_map.begin();
+  if (it != context.url_passages_map.end()) {
+    optimization_guide::proto::Citation* citation =
+        result.answer.add_citations();
+    citation->set_passage_id("0001");
+    result.url = it->first;
+    result.PopulateScrollToTextFragment(it->second);
+  }
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          AnswererResult{ComputeAnswerStatus::kSuccess, query, answer}),
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)),
       base::Milliseconds(kMockAnswererDelayMS.Get()));
 }
 

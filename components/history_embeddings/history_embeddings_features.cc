@@ -198,6 +198,10 @@ const base::FeatureParam<int> kWordMatchMaxTermCount(&kHistoryEmbeddings,
                                                      "WordMatchMaxTermCount",
                                                      3);
 
+const base::FeatureParam<bool> kScrollTagsEnabled(&kHistoryEmbeddings,
+                                                  "ScrollTagsEnabled",
+                                                  false);
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&
