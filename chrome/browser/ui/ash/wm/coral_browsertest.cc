@@ -200,10 +200,10 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsToNewDesk) {
   coral::mojom::GroupPtr fake_group = coral::mojom::Group::New();
   fake_group->title = "Coral desk";
 
-  fake_group->entities.push_back(
-      coral::mojom::EntityKey::NewTabUrl(GURL("https://youtube.com")));
-  fake_group->entities.push_back(
-      coral::mojom::EntityKey::NewTabUrl(GURL("https://maps.google.com")));
+  fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+      coral::mojom::Tab::New("Youtube", GURL("https://youtube.com"))));
+  fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+      coral::mojom::Tab::New("Google Maps", GURL("https://maps.google.com"))));
 
   DeskSwitchAnimationWaiter waiter;
   Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(fake_group));

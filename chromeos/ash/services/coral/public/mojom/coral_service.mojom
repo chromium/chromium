@@ -46,25 +46,6 @@ union Entity {
   App app;
 };
 
-// Identifier that uniquely identifies an entity of each type. In CoralResponse,
-// to return the groupings we don't need to include all original metadata, but
-// just this identifier, to the client.
-[Extensible]
-union EntityKey {
-  // For backward compatibility. In mojom, when deserializing variants of an
-  // extensible union that are introduced in newer versions than the version
-  // remote is on, they'll be mapped to the variant marked [Default] with
-  // nullified value. In service-side logic, we'd like to treat those variants
-  // as unknown and unsupported instead of being disguised as a valid entity
-  // type (like Tab). So we introduce this default unknown variant.
-  [Default]
-  bool unknown;
-  // URL field of Tab struct.
-  url.mojom.Url tab_url;
-  // Id field of App struct.
-  string app_id;
-};
-
 // Configurable options of the embedding engine.
 struct EmbeddingOptions {};
 
@@ -96,16 +77,16 @@ struct TitleGenerationOptions {
 [Extensible]
 enum CoralError {
   [Default] kUnknownError,
-  [MinVersion=1] kLoadModelFailed,
-  [MinVersion=2] kInvalidArgs,
-  [MinVersion=2] kModelExecutionFailed,
-  [MinVersion=3] kClusteringError,
+  kLoadModelFailed,
+  kInvalidArgs,
+  kModelExecutionFailed,
+  kClusteringError,
 };
 
 struct Group {
   string title;
   // This is sorted by descending rank of importance.
-  array<EntityKey> entities;
+  array<Entity> entities;
 };
 
 struct GroupRequest {

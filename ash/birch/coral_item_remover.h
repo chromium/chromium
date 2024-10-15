@@ -23,12 +23,9 @@ class ASH_EXPORT CoralItemRemover {
   CoralItemRemover& operator=(const CoralItemRemover&) = delete;
   ~CoralItemRemover();
 
-  // Records the coral::mojom::EntityKey to be removed for the current session.
-  void RemoveItem(const coral::mojom::EntityKey& key);
-
-  // Records the coral::mojom::EntityKeyPtr to be removed for the current
+  // Records the coral::mojom::EntityPtr to be removed for the current
   // session.
-  void RemoveItem(const coral::mojom::EntityKeyPtr& key);
+  void RemoveItem(const coral::mojom::EntityPtr& item);
 
   // Records the coral::mojom::Entity to be removed for the current session.
   void RemoveItem(const coral::mojom::Entity& item);

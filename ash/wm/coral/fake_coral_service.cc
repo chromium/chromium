@@ -14,13 +14,13 @@ void FakeCoralService::Group(coral::mojom::GroupRequestPtr request,
   CHECK_GE(total_num, min_group_size);
 
   // Get tab and app items from the request.
-  std::vector<GURL> tab_urls;
-  std::vector<std::string> app_ids;
+  std::vector<coral::mojom::TabPtr> tabs;
+  std::vector<coral::mojom::AppPtr> apps;
   for (const coral::mojom::EntityPtr& entity : request->entities) {
     if (entity->is_tab()) {
-      tab_urls.emplace_back(entity->get_tab()->url);
+      tabs.push_back(entity->get_tab()->Clone());
     } else {
-      app_ids.emplace_back(entity->get_app()->id);
+      apps.push_back(entity->get_app()->Clone());
     }
   }
 
@@ -32,11 +32,10 @@ void FakeCoralService::Group(coral::mojom::GroupRequestPtr request,
     auto group = coral::mojom::Group::New();
     group->title = name;
     for (size_t i = tab_start; i < tab_start + tab_num; i++) {
-      group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(tab_urls[i]));
+      group->entities.push_back(coral::mojom::Entity::NewTab(tabs[i].Clone()));
     }
     for (size_t i = app_start; i < app_start + app_num; i++) {
-      group->entities.push_back(coral::mojom::EntityKey::NewAppId(app_ids[i]));
+      group->entities.push_back(coral::mojom::Entity::NewApp(apps[i].Clone()));
     }
     return group;
   };
@@ -46,7 +45,7 @@ void FakeCoralService::Group(coral::mojom::GroupRequestPtr request,
   const int group_size_1 =
       std::clamp(total_num / 2, min_group_size, max_group_size);
   // Assign the tabs and apps to the group in proportion to their total num;
-  const int tab_total = tab_urls.size();
+  const int tab_total = tabs.size();
   const int tab_num_1 = group_size_1 * tab_total / total_num;
   const int app_num_1 = group_size_1 - tab_num_1;
   if (group_size_1) {

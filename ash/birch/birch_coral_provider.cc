@@ -189,18 +189,19 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
     // TODO(owenzhang): Remove placeholder page_urls.
     auto fake_group = coral::mojom::Group::New();
     fake_group->title = "Coral Group";
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.reddit.com/")));
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.figma.com/")));
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.notion.so/")));
+    fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+        coral::mojom::Tab::New("Reddit", GURL("https://www.reddit.com/"))));
+    fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+        coral::mojom::Tab::New("Figma", GURL("https://www.figma.com/"))));
+    fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+        coral::mojom::Tab::New("Notion", GURL("https://www.notion.so/"))));
     // OS settings.
     fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewAppId("odknhmnlageboeamepcngndbggdpaobj"));
+        coral::mojom::Entity::NewApp(coral::mojom::App::New(
+            "Settings", "odknhmnlageboeamepcngndbggdpaobj")));
     // Files.
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewAppId("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+    fake_group->entities.push_back(coral::mojom::Entity::NewApp(
+        coral::mojom::App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 
     std::vector<coral::mojom::GroupPtr> fake_groups;
     fake_groups.push_back(std::move(fake_group));
@@ -242,9 +243,9 @@ void BirchCoralProvider::RemoveGroup(int group_id) {
   }
 }
 
-void BirchCoralProvider::RemoveItem(const coral::mojom::EntityKeyPtr& key) {
+void BirchCoralProvider::RemoveItem(const coral::mojom::EntityPtr& item) {
   CHECK(coral_item_remover_);
-  coral_item_remover_->RemoveItem(key);
+  coral_item_remover_->RemoveItem(item);
 }
 
 void BirchCoralProvider::RequestBirchDataFetch() {

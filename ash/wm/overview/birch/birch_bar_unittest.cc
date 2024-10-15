@@ -304,28 +304,29 @@ class BirchBarTest : public AshTestBase {
     if (num >= 1u) {
       auto fake_group = coral::mojom::Group::New();
       fake_group->title = "Coral Group 1";
+      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New("Reddit", GURL("https://www.reddit.com/"))));
+      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New("Figma", GURL("https://www.figma.com/"))));
+      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New("Notion", GURL("https://www.notion.so/"))));
       fake_group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(GURL("https://www.reddit.com/")));
-      fake_group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(GURL("https://www.figma.com/")));
-      fake_group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(GURL("https://www.notion.so/")));
-      fake_group->entities.push_back(coral::mojom::EntityKey::NewAppId(
-          "odknhmnlageboeamepcngndbggdpaobj"));
+          coral::mojom::Entity::NewApp(coral::mojom::App::New(
+              "Settings", "odknhmnlageboeamepcngndbggdpaobj")));
       fake_groups.push_back(std::move(fake_group));
     }
 
     if (num == 2u) {
       auto fake_group = coral::mojom::Group::New();
       fake_group->title = "Coral Group 2";
-      fake_group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(GURL("https://www.ikea.com/")));
-      fake_group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(GURL("https://www.nhl.com/")));
-      fake_group->entities.push_back(
-          coral::mojom::EntityKey::NewTabUrl(GURL("https://www.google.com/")));
-      fake_group->entities.push_back(coral::mojom::EntityKey::NewAppId(
-          "fkiggjmkendpmbegkagpmagjepfkpmeb"));
+      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New("IKEA", GURL("https://www.ikea.com/"))));
+      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New("NHL", GURL("https://www.nhl.com/"))));
+      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New("Google", GURL("https://www.google.com/"))));
+      fake_group->entities.push_back(coral::mojom::Entity::NewApp(
+          coral::mojom::App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
       fake_groups.push_back(std::move(fake_group));
     }
 

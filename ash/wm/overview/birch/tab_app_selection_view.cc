@@ -318,10 +318,10 @@ TabAppSelectionView::TabAppSelectionView(int group_id) {
   std::vector<GURL> page_urls;
   std::vector<std::string> app_ids;
   for (const auto& entity : group->entities) {
-    if (entity->is_tab_url()) {
-      page_urls.push_back(entity->get_tab_url());
+    if (entity->is_tab()) {
+      page_urls.push_back(entity->get_tab()->url);
     } else {
-      app_ids.push_back(entity->get_app_id());
+      app_ids.push_back(entity->get_app()->id);
     }
   }
 

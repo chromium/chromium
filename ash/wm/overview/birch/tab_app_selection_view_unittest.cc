@@ -43,18 +43,17 @@ class TabAppSelectionViewTest : public AshTestBase {
     auto fake_response = std::make_unique<CoralResponse>();
     auto fake_group = coral::mojom::Group::New();
     fake_group->title = "Coral Group";
+    fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+        coral::mojom::Tab::New("Reddit", GURL("https://www.reddit.com/"))));
+    fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+        coral::mojom::Tab::New("Figma", GURL("https://www.figma.com/"))));
+    fake_group->entities.push_back(coral::mojom::Entity::NewTab(
+        coral::mojom::Tab::New("Notion", GURL("https://www.notion.so/"))));
     fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.reddit.com/")));
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.figma.com/")));
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.notion.so/")));
-    // OS settings.
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewAppId("odknhmnlageboeamepcngndbggdpaobj"));
-    // Files.
-    fake_group->entities.push_back(
-        coral::mojom::EntityKey::NewAppId("lgnggepjiihbfdbedefdhcffnmhcahbm"));
+        coral::mojom::Entity::NewApp(coral::mojom::App::New(
+            "Settings", "odknhmnlageboeamepcngndbggdpaobj")));
+    fake_group->entities.push_back(coral::mojom::Entity::NewApp(
+        coral::mojom::App::New("Files", "lgnggepjiihbfdbedefdhcffnmhcahbm")));
 
     std::vector<coral::mojom::GroupPtr> fake_groups;
     fake_groups.push_back(std::move(fake_group));

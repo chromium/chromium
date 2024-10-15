@@ -13,9 +13,7 @@
 namespace ash::coral_util {
 
 std::string ASH_PUBLIC_EXPORT
-GetIdentifier(const coral::mojom::EntityKeyPtr& key);
-
-std::string ASH_PUBLIC_EXPORT GetIdentifier(const coral::mojom::EntityKey& key);
+GetIdentifier(const coral::mojom::EntityPtr& item);
 
 std::string ASH_PUBLIC_EXPORT GetIdentifier(const coral::mojom::Entity& item);
 

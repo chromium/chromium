@@ -1438,21 +1438,16 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   content_items.push_back(item2.Clone());
   content_items.push_back(item3.Clone());
 
-  // Setup clusters with title and content keys.
-  auto key0 = coral::mojom::EntityKey::NewTabUrl(item0->get_tab()->url);
-  auto key1 = coral::mojom::EntityKey::NewTabUrl(item1->get_tab()->url);
-  auto key2 = coral::mojom::EntityKey::NewAppId(item2->get_app()->id);
-  auto key3 = coral::mojom::EntityKey::NewAppId(item3->get_app()->id);
-
-  std::vector<coral::mojom::EntityKeyPtr> entity_keys0;
-  entity_keys0.emplace_back(std::move(key0));
-  entity_keys0.emplace_back(std::move(key1));
-  entity_keys0.emplace_back(std::move(key2));
-  entity_keys0.emplace_back(std::move(key3));
+  // Setup clusters with title and content.
+  std::vector<coral::mojom::EntityPtr> entities0;
+  entities0.emplace_back(item0.Clone());
+  entities0.emplace_back(item1.Clone());
+  entities0.emplace_back(item2.Clone());
+  entities0.emplace_back(item3.Clone());
 
   coral::mojom::GroupPtr group0 = coral::mojom::Group::New();
   group0->title = "Group Title 0";
-  group0->entities = std::move(entity_keys0);
+  group0->entities = std::move(entities0);
 
   coral::mojom::GroupPtr group1 = coral::mojom::Group::New();
   group1->title = "Group Title 1 (empty)";
