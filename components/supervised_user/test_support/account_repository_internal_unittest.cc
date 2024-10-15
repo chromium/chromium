@@ -11,7 +11,13 @@
 
 namespace supervised_user {
 namespace {
-TEST(AccountRepositoryInternalTest, ProdConfigIsParseable) {
+// TODO(crbug.com/373667523): Re-enable this test on ios.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ProdConfigIsParseable DISABLED_ProdConfigIsParseable
+#else
+#define MAYBE_ProdConfigIsParseable ProdConfigIsParseable
+#endif
+TEST(AccountRepositoryInternalTest, MAYBE_ProdConfigIsParseable) {
   TestAccountRepository repository;
   std::optional<test_accounts::Family> family =
       repository.GetRandomFamilyByFeature(test_accounts::Feature::REGULAR);
