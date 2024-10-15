@@ -198,11 +198,6 @@
     "expiry_milestone": 131
   },
   {
-    "name": "android-improved-bookmarks",
-    "owners": ["wylieb@chromium.org", "skym@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "android-no-surface-sync-for-browser-controls",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 130

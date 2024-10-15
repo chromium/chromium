@@ -41,14 +41,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Controls the bookmarks save-flow, which has 2 variants: standard, improved. The two variants have
- * different properties, so each of the methods is branched to reflect that.
- * BookmarkSaveFlowProperties shouldn't be used for the improved variant (it'll crash), and the same
- * is true for ImprovedBookmarkSaveFlow properties with the standard variant. standard: The default
- * save experience prior to android-improved-bookmarks. improved: The new experience for saving when
- * android-improved-bookmarks is enabled.
- */
+/** Controls the bookmarks save-flow. */
 public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         implements SubscriptionsObserver {
     private static final String FOLDER_TEXT_TOKEN = "%1$s";
