@@ -520,6 +520,7 @@ class WebSocketHandshakeStreamCreateHelperTest
             /*socket_performance_watcher=*/nullptr,
             ConnectionEndpointMetadata(), /*report_ecn=*/true,
             /*enable_origin_frame=*/true,
+            /*allow_server_preferred_address=*/true,
             NetLogWithSource::Make(NetLogSourceType::NONE));
 
         session_->Initialize();

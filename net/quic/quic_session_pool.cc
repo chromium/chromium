@@ -541,9 +541,6 @@ QuicSessionPool::QuicSessionPool(
   if (params_.disable_tls_zero_rtt) {
     SetQuicFlag(quic_disable_client_tls_zero_rtt, true);
   }
-  if (params_.allow_server_migration) {
-    SetQuicFlag(quic_always_support_server_preferred_address, true);
-  }
   InitializeMigrationOptions();
   cert_verifier_->AddObserver(this);
   CertDatabase::GetInstance()->AddObserver(this);
@@ -1747,7 +1744,7 @@ QuicSessionPool::CreateSessionHelper(
       network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
       std::move(socket_performance_watcher), metadata, params_.report_ecn,
-      params_.enable_origin_frame, net_log);
+      params_.enable_origin_frame, params_.allow_server_migration, net_log);
   QuicChromiumClientSession* session = new_session.get();
 
   all_sessions_.insert(std::move(new_session));

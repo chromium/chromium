@@ -632,6 +632,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const ConnectionEndpointMetadata& metadata,
       bool report_ecn,
       bool enable_origin_frame,
+      bool allow_server_preferred_address,
       const NetLogWithSource& net_log);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
@@ -1191,6 +1192,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // When true, the session has observed a transition and can stop incrementing
   // incoming_packets_before_ecn_transition_.
   bool observed_ecn_transition_ = false;
+
+  const bool allow_server_preferred_address_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

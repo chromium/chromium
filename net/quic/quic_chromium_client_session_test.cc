@@ -200,6 +200,7 @@ class QuicChromiumClientSessionTest
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         /*report_ecn=*/true, /*enable_origin_frame=*/true,
+        /*allow_server_preferred_address=*/true,
         NetLogWithSource::Make(NetLogSourceType::NONE));
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);

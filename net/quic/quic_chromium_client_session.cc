@@ -948,6 +948,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     const ConnectionEndpointMetadata& metadata,
     bool report_ecn,
     bool enable_origin_frame,
+    bool allow_server_preferred_address,
     const NetLogWithSource& net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
@@ -992,7 +993,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
           net_log_)),
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       path_validation_writer_delegate_(this, task_runner_),
-      ech_config_list_(metadata.ech_config_list) {
+      ech_config_list_(metadata.ech_config_list),
+      allow_server_preferred_address_(allow_server_preferred_address) {
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(
@@ -3948,6 +3950,9 @@ void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
           connection_id(),
           "Ignored server preferred address received via proxied connection");
     });
+    return;
+  }
+  if (!allow_server_preferred_address_) {
     return;
   }
 
