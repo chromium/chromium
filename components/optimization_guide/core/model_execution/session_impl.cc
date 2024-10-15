@@ -956,6 +956,10 @@ SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
 void SessionImpl::GetSizeInTokens(
     const std::string& text,
     OptimizationGuideModelSizeInTokenCallback callback) {
+  if (!ShouldUseOnDeviceModel()) {
+    std::move(callback).Run(0);
+    return;
+  }
   auto input = on_device_model::mojom::Input::New();
   input->pieces.push_back(text);
   GetOrCreateSession().GetSizeInTokens(std::move(input), std::move(callback));
@@ -964,6 +968,10 @@ void SessionImpl::GetSizeInTokens(
 void SessionImpl::GetContextSizeInTokens(
     const google::protobuf::MessageLite& request,
     OptimizationGuideModelSizeInTokenCallback callback) {
+  if (!ShouldUseOnDeviceModel()) {
+    std::move(callback).Run(0);
+    return;
+  }
   auto input = on_device_state_->opts.adapter->ConstructInputString(
       request, /*want_input_context=*/true);
   if (!input) {
