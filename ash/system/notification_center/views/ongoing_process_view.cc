@@ -33,6 +33,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -94,14 +95,6 @@ OngoingProcessView::OngoingProcessView(
                        .Build());
   icon_and_label_container->SetDefault(views::kMarginsKey,
                                        kIconAndLabelContainerDefaultMargins);
-  // Set `MaximumFlexSizeRule` to `kUnbounded` so the container expands and the
-  // `buttons_container` is always on the trailing side of the notification.
-  icon_and_label_container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded,
-                                   /*adjust_height_for_width=*/true)));
 
   icon_and_label_container->AddChildView(
       views::Builder<views::ImageView>()
@@ -114,18 +107,10 @@ OngoingProcessView::OngoingProcessView(
           .Build());
 
   auto* label_container = icon_and_label_container->AddChildView(
-      views::Builder<views::FlexLayoutView>()
+      views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
           .Build());
-  // Set `MinimumFlexSizeRule` to `kScaleToZero` so labels can shrink and elide,
-  // or wrap when multi-line text is enabled.
-  label_container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded,
-                                   /*adjust_height_for_width=*/true)));
 
   label_container->AddChildView(
       views::Builder<views::Label>()
@@ -133,6 +118,7 @@ OngoingProcessView::OngoingProcessView(
           .SetID(VIEW_ID_ONGOING_PROCESS_TITLE_LABEL)
           .SetMultiLine(notification.message().empty())
           .SetMaxLines(kTitleMaxLines)
+          .SetAllowCharacterBreak(true)
           .SetText(notification.title())
           .SetTooltipText(notification.title())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -150,6 +136,7 @@ OngoingProcessView::OngoingProcessView(
           .SetVisible(!notification.message().empty())
           .SetMultiLine(true)
           .SetMaxLines(kSubtitleMaxLines)
+          .SetAllowCharacterBreak(true)
           .SetText(notification.message())
           .SetTooltipText(notification.message())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)

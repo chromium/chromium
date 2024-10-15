@@ -4886,6 +4886,7 @@ test("ash_pixeltests") {
     "system/network/vpn_detailed_view_pixeltest.cc",
     "system/notification_center/notification_center_tray_pixeltest.cc",
     "system/notification_center/views/ash_notification_view_pixeltest.cc",
+    "system/notification_center/views/ongoing_process_view_pixeltest.cc",
     "system/privacy/privacy_indicators_tray_item_view_pixeltest.cc",
     "system/status_area_pixeltest.cc",
     "system/time/calendar_up_next_pixeltest.cc",
