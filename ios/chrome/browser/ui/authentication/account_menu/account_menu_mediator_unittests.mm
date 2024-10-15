@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_consumer.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -287,36 +288,81 @@ TEST_F(AccountMenuMediatorTest, TestError) {
 #pragma mark - AccountMenuMutator
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
-// when sign-in fail.
-TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
-  __block ShowSigninCommandCompletionCallback onSigninSuccess = nil;
-  __block void (^userDecisionCompletion)() = nil;
+// when sign-out fail.
+TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
+  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
+  // callback in a callback, this tests has three parts.  One part by callback,
+  // and one part for the initial part of the run.
+
+  // Testing the part before the callback.
+  // This variable will contain the callback that should be executed once
+  // sign-out ends.
+  __block void (^onSignoutSuccess)(BOOL) = nil;
   auto target = CGRect();
   OCMExpect([delegate_
-      triggerAccountSwitchWithTargetRect:target
-                             newIdentity:kSecondaryIdentity
-         viewWillBeDismissedAfterSignout:NO
-                  userDecisionCompletion:[OCMArg
-                                             checkWithBlock:^BOOL(id value) {
-                                               userDecisionCompletion = value;
-                                               return true;
-                                             }]
-                        signInCompletion:[OCMArg
-                                             checkWithBlock:^BOOL(id value) {
-                                               onSigninSuccess = value;
-                                               return true;
-                                             }]]);
+      signOutFromTargetRect:target
+                  forSwitch:YES
+                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
+                     onSignoutSuccess = value;
+                     return true;
+                   }]]);
+  OCMExpect([delegate_ blockOtherScene]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
-  SigninCompletionInfo* signinCompletionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
-  OCMExpect([delegate_ mediatorWantsToDismissTheView:mediator_]);
-  userDecisionCompletion();
-  onSigninSuccess(SigninCoordinatorResultCanceledByUser, signinCompletionInfo);
+  OCMExpect([delegate_ unblockOtherScene]);
+  // Simulate a sign-out failure
+  onSignoutSuccess(false);
+}
+
+// Tests the result of accountTappedWithGaiaID:targetRect:
+// when sign-in fail.
+TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
+  // Given that the method  `signOutFromTargetRect:forSwitch:completion` create
+  // a callback in a callback, this tests has three parts.  One part by
+  // callback, and one part for the initial part of the run.
+
+  // Testing the part before the callback.
+  // This variable will contain the callback that should be executed once
+  // sign-out ends.
+  __block signin_ui::SignoutCompletionCallback onSignoutSuccess = nil;
+  auto target = CGRect();
+  OCMExpect([delegate_
+      signOutFromTargetRect:target
+                  forSwitch:YES
+                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
+                     onSignoutSuccess = value;
+                     // Actually sign-out, in order to test next step.
+                     SignOut();
+                     return true;
+                   }]]);
+  OCMExpect([delegate_ blockOtherScene]);
+  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
+                          targetRect:target];
+  VerifyMock();
+
+  // Simulate a sign-out success.
+  // This variable will contain the callback that should be executed once
+  // sign-in ended.
+  __block signin_ui::SigninCompletionCallback onSigninSuccess = nil;
+  OCMExpect([delegate_
+                triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                     completion:[OCMArg checkWithBlock:^BOOL(
+                                                            id value) {
+                                       onSigninSuccess = value;
+                                       return true;
+                                     }]])
+      .andReturn(OCMStrictClassMock([AuthenticationFlow class]));
+  onSignoutSuccess(true);
+
+  // Testing the sign-in callback.
+  // The delegate should not receive any message. The mediator directly sign the
+  // user back in the previous account.
+  OCMExpect([delegate_ unblockOtherScene]);
+  onSigninSuccess(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 
   // Checks the user is signed-back in.
   ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
@@ -326,38 +372,53 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when switch is succesful.
 TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
-  __block ShowSigninCommandCompletionCallback onSigninSuccess = nil;
-  __block void (^userDecisionCompletion)() = nil;
+  // Given that the method  `signOutFromTargetRect:forSwitch:callback` create a
+  // callback in a callback, this tests has three parts.  One part by callback,
+  // and one part for the initial part of the run.
+
+  // Testing the part before the callback.
+  // This variable will contain the callback that should be executed once
+  // sign-out ends.
+  __block signin_ui::SignoutCompletionCallback onSignoutSuccess = nil;
   auto target = CGRect();
   OCMExpect([delegate_
-      triggerAccountSwitchWithTargetRect:target
-                             newIdentity:kSecondaryIdentity
-         viewWillBeDismissedAfterSignout:NO
-                  userDecisionCompletion:[OCMArg
-                                             checkWithBlock:^BOOL(id value) {
-                                               userDecisionCompletion = value;
-                                               return true;
-                                             }]
-                        signInCompletion:[OCMArg
-                                             checkWithBlock:^BOOL(id value) {
-                                               // Actually sign-out, in order to
-                                               // test next step.
-                                               SignOut();
-                                               onSigninSuccess = value;
-                                               return true;
-                                             }]]);
+      signOutFromTargetRect:target
+                  forSwitch:YES
+                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
+                     onSignoutSuccess = value;
+                     return true;
+                   }]]);
+  OCMExpect([delegate_ blockOtherScene]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
-  // Testing the sign-in callback.
-  OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
+  // Simulate a sign-out success.
+  // This variable will contain the callback that should be executed once
+  // sign-in ends.
+  __block signin_ui::SigninCompletionCallback onSigninSuccess = nil;
+  {
+    base::RunLoop run_loop;
+    base::RepeatingClosure closure = run_loop.QuitClosure();
+    OCMExpect([delegate_
+                  triggerSigninWithSystemIdentity:kSecondaryIdentity
+                                       completion:[OCMArg checkWithBlock:^BOOL(
+                                                              id value) {
+                                         onSigninSuccess = value;
+                                         closure.Run();
+                                         return true;
+                                       }]])
+        .andReturn(OCMStrictClassMock([AuthenticationFlow class]));
+    onSignoutSuccess(true);
+    run_loop.Run();
+  }
+  VerifyMock();
 
-  OCMExpect([delegate_ mediatorWantsToDismissTheView:mediator_]);
-  userDecisionCompletion();
-  SigninCompletionInfo* signinCompletionInfo = [SigninCompletionInfo
-      signinCompletionInfoWithIdentity:kSecondaryIdentity];
-  onSigninSuccess(SigninCoordinatorResultSuccess, signinCompletionInfo);
+  OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect(
+      [delegate_ triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
+  OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
+  onSigninSuccess(SigninCoordinatorResultSuccess);
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.
@@ -398,6 +459,7 @@ TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   __block void (^callback)(BOOL) = nil;
   OCMExpect([delegate_
       signOutFromTargetRect:rect
+                  forSwitch:NO
                    callback:[OCMArg checkWithBlock:^BOOL(id value) {
                      callback = value;
                      return true;
@@ -405,6 +467,7 @@ TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   OCMExpect([delegate_ blockOtherScene]);
   [mediator_ signOutFromTargetRect:rect];
   OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   callback(YES);
 }
 
@@ -415,6 +478,7 @@ TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
   __block void (^callback)(BOOL) = nil;
   OCMExpect([delegate_
       signOutFromTargetRect:rect
+                  forSwitch:NO
                    callback:[OCMArg checkWithBlock:^BOOL(id value) {
                      callback = value;
                      return true;

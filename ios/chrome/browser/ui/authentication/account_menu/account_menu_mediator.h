@@ -16,6 +16,8 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol ManageSyncSettingsCommandHandler;
 class PrefService;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+@class SigninCompletionInfo;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -32,6 +34,12 @@ class SyncService;
 
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AccountMenuMediatorDelegate> delegate;
+
+// Parameters for [super runCompletionCallbackWithSigninResult:completionInfo];
+@property(nonatomic, readwrite) SigninCoordinatorResult signinCoordinatorResult;
+// the identity with which the user is newly signed-in.
+@property(nonatomic, strong, readonly)
+    SigninCompletionInfo* signinCompletionInfo;
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
               accountManagerService:

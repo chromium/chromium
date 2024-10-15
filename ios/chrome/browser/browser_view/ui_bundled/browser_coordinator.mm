@@ -871,7 +871,6 @@ enum class ToolbarKind {
   if (!_NTPCoordinator) {
     return;
   }
-  [_NTPCoordinator dismissAccountMenu];
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {

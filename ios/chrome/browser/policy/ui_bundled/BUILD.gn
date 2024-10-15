@@ -62,9 +62,10 @@ source_set("management_util") {
     ":user_policy_util",
     "//components/account_id",
     "//components/policy/core/common",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/authentication/signin",
   ]
 }

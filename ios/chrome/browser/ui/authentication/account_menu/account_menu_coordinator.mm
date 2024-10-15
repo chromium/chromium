@@ -38,11 +38,15 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
@@ -87,9 +91,19 @@
   id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
+  // The add account coordinator if it’s open.
+  SigninCoordinator* _addAccountCoordinator;
 
   // Block the UI when the identity removal or switch is in progress.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  return [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:signin_metrics::AccessPoint::
+                                               ACCESS_POINT_ACCOUNT_MENU];
 }
 
 - (void)dealloc {
@@ -150,20 +164,12 @@
   if (!_mediator) {
     return;
   }
-  if (!_accountDetailsControllerDismissCallback.is_null()) {
-    std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
-  }
-  // Stopping all potentially open children views.
-  [self stopSignoutActionSheetCoordinator];
-  [self stopManageAccountsCoordinator];
-  _activityOverlayCallback.RunAndReset();
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
   _syncEncryptionTableViewController = nil;
 
   // Sets to nil the account menu objects.
-  [self dismissTheViewController];
   [_mediator disconnect];
   _mediator.delegate = nil;
   _mediator = nil;
@@ -176,8 +182,6 @@
   _applicationHandler = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
-
-  [self unblockOtherScene];
   [super stop];
 }
 
@@ -185,8 +189,11 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate acountMenuCoordinatorShouldStop:self];
-  _navigationController = nil;
+  // We assume the dismiss was done by the user.
+  self.mediator.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
+  // UIShutdownNoDismiss because the UI is already dismissed.
+  [self interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
+                 completion:nil];
 }
 
 #pragma mark - AccountMenuMediatorDelegate
@@ -218,6 +225,7 @@
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
+                    forSwitch:(BOOL)forSwitch
                      callback:(void (^)(BOOL))callback {
   if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
@@ -225,20 +233,21 @@
     // after the accounts menu was created.
     return;
   }
+  signin_metrics::ProfileSignout metricSignOut =
+      forSwitch
+          ? signin_metrics::ProfileSignout::kChangeAccountInAccountMenu
+          : signin_metrics::ProfileSignout::kUserClickedSignoutInAccountMenu;
   _signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
                             rect:targetRect
                             view:_viewController.view
         forceSnackbarOverToolbar:YES
-                      withSource:signin_metrics::ProfileSignout::
-                                     kUserClickedSignoutInAccountMenu];
+                      withSource:metricSignOut];
+  _signoutActionSheetCoordinator.accountSwitch = forSwitch;
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf stopSignoutActionSheetCoordinator];
-    if (success) {
-      [weakSelf.delegate acountMenuCoordinatorShouldStop:weakSelf];
-    }
     if (callback) {
       callback(success);
     }
@@ -247,20 +256,25 @@
 }
 
 - (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback {
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:callback];
-  [_applicationHandler showSignin:command
-               baseViewController:_navigationController];
+  _addAccountCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:_navigationController
+                                          browser:self.browser
+                                      accessPoint:self.accessPoint];
+  __weak __typeof(self) weakSelf = self;
+  _addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf addAccountCompletionWithSigninResult:signinResult
+                                        completionInfo:signinCompletionInfo
+                                              callback:callback];
+      };
+  [_addAccountCoordinator start];
 }
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator {
   CHECK_EQ(mediator, _mediator);
-  [self.delegate acountMenuCoordinatorShouldStop:self];
+  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
+                 completion:nil];
 }
 
 // Requests to dismiss the account menu view. Keeps the coordinator open and
@@ -268,30 +282,48 @@
 - (void)mediatorWantsToDismissTheView:(AccountMenuMediator*)mediator {
   CHECK_EQ(mediator, _mediator);
   CHECK(_viewController);
-  [self dismissTheViewController];
+  [self stopChildrenAndViewControllerWithAction:SigninCoordinatorInterrupt::
+                                                    DismissWithAnimation
+                                     completion:nil];
   _activityOverlayCallback = [_browserCoordinatorCommands showActivityOverlay];
 }
 
-- (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
-                               newIdentity:(id<SystemIdentity>)newIdentity
-           viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
-                    userDecisionCompletion:(void (^)())userDecisionCompletion
-                          signInCompletion:(ShowSigninCommandCompletionCallback)
-                                               signInCompletion {
-  CHECK(
-      _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
-      base::NotFatalUntil::M130)
-      << "There must be a signed-in account to view the menu and be able to "
-         "switch accounts.";
+- (AuthenticationFlow*)
+    triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
+                         completion:
+                             (signin_ui::SigninCompletionCallback)completion {
+  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
+               initWithBrowser:self.browser
+                      identity:identity
+                   accessPoint:signin_metrics::AccessPoint::
+                                   ACCESS_POINT_ACCOUNT_MENU
+             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
+      presentingViewController:_navigationController];
 
-  [_applicationHandler
-      switchAccountWithBaseViewController:_navigationController
-                              newIdentity:newIdentity
-                                     rect:targetRect
-                           rectAnchorView:_viewController.view
-          viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
-                   userDecisionCompletion:userDecisionCompletion
-                         signInCompletion:signInCompletion];
+  [authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        if (completion) {
+          completion(result);
+        }
+      }];
+  return authenticationFlow;
+}
+
+- (void)triggerAccountSwitchSnackbarWithIdentity:
+    (id<SystemIdentity>)systemIdentity {
+  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+      systemIdentity, IdentityAvatarSize::Regular);
+  ManagementState managementState = GetManagementState(
+      _identityManager, _authenticationService, _prefService);
+  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
+      initWithName:systemIdentity.userGivenName
+             email:systemIdentity.userEmail
+            avatar:avatar
+           managed:managementState.is_profile_managed()];
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarCommandsHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
 }
 
 - (void)blockOtherScene {
@@ -373,7 +405,38 @@
                baseViewController:_navigationController];
 }
 
+#pragma mark - SigninCoordinator
+
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock childrenCompletion = ^() {
+    [weakSelf runCompletionCallbackWithSigninResult:weakSelf.mediator
+                                                        .signinCoordinatorResult
+                                     completionInfo:weakSelf.mediator
+                                                        .signinCompletionInfo];
+    if (completion) {
+      completion();
+    }
+  };
+  [self stopChildrenAndViewControllerWithAction:action
+                                     completion:childrenCompletion];
+}
+
 #pragma mark - Private
+
+// Clean up the add account coordinator.
+- (void)
+    addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
+                          completionInfo:(SigninCompletionInfo*)completionInfo
+                                callback:(ShowSigninCommandCompletionCallback)
+                                             callback {
+  [_addAccountCoordinator stop];
+  _addAccountCoordinator = nil;
+  if (callback) {
+    callback(signinResult, completionInfo);
+  }
+}
 
 - (void)stopManageAccountsCoordinator {
   [_manageAccountsCoordinator stop];
@@ -399,17 +462,73 @@
   _signoutActionSheetCoordinator = nil;
 }
 
-// Dismisses the view controller.
-- (void)dismissTheViewController {
+// Stops all children, then dismiss the view controller, then execute
+// `completion`. If `dismiss` is YES, dismiss the add account coordinator if it
+// is present.
+- (void)stopChildrenAndViewControllerWithAction:
+            (SigninCoordinatorInterrupt)action
+                                     completion:(ProceduralBlock)completion {
+  // Stopping all potentially open children views.
+  if (!_accountDetailsControllerDismissCallback.is_null()) {
+    std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
+  }
+  [self stopSignoutActionSheetCoordinator];
+  [self stopManageAccountsCoordinator];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock dismissAndCompletion = ^() {
+    [weakSelf dismissViewControllerAction:action completion:completion];
+  };
+  if (_addAccountCoordinator) {
+    SigninCoordinatorInterrupt subviewAction =
+        (action == SigninCoordinatorInterrupt::UIShutdownNoDismiss)
+            ? SigninCoordinatorInterrupt::UIShutdownNoDismiss
+            : SigninCoordinatorInterrupt::DismissWithoutAnimation;
+    [_addAccountCoordinator interruptWithAction:subviewAction
+                                     completion:dismissAndCompletion];
+  } else {
+    dismissAndCompletion();
+  }
+}
+
+// Unplugs the view and navigation controller. Dismisses the navigation
+// controller as specified by the action.
+- (void)dismissViewControllerAction:(SigninCoordinatorInterrupt)action
+                         completion:(void (^)())completion {
+  if (!_navigationController) {
+    // The view controller was already dismissed. We can directly call
+    // completion.
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+  _activityOverlayCallback.RunAndReset();
   _mediator.consumer = nil;
   _viewController.dataSource = nil;
   _viewController.mutator = nil;
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-  _navigationController.delegate = nil;
+  UINavigationController* navigationController = _navigationController;
   _navigationController = nil;
   _viewController = nil;
+  switch (action) {
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
+      if (completion) {
+        completion();
+      }
+      break;
+    }
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
+      [navigationController.presentingViewController
+          dismissViewControllerAnimated:NO
+                             completion:completion];
+      break;
+    }
+    case SigninCoordinatorInterrupt::DismissWithAnimation: {
+      [navigationController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:completion];
+      break;
+    }
+  }
 }
 
 @end

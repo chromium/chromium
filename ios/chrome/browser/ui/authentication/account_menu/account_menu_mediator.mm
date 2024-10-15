@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 
@@ -51,9 +52,13 @@
   AccountErrorUIInfo* _error;
   // Whether the UI should not update anymore.
   BOOL _blockUpdates;
+  // The authentication flow,
+  AuthenticationFlow* _authenticationFlow;
   // Whether the account menu operations requires the user interacitons to be
   // ignored.
   BOOL _blockUserInteractions;
+  // This object is set iff an account switch is in progress.
+  base::ScopedClosureRunner _accountSwitchInProgress;
 
   // The list of identities to display and their index in the table view’s
   // identities section
@@ -102,12 +107,19 @@
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
     [self updateIdentities];
+    // By default, if the mediator was not involved in stopping the account
+    // menu, it mean the coordinator was directly interupted.
+    self.signinCoordinatorResult = SigninCoordinatorResultInterrupted;
+    _signinCompletionInfo =
+        [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
     _error = GetAccountErrorUIInfo(_syncService);
   }
   return self;
 }
 
 - (void)disconnect {
+  _accountSwitchInProgress.RunAndReset();
+  _signinCompletionInfo = nil;
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
@@ -207,6 +219,10 @@
       if (_authenticationService->IsAccountSwitchInProgress()) {
         return;
       }
+      self.signinCoordinatorResult =
+          SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
+      _blockUpdates = YES;
+      _blockUserInteractions = YES;
       [self.delegate mediatorWantsToBeDismissed:self];
       break;
   }
@@ -233,6 +249,8 @@
     (AccountMenuViewController*)viewController {
   CHECK_EQ(viewController, _consumer);
   _blockUserInteractions = YES;
+  self.signinCoordinatorResult =
+      SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
   [_delegate mediatorWantsToBeDismissed:self];
 }
 
@@ -245,6 +263,7 @@
   [self.delegate blockOtherScene];
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
+                             forSwitch:NO
                               callback:^(BOOL success) {
                                 [weakSelf signoutEndedWithSuccess:success];
                               }];
@@ -255,6 +274,7 @@
   if (_blockUserInteractions) {
     return;
   }
+  [self.delegate blockOtherScene];
   _blockUpdates = YES;
   _blockUserInteractions = YES;
   id<SystemIdentity> newIdentity = nil;
@@ -265,27 +285,17 @@
     }
   }
   CHECK(newIdentity);
-
-  BOOL viewWillBeDismissedAfterSignout =
-      _authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin);
+  _accountSwitchInProgress =
+      _authenticationService->DeclareAccountSwitchInProgress();
   __weak __typeof(self) weakSelf = self;
-  void (^userDecisionCompletion)() = ^() {
-    [weakSelf.delegate mediatorWantsToDismissTheView:weakSelf];
-  };
-  void (^signinCompletion)(SigninCoordinatorResult result,
-                           SigninCompletionInfo* info) =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        BOOL success =
-            result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
-        [weakSelf signinEndedWithSuccess:success];
-      };
-  [self.delegate
-      triggerAccountSwitchWithTargetRect:targetRect
-                             newIdentity:newIdentity
-         viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
-                  userDecisionCompletion:userDecisionCompletion
-                        signInCompletion:signinCompletion];
+  id<SystemIdentity> fromIdentity = _primaryIdentity;
+  [self.delegate signOutFromTargetRect:targetRect
+                             forSwitch:YES
+                              callback:^(BOOL success) {
+                                [weakSelf signoutEndedWithSuccess:success
+                                                     fromIdentity:fromIdentity
+                                                       toIdentity:newIdentity];
+                              }];
 }
 
 - (void)didTapErrorButton {
@@ -359,25 +369,64 @@
 // Callback for signout.
 - (void)signoutEndedWithSuccess:(BOOL)success {
   [self.delegate unblockOtherScene];
-  if (!success) {
+  if (success) {
+    // By signing-out the user cancelled the option to signin in this menu.
+    self.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
+    [_delegate mediatorWantsToBeDismissed:self];
+  } else {
     // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;
     [self restartUpdates];
   }
 }
 
-- (void)signinEndedWithSuccess:(BOOL)success {
-  if (success) {
-    [_delegate mediatorWantsToBeDismissed:self];
-  } else if (_authenticationService->GetPrimaryIdentity(
-                 signin::ConsentLevel::kSignin)) {
-    // Sign in to the new identity failed, and the user was signed back.
+// Callback for the first part of the switch, which is a sign-out.
+- (void)signoutEndedWithSuccess:(BOOL)signoutSuccess
+                   fromIdentity:(id<SystemIdentity>)previousIdentity
+                     toIdentity:(id<SystemIdentity>)newIdentity {
+  if (!signoutSuccess) {
+    // User had not signed-out. Allow to interact with the UI.
+    [self.delegate unblockOtherScene];
+    _blockUserInteractions = NO;
+    _accountSwitchInProgress.RunAndReset();
     [self restartUpdates];
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  _authenticationFlow = [self.delegate
+      triggerSigninWithSystemIdentity:newIdentity
+                           completion:^(SigninCoordinatorResult result) {
+                             [weakSelf signinEndedWithResult:result
+                                                fromIdentity:previousIdentity
+                                                  toIdentity:newIdentity];
+                           }];
+}
+
+- (void)signinEndedWithResult:(SigninCoordinatorResult)result
+                 fromIdentity:(id<SystemIdentity>)previousIdentity
+                   toIdentity:(id<SystemIdentity>)newIdentity {
+  CHECK(_authenticationFlow);
+  _authenticationFlow = nil;
+  _accountSwitchInProgress.RunAndReset();
+  [self.delegate unblockOtherScene];
+  BOOL success =
+      result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
+  if (success) {
+    _signinCompletionInfo =
+        [SigninCompletionInfo signinCompletionInfoWithIdentity:newIdentity];
+    self.signinCoordinatorResult = result;
+    [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
+    [_delegate mediatorWantsToBeDismissed:self];
+  } else if (_accountManagerService->IsValidIdentity(previousIdentity)) {
+    // If the sign-in failed, sign back in previous account if possible and
+    // restart using the account menu.
+    _authenticationService->SignIn(
+        previousIdentity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
     _blockUserInteractions = NO;
   } else {
-    // That should be extremely are. MDM invalidated the previous account
-    // during the switch.
-    [self.delegate mediatorWantsToBeDismissed:self];
+    self.signinCoordinatorResult = result;
+    [_delegate mediatorWantsToBeDismissed:self];
   }
 }
 
