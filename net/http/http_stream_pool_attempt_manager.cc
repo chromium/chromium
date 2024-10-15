@@ -473,6 +473,17 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   net_error_details_ = std::move(details);
   quic_task_.reset();
 
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED,
+      [&] {
+        base::Value::Dict dict;
+        if (rv != 0) {
+          dict.Set("net_error", rv);
+        }
+        AddStatesToNetLogParams(dict);
+        return dict;
+      });
+
   MaybeMarkQuicBroken();
 
   const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
@@ -776,11 +787,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     net_log().AddEvent(
         NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START, [&] {
           base::Value::Dict dict;
-          dict.Set("num_jobs", static_cast<int>(jobs_.size()));
-          dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
-          dict.Set("num_inflight_attempts",
-                   static_cast<int>(in_flight_attempts_.size()));
-          dict.Set("num_slow_attempts", static_cast<int>(slow_attempt_count_));
+          AddStatesToNetLogParams(dict);
           attempt->net_log().source().AddToEventParameters(dict);
           return dict;
         });
@@ -1212,9 +1219,13 @@ void HttpStreamPool::AttemptManager::SetJobPriority(Job* job,
 void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     InFlightAttempt* raw_attempt,
     int rv) {
-  net_log().AddEventReferencingSource(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END,
-      raw_attempt->attempt()->net_log().source());
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END, [&] {
+        base::Value::Dict dict;
+        AddStatesToNetLogParams(dict);
+        raw_attempt->attempt()->net_log().source().AddToEventParameters(dict);
+        return dict;
+      });
   raw_attempt->slow_timer().Stop();
   if (raw_attempt->is_slow()) {
     CHECK_GT(slow_attempt_count_, 0u);
@@ -1430,6 +1441,20 @@ void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
           AlternativeService(NextProto::kProtoQUIC, destination.host(),
                              destination.port()),
           stream_key().network_anonymization_key());
+}
+
+void HttpStreamPool::AttemptManager::AddStatesToNetLogParams(
+    base::Value::Dict& dict) {
+  dict.Set("num_jobs", static_cast<int>(jobs_.size()));
+  dict.Set("num_notified_jobs", static_cast<int>(notified_jobs_.size()));
+  dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
+  dict.Set("num_inflight_attempts",
+           static_cast<int>(in_flight_attempts_.size()));
+  dict.Set("num_slow_attempts", static_cast<int>(slow_attempt_count_));
+  dict.Set("quic_task_alive", !!quic_task_);
+  if (quic_task_result_.has_value()) {
+    dict.Set("quic_task_result", ErrorToString(*quic_task_result_));
+  }
 }
 
 void HttpStreamPool::AttemptManager::MaybeComplete() {

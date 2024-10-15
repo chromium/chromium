@@ -327,6 +327,8 @@ class HttpStreamPool::AttemptManager
   // or not attempted.
   void MaybeMarkQuicBroken();
 
+  void AddStatesToNetLogParams(base::Value::Dict& dict);
+
   void MaybeComplete();
 
   const raw_ptr<Group> group_;

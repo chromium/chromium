@@ -1424,10 +1424,34 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED)
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
 // Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+// The event parameters are:
+//   {
+//     "num_jobs": <The number of active jobs>,
+//     "num_notified_jobs": <The number of jobs that are notified results but
+//                           are still not destroyed yet>,
+//     "num_preconnects": <The number of preconnect requests>,
+//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
+//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
+//                           treated as slow>,
+//     "quic_task_alive": <True when a QuicTask is alive>,
+//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
 // StreamAttempt.
+// The event parameters are:
+//   {
+//     "num_jobs": <The number of active jobs>,
+//     "num_notified_jobs": <The number of jobs that are notified results but
+//                           are still not destroyed yet>,
+//     "num_preconnects": <The number of preconnect requests>,
+//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
+//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
+//                           treated as slow>,
+//     "quic_task_alive": <True when a QuicTask is alive>,
+//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 
 // Emitted when the stream attempt delay has passed on an
@@ -1440,6 +1464,21 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
 // Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
 // HttpStreamPool::QuicTask is bound to the AttemptManager.
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+
+// Emitted when an HttpStreamPool::QuicTask is completed.
+// The event parameters are:
+//   {
+//     "num_jobs": <The number of active jobs>,
+//     "num_notified_jobs": <The number of jobs that are notified results but
+//                           are still not destroyed yet>,
+//     "num_preconnects": <The number of preconnect requests>,
+//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
+//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
+//                           treated as slow>,
+//     "quic_task_alive": <True when a QuicTask is alive>,
+//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED)
 
 // Marks the start/end of a HttpStreamPool::QuicTask.
 // For the BEGIN event, the event parameters are:
