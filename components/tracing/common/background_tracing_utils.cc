@@ -51,6 +51,10 @@ const base::FeatureParam<bool> kFieldTracingCompressed{&kFieldTracing,
                                                        "compressed", false};
 const base::FeatureParam<bool> kFieldTracingAnonymized{&kFieldTracing,
                                                        "anonymized", true};
+const base::FeatureParam<bool> kFieldTracingForceUploads{
+    &kFieldTracing, "force_uploads", false};
+const base::FeatureParam<size_t> kFieldTracingUploadLimitKb{
+    &kFieldTracing, "upload_limit_kb", 0};
 const base::FeatureParam<bool> kStartupFieldTracing{&kFieldTracing, "startup",
                                                     false};
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
@@ -141,6 +145,44 @@ GetTracingConfigFromFeature(const base::Feature& feature,
   }
 
   perfetto::protos::gen::ChromeFieldTracingConfig config;
+  if (config.ParseFromString(serialized_config)) {
+    return config;
+  }
+  return std::nullopt;
+}
+
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetFieldTracingConfig() {
+  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig,
+                                     kFieldTracingCompressed.Get());
+}
+
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetPresetTracingConfig() {
+  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig,
+                                     kPresetTracingCompressed.Get());
+}
+
+std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
+GetTracingTriggerRulesConfig() {
+  if (!base::FeatureList::IsEnabled(kTracingTriggers)) {
+    return std::nullopt;
+  }
+  std::string serialized_config;
+  if (!base::Base64Decode(kTracingTriggerRulesConfig.Get(),
+                          &serialized_config)) {
+    return std::nullopt;
+  }
+
+  if (kTracingTriggerRulesCompressed.Get()) {
+    std::string decompressed_config;
+    if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
+                            &decompressed_config)) {
+      return std::nullopt;
+    }
+    serialized_config = std::move(decompressed_config);
+  }
+  perfetto::protos::gen::TracingTriggerRulesConfig config;
   if (config.ParseFromString(serialized_config)) {
     return config;
   }
@@ -269,7 +311,7 @@ bool SetupFieldTracingFromFieldTrial() {
     if (!tracing::SetBackgroundTracingOutputPath()) {
       return false;
     }
-  } else if (!tracing::ShouldAnonymizeFieldTracing()) {
+  } else if (!kFieldTracingAnonymized.Get()) {
     data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
   }
 
@@ -283,8 +325,9 @@ bool SetupFieldTracingFromFieldTrial() {
           content::BackgroundTracingManager::NO_DATA_FILTERING);
       return manager.SetEnabledScenarios(enabled_scenarios);
     }
-    return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
-                                            data_filtering);
+    return manager.InitializeFieldScenarios(
+        std::move(*field_tracing_config), data_filtering,
+        kFieldTracingForceUploads.Get(), kFieldTracingUploadLimitKb.Get());
   }
   std::unique_ptr<content::BackgroundTracingConfig> config =
       manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
@@ -347,54 +390,8 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
   return BackgroundTracingSetupMode::kFromJsonConfigFile;
 }
 
-std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetFieldTracingConfig() {
-  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig,
-                                     kFieldTracingCompressed.Get());
-}
-
-bool ShouldAnonymizeFieldTracing() {
-  return kFieldTracingAnonymized.Get();
-}
-
 bool ShouldTraceStartup() {
   return kStartupFieldTracing.Get();
-}
-
-std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetPresetTracingConfig() {
-  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig,
-                                     kPresetTracingCompressed.Get());
-}
-
-std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
-GetTracingTriggerRulesConfig() {
-  if (!base::FeatureList::IsEnabled(kTracingTriggers)) {
-    return std::nullopt;
-  }
-  std::string serialized_config;
-  if (!base::Base64Decode(kTracingTriggerRulesConfig.Get(),
-                          &serialized_config)) {
-    return std::nullopt;
-  }
-
-  if (kTracingTriggerRulesCompressed.Get()) {
-    std::string decompressed_config;
-    if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
-                            &decompressed_config)) {
-      return std::nullopt;
-    }
-    serialized_config = std::move(decompressed_config);
-  }
-  perfetto::protos::gen::TracingTriggerRulesConfig config;
-  if (config.ParseFromString(serialized_config)) {
-    return config;
-  }
-  return std::nullopt;
-}
-
-bool IsFieldTracingEnabled() {
-  return base::FeatureList::IsEnabled(kFieldTracing);
 }
 
 }  // namespace tracing

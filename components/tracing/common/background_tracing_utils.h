@@ -81,25 +81,7 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
-GetTracingTriggerRulesConfig();
-
-COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetFieldTracingConfig();
-
-COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool ShouldAnonymizeFieldTracing();
-
-COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool ShouldTraceStartup();
-
-COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetPresetTracingConfig();
-
-COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool IsFieldTracingEnabled();
 
 }  // namespace tracing
 

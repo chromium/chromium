@@ -108,7 +108,7 @@ void AddTraceOnDatabaseTaskRunner(
     std::string&& serialized_system_profile,
     BaseTraceReport base_report,
     bool should_save_trace,
-    bool is_crash_scenario,
+    bool force_upload,
     base::OnceCallback<void(std::optional<NewTraceReport>, bool)>
         on_trace_saved) {
   if (!database->is_initialized()) {
@@ -117,8 +117,8 @@ void AddTraceOnDatabaseTaskRunner(
   base::Time since = base::Time::Now() - kMinTimeUntilNextUpload;
   auto upload_count =
       database->UploadCountSince(base_report.scenario_name, since);
-  if (base_report.skip_reason == SkipUploadReason::kNoSkip &&
-      !is_crash_scenario && upload_count && *upload_count > 0) {
+  if (base_report.skip_reason == SkipUploadReason::kNoSkip && !force_upload &&
+      upload_count && *upload_count > 0) {
     base_report.skip_reason = SkipUploadReason::kScenarioQuotaExceeded;
     if (!should_save_trace) {
       return;
@@ -491,11 +491,17 @@ bool BackgroundTracingManagerImpl::InitializePerfettoTriggerRules(
 
 bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-    DataFiltering data_filtering) {
+    DataFiltering data_filtering,
+    bool force_uploads,
+    size_t upload_limit_kb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(legacy_active_scenario_, nullptr);
   if (!RequestActivateScenario()) {
     return false;
+  }
+  force_uploads_ = force_uploads;
+  if (upload_limit_kb > 0) {
+    upload_limit_kb_ = upload_limit_kb;
   }
 
   bool requires_anonymized_data = (data_filtering != NO_DATA_FILTERING);
@@ -766,7 +772,7 @@ void BackgroundTracingManagerImpl::SaveTrace(
   }
   OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
                       rule_name, scenario->privacy_filter_enabled(),
-                      /*is_crash_scenario=*/false, trace_uuid);
+                      /*force_upload=*/force_uploads_, trace_uuid);
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
@@ -922,7 +928,7 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
   InitializeTraceReportDatabase(true);
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
                       /*privacy_filter_enabled*/ true,
-                      /*is_crash_scenario=*/false, uuid);
+                      /*force_upload=*/force_uploads_, uuid);
 }
 
 void BackgroundTracingManagerImpl::SetPreferenceManagerForTesting(
@@ -944,7 +950,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     const std::string& scenario_name,
     const std::string& rule_name,
     bool privacy_filter_enabled,
-    bool is_crash_scenario,
+    bool force_upload,
     const base::Token& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -989,7 +995,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
             AddTraceOnDatabaseTaskRunner,
             base::Unretained(trace_database_.get()),
             std::move(serialized_trace), std::move(serialized_system_profile),
-            std::move(base_report), should_save_trace, is_crash_scenario,
+            std::move(base_report), should_save_trace, force_upload,
             base::BindOnce(&BackgroundTracingManagerImpl::OnTraceSaved,
                            weak_factory_.GetWeakPtr(), scenario_name)));
   } else {

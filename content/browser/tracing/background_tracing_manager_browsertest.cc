@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   )pb";
   BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
-      BackgroundTracingManager::NO_DATA_FILTERING);
+      BackgroundTracingManager::NO_DATA_FILTERING, false, 0);
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   )pb";
   BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
-      BackgroundTracingManager::NO_DATA_FILTERING);
+      BackgroundTracingManager::NO_DATA_FILTERING, false, 0);
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   background_tracing_helper.ExpectOnScenarioIdle("test_scenario");
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   )pb";
   BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
-      BackgroundTracingManager::ANONYMIZE_DATA);
+      BackgroundTracingManager::ANONYMIZE_DATA, false, 0);
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
   background_tracing_helper.WaitForTraceStarted();
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   )pb";
   BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
-      BackgroundTracingManager::NO_DATA_FILTERING);
+      BackgroundTracingManager::NO_DATA_FILTERING, false, 0);
 
   observer.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   )pb";
   BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
-      BackgroundTracingManager::NO_DATA_FILTERING);
+      BackgroundTracingManager::NO_DATA_FILTERING, false, 0);
 
   observer.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   perfetto::protos::gen::ChromeFieldTracingConfig config;
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
-      config, BackgroundTracingManager::ANONYMIZE_DATA));
+      config, BackgroundTracingManager::ANONYMIZE_DATA, false, 0));
 
   EXPECT_FALSE(base::trace_event::EmitNamedTrigger(
       base::trace_event::kStartupTracingTriggerName));
@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   perfetto::protos::gen::ChromeFieldTracingConfig config;
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
-      config, BackgroundTracingManager::ANONYMIZE_DATA));
+      config, BackgroundTracingManager::ANONYMIZE_DATA, false, 0));
 
   background_tracing_helper.ExpectOnScenarioActive("Startup");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger(

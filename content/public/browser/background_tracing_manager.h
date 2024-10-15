@@ -123,10 +123,14 @@ class BackgroundTracingManager {
   // tracing configs. Returns true if all scenarios were successfully
   // initialized. This will fail and return false if any scenario was previously
   // enabled, either with InitializeFieldScenarios() or SetEnabledScenarios().
-  // This shouldn't be called if SetActiveScenario() was previously called.
+  // `force_uploads` allows scenario to ignore upload quotas, and
+  // `upload_limit_kb` overrides default upload size limits if not 0. This
+  // shouldn't be called if SetActiveScenario() was previously called.
   virtual bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-      DataFiltering data_filtering) = 0;
+      DataFiltering data_filtering,
+      bool force_uploads,
+      size_t upload_limit_kb) = 0;
 
   // Saves a set of preset scenarios, each associated with specific tracing
   // configs, without enabling them. These scenarios can be enabled with

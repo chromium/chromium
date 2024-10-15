@@ -118,7 +118,9 @@ class BackgroundTracingManagerImpl
       const perfetto::protos::gen::TracingTriggerRulesConfig& config) override;
   bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-      DataFiltering data_filtering) override;
+      DataFiltering data_filtering,
+      bool force_upload,
+      size_t upload_limit_kb) override;
   std::vector<std::string> AddPresetScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) override;
@@ -201,7 +203,7 @@ class BackgroundTracingManagerImpl
                            const std::string& scenario_name,
                            const std::string& rule_name,
                            bool privacy_filter_enabled,
-                           bool is_crash_scenario,
+                           bool force_upload,
                            const base::Token& uuid);
 
   // For tests
@@ -219,10 +221,10 @@ class BackgroundTracingManagerImpl
  private:
 #if BUILDFLAG(IS_ANDROID)
   // ~1MB compressed size.
-  constexpr static int kUploadLimitKb = 5 * 1024;
+  constexpr static int kDefaultUploadLimitKb = 5 * 1024;
 #else
   // Less than 10MB compressed size.
-  constexpr static int kUploadLimitKb = 30 * 1024;
+  constexpr static int kDefaultUploadLimitKb = 30 * 1024;
 #endif
 
   bool RequestActivateScenario();
@@ -298,7 +300,8 @@ class BackgroundTracingManagerImpl
   // compression the data size usually reduces by 3x for size < 10MB, and the
   // compression ratio grows up to 8x if the buffer size is around 100MB.
   size_t upload_limit_network_kb_ = 1024;
-  size_t upload_limit_kb_ = kUploadLimitKb;
+  size_t upload_limit_kb_ = kDefaultUploadLimitKb;
+  bool force_uploads_ = false;
 
   base::WeakPtrFactory<BackgroundTracingManagerImpl> weak_factory_{this};
 };
