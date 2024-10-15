@@ -342,6 +342,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   cell.textLabel.text = title;
   // Placeholder description required by the constraint to avoid cell resize.
   cell.detailText = summary ? summary : @" ";
+  cell.detailTextNumberOfLines = 0;
   cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   [cell setIconImage:icon
             tintColor:[UIColor colorNamed:kGrey500Color]
