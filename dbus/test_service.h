@@ -65,9 +65,6 @@ class TestService : public base::Thread {
   // Returns true if the bus has the D-Bus thread.
   bool HasDBusThread();
 
-  // Returns the unique name of the connection to D-Bus.
-  std::string GetConnectionName();
-
   // Sends "Test" signal with the given message from the exported object.
   void SendTestSignal(const std::string& message);
 

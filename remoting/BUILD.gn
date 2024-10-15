@@ -55,10 +55,6 @@ group("remoting_all") {
       deps += [ "//remoting/host:remoting_me2me_host_archive" ]
     }
   }
-
-  if (use_glib) {
-    deps += [ "//remoting/host/linux/dbus_interfaces:gen_dbus_interface" ]
-  }
 }
 
 group("test_support") {
