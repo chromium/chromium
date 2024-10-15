@@ -894,7 +894,7 @@ inline constexpr char kFingerprintLearnMoreURL[] =
 // The URL for the help center article about local data recovery on Chrome OS
 // devices.
 inline constexpr char kRecoveryLearnMoreURL[] =
-    "https://support.google.com/chrome?p=local_data_recovery";
+    "https://support.google.com/chromebook?p=local_data_recovery";
 
 // The URL for the learn more link about extended automatic updates for
 // ChromeOS devices.
