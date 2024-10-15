@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "build/buildflag.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 
@@ -87,5 +88,11 @@ void DisplayChangeNotifier::NotifyCurrentWorkspaceChanged(
     const std::string& workspace) {
   observer_list_.Notify(&DisplayObserver::OnCurrentWorkspaceChanged, workspace);
 }
+
+#if BUILDFLAG(IS_MAC)
+void DisplayChangeNotifier::NotifyPrimaryDisplayChanged() {
+  observer_list_.Notify(&DisplayObserver::OnPrimaryDisplayChanged);
+}
+#endif
 
 }  // namespace display

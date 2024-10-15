@@ -532,6 +532,11 @@ class ScreenMac : public Screen {
       }
     }
 
+    if (NSScreen.screens.firstObject != primary_ns_screen_) {
+      primary_ns_screen_ = NSScreen.screens.firstObject;
+      change_notifier_.NotifyPrimaryDisplayChanged();
+    }
+
     // If nothing changed, do no notifications.
     if (all_displays_equal) {
       return;
@@ -575,6 +580,8 @@ class ScreenMac : public Screen {
   std::vector<DisplayMac> displays_mac_;
 
   std::vector<Display> displays_;
+
+  NSScreen* __weak primary_ns_screen_ = nil;
 
   // The observers notified by NSScreenColorSpaceDidChangeNotification and
   // NSApplicationDidChangeScreenParametersNotification.
