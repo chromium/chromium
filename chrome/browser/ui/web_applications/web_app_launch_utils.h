@@ -168,6 +168,13 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
+// Searches all browsers and tabs to find an applicable browser and (contained)
+// tab that matches the given `requested_display_mode`.
+std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
+    const Profile& profile,
+    const webapps::AppId& app_id,
+    const mojom::UserDisplayMode requested_display_mode);
+
 // Returns an AppNavigationResult with pertinent details on how to handle a
 // navigation if the web app system can do so. If not, the
 // `browser_tab_override` is set to be std::nullopt so that ::Navigate() inside

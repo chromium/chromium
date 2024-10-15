@@ -260,61 +260,6 @@ bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
   return false;
 }
 
-// Searches all browsers and tabs to find an applicable browser and (contained)
-// tab that matches the given `requested_display_mode`.
-std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
-    const Profile& profile,
-    const webapps::AppId& app_id,
-    const mojom::UserDisplayMode requested_display_mode) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (!(browser->is_type_normal() || browser->is_type_app())) {
-      continue;
-    }
-    if (browser->profile() != &profile) {
-      continue;
-    }
-    switch (requested_display_mode) {
-      case mojom::UserDisplayMode::kBrowser:
-        if (!(browser->is_type_normal())) {
-          continue;
-        }
-        if (AppBrowserController::IsWebApp(browser)) {
-          continue;
-        }
-        break;
-      case mojom::UserDisplayMode::kStandalone:
-      case mojom::UserDisplayMode::kTabbed:
-        if (!(browser->is_type_app())) {
-          continue;
-        }
-        if (!AppBrowserController::IsWebApp(browser)) {
-          continue;
-        }
-    }
-
-    // The active web contents should have preference if it is in scope.
-    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
-          browser->tab_strip_model()->GetActiveWebContents());
-      if (tab_app_id && *tab_app_id == app_id) {
-        return std::pair(browser, browser->tab_strip_model()->active_index());
-      }
-    }
-    // Otherwise, use the first one for the app.
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
-      if (tab_app_id && *tab_app_id == app_id) {
-        return std::pair(browser, i);
-      }
-    }
-  }
-  return std::nullopt;
-}
 
 // TODO(crbug.com/336371044): Support apps that open in a browser tab.
 // `open_pwa_window_if_possible` can be set outside of navigation capturing flow
@@ -951,6 +896,62 @@ void LaunchWebApp(apps::AppLaunchParams params,
                      browser ? browser->AsWeakPtr() : nullptr,
                      web_contents ? web_contents->GetWeakPtr() : nullptr,
                      container, base::Value(std::move(debug_value))));
+}
+
+// Searches all browsers and tabs to find an applicable browser and (contained)
+// tab that matches the given `requested_display_mode`.
+std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
+    const Profile& profile,
+    const webapps::AppId& app_id,
+    const mojom::UserDisplayMode requested_display_mode) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
+      continue;
+    }
+    if (!(browser->is_type_normal() || browser->is_type_app())) {
+      continue;
+    }
+    if (browser->profile() != &profile) {
+      continue;
+    }
+    switch (requested_display_mode) {
+      case mojom::UserDisplayMode::kBrowser:
+        if (!(browser->is_type_normal())) {
+          continue;
+        }
+        if (AppBrowserController::IsWebApp(browser)) {
+          continue;
+        }
+        break;
+      case mojom::UserDisplayMode::kStandalone:
+      case mojom::UserDisplayMode::kTabbed:
+        if (!(browser->is_type_app())) {
+          continue;
+        }
+        if (!AppBrowserController::IsWebApp(browser)) {
+          continue;
+        }
+    }
+
+    // The active web contents should have preference if it is in scope.
+    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
+      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
+          browser->tab_strip_model()->GetActiveWebContents());
+      if (tab_app_id && *tab_app_id == app_id) {
+        return std::pair(browser, browser->tab_strip_model()->active_index());
+      }
+    }
+    // Otherwise, use the first one for the app.
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
+      if (tab_app_id && *tab_app_id == app_id) {
+        return std::pair(browser, i);
+      }
+    }
+  }
+  return std::nullopt;
 }
 
 AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
