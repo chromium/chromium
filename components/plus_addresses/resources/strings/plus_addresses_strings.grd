@@ -500,10 +500,10 @@ if we want to translate this file.
           Try again
         </message>
         <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_TITLE" desc="The title in the modal that is shown if a quota error is encountered during inline creation." translateable="false">
-          Too many Shielded Email addresses
+          Too many plus addresses
         </message>
         <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a quota error is encountered during inline creation." translateable="false">
-          Can't create any more Shielded Email addresses for this site or app.
+          Can't create any more plus addresses for this site or app.
         </message>
 
         <!-- Manual fallback strings -->
