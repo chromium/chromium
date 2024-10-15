@@ -4395,7 +4395,6 @@ if (!is_android) {
         "../browser/ui/views/desktop_capture/desktop_media_picker_views_browsertest.cc",
         "../browser/ui/views/extensions/device_chooser_extension_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/extension_multiple_uninstall_dialog_browsertest.cc",
-        "../browser/ui/views/extensions/dialogs/mv2_deprecation_disabled_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_keep_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_reenable_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/reload_page_dialog_browsertest.cc",
