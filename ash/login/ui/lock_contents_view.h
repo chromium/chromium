@@ -415,6 +415,10 @@ class ASH_EXPORT LockContentsView
   // becomes available after being soft-locked.
   void OnPinUnlock(const AccountId& account_id);
 
+  // Checks whether `pin_available_at` is past and pin needs to be enabled
+  // again.
+  void CheckIfPinEnabled(const AccountId& account_id);
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;

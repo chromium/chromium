@@ -164,6 +164,12 @@ bool IsTimeInFuture(cryptohome::PinLockAvailability available_time) {
          available_time.value() < base::Time::Max();
 }
 
+bool IsTimeInPast(cryptohome::PinLockAvailability available_time) {
+  return available_time.has_value() &&
+         available_time.value() <= base::Time::Now() &&
+         available_time.value() > base::Time::Min();
+}
+
 //
 // Computes a layout described as follows:
 //
@@ -1836,19 +1842,20 @@ void LockContentsView::SwapActiveAuthBetweenPrimaryAndSecondary(
     return;
   }
 
-  if (is_primary) {
-    if (!primary_big_view_->IsAuthEnabled()) {
-      LayoutAuth(primary_big_view_, opt_secondary_big_view_, true /*animate*/);
+  LoginBigUserView* new_big_view =
+      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
+  LoginBigUserView* previous_big_view =
+      is_primary ? opt_secondary_big_view_.get() : primary_big_view_.get();
+
+  if (new_big_view) {
+    if (!new_big_view->IsAuthEnabled()) {
+      // Check if the pin is enabled again after the lock out period.
+      CheckIfPinEnabled(
+          new_big_view->GetCurrentUser().basic_user_info.account_id);
+      LayoutAuth(new_big_view, previous_big_view, true /*animate*/);
       OnBigUserChanged();
     } else {
-      primary_big_view_->RequestFocus();
-    }
-  } else if (!is_primary && opt_secondary_big_view_) {
-    if (!opt_secondary_big_view_->IsAuthEnabled()) {
-      LayoutAuth(opt_secondary_big_view_, primary_big_view_, true /*animate*/);
-      OnBigUserChanged();
-    } else {
-      opt_secondary_big_view_->RequestFocus();
+      new_big_view->RequestFocus();
     }
   }
 }
@@ -2037,6 +2044,8 @@ void LockContentsView::SwapToBigUser(int user_index) {
 
   view->UpdateForUser(previous_big_user, true /*animate*/);
   primary_big_view_->UpdateForUser(new_big_user);
+  // Check if the pin is enabled again after the lock out period.
+  CheckIfPinEnabled(new_big_user.basic_user_info.account_id);
   LayoutAuth(primary_big_view_, nullptr, true /*animate*/);
   OnBigUserChanged();
 }
@@ -2456,6 +2465,18 @@ void LockContentsView::OnPinUnlock(const AccountId& account_id) {
   data_dispatcher_->SetPinEnabledForUser(account_id, true,
                                          /*available_at=*/std::nullopt);
   HideAuthErrorMessage();
+}
+
+void LockContentsView::CheckIfPinEnabled(const AccountId& account_id) {
+  UserState* state = FindStateForUser(account_id);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user when checking pin status";
+    return;
+  }
+  if (IsTimeInPast(state->pin_available_at)) {
+    data_dispatcher_->SetPinEnabledForUser(account_id, true,
+                                           /*available_at=*/std::nullopt);
+  }
 }
 
 BEGIN_METADATA(LockContentsView)

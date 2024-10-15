@@ -3663,6 +3663,88 @@ TEST_F(LockContentsViewPinTimeoutUnitTest, PinDelayMessageCorrectness) {
   EXPECT_FALSE(pin_status_message_view->GetVisible());
 }
 
+TEST_F(LockContentsViewPinTimeoutUnitTest, TwoUsers) {
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  AddUsers(2);
+
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  LockContentsViewTestApi contents_test_api(contents);
+
+  LoginBigUserView* primary_view = contents_test_api.primary_big_view();
+  LoginAuthUserView::TestApi primary_auth_test_api(primary_view->auth_user());
+  LoginPinView* primary_pin_view = primary_auth_test_api.pin_view();
+  PinStatusMessageView* primary_pin_status_message_view =
+      primary_auth_test_api.pin_status_message_view();
+
+  LoginBigUserView* secondary_view = contents_test_api.opt_secondary_big_view();
+  LoginAuthUserView::TestApi secondary_auth_test_api(
+      secondary_view->auth_user());
+  LoginPinView* secondary_pin_view = secondary_auth_test_api.pin_view();
+  PinStatusMessageView* secondary_pin_status_message_view =
+      secondary_auth_test_api.pin_status_message_view();
+
+  AccountId primary_user =
+      primary_view->GetCurrentUser().basic_user_info.account_id;
+  AccountId secondary_user =
+      secondary_view->GetCurrentUser().basic_user_info.account_id;
+  EXPECT_NE(primary_user, secondary_user);
+
+  // Enable pin for both users.
+  contents->OnPinEnabledForUserChanged(primary_user, true,
+                                       /*available_at*/ std::nullopt);
+  contents->OnPinEnabledForUserChanged(secondary_user, true,
+                                       /*available_at*/ std::nullopt);
+  EXPECT_TRUE(primary_pin_view->GetVisible());
+  EXPECT_FALSE(primary_pin_status_message_view->GetVisible());
+  EXPECT_FALSE(secondary_pin_view->GetVisible());
+  EXPECT_FALSE(secondary_pin_status_message_view->GetVisible());
+
+  // Primary user - lock pin for 30 seconds.
+  contents->OnPinEnabledForUserChanged(primary_user, false,
+                                       base::Time::Now() + base::Seconds(30));
+  EXPECT_FALSE(primary_pin_view->GetVisible());
+  EXPECT_TRUE(primary_pin_status_message_view->GetVisible());
+  EXPECT_EQ(GetExpectedPinStatusMessage(u"30 seconds"),
+            primary_auth_test_api.GetPinStatusMessageContent());
+
+  // Send event to swap users.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      secondary_auth_test_api.user_view()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // Check the secondary user has pin enabled.
+  EXPECT_TRUE(secondary_pin_view->GetVisible());
+  EXPECT_FALSE(secondary_pin_status_message_view->GetVisible());
+  EXPECT_FALSE(primary_pin_view->GetVisible());
+  EXPECT_FALSE(primary_pin_status_message_view->GetVisible());
+
+  // Secondary user - lock pin for 1 minute.
+  contents->OnPinEnabledForUserChanged(secondary_user, false,
+                                       base::Time::Now() + base::Minutes(1));
+  EXPECT_FALSE(secondary_pin_view->GetVisible());
+  EXPECT_TRUE(secondary_pin_status_message_view->GetVisible());
+  EXPECT_EQ(GetExpectedPinStatusMessage(u"1 minute, 0 seconds"),
+            secondary_auth_test_api.GetPinStatusMessageContent());
+
+  // Check the secondary user has pin enabled after the lock out period.
+  AdvanceClock(base::Minutes(1));
+  EXPECT_TRUE(secondary_pin_view->GetVisible());
+  EXPECT_FALSE(secondary_pin_status_message_view->GetVisible());
+
+  // Swap the user back.
+  generator->MoveMouseTo(
+      primary_auth_test_api.user_view()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // Check the primary user has pin enabled again.
+  EXPECT_TRUE(primary_pin_view->GetVisible());
+  EXPECT_FALSE(primary_pin_status_message_view->GetVisible());
+  EXPECT_FALSE(secondary_pin_view->GetVisible());
+  EXPECT_FALSE(secondary_pin_status_message_view->GetVisible());
+}
+
 TEST_F(LockContentsViewPinTimeoutUnitTest, MultipleUsers) {
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
   AddUsers(3);
