@@ -2412,7 +2412,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': '-i5fwP_NzM6Ylg5AsSGEotYN7hQgV852gXCslvXIrRwC',
+              'version': 'K7fIEIzzANXaspaV4maRvvy6jqYIHGEgoC4gfJvSD_0C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
