@@ -28,6 +28,11 @@ void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
 void SkyVaultMigrationFailedHistogram(CloudProvider provider, bool value);
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value);
 
+// Helper functions to log UMA stats on migration dialog interactions.
+void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,
+                                            DialogAction action);
+void SkyVaultMigrationDialogShownHistogram(CloudProvider provider, bool value);
+
 }  // namespace policy::local_user_files
 
 #endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_HISTOGRAM_HELPER_H_

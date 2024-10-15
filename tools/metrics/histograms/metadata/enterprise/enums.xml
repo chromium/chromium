@@ -2311,6 +2311,16 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Extension telemetry event"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationDialogAction) -->
+
+<enum name="EnterpriseSkyVaultMigrationDialogAction">
+  <int value="0" label="'Upload now' button clicked"/>
+  <int value="1"
+      label="No action (timeout expired) 'Upload in ...' button clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:DialogAction) -->
+
 <!-- LINT.IfChange(EnterpriseSkyVaultMigrationState) -->
 
 <enum name="EnterpriseSkyVaultMigrationState">

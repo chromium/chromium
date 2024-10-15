@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
@@ -54,6 +55,9 @@ class LocalFilesMigrationDialogTest : public InProcessBrowserTest {
   LocalFilesMigrationDialogTest& operator=(
       const LocalFilesMigrationDialogTest&) = delete;
   ~LocalFilesMigrationDialogTest() override = default;
+
+ protected:
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -108,6 +112,14 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
                       "document.querySelector('local-files-migration-dialog')"
                       ".$('#dismiss-button').click()"));
   watcher.Wait();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.OneDrive.DialogShown", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.OneDrive.DialogShown", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.SkyVault.Migration.OneDrive.DialogAction",
+      DialogAction::kUploadLater, 1);
 }
 
 // Tests that clicking the dialog's Upload now button invokes the migration
@@ -144,6 +156,12 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_UploadNow) {
                       "document.querySelector('local-files-migration-dialog')"
                       ".$('#upload-now-button').click()"));
   watcher.Wait();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DialogShown", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DialogAction",
+      DialogAction::kUploadNow, 1);
 }
 
 }  // namespace policy::local_user_files

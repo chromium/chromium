@@ -83,6 +83,18 @@ enum class StateErrorContext {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkyVaultMigrationStateErrorContext)
 
+// Possible actions a user can take in the migration dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DialogAction)
+enum class DialogAction {
+  kUploadNow = 0,    // `Upload now` button clicked
+  kUploadLater = 1,  // No action or `Upload in <delay>` button clicked
+  kMaxValue = kUploadLater,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkyVaultMigrationDialogAction)
+
 // Returns whether local user files are enabled on the device by the flag and
 // policy.
 bool LocalUserFilesAllowed();

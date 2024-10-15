@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
@@ -33,14 +34,16 @@ bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
       SystemWebDialogDelegate::FindInstance(
           chrome::kChromeUILocalFilesMigrationURL);
   if (existing_dialog) {
-    // TODO(aidazolic): Check params & maybe update title.
+    // TODO(crbug.com/368242690): Better handling for re-showing a dialog.
     existing_dialog->StackAtTop();
+    SkyVaultMigrationDialogShownHistogram(cloud_provider, false);
     return false;
   }
   // This pointer is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   LocalFilesMigrationDialog* dialog = new LocalFilesMigrationDialog(
       cloud_provider, migration_start_time, std::move(migration_callback));
   dialog->ShowSystemDialog();
+  SkyVaultMigrationDialogShownHistogram(cloud_provider, true);
   return true;
 }
 

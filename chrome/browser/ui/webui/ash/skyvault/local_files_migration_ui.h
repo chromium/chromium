@@ -68,7 +68,7 @@ class LocalFilesMigrationUI : public ui::MojoWebDialogUI,
 
  private:
   // Processes the user's action and closes the dialog accordingly.
-  void ProcessResponseAndCloseDialog(UserAction action);
+  void ProcessResponseAndCloseDialog(DialogAction action);
 
   CloudProvider cloud_provider_;
   base::Time migration_start_time_;

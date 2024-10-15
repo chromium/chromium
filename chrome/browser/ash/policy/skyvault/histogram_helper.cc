@@ -111,4 +111,19 @@ void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
                             value);
 }
 
+void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,
+                                            DialogAction action) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".DialogAction"}),
+      action);
+}
+
+void SkyVaultMigrationDialogShownHistogram(CloudProvider provider, bool value) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".DialogShown"}),
+      value);
+}
+
 }  // namespace policy::local_user_files
