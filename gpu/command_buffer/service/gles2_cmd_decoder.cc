@@ -13010,11 +13010,11 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
     framebuffer_state_.clear_state_dirty = true;
   }
 
-  std::unique_ptr<int8_t[]> zero;
+  base::HeapArray<int8_t> zero;
   if (!state_.bound_pixel_unpack_buffer && !data) {
-    zero.reset(new int8_t[image_size]);
-    memset(zero.get(), 0, image_size);
-    data = zero.get();
+    // Memory is already zero-initialized:
+    zero = base::HeapArray<int8_t>::WithSize(image_size);
+    data = zero.data();
   }
   LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(func_name);
   const CompressedFormatInfo* format_info =
