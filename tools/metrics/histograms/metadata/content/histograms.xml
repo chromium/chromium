@@ -1866,7 +1866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.Activity.ByProvider"
-    enum="FeedActivityBucket" expires_after="2024-11-17">
+    enum="FeedActivityBucket" expires_after="2025-11-17">
   <owner>guiperez@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
