@@ -7051,7 +7051,10 @@ static_library("browser") {
         "notifications/notification_platform_bridge_linux.h",
         "platform_util_linux.cc",
       ]
-      deps += [ "//components/dbus/thread_linux" ]
+      deps += [
+        "//components/dbus/thread_linux",
+        "//components/dbus/utils",
+      ]
     }
   }
 

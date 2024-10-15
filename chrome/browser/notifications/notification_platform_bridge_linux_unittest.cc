@@ -37,6 +37,7 @@ using message_center::Notification;
 using message_center::SettingsButtonHandler;
 using testing::_;
 using testing::ByMove;
+using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -362,12 +363,17 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                                dbus::ObjectPath(kFreedesktopNotificationsPath)))
         .WillOnce(Return(mock_notification_proxy_.get()));
 
-    auto name_has_owner_response = dbus::Response::CreateEmpty();
-    dbus::MessageWriter name_has_owner_writer(name_has_owner_response.get());
-    name_has_owner_writer.AppendBool(test_params.name_has_owner);
     EXPECT_CALL(*mock_dbus_proxy_.get(),
-                CallMethodAndBlock(Calls("NameHasOwner"), _))
-        .WillOnce(Return(ByMove(std::move(name_has_owner_response))));
+                DoCallMethod(Calls("NameHasOwner"), _, _))
+        .WillOnce(Invoke([name_has_owner = test_params.name_has_owner](
+                             dbus::MethodCall* method_call, int timeout_ms,
+                             dbus::ObjectProxy::ResponseCallback* callback) {
+          auto name_has_owner_response = dbus::Response::CreateEmpty();
+          dbus::MessageWriter name_has_owner_writer(
+              name_has_owner_response.get());
+          name_has_owner_writer.AppendBool(name_has_owner);
+          std::move(*callback).Run(name_has_owner_response.get());
+        }));
 
     auto capabilities_response = dbus::Response::CreateEmpty();
     dbus::MessageWriter capabilities_writer(capabilities_response.get());
