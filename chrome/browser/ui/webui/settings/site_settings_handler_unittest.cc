@@ -4341,37 +4341,50 @@ TEST_F(SmartCardReaderPermissionsSiteSettingsHandlerTest,
   SmartCardPermissionContext& context =
       SmartCardPermissionContextFactory::GetForProfile(*profile());
 
-  const auto kTestOrigin1 = url::Origin::Create(
+  const auto kTestOrigin0 = url::Origin::Create(
       GURL("isolated-app://"
            "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai/"));
-  const auto kTestOrigin2 = url::Origin::Create(
-      GURL("isolated-app://"
-           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai/"));
+  const auto kTestOrigin1 =
+      url::Origin::Create(GURL("https://www.example.com"));
+  const std::string kTestOrigin1DisplayName = "www.example.com";
 
   const std::string kReader0 = "Reader 0";
   const std::string kReader1 = "Reader 1";
 
-  GrantPersistentReaderPermission(context, kTestOrigin1, kReader0);
+  GrantPersistentReaderPermission(context, kTestOrigin0, kReader0);
+  GrantPersistentReaderPermission(context, kTestOrigin0, kReader1);
   GrantPersistentReaderPermission(context, kTestOrigin1, kReader1);
-  GrantPersistentReaderPermission(context, kTestOrigin2, kReader1);
   context.FlushScheduledSaveSettingsCalls();
 
   handler_->HandleGetSmartCardReaderGrants(
       base::Value::List().Append(kCallbackId));
 
-  EXPECT_EQ(web_ui()->call_data().back()->arg3()->GetList(),
-            base::Value::List()
-                .Append(base::Value::Dict()
-                            .Set(site_settings::kReaderName, kReader0)
-                            .Set(site_settings::kOrigins,
-                                 base::Value::List().Append(
-                                     kTestOrigin1.Serialize())))
-                .Append(base::Value::Dict()
-                            .Set(site_settings::kReaderName, kReader1)
-                            .Set(site_settings::kOrigins,
-                                 base::Value::List()
-                                     .Append(kTestOrigin1.Serialize())
-                                     .Append(kTestOrigin2.Serialize()))));
+  EXPECT_EQ(
+      web_ui()->call_data().back()->arg3()->GetList(),
+      base::Value::List()
+          .Append(base::Value::Dict()
+                      .Set(site_settings::kReaderName, kReader0)
+                      .Set(site_settings::kOrigins,
+                           base::Value::List().Append(
+                               base::Value::Dict()
+                                   .Set(site_settings::kOrigin,
+                                        kTestOrigin0.Serialize())
+                                   .Set(site_settings::kDisplayName,
+                                        kTestOrigin0.Serialize()))))
+          .Append(base::Value::Dict()
+                      .Set(site_settings::kReaderName, kReader1)
+                      .Set(site_settings::kOrigins,
+                           base::Value::List()
+                               .Append(base::Value::Dict()
+                                           .Set(site_settings::kOrigin,
+                                                kTestOrigin0.Serialize())
+                                           .Set(site_settings::kDisplayName,
+                                                kTestOrigin0.Serialize()))
+                               .Append(base::Value::Dict()
+                                           .Set(site_settings::kOrigin,
+                                                kTestOrigin1.Serialize())
+                                           .Set(site_settings::kDisplayName,
+                                                kTestOrigin1DisplayName)))));
 }
 
 TEST_F(SmartCardReaderPermissionsSiteSettingsHandlerTest,

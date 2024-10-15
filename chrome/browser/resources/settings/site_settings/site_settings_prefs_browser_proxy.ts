@@ -196,9 +196,14 @@ export interface OriginFileSystemGrants {
   editGrants: FileSystemGrant[];
 }
 
+export interface OriginWithDisplayName {
+  origin: string;
+  displayName: string;
+}
+
 export interface SmartCardReaderGrants {
   readerName: string;
-  origins: string[];
+  origins: OriginWithDisplayName[];
 }
 
 export interface SiteSettingsPrefsBrowserProxy {

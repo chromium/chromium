@@ -16,7 +16,11 @@ import '../site_favicon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {routes} from '../route.js';
+import {Router} from '../router.js';
+
 import {SiteSettingsMixin} from './site_settings_mixin.js';
+import type {OriginWithDisplayName} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './smart_card_reader_origin_entry.html.js';
 
 const SmartCardReaderOriginEntryElementBase = SiteSettingsMixin(PolymerElement);
@@ -37,16 +41,22 @@ export class SmartCardReaderOriginEntryElement extends
         type: String,
       },
       origin: {
-        type: String,
+        type: Object,
       },
     };
   }
   smartCardReaderName: string;
-  origin: string;
+  origin: OriginWithDisplayName;
 
   private onRemoveOriginClick_() {
     this.browserProxy.revokeSmartCardReaderGrant(
-        this.smartCardReaderName, this.origin);
+        this.smartCardReaderName, this.origin.origin);
+  }
+
+  private onNavigateToSiteDetailsPageClick_() {
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS_SITE_DETAILS,
+        new URLSearchParams('site=' + this.origin.origin));
   }
 }
 declare global {

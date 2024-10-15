@@ -9,9 +9,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SmartCardReaderOriginEntryElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import type {SiteFaviconElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertStringContains, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -31,45 +30,62 @@ suite('SmartCardReadersPageSettings_OriginEntry', function() {
     testElement = document.createElement('smart-card-reader-origin-entry');
     assertTrue(!!testElement);
     testElement.smartCardReaderName = 'reader';
-    testElement.origin = 'foo.com';
+    testElement.origin = {origin: 'foo.com', displayName: 'Foo.com'};
     document.body.appendChild(testElement);
   });
 
-  test('HasAllElements', async function() {
-    const icons = testElement.shadowRoot!.querySelectorAll<SiteFaviconElement>(
-        'site-favicon');
+  test('HasAllElements', function() {
+    const clickableDivs =
+        testElement.shadowRoot!.querySelectorAll('.settings-row');
+    assertEquals(1, clickableDivs.length);
+    const clickableDiv = clickableDivs[0]!;
+    const icons = clickableDiv.querySelectorAll('site-favicon');
     assertEquals(1, icons.length);
-    assertTrue(!!icons[0]);
-    assertEquals('foo.com', icons[0].url);
+    assertEquals('foo.com', icons[0]!.url);
 
-    const origins = testElement.shadowRoot!.querySelectorAll('.origin');
+    const origins = clickableDiv.querySelectorAll('.origin');
     assertEquals(1, origins.length);
-    assertTrue(!!origins[0] && !!origins[0].textContent);
-    assertStringContains('foo.com', origins[0].textContent);
+    assertTrue(!!origins[0]!.textContent);
+    assertStringContains('Foo.com', origins[0]!.textContent);
+
+    const arrows = clickableDiv.querySelectorAll('#fileSystemSiteDetails');
+    assertEquals(1, arrows.length);
+    assertTrue(!!arrows[0]!.ariaLabel);
+    assertEquals('Foo.com', arrows[0]!.ariaLabel);
 
     const removeButtons =
         testElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
             '#removeOrigin');
     assertEquals(1, removeButtons.length);
     assertTrue(!!removeButtons[0]!.ariaLabel);
-    assertStringContains('foo.com', removeButtons[0]!.ariaLabel);
+    assertEquals('foo.com', removeButtons[0]!.ariaLabel);
   });
 
   test('RevokeButtonWorks', async function() {
-    assertTrue(!!testElement.shadowRoot);
     const buttons =
         testElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
             '#removeOrigin');
     assertEquals(1, buttons.length);
-    assertTrue(!!buttons[0]);
-    buttons[0].click();
+    buttons[0]!.click();
 
     await browserProxy.whenCalled('revokeSmartCardReaderGrant');
     flush();
 
     assertEquals(1, browserProxy.getCallCount('revokeSmartCardReaderGrant'));
-    const lastArgs = browserProxy.getArgs('revokeSmartCardReaderGrant')[0];
-    assertEquals('reader', lastArgs[0]);
-    assertEquals('foo.com', lastArgs[1]);
+    assertDeepEquals(
+        ['reader', 'foo.com'],
+        browserProxy.getArgs('revokeSmartCardReaderGrant')[0]);
+  });
+
+  test('NavigationToSiteDetails', function() {
+    const clickableRows =
+        testElement.shadowRoot!.querySelectorAll<HTMLElement>('.settings-row');
+    assertEquals(1, clickableRows.length);
+    assertTrue(clickableRows[0]!.hasAttribute('actionable'));
+    clickableRows[0]!.click();
+    assertDeepEquals(
+        routes.SITE_SETTINGS_SITE_DETAILS,
+        Router.getInstance().getCurrentRoute());
+    assertEquals('foo.com', new URL(document.URL).searchParams.get('site'));
   });
 });

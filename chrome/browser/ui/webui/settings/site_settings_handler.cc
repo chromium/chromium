@@ -1580,12 +1580,20 @@ void SiteSettingsHandler::HandleGetSmartCardReaderGrants(
 
   reader_names = base::ToValueList(
       permission_context.GetPersistentReaderGrants(),
-      [](const SmartCardPermissionContext::ReaderGrants& reader_grant) {
+      [this](const SmartCardPermissionContext::ReaderGrants& reader_grant) {
         return base::Value::Dict()
             .Set(site_settings::kReaderName, reader_grant.reader_name)
             .Set(site_settings::kOrigins,
-                 base::ToValueList(reader_grant.origins,
-                                   &url::Origin::Serialize));
+                 base::ToValueList(
+                     reader_grant.origins, [this](const url::Origin& origin) {
+                       return base::Value::Dict()
+                           .Set(site_settings::kOrigin, origin.Serialize())
+                           .Set(site_settings::kDisplayName,
+                                site_settings::GetUrlIdentityForGURL(
+                                    profile_, origin.GetURL(),
+                                    /*hostname_only=*/false)
+                                    .name);
+                     }));
       });
 #endif
   ResolveJavascriptCallback(callback_id, reader_names);

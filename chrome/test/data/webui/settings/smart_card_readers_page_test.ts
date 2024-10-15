@@ -42,14 +42,23 @@ suite('SmartCardReadersPageSettings', function() {
       {
         readerName: 'reader',
         origins: [
-          'foo.com',
-          'bar.com',
+          {
+            origin: 'foo.com',
+            displayName: 'Foo.com',
+          },
+          {
+            origin: 'bar.com',
+            displayName: 'Bar.com',
+          },
         ],
       },
       {
         readerName: 'reader 2',
         origins: [
-          'bar.com',
+          {
+            origin: 'bar.com',
+            displayName: 'Bar.com',
+          },
         ],
       },
     ]);
@@ -60,9 +69,27 @@ suite('SmartCardReadersPageSettings', function() {
 
     assertDeepEquals(
         [
-          ['reader', 'foo.com'],
-          ['reader', 'bar.com'],
-          ['reader 2', 'bar.com'],
+          [
+            'reader',
+            {
+              origin: 'foo.com',
+              displayName: 'Foo.com',
+            },
+          ],
+          [
+            'reader',
+            {
+              origin: 'bar.com',
+              displayName: 'Bar.com',
+            },
+          ],
+          [
+            'reader 2',
+            {
+              origin: 'bar.com',
+              displayName: 'Bar.com',
+            },
+          ],
         ],
         Array.from(
             testElement.shadowRoot!.querySelectorAll(

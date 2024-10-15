@@ -19,18 +19,31 @@
   .separator {
     padding-inline-end: 25px;
   }
+
+  .settings-row {
+    flex: 1;
+  }
 </style>
 
 <div class="list-frame">
   <div class="origin-row">
-    <site-favicon url="[[origin]]"></site-favicon>
-    <div class="origin">[[origin]]</div>
+    <div class="settings-row"
+        on-click="onNavigateToSiteDetailsPageClick_"
+        actionable>
+      <site-favicon url="[[origin.origin]]"></site-favicon>
+      <div class="origin">[[origin.displayName]]</div>
+      <cr-icon-button id="fileSystemSiteDetails"
+          class="subpage-arrow"
+          aria-label$="[[origin.displayName]]"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+      </cr-icon-button>
+    </div>
     <div class="separator"></div>
     <cr-icon-button
         class="icon-delete-gray"
         id="removeOrigin"
         on-click="onRemoveOriginClick_"
-        aria-label$="[[origin]]">
+        aria-label$="[[origin.origin]]">
     </cr-icon-button>
   </div>
 </div>
