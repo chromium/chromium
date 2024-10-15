@@ -48,8 +48,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "content/public/browser/render_process_host.h"
@@ -57,16 +59,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_response_handler.h"
@@ -244,12 +236,11 @@ void ProcessMirrorHeader(
   base::UmaHistogramEnumeration("AccountManager.ManageAccountsServiceType",
                                 service_type);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore response to background request from another profile, so dialogs are
   // not displayed in the wrong profile when using ChromeOS multiprofile mode.
-  if (profile != ProfileManager::GetActiveUserProfile())
+  if (profile != ProfileManager::GetActiveUserProfile()) {
     return;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // At this point, all the early-returns have been passed, and the header is
@@ -278,7 +269,6 @@ void ProcessMirrorHeader(
 
   // 2. Displaying a reauthentication window
   if (!manage_accounts_params.email.empty()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Do not display the re-authentication dialog if this event was triggered
     // by supervision being enabled for an account.  In this situation, a
     // complete signout is required.
@@ -287,7 +277,6 @@ void ProcessMirrorHeader(
     if (service && service->signout_required_after_supervision_enabled()) {
       return;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Child users shouldn't get the re-authentication dialog for primary
     // account. Log out all accounts to re-mint the cookies.
     // (See the reason below.)
@@ -312,33 +301,9 @@ void ProcessMirrorHeader(
 
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    signin::IdentityManager* const identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    CoreAccountInfo primary_account =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_account.account_id)) {
-      // On Lacros, it is not allowed to add a new account while the primary
-      // account is in error, as the reconcilor cannot generate the cookie until
-      // the primary account is fixed. Display a reauth dialog instead.
-      signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-          profile, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
-      return;
-    }
-
-    AccountProfileMapper* mapper =
-        g_browser_process->profile_manager()->GetAccountProfileMapper();
-    SigninManagerFactory::GetForProfile(profile)->StartLacrosSigninFlow(
-        profile->GetPath(), mapper,
-        account_reconcilor->GetConsistencyCookieManager(),
-        account_manager::AccountManagerFacade::AccountAdditionSource::
-            kOgbAddAccount);
-#else
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
                                    AccountAdditionSource::kOgbAddAccount);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     return;
   }
 
