@@ -123,8 +123,6 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-
- private:
   std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
 };
 
@@ -606,4 +604,71 @@ IN_PROC_BROWSER_TEST_F(PermissionElementLegacyPromptBrowserTest,
                        PromptPosition) {
   TestPromptPosition(permissions::feature_params::
                          PermissionElementPromptPosition::kLegacyPrompt);
+}
+
+class EventsPermissionElementBrowserTest
+    : public PermissionElementBrowserTestBase {
+ public:
+  EventsPermissionElementBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPermissionElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {permissions::features::kPermissionElementPromptPositioning});
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    console_observer_ =
+        std::make_unique<content::WebContentsConsoleObserver>(web_contents());
+    ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+        browser(),
+        embedded_test_server()->GetURL(
+            "/permissions/permission_element_events_tester.html"),
+        1));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(EventsPermissionElementBrowserTest,
+                       EventsBubbleAndAreCancelable) {
+  const char* id = "camera";
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+
+    // The event is reported by the parent element, then the grandparent
+    // element.
+    WaitForDismissEvent(base::StrCat({"parent-", id}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
+
+    WaitForDismissEvent(base::StrCat({"grandparent-", id}));
+    ExpectConsoleMessage(
+        base::StrCat({"grandparent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
+  }
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(permissions::PermissionRequestManager::
+                                         AutoResponseType::ACCEPT_ALL);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+
+    // The event is reported by the parent element, then the grandparent
+    // element.
+    WaitForResolveEvent(base::StrCat({"parent-", id}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
+
+    WaitForResolveEvent(base::StrCat({"grandparent-", id}));
+    ExpectConsoleMessage(
+        base::StrCat({"grandparent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
+  }
 }
