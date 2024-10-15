@@ -576,11 +576,12 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       AddChildView(std::make_unique<views::FlexLayoutView>());
   // All the quick action buttons are added as children. Later on, only the ones
   // that are enabled will be made visible in UpdateButtons().
-  AddQuickAction(DownloadCommands::RESUME);
-  AddQuickAction(DownloadCommands::PAUSE);
-  AddQuickAction(DownloadCommands::SHOW_IN_FOLDER);
-  AddQuickAction(DownloadCommands::CANCEL);
-  AddQuickAction(DownloadCommands::OPEN_WHEN_COMPLETE);
+  resume_action_ = AddQuickAction(DownloadCommands::RESUME);
+  pause_action_ = AddQuickAction(DownloadCommands::PAUSE);
+  show_in_folder_action_ = AddQuickAction(DownloadCommands::SHOW_IN_FOLDER);
+  cancel_action_ = AddQuickAction(DownloadCommands::CANCEL);
+  open_when_complete_action_ =
+      AddQuickAction(DownloadCommands::OPEN_WHEN_COMPLETE);
   quick_action_holder_->SetVisible(false);
   quick_action_holder_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   quick_action_holder_->SetBackground(
@@ -790,7 +791,8 @@ void DownloadBubbleRowView::UpdateRowForFocus(
                           GetFocusManager() &&
                           !Contains(GetFocusManager()->GetFocusedView());
   if (should_set_focus && !info_->quick_actions().empty()) {
-    quick_actions_[info_->quick_actions().back().command]->RequestFocus();
+    GetActionButtonForCommand(info_->quick_actions().back().command)
+        ->RequestFocus();
   }
 }
 
@@ -850,32 +852,27 @@ void DownloadBubbleRowView::OnActionButtonPressed(
 }
 
 void DownloadBubbleRowView::UpdateButtons() {
-  if (quick_action_holder_->GetVisible()) {
-    // Things like focus and tooltips are broken if we make an action
-    // button invisible, then visible. Instead, keep track of which action
-    // buttons should be made invisible so we only change visibility once.
-    base::flat_map<DownloadCommands::Command, raw_ptr<views::ImageButton>>
-        buttons_to_remove = quick_actions_;
-    for (const auto& action : info_->quick_actions()) {
-      if (!DownloadCommands(info_->model()->GetWeakPtr())
-               .IsCommandEnabled(action.command)) {
-        continue;
-      }
-      views::ImageButton* action_button = quick_actions_[action.command];
-      action_button->SetImageModel(views::Button::STATE_NORMAL,
-                                   ui::ImageModel::FromVectorIcon(
-                                       *(action.icon), ui::kColorIcon,
-                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-      action_button->GetViewAccessibility().SetName(
-          GetAccessibleNameForQuickAction(action.command));
-      action_button->SetTooltipText(action.hover_text);
-      action_button->SetVisible(true);
-      buttons_to_remove.erase(action.command);
-    }
+  resume_action_->SetVisible(false);
+  pause_action_->SetVisible(false);
+  open_when_complete_action_->SetVisible(false);
+  cancel_action_->SetVisible(false);
+  show_in_folder_action_->SetVisible(false);
 
-    for (const auto& pair : buttons_to_remove) {
-      pair.second->SetVisible(false);
+  for (const auto& action : info_->quick_actions()) {
+    if (!DownloadCommands(info_->model()->GetWeakPtr())
+             .IsCommandEnabled(action.command)) {
+      continue;
     }
+    views::ImageButton* action_button =
+        GetActionButtonForCommand(action.command);
+    action_button->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(*(action.icon), ui::kColorIcon,
+                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    action_button->GetViewAccessibility().SetName(
+        GetAccessibleNameForQuickAction(action.command));
+    action_button->SetTooltipText(action.hover_text);
+    action_button->SetVisible(true);
   }
 
   for (const auto& [command, button] : main_page_buttons_) {
@@ -983,7 +980,8 @@ void DownloadBubbleRowView::AddMainPageButton(
   main_page_buttons_[command] = button;
 }
 
-void DownloadBubbleRowView::AddQuickAction(DownloadCommands::Command command) {
+views::ImageButton* DownloadBubbleRowView::AddQuickAction(
+    DownloadCommands::Command command) {
   // Unretained is safe because this owns and outlives the quick action button.
   views::ImageButton* quick_action =
       quick_action_holder_->AddChildView(views::CreateVectorImageButton(
@@ -997,7 +995,25 @@ void DownloadBubbleRowView::AddQuickAction(DownloadCommands::Command command) {
   views::InkDrop::Get(quick_action)
       ->SetBaseColorId(views::TypographyProvider::Get().GetColorId(
           views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
-  quick_actions_[command] = quick_action;
+  return quick_action;
+}
+
+views::ImageButton* DownloadBubbleRowView::GetActionButtonForCommand(
+    DownloadCommands::Command command) {
+  switch (command) {
+    case DownloadCommands::RESUME:
+      return resume_action_;
+    case DownloadCommands::PAUSE:
+      return pause_action_;
+    case DownloadCommands::OPEN_WHEN_COMPLETE:
+      return open_when_complete_action_;
+    case DownloadCommands::CANCEL:
+      return cancel_action_;
+    case DownloadCommands::SHOW_IN_FOLDER:
+      return show_in_folder_action_;
+    default:
+      return nullptr;
+  }
 }
 
 std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
@@ -1191,22 +1207,16 @@ void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
 
 bool DownloadBubbleRowView::IsQuickActionButtonVisibleForTesting(
     DownloadCommands::Command command) {
-  if (!quick_action_holder_->GetVisible()) {
+  views::ImageButton* button = GetActionButtonForCommand(command);
+  if (!button) {
     return false;
   }
-
-  auto it = quick_actions_.find(command);
-  if (it == quick_actions_.end()) {
-    return false;
-  }
-  return it->second->GetVisible();
+  return button->GetVisible();
 }
 
 views::ImageButton* DownloadBubbleRowView::GetQuickActionButtonForTesting(
     DownloadCommands::Command command) {
-  auto it = quick_actions_.find(command);
-  CHECK(it != quick_actions_.end());
-  return it->second;
+  return GetActionButtonForCommand(command);
 }
 
 void DownloadBubbleRowView::SetInputProtectorForTesting(
