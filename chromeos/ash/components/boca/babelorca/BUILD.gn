@@ -41,6 +41,7 @@ static_library("babelorca") {
     "transcript_builder.h",
     "transcript_receiver.cc",
     "transcript_receiver.h",
+    "transcript_sender.h",
     "transcript_sender_impl.cc",
     "transcript_sender_impl.h",
   ]

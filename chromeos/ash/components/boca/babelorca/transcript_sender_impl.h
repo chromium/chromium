@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/babelorca/transcript_sender.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace media {
@@ -35,7 +36,7 @@ class TachyonRequestDataProvider;
 class TachyonResponse;
 
 // Class to send transcriptions.
-class TranscriptSenderImpl {
+class TranscriptSenderImpl : public TranscriptSender {
  public:
   struct Options {
     size_t max_allowed_char = 200;
@@ -53,12 +54,12 @@ class TranscriptSenderImpl {
   TranscriptSenderImpl(const TranscriptSenderImpl&) = delete;
   TranscriptSenderImpl& operator=(const TranscriptSenderImpl&) = delete;
 
-  ~TranscriptSenderImpl();
+  ~TranscriptSenderImpl() override;
 
   // Sends the transcript to the group specified by `request_data_provider`.
   // Only rejects sending if max number of errors is reached.
   void SendTranscriptionUpdate(const media::SpeechRecognitionResult& transcript,
-                               const std::string& language);
+                               const std::string& language) override;
 
  private:
   BabelOrcaMessage GenerateMessage(
