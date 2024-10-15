@@ -333,6 +333,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.Declutter.Trigger.Outcome"
+    enum="TabOrganizationTriggerOutcome" expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records user actions (or lack thereof) taken on the proactive declutter
+    nudge UI each time it is triggered to suggest the user declutter their tabs.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.DeclutterCTR"
     enum="TabOrganizationDeclutterCTREvent" expires_after="2025-02-10">
   <owner>emshack@chromium.org</owner>

@@ -47,7 +47,10 @@ constexpr base::TimeDelta kOpacityInDuration = base::Milliseconds(300);
 constexpr base::TimeDelta kOpacityOutDuration = base::Milliseconds(100);
 constexpr base::TimeDelta kOpacityDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kShowDuration = base::Seconds(16);
-constexpr char kTriggerOutcomeName[] = "Tab.Organization.Trigger.Outcome";
+constexpr char kAutoTabGroupsTriggerOutcomeName[] =
+    "Tab.Organization.Trigger.Outcome";
+constexpr char kDeclutterTriggerOutcomeName[] =
+    "Tab.Organization.Declutter.Trigger.Outcome";
 
 Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
   const bool is_rtl = base::i18n::IsRTL();
@@ -339,7 +342,8 @@ void TabSearchContainer::SetLockedExpansionModeForTesting(
 }
 
 void TabSearchContainer::OnAutoTabGroupButtonClicked() {
-  base::UmaHistogramEnumeration(kTriggerOutcomeName, TriggerOutcome::kAccepted);
+  base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
+                                TriggerOutcome::kAccepted);
   tab_organization_service_->OnActionUIAccepted(browser_);
 
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
@@ -350,7 +354,7 @@ void TabSearchContainer::OnAutoTabGroupButtonClicked() {
 }
 
 void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
-  base::UmaHistogramEnumeration(kTriggerOutcomeName,
+  base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
                                 TriggerOutcome::kDismissed);
   tab_organization_service_->OnActionUIDismissed(browser_);
 
@@ -363,9 +367,12 @@ void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
 void TabSearchContainer::OnOrganizeButtonTimeout(
     TabOrganizationButton* button) {
   if (button == auto_tab_group_button_) {
-    base::UmaHistogramEnumeration(kTriggerOutcomeName,
+    base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
                                   TriggerOutcome::kTimedOut);
     UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Proactive.Clicked", false);
+  } else if (button == tab_declutter_button_) {
+    base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                  TriggerOutcome::kTimedOut);
   }
 
   // Hide the button if not pressed. Use locked expansion mode to avoid
@@ -486,6 +493,8 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
 }
 
 void TabSearchContainer::OnTabDeclutterButtonClicked() {
+  base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                TriggerOutcome::kAccepted);
   tab_search_button_->tab_search_bubble_host()->ShowTabSearchBubble(
       false, tab_search::mojom::TabSearchSection::kOrganize,
       tab_search::mojom::TabOrganizationFeature::kDeclutter);
@@ -495,6 +504,8 @@ void TabSearchContainer::OnTabDeclutterButtonClicked() {
 }
 
 void TabSearchContainer::OnTabDeclutterButtonDismissed() {
+  base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                TriggerOutcome::kDismissed);
   tab_declutter_controller_->OnActionUIDismissed(
       base::PassKey<TabSearchContainer>());
 
