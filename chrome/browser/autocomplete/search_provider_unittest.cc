@@ -48,6 +48,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -103,30 +104,6 @@ class TestSearchProvider : public SearchProvider {
  private:
   void RecordDeletionResult(bool success) override { is_success_ = success; }
   bool is_success_ = false;
-};
-
-class MockSearchProvider : public testing::NiceMock<SearchProvider> {
- public:
-  MockSearchProvider(AutocompleteProviderClient* client,
-                     AutocompleteProviderListener* listener,
-                     Profile* profile)
-      : testing::NiceMock<SearchProvider>(client, listener) {}
-  MockSearchProvider(const MockSearchProvider&) = delete;
-  MockSearchProvider& operator=(const MockSearchProvider&) = delete;
-
-  // SearchProvider:
-  MOCK_METHOD(
-      bool,
-      CanSendCurrentPageURLInRequest,
-      (const GURL& current_page_url,
-       metrics::OmniboxEventProto::PageClassification page_classification,
-       const TemplateURL* template_url,
-       const SearchTermsData& search_terms_data,
-       const AutocompleteProviderClient* client),
-      (override));
-
- protected:
-  ~MockSearchProvider() override = default;
 };
 
 class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
@@ -3505,39 +3482,43 @@ TEST_F(SearchProviderTest, ParseDeletionUrl) {
 // suggest requests.
 TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   // Benchmark test for HTTPS page URL on different origin as Suggest endpoint.
+  // Requires personalized URL data collection to be active.
   auto test_different_origin = [](TemplateURL* template_url,
                                   AutocompleteProviderClient* client,
                                   SearchProvider* provider) {
-    // Requires personalized URL data collection to be active.
-    return client->IsPersonalizedUrlDataCollectionActive() &&
-           provider->CanSendCurrentPageURLInRequest(
+    return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
                GURL("https://www.example.com?q=foo"),
-               metrics::OmniboxEventProto::OTHER, template_url,
+               metrics::OmniboxEventProto::OTHER) &&
+           BaseSearchProvider::CanSendSuggestRequestWithPageURL(
+               GURL("https://www.example.com?q=foo"), template_url,
                SearchTermsData(), client);
   };
 
   // Benchmark test for HTTPS page URL on same origin as Suggest endpoint.
   // Uses the same URL as the Suggest endpoint for the current page URL.
+  // Requires personalized URL data collection to be active.
   auto test_same_origin = [](TemplateURL* template_url,
                              AutocompleteProviderClient* client,
                              SearchProvider* provider) {
-    // Requires personalized URL data collection to be active.
-    return client->IsPersonalizedUrlDataCollectionActive() &&
-           provider->CanSendCurrentPageURLInRequest(
+    return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
                template_url->GenerateSuggestionURL(SearchTermsData()),
-
-               metrics::OmniboxEventProto::OTHER, template_url,
-               SearchTermsData(), client);
+               metrics::OmniboxEventProto::OTHER) &&
+           BaseSearchProvider::CanSendSuggestRequestWithPageURL(
+               template_url->GenerateSuggestionURL(SearchTermsData()),
+               template_url, SearchTermsData(), client);
   };
 
   // Benchmark test for Search Results Page URL.
+  // Does not require personalized URL data collection to be active.
   auto test_srp = [](TemplateURL* template_url,
                      AutocompleteProviderClient* client,
                      SearchProvider* provider) {
-    return provider->CanSendCurrentPageURLInRequest(
-        template_url->GenerateSearchURL(SearchTermsData()),
-        metrics::OmniboxEventProto::SRP_ZPS_PREFETCH, template_url,
-        SearchTermsData(), client);
+    return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+               template_url->GenerateSearchURL(SearchTermsData()),
+               metrics::OmniboxEventProto::SRP_ZPS_PREFETCH) &&
+           BaseSearchProvider::CanSendSuggestRequestWithPageURL(
+               template_url->GenerateSearchURL(SearchTermsData()), template_url,
+               SearchTermsData(), client);
   };
 
   // Create an HTTPS Google search provider.
@@ -3567,27 +3548,23 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
 
   // Invalid page URL - invalid URL.
-  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
-      GURL("badpageurl"), metrics::OmniboxEventProto::OTHER,
-      &google_template_url, SearchTermsData(), client_.get()));
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+      GURL("badpageurl"), metrics::OmniboxEventProto::OTHER));
 
   // Invalid page URL - non-HTTP(S) URL.
-  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
       GURL("ftp://www.google.com/search?q=foo"),
-      metrics::OmniboxEventProto::OTHER, &google_template_url,
-      SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER));
 
   // Invalid page classification - New Tab Page.
-  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
       GURL("https://www.google.com/search?q=foo"),
-      metrics::OmniboxEventProto::NTP_REALBOX, &google_template_url,
-      SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::NTP_REALBOX));
 
   // Invalid page classification - New Tab Page.
-  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
       GURL("https://www.google.com/search?q=foo"),
-      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-      &google_template_url, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS));
 
   // Disable Suggest.
   profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
@@ -3981,39 +3958,42 @@ class SearchProviderRequestTest : public SearchProviderTest {
       : SearchProviderTest(command_line_overrides) {}
 
   void SetUp() override {
-    CustomizableSetUp(
-        /* search_url */ "http://defaultturl/{searchTerms}",
-        /* suggestions_url */
-        "https://defaultturl2/{searchTerms}&{google:currentPageUrl}");
+    SearchProviderTest::SetUp();
 
-    provider_ = new MockSearchProvider(client_.get(), this, profile_.get());
+    // Set up a Google default search provider.
+    TemplateURLData google_template_url_data;
+    google_template_url_data.SetShortName(u"t");
+    google_template_url_data.SetURL(
+        "https://www.google.com/search?q={searchTerms}");
+    google_template_url_data.suggestions_url =
+        "https://www.google.com/"
+        "suggest?q={searchTerms}&{google:currentPageUrl}";
+
+    TemplateURLService* turl_model =
+        TemplateURLServiceFactory::GetForProfile(profile_.get());
+    TemplateURL* template_url = turl_model->Add(
+        std::make_unique<TemplateURL>(google_template_url_data));
+    turl_model->SetUserSelectedDefaultSearchProvider(template_url);
+    ASSERT_NE(0, template_url->id());
   }
-
- protected:
-  scoped_refptr<MockSearchProvider> provider_;
 };
 
 TEST_F(SearchProviderRequestTest, SendRequestWithoutURL) {
-  EXPECT_CALL(*provider_, CanSendCurrentPageURLInRequest(_, _, _, _, _))
-      .WillRepeatedly(testing::Return(false));
-
   // Start a query.
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  input.set_current_url(GURL("https://www.example.com"));
+  input.set_current_url(GURL("chrome://settings"));
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried without the
   // current page URL.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(provider_->done());
-  EXPECT_TRUE(test_url_loader_factory_.IsPending("https://defaultturl2/foo&"));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(
+      "https://www.google.com/suggest?q=foo&"));
 }
 
 TEST_F(SearchProviderRequestTest, SendRequestWithURL) {
-  EXPECT_CALL(*provider_, CanSendCurrentPageURLInRequest(_, _, _, _, _))
-      .WillRepeatedly(testing::Return(true));
-
   // Start a query.
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
@@ -4025,25 +4005,11 @@ TEST_F(SearchProviderRequestTest, SendRequestWithURL) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(provider_->done());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
-      "https://defaultturl2/foo&url=https%3A%2F%2Fwww.example.com%2F&"));
+      "https://www.google.com/"
+      "suggest?q=foo&url=https%3A%2F%2Fwww.example.com%2F&"));
 }
 
 TEST_F(SearchProviderRequestTest, SendRequestWithoutLensInteractionResponse) {
-  // Set up a Google default search provider.
-  TemplateURLData google_template_url_data;
-  google_template_url_data.SetShortName(u"t");
-  google_template_url_data.SetURL(
-      "https://www.google.com/search?q={searchTerms}");
-  google_template_url_data.suggestions_url =
-      "https://www.google.com/suggest?q={searchTerms}";
-
-  TemplateURLService* turl_model =
-      TemplateURLServiceFactory::GetForProfile(profile_.get());
-  TemplateURL* template_url =
-      turl_model->Add(std::make_unique<TemplateURL>(google_template_url_data));
-  turl_model->SetUserSelectedDefaultSearchProvider(template_url);
-  ASSERT_NE(0, template_url->id());
-
   // Start a query.
   AutocompleteInput input(u"foo",
                           metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX,
@@ -4062,21 +4028,6 @@ TEST_F(SearchProviderRequestTest, SendRequestWithoutLensInteractionResponse) {
 }
 
 TEST_F(SearchProviderRequestTest, SendRequestWithLensInteractionResponse) {
-  // Set up a Google default search provider.
-  TemplateURLData google_template_url_data;
-  google_template_url_data.SetShortName(u"t");
-  google_template_url_data.SetURL(
-      "https://www.google.com/search?q={searchTerms}");
-  google_template_url_data.suggestions_url =
-      "https://www.google.com/suggest?q={searchTerms}";
-
-  TemplateURLService* turl_model =
-      TemplateURLServiceFactory::GetForProfile(profile_.get());
-  TemplateURL* template_url =
-      turl_model->Add(std::make_unique<TemplateURL>(google_template_url_data));
-  turl_model->SetUserSelectedDefaultSearchProvider(template_url);
-  ASSERT_NE(0, template_url->id());
-
   // Start a query.
   AutocompleteInput input(u"foo",
                           metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,

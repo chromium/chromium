@@ -180,23 +180,6 @@ int SearchProvider::CalculateRelevanceForKeywordVerbatim(
              : 1100;
 }
 
-bool SearchProvider::CanSendCurrentPageURLInRequest(
-    const GURL& current_page_url,
-    metrics::OmniboxEventProto::PageClassification page_classification,
-    const TemplateURL* template_url,
-    const SearchTermsData& search_terms_data,
-    const AutocompleteProviderClient* client) {
-  // Send the current page URL if the request eligiblility and the user settings
-  // requirements are met and the URL is valid with an HTTP(S) scheme.
-  // Don't bother sending the URL of an NTP page; it's not useful. The server
-  // already gets equivalent information in the form of the current page
-  // classification.
-  return !omnibox::IsNTPPage(page_classification) &&
-         PageURLIsEligibleForSuggestRequest(current_page_url) &&
-         CanSendSuggestRequestWithPageURL(current_page_url, template_url,
-                                          search_terms_data, client);
-}
-
 SearchProvider::~SearchProvider() = default;
 
 // static
@@ -924,10 +907,12 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();
 
-  // Make sure the current page URL is sent in the request, if it is allowed.
-  if (CanSendCurrentPageURLInRequest(
-          input.current_url(), input.current_page_classification(),
-          template_url, search_terms_data, client())) {
+  // Send the current page URL if it is valid with an HTTP(S) scheme, it is not
+  // the NTP URL, and the request eligiblility requirements are met.
+  if (PageURLIsEligibleForSuggestRequest(input.current_url(),
+                                         input.current_page_classification()) &&
+      CanSendSuggestRequestWithPageURL(input.current_url(), template_url,
+                                       search_terms_data, client())) {
     search_term_args.current_page_url = input.current_url().spec();
   }
 

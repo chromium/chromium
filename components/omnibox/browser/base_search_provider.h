@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
@@ -112,7 +113,11 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   // Returns whether the URL of the current page is eligible to be sent in any
   // suggest request. Only valid URLs with an HTTP or HTTPS scheme are eligible.
-  static bool PageURLIsEligibleForSuggestRequest(const GURL& page_url);
+  // We don't bother sending the URL of an NTP page; it's not useful. The server
+  // already gets equivalent information in the form of the page classification.
+  static bool PageURLIsEligibleForSuggestRequest(
+      const GURL& page_url,
+      metrics::OmniboxEventProto::PageClassification page_classification);
   // Returns whether a suggest request can be made without the current page URL.
   // It requires that all the following to hold:
   // * The suggest request is sent over HTTPS. This avoids leaking the current

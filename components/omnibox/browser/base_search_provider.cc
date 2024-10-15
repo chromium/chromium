@@ -367,8 +367,10 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
 
 // static
 bool BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-    const GURL& page_url) {
-  return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS();
+    const GURL& page_url,
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS() &&
+         !omnibox::IsNTPPage(page_classification);
 }
 
 // static

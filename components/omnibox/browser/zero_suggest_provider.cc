@@ -264,10 +264,9 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
   }
 
   // The following cases require sending the current page URL in the request.
-  // Ensure the URL is valid with an HTTP(S) scheme and is not the NTP page URL.
-  if (omnibox::IsNTPPage(page_class) ||
-      !BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-          input.current_url())) {
+  // Ensure the page URL is valid with an HTTP(S) scheme and is not the NTP URL.
+  if (!BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+          input.current_url(), page_class)) {
     return ResultType::kNone;
   }
 

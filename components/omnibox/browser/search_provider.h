@@ -75,15 +75,6 @@ class SearchProvider : public BaseSearchProvider,
   // The verbatim score for an input which is not a URL.
   static const int kNonURLVerbatimRelevance = 1300;
 
-  // Returns whether the current page URL can be sent in the suggest requests.
-  // This method is virtual to mock for testing.
-  virtual bool CanSendCurrentPageURLInRequest(
-      const GURL& current_page_url,
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      const TemplateURL* template_url,
-      const SearchTermsData& search_terms_data,
-      const AutocompleteProviderClient* client);
-
  protected:
   ~SearchProvider() override;
 
