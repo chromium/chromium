@@ -69,12 +69,12 @@ void ReadDataFromSpeechFile(base::HeapArray<int16_t>& data) {
              .Append(FILE_PATH_LITERAL("data"))
              .Append(FILE_PATH_LITERAL("speech_16b_stereo_48kHz.raw"));
   DCHECK(base::PathExists(file));
-  int64_t data_file_size64 = 0;
-  DCHECK(base::GetFileSize(file, &data_file_size64));
+  std::optional<int64_t> data_file_size64 = base::GetFileSize(file);
+  DCHECK(data_file_size64.has_value());
   auto bytes = base::as_writable_chars(data.as_span());
   EXPECT_EQ(base::checked_cast<int>(bytes.size_bytes()),
             base::ReadFile(file, bytes));
-  DCHECK(data_file_size64 > base::checked_cast<int64_t>(data.size()));
+  DCHECK(data_file_size64.value() > base::checked_cast<int64_t>(data.size()));
 }
 
 }  // namespace

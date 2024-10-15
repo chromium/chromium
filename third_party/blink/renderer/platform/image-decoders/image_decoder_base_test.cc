@@ -41,8 +41,7 @@ bool ShouldSkipFile(const base::FilePath& path,
     return false;
   }
 
-  int64_t image_size = 0;
-  base::GetFileSize(path, &image_size);
+  int64_t image_size = base::GetFileSize(path).value_or(0);
   return (file_selection ==
           blink::ImageDecoderBaseTest::FileSelection::kSmaller) ==
          (image_size > threshold);
