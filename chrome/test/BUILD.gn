@@ -5266,6 +5266,7 @@ if (!is_android) {
     }
     if (enterprise_data_controls && !is_android) {
       sources += [
+        "//chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_browsertest.cc",
         "//chrome/browser/enterprise/data_protection/clipboard_browsertest.cc",
       ]
       deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
@@ -11203,9 +11204,6 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enterprise_data_controls) {
-      if (!is_android) {
-        sources += [ "//chrome/browser/enterprise/data_protection/clipboard_browsertest.cc" ]
-      }
       deps += [
         "//chrome/browser/enterprise/data_controls:test_support",
         "//components/enterprise/data_controls/core/browser",
