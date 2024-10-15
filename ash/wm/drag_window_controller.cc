@@ -8,6 +8,8 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_mirror_view.h"
+#include "ash/wm/window_properties.h"
+#include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -64,6 +66,18 @@ float GetDragWindowOpacity(aura::Window* root_window,
   visible_bounds.Intersect(dragged_window_bounds);
   return kDragPhantomMaxOpacity * visible_bounds.size().GetArea() /
          dragged_window_bounds.size().GetArea();
+}
+
+float GetDragWindowCornerRadius(const aura::Window* original_window) {
+  // In overview mode, the `original_window` is square. Therefore,
+  // `kWindowCornerRadiusKey` is zero for the `original_window`.
+  // However the mini-window view has rounded corners and the shadow
+  // associated with the mini-window should be rounded as well.
+  if (original_window->GetProperty(kIsOverviewItemKey)) {
+    return window_util::GetMiniWindowRoundedCornerRadius();
+  }
+
+  return original_window->GetProperty(aura::client::kWindowCornerRadiusKey);
 }
 
 }  // namespace
@@ -125,6 +139,8 @@ class DragWindowController::DragWindowDetails {
     } else {
       params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     }
+
+    params.corner_radius = GetDragWindowCornerRadius(original_window);
 
     widget_ = std::make_unique<views::Widget>();
     widget_->set_focus_on_creation(false);
