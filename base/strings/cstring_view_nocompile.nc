@@ -67,11 +67,9 @@ void WontCompileDanglingInput() {
   // TODO: construct from string.
   // auto v1 = cstring_view(std::string("abc"));
 
-  // TODO(https://crbug.com/364890560): uncomment once upstream clang change
-  // that warns on this is rolled
-  // auto v2 = UNSAFE_BUFFERS(cstring_view(
-  //   std::vector<char>{'a', 'b', 'c', '\0'}.data(),
-  //   3u));
+  auto v2 = UNSAFE_BUFFERS(cstring_view( // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+      std::vector<char>{'a', 'b', 'c', '\0'}.data(),
+      3u));
 
   auto v3 = cstring_view();
   {
