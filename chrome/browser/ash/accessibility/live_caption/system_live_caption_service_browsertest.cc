@@ -315,6 +315,9 @@ class SystemLiveCaptionServiceTest
         SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(
             primary_profile_)
             ->ChangeBabelOrcaSpeechRecognitionAvailability(enabled);
+        ::captions::LiveCaptionControllerFactory::GetInstance()
+            ->GetForProfile(primary_profile_)
+            ->ToggleLiveCaptionForBabelOrca(enabled);
         break;
     }
     base::RunLoop().RunUntilIdle();
@@ -436,11 +439,6 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
 
 // Test that captions are only dispatched for the primary profile.
 IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, DispatchToProfile) {
-  // TODO(next): Test this for babel orca when the controller hookup
-  // is done.
-  if (!IsTestingLiveCaption()) {
-    return;
-  }
   StartLiveCaptioning();
 
   // Capture fake audio.
@@ -461,11 +459,6 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, DispatchToProfile) {
 }
 
 IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, StartStopStart) {
-  // Once again skip this as we haven't implemented this for babel
-  // orca yet. See TODO on `IsTestingLiveCaption`
-  if (!IsTestingLiveCaption()) {
-    return;
-  }
 
   StartLiveCaptioning();
 
@@ -503,12 +496,6 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, StartStopStart) {
 
 // Test that we can cease transcription by closing the bubble UI.
 IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EarlyStopping) {
-  // Once again skip this as we haven't implemented this for babel
-  // orca yet. See TODO on `IsTestingLiveCaption`
-  if (!IsTestingLiveCaption()) {
-    return;
-  }
-
   StartLiveCaptioning();
 
   // Fake some speech.
@@ -561,12 +548,6 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EndOfStream) {
 
 // Test that an error message is shown if something goes wrong.
 IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, ServiceError) {
-  // Once again skip this as we haven't implemented this for babel
-  // orca yet. See TODO on `IsTestingLiveCaption`
-  if (!IsTestingLiveCaption()) {
-    return;
-  }
-
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
