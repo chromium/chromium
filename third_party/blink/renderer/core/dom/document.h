@@ -248,12 +248,14 @@ class TextAutosizer;
 class TransformSource;
 class TreeWalker;
 class TrustedHTML;
+class V8DocumentReadyState;
 class V8NodeFilter;
 class V8UnionStringOrTrustedHTML;
 class ViewportData;
 class VisitedLinkState;
 class WebMouseEvent;
 class WorkletAnimationController;
+class V8VisibilityState;
 
 template <typename EventType>
 class EventWithHitTestResults;
@@ -510,7 +512,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool KeyboardFocusableScrollersEnabled();
   bool StandardizedBrowserZoomEnabled() const;
 
-  String readyState() const;
+  V8DocumentReadyState readyState() const;
 
   AtomicString characterSet() const { return Document::EncodingName(); }
 
@@ -547,7 +549,8 @@ class CORE_EXPORT Document : public ContainerNode,
     has_xml_declaration_ = has_xml_declaration ? 1 : 0;
   }
 
-  AtomicString visibilityState() const;
+  V8VisibilityState visibilityState() const;
+  String visibilityStateAsString() const;
   bool IsPageVisible() const;
   bool hidden() const;
   void DidChangeVisibilityState();

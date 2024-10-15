@@ -196,7 +196,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Deprecated prefixed page visibility API.
     // TODO(davidben): This is a property so attaching a deprecation warning results in false positives when outputting
     // document in the console. It's possible https://crbug.com/43394 will resolve this.
-    [MeasureAs=PrefixedPageVisibility, ImplementedAs=visibilityState] readonly attribute DOMString webkitVisibilityState;
+    [MeasureAs=PrefixedPageVisibility, ImplementedAs=visibilityStateAsString] readonly attribute DOMString webkitVisibilityState;
     [MeasureAs=PrefixedPageVisibility, ImplementedAs=hidden] readonly attribute boolean webkitHidden;
 
     // Private Token API (https://github.com/wicg/trust-token-api)

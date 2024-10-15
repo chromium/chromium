@@ -85,12 +85,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_caret_position_from_point_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document_ready_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_visibility_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -1493,22 +1495,16 @@ bool Document::HasValidNamespaceForAttributes(const QualifiedName& q_name) {
   return HasValidNamespaceForElements(q_name);
 }
 
-String Document::readyState() const {
-  DEFINE_STATIC_LOCAL(const String, loading, ("loading"));
-  DEFINE_STATIC_LOCAL(const String, interactive, ("interactive"));
-  DEFINE_STATIC_LOCAL(const String, complete, ("complete"));
-
+V8DocumentReadyState Document::readyState() const {
   switch (ready_state_) {
     case kLoading:
-      return loading;
+      return V8DocumentReadyState(V8DocumentReadyState::Enum::kLoading);
     case kInteractive:
-      return interactive;
+      return V8DocumentReadyState(V8DocumentReadyState::Enum::kInteractive);
     case kComplete:
-      return complete;
+      return V8DocumentReadyState(V8DocumentReadyState::Enum::kComplete);
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 void Document::SetReadyState(DocumentReadyState ready_state) {
@@ -1937,8 +1933,16 @@ bool Document::IsPrefetchOnly() const {
   return no_state_prefetch_client && no_state_prefetch_client->IsPrefetchOnly();
 }
 
-AtomicString Document::visibilityState() const {
-  return PageHiddenStateString(hidden());
+V8VisibilityState Document::visibilityState() const {
+  if (hidden()) {
+    return V8VisibilityState(V8VisibilityState::Enum::kHidden);
+  } else {
+    return V8VisibilityState(V8VisibilityState::Enum::kVisible);
+  }
+}
+
+String Document::visibilityStateAsString() const {
+  return visibilityState().AsString();
 }
 
 bool Document::prerendering() const {
