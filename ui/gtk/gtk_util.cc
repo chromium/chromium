@@ -227,9 +227,13 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
 }
 
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
+  if (!parent || !parent->GetHost()) {
+    return;
+  }
+
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
-  GtkUi::GetPlatform()->ClearTransientFor(
-      parent->GetHost()->GetAcceleratedWidget());
+  gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
+  GtkUi::GetPlatform()->ClearTransientFor(parent_id);
 }
 
 base::OnceClosure DisableHostInputHandling(GtkWidget* dialog,
