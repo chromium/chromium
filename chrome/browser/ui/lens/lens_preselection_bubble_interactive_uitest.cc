@@ -25,10 +25,9 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   void operator=(const LensPreselectionBubbleInteractiveUiTest&) = delete;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay, {
-                                          {"search-bubble", "false"},
-                                      });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {{"search-bubble", "false"}}}},
+        {lens::features::kLensOverlayContextualSearchbox});
     InteractiveBrowserTest::SetUp();
   }
 

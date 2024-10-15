@@ -3892,6 +3892,12 @@ class LensOverlayControllerBrowserPDFTest
     return enabled;
   }
 
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
+    disabled.push_back({lens::features::kLensOverlayContextualSearchbox});
+    return disabled;
+  }
+
   LensOverlayController* GetLensOverlayController() {
     return browser()
         ->tab_strip_model()
@@ -4003,6 +4009,10 @@ class LensOverlayControllerBrowserPDFContextualizationTest
                         {"file-upload-limit-bytes",
                          base::NumberToString(file_size_limit_bytes_)}}});
     return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    return {};
   }
 
  protected:

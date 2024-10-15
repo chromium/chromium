@@ -6297,6 +6297,28 @@
             ]
         }
     ],
+    "ContextualSearchBox": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Teamfood",
+                    "params": {
+                        "use-pdfs-as-context": "true"
+                    },
+                    "enable_features": [
+                        "LensOverlayContextualSearchbox"
+                    ]
+                }
+            ]
+        }
+    ],
     "CookieDeprecationFacilitatedTestingCookieDeprecation": [
         {
             "platforms": [
