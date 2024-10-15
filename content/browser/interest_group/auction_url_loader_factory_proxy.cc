@@ -329,7 +329,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     new_request.throttling_profile_id =
         owner_frame_tree_node->current_frame_host()->devtools_frame_token();
     if (base::FeatureList::IsEnabled(
-            features::kFledgeEnableUserAgentAndClientHints)) {
+            features::kFledgeEnableUserAgentOverrides) &&
+        owner_frame_tree_node != nullptr) {
       const bool override_user_agent =
           owner_frame_tree_node->navigator()
               .GetDelegate()

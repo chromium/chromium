@@ -19,7 +19,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandASampleDebugReports);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableIFrameAdAuctionHeaders);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUserAgentAndClientHints);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUserAgentOverrides);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
 

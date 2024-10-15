@@ -36,6 +36,7 @@
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -111,6 +112,7 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
     const url::Origin& frame_origin,
     FrameTreeNodeId frame_tree_node_id,
     const network::mojom::ClientSecurityState& client_security_state,
+    const std::optional<std::string>& user_agent_override,
     bool is_post_method) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
@@ -127,6 +129,10 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
       net::IsolationInfo::CreateTransient();
   resource_request->trusted_params->client_security_state =
       client_security_state.Clone();
+  if (user_agent_override.has_value()) {
+    resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                        std::move(user_agent_override.value()));
+  }
 
   bool network_instrumentation_enabled = false;
   if (frame_tree_node_id) {
@@ -522,6 +528,31 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
       std::move(callback));
 }
 
+std::optional<std::string> InterestGroupManagerImpl::MaybeGetUserAgentOverride(
+    const FrameTreeNodeId& frame_tree_node_id) {
+  if (base::FeatureList::IsEnabled(features::kFledgeEnableUserAgentOverrides)) {
+    FrameTreeNode* frame_tree_node =
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+
+    if (frame_tree_node != nullptr) {
+      const bool override_user_agent =
+          frame_tree_node->navigator()
+              .GetDelegate()
+              ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
+      if (override_user_agent) {
+        std::string maybe_user_agent = frame_tree_node->navigator()
+                                           .GetDelegate()
+                                           ->GetUserAgentOverride()
+                                           .ua_string_override;
+        if (!maybe_user_agent.empty()) {
+          return std::move(maybe_user_agent);
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 void InterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
     std::vector<GURL> report_urls,
@@ -563,6 +594,8 @@ void InterestGroupManagerImpl::EnqueueReports(
     report_request->name = report_type_name;
     report_request->url_loader_factory = url_loader_factory;
     report_request->frame_tree_node_id = frame_tree_node_id;
+    report_request->user_agent_override =
+        MaybeGetUserAgentOverride(frame_tree_node_id);
     report_requests_.emplace_back(std::move(report_request));
   }
 
@@ -1015,6 +1048,7 @@ void InterestGroupManagerImpl::TrySendingOneReport() {
           report_request->report_url, report_request->frame_origin,
           report_request->frame_tree_node_id,
           report_request->client_security_state,
+          report_request->user_agent_override,
           /*is_post_method=*/report_request->real_time_histogram.has_value()
               ? true
               : false);

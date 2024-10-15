@@ -331,6 +331,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
 
+  // Returns a user agent override string for the given frame tree node,
+  // if one is available and the feature is enabled.
+  std::optional<std::string> MaybeGetUserAgentOverride(
+      const FrameTreeNodeId& frame_tree_node_id);
+
   // Enqueues reports for the specified URLs. Virtual for testing.
   virtual void EnqueueReports(
       ReportType report_type,
@@ -534,6 +539,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     network::mojom::ClientSecurityState client_security_state;
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+
+    // This optional string holds a user agent value that can override the
+    // default one for reporting requests. If no override is needed, it remains
+    // std::nullopt.
+    std::optional<std::string> user_agent_override;
 
     // Used for Uma histograms. These are build-time constants contained within
     // the binary, so no need for anything to own them.
