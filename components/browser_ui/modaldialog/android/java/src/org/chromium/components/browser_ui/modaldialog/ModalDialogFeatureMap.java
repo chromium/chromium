@@ -19,9 +19,7 @@ public final class ModalDialogFeatureMap extends FeatureMap {
 
     public static final CachedFlag sModalDialogLayoutWithSystemInsets =
             new CachedFlag(
-                    sInstance,
-                    ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS,
-                    false);
+                    sInstance, ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS, true);
     public static final List<CachedFlag> sCachedFlags = List.of(sModalDialogLayoutWithSystemInsets);
 
     // Do not instantiate this class.
