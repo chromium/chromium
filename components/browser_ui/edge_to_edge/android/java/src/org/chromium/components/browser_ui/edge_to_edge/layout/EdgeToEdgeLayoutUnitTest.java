@@ -269,13 +269,13 @@ public class EdgeToEdgeLayoutUnitTest {
         measureAndLayoutRootView(600, 400);
         assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
 
-        WindowInsetsCompat topLeftInsets =
+        WindowInsetsCompat topRightInsets =
                 new WindowInsetsCompat.Builder()
                         .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
                         .setInsets(NAVIGATION_BARS, Insets.of(0, 0, NAV_BAR_SIZE, 0))
                         .build();
         WindowInsetsCompat newInsets =
-                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(mEdgeToEdgeLayout, topLeftInsets);
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(mEdgeToEdgeLayout, topRightInsets);
         assertEquals(
                 "Window insets should be consumed",
                 Insets.NONE,

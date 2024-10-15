@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:id="@+id/edge_to_edge_base_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/window_background_color">
 
   <ViewStub
       android:id="@+id/original_layout"
