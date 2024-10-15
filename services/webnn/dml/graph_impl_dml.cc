@@ -1957,9 +1957,7 @@ void CreateOperatorNodeForDequantizeOrQuantizeLinear(
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
-// TODO(crbug.com/368222740): Change return type back to void once logicalAnd,
-// logicalNot, logicalOr are implemented.
-base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
+void CreateOperatorNodeForBinary(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
@@ -2132,14 +2130,35 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           inputs, label);
       break;
     }
-    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd: {
+      CHECK(context_properties.data_type_limits.logical_and_input.Has(
+          input_data_type));
+      binary_node =
+          CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_AND_OPERATOR_DESC>(
+              input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_AND, inputs,
+              label);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLogicalOr: {
+      CHECK(context_properties.data_type_limits.logical_or_input.Has(
+          input_data_type));
+      binary_node =
+          CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_OR_OPERATOR_DESC>(
+              input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_OR, inputs,
+              label);
+      break;
+    }
     case mojom::ElementWiseBinary::Kind::kLogicalXor: {
-      // TODO(crbug.com/368222740): Implement logical binary ops for DML.
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kNotSupportedError,
-                      "logicalAnd, logicalXor, and logicalXor are not yet "
-                      "supported on DML."));
+      CHECK(context_properties.data_type_limits.logical_xor_input.Has(
+          input_data_type));
+      binary_node =
+          CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_XOR_OPERATOR_DESC>(
+              input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_XOR, inputs,
+              label);
+      break;
     }
   }
 
@@ -2147,8 +2166,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
       binary_node, std::move(output_tensor_desc), 0);
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
-
-  return base::ok();
 }
 
 void CreateOperatorNodeForPad(const ContextProperties& context_properties,
@@ -6168,7 +6185,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
-        create_operator_result = CreateOperatorNodeForBinary(
+        CreateOperatorNodeForBinary(
             context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);

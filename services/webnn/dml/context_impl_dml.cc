@@ -152,13 +152,14 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_less_than_or_equal_operator_desc#tensor-support
        /*lesser_or_equal_input=*/kFloat16To32Ints8To32,
 
-       // TODO(crbug.com/368222740): Implement logical binary ops for DML.
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_and_operator_desc#tensor-support
-       /*logical_and_input=*/{},
+       /*logical_and_input=*/kUint8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_or_operator_desc#tensor-support
-       /*logical_or_input=*/{},
+       /*logical_or_input=*/kUint8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_xor_operator_desc#tensor-support
-       /*logical_xor_input=*/{},
+       /*logical_xor_input=*/kUint8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_not_operator_desc#tensor-support
        /*logical_not_input=*/kUint8To32,
