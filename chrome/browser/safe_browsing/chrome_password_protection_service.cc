@@ -1637,10 +1637,18 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
          !GetAccountInfo().hosted_domain.empty();
 }
 
+// TODO(crbug.com/373619536): Remove no_hosted_domain_found if unneeded.
 bool ChromePasswordProtectionService::IsAccountGmail(
     const std::string& username) const {
-  return GetAccountInfoForUsername(username).hosted_domain ==
-         kNoHostedDomainFound;
+  if (base::EndsWith(username, "@gmail.com") ||
+      base::EndsWith(username, "@googlemail.com")) {
+    return true;
+  }
+  bool no_hosted_domain_found =
+      GetAccountInfoForUsername(username).hosted_domain == kNoHostedDomainFound;
+  base::UmaHistogramBoolean("PasswordProtection.NoHostedDomainFoundMatched",
+                            no_hosted_domain_found);
+  return no_hosted_domain_found;
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(

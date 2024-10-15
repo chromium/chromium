@@ -4625,6 +4625,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.NoHostedDomainFoundMatched" enum="Boolean"
+    expires_after="2025-04-19">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Tracks whether the kNoHostedDomainFound check is useful when the gmail and
+    googlemail domains are being checked explicitly.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.PageInfoAction"
     enum="PasswordProtectionWarningAction" expires_after="2025-05-12">
   <owner>nwokedi@chromium.org</owner>

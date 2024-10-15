@@ -125,7 +125,8 @@ const char kUserName[] = "username";
 const char kRedirectURL[] = "http://redirect.com";
 #if !BUILDFLAG(IS_ANDROID)
 const char kPasswordReuseURL[] = "http://login.example.com/";
-const char kTestGmail[] = "foo@gmail.com";
+const char kGmailUserName[] = "username@gmail.com";
+const char kGooglemailUserName[] = "username@googlemail.com";
 #endif
 
 BrowserContextKeyedServiceFactory::TestingFactory
@@ -1365,7 +1366,28 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
-
+  // Explicitly verify the @gmail.com and @googlemail.com cases are treated as
+  // consumer accounts and reports are not sent even if there is a hosted
+  // domain.
+  service_->SetAccountInfo(kGmailUserName, /*hosted_domain=*/"example.com");
+  service_->MaybeReportPasswordReuseDetected(request_->main_frame_url(),
+                                             kGmailUserName,
+                                             PasswordType::OTHER_GAIA_PASSWORD,
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, test_event_router_->GetEventCount(
+                   OnPolicySpecifiedPasswordReuseDetected::kEventName));
+  service_->SetAccountInfo(kGooglemailUserName,
+                           /*hosted_domain=*/"example.com");
+  service_->MaybeReportPasswordReuseDetected(request_->main_frame_url(),
+                                             kGooglemailUserName,
+                                             PasswordType::OTHER_GAIA_PASSWORD,
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, test_event_router_->GetEventCount(
+                   OnPolicySpecifiedPasswordReuseDetected::kEventName));
   // If the reused password is not Enterprise password but the account is
   // GSuite, event should be sent.
   service_->SetAccountInfo(kUserName, "example.com");
@@ -1404,7 +1426,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // If user is a Gmail user and enterprise password is used, event should be
   // sent.
-  CoreAccountInfo gmail_account_info = SetPrimaryAccount(kTestGmail);
+  CoreAccountInfo gmail_account_info = SetPrimaryAccount(kGmailUserName);
   SetUpSyncAccount(kNoHostedDomainFound, gmail_account_info);
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_REUSE);
