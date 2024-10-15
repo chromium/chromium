@@ -158,8 +158,6 @@ source_set("extensions") {
     "api/identity/web_auth_flow.h",
     "api/identity/web_auth_flow_info_bar_delegate.cc",
     "api/identity/web_auth_flow_info_bar_delegate.h",
-    "api/idltest/idltest_api.cc",
-    "api/idltest/idltest_api.h",
     "api/image_writer_private/destroy_partitions_operation.cc",
     "api/image_writer_private/destroy_partitions_operation.h",
     "api/image_writer_private/error_constants.cc",

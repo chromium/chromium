@@ -35,6 +35,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/enterprise_hardware_platform",
     "//chrome/browser/extensions/api/experimental_ai_data",
     "//chrome/browser/extensions/api/font_settings",
+    "//chrome/browser/extensions/api/idltest",
     "//chrome/browser/extensions/api/mdns",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/networking_private",
