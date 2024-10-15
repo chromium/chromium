@@ -84,8 +84,8 @@ source_set("javascript_test") {
 
 # Those fixtures *must* not be used directly from //ios/chrome code as they
 # create web::BrowserState* as the BrowserState which violates one important
-# invariant of //ios/chrome code (the invariant that all BrowserStates are of
-# a sub-class of ChromeBrowserState). This is why the classes are defined in
+# invariant of //ios/chrome code (the invariant that all Profiles are of
+# a sub-class of ProfileIOS). This is why the classes are defined in
 # a target that limits its visibility to //ios/web, //components and to the
 # targets in //ios/chrome that safely wraps those fixtures.
 source_set("test_fixture") {

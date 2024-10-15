@@ -18,12 +18,6 @@
 #include "ios/web/public/browser_state.h"
 
 // static
-webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
     ProfileIOS* profile) {
   if (!base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {

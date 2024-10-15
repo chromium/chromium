@@ -621,10 +621,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
-  for (ProfileIOS* chromeBrowserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(chromeBrowserState);
+        feature_engagement::TrackerFactory::GetForProfile(profile);
     // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
     // start.
     tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
@@ -632,16 +632,15 @@ SEQUENCE_CHECKER(_sequenceChecker);
     [_metricsMediator notifyCredentialProviderWasUsed:tracker];
 
     [_spotlightManagers
-        addObject:[SpotlightManager
-                      spotlightManagerWithProfile:chromeBrowserState]];
+        addObject:[SpotlightManager spotlightManagerWithProfile:profile]];
 
     ShareExtensionService* service =
-        ShareExtensionServiceFactory::GetForProfile(chromeBrowserState);
+        ShareExtensionServiceFactory::GetForProfile(profile);
     service->Initialize();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
     if (IsCredentialProviderExtensionSupported()) {
-      CredentialProviderServiceFactory::GetForProfile(chromeBrowserState);
+      CredentialProviderServiceFactory::GetForProfile(profile);
     }
 #endif
   }

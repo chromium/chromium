@@ -116,7 +116,7 @@ TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {
   ASSERT_TRUE(
       ConnectorsServiceFactory::GetForProfile(profile())->ConnectorsEnabled());
   ASSERT_FALSE(ConnectorsServiceFactory::GetForProfile(
-                   profile()->GetOffTheRecordChromeBrowserState())
+                   profile()->GetOffTheRecordProfile())
                    ->ConnectorsEnabled());
   ASSERT_TRUE(
       ConnectorsService(
