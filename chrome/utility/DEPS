@@ -29,6 +29,7 @@ include_rules = [
   "+chromeos/ash/components/trash_service/public/mojom",
   "+chromeos/ash/services/assistant",
   "+chromeos/ash/services/assistant/audio_decoder",
+  "+chromeos/ash/services/boca/babelorca",
   "+chromeos/ash/services/ime/ime_service.h",
   "+chromeos/ash/services/ime/public/mojom",
   "+chromeos/ash/services/libassistant/libassistant_service.h",

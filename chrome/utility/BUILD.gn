@@ -191,6 +191,8 @@ static_library("utility") {
       "//chromeos/ash/components/mojo_service_manager",
       "//chromeos/ash/components/trash_service",
       "//chromeos/ash/components/trash_service/public/mojom",
+      "//chromeos/ash/services/boca/babelorca/cpp",
+      "//chromeos/ash/services/boca/babelorca/mojom",
       "//chromeos/ash/services/ime:lib",
       "//chromeos/ash/services/ime/public/mojom",
       "//chromeos/ash/services/nearby/public/mojom:mojom",

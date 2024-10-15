@@ -119,6 +119,8 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
+#include "chromeos/ash/services/boca/babelorca/cpp/tachyon_parsing_service.h"
+#include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "chromeos/ash/services/ime/ime_service.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
@@ -438,6 +440,15 @@ auto RunOnDeviceTranslationService(
       std::move(receiver));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+auto RunBabelOrcaTachyonParsingService(
+    mojo::PendingReceiver<ash::babelorca::mojom::TachyonParsingService>
+        receiver) {
+  return std::make_unique<ash::babelorca::TachyonParsingService>(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
@@ -532,6 +543,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);
+  services.Add(RunBabelOrcaTachyonParsingService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
   services.Add(RunLibassistantService);
