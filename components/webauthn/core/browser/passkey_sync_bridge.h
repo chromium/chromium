@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/sync/model/data_type_store.h"
@@ -98,6 +99,14 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   void AddPasskeyInternal(sync_pb::WebauthnCredentialSpecifics specifics);
   void AddShadowedCredentialIdsToNewPasskey(
       sync_pb::WebauthnCredentialSpecifics& passkey);
+  // Updates the credential specified by `credential_id` by synchronously
+  // calling `mutate_callback` to update it. If `mutate_callback` returns false
+  // then no update occurs. Returns false if the credential could not be found,
+  // or if the callback returned false.
+  bool UpdateSinglePasskey(
+      const std::string& credential_id,
+      base::OnceCallback<bool(sync_pb::WebauthnCredentialSpecifics*)>
+          mutate_callback);
 
   // Local view of the stored data. Indexes specifics protos by storage key.
   std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;

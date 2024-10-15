@@ -157,4 +157,9 @@ BASE_FEATURE(kWebAuthnHybridLinking,
              "WebAuthenticationHybridLinking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Update the "last used" timestamp for GPM passkeys when asserted.
+BASE_FEATURE(kWebAuthnUpdateLastUsed,
+             "WebAuthenticationUpdateLastUsed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

@@ -80,6 +80,7 @@
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -1671,6 +1672,26 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   security_domain_service_->pretend_there_are_members();
   AddTestPasskeyToModel();
 
+  class PasskeyModelObserver : public webauthn::PasskeyModel::Observer {
+   public:
+    void OnPasskeysChanged(
+        const std::vector<webauthn::PasskeyModelChange>& changes) override {
+      for (const auto& change : changes) {
+        if (change.type() == webauthn::PasskeyModelChange::ChangeType::UPDATE) {
+          CHECK(!did_update);
+          did_update = true;
+        }
+      }
+    }
+
+    void OnPasskeyModelShuttingDown() override {}
+    void OnPasskeyModelIsReady(bool is_ready) override {}
+
+    bool did_update = false;
+  };
+  PasskeyModelObserver passkey_model_observer;
+  passkey_model()->AddObserver(&passkey_model_observer);
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -1697,11 +1718,22 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                   kSecretVersion);
   model_observer()->WaitForStep();
 
+  EXPECT_FALSE(passkey_model_observer.did_update);
   dialog_model()->OnGPMPinEntered(u"123456");
 
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+  passkey_model()->RemoveObserver(&passkey_model_observer);
+  EXPECT_TRUE(passkey_model_observer.did_update);
+  auto passkeys = passkey_model()->GetAllPasskeys();
+  ASSERT_EQ(passkeys.size(), 1u);
+  // The update time should be in the last 10 minutes.
+  EXPECT_LT((base::Time::Now() -
+             base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+                 passkeys[0].last_used_time_windows_epoch_micros())))
+                .InMinutes(),
+            10);
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,

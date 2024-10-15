@@ -133,9 +133,9 @@ class PasskeyModel : public KeyedService {
                              PasskeyUpdate change,
                              bool updated_by_user) = 0;
 
-  // Updates the `last_used_time` attribute of the passkey with the given
-  // `credential_id`. Returns true if the credential was found and updated,
-  // false otherwise.
+  // Updates the `last_used_time_windows_epoch_micros` attribute of the
+  // passkey with the given `credential_id`. Returns true if the credential was
+  // found and updated, false otherwise.
   virtual bool UpdatePasskeyTimestamp(const std::string& credential_id,
                                       base::Time last_used_time) = 0;
 

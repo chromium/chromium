@@ -1432,6 +1432,12 @@ void GPMEnclaveController::StartEnclaveTransaction(
         }
       }
       CHECK(entity);
+      if (base::FeatureList::IsEnabled(device::kWebAuthnUpdateLastUsed)) {
+        webauthn::PasskeyModel* passkey_model =
+            PasskeyModelFactory::GetInstance()->GetForProfile(GetProfile());
+        passkey_model->UpdatePasskeyTimestamp(entity->credential_id(),
+                                              base::Time::Now());
+      }
 
       if (use_unwrapped_secret) {
         std::tie(std::ignore, request->secret) =

@@ -129,6 +129,10 @@ BASE_DECLARE_FEATURE(kWebAuthniCloudKeychainPrf);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHybridLinking);
 
+// Update the "last_used" timestamp in GPM passkeys when asserted.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
