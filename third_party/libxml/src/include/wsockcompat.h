@@ -30,10 +30,6 @@
 #endif
 #endif
 
-#ifndef XML_SOCKLEN_T
-#define XML_SOCKLEN_T int
-#endif
-
 #ifndef ECONNRESET
 #define ECONNRESET WSAECONNRESET
 #endif

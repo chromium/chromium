@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "private/dict.h"
+#include "private/error.h"
 #include "private/globals.h"
 #include "private/threads.h"
 
@@ -927,10 +928,6 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
 #ifdef _WIN32
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
-#elif defined(HAVE_GETENTROPY)
-  #ifdef HAVE_UNISTD_H
-    #include <unistd.h>
-  #endif
 #endif
 #include <time.h>
 

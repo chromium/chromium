@@ -1132,7 +1132,7 @@ xmlSaveUri(xmlURIPtr uri) {
 
 
     max = 80;
-    ret = (xmlChar *) xmlMallocAtomic(max + 1);
+    ret = xmlMalloc(max + 1);
     if (ret == NULL)
 	return(NULL);
     len = 0;
@@ -1469,7 +1469,7 @@ xmlIsPathSeparator(int c, int isFile) {
     if (c == '/')
         return(1);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
     if (isFile && (c == '\\'))
         return(1);
 #endif
@@ -1511,7 +1511,7 @@ xmlNormalizePath(char *path, int isFile) {
          * Collapse multiple separators first.
          */
         while (xmlIsPathSeparator(*cur, isFile)) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
             /* Allow two separators at start of path */
             if ((isFile) && (out == path + 1))
                 *out++ = '/';
@@ -1625,7 +1625,7 @@ xmlURIUnescapeString(const char *str, int len, char *target) {
     if (len < 0) return(NULL);
 
     if (target == NULL) {
-	ret = (char *) xmlMallocAtomic(len + 1);
+	ret = xmlMalloc(len + 1);
 	if (ret == NULL)
 	    return(NULL);
     } else
@@ -1687,7 +1687,7 @@ xmlURIEscapeStr(const xmlChar *str, const xmlChar *list) {
     len = xmlStrlen(str);
 
     len += 20;
-    ret = (xmlChar *) xmlMallocAtomic(len);
+    ret = xmlMalloc(len);
     if (ret == NULL)
 	return(NULL);
     in = (const xmlChar *) str;
@@ -1876,7 +1876,7 @@ xmlIsAbsolutePath(const xmlChar *path) {
     if (xmlIsPathSeparator(c, 1))
         return(1);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
     if ((((c >= 'A') && (c <= 'Z')) ||
          ((c >= 'a') && (c <= 'z'))) &&
         (path[1] == ':'))
@@ -2018,6 +2018,18 @@ xmlBuildURISafe(const xmlChar *URI, const xmlChar *base, xmlChar **valPtr) {
 
     if (valPtr == NULL)
         return(1);
+    *valPtr = NULL;
+
+    if (URI == NULL)
+        return(1);
+
+    if (base == NULL) {
+        val = xmlStrdup(URI);
+        if (val == NULL)
+            return(-1);
+        *valPtr = val;
+        return(0);
+    }
 
     /*
      * 1) The URI reference is parsed into the potential four components and
@@ -2027,9 +2039,7 @@ xmlBuildURISafe(const xmlChar *URI, const xmlChar *base, xmlChar **valPtr) {
      *    as a reference to "." rather than as a synonym for the current
      *    URI.  Should we do that here?
      */
-    if (URI == NULL)
-        ret = 1;
-    else if (URI[0] != 0)
+    if (URI[0] != 0)
         ret = xmlParseURISafe((const char *) URI, &ref);
     else
         ret = 0;
@@ -2260,7 +2270,7 @@ xmlBuildURISafe(const xmlChar *URI, const xmlChar *base, xmlChar **valPtr) {
 	len += strlen(ref->path);
     if (bas->path != NULL)
 	len += strlen(bas->path);
-    res->path = (char *) xmlMallocAtomic(len);
+    res->path = xmlMalloc(len);
     if (res->path == NULL)
 	goto done;
     res->path[0] = 0;
@@ -2355,6 +2365,129 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
     return(out);
 }
 
+static int
+xmlParseUriOrPath(const char *str, xmlURIPtr *out, int *drive) {
+    xmlURIPtr uri;
+    char *buf = NULL;
+    int ret;
+
+    *out = NULL;
+    *drive = 0;
+
+    uri = xmlCreateURI();
+    if (uri == NULL) {
+        ret = -1;
+	goto done;
+    }
+
+    if (xmlStrstr(BAD_CAST str, BAD_CAST "://") == NULL) {
+        const char *path;
+        size_t pathSize;
+        int prependSlash = 0;
+
+        buf = xmlMemStrdup(str);
+        if (buf == NULL) {
+            ret = -1;
+            goto done;
+        }
+        xmlNormalizePath(buf, /* isFile */ 1);
+
+        path = buf;
+
+        if (xmlIsAbsolutePath(BAD_CAST buf)) {
+#if defined(_WIN32) || defined(__CYGWIN__)
+            const char *server = NULL;
+            int isFileScheme = 0;
+#endif
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+            if (strncmp(buf, "//?/UNC/", 8) == 0) {
+                server = buf + 8;
+                isFileScheme = 1;
+            } else if (strncmp(buf, "//?/", 4) == 0) {
+                path = buf + 3;
+                isFileScheme = 1;
+            } else if (strncmp(buf, "//", 2) == 0) {
+                server = buf + 2;
+                isFileScheme = 1;
+            }
+
+            if (server != NULL) {
+                const char *end = strchr(server, '/');
+
+                if (end == NULL) {
+                    uri->server = xmlMemStrdup(server);
+                    path = "/";
+                } else {
+                    uri->server = (char *) xmlStrndup(BAD_CAST server,
+                                                      end - server);
+                    path = end;
+                }
+                if (uri->server == NULL) {
+                    ret = -1;
+                    goto done;
+                }
+            }
+
+            if ((((path[0] >= 'A') && (path[0] <= 'Z')) ||
+                 ((path[0] >= 'a') && (path[0] <= 'z'))) &&
+                (path[1] == ':')) {
+                prependSlash = 1;
+                isFileScheme = 1;
+            }
+
+            if (isFileScheme) {
+                uri->scheme = xmlMemStrdup("file");
+                if (uri->scheme == NULL) {
+                    ret = -1;
+                    goto done;
+                }
+
+                if (uri->server == NULL)
+                    uri->port = PORT_EMPTY_SERVER;
+            }
+#endif
+        }
+
+        pathSize = strlen(path);
+        uri->path = xmlMalloc(pathSize + prependSlash + 1);
+        if (uri->path == NULL) {
+            ret = -1;
+            goto done;
+        }
+        if (prependSlash) {
+            uri->path[0] = '/';
+            memcpy(uri->path + 1, path, pathSize + 1);
+        } else {
+            memcpy(uri->path, path, pathSize + 1);
+        }
+    } else {
+	ret = xmlParseURIReference(uri, str);
+	if (ret != 0)
+	    goto done;
+
+        xmlNormalizePath(uri->path, /* isFile */ 0);
+    }
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+    if ((uri->path[0] == '/') &&
+        (((uri->path[1] >= 'A') && (uri->path[1] <= 'Z')) ||
+         ((uri->path[1] >= 'a') && (uri->path[1] <= 'z'))) &&
+        (uri->path[2] == ':'))
+        *drive = uri->path[1];
+#endif
+
+    *out = uri;
+    uri = NULL;
+    ret = 0;
+
+done:
+    xmlFreeURI(uri);
+    xmlFree(buf);
+
+    return(ret);
+}
+
 /**
  * xmlBuildRelativeURISafe:
  * @URI:  the URI reference under consideration
@@ -2362,12 +2495,10 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
  * @valPtr:  pointer to result URI
  *
  * Expresses the URI of the reference in terms relative to the
- * base.  Some examples of this operation include:
+ * base. Some examples of this operation include:
+ *
  *     base = "http://site1.com/docs/book1.html"
  *        URI input                        URI returned
- *     docs/pic1.gif                    pic1.gif
- *     docs/img/pic1.gif                img/pic1.gif
- *     img/pic1.gif                     ../img/pic1.gif
  *     http://site1.com/docs/pic1.gif   pic1.gif
  *     http://site2.com/docs/pic1.gif   http://site2.com/docs/pic1.gif
  *
@@ -2377,13 +2508,6 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
  *     docs/img/pic1.gif                img/pic1.gif
  *     img/pic1.gif                     ../img/pic1.gif
  *     http://site1.com/docs/pic1.gif   http://site1.com/docs/pic1.gif
- *
- *
- * Note: if the URI reference is really weird or complicated, it may be
- *       worthwhile to first convert it into a "nice" one by calling
- *       xmlBuildURI (using 'base') before calling this routine,
- *       since this routine (for reasonable efficiency) assumes URI has
- *       already been through some validation.
  *
  * Available since 2.13.0.
  *
@@ -2401,8 +2525,10 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
     int len;
     xmlURIPtr ref = NULL;
     xmlURIPtr bas = NULL;
-    xmlChar *bptr, *uptr, *vptr;
+    const xmlChar *bptr, *uptr, *rptr;
+    xmlChar *vptr;
     int remove_path = 0;
+    int refDrive, baseDrive;
 
     if (valPtr == NULL)
         return(1);
@@ -2410,65 +2536,39 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
     if ((URI == NULL) || (*URI == 0))
 	return(1);
 
-    /*
-     * First parse URI into a standard form
-     */
-    ref = xmlCreateURI ();
-    if (ref == NULL) {
-        ret = -1;
-	goto done;
-    }
-    /* If URI not already in "relative" form */
-    if (URI[0] != '.') {
-	ret = xmlParseURIReference (ref, (const char *) URI);
-	if (ret != 0)
-	    goto done;		/* Error in URI, return NULL */
-    } else {
-	ref->path = (char *)xmlStrdup(URI);
-        if (ref->path == NULL) {
-            ret = -1;
-            goto done;
-        }
-    }
-
-    /*
-     * Next parse base into the same standard form
-     */
-    if ((base == NULL) || (*base == 0)) {
-	val = xmlStrdup (URI);
+    ret = xmlParseUriOrPath((char *) URI, &ref, &refDrive);
+    if (ret < 0)
+        goto done;
+    if (ret != 0) {
+        /* Return URI if URI is invalid */
+        ret = 0;
+        val = xmlStrdup(URI);
         if (val == NULL)
             ret = -1;
-	goto done;
+        goto done;
     }
-    bas = xmlCreateURI ();
-    if (bas == NULL) {
-        ret = -1;
-	goto done;
-    }
-    if (base[0] != '.') {
-	ret = xmlParseURIReference (bas, (const char *) base);
-	if (ret != 0)
-	    goto done;		/* Error in base, return NULL */
-    } else {
-	bas->path = (char *)xmlStrdup(base);
-        if (bas->path == NULL) {
-            ret = -1;
-            goto done;
-        }
+
+    /* Return URI if base is empty */
+    if ((base == NULL) || (*base == 0))
+        goto done;
+
+    ret = xmlParseUriOrPath((char *) base, &bas, &baseDrive);
+    if (ret < 0)
+        goto done;
+    if (ret != 0) {
+        /* Return URI if base is invalid */
+        ret = 0;
+        goto done;
     }
 
     /*
      * If the scheme / server on the URI differs from the base,
      * just return the URI
      */
-    if ((ref->scheme != NULL) &&
-	((bas->scheme == NULL) ||
-	 (xmlStrcmp ((xmlChar *)bas->scheme, (xmlChar *)ref->scheme)) ||
-	 (xmlStrcmp ((xmlChar *)bas->server, (xmlChar *)ref->server)) ||
-         (bas->port != ref->port))) {
-	val = xmlStrdup (URI);
-        if (val == NULL)
-            ret = -1;
+    if ((xmlStrcmp ((xmlChar *)bas->scheme, (xmlChar *)ref->scheme)) ||
+	(xmlStrcmp ((xmlChar *)bas->server, (xmlChar *)ref->server)) ||
+        (bas->port != ref->port) ||
+        (baseDrive != refDrive)) {
 	goto done;
     }
     if (xmlStrEqual((xmlChar *)bas->path, (xmlChar *)ref->path)) {
@@ -2479,35 +2579,35 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
     }
     if (bas->path == NULL) {
 	val = xmlStrdup((xmlChar *)ref->path);
-        if (val == NULL)
+        if (val == NULL) {
             ret = -1;
-	goto done;
+            goto done;
+        }
+	goto escape;
     }
     if (ref->path == NULL) {
         ref->path = (char *) "/";
 	remove_path = 1;
     }
 
+    bptr = (xmlChar *) bas->path;
+    rptr = (xmlChar *) ref->path;
+
     /*
-     * At this point (at last!) we can compare the two paths
-     *
-     * First we take care of the special case where either of the
-     * two path components may be missing (bug 316224)
+     * Return URI if URI and base aren't both absolute or relative.
      */
-    bptr = (xmlChar *)bas->path;
+    if ((bptr[0] == '/') != (rptr[0] == '/'))
+        goto done;
+
+    /*
+     * At this point we can compare the two paths
+     */
     {
-        xmlChar *rptr = (xmlChar *) ref->path;
         int pos = 0;
 
         /*
          * Next we compare the two strings and find where they first differ
          */
-	if ((*rptr == '.') && (rptr[1] == '/'))
-            rptr += 2;
-	if ((*bptr == '.') && (bptr[1] == '/'))
-            bptr += 2;
-	else if ((*bptr == '/') && (*rptr != '/'))
-	    bptr++;
 	while ((bptr[pos] == rptr[pos]) && (bptr[pos] != 0))
 	    pos++;
 
@@ -2595,9 +2695,10 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
 	vptr[len - 1] = 0;
     }
 
+escape:
     /* escape the freshly-built path */
     vptr = val;
-	/* exception characters from xmlSaveUri */
+    /* exception characters from xmlSaveUri */
     val = xmlURIEscapeStr(vptr, BAD_CAST "/;&=+$,");
     if (val == NULL)
         ret = -1;
@@ -2606,6 +2707,12 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
     xmlFree(vptr);
 
 done:
+    if ((ret == 0) && (val == NULL)) {
+        val = xmlSaveUri(ref);
+        if (val == NULL)
+            ret = -1;
+    }
+
     /*
      * Free the working variables
      */

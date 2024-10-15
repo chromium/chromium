@@ -1,5 +1,37 @@
 NEWS file for libxml2
 
+v2.14.0: not released yet
+
+Input callbacks can now be set on a parser context and an improved API
+to create parser input is available.
+
+A new API function xmlCtxtParseContent to parse XML content using an
+existing parser context was added.
+
+The xmlSave API now has additional options to replace global settings.
+
+Parser options XML_PARSE_NO_UNZIP, XML_PARSE_NO_SYS_CATALOG and
+XML_PARSE_NO_CATALOG_PI were added.
+
+The serialization API will now take a user-provided or default encodings
+into account when serializing attribute values, matching the
+serialization of text and avoiding unnecessary escaping.
+
+Access to many public struct members is now deprecated. Several accessor
+functions were added.
+
+The FTP module and related functions were removed.
+
+Support for the range and point extensions of the xpointer() scheme
+were removed. The rest of the XPointer implementation isn't affected.
+The xpointer() scheme now behaves like the xpath1() scheme.
+
+Several legacy functions were removed from the header files.
+
+The shell was moved from libxml2 to xmllint. Several related functions
+are no longer available.
+
+
 v2.13.0: Jun 12 2024
 
 ### Major changes
@@ -26,12 +58,16 @@ XML_PARSE_NOENT.
 Support for HTTP POST was removed.
 
 Support for zlib, liblzma and HTTP is now disabled by default and has
-to be enabled by passing --with-zlib, --with-lzma or --with-html to
+to be enabled by passing --with-zlib, --with-lzma or --with-http to
 configure. In legacy mode (--with-legacy) these options are enabled
 by default as before.
 
-Support for FTP and xpointer() XPath extensions will be removed in
-the next release.
+Support for FTP will be removed in the next release.
+
+Support for the range and point extensions of the xpointer() scheme
+will be removed in the next release. The rest of the XPointer
+implementation won't be affected. The xpointer() scheme will behave
+like the xpath1() scheme.
 
 Several more legacy symbols were deprecated. Users of the old "SAX1"
 API functions are encouraged to upgrade to the new "SAX2" API,

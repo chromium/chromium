@@ -6,7 +6,7 @@
  * daniel@veillard.com
  */
 
-#include "config.h"
+#include "libxml.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -122,14 +122,14 @@ testResourceLoader(void *vctxt ATTRIBUTE_UNUSED, const char *URL,
 
     for (i = 0; i < nb_entities; i++) {
         if (!strcmp(testEntitiesName[i], URL)) {
-	    *out = xmlInputCreateString(testEntitiesName[i],
+	    *out = xmlNewInputFromString(testEntitiesName[i],
                                         testEntitiesValue[i],
                                         XML_INPUT_BUF_STATIC);
 	    return(XML_ERR_OK);
 	}
     }
 
-    return(xmlInputCreateUrl(URL, 0, out));
+    return(xmlNewInputFromUrl(URL, 0, out));
 }
 
 /*
@@ -302,7 +302,8 @@ xsdIncorrectTestCase(xmlNodePtr cur) {
     }
     xmlBufferSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlNodeDump(buf, test->doc, test, 0, 0);
-    pctxt = xmlRelaxNGNewMemParserCtxt((const char *)buf->content, buf->use);
+    pctxt = xmlRelaxNGNewMemParserCtxt(
+            (const char *) xmlBufferContent(buf), xmlBufferLength(buf));
     xmlRelaxNGSetParserErrors(pctxt, testErrorHandler, testErrorHandler,
             pctxt);
     xmlRelaxNGSetResourceLoader(pctxt, testResourceLoader, NULL);
@@ -349,7 +350,7 @@ installResources(xmlNodePtr tst, const xmlChar *base) {
 	    xmlBufferEmpty(buf);
 	    xmlNodeDump(buf, test->doc, test, 0, 0);
 	    name = getString(tst, "string(@name)");
-	    content = xmlStrdup(buf->content);
+	    content = xmlStrdup(xmlBufferContent(buf));
 	    if ((name != NULL) && (content != NULL)) {
 	        res = composeDir(base, name);
 		xmlFree(name);
@@ -437,7 +438,8 @@ xsdTestCase(xmlNodePtr tst) {
     }
     xmlBufferSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlNodeDump(buf, test->doc, test, 0, 0);
-    pctxt = xmlRelaxNGNewMemParserCtxt((const char *)buf->content, buf->use);
+    pctxt = xmlRelaxNGNewMemParserCtxt(
+            (const char *) xmlBufferContent(buf), xmlBufferLength(buf));
     xmlRelaxNGSetParserErrors(pctxt, testErrorHandler, testErrorHandler,
             pctxt);
     xmlRelaxNGSetResourceLoader(pctxt, testResourceLoader, NULL);
@@ -472,8 +474,8 @@ xsdTestCase(xmlNodePtr tst) {
 	     * We are ready to run the test
 	     */
 	    mem = xmlMemUsed();
-            doc = xmlReadMemory((const char *)buf->content, buf->use,
-	                        "test", NULL, 0);
+            doc = xmlReadMemory((const char *) xmlBufferContent(buf),
+                                xmlBufferLength(buf), "test", NULL, 0);
 	    if (doc == NULL) {
 		test_log("Failed to parse valid instance line %ld\n",
 			xmlGetLineNo(tmp));
@@ -525,8 +527,8 @@ xsdTestCase(xmlNodePtr tst) {
 	     * We are ready to run the test
 	     */
 	    mem = xmlMemUsed();
-            doc = xmlReadMemory((const char *)buf->content, buf->use,
-	                        "test", NULL, 0);
+            doc = xmlReadMemory((const char *) xmlBufferContent(buf),
+                                xmlBufferLength(buf), "test", NULL, 0);
 	    if (doc == NULL) {
 		test_log("Failed to parse valid instance line %ld\n",
 			xmlGetLineNo(tmp));
@@ -1008,7 +1010,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     int ret = 0;
     int old_errors, old_tests, old_leaks, expected_errors;
 
-    logfile = fopen(LOGFILE, "w");
+    logfile = fopen(LOGFILE, "wb");
     if (logfile == NULL) {
         fprintf(stderr,
 	        "Could not open the log file, running in verbose mode\n");

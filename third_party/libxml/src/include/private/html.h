@@ -5,8 +5,8 @@
 
 #ifdef LIBXML_HTML_ENABLED
 
-XML_HIDDEN void
-__htmlParseContent(void *ctx);
+XML_HIDDEN xmlNodePtr
+htmlCtxtParseContentInternal(xmlParserCtxtPtr ctxt, xmlParserInputPtr input);
 
 #endif /* LIBXML_HTML_ENABLED */
 

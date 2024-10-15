@@ -259,7 +259,7 @@ xmlTextReaderFreeProp(xmlTextReaderPtr reader, xmlAttrPtr cur) {
         dict = NULL;
     if (cur == NULL) return;
 
-    if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
+    if ((xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 	xmlDeregisterNodeDefaultValue((xmlNodePtr) cur);
 
     if (cur->children != NULL)
@@ -350,7 +350,7 @@ xmlTextReaderFreeNodeList(xmlTextReaderPtr reader, xmlNodePtr cur) {
 	/* unroll to speed up freeing the document */
 	if (cur->type != XML_DTD_NODE) {
 
-	    if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
+	    if ((xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 		xmlDeregisterNodeDefaultValue(cur);
 
 	    if (((cur->type == XML_ELEMENT_NODE) ||
@@ -437,7 +437,7 @@ xmlTextReaderFreeNode(xmlTextReaderPtr reader, xmlNodePtr cur) {
 	cur->children = NULL;
     }
 
-    if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
+    if ((xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 	xmlDeregisterNodeDefaultValue(cur);
 
     if (((cur->type == XML_ELEMENT_NODE) ||
@@ -490,7 +490,7 @@ xmlTextReaderFreeDoc(xmlTextReaderPtr reader, xmlDocPtr cur) {
 
     if (cur == NULL) return;
 
-    if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
+    if ((xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 	xmlDeregisterNodeDefaultValue((xmlNodePtr) cur);
 
     /*
@@ -836,15 +836,12 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
      * Discard the consumed input when needed and possible
      */
     if (reader->mode == XML_TEXTREADER_MODE_INTERACTIVE) {
-        if (reader->input->readcallback != NULL) {
-	    if ((reader->cur >= 4096) &&
-		(xmlBufUse(inbuf) - reader->cur <= CHUNK_SIZE)) {
-		val = xmlBufShrink(inbuf, reader->cur);
-		if (val >= 0) {
-		    reader->cur -= val;
-		}
-	    }
-	}
+        if (reader->cur > 80 /* LINE_LEN */) {
+            val = xmlBufShrink(inbuf, reader->cur - 80);
+            if (val >= 0) {
+                reader->cur -= val;
+            }
+        }
     }
 
     /*
@@ -1754,7 +1751,10 @@ xmlTextReaderReadString(xmlTextReaderPtr reader)
     switch (node->type) {
         case XML_TEXT_NODE:
         case XML_CDATA_SECTION_NODE:
+            break;
         case XML_ELEMENT_NODE:
+            if (xmlTextReaderDoExpand(reader) == -1)
+                return(NULL);
             break;
         case XML_ATTRIBUTE_NODE:
             /* TODO */
@@ -1763,12 +1763,11 @@ xmlTextReaderReadString(xmlTextReaderPtr reader)
             break;
     }
 
-    buf = xmlBufCreateSize(30);
+    buf = xmlBufCreate(50);
     if (buf == NULL) {
         xmlTextReaderErrMemory(reader);
         return(NULL);
     }
-    xmlBufSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
 
     cur = node;
     while (cur != NULL) {
@@ -1808,66 +1807,6 @@ done:
     xmlBufFree(buf);
     return(ret);
 }
-
-#if 0
-/**
- * xmlTextReaderReadBase64:
- * @reader:  the xmlTextReaderPtr used
- * @array:  a byte array to store the content.
- * @offset:  the zero-based index into array where the method should
- *           begin to write.
- * @len:  the number of bytes to write.
- *
- * Reads and decodes the Base64 encoded contents of an element and
- * stores the result in a byte buffer.
- *
- * Returns the number of bytes written to array, or zero if the current
- *         instance is not positioned on an element or -1 in case of error.
- */
-int
-xmlTextReaderReadBase64(xmlTextReaderPtr reader,
-                        unsigned char *array ATTRIBUTE_UNUSED,
-	                int offset ATTRIBUTE_UNUSED,
-			int len ATTRIBUTE_UNUSED) {
-    if ((reader == NULL) || (reader->ctxt == NULL))
-	return(-1);
-    if (reader->ctxt->wellFormed != 1)
-	return(-1);
-
-    if ((reader->node == NULL) || (reader->node->type == XML_ELEMENT_NODE))
-	return(0);
-    return(0);
-}
-
-/**
- * xmlTextReaderReadBinHex:
- * @reader:  the xmlTextReaderPtr used
- * @array:  a byte array to store the content.
- * @offset:  the zero-based index into array where the method should
- *           begin to write.
- * @len:  the number of bytes to write.
- *
- * Reads and decodes the BinHex encoded contents of an element and
- * stores the result in a byte buffer.
- *
- * Returns the number of bytes written to array, or zero if the current
- *         instance is not positioned on an element or -1 in case of error.
- */
-int
-xmlTextReaderReadBinHex(xmlTextReaderPtr reader,
-                        unsigned char *array ATTRIBUTE_UNUSED,
-	                int offset ATTRIBUTE_UNUSED,
-			int len ATTRIBUTE_UNUSED) {
-    if ((reader == NULL) || (reader->ctxt == NULL))
-	return(-1);
-    if (reader->ctxt->wellFormed != 1)
-	return(-1);
-
-    if ((reader->node == NULL) || (reader->node->type == XML_ELEMENT_NODE))
-	return(0);
-    return(0);
-}
-#endif
 
 /************************************************************************
  *									*
@@ -2072,14 +2011,11 @@ xmlNewTextReader(xmlParserInputBufferPtr input, const char *URI) {
     ret->entMax = 0;
     ret->entNr = 0;
     ret->input = input;
-    ret->buffer = xmlBufCreateSize(100);
+    ret->buffer = xmlBufCreate(50);
     if (ret->buffer == NULL) {
         xmlFree(ret);
 	return(NULL);
     }
-    /* no operation on a reader should require a huge buffer */
-    xmlBufSetAllocationScheme(ret->buffer,
-			      XML_BUFFER_ALLOC_DOUBLEIT);
     ret->sax = (xmlSAXHandler *) xmlMalloc(sizeof(xmlSAXHandler));
     if (ret->sax == NULL) {
 	xmlBufFree(ret->buffer);
@@ -2343,6 +2279,8 @@ xmlTextReaderGetAttributeNo(xmlTextReaderPtr reader, int no) {
     }
     /* TODO walk the DTD if present */
 
+    if (cur->children == NULL)
+        return(NULL);
     ret = xmlNodeListGetString(reader->node->doc, cur->children, 1);
     if (ret == NULL)
         xmlTextReaderErrMemory(reader);
@@ -3588,6 +3526,8 @@ xmlTextReaderValue(xmlTextReaderPtr reader) {
             xmlDocPtr doc = NULL;
             xmlChar *ret;
 
+            if (attr->children == NULL)
+                return(NULL);
 	    if (attr->parent != NULL)
                 doc = attr->parent->doc;
 	    ret = xmlNodeListGetString(doc, attr->children, 1);
@@ -3640,11 +3580,9 @@ xmlTextReaderConstValue(xmlTextReaderPtr reader) {
 		return(attr->children->content);
 	    else {
 		if (reader->buffer == NULL) {
-		    reader->buffer = xmlBufCreateSize(100);
+		    reader->buffer = xmlBufCreate(50);
                     if (reader->buffer == NULL)
                         return (NULL);
-		    xmlBufSetAllocationScheme(reader->buffer,
-		                              XML_BUFFER_ALLOC_DOUBLEIT);
                 } else
                     xmlBufEmpty(reader->buffer);
 	        xmlBufGetNodeContent(reader->buffer, node);
@@ -3653,9 +3591,7 @@ xmlTextReaderConstValue(xmlTextReaderPtr reader) {
                     xmlTextReaderErrMemory(reader);
 		    /* error on the buffer best to reallocate */
 		    xmlBufFree(reader->buffer);
-		    reader->buffer = xmlBufCreateSize(100);
-		    xmlBufSetAllocationScheme(reader->buffer,
-		                              XML_BUFFER_ALLOC_DOUBLEIT);
+		    reader->buffer = xmlBufCreate(50);
 		}
 		return(ret);
 	    }
@@ -4905,13 +4841,10 @@ xmlTextReaderSetup(xmlTextReaderPtr reader,
 	reader->allocs |= XML_TEXTREADER_INPUT;
     }
     if (reader->buffer == NULL)
-        reader->buffer = xmlBufCreateSize(100);
+        reader->buffer = xmlBufCreate(50);
     if (reader->buffer == NULL) {
         return (-1);
     }
-    /* no operation on a reader should require a huge buffer */
-    xmlBufSetAllocationScheme(reader->buffer,
-			      XML_BUFFER_ALLOC_DOUBLEIT);
     if (reader->sax == NULL)
 	reader->sax = (xmlSAXHandler *) xmlMalloc(sizeof(xmlSAXHandler));
     if (reader->sax == NULL) {
@@ -4985,7 +4918,10 @@ xmlTextReaderSetup(xmlTextReaderPtr reader,
 	    inputStream->buf = buf;
             xmlBufResetInput(buf->buffer, inputStream);
 
-	    inputPush(reader->ctxt, inputStream);
+            if (inputPush(reader->ctxt, inputStream) < 0) {
+                xmlFreeInputStream(inputStream);
+                return(-1);
+            }
 	    reader->cur = 0;
 	}
     }
@@ -5092,6 +5028,10 @@ xmlTextReaderGetLastError(xmlTextReaderPtr reader)
  * xmlTextReaderByteConsumed:
  * @reader: an XML reader
  *
+ * DEPRECATED: The returned value is mostly random and useless.
+ * It reflects the parser reading ahead and is in no way related to
+ * the current node.
+ *
  * This function provides the current index of the parser used
  * by the reader, relative to the start of the current entity.
  * This function actually just wraps a call to xmlBytesConsumed()
@@ -5103,9 +5043,14 @@ xmlTextReaderGetLastError(xmlTextReaderPtr reader)
  */
 long
 xmlTextReaderByteConsumed(xmlTextReaderPtr reader) {
+    xmlParserInputPtr in;
+
     if ((reader == NULL) || (reader->ctxt == NULL))
         return(-1);
-    return(xmlByteConsumed(reader->ctxt));
+    in = reader->ctxt->input;
+    if (in == NULL)
+        return(-1);
+    return(in->consumed + (in->cur - in->base));
 }
 
 
@@ -5531,214 +5476,5 @@ xmlReaderNewIO(xmlTextReaderPtr reader, xmlInputReadCallback ioread,
     }
     return (xmlTextReaderSetup(reader, input, URL, encoding, options));
 }
-
-/************************************************************************
- *									*
- *			Utilities					*
- *									*
- ************************************************************************/
-#ifdef NOT_USED_YET
-
-/**
- * xmlBase64Decode:
- * @in:  the input buffer
- * @inlen:  the size of the input (in), the size read from it (out)
- * @to:  the output buffer
- * @tolen:  the size of the output (in), the size written to (out)
- *
- * Base64 decoder, reads from @in and save in @to
- * TODO: tell jody when this is actually exported
- *
- * Returns 0 if all the input was consumer, 1 if the Base64 end was reached,
- *         2 if there wasn't enough space on the output or -1 in case of error.
- */
-static int
-xmlBase64Decode(const unsigned char *in, unsigned long *inlen,
-                unsigned char *to, unsigned long *tolen)
-{
-    unsigned long incur;        /* current index in in[] */
-
-    unsigned long inblk;        /* last block index in in[] */
-
-    unsigned long outcur;       /* current index in out[] */
-
-    unsigned long inmax;        /* size of in[] */
-
-    unsigned long outmax;       /* size of out[] */
-
-    unsigned char cur;          /* the current value read from in[] */
-
-    unsigned char intmp[4], outtmp[4];  /* temporary buffers for the convert */
-
-    int nbintmp;                /* number of byte in intmp[] */
-
-    int is_ignore;              /* cur should be ignored */
-
-    int is_end = 0;             /* the end of the base64 was found */
-
-    int retval = 1;
-
-    int i;
-
-    if ((in == NULL) || (inlen == NULL) || (to == NULL) || (tolen == NULL))
-        return (-1);
-
-    incur = 0;
-    inblk = 0;
-    outcur = 0;
-    inmax = *inlen;
-    outmax = *tolen;
-    nbintmp = 0;
-
-    while (1) {
-        if (incur >= inmax)
-            break;
-        cur = in[incur++];
-        is_ignore = 0;
-        if ((cur >= 'A') && (cur <= 'Z'))
-            cur = cur - 'A';
-        else if ((cur >= 'a') && (cur <= 'z'))
-            cur = cur - 'a' + 26;
-        else if ((cur >= '0') && (cur <= '9'))
-            cur = cur - '0' + 52;
-        else if (cur == '+')
-            cur = 62;
-        else if (cur == '/')
-            cur = 63;
-        else if (cur == '.')
-            cur = 0;
-        else if (cur == '=')    /*no op , end of the base64 stream */
-            is_end = 1;
-        else {
-            is_ignore = 1;
-            if (nbintmp == 0)
-                inblk = incur;
-        }
-
-        if (!is_ignore) {
-            int nbouttmp = 3;
-
-            int is_break = 0;
-
-            if (is_end) {
-                if (nbintmp == 0)
-                    break;
-                if ((nbintmp == 1) || (nbintmp == 2))
-                    nbouttmp = 1;
-                else
-                    nbouttmp = 2;
-                nbintmp = 3;
-                is_break = 1;
-            }
-            intmp[nbintmp++] = cur;
-            /*
-             * if intmp is full, push the 4byte sequence as a 3 byte
-             * sequence out
-             */
-            if (nbintmp == 4) {
-                nbintmp = 0;
-                outtmp[0] = (intmp[0] << 2) | ((intmp[1] & 0x30) >> 4);
-                outtmp[1] =
-                    ((intmp[1] & 0x0F) << 4) | ((intmp[2] & 0x3C) >> 2);
-                outtmp[2] = ((intmp[2] & 0x03) << 6) | (intmp[3] & 0x3F);
-                if (outcur + 3 >= outmax) {
-                    retval = 2;
-                    break;
-                }
-
-                for (i = 0; i < nbouttmp; i++)
-                    to[outcur++] = outtmp[i];
-                inblk = incur;
-            }
-
-            if (is_break) {
-                retval = 0;
-                break;
-            }
-        }
-    }
-
-    *tolen = outcur;
-    *inlen = inblk;
-    return (retval);
-}
-
-/*
- * Test routine for the xmlBase64Decode function
- */
-#if 0
-int
-main(int argc, char **argv)
-{
-    char *input = "  VW4 gcGV0        \n      aXQgdGVzdCAuCg== ";
-
-    char output[100];
-
-    char output2[100];
-
-    char output3[100];
-
-    unsigned long inlen = strlen(input);
-
-    unsigned long outlen = 100;
-
-    int ret;
-
-    unsigned long cons, tmp, tmp2, prod;
-
-    /*
-     * Direct
-     */
-    ret = xmlBase64Decode(input, &inlen, output, &outlen);
-
-    output[outlen] = 0;
-    printf("ret: %d, inlen: %ld , outlen: %ld, output: '%s'\n", ret, inlen,
-           outlen, output)indent: Standard input:179: Error:Unmatched #endif
-;
-
-    /*
-     * output chunking
-     */
-    cons = 0;
-    prod = 0;
-    while (cons < inlen) {
-        tmp = 5;
-        tmp2 = inlen - cons;
-
-        printf("%ld %ld\n", cons, prod);
-        ret = xmlBase64Decode(&input[cons], &tmp2, &output2[prod], &tmp);
-        cons += tmp2;
-        prod += tmp;
-        printf("%ld %ld\n", cons, prod);
-    }
-    output2[outlen] = 0;
-    printf("ret: %d, cons: %ld , prod: %ld, output: '%s'\n", ret, cons,
-           prod, output2);
-
-    /*
-     * input chunking
-     */
-    cons = 0;
-    prod = 0;
-    while (cons < inlen) {
-        tmp = 100 - prod;
-        tmp2 = inlen - cons;
-        if (tmp2 > 5)
-            tmp2 = 5;
-
-        printf("%ld %ld\n", cons, prod);
-        ret = xmlBase64Decode(&input[cons], &tmp2, &output3[prod], &tmp);
-        cons += tmp2;
-        prod += tmp;
-        printf("%ld %ld\n", cons, prod);
-    }
-    output3[outlen] = 0;
-    printf("ret: %d, cons: %ld , prod: %ld, output: '%s'\n", ret, cons,
-           prod, output3);
-    return (0);
-
-}
-#endif
-#endif /* NOT_USED_YET */
 
 #endif /* LIBXML_READER_ENABLED */

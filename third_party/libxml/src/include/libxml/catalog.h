@@ -161,6 +161,7 @@ XMLPUBFUN xmlChar *
  */
 XMLPUBFUN int
 		xmlCatalogSetDebug	(int level);
+XML_DEPRECATED
 XMLPUBFUN xmlCatalogPrefer
 		xmlCatalogSetDefaultPrefer(xmlCatalogPrefer prefer);
 XMLPUBFUN void

@@ -41,12 +41,6 @@
  * Attributes
  */
 
-#if __GNUC__ * 100 + __GNUC_MINOR__ >= 207
-  #define ATTRIBUTE_UNUSED __attribute__((unused))
-#else
-  #define ATTRIBUTE_UNUSED
-#endif
-
 #if !defined(__clang__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 403)
   #define LIBXML_ATTR_ALLOC_SIZE(x) __attribute__((alloc_size(x)))
 #else
@@ -65,11 +59,21 @@
     #define XML_DEPRECATED
   #elif __GNUC__ * 100 + __GNUC_MINOR__ >= 301
     #define XML_DEPRECATED __attribute__((deprecated))
-  #elif _MSC_VER >= 1400
+  #elif defined(_MSC_VER) && _MSC_VER >= 1400
     /* Available since Visual Studio 2005 */
     #define XML_DEPRECATED __declspec(deprecated)
   #else
     #define XML_DEPRECATED
+  #endif
+#endif
+
+#ifndef XML_DEPRECATED_MEMBER
+  #if defined(IN_LIBXML)
+    #define XML_DEPRECATED_MEMBER
+  #elif __GNUC__ * 100 + __GNUC_MINOR__ >= 301
+    #define XML_DEPRECATED_MEMBER __attribute__((deprecated))
+  #else
+    #define XML_DEPRECATED_MEMBER
   #endif
 #endif
 
@@ -98,7 +102,7 @@
   #define XML_POP_WARNINGS \
     _Pragma("GCC diagnostic pop")
 
-#elif _MSC_VER >= 1400
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
 
   #define XML_IGNORE_FPTR_CAST_WARNINGS __pragma(warning(push))
   #define XML_POP_WARNINGS __pragma(warning(pop))

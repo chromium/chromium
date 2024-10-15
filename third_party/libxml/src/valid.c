@@ -119,7 +119,7 @@ xmlErrValid(xmlValidCtxtPtr ctxt, xmlParserErrors error,
                   NULL, NULL, 0, msg, extra);
 }
 
-#if defined(LIBXML_VALID_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
+#ifdef LIBXML_VALID_ENABLED
 /**
  * xmlErrValidNode:
  * @ctxt:  an XML validation parser context
@@ -140,9 +140,7 @@ xmlErrValidNode(xmlValidCtxtPtr ctxt,
     xmlDoErrValid(ctxt, node, error, XML_ERR_ERROR, str1, str2, str3, 0,
                   msg, str1, str2, str3);
 }
-#endif /* LIBXML_VALID_ENABLED or LIBXML_SCHEMAS_ENABLED */
 
-#ifdef LIBXML_VALID_ENABLED
 /**
  * xmlErrValidNodeNr:
  * @ctxt:  an XML validation parser context
@@ -675,7 +673,8 @@ done:
 xmlValidCtxtPtr xmlNewValidCtxt(void) {
     xmlValidCtxtPtr ret;
 
-    if ((ret = xmlMalloc(sizeof (xmlValidCtxt))) == NULL)
+    ret = xmlMalloc(sizeof (xmlValidCtxt));
+    if (ret == NULL)
 	return (NULL);
 
     (void) memset(ret, 0, sizeof (xmlValidCtxt));
@@ -1353,7 +1352,6 @@ xmlFreeElementTable(xmlElementTablePtr table) {
     xmlHashFree(table, xmlFreeElementTableEntry);
 }
 
-#ifdef LIBXML_TREE_ENABLED
 /**
  * xmlCopyElement:
  * @elem:  An element
@@ -1409,7 +1407,6 @@ xmlElementTablePtr
 xmlCopyElementTable(xmlElementTablePtr table) {
     return(xmlHashCopySafe(table, xmlCopyElement, xmlFreeElementTableEntry));
 }
-#endif /* LIBXML_TREE_ENABLED */
 
 #ifdef LIBXML_OUTPUT_ENABLED
 /**
@@ -1519,7 +1516,6 @@ xmlFreeEnumeration(xmlEnumerationPtr cur) {
     }
 }
 
-#ifdef LIBXML_TREE_ENABLED
 /**
  * xmlCopyEnumeration:
  * @cur:  the tree to copy.
@@ -1554,7 +1550,6 @@ xmlCopyEnumeration(xmlEnumerationPtr cur) {
 
     return(ret);
 }
-#endif /* LIBXML_TREE_ENABLED */
 
 #ifdef LIBXML_VALID_ENABLED
 /**
@@ -1892,7 +1887,6 @@ xmlFreeAttributeTable(xmlAttributeTablePtr table) {
     xmlHashFree(table, xmlFreeAttributeTableEntry);
 }
 
-#ifdef LIBXML_TREE_ENABLED
 /**
  * xmlCopyAttribute:
  * @attr:  An attribute
@@ -1958,7 +1952,6 @@ xmlCopyAttributeTable(xmlAttributeTablePtr table) {
     return(xmlHashCopySafe(table, xmlCopyAttribute,
                            xmlFreeAttributeTableEntry));
 }
-#endif /* LIBXML_TREE_ENABLED */
 
 #ifdef LIBXML_OUTPUT_ENABLED
 /**
@@ -2150,7 +2143,6 @@ xmlFreeNotationTable(xmlNotationTablePtr table) {
     xmlHashFree(table, xmlFreeNotationTableEntry);
 }
 
-#ifdef LIBXML_TREE_ENABLED
 /**
  * xmlCopyNotation:
  * @nota:  A notation
@@ -2202,7 +2194,6 @@ xmlNotationTablePtr
 xmlCopyNotationTable(xmlNotationTablePtr table) {
     return(xmlHashCopySafe(table, xmlCopyNotation, xmlFreeNotationTableEntry));
 }
-#endif /* LIBXML_TREE_ENABLED */
 
 #ifdef LIBXML_OUTPUT_ENABLED
 /**
@@ -2336,9 +2327,6 @@ xmlAddIDInternal(xmlAttrPtr attr, const xmlChar *value, xmlIDPtr *idPtr) {
     if (doc == NULL)
         return(0);
 
-    if (attr->id != NULL)
-        xmlRemoveID(doc, attr);
-
     /*
      * Create the ID table if needed.
      */
@@ -2349,14 +2337,8 @@ xmlAddIDInternal(xmlAttrPtr attr, const xmlChar *value, xmlIDPtr *idPtr) {
             return(-1);
     } else {
         id = xmlHashLookup(table, value);
-        if (id != NULL) {
-            if (id->attr != NULL) {
-                id->attr->id = NULL;
-                id->attr->atype = 0;
-            }
-            ret = 0;
-            goto done;
-        }
+        if (id != NULL)
+            return(0);
     }
 
     id = (xmlIDPtr) xmlMalloc(sizeof(xmlID));
@@ -2374,6 +2356,9 @@ xmlAddIDInternal(xmlAttrPtr attr, const xmlChar *value, xmlIDPtr *idPtr) {
         return(-1);
     }
 
+    if (attr->id != NULL)
+        xmlRemoveID(doc, attr);
+
     if (xmlHashAddEntry(table, value, id) < 0) {
 	xmlFreeID(id);
 	return(-1);
@@ -2383,7 +2368,6 @@ xmlAddIDInternal(xmlAttrPtr attr, const xmlChar *value, xmlIDPtr *idPtr) {
     if (idPtr != NULL)
         *idPtr = id;
 
-done:
     id->attr = attr;
     id->lineno = xmlGetLineNo(attr->parent);
     attr->atype = XML_ATTRIBUTE_ID;
@@ -2762,10 +2746,12 @@ xmlAddRef(xmlValidCtxtPtr ctxt, xmlDocPtr doc, const xmlChar *value,
      * Return the ref
      */
 
-    if (NULL == (ref_list = xmlHashLookup(table, value))) {
+    ref_list = xmlHashLookup(table, value);
+    if (ref_list == NULL) {
         int res;
 
-        if (NULL == (ref_list = xmlListCreate(xmlFreeRef, xmlDummyCompare)))
+        ref_list = xmlListCreate(xmlFreeRef, xmlDummyCompare);
+        if (ref_list == NULL)
 	    goto failed;
         res = xmlHashAdd(table, value, ref_list);
         if (res <= 0) {
@@ -3157,7 +3143,7 @@ xmlGetDtdNotationDesc(xmlDtdPtr dtd, const xmlChar *name) {
     return(xmlHashLookup(table, name));
 }
 
-#if defined(LIBXML_VALID_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
+#ifdef LIBXML_VALID_ENABLED
 /**
  * xmlValidateNotationUse:
  * @ctxt:  the validation context
@@ -3183,7 +3169,7 @@ xmlValidateNotationUse(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
     if ((notaDecl == NULL) && (doc->extSubset != NULL))
 	notaDecl = xmlGetDtdNotationDesc(doc->extSubset, notationName);
 
-    if ((notaDecl == NULL) && (ctxt != NULL)) {
+    if (notaDecl == NULL) {
 	xmlErrValidNode(ctxt, (xmlNodePtr) doc, XML_DTD_UNKNOWN_NOTATION,
 	                "NOTATION %s is not declared\n",
 		        notationName, NULL, NULL);
@@ -3191,7 +3177,7 @@ xmlValidateNotationUse(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
     }
     return(1);
 }
-#endif /* LIBXML_VALID_ENABLED or LIBXML_SCHEMAS_ENABLED */
+#endif /* LIBXML_VALID_ENABLED */
 
 /**
  * xmlIsMixedElement:
@@ -4115,13 +4101,6 @@ xmlValidateElementDecl(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 
     if (elem == NULL) return(1);
 
-#if 0
-#ifdef LIBXML_REGEXP_ENABLED
-    /* Build the regexp associated to the content model */
-    ret = xmlValidBuildContentModel(ctxt, elem);
-#endif
-#endif
-
     /* No Duplicate Types */
     if (elem->etype == XML_ELEMENT_TYPE_MIXED) {
 	xmlElementContentPtr cur, next;
@@ -4512,25 +4491,6 @@ xmlNodePtr elem, const xmlChar *prefix, xmlNsPtr ns, const xmlChar *value) {
 	    ret = 0;
 	}
     }
-
-    /*
-     * Casting ns to xmlAttrPtr is wrong. We'd need separate functions
-     * xmlAddID and xmlAddRef for namespace declarations, but it makes
-     * no practical sense to use ID types anyway.
-     */
-#if 0
-    /* Validity Constraint: ID uniqueness */
-    if (attrDecl->atype == XML_ATTRIBUTE_ID) {
-        if (xmlAddID(ctxt, doc, value, (xmlAttrPtr) ns) == NULL)
-	    ret = 0;
-    }
-
-    if ((attrDecl->atype == XML_ATTRIBUTE_IDREF) ||
-	(attrDecl->atype == XML_ATTRIBUTE_IDREFS)) {
-        if (xmlAddRef(ctxt, doc, value, (xmlAttrPtr) ns) == NULL)
-	    ret = 0;
-    }
-#endif
 
     /* Validity Constraint: Notation Attributes */
     if (attrDecl->atype == XML_ATTRIBUTE_NOTATION) {
@@ -5589,7 +5549,7 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 
     if (ctxt == NULL)
         return(0);
-/* printf("PushElem %s\n", qname); */
+
     if ((ctxt->vstateNr > 0) && (ctxt->vstate != NULL)) {
 	xmlValidStatePtr state = ctxt->vstate;
 	xmlElementPtr elemDecl;
@@ -5683,7 +5643,6 @@ int
 xmlValidatePushCData(xmlValidCtxtPtr ctxt, const xmlChar *data, int len) {
     int ret = 1;
 
-/* printf("CDATA %s %d\n", data, len); */
     if (ctxt == NULL)
         return(0);
     if (len <= 0)
@@ -5762,7 +5721,7 @@ xmlValidatePopElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc ATTRIBUTE_UNUSED,
 
     if (ctxt == NULL)
         return(0);
-/* printf("PopElem %s\n", qname); */
+
     if ((ctxt->vstateNr > 0) && (ctxt->vstate != NULL)) {
 	xmlValidStatePtr state = ctxt->vstate;
 	xmlElementPtr elemDecl;
@@ -6231,7 +6190,10 @@ xmlValidateElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc, xmlNodePtr root) {
         if (elem->type == XML_ELEMENT_NODE) {
             attr = elem->properties;
             while (attr != NULL) {
-                value = xmlNodeListGetString(doc, attr->children, 0);
+                if (attr->children == NULL)
+                    value = xmlStrdup(BAD_CAST "");
+                else
+                    value = xmlNodeListGetString(doc, attr->children, 0);
                 if (value == NULL) {
                     xmlVErrMemory(ctxt);
                     ret = 0;
@@ -6808,7 +6770,6 @@ xmlValidGetPotentialChildren(xmlElementContent *ctree,
  */
 static void xmlNoValidityErr(void *ctx ATTRIBUTE_UNUSED,
                                 const char *msg ATTRIBUTE_UNUSED, ...) {
-    return;
 }
 
 /**
