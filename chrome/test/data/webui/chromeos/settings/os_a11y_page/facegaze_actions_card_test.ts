@@ -423,6 +423,7 @@ suite('<facegaze-actions-card>', () => {
         faceGazeActionsCard.shadowRoot!.querySelector<CrIconButtonElement>(
             '.icon-clear');
     assertTrue(!!removeButton);
+    assertEquals('Remove action Left-click the mouse', removeButton.ariaLabel);
     removeButton.click();
     await flushTasks();
 

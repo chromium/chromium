@@ -1331,6 +1331,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ADD_ACTION" desc="Label description for button to add an action in the action settings.">
     Add action
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_REMOVE_ACTION_LABEL" desc="Spoken description when focus is received by button to remove a specific action in the action settings." is_accessibility_with_no_ui="true">
+    Remove action <ph name="ACTION_TO_REMOVE">$1<ex>Click a mouse button</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGN_GESTURE_LABEL" desc="Label description for button to assign a gesture to an action in the action settings.">
     Assign a gesture
   </message>

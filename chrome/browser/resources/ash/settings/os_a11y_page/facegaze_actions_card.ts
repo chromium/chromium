@@ -187,6 +187,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     return FaceGazeUtils.getKeyComboDisplayText(keyCombo);
   }
 
+  private getRemoveButtonLabel_(macro: MacroName): string {
+    return this.i18n(
+        'faceGazeActionsRemoveActionLabel', this.getActionDisplayText_(macro));
+  }
+
   // When an action is removed from the list, update the pref and then update
   // the UI accordingly.
   private onRemoveCommandPairButtonClick_(
