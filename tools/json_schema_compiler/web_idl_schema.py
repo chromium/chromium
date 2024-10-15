@@ -153,10 +153,19 @@ class Type:
       # TODO(crbug.com/340297705): We should verify this ref name is actually a
       # custom type we have parsed from the IDL.
       properties['$ref'] = type_details.GetName()
+    elif type_details.IsA('Promise'):
+      properties['type'] = 'promise'
+      # Promise types also have an associated type they resolve with. We
+      # represent this similar to how we represent arguments for Operations,
+      # with 'parameters' list that has a single entry for the type.
+      # TODO(crbug.com/340297705): Add support for Promise<undefined>.
+      promise_type = Type(type_details).process()
+      # The Promise type node name is always "Promise", so we remove it.
+      del promise_type['name']
+      properties['parameters'] = [promise_type]
     else:
-      unknown_child = self.node.GetChildren()[0]
       raise SchemaCompilerError('Unsupported type class when processing type.',
-                                unknown_child)
+                                type_details)
 
     return properties
 
@@ -186,11 +195,15 @@ class Operation:
     properties['parameters'] = parameters
 
     # Return type processing.
-    # TODO(crbug.com/340297705): Add support for turning a Promise return into a
-    # returns_async property.
     return_type = Type(self.node).process()
     if return_type is not None:
-      properties['returns'] = return_type
+      if 'type' in return_type and return_type['type'] == 'promise':
+        # For legacy reasons Promise based returns are represented on a
+        # "returns_async" property and are always named "callback".
+        return_type['name'] = 'callback'
+        properties['returns_async'] = return_type
+      else:
+        properties['returns'] = return_type
 
     return properties
 

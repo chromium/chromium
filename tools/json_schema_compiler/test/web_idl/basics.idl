@@ -31,6 +31,10 @@ interface TestWebIdl {
   static void takesCustomType(ExampleType customTypeArgument);
   static void takesOptionalCustomType(
   optional ExampleType optionalCustomTypeArgument);
+
+  static Promise<DOMString> stringPromiseReturn();
+  static Promise<DOMString?> nullablePromiseReturn();
+  static Promise<ExampleType> customTypePromiseReturn();
 };
 
 partial interface Browser {

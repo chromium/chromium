@@ -22,9 +22,14 @@ def getType(schema, name):
   raise KeyError('Could not find "type" with id "%s" in schema' % name)
 
 
-def getReturns(schema, name):
+def getFunctionReturn(schema, name):
   function = getFunction(schema, name)
   return function.get('returns', None)
+
+
+def getFunctionAsyncReturn(schema, name):
+  function = getFunction(schema, name)
+  return function.get('returns_async', None)
 
 
 def getFunctionParameters(schema, name):
@@ -45,40 +50,69 @@ class WebIdlSchemaTest(unittest.TestCase):
     # Test basic types.
     self.assertEqual(
         None,
-        getReturns(schema, 'returnsVoid'),
+        getFunctionReturn(schema, 'returnsVoid'),
     )
     self.assertEqual(
         {
             'name': 'returnsBoolean',
             'type': 'boolean'
         },
-        getReturns(schema, 'returnsBoolean'),
+        getFunctionReturn(schema, 'returnsBoolean'),
     )
     self.assertEqual(
         {
             'name': 'returnsDouble',
             'type': 'number'
         },
-        getReturns(schema, 'returnsDouble'),
+        getFunctionReturn(schema, 'returnsDouble'),
     )
     self.assertEqual(
         {
             'name': 'returnsLong',
             'type': 'integer'
         },
-        getReturns(schema, 'returnsLong'),
+        getFunctionReturn(schema, 'returnsLong'),
     )
     self.assertEqual(
         {
             'name': 'returnsDOMString',
             'type': 'string'
         },
-        getReturns(schema, 'returnsDOMString'),
+        getFunctionReturn(schema, 'returnsDOMString'),
     )
     self.assertEqual({
         'name': 'returnsCustomType',
         '$ref': 'ExampleType'
-    }, getReturns(schema, 'returnsCustomType'))
+    }, getFunctionReturn(schema, 'returnsCustomType'))
+
+  def testPromiseBasedReturn(self):
+    schema = self.idl_basics
+    self.assertEqual(
+        {
+            'name': 'callback',
+            'parameters': [{
+                'type': 'string'
+            }],
+            'type': 'promise'
+        }, getFunctionAsyncReturn(schema, 'stringPromiseReturn'))
+    self.assertEqual(
+        {
+            'name': 'callback',
+            'parameters': [{
+                'optional': True,
+                'type': 'string'
+            }],
+            'type': 'promise'
+        }, getFunctionAsyncReturn(schema, 'nullablePromiseReturn'))
+    self.assertEqual(
+        {
+            'name': 'callback',
+            'parameters': [{
+                '$ref': 'ExampleType'
+            }],
+            'type': 'promise'
+        }, getFunctionAsyncReturn(schema, 'customTypePromiseReturn'))
+
 
   # Tests function parameters are processed as expected.
   def testFunctionParameters(self):
