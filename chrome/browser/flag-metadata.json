@@ -5489,39 +5489,29 @@
   {
     "name": "ios-promo-address-bubble",
     "owners": [
-      "aliaaborhamy@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "ios-promo-bookmark-bubble",
-    "owners": [
-      "aliaaborhamy@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "ios-promo-payment-bubble",
-    "owners": [
-      "aliaaborhamy@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "ios-promo-refreshed-password-bubble",
-    "owners": [
-      "aliaaborhamy@google.com",
       "nicolasmacbeth@google.com",
       "gujen@google.com",
       "bling-mony-pod@google.com"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
+  },
+  {
+    "name": "ios-promo-payment-bubble",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "gujen@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "ios-promo-refreshed-password-bubble",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "gujen@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 135
   },
   {
     "name": "ios-quick-delete",
