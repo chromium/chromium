@@ -250,7 +250,14 @@ void ProcessMirrorHeader(
   if (profile != ProfileManager::GetActiveUserProfile())
     return;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // At this point, all the early-returns have been passed, and the header is
+  // actually going to be handled. So record it as such.
+  base::UmaHistogramEnumeration("Signin.ManageAccountsResponse.ServiceType",
+                                service_type);
+
+#if BUILDFLAG(IS_CHROMEOS)
   // The only allowed operations are:
   // 1. Going Incognito.
   // 2. Displaying a reauthentication window: Enterprise GSuite Accounts could
