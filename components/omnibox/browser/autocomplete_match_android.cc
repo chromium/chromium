@@ -99,8 +99,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type,
-          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), relevance,
-          transition, ConvertUTF16ToJavaString(env, contents),
+          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), transition,
+          ConvertUTF16ToJavaString(env, contents),
           ToJavaIntArray(env, contents_class_offsets),
           ToJavaIntArray(env, contents_class_styles),
           ConvertUTF16ToJavaString(env, description),

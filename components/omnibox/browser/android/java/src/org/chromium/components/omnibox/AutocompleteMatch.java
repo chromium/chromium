@@ -79,7 +79,6 @@ public class AutocompleteMatch {
     private GURL mUrl;
     private final GURL mImageUrl;
     private final String mImageDominantColor;
-    private final int mRelevance;
     private final int mTransition;
     private final boolean mIsDeletable;
     private String mPostContentType;
@@ -97,7 +96,6 @@ public class AutocompleteMatch {
             int nativeType,
             Set<Integer> subtypes,
             boolean isSearchType,
-            int relevance,
             int transition,
             String displayText,
             List<MatchClassification> displayTextClassifications,
@@ -126,7 +124,6 @@ public class AutocompleteMatch {
         mType = nativeType;
         mSubtypes = subtypes;
         mIsSearchType = isSearchType;
-        mRelevance = relevance;
         mTransition = transition;
         mDisplayText = displayText;
         mDisplayTextClassifications = displayTextClassifications;
@@ -165,7 +162,6 @@ public class AutocompleteMatch {
             int nativeType,
             int[] nativeSubtypes,
             boolean isSearchType,
-            int relevance,
             int transition,
             String contents,
             int[] contentClassificationOffsets,
@@ -208,7 +204,6 @@ public class AutocompleteMatch {
                         nativeType,
                         subtypes,
                         isSearchType,
-                        relevance,
                         transition,
                         contents,
                         contentClassifications,
@@ -429,12 +424,9 @@ public class AutocompleteMatch {
         return mClipboardImageData;
     }
 
-    /** @return The relevance score of this suggestion. */
-    public int getRelevance() {
-        return mRelevance;
-    }
-
-    /** @return Set of suggestion subtypes. */
+    /**
+     * @return Set of suggestion subtypes.
+     */
     public @NonNull Set<Integer> getSubtypes() {
         return mSubtypes;
     }
@@ -474,7 +466,6 @@ public class AutocompleteMatch {
                 && ObjectsCompat.equals(
                         mDescriptionClassifications, suggestion.mDescriptionClassifications)
                 && mIsDeletable == suggestion.mIsDeletable
-                && mRelevance == suggestion.mRelevance
                 && ObjectsCompat.equals(mAnswer, suggestion.mAnswer)
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
                 && Arrays.equals(mPostData, suggestion.mPostData)
@@ -522,7 +513,6 @@ public class AutocompleteMatch {
                         "mUrl=" + mUrl,
                         "mImageUrl=" + mImageUrl,
                         "mImageDominatColor=" + mImageDominantColor,
-                        "mRelevance=" + mRelevance,
                         "mTransition=" + mTransition,
                         "mIsDeletable=" + mIsDeletable,
                         "mPostContentType=" + mPostContentType,

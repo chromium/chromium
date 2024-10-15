@@ -193,7 +193,6 @@ public class CachedZeroSuggestionsManager {
                             subtypes,
                             isSearchType,
                             0,
-                            0,
                             displayText,
                             classifications,
                             description,

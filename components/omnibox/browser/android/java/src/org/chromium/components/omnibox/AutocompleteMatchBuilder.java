@@ -37,7 +37,6 @@ public class AutocompleteMatchBuilder {
     private GURL mUrl;
     private GURL mImageUrl;
     private String mImageDominantColor;
-    private int mRelevance;
     private int mTransition;
     private boolean mIsDeletable;
     private String mPostContentType;
@@ -89,7 +88,6 @@ public class AutocompleteMatchBuilder {
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
         mImageDominantColor = null;
-        mRelevance = 0;
         mTransition = 0;
         mIsDeletable = false;
         mPostContentType = null;
@@ -119,7 +117,6 @@ public class AutocompleteMatchBuilder {
                 mType,
                 mSubtypes,
                 mIsSearchType,
-                mRelevance,
                 mTransition,
                 mDisplayText,
                 mDisplayTextClassifications,
@@ -267,15 +264,6 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setHasTabMatch(boolean hasTabMatch) {
         mHasTabMatch = hasTabMatch;
-        return this;
-    }
-
-    /**
-     * @param relevance Relevance score for newly constructed suggestion.
-     * @return Omnibox suggestion builder.
-     */
-    public AutocompleteMatchBuilder setRelevance(int relevance) {
-        mRelevance = relevance;
         return this;
     }
 
