@@ -19,6 +19,20 @@ namespace ash::graduation {
 // Class that handles the showing of the nudge for the Graduation app.
 class ASH_EXPORT GraduationNudgeController {
  public:
+  // The failure reason used to record a metric tracking failures to show the
+  // nudge. Should be kept in sync with ContentTransferShowNudgeFailureReason
+  // in tools/metrics/histograms/metadata/ash/enums.xml.
+  enum class ShowNudgeFailureReason : int {
+    // The app icon is unavailable.
+    kAppIconUnavailable = 0,
+    kMaxValue = kAppIconUnavailable,
+  };
+
+  // Should be kept consistent with the name in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  static constexpr char kShowNudgeFailedHistogramName[] =
+      "Ash.ContentTransfer.ShowNudgeFailed";
+
   explicit GraduationNudgeController(PrefService* pref_service);
   GraduationNudgeController(const GraduationNudgeController&) = delete;
   GraduationNudgeController& operator=(const GraduationNudgeController&) =

@@ -2541,6 +2541,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ContentTransfer.ShowNudgeFailed"
+    enum="ContentTransferShowNudgeFailureReason" expires_after="2025-10-07">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>amberhaynes@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Recorded when showing the Content Transfer app nudge to a user has failed.
+    Recorded for ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ContextualGoogleIntegrations.{IntegrationName}.Status"
     enum="ContextualGoogleIntegrationStatus" expires_after="2025-03-02">
   <owner>amitrokhin@google.com</owner>

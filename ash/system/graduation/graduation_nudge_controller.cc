@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -48,8 +49,9 @@ void GraduationNudgeController::MaybeShowNudge(const ShelfID& id) {
   ShelfAppButton* button =
       hotseat_widget->GetShelfView()->GetShelfAppButton(id);
   if (!button) {
-    // TODO(b:365835134): Record metrics for failure to show the nudge.
     VLOG(1) << "graduation: Tried to show nudge but app button not available";
+    base::UmaHistogramEnumeration(kShowNudgeFailedHistogramName,
+                                  ShowNudgeFailureReason::kAppIconUnavailable);
     return;
   }
 
@@ -57,7 +59,11 @@ void GraduationNudgeController::MaybeShowNudge(const ShelfID& id) {
       "graduation.nudge", NudgeCatalogName::kGraduationAppEnabled,
       l10n_util::GetStringUTF16(IDS_ASH_GRADUATION_NUDGE_TEXT), button);
   nudge_data.anchored_to_shelf = true;
+
+  // Shows the nudge and records a metric tracking the number of times the nudge
+  // has been shown to a user.
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+
   pref_service_->SetBoolean(prefs::kGraduationNudgeShown, true);
 }
 

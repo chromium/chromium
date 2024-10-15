@@ -25,6 +25,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -37,6 +38,10 @@ namespace ash {
 namespace {
 
 constexpr char kAppId[] = "test_id";
+constexpr char kInvalidAppId[] = "invalid_app_id";
+constexpr NudgeCatalogName kGraduationNudgeCatalogName =
+    NudgeCatalogName::kGraduationAppEnabled;
+constexpr char kNudgeShownCount[] = "Ash.NotifierFramework.Nudge.ShownCount";
 
 bool IsNudgeShown() {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
@@ -145,4 +150,34 @@ TEST_F(GraduationNudgeControllerTest, EnableAppWhenHotseatHidden) {
   nudge_controller()->MaybeShowNudge(added_item);
   EXPECT_FALSE(IsNudgeShown());
 }
+
+TEST_F(GraduationNudgeControllerTest, RecordNudgeShownCountMetric) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(kNudgeShownCount,
+                                      kGraduationNudgeCatalogName, 0);
+
+  ShelfID added_item = AddItem(ShelfItemType::TYPE_PINNED_APP, true);
+  nudge_controller()->MaybeShowNudge(added_item);
+
+  histogram_tester.ExpectUniqueSample(kNudgeShownCount,
+                                      kGraduationNudgeCatalogName, 1);
+}
+
+TEST_F(GraduationNudgeControllerTest, RecordShowNudgeFailedMetric) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      graduation::GraduationNudgeController::kShowNudgeFailedHistogramName,
+      graduation::GraduationNudgeController::ShowNudgeFailureReason::
+          kAppIconUnavailable,
+      0);
+
+  nudge_controller()->MaybeShowNudge(ShelfID(kInvalidAppId));
+
+  histogram_tester.ExpectUniqueSample(
+      graduation::GraduationNudgeController::kShowNudgeFailedHistogramName,
+      graduation::GraduationNudgeController::ShowNudgeFailureReason::
+          kAppIconUnavailable,
+      1);
+}
+
 }  // namespace ash

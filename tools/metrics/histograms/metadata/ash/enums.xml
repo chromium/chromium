@@ -534,6 +534,10 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3" label="Error screen"/>
 </enum>
 
+<enum name="ContentTransferShowNudgeFailureReason">
+  <int value="0" label="App icon unavailable"/>
+</enum>
+
 <enum name="ContextualGoogleIntegrationStatus">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled by policy"/>
@@ -1586,6 +1590,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="35" label="Birch Privacy Nudge"/>
   <int value="36" label="Video Conference Tray Sidetone Not Supported"/>
   <int value="37" label="Video Conference Tray Sidetone Enabled"/>
+  <int value="38" label="Content Transfer App Enabled"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
