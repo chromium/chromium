@@ -703,8 +703,13 @@ TrustedSignalsKVv2RequestHelperBuilder::Build() {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
 
-  cbor::Value::ArrayValue partition_array;
+  // Add hostname to metadata.
+  cbor::Value::MapValue metadata;
+  metadata.try_emplace(cbor::Value("hostname"), cbor::Value(hostname()));
+  request_map_value.try_emplace(cbor::Value("metadata"),
+                                cbor::Value(std::move(metadata)));
 
+  cbor::Value::ArrayValue partition_array;
   for (const auto& group_pair : compression_groups()) {
     int compression_group_id = group_pair.first;
     const CompressionGroup& partition_map = group_pair.second;
@@ -732,13 +737,11 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
     int partition_id,
     const std::string& interest_group_name,
     const std::set<std::string>& bidding_keys,
-    const std::string& hostname,
     const std::optional<int>& experiment_group_id,
     std::pair<std::string, std::string> trusted_bidding_signals_slot_size_param)
     : partition_id(partition_id),
       interest_group_names({interest_group_name}),
       bidding_signals_keys(bidding_keys) {
-  additional_params.Set("hostname", hostname);
   if (experiment_group_id.has_value()) {
     additional_params.Set("experimentGroupId",
                           base::NumberToString(experiment_group_id.value()));
@@ -751,12 +754,10 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
     int partition_id,
     const std::string& render_url,
     const std::set<std::string>& ad_component_render_urls,
-    const std::string& hostname,
     const std::optional<int>& experiment_group_id)
     : partition_id(partition_id),
       render_urls({render_url}),
       ad_component_render_urls(ad_component_render_urls) {
-  additional_params.Set("hostname", hostname);
   if (experiment_group_id.has_value()) {
     additional_params.Set("experimentGroupId",
                           base::NumberToString(experiment_group_id.value()));
@@ -847,7 +848,7 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
   // Find or create partition.
   if (partition_it == compression_group_ptr->end()) {
     Partition new_partition(partition_id, interest_group_name, bidding_keys,
-                            hostname(), experiment_group_id(),
+                            experiment_group_id(),
                             trusted_bidding_signals_slot_size_param());
     compression_group_ptr->emplace(partition_id, std::move(new_partition));
   } else {
@@ -940,8 +941,7 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
   // means the next partition ID is the size of compression group.
   partition_id = compression_group_ptr->size();
   Partition new_partition(partition_id, render_url.spec(),
-                          ad_component_render_urls, hostname(),
-                          experiment_group_id());
+                          ad_component_render_urls, experiment_group_id());
   compression_group_ptr->emplace(partition_id, std::move(new_partition));
 
   return IsolationIndex(compression_group_id, partition_id);
