@@ -107,6 +107,10 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card1.mutable_masked_card()
       ->mutable_card_issuer()
       ->set_issuer_id("amex");
+  wallet_specifics_card1.mutable_masked_card()
+      ->set_card_info_retrieval_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::
+              RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE);
   // Add the second card that has nickname.
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
@@ -130,6 +134,9 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
       "https://www.example.com/card.png");
   wallet_specifics_card2.mutable_masked_card()->set_product_description(
       "fake product description");
+  wallet_specifics_card2.mutable_masked_card()
+      ->set_card_info_retrieval_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED);
   sync_pb::AutofillWalletSpecifics wallet_specifics_iban =
       CreateAutofillWalletSpecificsForIban(
           /*client_tag=*/iban_id);
@@ -205,6 +212,13 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   EXPECT_TRUE(wallet_cards.front().product_description().empty());
   EXPECT_EQ(wallet_cards.back().product_description(),
             u"fake product description");
+
+  // Verify that the `card_info_retrieval_enrollment_state` is set correctly.
+  EXPECT_EQ(wallet_cards.front().card_info_retrieval_enrollment_state(),
+            CreditCard::CardInfoRetrievalEnrollmentState::
+                kRetrievalUnenrolledAndNotEligible);
+  EXPECT_EQ(wallet_cards.back().card_info_retrieval_enrollment_state(),
+            CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
 }
 
 // Test suite for benefit syncing helpers that takes a bool indicating

@@ -311,6 +311,28 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     result.set_product_terms_url(GURL(card.product_terms_url()));
   }
 
+  CreditCard::CardInfoRetrievalEnrollmentState enrollment_state =
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
+  switch (card.card_info_retrieval_enrollment_state()) {
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED:
+      enrollment_state =
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
+      break;
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE:
+      enrollment_state = CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible;
+      break;
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE:
+      enrollment_state = CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndEligible;
+      break;
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED:
+      enrollment_state =
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
+      break;
+  }
+  result.set_card_info_retrieval_enrollment_state(enrollment_state);
+
   return result;
 }
 
@@ -511,6 +533,28 @@ void SetAutofillWalletSpecificsFromServerCard(
   if (!card.product_terms_url().is_empty()) {
     wallet_card->set_product_terms_url(card.product_terms_url().spec());
   }
+
+  sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState
+      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
+  switch (card.card_info_retrieval_enrollment_state()) {
+    case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled:
+      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED;
+      break;
+    case CreditCard::CardInfoRetrievalEnrollmentState::
+        kRetrievalUnenrolledAndNotEligible:
+      enrollment_state = sync_pb::WalletMaskedCreditCard::
+          RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE;
+      break;
+    case CreditCard::CardInfoRetrievalEnrollmentState::
+        kRetrievalUnenrolledAndEligible:
+      enrollment_state =
+          sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE;
+      break;
+    case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified:
+      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
+      break;
+  }
+  wallet_card->set_card_info_retrieval_enrollment_state(enrollment_state);
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(

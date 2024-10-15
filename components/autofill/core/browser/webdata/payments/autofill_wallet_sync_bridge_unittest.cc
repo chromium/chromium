@@ -568,12 +568,17 @@ TEST_F(AutofillWalletSyncBridgeTest,
   card1.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card1.set_card_art_url(GURL("https://www.example.com/card.png"));
+  card1.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
   CreditCard card2 = test::GetMaskedServerCardAmex();
   CreditCard card_with_nickname = test::GetMaskedServerCardWithNickname();
   card2.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card2.set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
+  card2.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   table()->SetServerCreditCards({card1, card2, card_with_nickname});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -615,6 +620,12 @@ TEST_F(AutofillWalletSyncBridgeTest,
   EXPECT_EQ("https://www.example.com/card.png",
             card_specifics1.masked_card().card_art_url());
   EXPECT_TRUE(card_specifics2.masked_card().card_art_url().empty());
+  EXPECT_EQ(
+      sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE,
+      card_specifics1.masked_card().card_info_retrieval_enrollment_state());
+  EXPECT_EQ(
+      sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED,
+      card_specifics2.masked_card().card_info_retrieval_enrollment_state());
 
   // Read local Wallet Data from Autofill table, and compare with expected
   // wallet specifics.
@@ -699,6 +710,41 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewWalletCard) {
       UnorderedElementsAre(EqualsSpecifics(card_specifics2),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics)));
+}
+
+// Tests that when a new wallet card is sent by the server with
+// CardInfoRetrievalEnrollment, the client only keeps the new data.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_NewWalletCard_CardInfoRetrievalEnrollment) {
+  // Create one card on the client.
+  CreditCard card1 = test::GetMaskedServerCard();
+  card1.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
+  table()->SetServerCreditCards({card1});
+
+  // Create a different card on the server.
+  CreditCard card2 = test::GetMaskedServerCardAmex();
+  card2.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  AutofillWalletSpecifics card_specifics2;
+  SetAutofillWalletSpecificsFromServerCard(card2, &card_specifics2);
+
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOfCreditCardChanged(AddChange(card2.server_id(), card2)));
+  EXPECT_CALL(*backend(),
+              NotifyOfCreditCardChanged(RemoveChange(card1.server_id())));
+  StartSyncing({card_specifics2});
+
+  // Billing address IDs are deprecated and no longer stored.
+  card_specifics2.mutable_masked_card()->set_billing_address_id(std::string());
+
+  // Only the server card should be present on the client.
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(EqualsSpecifics(card_specifics2)));
 }
 
 // Tests that in initial sync, no metrics are recorded for new cards.
@@ -911,6 +957,9 @@ TEST_F(AutofillWalletSyncBridgeTest,
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));
+  card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -992,6 +1041,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));
+  card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
 
@@ -1017,9 +1069,11 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   EXPECT_EQ(card.nickname(), cards[0]->nickname());
   EXPECT_EQ(card.card_issuer(), cards[0]->card_issuer());
   EXPECT_EQ(card.instrument_id(), cards[0]->instrument_id());
-  EXPECT_EQ(card.virtual_card_enrollment_state(),
-            cards[0]->virtual_card_enrollment_state());
+  EXPECT_EQ(card.card_info_retrieval_enrollment_state(),
+            cards[0]->card_info_retrieval_enrollment_state());
   EXPECT_EQ(card.card_art_url(), cards[0]->card_art_url());
+  EXPECT_EQ(card.card_info_retrieval_enrollment_state(),
+            cards[0]->card_info_retrieval_enrollment_state());
 
   // Also make sure that those types are not empty, to exercice all the code
   // paths.
