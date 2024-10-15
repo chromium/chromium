@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -424,6 +425,17 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             _prefService->GetBoolean(prefs::kSafeBrowsingEnhanced)));
 
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _prefService->GetBoolean(
+                password_manager::prefs::kCredentialsEnableService)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _prefService->GetBoolean(prefs::kAdvancedProtectionAllowed)));
+
     // Local signals
     inputContext->metadata_args.emplace(
         segmentation_platform::tips_manager::signals::
@@ -432,6 +444,12 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
             _tipsManager->WasSignalFired(
                 segmentation_platform::tips_manager::signals::
                     kAddressBarPositionChoiceScreenDisplayed)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLensAllowedByEnterprisePolicy,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _localState->GetBoolean(
+                prefs::kLensCameraAssistedSearchPolicyAllowed)));
   }
 
   __weak MagicStackRankingModel* weakSelf = self;

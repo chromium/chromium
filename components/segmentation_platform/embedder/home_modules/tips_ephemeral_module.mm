@@ -27,7 +27,7 @@ namespace {
 
 // Defines the signals that must all evaluate to true for each `TipIdentifier`
 // in order for the corresponding tip to be shown.
-constexpr std::array<std::pair<TipIdentifier, const char*>, 8>
+constexpr std::array<std::pair<TipIdentifier, const char*>, 14>
     kTipRequiredSignals = {
         std::make_pair(TipIdentifier::kAddressBarPosition,
                        segmentation_platform::tips_manager::signals::
@@ -35,22 +35,37 @@ constexpr std::array<std::pair<TipIdentifier, const char*>, 8>
         std::make_pair(TipIdentifier::kAutofillPasswords,
                        segmentation_platform::tips_manager::signals::
                            kUsedPasswordAutofill),
+        std::make_pair(
+            TipIdentifier::kAutofillPasswords,
+            segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy),
         std::make_pair(TipIdentifier::kEnhancedSafeBrowsing,
                        segmentation_platform::kHasEnhancedSafeBrowsing),
+        std::make_pair(TipIdentifier::kEnhancedSafeBrowsing,
+                       segmentation_platform::
+                           kEnhancedSafeBrowsingAllowedByEnterprisePolicy),
         std::make_pair(TipIdentifier::kLensSearch,
                        segmentation_platform::tips_manager::signals::kLensUsed),
+        std::make_pair(TipIdentifier::kLensSearch,
+                       segmentation_platform::kLensAllowedByEnterprisePolicy),
         std::make_pair(TipIdentifier::kLensShop,
                        segmentation_platform::tips_manager::signals::
                            kOpenedShoppingWebsite),
+        std::make_pair(TipIdentifier::kLensShop,
+                       segmentation_platform::kLensAllowedByEnterprisePolicy),
         std::make_pair(TipIdentifier::kLensTranslate,
                        segmentation_platform::tips_manager::signals::
                            kOpenedWebsiteInAnotherLanguage),
         std::make_pair(TipIdentifier::kLensTranslate,
                        segmentation_platform::tips_manager::signals::
                            kUsedGoogleTranslation),
+        std::make_pair(TipIdentifier::kLensTranslate,
+                       segmentation_platform::kLensAllowedByEnterprisePolicy),
         std::make_pair(
             TipIdentifier::kSavePasswords,
             segmentation_platform::tips_manager::signals::kSavedPasswords),
+        std::make_pair(
+            TipIdentifier::kSavePasswords,
+            segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy),
 };
 
 // Checks if a Tip variation is being forced via a Finch feature param.
@@ -152,7 +167,16 @@ std::map<SignalKey, FeatureQuery> TipsEphemeralModule::GetInputs() {
        create_query(segmentation_platform::tips_manager::signals::
                         kUsedPasswordAutofill)},
       {segmentation_platform::kHasEnhancedSafeBrowsing,
-       create_query(segmentation_platform::kHasEnhancedSafeBrowsing)}};
+       create_query(segmentation_platform::kHasEnhancedSafeBrowsing)},
+      {segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
+       create_query(segmentation_platform::
+                        kEnhancedSafeBrowsingAllowedByEnterprisePolicy)},
+      {segmentation_platform::kLensAllowedByEnterprisePolicy,
+       create_query(segmentation_platform::kLensAllowedByEnterprisePolicy)},
+      {segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
+       create_query(
+           segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy)},
+  };
 }
 
 CardSelectionInfo::ShowResult TipsEphemeralModule::ComputeCardResult(

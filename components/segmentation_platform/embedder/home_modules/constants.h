@@ -11,6 +11,12 @@ namespace segmentation_platform {
 const char kIsNewUser[] = "is_new_user";
 const char kIsSynced[] = "is_sycned";
 const char kHasEnhancedSafeBrowsing[] = "has_enhanced_safe_browsing";
+const char kLensAllowedByEnterprisePolicy[] =
+    "lens_allowed_by_enterprise_policy";
+const char kPasswordManagerAllowedByEnterprisePolicy[] =
+    "password_manager_allowed_by_enterprise_policy";
+const char kEnhancedSafeBrowsingAllowedByEnterprisePolicy[] =
+    "enhanced_safe_browsing_allowed_by_enterprise_policy";
 
 // Placeholder output label for segmentation model executor.
 const char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
