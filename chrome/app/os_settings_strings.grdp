@@ -1547,6 +1547,18 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET" desc="Label for the 'reset' button in FaceGaze cursor settings, that brings cursor settings back to default.">
     Reset
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_PRIMARY_LABEL" desc="Label for the slider on the FaceGaze cursor settings page that adjusts the velocity threshold.">
+    Cursor stability
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_SECONDARY_LABEL" desc="Secondary label for the slider on the FaceGaze cursor settings page that adjusts the velocity threshold.">
+    You can keep the cursor stable even if you have slight head movements. This requires more effort to move the cursor.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_MIN_LABEL" desc="Label for the 'Responsive' side of the FaceGaze velocity threshold slider.">
+    Responsive
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_MAX_LABEL" desc="Label for the 'Stable' side of the FaceGaze velocity threshold slider.'">
+    Stable
+  </message>
   <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL" desc="The label of a setting that flashes the screen in a color when a notification is received.">
     Flash notifications
   </message>
