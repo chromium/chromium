@@ -568,6 +568,14 @@ BASE_FEATURE(kTrustedTypesFromLiteral,
              "TrustedTypesFromLiteral",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Validate the code signing identity of the network process before establishing
+// a Mojo connection with it.
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kValidateNetworkServiceProcessIdentity,
+             "ValidateNetworkServiceProcessIdentity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
 // Pre-warm up the network process on browser startup.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWarmUpNetworkProcess,

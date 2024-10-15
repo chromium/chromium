@@ -4,8 +4,14 @@
 
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -78,6 +84,11 @@ bool SandboxedProcessLauncherDelegate::DisclaimResponsibility() {
 
 bool SandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations() {
   return false;
+}
+
+std::optional<base::mac::ProcessRequirement>
+SandboxedProcessLauncherDelegate::GetProcessRequirement() {
+  return std::nullopt;
 }
 
 #endif  // BUILDFLAG(IS_MAC)

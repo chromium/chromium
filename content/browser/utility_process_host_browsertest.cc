@@ -17,8 +17,11 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
+#include "content/browser/utility_sandbox_delegate.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -49,6 +52,10 @@
 #if BUILDFLAG(USE_ZYGOTE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #include "content/public/common/zygote/zygote_handle.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 namespace content {
@@ -394,5 +401,34 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
                      base::Unretained(this)));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+// Ensure that the network service launches and can establish Mojo IPC
+// connections when peer requirements are being enforced. Since browser tests
+// are run in an unsigned process this will exercise most of the mechanism, but
+// code signature validation will be skipped.
+class NetworkServiceProcessIdentityTest : public UtilityProcessHostBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {base::kMachPortRendezvousEnforcePeerRequirements,
+         features::kValidateNetworkServiceProcessIdentity},
+        {});
+    UtilityProcessHostBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceProcessIdentityTest, LaunchService) {
+  // The process requirement is applied to the network service based on its
+  // sandbox type.
+  host_->SetSandboxType(sandbox::mojom::Sandbox::kNetwork);
+  RunUtilityProcess(
+      base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
+                     base::Unretained(this)));
+}
+#endif
 
 }  // namespace content
