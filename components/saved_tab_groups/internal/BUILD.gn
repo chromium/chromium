@@ -24,7 +24,7 @@ source_set("internal") {
   deps = [
     ":tab_group_sync_bridge",
     "//base",
-    "//components/data_sharing/public",
+    "//components/data_sharing/public:features",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/saved_tab_groups/delegate",
@@ -154,7 +154,7 @@ source_set("service_test_utils") {
     ":tab_group_sync_bridge",
     "//base",
     "//base/test:test_support",
-    "//components/data_sharing/public",
+    "//components/data_sharing/public:features",
     "//components/optimization_guide/core",
     "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/public",
