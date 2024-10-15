@@ -28,8 +28,19 @@ source_set("enterprise_platform_keys") {
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chrome/common/extensions/api",
+  ]
+}
+
+source_set("enterprise_platform_keys_registry_util") {
+  sources = [
+    "enterprise_platform_keys_registry_util.cc",
+    "enterprise_platform_keys_registry_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:constants",
     "//components/pref_registry",
   ]
 }

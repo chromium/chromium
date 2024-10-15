@@ -324,7 +324,7 @@
 #include "chrome/browser/chromeos/quickoffice/quickoffice_prefs.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/extensions/api/document_scan/profile_prefs_registry_util.h"
-#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
+#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_registry_util.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/policy/annotations/blocklist_handler.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -2157,7 +2157,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::DocumentScanRegisterProfilePrefs(registry);
   extensions::login_api::RegisterProfilePrefs(registry);
-  extensions::platform_keys::RegisterProfilePrefs(registry);
+  extensions::platform_keys::EnterprisePlatformKeysRegisterProfilePrefs(
+      registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
   chromeos::cloud_storage::RegisterProfilePrefs(registry);
   chromeos::cloud_upload::RegisterProfilePrefs(registry);

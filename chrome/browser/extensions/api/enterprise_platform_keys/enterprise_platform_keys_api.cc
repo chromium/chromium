@@ -20,9 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -66,14 +64,6 @@ std::string ValidateInput(const std::string& token_id,
   return "";
 }
 }  // namespace
-
-namespace platform_keys {
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kAttestationExtensionAllowlist);
-}
-
-}  // namespace platform_keys
 
 //------------------------------------------------------------------------------
 

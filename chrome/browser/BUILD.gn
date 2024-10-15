@@ -5182,6 +5182,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/tast_support",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/extensions/api/document_scan:profile_prefs_registry_util",
+      "//chrome/browser/extensions/api/enterprise_platform_keys:enterprise_platform_keys_registry_util",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/client",
