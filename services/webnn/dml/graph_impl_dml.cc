@@ -27,7 +27,9 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -751,6 +753,46 @@ std::optional<uint64_t> GetFusibleActivationOutputId(
     default:
       return std::optional<uint64_t>();
   }
+}
+
+std::string_view GetOperatorLabel(std::string_view original_label,
+                                  std::string_view default_label) {
+  return original_label.empty() ? default_label : original_label;
+}
+
+std::string_view GetFusibleActivationLabel(const mojom::Operation& operation) {
+  switch (operation.which()) {
+    case mojom::Operation::Tag::kElu:
+      return GetOperatorLabel(operation.get_elu()->label, "elu");
+    case mojom::Operation::Tag::kHardSigmoid:
+      return GetOperatorLabel(operation.get_hard_sigmoid()->label,
+                              "hard_sigmoid");
+    case mojom::Operation::Tag::kLeakyRelu:
+      return GetOperatorLabel(operation.get_leaky_relu()->label, "leaky_relu");
+    case mojom::Operation::Tag::kLinear:
+      return GetOperatorLabel(operation.get_linear()->label, "linear");
+    case mojom::Operation::Tag::kRelu:
+      return GetOperatorLabel(operation.get_relu()->label, "relu");
+    case mojom::Operation::Tag::kSigmoid:
+      return GetOperatorLabel(operation.get_sigmoid()->label, "sigmoid");
+    case mojom::Operation::Tag::kSoftplus:
+      return GetOperatorLabel(operation.get_softplus()->label, "softplus");
+    case mojom::Operation::Tag::kSoftsign:
+      return GetOperatorLabel(operation.get_softsign()->label, "softsign");
+    case mojom::Operation::Tag::kTanh:
+      return GetOperatorLabel(operation.get_tanh()->label, "tanh");
+    default:
+      NOTREACHED() << "The operation is not a fusible activation.";
+  }
+}
+
+std::string GetFusedOperatorLabel(std::string_view original_label,
+                                  std::string_view default_label,
+                                  const mojom::Operation& fusible_activation) {
+  return base::JoinString(
+      {original_label.empty() ? default_label : original_label,
+       GetFusibleActivationLabel(fusible_activation)},
+      "+");
 }
 
 ActivationOperatorDesc CreateOperatorDescForFusibleActivation(
@@ -1550,12 +1592,15 @@ void CreateOperatorNodeForBatchNormalization(
           operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  std::string label = batch_normalization->label;
   if (fusible_activation) {
     activation_operator_desc =
         CreateOperatorDescForFusibleActivation(*fusible_activation.value());
     output_id =
         GetFusibleActivationOutputId(*fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
+    label = GetFusedOperatorLabel(label, "batch_normalization",
+                                  *fusible_activation.value());
   }
 
   DML_BATCH_NORMALIZATION_OPERATOR_DESC batch_normalization_operator_desc{
@@ -1574,7 +1619,6 @@ void CreateOperatorNodeForBatchNormalization(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
-  const std::string& label = batch_normalization->label;
   const GraphNode* batch_normalization_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_BATCH_NORMALIZATION, &batch_normalization_operator_desc,
       inputs, label);
@@ -1752,12 +1796,14 @@ void CreateOperatorNodeForConv2d(
           operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  std::string label = conv2d->label;
   if (fusible_activation) {
     activation_operator_desc =
         CreateOperatorDescForFusibleActivation(*fusible_activation.value());
     output_id =
         GetFusibleActivationOutputId(*fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
+    label = GetFusedOperatorLabel(label, "conv2d", *fusible_activation.value());
   }
 
   DML_CONVOLUTION_OPERATOR_DESC conv2d_operator_desc{
@@ -1780,7 +1826,6 @@ void CreateOperatorNodeForConv2d(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
-  const std::string& label = conv2d->label;
   const GraphNode* conv2d_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs, label);
 
@@ -1947,7 +1992,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
 
   const OperandDataType input_data_type =
       DmlDataTypeToOperand(input_a_tensor_desc.GetDataType());
-  const std::string& label = binary->label;
+  std::string label = binary->label;
   const GraphNode* binary_node = nullptr;
   std::array<const NodeOutput*, 2> inputs = {input_a, input_b};
   switch (binary->kind) {
@@ -1968,6 +2013,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
             .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
             .FusedActivation = &activation_dml_desc,
         };
+
+        label =
+            GetFusedOperatorLabel(label, "add", *fusible_activation.value());
+
         binary_node = graph_builder.CreateOperatorNode(
             DML_OPERATOR_ELEMENT_WISE_ADD1, &add1_operator_desc, inputs, label);
         output_id =
@@ -3380,6 +3429,7 @@ void CreateOperatorNodeForGemm(
           operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  std::string label = gemm->label;
   if (fusible_activation) {
     activation_operator_desc =
         CreateOperatorDescForFusibleActivation(*fusible_activation.value());
@@ -3387,6 +3437,7 @@ void CreateOperatorNodeForGemm(
 
     output_id =
         GetFusibleActivationOutputId(*fusible_activation.value()).value();
+    label = GetFusedOperatorLabel(label, "gemm", *fusible_activation.value());
   }
 
   DML_GEMM_OPERATOR_DESC gemm_operator_desc{
@@ -3404,7 +3455,6 @@ void CreateOperatorNodeForGemm(
           activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
-  const std::string& label = gemm->label;
   const GraphNode* gemm_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_GEMM, &gemm_operator_desc, inputs, label);
 
@@ -3898,7 +3948,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     }
   }
 
-  const std::string& label = normalization->label;
+  std::string label = normalization->label;
   if (!base::MakeCheckedNum(mean_variance_axes.size()).IsValid<uint32_t>()) {
     return base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError,
@@ -3938,6 +3988,18 @@ CreateOperatorNodeForMeanVarianceNormalization(
 
     output_id =
         GetFusibleActivationOutputId(*fusible_activation.value()).value();
+
+    std::string_view default_label;
+    if (label.empty()) {
+      if constexpr (std::is_same_v<NormalizationPtr,
+                                   mojom::InstanceNormalizationPtr>) {
+        default_label = "instance_normalization";
+      } else /* `NormalizationPtr` is `mojom::LayerNormalizationPtr` */ {
+        default_label = "layer_normalization";
+      }
+    }
+    label = GetFusedOperatorLabel(label, default_label,
+                                  *fusible_activation.value());
   }
 
   DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC
@@ -4401,7 +4463,17 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   std::optional<uint64_t> fusible_transpose_input_id =
       GetFusibleTransposeInputId(output_id_to_fusible_transpose_map,
                                  a_operand_id);
+
+  std::string label;
   if (fusible_transpose_input_id) {
+    std::string_view transpose_a_label =
+        output_id_to_fusible_transpose_map.at(a_operand_id)
+            ->get_transpose()
+            ->label;
+    base::StrAppend(
+        &label,
+        {transpose_a_label.empty() ? "transpose_a" : transpose_a_label, "+"});
+
     a_operand_id = fusible_transpose_input_id.value();
     transpose_a = true;
   }
@@ -4415,6 +4487,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   fusible_transpose_input_id = GetFusibleTransposeInputId(
       output_id_to_fusible_transpose_map, b_operand_id);
   if (fusible_transpose_input_id) {
+    std::string_view transpose_b_label =
+        output_id_to_fusible_transpose_map.at(b_operand_id)
+            ->get_transpose()
+            ->label;
+    base::StrAppend(
+        &label,
+        {transpose_b_label.empty() ? "transpose_b" : transpose_b_label, "+"});
+
     b_operand_id = fusible_transpose_input_id.value();
     transpose_b = true;
   }
@@ -4441,7 +4521,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
            output_tensor_dims.size());
 
-  const std::string& label = matmul->label;
+  if (!label.empty()) {
+    base::StrAppend(&label, {matmul->label.empty() ? "matmul" : matmul->label});
+  } else {
+    label = matmul->label;
+  }
   // Flatten adjacent dimensions for GEMM > 4D because DML_GEMM_OPERATOR_DESC
   // restricts tensor's rank <= 4.
   auto adjusted_output_tensor_desc = output_tensor_desc;
@@ -4493,6 +4577,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
 
     output_id =
         GetFusibleActivationOutputId(*fusible_activation.value()).value();
+    label = GetFusedOperatorLabel(label, "matmul", *fusible_activation.value());
   }
 
   DML_GEMM_OPERATOR_DESC matmul_operator_desc{
