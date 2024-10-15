@@ -120,9 +120,6 @@ public class CastWebContentsActivity extends Activity {
             });
         });
         createdAndNotTestingState.subscribe(Observer.onOpen(x -> {
-            // Do this in onCreate() only if not testing.
-            CastBrowserHelper.initializeBrowser(getApplicationContext());
-
             setContentView(R.layout.cast_web_contents_activity);
 
             mSurfaceHelperState.set(new CastWebContentsSurfaceHelper(

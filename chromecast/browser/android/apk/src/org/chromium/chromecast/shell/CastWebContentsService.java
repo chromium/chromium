@@ -76,7 +76,7 @@ public class CastWebContentsService extends Service {
     public void onCreate() {
         super.onCreate();
         if (DEBUG) Log.d(TAG, "onCreate");
-        CastBrowserHelper.initializeBrowser(getApplicationContext());
+        CastBrowserHelper.initializeBrowserAsync(getApplicationContext(), null);
         createNotificationChannel();
     }
 
