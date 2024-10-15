@@ -21,13 +21,6 @@ group("remoting_all") {
     }
   }
 
-  if (is_ios) {
-    deps += [
-      "//remoting/ios:all",
-      "//remoting/ios:ios_remoting_unittests",
-    ]
-  }
-
   if (enable_remoting_host) {
     deps += [
       ":remoting_perftests",
@@ -39,9 +32,6 @@ group("remoting_all") {
         "//remoting/host:remoting_native_messaging_manifests",
         "//remoting/host:remoting_start_host",
       ]
-      if (!is_ios) {
-        deps += [ "//remoting/host:remoting_native_messaging_host" ]
-      }
 
       # it2me.
       deps += [ "//remoting/host/it2me:remote_assistance_host" ]
@@ -84,10 +74,6 @@ group("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (!is_ios) {
-    deps += [ "//components/policy/core/browser:test_support" ]
-  }
 
   if (enable_remoting_host) {
     deps += [ "//remoting/host:test_support" ]
