@@ -13,9 +13,15 @@ namespace ash::mahi_availability {
 //   * If not in demo mode, guest session is not allowed.
 bool CanUseMahiService();
 
-// Check if the feature is available to use. It can be unavailable if the
-// feature flag is disabled, or the age and country requirements are not met.
+// Check if the mahi feature is available to use. It can be unavailable if the
+// mahi feature flag is disabled, or the age and country requirements are not
+// met.
 bool IsMahiAvailable();
+
+// Check if the Pompano feature is available to use.
+// Pompano is an add-on feature of mahi. Currently we make it available only
+// when mahi is available AND its own feature flag is enabled.
+bool IsPompanoAvailable();
 
 }  // namespace ash::mahi_availability
 

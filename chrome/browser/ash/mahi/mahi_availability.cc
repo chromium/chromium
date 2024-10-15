@@ -99,4 +99,8 @@ bool IsMahiAvailable() {
   return chromeos::features::IsMahiEnabled() && CanUseMahiService();
 }
 
+bool IsPompanoAvailable() {
+  return chromeos::features::IsPompanoEnabled() && IsMahiAvailable();
+}
+
 }  // namespace ash::mahi_availability

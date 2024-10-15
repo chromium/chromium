@@ -184,6 +184,9 @@ BASE_FEATURE(kMahiDebugging,
              "MahiDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the pompano feature.
+BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes the ChromeOS notification width size from 360px to 400px for pop-up
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease,
@@ -478,6 +481,10 @@ bool IsSparkyEnabled() {
 
 bool IsMahiDebuggingEnabled() {
   return base::FeatureList::IsEnabled(kMahiDebugging);
+}
+
+bool IsPompanoEnabled() {
+  return base::FeatureList::IsEnabled(kPompano);
 }
 
 bool IsNotificationWidthIncreaseEnabled() {
