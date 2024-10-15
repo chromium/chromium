@@ -51,6 +51,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -305,7 +306,7 @@ void PartialTranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   gfx::Rect screen_bounds = source->GetAnchorBoundsInScreen();
   options_menu_runner_->RunMenuAt(source->GetWidget(), nullptr, screen_bounds,
                                   views::MenuAnchorPosition::kTopRight,
-                                  ui::MENU_SOURCE_MOUSE);
+                                  ui::mojom::MenuSourceType::kMouse);
 }
 
 void PartialTranslateBubbleView::ExecuteCommand(int command_id,

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -48,9 +49,10 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
  private:
   friend class MediaGalleriesDialogTest;
@@ -73,7 +75,7 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
       int trailing_vertical_space);
 
   void ShowContextMenu(const gfx::Point& point,
-                       ui::MenuSourceType source_type,
+                       ui::mojom::MenuSourceType source_type,
                        MediaGalleryPrefId id);
 
   // Whether |controller_| has a valid WebContents or not.

@@ -33,6 +33,7 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -248,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                   // Show the tab group editor bubble.
                   auto* const view = AsView(element);
                   view->ShowContextMenu(view->GetLocalBounds().CenterPoint(),
-                                        ui::MENU_SOURCE_KEYBOARD);
+                                        ui::mojom::MenuSourceType::kKeyboard);
                 }),
       WaitForShow(kTabGroupEditorBubbleId),
 

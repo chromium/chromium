@@ -15,6 +15,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -265,7 +266,7 @@ class MenuModelAdapterTest : public ViewEventTestBase {
     menu_runner_->RunMenuAt(button_->GetWidget(), button_->button_controller(),
                             button_->GetBoundsInScreen(),
                             views::MenuAnchorPosition::kTopLeft,
-                            ui::MENU_SOURCE_NONE);
+                            ui::mojom::MenuSourceType::kNone);
   }
 
   raw_ptr<views::MenuButton> button_ = nullptr;

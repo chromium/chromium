@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -57,7 +58,7 @@ void PinOptionsButton::ButtonPressed() {
       views::MenuRunner::COMBOBOX | views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(
       GetWidget(), /*button_controller=*/nullptr, GetBoundsInScreen(),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE);
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
 }
 
 void PinOptionsButton::ExecuteCommand(int command_id, int event_flags) {

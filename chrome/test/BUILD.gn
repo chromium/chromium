@@ -2347,6 +2347,7 @@ if (!is_android) {
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
       "//ui/base/dragdrop/mojom",
+      "//ui/base/mojom:ui_base_types",
       "//ui/color:color",
       "//ui/color:mixers",
       "//ui/compositor:test_support",
@@ -8313,6 +8314,7 @@ test("unit_tests") {
       "//third_party/nearby:rpc_resources_proto",
       "//third_party/nearby:wire_format_proto",
       "//ui/base/ime/ash",
+      "//ui/base/mojom:ui_base_types",
       "//ui/chromeos/strings",
       "//ui/file_manager:resources_grit",
       "//ui/wm/public",
@@ -9893,6 +9895,7 @@ static_library("test_support_unit") {
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/quick_answers",
       "//chromeos/components/quick_answers:test_support",
+      "//ui/base/mojom:ui_base_types",
     ]
   }
 
@@ -10872,6 +10875,7 @@ if (!is_android && !is_chromeos_device) {
         "//ui/accessibility:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
+        "//ui/base/mojom:ui_base_types",
         "//ui/views",
         "//ui/views:test_support",
         "//ui/views:views_interactive_ui_tests",

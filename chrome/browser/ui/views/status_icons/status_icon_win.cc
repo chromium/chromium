@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/icon_util.h"
@@ -64,7 +65,7 @@ void StatusIconWin::HandleClickEvent(const gfx::Point& cursor_pos,
       menu_model_, views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(nullptr, nullptr, gfx::Rect(cursor_pos, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft,
-                          ui::MENU_SOURCE_MOUSE);
+                          ui::mojom::MenuSourceType::kMouse);
 }
 
 void StatusIconWin::HandleBalloonClickEvent() {

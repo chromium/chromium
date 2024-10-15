@@ -134,6 +134,7 @@ source_set("side_panel") {
     "//content/public/browser",
     "//ui/actions:actions_headers",
     "//ui/base",
+    "//ui/base/mojom:ui_base_types",
     "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/animation",

@@ -38,6 +38,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/border.h"
@@ -286,7 +287,7 @@ void TaskManagerView::OnKeyDown(ui::KeyboardCode keycode) {
 void TaskManagerView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   for (const auto& table_column : columns_) {

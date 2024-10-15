@@ -42,6 +42,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -337,7 +338,7 @@ void CastDialogView::ShowSourcesMenu() {
   const gfx::Rect& screen_bounds = sources_button_->GetBoundsInScreen();
   sources_menu_runner_->RunMenuAt(
       sources_button_->GetWidget(), nullptr, screen_bounds,
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
 }
 
 void CastDialogView::SelectSource(SourceType source) {

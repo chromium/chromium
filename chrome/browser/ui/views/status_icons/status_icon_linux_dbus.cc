@@ -36,6 +36,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -421,7 +422,7 @@ void StatusIconLinuxDbus::OnContextMenu(
   }
   menu_runner_->RunMenuAt(
       nullptr, nullptr, gfx::Rect(gfx::Point(x, y), gfx::Size()),
-      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_MOUSE);
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kMouse);
   std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 

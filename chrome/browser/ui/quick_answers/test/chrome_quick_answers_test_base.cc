@@ -15,6 +15,7 @@
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
@@ -73,7 +74,7 @@ void ChromeQuickAnswersTestBase::CreateAndShowBasicMenu() {
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   menu_runner_->RunMenuAt(menu_parent_.get(), nullptr, gfx::Rect(),
                           views::MenuAnchorPosition::kTopLeft,
-                          ui::MENU_SOURCE_MOUSE);
+                          ui::mojom::MenuSourceType::kMouse);
 }
 
 void ChromeQuickAnswersTestBase::ResetMenuParent() {

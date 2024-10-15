@@ -35,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -785,7 +786,7 @@ void OpaqueBrowserFrameView::WindowIconPressed() {
   menu_runner_->RunMenuAt(
       browser_view()->GetWidget(), window_icon_->button_controller(),
       window_icon_->GetBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
-      ui::MENU_SOURCE_MOUSE);
+      ui::mojom::MenuSourceType::kMouse);
 #endif
 }
 

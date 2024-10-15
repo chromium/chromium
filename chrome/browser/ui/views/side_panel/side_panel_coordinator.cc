@@ -56,6 +56,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
@@ -421,7 +422,7 @@ void SidePanelCoordinator::OpenMoreInfoMenu() {
                               header_more_info_button_->button_controller()),
                           header_more_info_button_->GetAnchorBoundsInScreen(),
                           views::MenuAnchorPosition::kTopRight,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()

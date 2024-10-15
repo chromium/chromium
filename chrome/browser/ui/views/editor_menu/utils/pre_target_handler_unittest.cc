@@ -12,6 +12,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -163,7 +164,7 @@ class PreTargetHandlerTest : public ChromeViewsTestBase,
     menu_runner_->RunMenuAt(
         /*parent=*/test_widget_.get(),
         /*button_controller=*/nullptr, /*bounds=*/gfx::Rect(),
-        views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
+        views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
   }
 
   void TearDown() override {

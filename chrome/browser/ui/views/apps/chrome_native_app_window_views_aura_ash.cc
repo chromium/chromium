@@ -42,6 +42,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -337,7 +338,7 @@ ui::ZOrderLevel ChromeNativeAppWindowViewsAuraAsh::GetZOrderLevel() const {
 void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   menu_model_ = CreateMultiUserContextMenu(GetNativeWindow());
   if (!menu_model_)
     return;

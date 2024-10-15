@@ -39,6 +39,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -1075,7 +1076,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
 void DownloadBubbleRowView::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // Similar hack as in MenuButtonController and DownloadItemView.
   // We're about to show the menu from a mouse press. By showing from the
   // mouse press event we block RootView in mouse dispatching. This also

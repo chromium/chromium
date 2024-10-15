@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -84,9 +85,10 @@ class DownloadBubbleRowView : public views::View,
   void UpdateRowForFocus(bool visible, bool request_focus_on_last_quick_action);
 
   // Overrides views::ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // Overrides ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

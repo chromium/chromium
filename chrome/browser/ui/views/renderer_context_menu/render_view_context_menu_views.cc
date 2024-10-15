@@ -34,6 +34,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_host.h"
@@ -138,7 +139,7 @@ RenderViewContextMenuViews* RenderViewContextMenuViews::Create(
 
 void RenderViewContextMenuViews::RunMenuAt(views::Widget* parent,
                                            const gfx::Point& point,
-                                           ui::MenuSourceType type) {
+                                           ui::mojom::MenuSourceType type) {
   static_cast<ToolkitDelegateViews*>(toolkit_delegate())->
       RunMenuAt(parent, point, type);
 }

@@ -11,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/wm_role_names_linux.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -95,7 +96,7 @@ void StatusIconButtonLinux::OnSetDelegate() {
 void StatusIconButtonLinux::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ui::MenuModel* menu = delegate_->GetMenuModel();
   if (!menu) {
     return;

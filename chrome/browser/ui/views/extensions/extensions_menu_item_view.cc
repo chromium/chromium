@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -534,7 +535,7 @@ void ExtensionMenuItemView::OnContextMenuPressed() {
   // TODO(crbug.com/41478477): Cleanup the menu source type.
   context_menu_controller_->ShowContextMenuForViewImpl(
       context_menu_button_, context_menu_button_->GetMenuPosition(),
-      ui::MENU_SOURCE_MOUSE);
+      ui::mojom::MenuSourceType::kMouse);
 }
 
 void ExtensionMenuItemView::OnPinButtonPressed() {

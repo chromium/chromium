@@ -20,6 +20,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/context_menu_controller.h"
@@ -85,9 +86,10 @@ class ChromeNativeAppWindowViewsAuraAsh
   ui::ZOrderLevel GetZOrderLevel() const override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& p,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& p,
+      ui::mojom::MenuSourceType source_type) override;
 
   // WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(

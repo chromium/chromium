@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
@@ -33,7 +34,7 @@ ExtensionContextMenuController::~ExtensionContextMenuController() = default;
 void ExtensionContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ui::MenuModel* model = controller_->GetContextMenu(context_menu_source_);
 
   // It's possible the action doesn't have a context menu.

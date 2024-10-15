@@ -66,6 +66,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -754,7 +755,7 @@ void WebUITabStripContainerView::ShowContextMenuAtPoint(
       context_menu_model_.get(), menu_runner_flags, on_menu_closed_callback);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
       web_view_->GetWebContents()->GetContentNativeView());
 }
 

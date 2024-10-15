@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
@@ -385,9 +386,10 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   Widget::OnNativeWidgetWorkspaceChanged();
 }
 
-void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
-                                              const gfx::Point& p,
-                                              ui::MenuSourceType source_type) {
+void BrowserFrame::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& p,
+    ui::mojom::MenuSourceType source_type) {
   if (IsRunningInForcedAppMode()) {
     return;
   }

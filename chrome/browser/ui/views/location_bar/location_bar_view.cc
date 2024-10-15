@@ -124,6 +124,7 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -1385,7 +1386,7 @@ void LocationBarView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void LocationBarView::ShowContextMenu(const gfx::Point& p,
-                                      ui::MenuSourceType source_type) {
+                                      ui::mojom::MenuSourceType source_type) {
   omnibox_view_->ShowContextMenu(p, source_type);
 }
 

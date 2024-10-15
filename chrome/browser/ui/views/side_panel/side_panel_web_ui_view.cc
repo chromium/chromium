@@ -19,6 +19,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
@@ -68,7 +69,7 @@ void SidePanelWebUIView::ShowCustomContextMenu(
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
       contents_wrapper_->web_contents()->GetContentNativeView());
 }
 

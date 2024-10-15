@@ -2712,6 +2712,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings/app_management",
+      "//ui/base/mojom:ui_base_types",
     ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
@@ -3572,6 +3573,8 @@ static_library("ui") {
       "webui/version/version_util_win.h",
     ]
 
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
+
     deps += [
       "//chrome/browser:titlebar_config",
       "//chrome/browser/win:mica_titlebar",
@@ -3635,6 +3638,8 @@ static_library("ui") {
       "webui/help/version_updater_basic.cc",
       "webui/settings/settings_utils_linux.cc",
     ]
+
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
 
     deps += [
       "//ui/base:wm_role_names",
@@ -5302,6 +5307,8 @@ static_library("ui") {
       "views/theme_profile_key.cc",
       "views/theme_profile_key.h",
     ]
+
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
 
     deps += [
       "//chrome/browser/ui/aura/accessibility",
