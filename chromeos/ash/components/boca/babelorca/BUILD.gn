@@ -11,6 +11,7 @@ static_library("babelorca") {
   sources = [
     "babel_orca_manager.cc",
     "babel_orca_manager.h",
+    "babel_orca_speech_recognizer.h",
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
     "request_data_wrapper.cc",
