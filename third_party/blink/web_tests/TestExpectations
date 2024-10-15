@@ -2785,7 +2785,6 @@ crbug.com/358399788 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/
 crbug.com/358461054 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/concat.https.any.worker.html?npu [ Failure Timeout ]
 crbug.com/358456309 [ Mac15-arm64 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/358456309 [ Mac15 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
-crbug.com/358192613 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash Pass ]
 crbug.com/358192613 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash Pass ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.html [ Failure ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.html [ Failure ]
