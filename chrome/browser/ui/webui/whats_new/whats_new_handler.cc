@@ -91,9 +91,9 @@ void WhatsNewHandler::RecordModuleImpression(
   action_name.append(module_name);
   base::RecordComputedAction(action_name);
 
-  std::string base_histogram_name = "UserEducation.WhatsNew.ModuleShown.";
-  base_histogram_name.append(module_name);
-  base::UmaHistogramEnumeration(action_name, position);
+  std::string histogram_name = "UserEducation.WhatsNew.ModuleShown.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
 }
 
 void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {
@@ -119,14 +119,63 @@ void WhatsNewHandler::RecordModuleLinkClicked(
   action_name.append(module_name);
   base::RecordComputedAction(action_name);
 
-  std::string base_histogram_name = "UserEducation.WhatsNew.ModuleLinkClicked.";
-  base_histogram_name.append(module_name);
-  base::UmaHistogramEnumeration(action_name, position);
+  std::string histogram_name = "UserEducation.WhatsNew.ModuleLinkClicked.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
 }
 
 void WhatsNewHandler::RecordBrowserCommandExecuted() {
   base::RecordAction(
       base::UserMetricsAction("UserEducation.WhatsNew.BrowserCommandExecuted"));
+}
+
+void WhatsNewHandler::RecordModuleVideoStarted(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
+  std::string histogram_name = "UserEducation.WhatsNew.VideoStarted.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
+}
+
+void WhatsNewHandler::RecordModuleVideoEnded(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
+  std::string histogram_name = "UserEducation.WhatsNew.VideoEnded.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
+}
+
+void WhatsNewHandler::RecordModulePlayClicked(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.PlayClicked"));
+
+  std::string histogram_name = "UserEducation.WhatsNew.PlayClicked.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
+}
+
+void WhatsNewHandler::RecordModulePauseClicked(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.PauseClicked"));
+
+  std::string histogram_name = "UserEducation.WhatsNew.PauseClicked.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
+}
+
+void WhatsNewHandler::RecordModuleRestartClicked(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.RestartClicked"));
+
+  std::string histogram_name = "UserEducation.WhatsNew.RestartClicked.";
+  histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(histogram_name, position);
 }
 
 void WhatsNewHandler::GetServerUrl(bool is_staging,

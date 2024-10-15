@@ -83,4 +83,37 @@ suite('WhatsNewV2AppTest', function() {
     assertEquals('ChromeFeature', moduleImpression[0]);
     assertEquals(ModulePosition.kSpotlight1, moduleImpression[1]);
   });
+
+  test('with video metrics from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_module_video_events'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    const videoStarted =
+        await proxy.handler.whenCalled('recordModuleVideoStarted');
+    assertEquals('ChromeFeature', videoStarted[0]);
+    assertEquals(ModulePosition.kSpotlight1, videoStarted[1]);
+
+    const videoEnded = await proxy.handler.whenCalled('recordModuleVideoEnded');
+    assertEquals('ChromeVideoEndFeature', videoEnded[0]);
+    assertEquals(ModulePosition.kSpotlight3, videoEnded[1]);
+
+    const playClicked =
+        await proxy.handler.whenCalled('recordModulePlayClicked');
+    assertEquals('ChromeVideoFeature', playClicked[0]);
+    assertEquals(ModulePosition.kSpotlight1, playClicked[1]);
+
+    const pauseClicked =
+        await proxy.handler.whenCalled('recordModulePauseClicked');
+    assertEquals('ChromeVideoFeature', pauseClicked[0]);
+    assertEquals(ModulePosition.kSpotlight2, pauseClicked[1]);
+
+    const restartClicked =
+        await proxy.handler.whenCalled('recordModuleRestartClicked');
+    assertEquals('ChromeVideoFeature', restartClicked[0]);
+    assertEquals(ModulePosition.kSpotlight3, restartClicked[1]);
+  });
 });

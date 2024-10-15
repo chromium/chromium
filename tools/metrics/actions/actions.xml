@@ -43877,6 +43877,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.WhatsNew.PauseClicked">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The user clicked the pause button on a video in a What's New module.
+  </description>
+</action>
+
+<action name="UserEducation.WhatsNew.PlayClicked">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The user clicked the play button on a video in a What's New module.
+  </description>
+</action>
+
+<action name="UserEducation.WhatsNew.RestartClicked">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The user clicked the restart button on a video in a What's New module.
+  </description>
+</action>
+
 <action name="UserEducation.WhatsNew.Shown">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
