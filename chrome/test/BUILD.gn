@@ -1958,6 +1958,7 @@ if (!is_android) {
       "//chrome/browser/ui/hats:browser_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/pdf",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
       "//chrome/browser/ui/safety_hub",

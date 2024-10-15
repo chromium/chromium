@@ -8021,6 +8021,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/pdf",
       "//chrome/browser/pdf:pdf_pref_names",
+      "//chrome/browser/ui/pdf",
       "//components/pdf/browser",
       "//components/pdf/browser:interceptors",
       "//extensions/common/api",

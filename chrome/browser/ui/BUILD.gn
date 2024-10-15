@@ -5498,13 +5498,21 @@ static_library("ui") {
   }
 
   if (enable_pdf) {
-    sources += [
-      "pdf/chrome_pdf_document_helper_client.cc",
-      "pdf/chrome_pdf_document_helper_client.h",
-    ]
     deps += [
+      "//chrome/browser/ui/pdf",
+
+      # TODO(crbug.com/372750819): Remove this dependency when the following
+      # files are built off of modularized GN targets:
+      # - c/b/ui/browser_commands.cc
+      # - c/b/ui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
+      # - c/b/ui/webui/print_preview/print_preview_ui.cc
       "//chrome/browser/pdf",
-      "//components/pdf/browser",
+
+      # TODO(crbug.com/340272378, crbug.com/372750819): Remove this dependency
+      # when "PdfOopif" feature gets enabled by default or the following files
+      # are built off of modularized GN targets:
+      # - c/b/ui/browser_commands.cc
+      # - c/b/ui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
       "//pdf:features",
     ]
   }

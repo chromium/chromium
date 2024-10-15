@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+assert(enable_pdf)
+
+source_set("pdf") {
+  sources = [
+    "chrome_pdf_document_helper_client.cc",
+    "chrome_pdf_document_helper_client.h",
+  ]
+  deps = [
+    "//chrome/browser/download",
+    "//chrome/browser/pdf",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/common",
+    "//components/pdf/browser",
+    "//extensions/browser",
+    "//pdf:features",
+  ]
+}
