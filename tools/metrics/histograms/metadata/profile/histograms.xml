@@ -157,6 +157,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.GaiaNameShareStatus" enum="ProfileGaiaNameShareStatus"
+    expires_after="2025-10-11">
+  <owner>droger@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    For all Gaia first names used as primary account in all profiles, records
+    whether this name is unique or if there are multiple profiles sharing the
+    same first name. Empty names are not considered. Recorded every 24 hours,
+    for each name. For example, if two profiles use the name &quot;A&quot; and
+    one profile uses the name &quot;B&quot;, the histogram is recorded twice
+    (once for &quot;A&quot; and once for &quot;B&quot;).
+  </summary>
+</histogram>
+
 <histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
     expires_after="2024-10-27">
   <owner>arabm@google.com</owner>

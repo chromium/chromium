@@ -348,6 +348,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Delayed and Crashed"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileGaiaNameShareStatus) -->
+
+<enum name="ProfileGaiaNameShareStatus">
+  <int value="0" label="Not shared"/>
+  <int value="1" label="Shared by non managed profiles"/>
+  <int value="2" label="Shared only by managed profiles"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:GaiaNameShareStatus) -->
+
 <enum name="ProfileKeepAliveOrigin">
   <int value="0" label="kWaitingForFirstBrowserWindow"/>
   <int value="1" label="kBrowserWindow"/>

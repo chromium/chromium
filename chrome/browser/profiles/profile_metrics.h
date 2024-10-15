@@ -103,6 +103,23 @@ class ProfileMetrics {
     NUM_PROFILE_AUTH_METRICS
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(GaiaNameShareStatus)
+  enum class GaiaNameShareStatus {
+    // The Gaia name is unique among profiles.
+    kNotShared,
+    // Two non-managed profiles or more share this name.
+    kSharedNonManaged,
+    // The Gaia name is unique among non-managed profiles, but may be shared by
+    // multiple managed profiles, or by one managed profile and a non-managed
+    // profile.
+    kSharedManaged,
+
+    kMaxValue = kSharedManaged,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileGaiaNameShareStatus)
+
   // Returns whether profile |entry| is considered active for metrics.
   static bool IsProfileActive(const ProfileAttributesEntry* entry);
 
