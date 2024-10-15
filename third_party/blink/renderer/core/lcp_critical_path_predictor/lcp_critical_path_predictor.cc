@@ -313,7 +313,9 @@ void LCPCriticalPathPredictor::OnStartPreload(
     const KURL& url,
     const ResourceType& resource_type) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kHttpDiskCachePrewarming)) {
+          blink::features::kHttpDiskCachePrewarming) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kLCPPPrefetchSubresource)) {
     return;
   }
   if (!frame_->IsOutermostMainFrame()) {

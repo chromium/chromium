@@ -13156,6 +13156,26 @@
             ]
         }
     ],
+    "LCPPPrefetchSubresource": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LCPPPrefetchSubresource"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPTimingPredictorPrerender2": [
         {
             "platforms": [

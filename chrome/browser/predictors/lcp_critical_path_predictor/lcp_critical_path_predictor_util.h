@@ -205,6 +205,9 @@ bool IsURLValidForLcpp(const GURL& url);
 // the first level path or it length exceeds kLCPPMultipleKeyMaxPathLength.
 std::string GetFirstLevelPath(const GURL& url);
 
+// Returns true if `url1` and `url2` are the same site.
+bool IsSameSite(const GURL& url1, const GURL& url2);
+
 class LcppDataMap {
  public:
   using DataTable = sqlite_proto::KeyValueTable<LcppData>;

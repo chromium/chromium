@@ -91,7 +91,9 @@ PrefetchRequest::PrefetchRequest(
     : url(url),
       network_anonymization_key(network_anonymization_key),
       destination(destination) {
-  DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  CHECK(
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));
   DCHECK(!network_anonymization_key.IsEmpty());
 }
 

@@ -138,10 +138,13 @@ void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
     base::TimeDelta subresource_load_start,
     network::mojom::RequestDestination request_destination) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kHttpDiskCachePrewarming)) {
+          blink::features::kHttpDiskCachePrewarming) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kLCPPPrefetchSubresource)) {
     ReportBadMessageAndDeleteThis(
         "NotifyFetchedSubresource can be called "
-        "only if kHttpDiskCachePrewarming is enabled.");
+        "only if kHttpDiskCachePrewarming or kLCPPPrefetchSubresource are "
+        "enabled.");
     return;
   }
   if (!subresource_url.SchemeIsHTTPOrHTTPS()) {

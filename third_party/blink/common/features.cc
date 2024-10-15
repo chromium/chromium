@@ -1509,6 +1509,10 @@ const base::FeatureParam<int> kLcppMultipleKeyHistogramSlidingWindowSize{
 const base::FeatureParam<int> kLcppMultipleKeyMaxHistogramBuckets{
     &kLCPPMultipleKey, "lcpp_multiple_key_max_histogram_buckets", 10};
 
+BASE_FEATURE(kLCPPPrefetchSubresource,
+             "LCPPPrefetchSubresource",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHttpDiskCachePrewarming,
              "HttpDiskCachePrewarming",
              base::FEATURE_DISABLED_BY_DEFAULT);

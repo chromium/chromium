@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
@@ -996,6 +997,13 @@ std::string GetFirstLevelPath(const GURL& url) {
     first_level_path_length = second_slash_pos;
   }
   return url.path().substr(0, first_level_path_length);
+}
+
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,

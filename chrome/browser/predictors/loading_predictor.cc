@@ -317,6 +317,68 @@ bool LoadingPredictor::PrepareForPageLoad(
     }
   }
 
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource)) {
+    const std::optional<LcppStat> lcpp_stat =
+        resource_prefetch_predictor()->GetLcppStat(initiator_origin, url);
+    if (lcpp_stat) {
+      auto network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(url::Origin::Create(url)));
+
+      const std::vector<GURL>& subresource_urls =
+          PredictFetchedSubresourceUrls(*lcpp_stat);
+      if (!subresource_urls.empty()) {
+        size_t subresource_urls_same_site = 0;
+        size_t subresource_urls_cross_site = 0;
+        for (const GURL& subresource_url : subresource_urls) {
+          const auto destination_it =
+              lcpp_stat->fetched_subresource_url_destination().find(
+                  subresource_url.spec());
+          // Database is broken.
+          // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
+          // database.
+          CHECK(destination_it !=
+                lcpp_stat->fetched_subresource_url_destination().end());
+          CHECK_GE(destination_it->second, 0);
+          CHECK_LE(destination_it->second,
+                   static_cast<int32_t>(
+                       network::mojom::RequestDestination::kMaxValue));
+          const network::mojom::RequestDestination destination =
+              static_cast<network::mojom::RequestDestination>(
+                  destination_it->second);
+          if (destination == network::mojom::RequestDestination::kFont) {
+            // This is done by kLCPPFontURLPredictor.
+            continue;
+          }
+          if (!PrefetchManager::IsAvailableForPrefetch(destination)) {
+            continue;
+          }
+          const bool is_same_site = IsSameSite(url, subresource_url);
+          if (is_same_site) {
+            subresource_urls_same_site++;
+          } else {
+            subresource_urls_cross_site++;
+            // TODO(crbug.com/40140806): Allow cross site.
+            // Once we support cross-site cases, remove the following continue;
+            continue;
+          }
+          prediction.prefetch_requests.emplace_back(
+              subresource_url, network_anonymization_key, destination);
+        }
+        base::UmaHistogramCounts10000(
+            "Blink.LCPP.PrefetchSubresource.Count.SameSite",
+            base::checked_cast<int>(subresource_urls_same_site));
+        base::UmaHistogramCounts10000(
+            "Blink.LCPP.PrefetchSubresource.Count.CrossSite",
+            base::checked_cast<int>(subresource_urls_cross_site));
+        base::UmaHistogramPercentage(
+            "Blink.LCPP.PrefetchSubresource.Count.SameSiteRatio",
+            base::checked_cast<int>(100 * subresource_urls_same_site /
+                                    subresource_urls.size()));
+      }
+    }
+  }
+
   // Return early if we do not have any requests.
   if (prediction.requests.empty() && prediction.prefetch_requests.empty())
     return false;
@@ -361,7 +423,9 @@ PreconnectManager* LoadingPredictor::preconnect_manager() {
 }
 
 PrefetchManager* LoadingPredictor::prefetch_manager() {
-  CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  CHECK(
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));
   CHECK(!shutdown_);
 
   if (!prefetch_manager_) {
@@ -468,7 +532,9 @@ void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
       (AfterStartupTaskUtils::IsBrowserStartupComplete() ||
        !base::FeatureList::IsEnabled(
            features::kAvoidLoadingPredictorPrefetchDuringBrowserStartup))) {
-    CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+    CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
+          base::FeatureList::IsEnabled(
+              blink::features::kLCPPPrefetchSubresource));
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }
 

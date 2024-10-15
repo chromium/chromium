@@ -3302,6 +3302,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.PrefetchSubresource.Count.SameSiteRatio" units="%"
+    expires_after="2025-02-10">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Ratio of the same site subresource URLs in prefetching subresources using
+    LCPP prewaming HttpDiskCache database.
+
+    This metric is emitted when predicted subresources URLs are appended to the
+    PreconnectPrediction structure for prefetching.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.PrefetchSubresource.Count.{Site}" units="count"
+    expires_after="2025-02-10">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of {Site} subresource URLs in prefetching subresources
+    using LCPP prewaming HttpDiskCache database.
+
+    This metric is emitted when predicted subresources URLs are appended to the
+    PreconnectPrediction structure for prefetching.
+  </summary>
+  <token key="Site">
+    <variant name="CrossSite" summary="cross-site subresources"/>
+    <variant name="SameSite" summary="same-site subresources"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.LCPP.PreloadedFontCount" units="count"
     expires_after="2025-02-10">
   <owner>yyanagisawa@chromium.org</owner>

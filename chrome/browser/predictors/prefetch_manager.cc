@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -176,7 +177,9 @@ PrefetchManager::~PrefetchManager() = default;
 
 void PrefetchManager::Start(const GURL& url,
                             std::vector<PrefetchRequest> requests) {
-  DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  CHECK(
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PrefetchInfo* info;
@@ -204,7 +207,9 @@ void PrefetchManager::Stop(const GURL& url) {
   it->second->was_canceled = true;
 }
 
-blink::mojom::ResourceType GetResourceType(
+// Returns a relevant ResourceType for the given RequestDestination if it's
+// supported by preftch. Otherwise, returns nullopt.
+std::optional<blink::mojom::ResourceType> GetResourceType(
     network::mojom::RequestDestination destination) {
   switch (destination) {
     case network::mojom::RequestDestination::kEmpty:
@@ -215,10 +220,38 @@ blink::mojom::ResourceType GetResourceType(
       return blink::mojom::ResourceType::kStylesheet;
     case network::mojom::RequestDestination::kFont:
       return blink::mojom::ResourceType::kFontResource;
-    default:
-      NOTREACHED_IN_MIGRATION() << destination;
+    case network::mojom::RequestDestination::kAudio:
+    case network::mojom::RequestDestination::kAudioWorklet:
+    case network::mojom::RequestDestination::kDocument:
+    case network::mojom::RequestDestination::kEmbed:
+    case network::mojom::RequestDestination::kFrame:
+    case network::mojom::RequestDestination::kIframe:
+    case network::mojom::RequestDestination::kImage:
+    case network::mojom::RequestDestination::kManifest:
+    case network::mojom::RequestDestination::kObject:
+    case network::mojom::RequestDestination::kPaintWorklet:
+    case network::mojom::RequestDestination::kReport:
+    case network::mojom::RequestDestination::kServiceWorker:
+    case network::mojom::RequestDestination::kSharedWorker:
+    case network::mojom::RequestDestination::kTrack:
+    case network::mojom::RequestDestination::kVideo:
+    case network::mojom::RequestDestination::kWebBundle:
+    case network::mojom::RequestDestination::kWorker:
+    case network::mojom::RequestDestination::kXslt:
+    case network::mojom::RequestDestination::kFencedframe:
+    case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kDictionary:
+    case network::mojom::RequestDestination::kSpeculationRules:
+    case network::mojom::RequestDestination::kJson:
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
+      return std::nullopt;
   }
-  return blink::mojom::ResourceType::kSubResource;
+}
+
+// static
+bool PrefetchManager::IsAvailableForPrefetch(
+    network::mojom::RequestDestination destination) {
+  return GetResourceType(destination).has_value();
 }
 
 void PrefetchManager::PrefetchUrl(
@@ -246,8 +279,12 @@ void PrefetchManager::PrefetchUrl(
 
   request.load_flags = net::LOAD_PREFETCH;
   request.destination = job->destination;
-  request.resource_type =
-      static_cast<int>(GetResourceType(request.destination));
+  auto resource_type = GetResourceType(request.destination);
+  DUMP_WILL_BE_CHECK(resource_type.has_value());
+  if (!resource_type.has_value()) {
+    resource_type = blink::mojom::ResourceType::kSubResource;
+  }
+  request.resource_type = static_cast<int>(*resource_type);
 
   // TODO(falken): Support CORS?
   request.mode = network::mojom::RequestMode::kNoCors;
