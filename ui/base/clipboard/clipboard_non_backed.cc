@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -372,24 +373,24 @@ class ClipboardDataBuilder {
 
   static void WriteText(std::string_view text) {
     ClipboardData* data = GetCurrentData();
-    data->set_text(text);
+    data->set_text(std::string(text));
   }
 
   static void WriteHTML(std::string_view markup,
                         std::optional<std::string_view> source_url) {
     ClipboardData* data = GetCurrentData();
-    data->set_markup_data(markup);
-    data->set_url(source_url ? *source_url : std::string());
+    data->set_markup_data(std::string(markup));
+    data->set_url(source_url ? std::string(*source_url) : std::string());
   }
 
   static void WriteSvg(std::string_view markup) {
     ClipboardData* data = GetCurrentData();
-    data->set_svg_data(markup);
+    data->set_svg_data(std::string(markup));
   }
 
   static void WriteRTF(std::string_view rtf) {
     ClipboardData* data = GetCurrentData();
-    data->SetRTFData(rtf);
+    data->SetRTFData(std::string(rtf));
   }
 
   static void WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -399,8 +400,8 @@ class ClipboardDataBuilder {
 
   static void WriteBookmark(std::string_view title, std::string_view url) {
     ClipboardData* data = GetCurrentData();
-    data->set_bookmark_title(title);
-    data->set_bookmark_url(url);
+    data->set_bookmark_title(std::string(title));
+    data->set_bookmark_url(std::string(url));
   }
 
   static void WriteWebSmartPaste() {

@@ -8,7 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
-#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
@@ -70,44 +70,44 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
       const std::optional<ClipboardFormatType>& custom_data_format) const;
 
   const std::string& text() const { return text_; }
-  void set_text(std::string_view text) {
-    text_ = text;
+  void set_text(std::string text) {
+    text_ = std::move(text);
     format_ |= static_cast<int>(ClipboardInternalFormat::kText);
   }
 
   const std::string& markup_data() const { return markup_data_; }
-  void set_markup_data(std::string_view markup_data) {
-    markup_data_ = markup_data;
+  void set_markup_data(std::string markup_data) {
+    markup_data_ = std::move(markup_data);
     format_ |= static_cast<int>(ClipboardInternalFormat::kHtml);
   }
 
   const std::string& svg_data() const { return svg_data_; }
-  void set_svg_data(std::string_view svg_data) {
-    svg_data_ = svg_data;
+  void set_svg_data(std::string svg_data) {
+    svg_data_ = std::move(svg_data);
     format_ |= static_cast<int>(ClipboardInternalFormat::kSvg);
   }
 
   const std::string& rtf_data() const { return rtf_data_; }
-  void SetRTFData(std::string_view rtf_data) {
-    rtf_data_ = rtf_data;
+  void SetRTFData(std::string rtf_data) {
+    rtf_data_ = std::move(rtf_data);
     format_ |= static_cast<int>(ClipboardInternalFormat::kRtf);
   }
 
   const std::string& url() const { return url_; }
-  void set_url(std::string_view url) {
-    url_ = url;
+  void set_url(std::string url) {
+    url_ = std::move(url);
     format_ |= static_cast<int>(ClipboardInternalFormat::kHtml);
   }
 
   const std::string& bookmark_title() const { return bookmark_title_; }
-  void set_bookmark_title(std::string_view bookmark_title) {
-    bookmark_title_ = bookmark_title;
+  void set_bookmark_title(std::string bookmark_title) {
+    bookmark_title_ = std::move(bookmark_title);
     format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
   }
 
   const std::string& bookmark_url() const { return bookmark_url_; }
-  void set_bookmark_url(std::string_view bookmark_url) {
-    bookmark_url_ = bookmark_url;
+  void set_bookmark_url(std::string bookmark_url) {
+    bookmark_url_ = std::move(bookmark_url);
     format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
   }
 

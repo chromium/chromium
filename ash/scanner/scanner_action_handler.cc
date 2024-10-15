@@ -216,10 +216,6 @@ void HandleDriveUploadCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
 std::unique_ptr<ui::ClipboardData> ClipboardDataFromAction(
     CopyToClipboardAction action) {
   auto data = std::make_unique<ui::ClipboardData>();
-  // The below setters cause copies as they take in `std::string_view`s, not
-  // `std::string`s.
-  // TODO: b/367871707 - Make `ui::ClipboardData` setters support copy elision:
-  // https://abseil.io/tips/117
   if (!action.plain_text.empty()) {
     data->set_text(std::move(action.plain_text));
   }
