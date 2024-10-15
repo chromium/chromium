@@ -25,7 +25,8 @@ class LobsterClient;
 
 class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
  public:
-  using ActionCallback = base::OnceCallback<void(const std::string&)>;
+  using ActionCallback =
+      base::OnceCallback<void(const std::string&, StatusCallback)>;
 
   explicit LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
                               LobsterEntryPoint entry_point);

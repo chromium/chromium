@@ -64,14 +64,15 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                                            const base::FilePath& file_path,
                                            StatusCallback status_callback) {
   RecordLobsterState(LobsterMetricState::kCandidateDownload);
-  InflateCandidateAndPerformAction(
-      candidate_id,
-      base::BindOnce(
-          [](const base::FilePath& file_path, const std::string& image_bytes) {
-            WriteImageToPath(file_path, image_bytes);
-          },
-          file_path),
-      std::move(status_callback));
+  InflateCandidateAndPerformAction(candidate_id,
+                                   base::BindOnce(&WriteImageToPath, file_path),
+                                   base::BindOnce([](bool success) {
+                                     // TODO: b:348514719 - Adds any logic to
+                                     // execute before returning the status back
+                                     // to WebUI, e.g. recording candidate
+                                     // download metric.
+                                     return success;
+                                   }).Then(std::move(status_callback)));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
@@ -85,24 +86,30 @@ void LobsterSessionImpl::RequestCandidates(const std::string& query,
 
 void LobsterSessionImpl::CommitAsInsert(int candidate_id,
                                         StatusCallback status_callback) {
-  InflateCandidateAndPerformAction(
-      candidate_id, base::BindOnce([](const std::string& image_bytes) {
-        InsertImageOrCopyToClipboard(GetFocusedTextInputClient(), image_bytes);
-      }),
-      std::move(status_callback));
+  InflateCandidateAndPerformAction(candidate_id,
+                                   base::BindOnce(&InsertImageOrCopyToClipboard,
+                                                  GetFocusedTextInputClient()),
+                                   base::BindOnce([](bool success) {
+                                     // TODO: b:348514607 - Adds any logic to
+                                     // execute before returning the status back
+                                     // to WebUI, e.g. recording commit as
+                                     // insert metric.
+                                     return success;
+                                   }).Then(std::move(status_callback)));
 }
 
 void LobsterSessionImpl::CommitAsDownload(int candidate_id,
                                           const base::FilePath& file_path,
                                           StatusCallback status_callback) {
-  InflateCandidateAndPerformAction(
-      candidate_id,
-      base::BindOnce(
-          [](const base::FilePath& file_path, const std::string& image_bytes) {
-            WriteImageToPath(file_path, image_bytes);
-          },
-          file_path),
-      std::move(status_callback));
+  InflateCandidateAndPerformAction(candidate_id,
+                                   base::BindOnce(&WriteImageToPath, file_path),
+                                   base::BindOnce([](bool success) {
+                                     // TODO: b:348514797 - Adds any logic to
+                                     // execute before returning the status back
+                                     // to WebUI, e.g. recording commit as
+                                     // download metric.
+                                     return success;
+                                   }).Then(std::move(status_callback)));
 }
 
 void LobsterSessionImpl::PreviewFeedback(
@@ -161,22 +168,17 @@ void LobsterSessionImpl::InflateCandidateAndPerformAction(
   client_->InflateCandidate(
       candidate->seed, candidate->query,
       base::BindOnce(
-          [](ActionCallback action_callback, const LobsterResult& result) {
-            if (!result.has_value()) {
+          [](ActionCallback action_callback, StatusCallback status_callback,
+             const LobsterResult& result) {
+            if (!result.has_value() || result->size() == 0) {
               LOG(ERROR) << "No image candidate";
-              return false;
+              std::move(status_callback).Run(false);
+              return;
             }
-
-            // TODO: b/348283703 - Return the value of action callback.
-            std::move(action_callback).Run((*result)[0].image_bytes);
-            return true;
+            std::move(action_callback)
+                .Run((*result)[0].image_bytes, std::move(status_callback));
           },
-          std::move(action_callback))
-          .Then(base::BindOnce(
-              [](StatusCallback status_callback, bool success) {
-                std::move(status_callback).Run(success);
-              },
-              std::move(status_callback))));
+          std::move(action_callback), std::move(status_callback)));
 }
 
 void LobsterSessionImpl::LoadUI(std::optional<std::string> query) {

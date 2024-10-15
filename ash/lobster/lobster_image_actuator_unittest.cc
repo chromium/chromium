@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -53,39 +54,45 @@ class LobsterImageActuatorTest : public testing::Test {
 
 TEST_F(LobsterImageActuatorTest, CanInsertImageIntoEligibleTextInputField) {
   ui::FakeTextInputClient text_input_client(&ime(), {.can_insert_image = true});
+  base::test::TestFuture<bool> future;
 
   InsertImageOrCopyToClipboard(&text_input_client,
-                               /*image_bytes=*/"a1b2c3");
+                               /*image_bytes=*/"a1b2c3", future.GetCallback());
 
   EXPECT_EQ(text_input_client.last_inserted_image_url(),
             GURL(base::StrCat(
                 {"data:image/jpeg;base64,", base::Base64Encode("a1b2c3")})));
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(LobsterImageActuatorTest,
        FallbackToCopyToClipboardInIneligibleTextInputField) {
   ui::FakeTextInputClient text_input_client(&ime(),
                                             {.can_insert_image = false});
+  base::test::TestFuture<bool> future;
 
   InsertImageOrCopyToClipboard(&text_input_client,
-                               /*image_bytes=*/"a1b2c3");
+                               /*image_bytes=*/"a1b2c3", future.GetCallback());
 
   EXPECT_EQ(text_input_client.last_inserted_image_url(), std::nullopt);
   EXPECT_EQ(
       ReadHTMLFromClipboard(ui::Clipboard::GetForCurrentThread()),
       base::StrCat({u"<img src=\"data:image/jpeg;base64,",
                     base::UTF8ToUTF16(base::Base64Encode("a1b2c3")), u"\">"}));
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(LobsterImageActuatorTest, WriteImageToPathCreatesNewFile) {
   std::string data;
+  base::test::TestFuture<bool> future;
 
-  WriteImageToPath(Path("./dummy_image.jpeg"), "a1b2c3");
+  WriteImageToPath(Path("./dummy_image.jpeg"), "a1b2c3", future.GetCallback());
   Wait();
 
   EXPECT_TRUE(base::PathExists(Path("./dummy_image.jpeg")));
   ASSERT_TRUE(base::ReadFileToString(Path("./dummy_image.jpeg"), &data));
   EXPECT_EQ(data, "a1b2c3");
+  EXPECT_TRUE(future.Get());
 }
 
 }  // namespace
