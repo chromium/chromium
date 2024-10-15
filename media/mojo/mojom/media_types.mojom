@@ -492,7 +492,6 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
   gpu.mojom.ExportedSharedImage? shared_image;
   gpu.mojom.SyncToken sync_token;
-  uint32 texture_target;
 };
 
 [EnableIf=is_linux_or_chromeos]
@@ -505,7 +504,6 @@ struct MailboxVideoFrameData {
 struct SharedImageVideoFrameData {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
-  uint32 texture_target;
   // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the
   // video is hardware decoded and the display compositor uses Vulkan.
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;

@@ -1467,18 +1467,6 @@ uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
   return GetVisibleDataInternal(writable_data(plane), plane);
 }
 
-// TODO(crbug.com/332564976): Update method to not take in param.
-const gpu::MailboxHolder VideoFrame::mailbox_holder(
-    size_t texture_index) const {
-  CHECK_EQ(texture_index, 0u);
-  CHECK(HasSharedImage());
-  if (wrapped_frame_) {
-    return wrapped_frame_->mailbox_holder(texture_index);
-  }
-  return gpu::MailboxHolder(shared_image_->mailbox(), acquire_sync_token_,
-                            shared_image_->GetTextureTarget());
-}
-
 gpu::SyncToken VideoFrame::acquire_sync_token() const {
   CHECK(HasSharedImage());
   return wrapped_frame_ ? wrapped_frame_->acquire_sync_token()

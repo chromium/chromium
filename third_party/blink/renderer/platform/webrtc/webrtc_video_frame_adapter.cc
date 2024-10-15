@@ -313,7 +313,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 
         auto* sii = raster_context_provider->SharedImageInterface();
 
-        const auto& mailbox = dst_frame->mailbox_holder(/*plane=*/0).mailbox;
+        const auto& mailbox = dst_frame->shared_image()->mailbox();
         sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
 
         // Synchronize RasterInterface with SharedImageInterface.

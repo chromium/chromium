@@ -703,11 +703,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const uint8_t* visible_data(size_t plane) const;
   uint8_t* GetWritableVisibleData(size_t plane);
 
-  // Returns a mailbox holder for a given texture.
-  // Only valid to call if this is a NATIVE_TEXTURE frame. Before using the
-  // mailbox, the caller must wait for the included sync point.
-  const gpu::MailboxHolder mailbox_holder(size_t texture_index) const;
-
   // Returns the `acquire_sync_token_`
   gpu::SyncToken acquire_sync_token() const;
 
