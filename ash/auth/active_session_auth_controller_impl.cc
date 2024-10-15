@@ -297,7 +297,6 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
 
   auth_session_broadcast_id_ = user_context_->GetBroadcastId();
 
-  uma_recorder_.RecordShow(auth_request_->GetAuthReason());
   UserDataAuthClient::Get()->AddAuthFactorStatusUpdateObserver(this);
 
   available_factors_.Clear();
@@ -313,6 +312,14 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
       available_factors_.Put(AuthInputType::kPin);
     }
   }
+
+  if (available_factors_.empty()) {
+    LOG(ERROR) << "No password/PIN found for user.";
+    StartClose();
+    return;
+  }
+
+  uma_recorder_.RecordShow(auth_request_->GetAuthReason());
 
   MaybePrepareFingerprint(
       BindOnce(&ActiveSessionAuthControllerImpl::AuthFactorsAreReady,
