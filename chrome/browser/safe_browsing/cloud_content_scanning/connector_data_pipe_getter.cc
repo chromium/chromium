@@ -64,6 +64,9 @@ bool ConnectorDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
   void* mapped = mmap(nullptr, static_cast<size_t>(file_len), PROT_READ,
                       MAP_SHARED, file_.GetPlatformFile(), 0);
   if (mapped == MAP_FAILED) {
+    LOG(ERROR) << "Upload failure: The creation of a memory mapped file with "
+                  "MAP_SHARED failed for file "
+               << file_.GetPlatformFile();
     // Retry with MAP_PRIVATE mode.
     // Some file systems do not support MAP_SHARED. Here, it is acceptable to
     // use MAP_PRIVATE instead. Note: For MAP_PRIVATE, it is unspecified whether
@@ -73,9 +76,9 @@ bool ConnectorDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
                   MAP_PRIVATE, file_.GetPlatformFile(), 0);
   }
   if (mapped == MAP_FAILED) {
-    DPLOG(ERROR) << "Upload failure: The creation of a memory mapped file "
-                    "failed for file "
-                 << file_.GetPlatformFile();
+    LOG(ERROR) << "Upload failure: The creation of a memory mapped file with "
+                  "MAP_PRIVATE failed for file "
+               << file_.GetPlatformFile();
     return false;
   }
   length_ = static_cast<size_t>(file_len);
