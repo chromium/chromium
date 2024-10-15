@@ -2221,7 +2221,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
       </message>
-      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" meaning="An on-screen button that enters the user's input" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
         Enter
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_PASSPHRASE_TITLE" desc="The title of the identity error info bar when the passphrase is required. [iOS only]">
@@ -5416,7 +5416,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SYNC_CONFIRM_PASSPHRASE_LABEL" desc="The text for the confirm-passphrase field. [Length: 20em] [iOS only]">
         Confirm passphrase
       </message>
-      <message name="IDS_IOS_SYNC_DECRYPT_BUTTON" desc="The title for the decrypt button on the encryption password screen [Length: 10em] [iOS only]">
+      <message name="IDS_IOS_SYNC_DECRYPT_BUTTON" meaning="An on-screen button that enters the user's input" desc="The title for the decrypt button on the encryption password screen [Length: 10em] [iOS only]">
         Enter
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_CREATE_PASSPHRASE" desc="The title for passphrase page where the user creates the sync encryption passphrase [Length: 20em] [iOS only]">
