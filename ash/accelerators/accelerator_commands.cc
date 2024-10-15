@@ -1448,10 +1448,8 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
   }
 
   CHECK(Shell::Get()->picker_controller());
-  if (auto* picker_controller = Shell::Get()->picker_controller()) {
-    picker_controller->ToggleWidget(accelerator_timestamp);
-    RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
-  }
+  Shell::Get()->picker_controller()->ToggleWidget(accelerator_timestamp);
+  RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
 }
 
 void EnableSelectToSpeak() {

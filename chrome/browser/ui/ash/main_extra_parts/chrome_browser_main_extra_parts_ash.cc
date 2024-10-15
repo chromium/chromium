@@ -416,10 +416,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
-  if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
-    picker_client_ = std::make_unique<PickerClientImpl>(
-        picker_controller, user_manager::UserManager::Get());
-  }
+  picker_client_ = std::make_unique<PickerClientImpl>(
+      ash::Shell::Get()->picker_controller(), user_manager::UserManager::Get());
 
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
 

@@ -16,7 +16,6 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
@@ -466,8 +465,6 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return !::features::IsAccessibilityMouseKeysEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
-    case kTogglePicker:
-      return !Shell::Get()->picker_controller();
   }
 
   return false;
