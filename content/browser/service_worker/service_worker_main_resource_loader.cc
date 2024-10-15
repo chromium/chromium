@@ -248,6 +248,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   RaceNetworkRequestMode race_network_request_mode =
       RaceNetworkRequestMode::kDefault;
+  std::optional<blink::ServiceWorkerRouterRaceSource> race_source;
   // Check if registered static router rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
@@ -330,6 +331,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           return;
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
           race_network_request_mode = RaceNetworkRequestMode::kForced;
+          race_source = sources[0].race_source;
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
           race_network_request_mode = RaceNetworkRequestMode::kSkipped;
@@ -382,6 +384,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     MaybeDispatchPreload(race_network_request_mode, context, active_worker);
   }
 
+  if (race_network_request_mode == RaceNetworkRequestMode::kForced) {
+    CHECK_EQ(race_source->target, blink::ServiceWorkerRouterRaceSource::
+                                      TargetEnum::kNetworkAndFetchHandler);
+  }
   // Record worker start time here as |fetch_dispatcher_| will start a service
   // worker if there is no running service worker.
   response_head_->load_timing.service_worker_start_time =

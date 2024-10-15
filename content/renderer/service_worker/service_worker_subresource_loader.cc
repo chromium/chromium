@@ -401,6 +401,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
     kForced,
     kSkipped
   } race_network_request_mode = kDefault;
+  std::optional<blink::ServiceWorkerRouterRaceSource> race_source;
 
   if (controller_connector_->router_evaluator()) {
     response_head_->service_worker_router_info =
@@ -432,6 +433,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
           return;
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
           race_network_request_mode = kForced;
+          race_source = sources[0].race_source;
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
           race_network_request_mode = kSkipped;
@@ -497,6 +499,8 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
 
   switch (race_network_request_mode) {
     case kForced:
+      CHECK_EQ(race_source->target, blink::ServiceWorkerRouterRaceSource::
+                                        TargetEnum::kNetworkAndFetchHandler);
       if (StartRaceNetworkRequest()) {
         SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
       }
