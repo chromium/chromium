@@ -825,6 +825,12 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
   if (url.IsEmpty() && mime_type.empty())
     return false;
 
+  // If present, `url` must contain a valid non-empty URL potentially surrounded
+  // by spaces.
+  if (!url.IsEmpty() && !url.IsValid()) {
+    return false;
+  }
+
   LocalFrame* frame = GetDocument().GetFrame();
   Settings* settings = frame->GetSettings();
   if (!settings)
