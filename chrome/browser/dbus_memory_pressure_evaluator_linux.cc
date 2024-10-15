@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/common/chrome_features.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/check_for_service_and_start.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
@@ -28,11 +29,6 @@ scoped_refptr<dbus::Bus> CreateBusOfType(dbus::Bus::BusType type) {
 }
 
 }  // namespace
-
-const char DbusMemoryPressureEvaluatorLinux::kMethodNameHasOwner[] =
-    "NameHasOwner";
-const char DbusMemoryPressureEvaluatorLinux::kMethodListActivatableNames[] =
-    "ListActivatableNames";
 
 const char DbusMemoryPressureEvaluatorLinux::kLmmService[] =
     "org.freedesktop.LowMemoryMonitor";
@@ -96,7 +92,7 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailable() {
   if (!system_bus_)
     system_bus_ = CreateBusOfType(dbus::Bus::SYSTEM);
 
-  CheckIfServiceIsAvailable(
+  dbus_utils::CheckForServiceAndStart(
       system_bus_, kLmmService,
       base::BindOnce(
           &DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailableResponse,
@@ -104,10 +100,10 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailable() {
 }
 
 void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailableResponse(
-    bool is_available) {
+    std::optional<bool> is_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_available) {
+  if (is_available.value_or(false)) {
     VLOG(1) << "LMM is available, using " << kLmmInterface;
 
     object_proxy_ =
@@ -133,7 +129,7 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailable() {
   if (!session_bus_)
     session_bus_ = CreateBusOfType(dbus::Bus::SESSION);
 
-  CheckIfServiceIsAvailable(
+  dbus_utils::CheckForServiceAndStart(
       session_bus_, kXdgPortalService,
       base::BindOnce(
           &DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailableResponse,
@@ -141,10 +137,10 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailable() {
 }
 
 void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailableResponse(
-    bool is_available) {
+    std::optional<bool> is_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_available) {
+  if (is_available.value_or(false)) {
     VLOG(1) << "Portal is available, using "
             << kXdgPortalMemoryMonitorInterface;
 
@@ -162,89 +158,6 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailableResponse(
 
     ResetBus(session_bus_);
   }
-}
-
-void DbusMemoryPressureEvaluatorLinux::CheckIfServiceIsAvailable(
-    scoped_refptr<dbus::Bus> bus,
-    const std::string& service,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  dbus::ObjectProxy* dbus_proxy =
-      bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-
-  dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(service);
-
-  dbus_proxy->CallMethod(
-      &method_call, DBUS_TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&DbusMemoryPressureEvaluatorLinux::OnNameHasOwnerResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(bus), service,
-                     std::move(callback)));
-}
-
-void DbusMemoryPressureEvaluatorLinux::OnNameHasOwnerResponse(
-    scoped_refptr<dbus::Bus> bus,
-    const std::string& service,
-    base::OnceCallback<void(bool)> callback,
-    dbus::Response* response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool is_running = false;
-
-  if (response) {
-    dbus::MessageReader reader(response);
-    bool owned = false;
-
-    if (!reader.PopBool(&owned)) {
-      LOG(ERROR) << "Failed to read " << kMethodNameHasOwner << " response";
-    } else if (owned) {
-      is_running = true;
-    }
-  } else {
-    LOG(ERROR) << "Failed to call " << kMethodNameHasOwner;
-  }
-
-  if (is_running) {
-    std::move(callback).Run(true);
-  } else {
-    dbus::ObjectProxy* dbus_proxy = bus->GetObjectProxy(
-        DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-
-    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS,
-                                 kMethodListActivatableNames);
-    dbus_proxy->CallMethod(
-        &method_call, DBUS_TIMEOUT_USE_DEFAULT,
-        base::BindOnce(
-            &DbusMemoryPressureEvaluatorLinux::OnListActivatableNamesResponse,
-            weak_ptr_factory_.GetWeakPtr(), std::move(service),
-            std::move(callback)));
-  }
-}
-
-void DbusMemoryPressureEvaluatorLinux::OnListActivatableNamesResponse(
-    const std::string& service,
-    base::OnceCallback<void(bool)> callback,
-    dbus::Response* response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool is_activatable = false;
-
-  if (response) {
-    dbus::MessageReader reader(response);
-    std::vector<std::string> names;
-    if (!reader.PopArrayOfStrings(&names)) {
-      LOG(ERROR) << "Failed to read " << kMethodListActivatableNames
-                 << " response";
-    } else if (base::Contains(names, service)) {
-      is_activatable = true;
-    }
-  } else {
-    LOG(ERROR) << "Failed to call " << kMethodListActivatableNames;
-  }
-
-  std::move(callback).Run(is_activatable);
 }
 
 void DbusMemoryPressureEvaluatorLinux::ResetBus(scoped_refptr<dbus::Bus>& bus) {

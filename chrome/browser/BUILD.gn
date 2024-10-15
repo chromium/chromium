@@ -7000,6 +7000,7 @@ static_library("browser") {
 
     deps += [
       "//chrome/common:chrome_features",
+      "//components/dbus/utils",
       "//components/os_crypt/async/browser:secret_portal_key_provider",
     ]
   }
