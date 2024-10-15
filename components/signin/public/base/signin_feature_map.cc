@@ -23,7 +23,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
     &switches::kHideSettingsSignInPromo,
     &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
-    &switches::kDontFallbackToDefaultImplementationInAccountManagerFacade,
     &switches::kCctSignInPrompt};
 
 // static

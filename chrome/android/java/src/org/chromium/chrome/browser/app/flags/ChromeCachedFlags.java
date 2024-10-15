@@ -51,7 +51,6 @@ import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.CachedFlagUtils;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.signin.SigninFeatureMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,9 +88,7 @@ public class ChromeCachedFlags {
         FirstRunUtils.cacheFirstRunPrefs();
 
         CachedFlagUtils.cacheNativeFlags(
-                ChromeFeatureList.sFlagsCachedFullBrowser,
-                OmniboxFeatures.getFieldTrialsToCache(),
-                SigninFeatureMap.sCachedFlags);
+                ChromeFeatureList.sFlagsCachedFullBrowser, OmniboxFeatures.getFieldTrialsToCache());
         cacheAdditionalNativeFlags();
 
         List<CachedFieldTrialParameter<?>> fieldTrialsToCache =
