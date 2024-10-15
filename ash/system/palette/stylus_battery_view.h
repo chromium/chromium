@@ -28,11 +28,13 @@ class ASH_EXPORT StylusBatteryView : public views::View {
 
   // views::View:
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   void OnBatteryLevelUpdated();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(StylusBatteryViewTest, AccessibleProperties);
+  void UpdateAccessibleName();
+
   StylusBatteryDelegate stylus_battery_delegate_;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;

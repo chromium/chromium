@@ -81,6 +81,8 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
                       kMenuItemInnerPadding,
                       kCheckmarkLabelSpacing) {
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 
   // CheckboxGroup:
@@ -92,11 +94,6 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
     button->set_delegate(this);
     buttons_.push_back(button);
     return button;
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    CheckboxGroup::GetAccessibleNodeData(node_data);
-    node_data->SetNameExplicitlyEmpty();
   }
 };
 
