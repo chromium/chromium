@@ -114,6 +114,11 @@ bool DefaultPlatformConfiguration::IsEnabledForThread(
     sampling_profiler::ProfilerProcessType process,
     sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
+  // TODO(crbug.com/40226611): Remove exception once ThreadPoolWorker profile
+  // sampling is enabled for thread pool worker.
+  if (thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker) {
+    return false;
+  }
   // Enable for all supported threads.
   return true;
 }
@@ -276,6 +281,12 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
 #endif
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
     return true;
+  }
+
+  // TODO(crbug.com/40226611): Remove exception once ThreadPoolWorker profile
+  // sampling is enabled for thread pool worker.
+  if (thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker) {
+    return false;
   }
 
   switch (*release_channel) {
