@@ -618,7 +618,7 @@ void ShapeResultView::ComputePartInkBounds(
 
   if (!is_horizontal_run)
     bounds.ConvertVerticalRunToLogical(current_font_data.GetFontMetrics());
-  ink_bounds->Union(bounds.bounds);
+  ink_bounds->Union(bounds.Bounds());
 }
 
 gfx::RectF ShapeResultView::ComputeInkBounds() const {

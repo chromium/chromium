@@ -2341,7 +2341,7 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 
   if (!is_horizontal_run)
     bounds.ConvertVerticalRunToLogical(current_font_data.GetFontMetrics());
-  ink_bounds->Union(bounds.bounds);
+  ink_bounds->Union(bounds.Bounds());
 }
 
 gfx::RectF ShapeResult::ComputeInkBounds() const {

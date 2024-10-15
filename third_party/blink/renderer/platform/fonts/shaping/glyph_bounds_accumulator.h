@@ -47,7 +47,14 @@ template <bool is_horizontal_run>
 struct GlyphBoundsAccumulator {
   // The accumulated glyph bounding box in physical coordinate, until
   // ConvertVerticalRunToLogical().
-  gfx::RectF bounds;
+  //
+  // We store this as a set of positions rather than a gfx::RectF,
+  // because it is cheaper to do lots of Union operations when stored
+  // that way, rather than as the (point, size) storage that RectF uses.
+  float min_x = 0;
+  float max_x = 0;
+  float min_y = 0;
+  float max_y = 0;
 
   // Unite a glyph bounding box to |bounds|.
   void Unite(gfx::RectF bounds_for_glyph,
@@ -67,14 +74,25 @@ struct GlyphBoundsAccumulator {
     }
     bounds_for_glyph.Offset(glyph_offset);
 
-    bounds.Union(bounds_for_glyph);
+    if (min_x == 0 && max_x == 0) [[unlikely]] {
+      min_x = bounds_for_glyph.x();
+      max_x = bounds_for_glyph.right();
+      min_y = bounds_for_glyph.y();
+      max_y = bounds_for_glyph.bottom();
+    } else {
+      min_x = std::min(min_x, bounds_for_glyph.x());
+      max_x = std::max(max_x, bounds_for_glyph.right());
+      min_y = std::min(min_y, bounds_for_glyph.y());
+      max_y = std::max(max_y, bounds_for_glyph.bottom());
+    }
   }
 
   // Convert vertical run glyph bounding box to logical. Horizontal runs do not
   // need conversions because physical and logical are the same.
   void ConvertVerticalRunToLogical(const FontMetrics& font_metrics) {
     // Convert physical glyph_bounding_box to logical.
-    bounds.Transpose();
+    std::swap(min_x, min_y);
+    std::swap(max_x, max_y);
 
     // The glyph bounding box of a vertical run uses ideographic central
     // baseline. Adjust the box Y position because the bounding box of a
@@ -83,7 +101,13 @@ struct GlyphBoundsAccumulator {
     // https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
     int baseline_adjust = font_metrics.Ascent(kCentralBaseline) -
                           font_metrics.Ascent(kAlphabeticBaseline);
-    bounds.set_y(bounds.y() + baseline_adjust);
+    min_y += baseline_adjust;
+    max_y += baseline_adjust;
+  }
+
+  gfx::RectF Bounds() const {
+    return gfx::RectF(gfx::PointF(min_x, min_y),
+                      gfx::SizeF(max_x - min_x, max_y - min_y));
   }
 };
 
