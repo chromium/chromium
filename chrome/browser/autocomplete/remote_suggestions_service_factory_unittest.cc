@@ -21,12 +21,12 @@ class RemoteSuggestionsServiceFactoryTest : public testing::Test,
 TEST_F(RemoteSuggestionsServiceFactoryTest, ServiceInstance) {
   EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(
       regular_profile(), /*create_if_necessary=*/true));
-  EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(
+  EXPECT_FALSE(RemoteSuggestionsServiceFactory::GetForProfile(
       incognito_profile(), /*create_if_necessary=*/true));
 
   EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(
       guest_profile(), /*create_if_necessary=*/true));
-  EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(
+  EXPECT_FALSE(RemoteSuggestionsServiceFactory::GetForProfile(
       guest_profile_otr(), /*create_if_necessary=*/true));
 
 // Service is NOT created for System Profiles. Also Android and Ash don't have

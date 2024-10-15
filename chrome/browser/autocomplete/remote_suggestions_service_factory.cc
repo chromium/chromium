@@ -40,9 +40,9 @@ RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory()
     : ProfileKeyedServiceFactory(
           "RemoteSuggestionsService",
           ProfileSelections::Builder()
-              // Service is needed in OTR profiles (Incognito and Guest).
-              .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
+              // Service is not needed in OTR profiles (Incognito and Guest).
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
