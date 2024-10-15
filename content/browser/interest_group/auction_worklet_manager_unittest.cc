@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -561,14 +562,15 @@ class MockAuctionProcessManager
       mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
           trusted_signals_cache) override {}
   scoped_refptr<AuctionProcessManager::WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override {
     mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
         pending_receiver;
     auto worklet_process = base::MakeRefCounted<WorkletProcess>(
         this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-        pending_receiver.InitWithNewPipeAndPassRemote(),
-        process_handle->worklet_type(), process_handle->origin(),
+        pending_receiver.InitWithNewPipeAndPassRemote(), worklet_type, origin,
         /*uses_shared_process=*/false);
     mojo::ReceiverId receiver_id =
         receiver_set_.Add(this, std::move(pending_receiver));

@@ -64,6 +64,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/navigation_simulator.h"
@@ -737,7 +738,9 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
 
  private:
   scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override {
     // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
     // production code. Don't bother to delete the service on pipe close,
@@ -748,8 +751,7 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
             service.InitWithNewPipeAndPassReceiver()));
     return base::MakeRefCounted<WorkletProcess>(
         this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-        std::move(service), process_handle->worklet_type(),
-        process_handle->origin(),
+        std::move(service), worklet_type, origin,
         /*uses_shared_process=*/false);
   }
 

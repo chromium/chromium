@@ -325,7 +325,9 @@ class CONTENT_EXPORT AuctionProcessManager {
   // Launches the actual process. The process will be kept-alive and
   // watched by the returned WorkletProcess.
   virtual scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) = 0;
 
   // Hook called when a new process is assigned at the end of
@@ -458,7 +460,9 @@ class CONTENT_EXPORT DedicatedAuctionProcessManager
 
  private:
   scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override;
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
@@ -479,7 +483,9 @@ class CONTENT_EXPORT InRendererAuctionProcessManager
 
  protected:
   scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override;
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(

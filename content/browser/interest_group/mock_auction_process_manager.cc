@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
@@ -554,8 +555,11 @@ MockAuctionProcessManager::MockAuctionProcessManager() = default;
 MockAuctionProcessManager::~MockAuctionProcessManager() = default;
 
 scoped_refptr<AuctionProcessManager::WorkletProcess>
-MockAuctionProcessManager::LaunchProcess(const ProcessHandle* process_handle,
-                                         const std::string& display_name) {
+MockAuctionProcessManager::LaunchProcess(
+    WorkletType worklet_type,
+    const url::Origin& origin,
+    scoped_refptr<SiteInstance> site_instance,
+    const std::string& display_name) {
   mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
   mojo::ReceiverId receiver_id =
       receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
@@ -575,9 +579,7 @@ MockAuctionProcessManager::LaunchProcess(const ProcessHandle* process_handle,
   receiver_display_name_map_[receiver_id] = display_name;
   return base::MakeRefCounted<WorkletProcess>(
       this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-      std::move(service), process_handle->worklet_type(),
-      process_handle->origin(),
-      /*uses_shared_process=*/false);
+      std::move(service), worklet_type, origin, /*uses_shared_process=*/false);
 }
 
 scoped_refptr<SiteInstance> MockAuctionProcessManager::MaybeComputeSiteInstance(

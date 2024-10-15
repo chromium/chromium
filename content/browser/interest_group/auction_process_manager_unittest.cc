@@ -138,17 +138,16 @@ class TestAuctionProcessManager
 
  private:
   scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
-    RenderProcessHost* host =
-        process_handle->site_instance_for_testing()->GetProcess();
+    RenderProcessHost* host = site_instance->GetProcess();
     return base::MakeRefCounted<WorkletProcess>(
-        this, process_handle->site_instance_for_testing(),
-        /*render_process_host=*/host, std::move(service),
-        process_handle->worklet_type(), process_handle->origin(),
-        /*uses_shared_process=*/false);
+        this, site_instance, /*render_process_host=*/host, std::move(service),
+        worklet_type, origin, /*uses_shared_process=*/false);
   }
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
@@ -195,15 +194,16 @@ class DedicatedStyleTestAuctionProcessManager
 
  private:
   scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
     scoped_refptr<WorkletProcess> process =
         base::MakeRefCounted<WorkletProcess>(
             this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-            std::move(service), process_handle->worklet_type(),
-            process_handle->origin(),
+            std::move(service), worklet_type, origin,
             /*uses_shared_process=*/false);
     launched_processes_.push_back(process.get());
     return process;

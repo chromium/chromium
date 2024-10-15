@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 
 #include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
@@ -360,13 +361,9 @@ void AuctionProcessManager::MaybeStartAnticipatoryProcess(
     return;
   }
 
-  auto process_handle = std::make_unique<ProcessHandle>();
-  process_handle->origin_ = origin;
-  process_handle->worklet_type_ = worklet_type;
-  process_handle->site_instance_ = std::move(site_instance);
-  scoped_refptr<WorkletProcess> worklet_process = LaunchProcess(
-      process_handle.get(), ComputeDisplayName(process_handle->worklet_type_,
-                                               process_handle->origin_));
+  scoped_refptr<WorkletProcess> worklet_process =
+      LaunchProcess(worklet_type, origin, std::move(site_instance),
+                    ComputeDisplayName(worklet_type, origin));
   idle_processes_.push_back(std::move(worklet_process));
   idle_processes_.back()->SetIsIdle(true);
 }
@@ -404,9 +401,11 @@ AuctionProcessManager::TryCreateOrGetProcessForHandle(
           })));
 
   // Launch the process and create WorkletProcess object bound to it.
-  scoped_refptr<WorkletProcess> worklet_process = LaunchProcess(
-      process_handle, ComputeDisplayName(process_handle->worklet_type_,
-                                         process_handle->origin_));
+  scoped_refptr<WorkletProcess> worklet_process =
+      LaunchProcess(process_handle->worklet_type_, process_handle->origin_,
+                    process_handle->site_instance_,
+                    ComputeDisplayName(process_handle->worklet_type_,
+                                       process_handle->origin_));
   (*processes)[process_handle->origin_] = worklet_process.get();
   process_handle->AssignProcess(std::move(worklet_process));
   OnNewProcessAssigned(process_handle);
@@ -638,14 +637,15 @@ DedicatedAuctionProcessManager::~DedicatedAuctionProcessManager() = default;
 
 scoped_refptr<AuctionProcessManager::WorkletProcess>
 DedicatedAuctionProcessManager::LaunchProcess(
-    const ProcessHandle* process_handle,
+    WorkletType worklet_type,
+    const url::Origin& origin,
+    scoped_refptr<SiteInstance> site_instance,
     const std::string& display_name) {
   mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService> receiver;
   scoped_refptr<WorkletProcess> worklet_process =
       base::MakeRefCounted<WorkletProcess>(
           this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-          receiver.InitWithNewPipeAndPassRemote(),
-          process_handle->worklet_type(), process_handle->origin(),
+          receiver.InitWithNewPipeAndPassRemote(), worklet_type, origin,
           /*uses_shared_process=*/false);
   content::ServiceProcessHost::Launch(
       std::move(receiver),
@@ -683,18 +683,18 @@ InRendererAuctionProcessManager::~InRendererAuctionProcessManager() = default;
 
 scoped_refptr<AuctionProcessManager::WorkletProcess>
 InRendererAuctionProcessManager::LaunchProcess(
-    const ProcessHandle* process_handle,
+    WorkletType worklet_type,
+    const url::Origin& origin,
+    scoped_refptr<SiteInstance> site_instance,
     const std::string& display_name) {
-  DCHECK(process_handle->site_instance_);
-  DCHECK(process_handle->site_instance_->RequiresDedicatedProcess());
+  DCHECK(site_instance);
+  DCHECK(site_instance->RequiresDedicatedProcess());
   mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-  RenderProcessHost* render_process_host =
-      LaunchInSiteInstance(process_handle->site_instance_.get(),
-                           service.InitWithNewPipeAndPassReceiver());
+  RenderProcessHost* render_process_host = LaunchInSiteInstance(
+      site_instance.get(), service.InitWithNewPipeAndPassReceiver());
   return base::MakeRefCounted<WorkletProcess>(
-      this, process_handle->site_instance_, render_process_host,
-      std::move(service), process_handle->worklet_type(),
-      process_handle->origin(),
+      this, std::move(site_instance), render_process_host, std::move(service),
+      worklet_type, origin,
       /*uses_shared_process=*/false);
 }
 

@@ -16,6 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
@@ -430,7 +431,9 @@ class MockAuctionProcessManager
 
   // AuctionProcessManager implementation:
   scoped_refptr<WorkletProcess> LaunchProcess(
-      const ProcessHandle* process_handle,
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance,
       const std::string& display_name) override;
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
