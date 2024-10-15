@@ -138,6 +138,12 @@ void AwFileSystemAccessPermissionContext::PerformAfterWriteChecks(
   std::move(callback).Run(AfterWriteCheckResult::kAllow);
 }
 
+base::expected<void, std::string>
+AwFileSystemAccessPermissionContext::CanShowFilePicker(
+    content::RenderFrameHost* rfh) {
+  return base::ok();
+}
+
 bool AwFileSystemAccessPermissionContext::CanObtainReadPermission(
     const url::Origin& origin) {
   return true;

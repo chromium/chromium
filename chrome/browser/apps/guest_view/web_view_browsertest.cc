@@ -6,11 +6,14 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -56,6 +60,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -159,6 +164,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/latency/latency_info.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -7273,4 +7279,81 @@ IN_PROC_BROWSER_TEST_F(WebViewBluetoothTest,
   // Have the embedder create a webview which navigates to the same origin
   // and attempts to use Bluetooth.
   TestHelper("testBluetoothDisabled", "web_view/shim", NO_TEST_SERVER);
+}
+
+class WebViewFileSystemAccessTest : public WebViewTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(
+        temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+    WebViewTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ASSERT_TRUE(temp_dir_.Delete());
+    WebViewTest::TearDownOnMainThread();
+  }
+
+  base::FilePath CreateTestFile() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath result;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &result));
+    return result;
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+// This test provides coverage for existing FSA behavior in WebView, which may
+// not be the desired behavior.
+// TODO(crbug.com/352520731): Embedder should allow filesystem permission for
+// the content embedded inside <webview> to use FSA.
+IN_PROC_BROWSER_TEST_F(WebViewFileSystemAccessTest,
+                       Shim_TestEnabledInTabAndWebView) {
+  constexpr char kSuccessResult[] = "SUCCESS";
+  constexpr char kFailResult[] = "FAIL";
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set up file picker for testing.
+  const base::FilePath test_file = CreateTestFile();
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectPredeterminedFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+
+  // Test that File System Access works in a tab.
+  auto kFileSystemAccessTestScript =
+      content::JsReplace(R"(
+(async function() {
+  try {
+    const [handle] = await showOpenFilePicker({
+      types: [
+        {
+          description: 'All files',
+          accept: {
+            '*/*': ['.txt', '.pdf', '.jpg', '.png'],
+          },
+        },
+      ],
+    });
+    await handle.getFile();
+    return $1;
+  } catch (error) {
+    return $2;
+  }
+})();
+  )",
+                         kSuccessResult, kFailResult);
+  EXPECT_EQ(kSuccessResult,
+            EvalJs(tab_web_contents, kFileSystemAccessTestScript));
+
+  // Have the embedder create a webview and attempt to use file picker.
+  TestHelper("testFileSystemAccessAvailable", "web_view/shim", NO_TEST_SERVER);
 }

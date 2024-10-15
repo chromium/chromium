@@ -53,6 +53,9 @@ class FakeFileSystemAccessPermissionContext
   bool IsFileTypeDangerous(const base::FilePath& path,
                            const url::Origin& origin) override;
 
+  base::expected<void, std::string> CanShowFilePicker(
+      content::RenderFrameHost* rfh) override;
+
   bool CanObtainReadPermission(const url::Origin& origin) override;
   bool CanObtainWritePermission(const url::Origin& origin) override;
 

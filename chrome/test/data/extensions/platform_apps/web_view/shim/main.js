@@ -3889,6 +3889,43 @@ function testBluetoothDisabled() {
   document.body.appendChild(webview);
 }
 
+// Before this test runs, the browser-side test code successfully requests File
+// System Access in a tab. We confirm that the webview can also receive File
+// System Access permission.
+//
+// Note that this test covers for existing behavior which may not be the desired
+// behavior.
+// TODO(crbug.com/352520731): Embedder should allow filesystem permission for
+// the content embedded inside <webview> to use FSA.
+function testFileSystemAccessAvailable() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    const getFileSystemAccess = async () => {
+      const [handle] = await showOpenFilePicker({
+        types: [
+          {
+            description: 'All files',
+            accept: {
+              '*/*': ['.txt', '.pdf', '.jpg', '.png'],
+            },
+          },
+        ],
+      });
+      await handle.getFile();
+    };
+
+    try {
+      await evalInWebView(webview, getFileSystemAccess, []);
+    } catch (e) {
+      embedder.test.fail();
+    }
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 function testCannotLockKeyboard() {
   const webview = document.createElement('webview');
   webview.src = embedder.emptyGuestURL;
@@ -4058,6 +4095,7 @@ embedder.test.testList = {
   'testCannotRequestFonts': testCannotRequestFonts,
   'testSerialDisabled': testSerialDisabled,
   'testBluetoothDisabled': testBluetoothDisabled,
+  'testFileSystemAccessAvailable': testFileSystemAccessAvailable,
   'testCannotLockKeyboard': testCannotLockKeyboard,
 };
 

@@ -13,6 +13,7 @@
 #endif
 
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/browser/global_routing_id.h"
@@ -27,6 +28,7 @@ class FileSystemURL;
 }  // namespace storage
 
 namespace content {
+class RenderFrameHost;
 
 // These values are used in json serialization. Entries should not be
 // renumbered and numeric values should never be reused.
@@ -187,6 +189,10 @@ class FileSystemAccessPermissionContext {
   // block file operations from creating or accessing these file types.
   virtual bool IsFileTypeDangerous(const base::FilePath& path,
                                    const url::Origin& origin) = 0;
+
+  // Returns whether the given RFH can use file picker.
+  virtual base::expected<void, std::string> CanShowFilePicker(
+      RenderFrameHost* rfh) = 0;
 
   // Returns whether the give |origin| already allows read permission, or it is
   // possible to request one. This is used to block file dialogs from being

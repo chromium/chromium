@@ -383,6 +383,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
+  EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
                   blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
@@ -416,6 +420,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kFile,
                   FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(write_grant));
+
   EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
                                       testing::_, testing::_, testing::_))
                                       .Times(0);
@@ -615,6 +620,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -703,6 +712,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto frame_id = GlobalRenderFrameHostId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -796,6 +809,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto frame_id = GlobalRenderFrameHostId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -908,6 +925,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
+  EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
                   blink::mojom::WellKnownDirectory::kDirDocuments, origin))
       .WillOnce(testing::Return(base::FilePath()));
@@ -972,6 +993,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(true));
   EXPECT_CALL(permission_context, CanObtainWritePermission(origin))
       .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
 
   EXPECT_CALL(permission_context,
               GetWellKnownDirectoryPath(
@@ -1082,6 +1107,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto frame_id = GlobalRenderFrameHostId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1175,6 +1205,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto frame_id = GlobalRenderFrameHostId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1275,6 +1310,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto frame_id = GlobalRenderFrameHostId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1371,6 +1411,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto frame_id = GlobalRenderFrameHostId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
+
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1502,6 +1547,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::UserAction::kOpen,
                   frame_id, testing::_))
       .WillOnce(RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  EXPECT_CALL(permission_context,
+              CanShowFilePicker(shell()->web_contents()->GetPrimaryMainFrame()))
+      .WillOnce(testing::Return(base::ok()));
 
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(

@@ -28,6 +28,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -57,6 +58,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -66,6 +68,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -91,6 +94,11 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 namespace {
 
@@ -135,6 +143,9 @@ const char kPathKey[] = "path";
 const char kDisplayNameKey[] = "display-name";
 const char kPathTypeKey[] = "path-type";
 const char kTimestampKey[] = "timestamp";
+
+constexpr char kDefaultNotAllowedMessage[] =
+    "Showing a file picker is not allowed.";
 
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
@@ -1844,6 +1855,39 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
               },
               base::SequencedTaskRunner::GetCurrentDefault(),
               std::move(callback))));
+}
+
+base::expected<void, std::string>
+ChromeFileSystemAccessPermissionContext::CanShowFilePicker(
+    content::RenderFrameHost* rfh) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  // Because permission is scoped to profile, <webview> and <controlledframe>,
+  // despite having isolated StoragePartition, will share File System Access
+  // permission with the rest of the profile. Therefore, we want to disable FSA
+  // for these contexts. However, <webview> is allowed to use FSA in avoidance
+  // of breaking existing usage.
+  if (auto* guest = extensions::WebViewGuest::FromRenderFrameHost(rfh);
+      guest != nullptr) {
+    // Disables file picker for <controlledframe> but allows <webview> to use
+    // it.
+    // TODO(crbug.com/40066989): Fix origin-keyed permission sharing between
+    // <webview> and rest of profile.
+    if (guest->IsOwnedByControlledFrameEmbedder()) {
+      return base::unexpected(kDefaultNotAllowedMessage);
+    }
+    return base::ok();
+  }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+  // Disable any other non-default StoragePartition contexts. However, unique
+  // schemes (e.g. isolated-app://) are exempt here.
+  if (rfh->GetStoragePartition() !=
+          rfh->GetBrowserContext()->GetDefaultStoragePartition() &&
+      rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    return base::unexpected(kDefaultNotAllowedMessage);
+  }
+
+  return base::ok();
 }
 
 void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(

@@ -68,6 +68,11 @@ class MockFileSystemAccessPermissionContext
               IsFileTypeDangerous_,
               (const base::FilePath& path, const url::Origin& origin));
 
+  MOCK_METHOD((base::expected<void, std::string>),
+              CanShowFilePicker,
+              (RenderFrameHost*),
+              (override));
+
   MOCK_METHOD(bool,
               CanObtainReadPermission,
               (const url::Origin& origin),

@@ -25,6 +25,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -46,6 +47,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -135,10 +137,12 @@ class WebContentsDelegateListener : public FileSelectListener {
 };
 #endif
 
-void ShowFilePickerOnUIThread(const url::Origin& requesting_origin,
-                              GlobalRenderFrameHostId frame_id,
-                              const FileSystemChooser::Options& options,
-                              FileSystemChooser::ResultCallback callback) {
+void ShowFilePickerOnUIThread(
+    FileSystemAccessPermissionContext* permission_context,
+    const url::Origin& requesting_origin,
+    GlobalRenderFrameHostId frame_id,
+    const FileSystemChooser::Options& options,
+    FileSystemChooser::ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
@@ -171,6 +175,17 @@ void ShowFilePickerOnUIThread(const url::Origin& requesting_origin,
             "Third party iframes are not allowed to show a file picker."),
         {});
     return;
+  }
+
+  if (permission_context) {
+    RETURN_IF_ERROR(permission_context->CanShowFilePicker(rfh),
+                    [&callback](const auto& e) {
+                      std::move(callback).Run(
+                          file_system_access_error::FromStatus(
+                              FileSystemAccessStatus::kPermissionDenied, e),
+                          {});
+                      return;
+                    });
   }
 
   // Drop fullscreen mode so that the user sees the URL bar.
@@ -720,7 +735,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
   }
 
   ShowFilePickerOnUIThread(
-      context.storage_key.origin(), context.frame_id,
+      permission_context(), context.storage_key.origin(), context.frame_id,
       file_system_chooser_options,
       base::BindOnce(&FileSystemAccessManagerImpl::DidChooseEntries,
                      weak_factory_.GetWeakPtr(), context,
@@ -1567,7 +1582,8 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
   }
   if (result == SensitiveEntryResult::kTryAgain) {
     ShowFilePickerOnUIThread(
-        binding_context.storage_key.origin(), binding_context.frame_id, options,
+        permission_context(), binding_context.storage_key.origin(),
+        binding_context.frame_id, options,
         base::BindOnce(&FileSystemAccessManagerImpl::DidChooseEntries,
                        weak_factory_.GetWeakPtr(), binding_context, options,
                        starting_directory_id, request_directory_write_access,

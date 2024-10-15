@@ -59,6 +59,11 @@ bool FakeFileSystemAccessPermissionContext::IsFileTypeDangerous(
   return false;
 }
 
+base::expected<void, std::string>
+FakeFileSystemAccessPermissionContext::CanShowFilePicker(RenderFrameHost* rfh) {
+  return base::ok();
+}
+
 bool FakeFileSystemAccessPermissionContext::CanObtainReadPermission(
     const url::Origin& origin) {
   return true;

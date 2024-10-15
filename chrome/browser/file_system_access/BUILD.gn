@@ -65,6 +65,10 @@ source_set("impl") {
     ]
   }
 
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
+
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

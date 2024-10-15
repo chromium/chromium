@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/types/expected.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -40,6 +41,7 @@ enum ContentSetting;
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
 }  // namespace content
 
 // Chrome implementation of FileSystemAccessPermissionContext. This class
@@ -183,6 +185,8 @@ class ChromeFileSystemAccessPermissionContext
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   bool IsFileTypeDangerous(const base::FilePath& path,
                            const url::Origin& origin) override;
+  base::expected<void, std::string> CanShowFilePicker(
+      content::RenderFrameHost* rfh) override;
   bool CanObtainReadPermission(const url::Origin& origin) override;
   bool CanObtainWritePermission(const url::Origin& origin) override;
   void SetLastPickedDirectory(const url::Origin& origin,
