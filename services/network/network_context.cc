@@ -578,6 +578,23 @@ mojom::URLLoaderFactoryParamsPtr CreateURLLoaderFactoryParamsForPrefetch() {
   return params;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(HSTSRedirectUpgradeReason)
+enum class HSTSRedirectUpgradeReason {
+  kNotUpgradedNotHTTP = 0,
+  kNotUpgradedHSTSUnavailable = 1,
+  kNotUpgradedNoHSTSPin = 2,
+  kUpgraded = 3,
+  kMaxValue = kUpgraded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HSTSRedirectUpgradeReason)
+
+void RecordHSTSPreconnectUpgradeReason(HSTSRedirectUpgradeReason reason) {
+  base::UmaHistogramEnumeration("Net.PreconnectHSTSUpgradesUrl", reason);
+}
+
 }  // namespace
 
 constexpr uint32_t NetworkContext::kMaxOutstandingRequestsPerProcess;
@@ -2168,7 +2185,7 @@ void NetworkContext::PreconnectSockets(
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
 
-  GURL url = GetHSTSRedirect(original_url);
+  GURL url = GetHSTSRedirectForPreconnect(original_url);
 
   // |PreconnectSockets| may receive arguments from the renderer, which is not
   // guaranteed to validate them.
@@ -2985,15 +3002,30 @@ void NetworkContext::OnConnectionError() {
     std::move(on_connection_close_callback_).Run(this);
 }
 
-GURL NetworkContext::GetHSTSRedirect(const GURL& original_url) {
+GURL NetworkContext::GetHSTSRedirectForPreconnect(const GURL& original_url) {
   // TODO(lilyhoughton) This needs to be gotten rid of once explicit
   // construction with a URLRequestContext is no longer supported.
-  if (!url_request_context_->transport_security_state() ||
-      !original_url.SchemeIs("http") ||
-      !url_request_context_->transport_security_state()->ShouldUpgradeToSSL(
-          original_url.host())) {
+
+  if (!url_request_context_->transport_security_state()) {
+    RecordHSTSPreconnectUpgradeReason(
+        HSTSRedirectUpgradeReason::kNotUpgradedHSTSUnavailable);
     return original_url;
   }
+
+  if (!original_url.SchemeIs(url::kHttpScheme)) {
+    RecordHSTSPreconnectUpgradeReason(
+        HSTSRedirectUpgradeReason::kNotUpgradedNotHTTP);
+    return original_url;
+  }
+
+  if (!url_request_context_->transport_security_state()->ShouldUpgradeToSSL(
+          original_url.host())) {
+    RecordHSTSPreconnectUpgradeReason(
+        HSTSRedirectUpgradeReason::kNotUpgradedNoHSTSPin);
+    return original_url;
+  }
+
+  RecordHSTSPreconnectUpgradeReason(HSTSRedirectUpgradeReason::kUpgraded);
 
   GURL::Replacements replacements;
   replacements.SetSchemeStr("https");

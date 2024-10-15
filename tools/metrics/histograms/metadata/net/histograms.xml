@@ -2492,6 +2492,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.PreconnectHSTSUpgradesUrl"
+    enum="HSTSRedirectUpgradeReason" expires_after="2025-04-06">
+  <owner>bingler@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records whether or not a url was upgraded by HSTS during an attempt to
+    preconnect to the url and, if it was not upgraded, why. Recorded everytime
+    GetHSTSRedirectForPreconnect() is called.
+  </summary>
+</histogram>
+
 <histogram name="Net.ProxyScriptFetcher.FirstByteDuration" units="ms"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>

@@ -746,7 +746,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       net::FirstPartySetMetadata first_party_set_metadata);
 
-  GURL GetHSTSRedirect(const GURL& original_url);
+  GURL GetHSTSRedirectForPreconnect(const GURL& original_url);
 
 #if BUILDFLAG(IS_P2P_ENABLED)
   void DestroySocketManager(P2PSocketManager* socket_manager);

@@ -382,6 +382,13 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Not-ECT, ECT(1), ECT(0), CE"/>
 </enum>
 
+<enum name="HSTSRedirectUpgradeReason">
+  <int value="0" label="URL not HTTP"/>
+  <int value="1" label="HSTS unavailable"/>
+  <int value="2" label="No HSTS pin"/>
+  <int value="3" label="URL upgraded by HSTS"/>
+</enum>
+
 <enum name="Http2WireErrorCodes">
   <summary>
     Error codes defined at
