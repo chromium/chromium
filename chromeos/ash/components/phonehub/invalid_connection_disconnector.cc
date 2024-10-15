@@ -43,7 +43,7 @@ InvalidConnectionDisconnector::~InvalidConnectionDisconnector() {
 }
 
 void InvalidConnectionDisconnector::OnConnectionStatusChanged() {
-  timer_->AbandonAndStop();
+  timer_->Stop();
 
   if (IsPhoneConnected() && !DoesPhoneStatusModelExist()) {
     timer_->Start(FROM_HERE, kEmptyPhoneStatusModelGracePeriodTimeDelta,
