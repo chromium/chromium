@@ -1346,6 +1346,38 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   </int>
 </enum>
 
+<enum name="LobsterState">
+  <int value="0" label="Shown Opportunity"/>
+  <int value="1" label="Blocked"/>
+  <int value="2" label="Right Click Trigger Impression"/>
+  <int value="3" label="Right Click Trigger Fired"/>
+  <int value="4" label="Right Click Trigger Needs Consent"/>
+  <int value="5" label="Picker Trigger Impression"/>
+  <int value="6" label="Picker Trigger Fired"/>
+  <int value="7" label="Picker Trigger Needs Consent"/>
+  <int value="8" label="Consent Screen Impression"/>
+  <int value="9" label="Consent Accepted"/>
+  <int value="10" label="Consent Rejected"/>
+  <int value="11" label="Query Page Impression"/>
+  <int value="12" label="Request Initial Candidates"/>
+  <int value="13" label="Request Initial Candidates Success"/>
+  <int value="14" label="Request Initial Candidates Error"/>
+  <int value="15" label="Initial Candidates Impression"/>
+  <int value="16" label="Request More Candidates"/>
+  <int value="17" label="Request More Candidates Success"/>
+  <int value="18" label="Request More Candidates Error"/>
+  <int value="19" label="More Candidates Appended"/>
+  <int value="20" label="Candidate Download"/>
+  <int value="21" label="Candidate Download Success"/>
+  <int value="22" label="Candidate Download Error"/>
+  <int value="23" label="Commit As Download"/>
+  <int value="24" label="Commit As Download Success"/>
+  <int value="25" label="Commit As Download Error"/>
+  <int value="26" label="Commit As Insert"/>
+  <int value="27" label="Commit As Insert Success"/>
+  <int value="28" label="Commit As Insert Error"/>
+</enum>
+
 <enum name="LockScreenUserClickTarget">
   <int value="0" label="Shut down button"/>
   <int value="1" label="Restart button"/>

@@ -9,7 +9,9 @@
 #include <optional>
 #include <string>
 
+#include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/lobster/lobster_image_actuator.h"
+#include "ash/lobster/lobster_metrics_recorder.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/files/file_path.h"
@@ -35,11 +37,26 @@ ui::TextInputClient* GetFocusedTextInputClient() {
 
 LobsterSessionImpl::LobsterSessionImpl(
     std::unique_ptr<LobsterClient> client,
-    const LobsterCandidateStore& candidate_store)
-    : client_(std::move(client)), candidate_store_(candidate_store) {}
+    const LobsterCandidateStore& candidate_store,
+    LobsterEntryPoint entry_point)
+    : client_(std::move(client)),
+      candidate_store_(candidate_store),
+      entry_point_(entry_point) {
+  switch (entry_point_) {
+    case LobsterEntryPoint::kPicker:
+      RecordLobsterState(LobsterMetricState::kPickerTriggerFired);
+      break;
+    case LobsterEntryPoint::kRightClickMenu:
+      RecordLobsterState(LobsterMetricState::kRightClickTriggerFired);
+      break;
+  }
+}
 
-LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client)
-    : LobsterSessionImpl(std::move(client), LobsterCandidateStore()) {}
+LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
+                                       LobsterEntryPoint entry_point)
+    : LobsterSessionImpl(std::move(client),
+                         LobsterCandidateStore(),
+                         entry_point) {}
 
 LobsterSessionImpl::~LobsterSessionImpl() = default;
 

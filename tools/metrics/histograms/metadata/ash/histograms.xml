@@ -5209,6 +5209,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Lobster.State" enum="LobsterState"
+    expires_after="2025-10-20">
+  <owner>hdchuong@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram captures user interactions with Lobster feature, providing a
+    funnel view from the beginning to end of the user journey.
+
+    This metric is recorded at different times, depending on the event being
+    recorded. For example, consent screen impression event is recorded at the
+    time when the consent screen is shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Login.ArcUiAvailableAfterLogin.Duration" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>

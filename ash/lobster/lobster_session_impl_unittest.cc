@@ -7,10 +7,12 @@
 #include <optional>
 #include <string_view>
 
+#include "ash/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/files/file_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,9 +65,11 @@ class LobsterSessionImplTest : public testing::Test {
   ~LobsterSessionImplTest() override = default;
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
@@ -89,7 +93,8 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
         std::move(done_callback).Run(std::move(image_candidates));
       }));
 
-  LobsterSessionImpl session(std::move(lobster_client));
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kPicker);
 
   base::test::TestFuture<const LobsterResult&> future;
 
@@ -123,7 +128,8 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesReturnsUnknownError) {
                 LobsterError(LobsterErrorCode::kUnknown, "unknown error")));
       }));
 
-  LobsterSessionImpl session(std::move(lobster_client));
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kPicker);
 
   base::test::TestFuture<const LobsterResult&> future;
 
@@ -145,7 +151,8 @@ TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateIfItIsNotCached) {
                .seed = 21,
                .query = "a nice raspberry"});
 
-  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store);
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store,
+                             LobsterEntryPoint::kPicker);
 
   base::test::TestFuture<bool> future;
   session.DownloadCandidate(/*id=*/2, base::FilePath("dummy_path"),
@@ -177,7 +184,8 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfItIsInCache) {
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
-  LobsterSessionImpl session(std::move(lobster_client), store);
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
   session.RequestCandidates("a nice strawberry", 2,
                             base::BindOnce([](const LobsterResult&) {}));
   RunUntilIdle();
@@ -202,7 +210,8 @@ TEST_F(LobsterSessionImplTest,
                .seed = 21,
                .query = "a nice raspberry"});
 
-  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store);
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store,
+                             LobsterEntryPoint::kPicker);
   base::test::TestFuture<const LobsterFeedbackPreviewResponse&> future;
 
   session.PreviewFeedback(/*id=*/2, future.GetCallback());
@@ -220,7 +229,8 @@ TEST_F(LobsterSessionImplTest, CanPreviewFeedbackForACandidateIfItIsInCache) {
                .image_bytes = "d4e5f6",
                .seed = 21,
                .query = "a nice raspberry"});
-  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store);
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store,
+                             LobsterEntryPoint::kPicker);
   base::test::TestFuture<const LobsterFeedbackPreviewResponse&> future;
 
   session.PreviewFeedback(/*id=*/1, future.GetCallback());
@@ -257,7 +267,8 @@ TEST_F(LobsterSessionImplTest,
                                           /*image_bytes=*/"d4e5f6"))
       .WillByDefault(testing::Return(true));
 
-  LobsterSessionImpl session(std::move(lobster_client), store);
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
   EXPECT_FALSE(session.SubmitFeedback(/*candidate_id*/ 2,
                                       /*description=*/"Awesome raspberry"));
 }
@@ -281,7 +292,8 @@ TEST_F(LobsterSessionImplTest,
                                           /*image_bytes=*/"a1b2c3"))
       .WillByDefault(testing::Return(false));
 
-  LobsterSessionImpl session(std::move(lobster_client), store);
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
   EXPECT_FALSE(session.SubmitFeedback(/*candidate_id*/ 0,
                                       /*description=*/"Awesome raspberry"));
 }
@@ -312,11 +324,32 @@ TEST_F(LobsterSessionImplTest, CanSubmitFeedbackForACandiateIfItIsInCache) {
                              /*image_bytes=*/"d4e5f6"))
       .WillOnce(testing::Return(true));
 
-  LobsterSessionImpl session(std::move(lobster_client), store);
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
   EXPECT_TRUE(session.SubmitFeedback(/*candidate_id*/ 0,
                                      /*description=*/"Awesome raspberry"));
   EXPECT_TRUE(session.SubmitFeedback(/*candidate_id*/ 1,
                                      /*description=*/"Awesome raspberry"));
+}
+
+TEST_F(LobsterSessionImplTest, RecordMetricsForPickerEntryPoint) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kPicker);
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kPickerTriggerFired, 1);
+}
+
+TEST_F(LobsterSessionImplTest, RecordMetricsForRightClickEntryPoint) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kRightClickMenu);
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kRightClickTriggerFired, 1);
 }
 
 }  // namespace

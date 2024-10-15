@@ -14,6 +14,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/lobster/lobster_controller.h"
+#include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_web_paste_target.h"
@@ -605,7 +606,8 @@ void PickerClientImpl::ShowLobster(std::optional<std::string> query) {
     return;
   }
 
-  lobster_trigger_ = lobster_controller->CreateTrigger();
+  lobster_trigger_ =
+      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kPicker);
   if (lobster_trigger_ != nullptr) {
     lobster_trigger_->Fire(query);
   }

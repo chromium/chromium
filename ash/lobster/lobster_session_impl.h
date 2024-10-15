@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/lobster/lobster_candidate_store.h"
+#include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_feedback_preview.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
@@ -26,9 +27,11 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
  public:
   using ActionCallback = base::OnceCallback<void(const std::string&)>;
 
-  explicit LobsterSessionImpl(std::unique_ptr<LobsterClient> client);
+  explicit LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
+                              LobsterEntryPoint entry_point);
   LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
-                     const LobsterCandidateStore& candidate_store);
+                     const LobsterCandidateStore& candidate_store,
+                     LobsterEntryPoint entry_point);
 
   ~LobsterSessionImpl() override;
 
@@ -62,6 +65,8 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   std::unique_ptr<LobsterClient> client_;
 
   LobsterCandidateStore candidate_store_;
+
+  LobsterEntryPoint entry_point_;
 
   base::WeakPtrFactory<LobsterSessionImpl> weak_ptr_factory_{this};
 };
