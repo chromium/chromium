@@ -309,7 +309,12 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.AndroidBootTime" units="ms" expires_after="2025-03-23">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
-  <summary>The time elapsed for booting up the ARC instance.</summary>
+  <summary>
+    The time elapsed for booting up the ARC instance.
+
+    This metric is capped at 60 seconds, see Arc.UiAvailable if you need a
+    metric that tracks longer.
+  </summary>
 </histogram>
 
 <histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2025-03-30">
