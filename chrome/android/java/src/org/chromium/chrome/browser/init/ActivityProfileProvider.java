@@ -80,7 +80,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
     @Nullable
     private OtrProfileId getOrCreateOtrProfileId() {
         if (!mHasCreatedOtrProfileId) {
-            mOtrProfileId = createOffTheRecordProfileID();
+            mOtrProfileId = createOffTheRecordProfileId();
             mHasCreatedOtrProfileId = true;
         }
         return mOtrProfileId;
@@ -91,7 +91,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
      * null, the default OffTheRecord profile will be used.
      */
     @Nullable
-    protected OtrProfileId createOffTheRecordProfileID() {
+    protected OtrProfileId createOffTheRecordProfileId() {
         return null;
     }
 

@@ -91,12 +91,12 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testNonPrimaryProfileConsistency() throws Exception {
-        OtrProfileId profileID = new OtrProfileId("test::OTRProfile");
+        OtrProfileId profileId = new OtrProfileId("test::OTRProfile");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID, /* createIfNeeded= */ true));
+                                        profileId, /* createIfNeeded= */ true));
 
         Assert.assertTrue(
                 "isOffTheRecord should be true for non-primary OTR profiles",
@@ -112,7 +112,7 @@ public class ProfileTest {
                 nonPrimaryOtrProfile1.isNativeInitialized());
         Assert.assertTrue(
                 "The regular profile should return the OTR profile from the OTR profile id",
-                mRegularProfile.hasOffTheRecordProfile(profileID));
+                mRegularProfile.hasOffTheRecordProfile(profileId));
         Assert.assertFalse(
                 "hasPrimaryOTRProfile should be false for non-primary, non-incognito profiles",
                 mRegularProfile.hasPrimaryOTRProfile());
@@ -120,7 +120,7 @@ public class ProfileTest {
         Assert.assertEquals(
                 "OTR profile id should be returned as it is set.",
                 nonPrimaryOtrProfile1.getOtrProfileId(),
-                profileID);
+                profileId);
 
         Profile nonPrimaryOtrProfile2 =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -140,19 +140,19 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testCreatingTwoNonPrimaryProfiles() throws Exception {
-        OtrProfileId profileID1 = new OtrProfileId("test::OTRProfile-1");
+        OtrProfileId profileId1 = new OtrProfileId("test::OTRProfile-1");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID1, /* createIfNeeded= */ true));
+                                        profileId1, /* createIfNeeded= */ true));
 
-        OtrProfileId profileID2 = new OtrProfileId("test::OTRProfile-2");
+        OtrProfileId profileId2 = new OtrProfileId("test::OTRProfile-2");
         Profile nonPrimaryOtrProfile2 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID2, /* createIfNeeded= */ true));
+                                        profileId2, /* createIfNeeded= */ true));
 
         Assert.assertTrue(
                 "isOffTheRecord should be true for non-primary OTR profiles",
@@ -168,7 +168,7 @@ public class ProfileTest {
                 nonPrimaryOtrProfile1.isNativeInitialized());
         Assert.assertTrue(
                 "The regular profile should return the OTR profile from the OTR profile id",
-                mRegularProfile.hasOffTheRecordProfile(profileID1));
+                mRegularProfile.hasOffTheRecordProfile(profileId1));
 
         Assert.assertTrue(
                 "isOffTheRecord should be true for non-primary OTR profiles",
@@ -184,7 +184,7 @@ public class ProfileTest {
                 nonPrimaryOtrProfile2.isNativeInitialized());
         Assert.assertTrue(
                 "The regular profile should return the OTR profile from the OTR profile id",
-                mRegularProfile.hasOffTheRecordProfile(profileID2));
+                mRegularProfile.hasOffTheRecordProfile(profileId2));
 
         Assert.assertNotSame(
                 "Two calls to get non-primary OTR profile with different IDs"
@@ -199,14 +199,14 @@ public class ProfileTest {
     public void testCreatingUniqueOtrProfileIds() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OtrProfileId profileID1 = OtrProfileId.createUnique("test::OTRProfile");
-                    OtrProfileId profileID2 = OtrProfileId.createUnique("test::OTRProfile");
+                    OtrProfileId profileId1 = OtrProfileId.createUnique("test::OTRProfile");
+                    OtrProfileId profileId2 = OtrProfileId.createUnique("test::OTRProfile");
 
                     Assert.assertNotSame(
                             "Two calls to OtrProfileId.CreateUnique with the same prefix"
                                     + "should return different objects.",
-                            profileID1,
-                            profileID2);
+                            profileId1,
+                            profileId2);
                 });
     }
 
@@ -306,25 +306,25 @@ public class ProfileTest {
     @RequiresRestart(
             "crbug/1161449 - Other tests create profiles which invalidate the first assertion.")
     public void testGetOffTheRecordProfile() throws Exception {
-        OtrProfileId profileID = new OtrProfileId("test::OTRProfile");
+        OtrProfileId profileId = new OtrProfileId("test::OTRProfile");
 
         // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
         Profile profile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID, /* createIfNeeded= */ false));
+                                        profileId, /* createIfNeeded= */ false));
         Assert.assertNull(profile1);
-        Assert.assertFalse(mRegularProfile.hasOffTheRecordProfile(profileID));
+        Assert.assertFalse(mRegularProfile.hasOffTheRecordProfile(profileId));
 
         // Ask for a non-existing profile with createIfNeeded set to true and expect creation.
         Profile profile2 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID, /* createIfNeeded= */ true));
+                                        profileId, /* createIfNeeded= */ true));
         Assert.assertNotNull(profile2);
-        Assert.assertTrue(mRegularProfile.hasOffTheRecordProfile(profileID));
+        Assert.assertTrue(mRegularProfile.hasOffTheRecordProfile(profileId));
 
         // Ask for an existing profile with createIfNeeded set to false and expect getting the
         // existing profile.
@@ -332,7 +332,7 @@ public class ProfileTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID, /* createIfNeeded= */ false));
+                                        profileId, /* createIfNeeded= */ false));
         Assert.assertNotNull(profile3);
         Assert.assertSame(profile2, profile3);
 
@@ -342,7 +342,7 @@ public class ProfileTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        profileID, /* createIfNeeded= */ true));
+                                        profileId, /* createIfNeeded= */ true));
         Assert.assertNotNull(profile4);
         Assert.assertSame(profile2, profile4);
     }

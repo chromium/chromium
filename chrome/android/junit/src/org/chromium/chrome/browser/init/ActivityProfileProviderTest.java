@@ -111,7 +111,7 @@ public class ActivityProfileProviderTest {
                 new ActivityProfileProvider(mLifecycleDispatcher) {
                     @Nullable
                     @Override
-                    protected OtrProfileId createOffTheRecordProfileID() {
+                    protected OtrProfileId createOffTheRecordProfileId() {
                         otrProfileIdHelper.notifyCalled();
                         return otrProfileId;
                     }

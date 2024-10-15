@@ -474,7 +474,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 new ActivityProfileProvider(getLifecycleDispatcher()) {
                     @Nullable
                     @Override
-                    protected OtrProfileId createOffTheRecordProfileID() {
+                    protected OtrProfileId createOffTheRecordProfileId() {
                         throw new IllegalStateException(
                                 "Attempting to access incognito from the search activity");
                     }

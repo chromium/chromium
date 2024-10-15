@@ -85,8 +85,8 @@ public class DownloadDialogIncognitoTest {
     @LargeTest
     public void testDuplicateDownloadForIncognitoMode() throws Exception {
         // Showing a duplicate download dialog with an Incognito profile.
-        OtrProfileId primaryProfileID = OtrProfileId.getPrimaryOtrProfileId();
-        showDuplicateDialog(primaryProfileID);
+        OtrProfileId primaryProfileId = OtrProfileId.getPrimaryOtrProfileId();
+        showDuplicateDialog(primaryProfileId);
 
         // Verify the Incognito warning message is shown.
         waitForWarningVisibilityToBe(VISIBLE);
@@ -100,8 +100,8 @@ public class DownloadDialogIncognitoTest {
     @LargeTest
     public void testDuplicateDownloadForRegularProfile() throws Exception {
         // Showing a duplicate download dialog with a regular profile.
-        OtrProfileId regularProfileID = null;
-        showDuplicateDialog(regularProfileID);
+        OtrProfileId regularProfileId = null;
+        showDuplicateDialog(regularProfileId);
 
         // Verify the Incognito warning message is NOT shown.
         waitForWarningVisibilityToBe(GONE);

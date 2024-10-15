@@ -192,7 +192,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 new ActivityProfileProvider(getLifecycleDispatcher()) {
                     @Nullable
                     @Override
-                    protected OtrProfileId createOffTheRecordProfileID() {
+                    protected OtrProfileId createOffTheRecordProfileId() {
                         throw new IllegalStateException(
                                 "Attempting to access incognito in the sign-in & history sync"
                                         + " opt-in flow");

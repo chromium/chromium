@@ -74,12 +74,12 @@ public class Profile implements BrowserContextHandle {
      * Returns the OffTheRecord profile with given OTRProfileiD. If the profile does not exist and
      * createIfNeeded is true, a new profile is created, otherwise returns null.
      *
-     * @param profileID {@link OtrProfileId} object.
+     * @param profileId {@link OtrProfileId} object.
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
-    public Profile getOffTheRecordProfile(OtrProfileId profileID, boolean createIfNeeded) {
-        assert profileID != null;
-        return ProfileJni.get().getOffTheRecordProfile(mNativeProfile, profileID, createIfNeeded);
+    public Profile getOffTheRecordProfile(OtrProfileId profileId, boolean createIfNeeded) {
+        assert profileId != null;
+        return ProfileJni.get().getOffTheRecordProfile(mNativeProfile, profileId, createIfNeeded);
     }
 
     /**
@@ -102,11 +102,11 @@ public class Profile implements BrowserContextHandle {
     /**
      * Returns if OffTheRecord profile with given OtrProfileId exists.
      *
-     * @param profileID {@link OtrProfileId} object.
+     * @param profileId {@link OtrProfileId} object.
      */
-    public boolean hasOffTheRecordProfile(OtrProfileId profileID) {
-        assert profileID != null;
-        return ProfileJni.get().hasOffTheRecordProfile(mNativeProfile, profileID);
+    public boolean hasOffTheRecordProfile(OtrProfileId profileId) {
+        assert profileId != null;
+        return ProfileJni.get().hasOffTheRecordProfile(mNativeProfile, profileId);
     }
 
     /** Returns if primary OffTheRecord profile exists. */

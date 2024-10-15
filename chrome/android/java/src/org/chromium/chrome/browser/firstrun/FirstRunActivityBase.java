@@ -160,7 +160,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         return new ActivityProfileProvider(getLifecycleDispatcher()) {
             @Nullable
             @Override
-            protected OtrProfileId createOffTheRecordProfileID() {
+            protected OtrProfileId createOffTheRecordProfileId() {
                 throw new IllegalStateException("Attempting to access incognito in the FRE");
             }
         };
