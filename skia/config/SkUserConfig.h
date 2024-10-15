@@ -237,6 +237,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_BLUR_GRAPHITE
 
+#define SK_USE_LEGACY_CLIP_GRAPHITE
+
+#define SK_USE_LEGACY_ARCS_GRAPHITE
+
 #define SK_USE_SRCOVER_FOR_FILTERS
 
 
