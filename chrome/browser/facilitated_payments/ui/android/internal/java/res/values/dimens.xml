@@ -6,13 +6,14 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="facilitated_payments_drag_handlebar_vertical_margin">8dp</dimen>
+    <dimen name="facilitated_payments_drag_handlebar_margin_top">8dp</dimen>
+    <dimen name="facilitated_payments_drag_handlebar_margin_bottom">16dp</dimen>
     <dimen name="facilitated_payments_gpay_icon_width">80dp</dimen>
     <dimen name="facilitated_payments_gpay_icon_height">32dp</dimen>
     <dimen name="facilitated_payments_bank_account_icon_padding_horizontal">11dp</dimen>
     <dimen name="facilitated_payments_bank_account_icon_padding_vertical">3dp</dimen>
     <dimen name="facilitated_payments_product_icon_height">32dp</dimen>
-    <dimen name="facilitated_payments_product_icon_margin_vertical">12dp</dimen>
+    <dimen name="facilitated_payments_product_icon_margin_vertical">8dp</dimen>
     <dimen name="facilitated_payments_horizontal_margin">8dp</dimen>
     <dimen name="facilitated_payments_header_bottom_margin">24dp</dimen>
     <dimen name="facilitated_payments_additional_info_margin_vertical">20dp</dimen>
@@ -34,4 +35,6 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_error_screen_button_vertical_margin">18dp</dimen>
     <dimen name="facilitated_payments_continue_button_height">40dp</dimen>
     <dimen name="facilitated_payments_continue_button_margin_bottom">24dp</dimen>
+    <dimen name="facilitated_payments_fop_selector_description_text_margin_top">4dp</dimen>
+    <dimen name="facilitated_payments_fop_selector_title_margin_top">16dp</dimen>
 </resources>
