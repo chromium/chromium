@@ -17,7 +17,8 @@ class ResponseHolder {
   ResponseHolder();
   ~ResponseHolder();
 
-  OptimizationGuideModelExecutionResultStreamingCallback callback();
+  OptimizationGuideModelExecutionResultCallback GetCallback();
+  OptimizationGuideModelExecutionResultStreamingCallback GetStreamingCallback();
 
   // Wait for and get the final execution status (true if completed without
   // error).
@@ -47,7 +48,11 @@ class ResponseHolder {
   void ClearLogEntry() { log_entry_received_.reset(); }
 
  private:
-  void OnResponse(OptimizationGuideModelStreamingExecutionResult result);
+  void Clear();
+  void OnResponse(OptimizationGuideModelExecutionResult result,
+                  std::unique_ptr<ModelQualityLogEntry> log_entry);
+  void OnStreamingResponse(
+      OptimizationGuideModelStreamingExecutionResult result);
 
   base::test::TestFuture<bool> final_status_future_;
   std::vector<std::string> streamed_responses_;
