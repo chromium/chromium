@@ -51,6 +51,7 @@ constexpr char kToSiteBTargetBlankWithOpener[] = "id-LINK-A_TO_B-BLANK-OPENER";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kStartPageId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppPageId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDestinationPageId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LatestDomMessageObserver,
                                     kLatestDomMessage);
 
@@ -180,13 +181,16 @@ class WebAppNavigationCapturingIphUiTest
       const std::string& element_id,
       ui_controls::MouseButton button,
       ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator) {
-    auto steps = Steps(
-        ClickLaunchLink(element_id, button, accel),
-        InAnyContext(
-            WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
-        InSameContext(CheckViewProperty(kBrowserViewElementId,
-                                        &BrowserView::browser,
-                                        testing::Ne(browser()))));
+    // Note: on Mac, the web contents for a new app can become "visible" well
+    // before the browser itself does, which can cause a race condition.
+    // Therefore, throughout, we wait for the web contents and not the browser
+    // to enforce consistency.
+    auto steps = Steps(InstrumentNextTab(kDestinationPageId, AnyBrowser()),
+                       ClickLaunchLink(element_id, button, accel),
+                       InAnyContext(WaitForShow(kDestinationPageId)),
+                       InSameContext(CheckViewProperty(
+                           kBrowserViewElementId, &BrowserView::browser,
+                           testing::Ne(browser()))));
     AddDescription(steps, "TriggerAppLaunch( %s )");
     return steps;
   }
@@ -216,39 +220,41 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
-// Middle click does not work (consistently?) on Mac; see
-// http://crbug.com/366580804
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IPHShownOnLinkMiddleClick DISABLED_IPHShownOnLinkMiddleClick
-#else
-#define MAYBE_IPHShownOnLinkMiddleClick IPHShownOnLinkMiddleClick
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_IPHShownOnLinkMiddleClick) {
+                       IPHShownOnLinkMiddleClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetStartUrl());
-  RunTestSequence(
-      OpenAppStartPage(app_id),
-      TriggerAppLaunch(kToSiteATargetBlankWithOpener, ui_controls::MIDDLE),
-      InSameContext(WaitForPromo(
-          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
-}
-
-// Shift-click click does not work (consistently?) on Mac; see
-// http://crbug.com/366580804
+  RunTestSequence(OpenAppStartPage(app_id),
+                  TriggerAppLaunch(kToSiteATargetBlankWithOpener,
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_IPHShownOnLinkShiftClick DISABLED_IPHShownOnLinkShiftClick
+                                   // Middle click does not work (consistently?)
+                                   // on Mac; see http://crbug.com/366580804
+                                   ui_controls::LEFT, ui_controls::kCommand
 #else
-#define MAYBE_IPHShownOnLinkShiftClick IPHShownOnLinkShiftClick
+                                   ui_controls::MIDDLE
 #endif
-IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       MAYBE_IPHShownOnLinkShiftClick) {
-  const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
-  const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
-  RunTestSequence(OpenAppStartPage(app_id_a),
-                  TriggerAppLaunch(kToSiteBTargetBlankWithOpener,
-                                   ui_controls::LEFT, ui_controls::kShift),
+                                   ),
                   InSameContext(WaitForPromo(
                       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+                       /*MAYBE_*/ IPHShownOnLinkShiftClick) {
+  const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
+  const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
+  RunTestSequence(
+      OpenAppStartPage(app_id_a),
+      TriggerAppLaunch(kToSiteBTargetBlankWithOpener, ui_controls::LEFT,
+#if BUILDFLAG(IS_MAC)
+                       // Shift-click click does not work (consistently?) on
+                       // Mac; see http://crbug.com/366580804
+                       static_cast<ui_controls::AcceleratorState>(
+                           ui_controls::kCommand | ui_controls::kAlt)
+#else
+                       ui_controls::kShift
+#endif
+                           ),
+      InSameContext(WaitForPromo(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
