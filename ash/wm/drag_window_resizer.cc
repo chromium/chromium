@@ -98,7 +98,8 @@ void DragWindowResizer::UpdateDragWindow() {
 
   if (!drag_window_controller_) {
     drag_window_controller_ = std::make_unique<DragWindowController>(
-        GetTarget(), details().source == wm::WINDOW_MOVE_SOURCE_TOUCH);
+        GetTarget(), details().source == wm::WINDOW_MOVE_SOURCE_TOUCH,
+        /*create_window_shadow=*/true);
   }
   drag_window_controller_->Update();
 }

@@ -349,8 +349,8 @@ void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
   }
 
   if (!window_mirror_for_dragging_) {
-    window_mirror_for_dragging_ =
-        std::make_unique<DragWindowController>(GetWindow(), is_touch_dragging);
+    window_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+        GetWindow(), is_touch_dragging, /*create_window_shadow=*/false);
   }
   window_mirror_for_dragging_->Update();
 }

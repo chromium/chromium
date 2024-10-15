@@ -313,7 +313,8 @@ void OverviewItemBase::UpdateMirrorsForDragging(bool is_touch_dragging) {
 
   if (!item_mirror_for_dragging_) {
     item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
-        item_widget_->GetNativeWindow(), is_touch_dragging);
+        item_widget_->GetNativeWindow(), is_touch_dragging,
+        /*create_window_shadow=*/true);
   }
 
   item_mirror_for_dragging_->Update();

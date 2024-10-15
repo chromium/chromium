@@ -27,7 +27,9 @@ namespace ash {
 // Phantom windows called "drag windows" represent the window on other displays.
 class ASH_EXPORT DragWindowController {
  public:
-  DragWindowController(aura::Window* window, bool is_touch_dragging);
+  DragWindowController(aura::Window* window,
+                       bool is_touch_dragging,
+                       bool create_window_shadow);
   DragWindowController(const DragWindowController&) = delete;
   DragWindowController& operator=(const DragWindowController&) = delete;
   virtual ~DragWindowController();
@@ -61,6 +63,9 @@ class ASH_EXPORT DragWindowController {
 
   // Indicates touch dragging, as opposed to mouse dragging.
   const bool is_touch_dragging_;
+
+  // If true, create a drop shadow for the drag window.
+  const bool create_window_shadow_;
 
   // |window_|'s opacity before the drag. Used to revert opacity after the drag.
   const float old_opacity_;
