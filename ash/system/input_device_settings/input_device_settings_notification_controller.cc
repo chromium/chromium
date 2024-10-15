@@ -169,6 +169,7 @@ constexpr auto kKeyCodeToSixPackKeyRemappingNudgeLastShownPref =
 // Device key of the virtual mouse often used by integration tests, avoid
 // showing notification in this case.
 const char kVirtualMouseDeviceKey[] = "0000:0000";
+const char kLogiBoltReceiverKey[] = "046d:c548";
 
 const char kNotifierId[] = "input_device_settings_controller";
 const char kAltRightClickRewriteNotificationId[] =
@@ -635,8 +636,10 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     return;
   }
 
-  // Avoid showing notification for the virtual mouse device.
-  if (mouse.device_key == kVirtualMouseDeviceKey) {
+  // Avoid showing notifications for the virtual mouse device and Logi Bolt
+  // receiver.
+  if (mouse.device_key == kVirtualMouseDeviceKey ||
+      mouse.device_key == kLogiBoltReceiverKey) {
     return;
   }
 

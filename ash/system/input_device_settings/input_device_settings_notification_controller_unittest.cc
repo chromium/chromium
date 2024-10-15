@@ -957,4 +957,17 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(1u, message_center()->NotificationCount());
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotificationBlockedForLogiBoltReceiver) {
+  mojom::MousePtr mojom_mouse = mojom::Mouse::New();
+  // 046d:c548 is the VID/PID for the receiver,
+  mojom_mouse->device_key = "046d:c548";
+  mojom_mouse->id = 1;
+  mojom_mouse->is_external = false;
+  mojom_mouse->settings = mojom::MouseSettings::New();
+
+  NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(0u, message_center()->NotificationCount());
+}
+
 }  // namespace ash
