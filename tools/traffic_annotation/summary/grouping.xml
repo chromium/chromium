@@ -356,6 +356,7 @@ after discussions on the right group.
       <annotation id="demo_login_controller"/>
       <annotation id="forms_annotations_model_execution"/>
       <annotation id="forms_predictions_model_execution"/>
+      <annotation id="chromeos_scanner_drive"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

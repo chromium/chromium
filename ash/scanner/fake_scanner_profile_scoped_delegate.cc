@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/drive/service/drive_service_interface.h"
 
 namespace ash {
 
@@ -33,6 +34,11 @@ void FakeScannerProfileScopedDelegate::SendFakeActionsResponse(
     ScannerActionsResponse actions_response) {
   CHECK(!fetch_actions_callback_.is_null());
   std::move(fetch_actions_callback_).Run(actions_response);
+}
+
+drive::DriveServiceInterface*
+FakeScannerProfileScopedDelegate::GetDriveService() {
+  return &drive_service_;
 }
 
 }  // namespace ash

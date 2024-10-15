@@ -498,4 +498,5 @@ Refer to README.md for content description and update process.
  <item id="demo_login_controller" added_in_milestone="131" content_hash_code="04b91873" os_list="chromeos" file_path="chrome/browser/ash/login/demo_mode/demo_login_controller.cc" />
  <item id="forms_annotations_model_execution" added_in_milestone="131" content_hash_code="00add55e" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="forms_predictions_model_execution" added_in_milestone="131" content_hash_code="02b70ea8" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="chromeos_scanner_drive" added_in_milestone="131" content_hash_code="06d99e20" os_list="chromeos" file_path="chrome/browser/ash/scanner/scanner_keyed_service.cc" />
 </annotations>

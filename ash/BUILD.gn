@@ -5427,6 +5427,8 @@ static_library("test_support") {
     "//components/capture_mode",
     "//components/desks_storage",
     "//components/desks_storage:test_support",
+    "//components/drive",
+    "//components/drive:test_support",
     "//components/exo/wayland:test_controller_stub",
     "//components/exo/wayland:ui_controls_protocol_stub",
     "//components/prefs:test_support",

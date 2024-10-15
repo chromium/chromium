@@ -5,12 +5,20 @@
 #include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 ScannerKeyedService* ScannerKeyedServiceFactory::GetForProfile(
     Profile* profile) {
@@ -33,17 +41,24 @@ ScannerKeyedServiceFactory::ScannerKeyedServiceFactory()
           "ScannerKeyedServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              .WithGuest(ProfileSelection::kNone)
-              .WithSystem(ProfileSelection::kNone)
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 ScannerKeyedServiceFactory::~ScannerKeyedServiceFactory() = default;
 
 std::unique_ptr<KeyedService> ScannerKeyedServiceFactory::BuildInstanceFor(
     content::BrowserContext* context) {
-  return std::make_unique<ScannerKeyedService>(
-      Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  return std::make_unique<ScannerKeyedService>(identity_manager,
+                                               std::move(url_loader_factory));
 }
 
 std::unique_ptr<KeyedService>

@@ -8,4 +8,7 @@ include_rules = [
   "+chrome/browser/ash/scanner",
   # And any browser dependencies required for a ProfileKeyedService.
   "+chrome/browser/profiles",
+
+  # Required for getting a `signin::IdentityManager`.
+  "+chrome/browser/signin",
 ]

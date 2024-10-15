@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
+#include "components/drive/service/fake_drive_service.h"
 
 namespace ash {
 
@@ -25,6 +26,7 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
   void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       base::OnceCallback<void(ScannerActionsResponse)> callback) override;
+  drive::DriveServiceInterface* GetDriveService() override;
 
   // Simulates sending `actions_response` in response to a prior request to
   // `FetchActionsForImage`. `FetchActionsForImage` must be called before
@@ -32,6 +34,8 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
   void SendFakeActionsResponse(ScannerActionsResponse actions_response);
 
  private:
+  drive::FakeDriveService drive_service_;
+
   base::OnceCallback<void(ScannerActionsResponse)> fetch_actions_callback_;
 };
 

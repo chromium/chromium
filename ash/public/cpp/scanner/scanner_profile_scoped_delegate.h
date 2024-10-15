@@ -12,6 +12,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 
+namespace drive {
+class DriveServiceInterface;
+}
+
 namespace ash {
 
 // Provides access to the browser. The access provided is scoped to a single
@@ -29,6 +33,9 @@ class ASH_PUBLIC_EXPORT ScannerProfileScopedDelegate {
   virtual void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       base::OnceCallback<void(ScannerActionsResponse)> callback) = 0;
+
+  // Returns a reference to a `drive::DriveServiceInterface` to upload files.
+  virtual drive::DriveServiceInterface* GetDriveService() = 0;
 };
 
 }  // namespace ash

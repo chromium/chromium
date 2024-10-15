@@ -27,7 +27,9 @@ static_library("scanner") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/drive",
     "//components/keyed_service/core",
     "//content/public/browser",
+    "//google_apis/drive",
   ]
 }
