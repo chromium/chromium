@@ -137,6 +137,9 @@ public class ModalDialogProperties {
         int DIALOG_WHEN_LARGE = 3;
     }
 
+    /** The name of the dialog. Should only be used internally to identify the dialog. */
+    public static final ReadableIntPropertyKey NAME = new ReadableIntPropertyKey();
+
     /** The {@link Controller} that handles events on user actions. */
     public static final ReadableObjectPropertyKey<Controller> CONTROLLER =
             new ReadableObjectPropertyKey<>();
@@ -274,6 +277,7 @@ public class ModalDialogProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                NAME,
                 CONTROLLER,
                 CONTENT_DESCRIPTION,
                 TITLE,

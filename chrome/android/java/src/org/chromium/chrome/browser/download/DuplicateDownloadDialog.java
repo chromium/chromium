@@ -55,6 +55,9 @@ public class DuplicateDownloadDialog {
         mPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
+                                ModalDialogProperties.NAME,
+                                ModalDialogManager.DialogName.DUPLICATE_DOWNLOAD_DIALOG)
+                        .with(
                                 ModalDialogProperties.CONTROLLER,
                                 getController(context, modalDialogManager, callback))
                         .with(

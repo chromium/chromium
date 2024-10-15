@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.download.interstitial.DownloadIntersti
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.STATE;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.TITLE_TEXT;
+import static org.chromium.ui.modaldialog.ModalDialogManager.DialogName.DUPLICATE_DOWNLOAD_DIALOG;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -98,6 +99,7 @@ class DownloadInterstitialMediator {
         mProvider = provider;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
+        mModalDialogManager.addObserver(getModalDialogManagerObserver());
 
         mModel.set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
         mModel.set(ListProperties.CALLBACK_OPEN, this::onOpenItem);
@@ -355,6 +357,20 @@ class DownloadInterstitialMediator {
                             setState(State.SUCCESSFUL);
                         }
                         break;
+                }
+            }
+        };
+    }
+
+    private ModalDialogManager.ModalDialogManagerObserver getModalDialogManagerObserver() {
+        return new ModalDialogManager.ModalDialogManagerObserver() {
+            @Override
+            public void onDialogSuppressed(PropertyModel model) {
+                if (DUPLICATE_DOWNLOAD_DIALOG == model.get(ModalDialogProperties.NAME)) {
+                    // If the duplicate download dialog is suppressed, we should continue with a
+                    // unique file name. This will dismiss the pending dialog in ModalDialogManager.
+                    model.get(ModalDialogProperties.CONTROLLER)
+                            .onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
                 }
             }
         };

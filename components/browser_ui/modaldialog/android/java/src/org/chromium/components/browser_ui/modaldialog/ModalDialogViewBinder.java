@@ -23,7 +23,9 @@ public class ModalDialogViewBinder
                 PropertyModel, ModalDialogView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
-        if (ModalDialogProperties.TITLE == propertyKey) {
+        if (ModalDialogProperties.NAME == propertyKey) {
+            /* Do nothing. */
+        } else if (ModalDialogProperties.TITLE == propertyKey) {
             view.setTitle(model.get(ModalDialogProperties.TITLE));
         } else if (ModalDialogProperties.TITLE_MAX_LINES == propertyKey) {
             view.setTitleMaxLines(model.get(ModalDialogProperties.TITLE_MAX_LINES));

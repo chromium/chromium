@@ -59,6 +59,13 @@ public class ModalDialogManager {
          */
         default void onDialogDismissed(PropertyModel model) {}
 
+        /**
+         * A notification that the manager has suppressed a modal dialog because it is suspended.
+         *
+         * @param model The model that describes the dialog that was suppressed.
+         */
+        default void onDialogSuppressed(PropertyModel model) {}
+
         /** A notification that the manager has dismissed all queued modal dialog. */
         default void onLastDialogDismissed() {}
     }
@@ -192,6 +199,20 @@ public class ModalDialogManager {
         // because of how {@link PendingDialogContainer} is built.
         int RANGE_MAX = VERY_HIGH;
         int NUM_ENTRIES = RANGE_MAX - RANGE_MIN + 1;
+    }
+
+    /**
+     * This is for identifying individual dialog types. If a dialog needs identifying, add an entry
+     * for the type here, set it in the property model and then you can query the name field.
+     */
+    @IntDef({DialogName.UNKNOWN, DialogName.DUPLICATE_DOWNLOAD_DIALOG})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DialogName {
+        // Dialog name wasn't set.
+        int UNKNOWN = 0;
+        // Dialog shown when there is a file name collision.
+        int DUPLICATE_DOWNLOAD_DIALOG = 1;
+        int NUM_ENTRIES = 2;
     }
 
     /** Mapping of the {@link Presenter}s and the type of dialogs they are showing. */
@@ -443,6 +464,7 @@ public class ModalDialogManager {
             if (mSuspendedTypes.contains(dialogType)
                     || (isShowing() && mCurrentPriority >= dialogPriority)) {
                 mPendingDialogContainer.put(dialogType, dialogPriority, model, showAsNext);
+                for (ModalDialogManagerObserver o : mObserverList) o.onDialogSuppressed(model);
                 return;
             }
         }
