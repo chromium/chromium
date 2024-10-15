@@ -1791,6 +1791,13 @@ static_library("browser") {
     # gets modularized.
     "//chrome/browser/ui/blocked_content:impl",
 
+    # TODO(crbug.com/373646571): Remove this circular dependency when the following
+    # directories get modularized:
+    # - c/b/preloading/prefetch/no_state_prefetch/
+    # - c/b/password_manager/
+    # - c/b/tab_contents/
+    "//chrome/browser/ui/login:impl",
+
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/profiles:profile_attributes_impl",
     "//chrome/browser/profiles:profile_util_impl",
@@ -1973,6 +1980,8 @@ static_library("browser") {
     "//chrome/browser/ui/hats:impl",
     "//chrome/browser/ui/javascript_dialogs",
     "//chrome/browser/ui/javascript_dialogs:impl",
+    "//chrome/browser/ui/login",
+    "//chrome/browser/ui/login:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/prefs",
