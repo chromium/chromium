@@ -139,8 +139,8 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(2 * width, bitmap.width());
   EXPECT_EQ(2 * height, bitmap.height());
 }
@@ -155,8 +155,8 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }
@@ -170,10 +170,8 @@ TEST_F(ClipboardMacTest, EmptyImage) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  EXPECT_EQ(0, bitmap.width());
-  EXPECT_EQ(0, bitmap.height());
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_TRUE(bitmap.isNull());
 }
 
 TEST_F(ClipboardMacTest, PDFImage) {
@@ -193,8 +191,8 @@ TEST_F(ClipboardMacTest, PDFImage) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }
@@ -217,8 +215,8 @@ TEST_F(ClipboardMacTest, WriteBitmapAddsPNGToClipboard) {
   const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
   std::vector<uint8_t> png_data(bytes, bytes + data.length);
 
-  SkBitmap result_bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &result_bitmap);
+  SkBitmap result_bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(result_bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, result_bitmap));
 }
 

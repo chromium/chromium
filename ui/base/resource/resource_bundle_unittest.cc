@@ -21,6 +21,7 @@
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -124,15 +125,16 @@ void CreateDataPackWithSingleBitmap(const base::FilePath& path,
   SkBitmap bitmap;
   bitmap.allocN32Pixels(edge_size, edge_size);
   bitmap.eraseColor(SK_ColorWHITE);
-  std::vector<unsigned char> bitmap_data;
-  EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bitmap_data));
+  std::optional<std::vector<uint8_t>> bitmap_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  ASSERT_TRUE(bitmap_data);
 
-  if (custom_chunk.size() > 0)
-    AddCustomChunk(custom_chunk, &bitmap_data);
+  if (custom_chunk.size() > 0) {
+    AddCustomChunk(custom_chunk, &bitmap_data.value());
+  }
 
   std::map<uint16_t, std::string_view> resources;
-  resources[3u] = std::string_view(
-      reinterpret_cast<const char*>(&bitmap_data[0]), bitmap_data.size());
+  resources[3u] = base::as_string_view(bitmap_data.value());
   DataPack::WritePack(path, resources, ui::DataPack::BINARY);
 }
 

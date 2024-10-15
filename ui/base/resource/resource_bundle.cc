@@ -1089,17 +1089,16 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   if (!memory.get())
     return false;
 
-  if (DecodePNG(memory->data(), memory->size(), bitmap, fell_back_to_1x)) {
+  if (DecodePNG(*memory, bitmap, fell_back_to_1x)) {
     return true;
   }
 
 #if !BUILDFLAG(IS_IOS)
   // iOS does not compile or use the JPEG codec.  On other platforms,
   // 99% of our assets are PNGs, however fallback to JPEG.
-  std::unique_ptr<SkBitmap> jpeg_bitmap(
-      gfx::JPEGCodec::Decode(memory->data(), memory->size()));
-  if (jpeg_bitmap.get()) {
-    bitmap->swap(*jpeg_bitmap.get());
+  SkBitmap jpeg_bitmap = gfx::JPEGCodec::Decode(*memory);
+  if (!jpeg_bitmap.isNull()) {
+    bitmap->swap(jpeg_bitmap);
     *fell_back_to_1x = false;
     return true;
   }
@@ -1264,15 +1263,12 @@ bool ResourceBundle::PNGContainsFallbackMarker(base::span<const uint8_t> buf) {
 }
 
 // static
-bool ResourceBundle::DecodePNG(const unsigned char* buf,
-                               size_t size,
+bool ResourceBundle::DecodePNG(base::span<const uint8_t> buf,
                                SkBitmap* bitmap,
                                bool* fell_back_to_1x) {
-  *fell_back_to_1x = PNGContainsFallbackMarker(
-      // TODO(crbug.com/40284755): DecodePNG should be receiving a span. We
-      // can't tell that the size is correct from here.
-      UNSAFE_TODO(base::span(buf, size)));
-  return gfx::PNGCodec::Decode(buf, size, bitmap);
+  *fell_back_to_1x = PNGContainsFallbackMarker(buf);
+  *bitmap = gfx::PNGCodec::Decode(buf);
+  return !bitmap->isNull();
 }
 
 }  // namespace ui

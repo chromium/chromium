@@ -397,7 +397,9 @@ void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
 
   // Create a dummy entry.
   GetDefaultStore().data[ClipboardFormatType::BitmapType()];
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &GetDefaultStore().png);
+  GetDefaultStore().png =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false)
+          .value();
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 

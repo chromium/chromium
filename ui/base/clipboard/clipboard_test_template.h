@@ -649,8 +649,8 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
   std::vector<uint8_t> result = clipboard_test_util::ReadPng(clipboard);
-  SkBitmap image;
-  gfx::PNGCodec::Decode(result.data(), result.size(), &image);
+  SkBitmap image = gfx::PNGCodec::Decode(result);
+  ASSERT_FALSE(image.isNull());
   AssertBitmapMatchesExpected(image, info, expect_data);
 }
 

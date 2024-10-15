@@ -529,8 +529,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // chunks. For security reasons we can't alter PNGCodec to return this
   // information. Our PNG files are preprocessed by GRIT, and any special chunks
   // should occur immediately after the IHDR chunk.
-  static bool DecodePNG(const unsigned char* buf,
-                        size_t size,
+  static bool DecodePNG(base::span<const uint8_t> buf,
                         SkBitmap* bitmap,
                         bool* fell_back_to_1x);
 

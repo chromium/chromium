@@ -4,6 +4,8 @@
 
 #include "ui/base/clipboard/clipboard_util.h"
 
+#include <vector>
+
 #include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ui_base_features.h"
@@ -16,10 +18,10 @@ namespace {
 std::vector<uint8_t> EncodeBitmapToPngImpl(const SkBitmap& bitmap) {
   // Prefer faster image encoding, even if it results in a PNG with a worse
   // compression ratio.
-  std::vector<uint8_t> data;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                        &data);
-  return data;
+  std::optional<std::vector<uint8_t>> data =
+      gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap,
+                                            /*discard_transparency=*/false);
+  return data.value_or(std::vector<uint8_t>());
 }
 
 }  // namespace
