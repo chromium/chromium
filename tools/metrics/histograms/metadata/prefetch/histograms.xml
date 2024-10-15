@@ -288,20 +288,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PrefetchProxy.CanaryChecker.GenerateCacheKey.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2024-09-01">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the amount of time spent generating a cache key for the availability
-    prober. In particular, this tracks how much getNetworkOperator calls might
-    be slowing down this method. See crbug.com/1266018 for more details.
-  </summary>
-  <token key="PrefetchProxyCanaryCheckerClient"
-      variants="PrefetchProxyCanaryCheckerClient"/>
-</histogram>
-
-<histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
     enum="NetErrorCodes" expires_after="2024-09-01">
   <owner>kouhei@chromium.org</owner>
@@ -581,16 +567,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of receiving a redirect while prefetching. This histogram is
     recorded for every redirect.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.SpareRenderer.CountStartedOnSRP" units="count"
-    expires_after="2024-09-01">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of spare renderers that were attempted to be started on
-    the SRP, when the feature param is enabled.
   </summary>
 </histogram>
 
