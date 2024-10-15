@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2014 The Chromium Authors
+<!-- Copyright 2024 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
  -->
@@ -12,24 +12,23 @@
     <uses-sdk android:minSdkVersion="24"/>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"
-                     tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <!-- Needed because CastWebContentsActivity sets orientation to landscape. -->
     <uses-feature android:name="android.hardware.screen.landscape" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
 
     <application android:name="org.chromium.chromecast.shell.CastApplication"
                  android:icon="@drawable/ic_settings_cast">
         <service android:name="org.chromium.chromecast.shell.CastBrowserService"
+                 android:process=":cast_browser_process"
                  android:hardwareAccelerated="true"
                  android:label="Chromecast Web Browser"
                  android:exported="true"
-                 android:foregroundServiceType="specialUse"
+                 android:foregroundServiceType="mediaPlayback"
                  tools:ignore="ExportedService">
              <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                        android:value="cast" />
@@ -39,7 +38,8 @@
             </intent-filter>
         </service>
         <service android:name="org.chromium.chromecast.shell.CastWebContentsService"
-                 android:foregroundServiceType="specialUse">
+                 android:process=":cast_browser_process"
+                 android:foregroundServiceType="mediaPlayback">
              <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                        android:value="cast" />
         </service>
@@ -49,6 +49,7 @@
                   android:exported="true"
                   android:hardwareAccelerated="true"
                   android:launchMode="singleInstance"
+                  android:process=":cast_browser_process"
                   android:screenOrientation="landscape"
                   android:taskAffinity=".CastWebContentsActivity"
                   android:supportsPictureInPicture="true"
@@ -67,10 +68,13 @@
         {% set num_sandboxed_services = 40 %}
         <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
                    android:value="{{ num_sandboxed_services }}"/>
+        <meta-data android:name="org.chromium.content.browser.SANDBOXED_SERVICES_NAME"
+                     android:value="org.chromium.content.app.SandboxedProcessService"/>
 
         {% for i in range(num_sandboxed_services) %}
         <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
+                 android:permission="org.chromium.chromecast.shell.permission.SANDBOX"
                  android:isolatedProcess="true"
                  android:exported="false" />
         {% endfor %}
@@ -78,6 +82,8 @@
         {% set num_privileged_services = 5 %}
         <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
                    android:value="{{ num_privileged_services }}"/>
+        <meta-data android:name="org.chromium.content.browser.PRIVILEGED_SERVICES_NAME"
+                   android:value="org.chromium.content.app.PrivilegedProcessService"/>
 
         {% for i in range(num_privileged_services) %}
         <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
