@@ -20,7 +20,7 @@ root = "sysroot"
 #
 # TODO(https://github.com/rust-lang/cargo/issues/10801): remove workaround once
 # issue is fixed.
-remove_crates = ['allocator-api2']
+remove_crates = ['allocator-api2', 'shlex']
 
 [gn]
 build_file_template = "BUILD.gn.hbs"
