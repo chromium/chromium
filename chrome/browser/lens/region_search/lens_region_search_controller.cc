@@ -207,9 +207,6 @@ void LensRegionSearchController::OnCaptureCompleted(
     lens::EntryPoint lens_entry_point =
         lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
     switch (entry_point_) {
-      case lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH:
-        lens_entry_point = lens::EntryPoint::COMPANION_REGION_SEARCH;
-        break;
       case lens::AmbientSearchEntryPoint::
           LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK:
         lens_entry_point = lens::EntryPoint::CHROME_LENS_OVERLAY_LOCATION_BAR;

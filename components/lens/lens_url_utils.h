@@ -55,8 +55,7 @@ extern GURL AppendOrReplaceQueryParametersForLensRequest(
 extern std::string GetQueryParametersForLensRequest(
     lens::EntryPoint ep,
     bool is_lens_side_panel_request,
-    bool is_full_screen_request,
-    bool is_companion_request = false);
+    bool is_full_screen_request);
 
 // Check if the lens URL is a valid results page. This is done by checking if
 // the URL has a payload parameter.

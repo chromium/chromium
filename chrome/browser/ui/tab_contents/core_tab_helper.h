@@ -158,10 +158,6 @@ class CoreTabHelper : public content::WebContentsObserver,
       std::string& content_type,
       lens::mojom::ImageFormat& image_format);
 
-  // Helper function to return if the companion side panel is enabled for image
-  // search.
-  bool IsImageSearchSupportedForCompanion();
-
   // Posts the bytes and content type to the specified URL If |use_side_panel|
   // is true, the content will open in a side panel, otherwise it will open in
   // a new tab.

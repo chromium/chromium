@@ -93,28 +93,6 @@ TEST(LensUrlUtilsTest, GetRegionSearchSidePanelQueryParameterTest) {
   EXPECT_THAT(query_param, MatchesRegex("ep=crs&re=dcsp&s=4&st=\\d+"));
 }
 
-TEST(LensUrlUtilsTest, GetRegionSearchCompanionQueryParameterTest) {
-  lens::EntryPoint lens_region_search_ep =
-      lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_region_search_ep, /*is_lens_side_panel_request=*/true,
-      /*is_full_screen_request=*/false,
-      /*is_companion_request=*/true);
-  EXPECT_THAT(query_param,
-              MatchesRegex("ep=crs&re=csc&s=4&source=chrome.gsc&st=\\d+"));
-}
-
-TEST(LensUrlUtilsTest, GetCompanionRegionSearchQueryParameterTest) {
-  lens::EntryPoint csc_region_search_ep =
-      lens::EntryPoint::COMPANION_REGION_SEARCH;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      csc_region_search_ep, /*is_lens_side_panel_request=*/true,
-      /*is_full_screen_request=*/false,
-      /*is_companion_request=*/true);
-  EXPECT_THAT(query_param,
-              MatchesRegex("ep=cscidr&re=csc&s=4&source=chrome.gsc&st=\\d+"));
-}
-
 TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_image_search_ep =
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
@@ -122,17 +100,6 @@ TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
       lens_image_search_ep, /*is_lens_side_panel_request=*/true,
       /*is_full_screen_request=*/false);
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
-}
-
-TEST(LensUrlUtilsTest, GetImageSearchCompanionQueryParameterTest) {
-  lens::EntryPoint lens_image_search_ep =
-      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_image_search_ep, /*is_lens_side_panel_request=*/true,
-      /*is_full_screen_request=*/false,
-      /*is_companion_request=*/true);
-  EXPECT_THAT(query_param,
-              MatchesRegex("ep=ccm&re=csc&s=4&source=chrome.gsc&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetImageTranslateSidePanelQueryParameterTest) {
