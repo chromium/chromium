@@ -131,5 +131,11 @@ void RecordTabGroupVisualsMetrics(
                               visual_data->title().length());
 }
 
+void RecordSharedTabGroupDataLoadFromDiskResult(
+    SharedTabGroupDataLoadFromDiskResult result) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Shared.LoadFromDiskResult", result);
+}
+
 }  // namespace stats
 }  // namespace tab_groups

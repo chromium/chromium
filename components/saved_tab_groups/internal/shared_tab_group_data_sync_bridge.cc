@@ -12,10 +12,12 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/internal/stats.h"
 #include "components/saved_tab_groups/internal/sync_bridge_tab_group_model_wrapper.h"
 #include "components/saved_tab_groups/proto/shared_tab_group_data.pb.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -311,7 +313,8 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     std::string collaboration_id =
         ExtractCollaborationId(sync_metadata, storage_key);
     if (collaboration_id.empty()) {
-      DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;
+      stats::RecordSharedTabGroupDataLoadFromDiskResult(
+          stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
       continue;
     }
     groups.emplace_back(SpecificsToSharedTabGroup(specifics, collaboration_id));
@@ -321,7 +324,8 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
       groups.back().SetLocalGroupId(
           LocalTabGroupIDFromString(proto.local_group_data().local_group_id()));
     }
-    // TODO(crbug.com/364910060): resolve duplicate GUIDs.
+    // There should not be duplicate group GUIDs because they are used as
+    // storage keys.
     group_guid_to_next_tab_position.emplace(specifics.guid(), 0);
   }
 
@@ -341,9 +345,9 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     }
     const std::string& storage_key = specifics.guid();
     if (ExtractCollaborationId(sync_metadata, storage_key).empty()) {
-      // Collaboration ID is not strictly required (tabs rely on parent group's
-      // collaboration IDs) but check it here for consistency anyway.
-      DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;
+      stats::RecordSharedTabGroupDataLoadFromDiskResult(
+          stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
+      continue;
     }
     if (group_guid_to_next_tab_position.contains(
             specifics.tab().shared_tab_group_guid())) {
@@ -914,6 +918,19 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
   for (const syncer::DataTypeStore::Record& r : *entries) {
     proto::SharedTabGroupData proto;
     if (!proto.ParseFromString(r.value)) {
+      stats::RecordSharedTabGroupDataLoadFromDiskResult(
+          stats::SharedTabGroupDataLoadFromDiskResult::kFailedToParse);
+      continue;
+    }
+    if (proto.specifics().guid() != r.id) {
+      // GUID is used as a storage key, so it should always match.
+      stats::RecordSharedTabGroupDataLoadFromDiskResult(
+          stats::SharedTabGroupDataLoadFromDiskResult::kUnexpectedGuid);
+      continue;
+    }
+    if (!proto.specifics().has_tab_group() && !proto.specifics().has_tab()) {
+      stats::RecordSharedTabGroupDataLoadFromDiskResult(
+          stats::SharedTabGroupDataLoadFromDiskResult::kMissingGroupAndTab);
       continue;
     }
     stored_entries.emplace_back(std::move(proto));

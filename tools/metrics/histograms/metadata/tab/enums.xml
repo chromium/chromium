@@ -187,6 +187,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/stats.h:MigrationResult) -->
 
+<!-- LINT.IfChange(SharedTabGroupDataLoadFromDiskResult) -->
+
+<enum name="SharedTabGroupDataLoadFromDiskResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to parse"/>
+  <int value="2" label="Unexpected guid"/>
+  <int value="3" label="Missing collaboration id"/>
+  <int value="4" label="Missing group and tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.h:SharedTabGroupDataLoadFromDiskResult) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>

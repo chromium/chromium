@@ -869,6 +869,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Shared.LoadFromDiskResult"
+    enum="SharedTabGroupDataLoadFromDiskResult" expires_after="2025-10-10">
+  <owner>rushans@google.com</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the result of loading a SharedTabGroupData entry from disk. Recorded
+    on browser startup or profile open for each entry in the store.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState"
     enum="Boolean" expires_after="2025-04-30">
   <owner>bjfong@google.com</owner>

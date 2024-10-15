@@ -43,6 +43,20 @@ enum class MigrationResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SavedTabGroupSyncBridge.MigrationResult)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SharedTabGroupDataLoadFromDiskResult)
+enum class SharedTabGroupDataLoadFromDiskResult {
+  kSuccess = 0,
+  kFailedToParse = 1,
+  kUnexpectedGuid = 2,
+  kMissingCollaborationId = 3,
+  kMissingGroupAndTab = 4,
+
+  kMaxValue = kMissingGroupAndTab,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupDataLoadFromDiskResult)
+
 // Records metrics about the state of model such as the number of saved groups,
 // the number of tabs in each group, and more.
 // Only used for desktop code that uses SavedTabGroupKeyedService. Soon to be
@@ -70,6 +84,10 @@ void RecordParsedSavedTabGroupDataCount(int parsed_entries_count,
 // Records metrics related to tab group creation dialog.
 void RecordTabGroupVisualsMetrics(
     const tab_groups::TabGroupVisualData* visual_data);
+
+// Records the result of loading SharedTabGroupData from disk.
+void RecordSharedTabGroupDataLoadFromDiskResult(
+    SharedTabGroupDataLoadFromDiskResult result);
 
 }  // namespace stats
 }  // namespace tab_groups
