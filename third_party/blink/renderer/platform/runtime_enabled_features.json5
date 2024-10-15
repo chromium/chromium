@@ -315,6 +315,7 @@
       origin_trial_feature_name: "AIPromptAPIForExtension",
       status: "test",
       base_feature: "EnableAIPromptAPIForExtension",
+      base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
     {
@@ -335,6 +336,8 @@
       status: "test",
       origin_trial_feature_name: "AISummarizationAPI",
       base_feature: "EnableAISummarizationAPI",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "AIWriterAPI",
