@@ -20,8 +20,8 @@ import './nearby_share_data_usage_dialog.js';
 import './nearby_share_receive_dialog.js';
 
 import {getContactManager} from '/shared/nearby_contact_manager.js';
-import {ReceiveManagerInterface, ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
-import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
+import type {ReceiveManagerInterface, ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
+import type {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -32,10 +32,11 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
-import {NearbyShareReceiveDialogElement} from './nearby_share_receive_dialog.js';
+import type {NearbyShareReceiveDialogElement} from './nearby_share_receive_dialog.js';
 import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
 import {dataUsageStringToEnum} from './types.js';
