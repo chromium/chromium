@@ -32,23 +32,40 @@ enum class IconDetailViewLayoutType {
   kMaxValue = kCompact
 };
 
+// The shape of the badge displayed on the icon.
+enum class IconDetailViewBadgeShape {
+  // A square-shaped badge.
+  kSquare,
+  // A circle-shaped badge.
+  kCircle,
+  kMaxValue = kCircle
+};
+
 // A view to display an icon, title, description, and (optional) chevron. This
 // view can be configured with different layout types to suit various display
 // needs.
 @interface IconDetailView : UIView
 
 // Initializer for creating an `IconDetailView` with the
-// given `title`, `description`, `layoutType`, `symbolName`,
-// `symbolColorPalette`, `symbolBackgroundColor` (and whether it
+// given `title`, `description`, `layoutType`, `backgroundImage`,
+// `symbolName`, `symbolColorPalette`, `symbolBackgroundColor` (and whether it
 // `usesDefaultSymbol`), `symbolwidth`, and `accessibilityIdentifier`. This
 // initializer provides a streamlined way to set up an `IconDetailView`
-// instance. When `showCheckmark` is true, the icon is displayed with a green
+// instance.
+//
+// If `backgroundImage` is valid, it will be used instead of `symbolName`,
+// `symbolColorPalette`, and `symbolBackgroundColor`.
+//
+// When `showCheckmark` is true, the icon is displayed with a green
 // checkmark to indicate a completed state.
-// The icon will display a badge based on
-// `badgeSymbolName`, `badgeUsesDefaultSymbol`, and `badgeBackgroundColor`.
+//
+// The icon will display a badge based on `badgeSymbolName`,
+// `badgeColorPalette`, `badgeShape`, `badgeUsesDefaultSymbol`, and
+// `badgeBackgroundColor`.
 - (instancetype)initWithTitle:(NSString*)title
                   description:(NSString*)description
                    layoutType:(IconDetailViewLayoutType)layoutType
+              backgroundImage:(UIImage*)backgroundImage
                    symbolName:(NSString*)symbolName
            symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
         symbolBackgroundColor:(UIColor*)symbolBackgroundColor
@@ -56,42 +73,58 @@ enum class IconDetailViewLayoutType {
                   symbolWidth:(CGFloat)symbolwidth
                 showCheckmark:(BOOL)showCheckmark
               badgeSymbolName:(NSString*)badgeSymbolName
+            badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
+                   badgeShape:(IconDetailViewBadgeShape)badgeShape
          badgeBackgroundColor:(UIColor*)badgeBackgroundColor
        badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Initializer for creating an `IconDetailView` with the
-// given `title`, `description`, `layoutType`, `symbolName`,
-// `symbolColorPalette`, `symbolBackgroundColor` (and whether it
+// given `title`, `description`, `layoutType`, `backgroundImage`,
+// `symbolName`, `symbolColorPalette`, `symbolBackgroundColor` (and whether it
 // `usesDefaultSymbol`), and `accessibilityIdentifier`. This initializer
-// provides a streamlined way to set up an `IconDetailView` instance. When
-// `showCheckmark` is true, the icon is displayed with a green checkmark to
-// indicate a completed state.
-// The icon will display a badge based on
-// `badgeSymbolName`, `badgeUsesDefaultSymbol`, and `badgeBackgroundColor`.
+// provides a streamlined way to set up an `IconDetailView` instance.
+//
+// If `backgroundImage` is valid, it will be used instead of `symbolName`,
+// `symbolColorPalette`, and `symbolBackgroundColor`.
+//
+// When `showCheckmark` is true, the icon is displayed with a green
+// checkmark to indicate a completed state.
+//
+// The icon will display a badge based on `badgeSymbolName`,
+// `badgeColorPalette`, `badgeShape`, `badgeUsesDefaultSymbol`, and
+// `badgeBackgroundColor`.
 - (instancetype)initWithTitle:(NSString*)title
                   description:(NSString*)description
                    layoutType:(IconDetailViewLayoutType)layoutType
+              backgroundImage:(UIImage*)backgroundImage
                    symbolName:(NSString*)symbolName
            symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
         symbolBackgroundColor:(UIColor*)symbolBackgroundColor
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                 showCheckmark:(BOOL)showCheckmark
               badgeSymbolName:(NSString*)badgeSymbolName
+            badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
+                   badgeShape:(IconDetailViewBadgeShape)badgeShape
          badgeBackgroundColor:(UIColor*)badgeBackgroundColor
        badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Initializer for creating an `IconDetailView` with the
-// given `title`, `description`, `layoutType`, `symbolName`,
-// `symbolColorPalette`, `symbolBackgroundColor` (and whether it
+// given `title`, `description`, `layoutType`, `backgroundImage`,
+// `symbolName`, `symbolColorPalette`, `symbolBackgroundColor` (and whether it
 // `usesDefaultSymbol`), and `accessibilityIdentifier`. This initializer
-// provides a streamlined way to set up an `IconDetailView` instance. When
-// `showCheckmark` is true, the icon is displayed with a green checkmark to
+// provides a streamlined way to set up an `IconDetailView` instance.
+//
+// If `backgroundImage` is valid, it will be used instead of `symbolName`,
+// `symbolColorPalette`, and `symbolBackgroundColor`.
+//
+// When `showCheckmark` is true, the icon is displayed with a green checkmark to
 // indicate a completed state.
 - (instancetype)initWithTitle:(NSString*)title
                   description:(NSString*)description
                    layoutType:(IconDetailViewLayoutType)layoutType
+              backgroundImage:(UIImage*)backgroundImage
                    symbolName:(NSString*)symbolName
            symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
         symbolBackgroundColor:(UIColor*)symbolBackgroundColor

@@ -7,9 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
+
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @class TipsModuleState;
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
+namespace image_fetcher {
+class ImageDataFetcher;
+}  // namespace image_fetcher
 namespace segmentation_platform {
 enum class TipIdentifier;
 }  // namespace segmentation_platform
@@ -36,9 +47,13 @@ enum class TipIdentifier;
     presentationAudience;
 
 // Default initializer.
-- (instancetype)initWithIdentifier:
-                    (segmentation_platform::TipIdentifier)identifier
-                profilePrefService:(PrefService*)profilePrefService
+- (instancetype)
+    initWithIdentifier:(segmentation_platform::TipIdentifier)identifier
+    profilePrefService:(PrefService*)profilePrefService
+       shoppingService:(commerce::ShoppingService*)shoppingService
+         bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          imageFetcher:
+              (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

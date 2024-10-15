@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 
+#import <memory>
+
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -11,9 +13,12 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
 #import "base/threading/thread_restrictions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -337,9 +342,16 @@ class MagicStackRankingModelTest : public PlatformTest {
                          userState:GetProfile()->GetPrefs()
                       profileState:nil];
 
+    shopping_service_ = std::make_unique<commerce::MockShoppingService>();
+    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:segmentation_platform::TipIdentifier::kUnknown
-        profilePrefService:GetProfile()->GetPrefs()];
+        profilePrefService:GetProfile()->GetPrefs()
+           shoppingService:shopping_service_.get()
+             bookmarkModel:bookmark_model_.get()
+              imageFetcher:std::make_unique<image_fetcher::ImageDataFetcher>(
+                               GetProfile()->GetSharedURLLoaderFactory())];
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
@@ -430,6 +442,8 @@ class MagicStackRankingModelTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeSceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<commerce::MockShoppingService> shopping_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   std::unique_ptr<IOSChromeScopedTestingVariationsService>
       scoped_variations_service_;

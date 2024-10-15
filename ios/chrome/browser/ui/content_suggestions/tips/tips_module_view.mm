@@ -86,10 +86,19 @@ SymbolConfig GetSymbolConfigForTip(TipIdentifier tip) {
 }
 
 // Returns the `SymbolConfig` for the badge symbol of the given `tip`, or
-// `std::nullopt` if the tip doesn't have a badge.
-std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip) {
+// `std::nullopt` if the tip doesn't have a badge. `has_product_image` is used
+// to determine the correct badge for the shopping tip.
+std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
+                                                       bool has_product_image) {
   switch (tip) {
     case TipIdentifier::kLensShop: {
+      if (has_product_image) {
+        SymbolConfig result = {base::SysNSStringToUTF8(kCameraLensSymbol),
+                               false};
+
+        return result;
+      }
+
       SymbolConfig result = {base::SysNSStringToUTF8(kCartSymbol), true};
 
       return result;
@@ -123,6 +132,16 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip) {
   }
 
   return self;
+}
+
+#pragma mark - TipsMagicStackConsumer
+
+- (void)tipsStateDidChange:(TipsModuleState*)state {
+  _state = state;
+
+  [_contentView removeFromSuperview];
+
+  [self createSubviews];
 }
 
 #pragma mark - UIView
@@ -171,22 +190,39 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip) {
 - (IconDetailView*)iconDetailView:(TipIdentifier)tip {
   SymbolConfig symbol = GetSymbolConfigForTip(tip);
 
-  std::optional<SymbolConfig> badgeSymbol = GetBadgeSymbolConfigForTip(tip);
+  UIImage* productImage = [UIImage imageWithData:_state.productImageData
+                                           scale:[UIScreen mainScreen].scale];
+
+  BOOL hasProductImage = productImage != nil;
+
+  std::optional<SymbolConfig> badgeSymbol =
+      GetBadgeSymbolConfigForTip(tip, hasProductImage);
 
   if (badgeSymbol.has_value()) {
     SymbolConfig badgeConfig = badgeSymbol.value();
+
+    NSArray<UIColor*>* badgeColorPalette =
+        hasProductImage ? nil : @[ [UIColor whiteColor] ];
+
+    IconDetailViewBadgeShape badgeShape =
+        hasProductImage ? IconDetailViewBadgeShape::kSquare
+                        : IconDetailViewBadgeShape::kCircle;
 
     IconDetailView* view = [[IconDetailView alloc]
                   initWithTitle:[self titleText:tip]
                     description:[self descriptionText:tip]
                      layoutType:IconDetailViewLayoutType::kHero
+                backgroundImage:productImage
                      symbolName:base::SysUTF8ToNSString(symbol.name)
              symbolColorPalette:[self symbolColorPalette:tip]
           symbolBackgroundColor:[self symbolBackgroundColor:tip]
               usesDefaultSymbol:symbol.is_default_symbol
                   showCheckmark:NO
                 badgeSymbolName:base::SysUTF8ToNSString(badgeConfig.name)
-           badgeBackgroundColor:[self badgeBackgroundColor:tip]
+              badgeColorPalette:badgeColorPalette
+                     badgeShape:badgeShape
+           badgeBackgroundColor:[self badgeBackgroundColor:tip
+                                           hasProductImage:hasProductImage]
          badgeUsesDefaultSymbol:badgeConfig.is_default_symbol
         accessibilityIdentifier:[self accessibilityIdentifier:tip]];
 
@@ -197,16 +233,17 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip) {
     return view;
   }
 
-  IconDetailView* view = [[IconDetailView alloc]
-                initWithTitle:[self titleText:tip]
-                  description:[self descriptionText:tip]
-                   layoutType:IconDetailViewLayoutType::kHero
-                   symbolName:base::SysUTF8ToNSString(symbol.name)
-           symbolColorPalette:[self symbolColorPalette:tip]
-        symbolBackgroundColor:[self symbolBackgroundColor:tip]
-            usesDefaultSymbol:symbol.is_default_symbol
-                showCheckmark:NO
-      accessibilityIdentifier:[self accessibilityIdentifier:tip]];
+  IconDetailView* view =
+      [[IconDetailView alloc] initWithTitle:[self titleText:tip]
+                                description:[self descriptionText:tip]
+                                 layoutType:IconDetailViewLayoutType::kHero
+                            backgroundImage:productImage
+                                 symbolName:base::SysUTF8ToNSString(symbol.name)
+                         symbolColorPalette:[self symbolColorPalette:tip]
+                      symbolBackgroundColor:[self symbolBackgroundColor:tip]
+                          usesDefaultSymbol:symbol.is_default_symbol
+                              showCheckmark:NO
+                    accessibilityIdentifier:[self accessibilityIdentifier:tip]];
 
   view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
 
@@ -301,11 +338,18 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip) {
 }
 
 // Returns the badge background color based on the `tip`, or `nil` if the tip
-// doesn't have a badge.
-- (UIColor*)badgeBackgroundColor:(TipIdentifier)tip {
+// doesn't have a badge. `hasProductImage` is used to determine the correct
+// badge color for the shopping tip.
+- (UIColor*)badgeBackgroundColor:(TipIdentifier)tip
+                 hasProductImage:(BOOL)hasProductImage {
   switch (tip) {
-    case segmentation_platform::TipIdentifier::kLensShop:
+    case segmentation_platform::TipIdentifier::kLensShop: {
+      if (hasProductImage) {
+        return [UIColor colorNamed:kBackgroundColor];
+      }
+
       return [UIColor colorNamed:kPink500Color];
+    }
     case segmentation_platform::TipIdentifier::kLensTranslate:
       return [UIColor colorNamed:kBlue500Color];
     default:

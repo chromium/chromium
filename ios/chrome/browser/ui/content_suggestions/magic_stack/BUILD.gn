@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
     "//components/feature_engagement/test:test_support",
+    "//components/image_fetcher/core",
     "//components/ntp_tiles",
     "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
