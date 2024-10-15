@@ -41,7 +41,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -683,10 +682,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DiskCacheDirOverride) {
 
 // Verifies the last selected directory has a default value.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, LastSelectedDirectory) {
-  ProfileImpl* profile_impl = static_cast<ProfileImpl*>(browser()->profile());
+  Profile* profile = browser()->profile();
   base::FilePath home;
   base::PathService::Get(base::DIR_HOME, &home);
-  ASSERT_EQ(profile_impl->last_selected_directory(), home);
+  ASSERT_EQ(profile->last_selected_directory(), home);
 }
 
 // Verifies creating an OTR with non-primary id results in a different profile

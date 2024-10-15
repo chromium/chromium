@@ -594,6 +594,7 @@ void OffTheRecordProfileImpl::InitChromeOSPreferences() {
   // The incognito profile shouldn't have Chrome OS's preferences.
   // The preferences are associated with the regular user profile.
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool OffTheRecordProfileImpl::IsNewProfile() const {

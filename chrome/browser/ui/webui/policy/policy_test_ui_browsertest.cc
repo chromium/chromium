@@ -17,7 +17,6 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/common/channel_info.h"

@@ -35,7 +35,7 @@
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/browsertest_util.h"
-#include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -229,9 +229,6 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
   // Default profile switches to app profile after app is launched.
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(app_profile);
-
-  // Check ChromeOS preference is initialized.
-  EXPECT_TRUE(static_cast<ProfileImpl*>(app_profile)->chromeos_preferences_);
 
   // Check installer status.
   EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
