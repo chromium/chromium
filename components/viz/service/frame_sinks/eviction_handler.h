@@ -15,6 +15,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace viz {
 class CompositorFrameSinkSupport;
@@ -48,6 +49,11 @@ class EvictionHandler : public ReservedResourceDelegate {
  private:
   void TakeSnapshotForEviction(const SurfaceId& surface_id, double scale);
 
+  std::optional<TransferableResource>
+  CreateTransferableResourceFromCopyOutputResult(
+      CopyOutputResult* copy_result,
+      scoped_refptr<gpu::ClientSharedImage>& output_software_shared_image);
+
   // Submits a compositor frame with either no content (solid color) if
   // `copy_result` is null, or the copied content if `copy_result` is non-null.
   void SubmitPlaceholderContentForEviction(
@@ -67,7 +73,9 @@ class EvictionHandler : public ReservedResourceDelegate {
 
   raw_ptr<ReservedResourceIdTracker> id_tracker_;
 
-  base::flat_map<ResourceId, std::unique_ptr<CopyOutputResult>>
+  base::flat_map<ResourceId,
+                 absl::variant<scoped_refptr<gpu::ClientSharedImage>,
+                               std::unique_ptr<CopyOutputResult>>>
       copy_output_results_;
 
   // True if we are currently doing the eviction process.

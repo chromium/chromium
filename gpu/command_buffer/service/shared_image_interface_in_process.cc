@@ -162,11 +162,13 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
 
   create_factory_ = base::BindOnce(
       [](std::unique_ptr<SetUpOnGpuParams> params) {
+        auto* memory_tracker = params->context_state
+                                   ? params->context_state->memory_tracker()
+                                   : nullptr;
         auto shared_image_factory = std::make_unique<SharedImageFactory>(
             params->gpu_preferences, params->gpu_workarounds,
             params->gpu_feature_info, params->context_state,
-            params->shared_image_manager,
-            params->context_state->memory_tracker(),
+            params->shared_image_manager, memory_tracker,
             params->is_for_display_compositor);
         return shared_image_factory;
       },
