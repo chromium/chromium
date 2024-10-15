@@ -168,11 +168,6 @@ ts_library("library") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    visibility +=
-        [ "//chrome/browser/resources/signin/profile_picker:build_ts" ]
-  }
-
   if (is_chromeos_ash) {
     visibility += [
       "//ash/webui/*",

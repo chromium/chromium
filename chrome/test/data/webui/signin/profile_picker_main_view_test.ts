@@ -60,9 +60,6 @@ function generateProfilesList(n: number): ProfileState[] {
              userName: sync ? `User${i}@gmail.com` : '',
              avatarIcon: `AvatarUrl-${i}`,
              avatarBadge: i % 4 === 0 ? `cr:domain` : ``,
-             // <if expr="chromeos_lacros">
-             isPrimaryLacrosProfile: false,
-             // </if>
            }));
 }
 

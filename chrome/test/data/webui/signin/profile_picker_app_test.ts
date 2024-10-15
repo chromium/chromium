@@ -3,16 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://profile-picker/profile_picker.js';
-// <if expr="chromeos_lacros">
-import 'chrome://profile-picker/lazy_load.js';
 
-// </if>
-
-import type {
-  // <if expr="chromeos_lacros">
-  AvailableAccount,
-  // </if>
-  ProfilePickerAppElement} from 'chrome://profile-picker/profile_picker.js';
+import type {ProfilePickerAppElement} from 'chrome://profile-picker/profile_picker.js';
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -89,50 +81,6 @@ suite('ProfilePickerAppTest', function() {
     await whenCheck(choice!, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice!);
   });
-
-  // <if expr="chromeos_lacros">
-  test('SignInPromoSignInWithAvailableAccountLacros', async function() {
-    await resetTestElement(Routes.NEW_PROFILE);
-    await waitForProfileCreationLoad();
-    const choice =
-        testElement.shadowRoot!.querySelector('profile-type-choice')!;
-    assertTrue(!!choice);
-    // Add available account to trigger the account selection screen.
-    const availableAccount: AvailableAccount = {
-      gaiaId: 'available-id',
-      name: 'Account Name',
-      email: 'email@gmail.com',
-      accountImageUrl: 'account-image-url',
-    };
-    webUIListenerCallback('available-accounts-changed', [availableAccount]);
-    await microtasksFinished();
-    choice.$.signInButton.click();
-    // Start Lacros signin flow.
-    await microtasksFinished();
-    const accountSelectionLacros =
-        testElement.shadowRoot!.querySelector('account-selection-lacros');
-    assertTrue(!!accountSelectionLacros);
-    // Test the back button.
-    const backButton =
-        accountSelectionLacros.shadowRoot!.querySelector<HTMLElement>(
-            '#backButton');
-    assertTrue(!!backButton);
-    backButton.click();
-    await whenCheck(choice, () => choice.classList.contains('active'));
-  });
-
-  test('SignInPromoSignInWithoutAccountLacros', async function() {
-    await resetTestElement(Routes.NEW_PROFILE);
-    await waitForProfileCreationLoad();
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
-    assertTrue(!!choice);
-    // No available account.
-    webUIListenerCallback('available-accounts-changed', []);
-    await microtasksFinished();
-    choice.$.signInButton.click();
-    return browserProxy.whenCalled('selectNewAccount');
-  });
-  // </if>
 
   test('SignInPromoSignIn', async function() {
     await resetTestElement(Routes.NEW_PROFILE);

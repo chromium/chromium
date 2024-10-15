@@ -26,20 +26,13 @@ export function getHtml(this: ProfileCardMenuElement) {
 
 <cr-dialog id="removeConfirmationDialog" ignore-enter-key>
   <div slot="title">${this.removeWarningTitle_}</div>
-  <if expr="chromeos_lacros">
-    <div id="removeWarningHeader" slot="header" class="warning-message"
-        .innerHTML="${this.getRemoveWarningTextForLacros_()}">
-    </div>
-  </if>
-  <if expr="not chromeos_lacros">
-    <div id="removeWarningHeader" slot="header" class="warning-message">
-      ${this.removeWarningText_}
-      <span id="userName" ?hidden="${!this.profileState.isSyncing}"
-          class="key-text">
-        ${this.profileState.userName}
-      </span>
-    </div>
-  </if>
+  <div id="removeWarningHeader" slot="header" class="warning-message">
+    ${this.removeWarningText_}
+    <span id="userName" ?hidden="${!this.profileState.isSyncing}"
+        class="key-text">
+      ${this.profileState.userName}
+    </span>
+  </div>
   <div slot="body">
     <div id="removeActionDialogBody">
       <div id="profileCardContainer">
@@ -74,22 +67,5 @@ export function getHtml(this: ProfileCardMenuElement) {
     </cr-button>
   </div>
 </cr-dialog>
-
-<if expr="chromeos_lacros">
-  <cr-dialog id="removePrimaryLacrosProfileDialog">
-    <div slot="title" class="key-text">
-      $i18n{lacrosPrimaryProfileDeletionWarningTitle}
-    </div>
-    <div slot="body" class="warning-message">
-      ${this.removePrimaryLacrosProfileWarning_}
-    </div>
-    <div slot="button-container">
-      <cr-button class="action-button"
-          @click="${this.onRemovePrimaryLacrosProfileCancelClicked_}">
-        $i18n{lacrosPrimaryProfileDeletionWarningConfirmation}
-      </cr-button>
-    </div>
-  </cr-dialog>
-</if>
 <!--_html_template_end_-->`;
 }

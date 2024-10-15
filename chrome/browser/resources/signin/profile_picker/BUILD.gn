@@ -13,11 +13,6 @@ build_webui("build") {
 
   static_files = [ "profile_picker.html" ]
 
-  if (is_chromeos_lacros) {
-    web_component_files =
-        [ "profile_creation_flow/account_selection_lacros.ts" ]
-  }
-
   non_web_component_files = [
     "drag_drop_reorder_tile_list_delegate.ts",
     "ensure_lazy_loaded.ts",
@@ -66,9 +61,6 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
-  if (is_chromeos_lacros) {
-    ts_deps += [ "//third_party/polymer/v3_0:library" ]
-  }
 
   webui_context_type = "trusted"
   optimize = optimize_webui

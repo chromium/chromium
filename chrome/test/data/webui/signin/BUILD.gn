@@ -37,10 +37,6 @@ build_webui_tests("build") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    files += [ "account_selection_lacros_test.ts" ]
-  }
-
   ts_path_mappings = [
     "chrome://profile-picker/profile_picker.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/profile_picker/tsc/profile_picker.d.ts",

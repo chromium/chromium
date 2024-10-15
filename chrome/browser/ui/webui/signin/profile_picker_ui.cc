@@ -150,12 +150,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"removeWarningLocalProfileTitle",
        IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
       {"removeWarningSignedInProfileTitle",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS
-#else
-       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE
-#endif
-      },
+       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE},
       {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
       {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
       {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
@@ -172,24 +167,10 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
       {"switchButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"accountSelectionLacrosTitle",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE},
-      {"accountSelectionLacrosOtherAccountButtonLabel",
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
-      {"lacrosPrimaryProfileDeletionWarningTitle",
-       IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE},
-      {"lacrosPrimaryProfileDeletionWarning",
-       IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING},
-      {"lacrosPrimaryProfileDeletionWarningConfirmation",
-       IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION},
-#else
       {"removeWarningLocalProfile",
        IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
       {"removeWarningSignedInProfile",
        IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
-#endif
       {"ok", IDS_OK},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

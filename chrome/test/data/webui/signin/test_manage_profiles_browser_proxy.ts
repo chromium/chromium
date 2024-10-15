@@ -21,10 +21,6 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'setProfileName', 'recordSignInPromoImpression', 'getAvailableIcons',
       'getSwitchProfile', 'confirmProfileSwitch', 'cancelProfileSwitch',
       'updateProfileOrder',
-      // <if expr="chromeos_lacros">
-      'getAvailableAccounts', 'openAshAccountSettingsPage',
-      'selectExistingAccountLacros', 'openDeviceGuestLinkLacros',
-      // </if>
     ]);
 
     this.profileThemeInfo = {
@@ -45,9 +41,6 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       userName: 'Alice@gmail.com',
       avatarIcon: 'url',
       avatarBadge: '',
-      // <if expr="chromeos_lacros">
-      isPrimaryLacrosProfile: false,
-      // </if>
     };
 
     /**
@@ -165,22 +158,4 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
   updateProfileOrder(fromIndex: number, toIndex: number) {
     this.methodCalled('updateProfileOrder', [fromIndex, toIndex]);
   }
-
-  // <if expr="chromeos_lacros">
-  getAvailableAccounts() {
-    this.methodCalled('getAvailableAccounts');
-  }
-
-  openAshAccountSettingsPage() {
-    this.methodCalled('openAshAccountSettingsPage');
-  }
-
-  selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
-    this.methodCalled('selectExistingAccountLacros', [profileColor, gaiaId]);
-  }
-
-  openDeviceGuestLinkLacros() {
-    this.methodCalled('openDeviceGuestLinkLacros');
-  }
-  // </if>
 }

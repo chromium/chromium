@@ -146,13 +146,6 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   }
 
   private updateShouldDisplayVerticalBanners_(step: string) {
-    // <if expr="chromeos_lacros">
-    if (this.currentRoute_ === Routes.ACCOUNT_SELECTION_LACROS) {
-      this.shouldDisplayVerticalBanners_ = true;
-      return;
-    }
-    // </if>
-
     if (this.currentRoute_ === Routes.MAIN ||
         (this.currentRoute_ === Routes.NEW_PROFILE &&
          step === ProfileCreationSteps.PROFILE_TYPE_CHOICE)) {
@@ -172,10 +165,6 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         return this.i18n('localProfileCreationTitle');
       case 'profileSwitch':
         return this.i18n('profileSwitchTitle');
-      // <if expr="chromeos_lacros">
-      case 'accountSelectionLacros':
-        return this.i18n('accountSelectionLacrosTitle');
-      // </if>
       default:
         return '';
     }
@@ -186,9 +175,6 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
       case Routes.MAIN:
         return Promise.resolve();
       case Routes.NEW_PROFILE:
-      // <if expr="chromeos_lacros">
-      case Routes.ACCOUNT_SELECTION_LACROS:
-        // </if>
         return Promise.all(
             [this.initializeNewProfileThemeInfo_(), ensureLazyLoaded()]);
       case Routes.PROFILE_SWITCH:

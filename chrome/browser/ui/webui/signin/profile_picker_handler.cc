@@ -36,8 +36,6 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -72,18 +70,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
-#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#include "chrome/browser/lacros/identity_manager_lacros.h"
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chromeos/crosapi/mojom/login.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "components/account_manager_core/account.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif
 
 namespace {
 const size_t kProfileCardAvatarSize = 74;
@@ -224,53 +210,8 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
                                    avatar_icon_size, avatar_icon_size);
   std::string icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
   profile_entry.Set("avatarIcon", icon_url);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  profile_entry.Set("isPrimaryLacrosProfile",
-                    Profile::IsMainProfilePath(entry->GetPath()));
-#else
-  profile_entry.Set("isPrimaryLacrosProfile", false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return profile_entry;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-base::FilePath GetCurrentProfilePath(content::WebUI* web_ui) {
-  DCHECK(web_ui);
-  return web_ui->GetWebContents()->GetBrowserContext()->GetPath();
-}
-
-// Returns whether this WebUI page is rendered in a user profile (and not the
-// default picker profile). The profile picker is loaded in a user profile
-// only in the flow of adding an account to an existing profile.
-bool IsUsingExistingProfile(content::WebUI* web_ui) {
-  return GetCurrentProfilePath(web_ui) != ProfilePicker::GetPickerProfilePath();
-}
-
-SkBitmap GetAvailableAccountBitmap(const gfx::Image& gaia_image) {
-  if (!gaia_image.IsEmpty()) {
-    return gaia_image.AsBitmap();
-  }
-
-  // Return a default avatar.
-  const int kAccountPictureSize = 128;
-  ProfileThemeColors colors = GetDefaultProfileThemeColors();
-  gfx::Image default_image = profiles::GetPlaceholderAvatarIconWithColors(
-      colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-      kAccountPictureSize);
-  return default_image.AsBitmap();
-}
-
-void RunAccountSelectionCallback(
-    const std::optional<AccountProfileMapper::AddAccountResult>& result) {
-  if (!result.has_value() || result->account.key.account_type() !=
-                                 account_manager::AccountType::kGaia) {
-    return;
-  }
-
-  ProfilePicker::NotifyAccountSelected(result->account.key.id());
-  ProfilePicker::Hide();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void RecordProfilingFinishReason(
     metrics::StartupProfilingFinishReason finish_reason) {
@@ -346,12 +287,7 @@ bool FirstWebContentsProfilerForProfilePicker::WasStartupInterrupted() {
 
 }  // namespace
 
-ProfilePickerHandler::ProfilePickerHandler()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    : identity_manager_lacros_(std::make_unique<IdentityManagerLacros>())
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-{
-}
+ProfilePickerHandler::ProfilePickerHandler() = default;
 
 ProfilePickerHandler::~ProfilePickerHandler() {
   OnJavascriptDisallowed();
@@ -448,44 +384,16 @@ void ProfilePickerHandler::RegisterMessages() {
       "updateProfileOrder",
       base::BindRepeating(&ProfilePickerHandler::HandleUpdateProfileOrder,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
-      "getAvailableAccounts",
-      base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableAccounts,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openAshAccountSettingsPage",
-      base::BindRepeating(
-          &ProfilePickerHandler::HandleOpenAshAccountSettingsPage,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "selectExistingAccountLacros",
-      base::BindRepeating(
-          &ProfilePickerHandler::HandleSelectExistingAccountLacros,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openDeviceGuestLinkLacros",
-      base::BindRepeating(
-          &ProfilePickerHandler::HandleOpenDeviceGuestLinkLacros,
-          base::Unretained(this)));
-#endif
   Profile* profile = Profile::FromWebUI(web_ui());
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 void ProfilePickerHandler::OnJavascriptAllowed() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_profile_mapper_observation_.Observe(
-      profile_manager->GetAccountProfileMapper());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   profile_attributes_storage_observation_.Observe(
       &profile_manager->GetProfileAttributesStorage());
 }
 void ProfilePickerHandler::OnJavascriptDisallowed() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_profile_mapper_observation_.Reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   profile_attributes_storage_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
@@ -642,29 +550,6 @@ void ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsUsingExistingProfile(web_ui())) {
-    // The picker offers secondary accounts for a given existing profile.
-    // Extract the color from the current profile (where this is rendered).
-    ThemeService* theme_service =
-        ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()));
-    base::Value::Dict profile_dict;
-    if (theme_service->UsingAutogeneratedTheme()) {
-      // We'll never use `profile_dict` for showing the color picker so we can
-      // pass in kManuallyPickedColorId to simplify the code.
-      profile_dict = CreateAutogeneratedProfileThemeInfo(
-          kManuallyPickedColorId, theme_service->GetAutogeneratedThemeColor(),
-          web_ui()->GetWebContents()->GetColorProvider(),
-          web_ui()->GetDeviceScaleFactor());
-    } else {
-      profile_dict = CreateDefaultProfileThemeInfo(
-          web_ui()->GetWebContents()->GetColorProvider(),
-          web_ui()->GetDeviceScaleFactor());
-    }
-    ResolveJavascriptCallback(callback_id, profile_dict);
-    return;
-  }
-#endif
   chrome_colors::ColorInfo color_info = GenerateNewProfileColor();
   base::Value::Dict dict = CreateAutogeneratedProfileThemeInfo(
       color_info.id, color_info.color,
@@ -821,11 +706,6 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::Value::List& args) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, the primary profile should never be deleted.
-  CHECK(!Profile::IsMainProfilePath(*profile_path));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);
   DCHECK(profile_statistics_keep_alive_);
 
@@ -919,9 +799,7 @@ void ProfilePickerHandler::HandleSelectNewAccount(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   std::optional<SkColor> profile_color = args[0].GetIfInt();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SelectAccountLacrosInternal("", profile_color);
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (signin_util::IsForceSigninEnabled()) {
     // Force sign-in policy uses a separate flow that doesn't initialize the
     // profile color. Generate a new profile color here.
@@ -934,18 +812,6 @@ void ProfilePickerHandler::HandleSelectNewAccount(
   NOTERACHED();
 #endif
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProfilePickerHandler::HandleSelectExistingAccountLacros(
-    const base::Value::List& args) {
-  AllowJavascript();
-  CHECK_EQ(2U, args.size());
-  std::optional<SkColor> profile_color = args[0].GetIfInt();
-  const std::string& gaia_id = args[1].GetString();
-  DCHECK(!gaia_id.empty());
-  SelectAccountLacrosInternal(gaia_id, profile_color);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
   AllowJavascript();
@@ -1223,232 +1089,3 @@ void ProfilePickerHandler::MaybeUpdateGuestMode() {
   FireWebUIListener("guest-mode-availability-updated",
                     base::Value(profiles::IsGuestModeEnabled()));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
-    const base::Value::List& args) {
-  std::string settings_url = chrome::kChromeUIOSSettingsURL;
-  // TODO(b/326488045) Update Settings path to kPeopleSectionPath when Settings
-  // revamp is launched.
-  settings_url.append(chromeos::settings::mojom::kMyAccountsSubpagePath);
-  lacros_url_handling::NavigateInAsh(GURL(settings_url));
-}
-
-void ProfilePickerHandler::HandleOpenDeviceGuestLinkLacros(
-    const base::Value::List& args) {
-  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::Login>()) {
-    return;
-  }
-
-  if (lacros_service->GetInterfaceVersion<crosapi::mojom::Login>() <
-      int(crosapi::mojom::Login::
-              kShowGuestSessionConfirmationDialogMinVersion)) {
-    return;
-  }
-
-  crosapi::mojom::Login* login_api =
-      lacros_service->GetRemote<crosapi::mojom::Login>().get();
-  if (!login_api) {
-    return;
-  }
-
-  login_api->ShowGuestSessionConfirmationDialog();
-}
-
-void ProfilePickerHandler::HandleGetAvailableAccounts(
-    const base::Value::List& args) {
-  AllowJavascript();
-  UpdateAvailableAccounts();
-}
-
-void ProfilePickerHandler::UpdateAvailableAccounts() {
-  AccountProfileMapper* mapper =
-      g_browser_process->profile_manager()->GetAccountProfileMapper();
-
-  // For the profile creation flow, show all accounts available.
-  // For in profile Sign in/ Turn sync on flows, filter accounts already added.
-  base::FilePath profile_path = IsUsingExistingProfile(web_ui())
-                                    ? GetCurrentProfilePath(web_ui())
-                                    : base::FilePath();
-
-  GetAllAvailableAccounts(
-      mapper, profile_path,
-      base::BindOnce(&ProfilePickerHandler::GetAvailableAccountsInfo,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void ProfilePickerHandler::GetAvailableAccountsInfo(
-    const std::vector<account_manager::Account>& accounts) {
-  // If there's a request in flight, it deletes the current helper and starts a
-  // new request.
-  lacros_account_info_helper_ = std::make_unique<GetAccountInformationHelper>();
-
-  std::vector<std::string> gaia_ids;
-  for (const account_manager::Account& account : accounts) {
-    gaia_ids.push_back(account.key.id());
-  }
-  lacros_account_info_helper_->Start(
-      gaia_ids, base::BindOnce(&ProfilePickerHandler::SendAvailableAccounts,
-                               weak_factory_.GetWeakPtr()));
-}
-
-void ProfilePickerHandler::SendAvailableAccounts(
-    std::vector<GetAccountInformationHelper::GetAccountInformationResult>
-        accounts) {
-  base::Value::List accounts_list;
-  for (const GetAccountInformationHelper::GetAccountInformationResult& account :
-       accounts) {
-    // TODO(https://crbug/1226050): Filter out items with no email as items
-    // without an email are impossible to use. The email should be always
-    // available, unless the mojo connection fails. This requires more robust
-    // unit-tests.
-    base::Value::Dict account_dict;
-    account_dict.Set("gaiaId", account.gaia);
-    account_dict.Set("email", account.email);
-    account_dict.Set("name", account.full_name);
-    SkBitmap account_bitmap = GetAvailableAccountBitmap(account.account_image);
-    account_dict.Set("accountImageUrl",
-                     webui::GetBitmapDataUrl(account_bitmap));
-    accounts_list.Append(std::move(account_dict));
-  }
-  FireWebUIListener("available-accounts-changed", accounts_list);
-}
-
-void ProfilePickerHandler::OnLacrosSignedInProfileCreated(
-    std::optional<SkColor> profile_color,
-    Profile* profile) {
-  DCHECK(lacros_sign_in_provider_);
-  lacros_sign_in_provider_.reset();
-
-  if (!profile) {
-    FireWebUIListener("load-signin-finished", base::Value(/*success=*/false));
-    return;
-  }
-
-  FireWebUIListener("load-signin-finished", base::Value(/*success=*/true));
-  ProfilePicker::SwitchToSignedInFlow(profile_color, profile);
-}
-
-void ProfilePickerHandler::OnAccountUpserted(
-    const base::FilePath& profile_path,
-    const account_manager::Account& account) {
-  UpdateAvailableAccounts();
-}
-
-void ProfilePickerHandler::OnAccountRemoved(
-    const base::FilePath& profile_path,
-    const account_manager::Account& account) {
-  UpdateAvailableAccounts();
-}
-
-void ProfilePickerHandler::OnReauthDialogClosed(
-    const account_manager::AccountUpsertionResult& result) {
-  // After the reauth screen is closed, we can now reuse the profile picker
-  // account list to select an account.
-  FireWebUIListener("reauth-dialog-closed", base::Value());
-  lacros_sign_in_provider_.reset();
-}
-
-void ProfilePickerHandler::ShowReauthWithEmail(
-    account_manager::AccountManagerFacade::AccountAdditionSource source,
-    const std::string& email) {
-  account_manager::AccountManagerFacade* account_manager_facade =
-      ::GetAccountManagerFacade(GetCurrentProfilePath(web_ui()).value());
-  account_manager_facade->ShowReauthAccountDialog(
-      source, email,
-      base::BindOnce(&ProfilePickerHandler::OnReauthDialogClosed,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void ProfilePickerHandler::AddExistingAccountToExistingProfile(
-    AccountProfileMapper* mapper,
-    AccountProfileMapper::AddAccountCallback add_account_callback,
-    const std::string& gaia_id) {
-  mapper->AddAccount(
-      GetCurrentProfilePath(web_ui()),
-      account_manager::AccountKey(gaia_id, account_manager::AccountType::kGaia),
-      std::move(add_account_callback));
-}
-
-void ProfilePickerHandler::AddExistingAccountToNewProfile(
-    ProfilePickerLacrosSignInProvider::SignedInCallback signed_in_callback,
-    const std::string& gaia_id) {
-  lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
-      gaia_id, std::move(signed_in_callback));
-}
-
-void ProfilePickerHandler::ResultAccountInPersistentError(
-    const std::string& gaia_id,
-    AddAccountCallback add_account_callback,
-    account_manager::AccountManagerFacade::AccountAdditionSource source,
-    bool persistent_error) {
-  if (persistent_error) {
-    // Get email to show reauth dialog.
-    identity_manager_lacros_->GetAccountEmail(
-        gaia_id, base::BindOnce(&ProfilePickerHandler::ShowReauthWithEmail,
-                                weak_factory_.GetWeakPtr(), source));
-    return;
-  }
-
-  std::move(add_account_callback).Run(gaia_id);
-}
-
-void ProfilePickerHandler::SelectAccountLacrosInternal(
-    const std::string& gaia_id,
-    std::optional<SkColor> profile_color) {
-  AllowJavascript();
-  if (IsUsingExistingProfile(web_ui())) {
-    AccountProfileMapper* mapper =
-        g_browser_process->profile_manager()->GetAccountProfileMapper();
-    AccountProfileMapper::AddAccountCallback add_account_callback =
-        base::BindOnce(&RunAccountSelectionCallback);
-    if (gaia_id.empty()) {
-      mapper->ShowAddAccountDialog(GetCurrentProfilePath(web_ui()),
-                                   account_manager::AccountManagerFacade::
-                                       AccountAdditionSource::kOgbAddAccount,
-                                   std::move(add_account_callback));
-    } else {
-      AddAccountCallback add_existing_account_to_existing_profile =
-          base::BindOnce(
-              &ProfilePickerHandler::AddExistingAccountToExistingProfile,
-              weak_factory_.GetWeakPtr(), mapper,
-              std::move(add_account_callback));
-      identity_manager_lacros_->HasAccountWithPersistentError(
-          gaia_id,
-          base::BindOnce(&ProfilePickerHandler::ResultAccountInPersistentError,
-                         weak_factory_.GetWeakPtr(), gaia_id,
-                         std::move(add_existing_account_to_existing_profile),
-                         account_manager::AccountManagerFacade::
-                             AccountAdditionSource::kContentAreaReauth));
-    }
-    return;
-  }
-
-  DCHECK(!lacros_sign_in_provider_);
-  lacros_sign_in_provider_ =
-      std::make_unique<ProfilePickerLacrosSignInProvider>(
-          /*hidden_profile=*/true);
-  ProfilePickerLacrosSignInProvider::SignedInCallback callback =
-      base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
-                     weak_factory_.GetWeakPtr(), profile_color);
-  if (gaia_id.empty()) {
-    lacros_sign_in_provider_->ShowAddAccountDialogAndCreateSignedInProfile(
-        std::move(callback));
-  } else {
-    AddAccountCallback add_exisiting_account_to_new_profile =
-        base::BindOnce(&ProfilePickerHandler::AddExistingAccountToNewProfile,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
-    identity_manager_lacros_->HasAccountWithPersistentError(
-        gaia_id,
-        base::BindOnce(&ProfilePickerHandler::ResultAccountInPersistentError,
-                       weak_factory_.GetWeakPtr(), gaia_id,
-                       std::move(add_exisiting_account_to_new_profile),
-                       account_manager::AccountManagerFacade::
-                           AccountAdditionSource::kChromeProfileCreation));
-  }
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

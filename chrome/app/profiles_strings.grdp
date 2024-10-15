@@ -813,125 +813,84 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL" desc="Label of a button that switches user browsing to existing profile">
       Switch
     </message>
-
-    <if expr="not chromeos_lacros">
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed by an administrator.">
-        Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed.">
-        Your device is managed by your organization. Administrators can access the data in any profile on this device.
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE" desc="Main text shown as a warning when attempting to remove an user.">
-        This will permanently delete your browsing data from this device.
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
-        Delete this profile?
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-        This will permanently delete your browsing data from this device. To recover the data, turn on sync as
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
-        desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
-      </message>
-    </if>
-
-    <if expr="chromeos_lacros">
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the session is managed by an administrator.">
-        Your session is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Administrators can delete your profile and also monitor your network traffic.
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the session is managed.">
-        Your session is managed by your organization. Administrators can delete your profile and also monitor your network traffic.
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE" desc="Profile picker, account selection screen title">
-        Choose an account
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL" desc="Label for a button to use another account for the new profile">
-        Use another account
-      </message>
-      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS" desc="Profile picker main view title">
-        Choose a profile
-      </message>
-      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE" desc="Title of a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile.">
-        Can't delete this profile
-      </message>
-      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING" desc="Text of a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile.">
-        <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph> is the default account on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
-      </message>
-      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION" desc="Text of a button below a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile. By clicking the button, the user closes the this dialog.">
-        Got it
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
-        Delete this profile and browsing data?
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-        This will permanently delete browsing data and saved desks associated with this profile from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-      </message>
-      <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL" desc="Label of the 'next' button of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-        Let's go
-      </message>
-    </if>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed by an administrator.">
+      Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed.">
+      Your device is managed by your organization. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE" desc="Main text shown as a warning when attempting to remove an user.">
+      This will permanently delete your browsing data from this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
+      Delete this profile?
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
+      This will permanently delete your browsing data from this device. To recover the data, turn on sync as
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
+      desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
+    </message>
 
     <!-- First Run Experience strings -->
-    <if expr="not chromeos_lacros">
-      <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
-        desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
-        Get additional features
+    <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
+      desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
+      Get additional features
+    </message>
+    <message name="IDS_FRE_SIGN_IN_SUBTITLE_1"
+      desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
+      Sign in for additional features
+    </message>
+    <message name="IDS_FRE_DEVICES_CARD_TITLE"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The headline is followed by the body text 'Easily pick up where you left off'. The tone should be informative.">
+      All your devices
+    </message>
+    <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'All your devices'. This card's body means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The tone should be informative.">
+      Easily pick up where you left off
+    </message>
+    <message name="IDS_FRE_SECURITY_CARD_TITLE"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get a higher level of security. The headline is followed by the body text 'Protect your passwords against phishing'. The tone should be informative.">
+      Stronger security
+    </message>
+    <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Stronger security'. This card's body means that users can get a higher level of security. Translate 'phishing' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=60554f8 . The tone should be informative.">
+      Protect your passwords against phishing
+    </message>
+    <message name="IDS_FRE_BACKUP_CARD_TITLE"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
+      Back up data
+    </message>
+    <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'passwords' as the plural version of https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=281e09e1 . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
+      Save your bookmarks, passwords and more with sync
+    </message>
+    <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
+      Save your bookmarks and more with sync
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Don't sign in
       </message>
-      <message name="IDS_FRE_SIGN_IN_SUBTITLE_1"
-        desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
-        Sign in for additional features
-      </message>
-      <message name="IDS_FRE_DEVICES_CARD_TITLE"
-        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The headline is followed by the body text 'Easily pick up where you left off'. The tone should be informative.">
-        All your devices
-      </message>
-      <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'All your devices'. This card's body means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The tone should be informative.">
-        Easily pick up where you left off
-      </message>
-      <message name="IDS_FRE_SECURITY_CARD_TITLE"
-        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get a higher level of security. The headline is followed by the body text 'Protect your passwords against phishing'. The tone should be informative.">
-        Stronger security
-      </message>
-      <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Stronger security'. This card's body means that users can get a higher level of security. Translate 'phishing' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=60554f8 . The tone should be informative.">
-        Protect your passwords against phishing
-      </message>
-      <message name="IDS_FRE_BACKUP_CARD_TITLE"
-        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
-        Back up data
-      </message>
-      <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'passwords' as the plural version of https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=281e09e1 . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
-        Save your bookmarks, passwords and more with sync
-      </message>
-      <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
-        Save your bookmarks and more with sync
-      </message>
-      <if expr="not use_titlecase">
-        <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
-          Don't sign in
-        </message>
-        <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
-          Sign in
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice not to sign in to Chrome">
-          Don't Sign In
-        </message>
-        <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice to sign in to Chrome">
-          Sign In
-        </message>
-      </if>
-      <message name="IDS_FRE_MANAGED_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by their organization">
-        Your device is managed by your organization. Administrators can access the data in any profile on this device.
-      </message>
-      <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
-        Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+      <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
+        Sign in
       </message>
     </if>
+    <if expr="use_titlecase">
+      <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice not to sign in to Chrome">
+        Don't Sign In
+      </message>
+      <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice to sign in to Chrome">
+        Sign In
+      </message>
+    </if>
+    <message name="IDS_FRE_MANAGED_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by their organization">
+      Your device is managed by your organization. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
+      Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+    </message>
 
     <!-- Default Browser Promo -->
     <message name="IDS_FRE_DEFAULT_BROWSER_TITLE_NEW" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">

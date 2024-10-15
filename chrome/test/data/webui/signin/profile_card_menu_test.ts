@@ -38,9 +38,6 @@ suite('ProfileCardMenuTest', function() {
       userName: `User@gmail.com`,
       avatarIcon: `AvatarUrl`,
       avatarBadge: ``,
-      // <if expr="chromeos_lacros">
-      isPrimaryLacrosProfile: false,
-      // </if>
     };
     profileCardMenuElement.profileState = testProfileState;
     document.body.appendChild(profileCardMenuElement);
@@ -191,89 +188,3 @@ suite('ProfileCardMenuTest', function() {
         '1');
   });
 });
-
-// <if expr="chromeos_lacros">
-suite('ProfileCardMenuLacrosTest', function() {
-  let primaryProfileCardMenuElement: ProfileCardMenuElement;
-  let secondaryProfileCardMenuElement: ProfileCardMenuElement;
-  let browserProxy: TestManageProfilesBrowserProxy;
-
-  setup(async function() {
-    browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    primaryProfileCardMenuElement = document.createElement('profile-card-menu');
-    const testPrimaryProfileState: ProfileState = {
-      profilePath: `primaryProfilePath`,
-      localProfileName: `profile`,
-      isSyncing: true,
-      needsSignin: false,
-      gaiaName: `User`,
-      userName: `User@gmail.com`,
-      avatarIcon: `AvatarUrl`,
-      avatarBadge: `cr:domain`,
-      isPrimaryLacrosProfile: true,
-    };
-    primaryProfileCardMenuElement.profileState = testPrimaryProfileState;
-    document.body.appendChild(primaryProfileCardMenuElement);
-    secondaryProfileCardMenuElement =
-        document.createElement('profile-card-menu');
-    const testSecondaryProfileState: ProfileState = {
-      profilePath: `secondaryProfilePath`,
-      localProfileName: `profile`,
-      isSyncing: true,
-      needsSignin: false,
-      gaiaName: `User2`,
-      userName: `User2@gmail.com`,
-      avatarIcon: `AvatarUrl`,
-      avatarBadge: ``,
-      isPrimaryLacrosProfile: false,
-    };
-    secondaryProfileCardMenuElement.profileState = testSecondaryProfileState;
-    document.body.appendChild(secondaryProfileCardMenuElement);
-  });
-
-  // The primary profile cannot be deleted in Lacros. The delete button should
-  // just open a notification about that.
-  test('PrimaryProfileCannotBeDeleted', async function() {
-    primaryProfileCardMenuElement.$.moreActionsButton.click();
-    const menuButtons = primaryProfileCardMenuElement.shadowRoot!
-                            .querySelectorAll<HTMLButtonElement>(
-                                '#actionMenu > .dropdown-item');
-    assertFalse(menuButtons[MenuButtonIndex.DELETE]!.disabled);
-    menuButtons[MenuButtonIndex.DELETE]!.click();
-    assertFalse(primaryProfileCardMenuElement.$.actionMenu.open);
-    const dialog =
-        primaryProfileCardMenuElement.$.removePrimaryLacrosProfileDialog;
-    assertTrue(dialog.open);
-    dialog.querySelector<HTMLElement>('.action-button')!.click();
-    await microtasksFinished();
-    assertFalse(dialog.open);
-  });
-
-  // All other profiles can be deleted as normal.
-  test('SecondaryProfileCanBeDeleted', async function() {
-    secondaryProfileCardMenuElement.$.moreActionsButton.click();
-    const menuButtons = secondaryProfileCardMenuElement.shadowRoot!
-                            .querySelectorAll<HTMLButtonElement>(
-                                '#actionMenu > .dropdown-item');
-    assertFalse(menuButtons[MenuButtonIndex.DELETE]!.disabled);
-    menuButtons[MenuButtonIndex.DELETE]!.click();
-    assertFalse(secondaryProfileCardMenuElement.$.actionMenu.open);
-    assertTrue(secondaryProfileCardMenuElement.$.removeConfirmationDialog.open);
-  });
-
-  // Check that the confirmation dialog has a clickable link.
-  test('RemoveConfirmationDialogLink', async function() {
-    const dialog = secondaryProfileCardMenuElement.$.removeConfirmationDialog;
-    dialog.showModal();
-    assertTrue(dialog.open);
-
-    const settingsLink = dialog.querySelector<HTMLElement>(
-        '#removeWarningHeader a[is="action-link"]');
-    settingsLink!.click();
-    await browserProxy.whenCalled('openAshAccountSettingsPage');
-  });
-
-});
-// </if>
