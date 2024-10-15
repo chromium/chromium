@@ -461,7 +461,6 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
@@ -496,7 +495,6 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
@@ -595,9 +593,6 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
 
 TEST_F(SyncPrefsTest,
        SetSelectedTypesForAccountInTransportModeWithPolicyRestrictedType) {
-  base::test::ScopedFeatureList features(
-      kEnablePasswordsAccountStorageForNonSyncingUsers);
-
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
@@ -887,7 +882,6 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
-                              kEnablePasswordsAccountStorageForNonSyncingUsers,
                               kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});

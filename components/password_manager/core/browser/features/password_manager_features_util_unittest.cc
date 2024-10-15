@@ -65,11 +65,8 @@ class PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest
     : public PasswordManagerFeaturesUtilTestBase {
  public:
   PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {syncer::kEnablePasswordsAccountStorageForNonSyncingUsers},
-        /*disabled_features=*/{
-            syncer::kEnablePasswordsAccountStorageForSyncingUsers});
+    feature_list_.InitAndDisableFeature(
+        syncer::kEnablePasswordsAccountStorageForSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -92,11 +89,8 @@ class PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest
     : public PasswordManagerFeaturesUtilTestBase {
  public:
   PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {syncer::kEnablePasswordsAccountStorageForSyncingUsers},
-        /*disabled_features=*/{
-            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers});
+    feature_list_.InitAndEnableFeature(
+        syncer::kEnablePasswordsAccountStorageForSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -610,23 +604,6 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
 
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-}
-
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
-       OptedOutIfNonSyncing) {
-  sync_service_.SetSignedOut();
-
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-
-  CoreAccountInfo account;
-  account.email = "foo@account.com";
-  account.gaia = "foo";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account);
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, true);
 
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
 }

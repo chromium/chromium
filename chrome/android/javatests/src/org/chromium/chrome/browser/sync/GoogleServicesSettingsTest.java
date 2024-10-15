@@ -384,21 +384,7 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @DisableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
-    public void hidePasswordsAccountStorageToggleIfSignedInAndFlagDisabled() {
-        mSigninTestRule.addTestAccountThenSignin();
-
-        startGoogleServicesSettings();
-
-        onView(withText(R.string.passwords_account_storage_toggle_title)).check(doesNotExist());
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void hidePasswordsAccountStorageToggleIfSignedInAndSyncToSigninEnabled() {
         mSigninTestRule.addTestAccountThenSignin();
 
@@ -409,7 +395,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void hidePasswordsAccountStorageToggleIfGmsCoreOutdated() {
         when(mMockPasswordManagerUtilBridgeJni.isGmsCoreUpdateRequired(any(), any()))
@@ -423,7 +408,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void showPasswordsAccountStorageToggleIfSignedInAndFlagEnabled() {
         CoreAccountInfo account = mSigninTestRule.addTestAccountThenSignin();
@@ -466,7 +450,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void showPasswordsAccountStorageToggleForNonDisplayableEmail() {
         // TODO(b/343378391) Update accountInfo to use
@@ -492,7 +475,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void showPasswordsAccountStorageToggleWithHighlight() {
         mSigninTestRule.addTestAccountThenSignin();

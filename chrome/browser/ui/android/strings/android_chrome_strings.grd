@@ -3723,9 +3723,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HISTORY_SYNC_SUBTITLE" desc="Text of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         To quickly get back to sites you’ve visited, sync your tabs and history
       </message>
-      <message name="IDS_SIGNIN_SYNC_TITLE" desc="Title of Sync feature for the screen that asks users to sign-in and turn on Sync.">
-        Sync your passwords, history &amp; more on all devices
-      </message>
       <message name="IDS_SIGNIN_SYNC_TITLE_WITHOUT_PASSWORDS" desc="Same as IDS_SIGNIN_SYNC_TITLE but without mentioning passwords. Title of Sync feature for the screen that asks users to sign-in and turn on Sync.">
         Sync your bookmarks, history &amp; more on all devices
       </message>
@@ -3880,9 +3877,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_SYNC_PROMO_TITLE_SETTINGS" desc="This string is the headline of a card that appears when the user opens Chrome's settings; the user may be signed in to Chrome, but isn't syncing their Chrome data. The line below this string is 'Sync to get your passwords, bookmarks and more on all your devices'. [CHAR_LIMIT=70]" meaning="This headline means that the user can use Chrome more easily by syncing their passwords, bookmarks, settings, and more.. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
         Use Chrome your way
-      </message>
-      <message name="IDS_SYNC_PROMO_DESCRIPTION_SETTINGS" desc="This string is the body of a card that appears when the user opens Chrome's settings; the user may be signed in to Chrome, but isn't syncing their Chrome data. The headline above this string is 'Browse more easily'. There's no character limit but try to keep the translation under 120 characters." meaning="This message means that the user can use Chrome more easily by syncing their passwords, bookmarks, settings, and more.. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
-        Sync to get your passwords, bookmarks and more on your other devices
       </message>
       <message name="IDS_SYNC_PROMO_DESCRIPTION_SETTINGS_WITHOUT_PASSWORDS" desc="Same as IDS_SYNC_PROMO_DESCRIPTION_SETTINGS but without mentioning passwords. This string is the body of a card that appears when the user opens Chrome's settings; the user may be signed in to Chrome, but isn't syncing their Chrome data. The headline above this string is 'Browse more easily'. There's no character limit but try to keep the translation under 120 characters." meaning="This message means that the user can use Chrome more easily by syncing their passwords, bookmarks, settings, and more.. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
         Sync to get your bookmarks, history and more on your other devices

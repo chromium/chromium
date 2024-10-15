@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
-import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -418,14 +417,8 @@ public class SyncPromoControllerUITest {
         setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
-        @StringRes
-        int description =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
-                        ? R.string.sync_promo_description_settings_without_passwords
-                        : R.string.sync_promo_description_settings;
-        onView(withText(description)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_settings_without_passwords))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
@@ -438,14 +431,8 @@ public class SyncPromoControllerUITest {
         setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
-        @StringRes
-        int description =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
-                        ? R.string.sync_promo_description_settings_without_passwords
-                        : R.string.sync_promo_description_settings;
-        onView(withText(description)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_settings_without_passwords))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
@@ -458,13 +445,8 @@ public class SyncPromoControllerUITest {
         setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
-        int description =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
-                        ? R.string.sync_promo_description_settings_without_passwords
-                        : R.string.sync_promo_description_settings;
-        onView(withText(description)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_settings_without_passwords))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 

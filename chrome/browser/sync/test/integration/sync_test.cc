@@ -1130,8 +1130,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
 
-  bool allow_passwords = base::FeatureList::IsEnabled(
-      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
+  bool allow_passwords = true;
 #if !BUILDFLAG(IS_ANDROID)
   // This is an approximation because passwords are only enabled if the signin
   // is explicit (they are not enabled for users who signed in through Dice).

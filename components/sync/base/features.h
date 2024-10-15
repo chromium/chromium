@@ -73,14 +73,6 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 //   saves always happen to the profile store.
 // - The account store is synced. When the flag is disabled, the profile one is.
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers);
-// For users who support separate "profile" and "account" password stores -
-// see password_manager::features_util::CanCreateAccountStore() - and have
-// sync-the-transport on, enabling this flag means:
-// - New passwords are saved to the account store if the passwords data type is
-//   "selected", and to the profile store otherwise. When the flag is disabled,
-//   saves always happen to the profile store.
-// - The account store is synced. When the flag is disabled, no store is.
-BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers);
 
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not

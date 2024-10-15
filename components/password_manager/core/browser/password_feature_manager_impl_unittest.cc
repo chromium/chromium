@@ -61,8 +61,6 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
 
 TEST_F(PasswordFeatureManagerImplTest,
        GenerationEnabledIfNonSyncingAndUsingAccountStorage) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
   pref_service_.registry()->RegisterIntegerPref(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,

@@ -83,7 +83,7 @@ found in the LICENSE file.
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-                tools:text="@string/signin_sync_title"/>
+                tools:text="@string/signin_sync_title_without_passwords"/>
             <TextView
                 android:id="@+id/signin_sync_description"
                 android:layout_width="match_parent"

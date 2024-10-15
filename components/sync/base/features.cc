@@ -79,10 +79,6 @@ BASE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers,
 #endif
 );
 
-BASE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers,
-             "EnablePasswordsAccountStorageForNonSyncingUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              "SyncEnableContactInfoDataTypeForDasherUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -354,9 +354,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                         && !syncService.hasSyncConsent()
                         && !PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
                                 UserPrefs.get(getProfile()), syncService)
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
                         && !ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS));
         if (account == null) {

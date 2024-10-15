@@ -3666,7 +3666,6 @@ const char kReplaceSyncPromosWithSignInPromosFeatures[] =
     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
     "SyncEnableWalletMetadataInTransportMode,"
     "SyncEnableWalletOfferInTransportMode,"
-    "EnablePasswordsAccountStorageForNonSyncingUsers,"
     "HideSettingsSignInPromo,"
     "EnableBatchUploadFromSettings";
 
@@ -3678,7 +3677,6 @@ const char kFastFollowFeatures[] =
     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
     "SyncEnableWalletMetadataInTransportMode,"
     "SyncEnableWalletOfferInTransportMode,"
-    "EnablePasswordsAccountStorageForNonSyncingUsers,"
     "HideSettingsSignInPromo,"
     "EnableBatchUploadFromSettings,"
     "UnoPhase2FollowUp";

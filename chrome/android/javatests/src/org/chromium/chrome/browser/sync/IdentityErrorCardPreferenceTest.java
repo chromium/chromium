@@ -233,7 +233,6 @@ public class IdentityErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
     public void testIdentityErrorCardForUpmBackendOutdated() throws Exception {
         when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(true);

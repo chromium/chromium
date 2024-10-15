@@ -1310,10 +1310,8 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kEnablePasswordsAccountStorageForNonSyncingUsers,
-       syncer::kEnablePasswordsAccountStorageForSyncingUsers},
-      {});
+  feature_list.InitAndEnableFeature(
+      syncer::kEnablePasswordsAccountStorageForSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
   prefs_.SetInteger(
       prefs::kPasswordsUseUPMLocalAndSeparateStores,

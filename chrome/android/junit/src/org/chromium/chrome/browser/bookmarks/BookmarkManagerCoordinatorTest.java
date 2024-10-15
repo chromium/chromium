@@ -60,7 +60,6 @@ import org.chromium.ui.base.TestActivity;
 })
 @EnableFeatures({
     SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 // TODO(crbug.com/327387704): Add tests with this flag enabled.

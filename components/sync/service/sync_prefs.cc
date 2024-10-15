@@ -752,15 +752,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
              base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
     case UserSelectableType::kPasswords:
-      // WARNING: This should actually be checking
-      // password_manager::features_util::CanCreateAccountStore() too, otherwise
-      // a crash can happen. But a) it would require a cyclic dependency, and
-      // b) by the time kEnablePasswordsAccountStorageForNonSyncingUsers is
-      // rolled out on Android, CanCreateAccountStore() should always return
-      // true (or at least it can be some trivial GmsCore version check and live
-      // in components/sync/).
-      return base::FeatureList::IsEnabled(
-          kEnablePasswordsAccountStorageForNonSyncingUsers);
+      return true;
     case UserSelectableType::kAutofill:
       return base::FeatureList::IsEnabled(
           kSyncEnableContactInfoDataTypeInTransportMode);

@@ -283,6 +283,7 @@ public class ManageSyncSettingsTest {
                 new HashSet<>(
                         Arrays.asList(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE,
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE,
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
         if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)) {
             expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE);
@@ -290,10 +291,6 @@ public class ManageSyncSettingsTest {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)) {
             expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE);
-        }
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)) {
-            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
         }
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {

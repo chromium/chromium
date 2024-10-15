@@ -88,9 +88,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
                 && !prefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)
                 && windowAndroid != null
                 && BottomSheetControllerProvider.from(windowAndroid) != null
-                && windowAndroid.getContext().get() != null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS);
+                && windowAndroid.getContext().get() != null;
     }
 
     @CalledByNative

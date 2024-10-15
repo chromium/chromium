@@ -184,7 +184,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
-                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
