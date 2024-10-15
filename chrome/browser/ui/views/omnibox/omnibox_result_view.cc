@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_local_answer_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
@@ -33,7 +34,6 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -64,8 +64,10 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -111,9 +113,9 @@ class OmniboxResultSelectionIndicator : public views::View {
  public:
   const int kStrokeThickness = 4;
 
-  explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)
-      : result_view_(result_view) {
-    SetPreferredSize(gfx::Size(kStrokeThickness, 40));
+  OmniboxResultSelectionIndicator() {
+    // Height will automatically match the parent's height.
+    SetPreferredSize(gfx::Size(kStrokeThickness, 0));
   }
 
   // views::View:
@@ -128,9 +130,6 @@ class OmniboxResultSelectionIndicator : public views::View {
   }
 
  private:
-  // Pointer to the parent view.
-  const raw_ptr<OmniboxResultView> result_view_;
-
   // The focus bar is a straight vertical line with half-rounded endcaps. Since
   // this geometry is nontrivial to represent using primitives, it's instead
   // represented using a fill path. This matches the style and implementation
@@ -166,33 +165,54 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                               base::Unretained(this))) {
   CHECK_GE(model_index, 0u);
 
+  // The view hierarchy is:
+  // OmniboxResultView (FillLayout)
+  //   selection_indicator_
+  //   local_answer_header_and_suggestion_and_buttons_ (BoxLayout vertical)
+  //     local_answer_header_ (added lazily)
+  //     suggestion_and_buttons (FlexLayout horizontal)
+  //       suggestion_and_button_row (FlexLayout horizontal)
+  //         suggestion_view_
+  //         button_row_
+  //       thumbs_up_button_
+  //       thumbs_down_button_
+  //       remove_suggestion_button_
+
+  // TODO(crbug.com/370088101): The division between `OmniboxResultView` and
+  //   `suggestion_view_` is not clear. Should we inline `suggestion_view_`'s
+  //   members in `OmniboxResultView`? Or should we move e.g. the thumb and
+  //   remove buttons into `suggestion_view_`? `suggestion_view_` currently uses
+  //   custom layout, so it's easier to add new views to `OmniboxResultView`
+  //   when possible.
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto* selection_indicator_container_ =
+  selection_indicator_ =
+      AddChildView(std::make_unique<OmniboxResultSelectionIndicator>());
+
+  local_answer_header_and_suggestion_and_buttons_ =
       AddChildView(std::make_unique<views::View>());
-  selection_indicator_container_->SetLayoutManager(
-      std::make_unique<views::FlexLayout>());
+  local_answer_header_and_suggestion_and_buttons_
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  selection_indicator_ = selection_indicator_container_->AddChildView(
-      std::make_unique<OmniboxResultSelectionIndicator>(this));
-  selection_indicator_->SetProperty(views::kCrossAxisAlignmentKey,
-                                    views::LayoutAlignment::kStart);
-
-  auto* right = AddChildView(std::make_unique<views::View>());
-  right->SetLayoutManager(std::make_unique<views::FlexLayout>())
+  auto* suggestion_and_buttons =
+      local_answer_header_and_suggestion_and_buttons_->AddChildView(
+          std::make_unique<views::View>());
+  suggestion_and_buttons
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  views::View* suggestion_and_buttons =
-      right->AddChildView(std::make_unique<views::View>());
-  suggestion_and_buttons->SetLayoutManager(
+  views::View* suggestion_and_button_row =
+      suggestion_and_buttons->AddChildView(std::make_unique<views::View>());
+  suggestion_and_button_row->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
-  suggestion_and_buttons->SetProperty(
+  suggestion_and_button_row->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
-  suggestion_view_ = suggestion_and_buttons->AddChildView(
+  suggestion_view_ = suggestion_and_button_row->AddChildView(
       std::make_unique<OmniboxMatchCellView>(this));
   suggestion_view_->iph_link_view()->SetCallback(base::BindRepeating(
       &OmniboxResultView::OpenIphLink, weak_factory_.GetWeakPtr()));
@@ -206,8 +226,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
   // TODO(b/345536738): Move the common code for setting up instances of
   //  OmniboxResultViewButton to the constructor.
-  thumbs_up_button_ =
-      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+  thumbs_up_button_ = suggestion_and_buttons->AddChildView(
+      std::make_unique<OmniboxResultViewButton>(
           IDS_ACC_THUMBS_UP_SUGGESTION_BUTTON,
           base::BindRepeating(
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
@@ -227,8 +247,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   thumbs_up_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  thumbs_down_button_ =
-      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+  thumbs_down_button_ = suggestion_and_buttons->AddChildView(
+      std::make_unique<OmniboxResultViewButton>(
           IDS_ACC_THUMBS_DOWN_SUGGESTION_BUTTON,
           base::BindRepeating(
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
@@ -249,8 +269,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   thumbs_down_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  remove_suggestion_button_ =
-      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+  remove_suggestion_button_ = suggestion_and_buttons->AddChildView(
+      std::make_unique<OmniboxResultViewButton>(
           IDS_ACC_REMOVE_SUGGESTION_BUTTON,
           base::BindRepeating(
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
@@ -269,7 +289,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   remove_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  button_row_ = suggestion_and_buttons->AddChildView(
+  button_row_ = suggestion_and_button_row->AddChildView(
       std::make_unique<OmniboxSuggestionButtonRowView>(popup_view_,
                                                        model_index));
   // If there's insufficient space for rendering both the suggestion text
@@ -309,8 +329,8 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
         /*for_border_thickness=*/0);
   }
 
-  gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
-                                static_cast<float>(view->height()), 0};
+  const float half_row_height = OmniboxMatchCellView::kRowHeight / 2;
+  gfx::RoundedCornersF radii = {0, half_row_height, half_row_height, 0};
   return views::CreateThemedRoundedRectBackground(
       GetOmniboxBackgroundColorId(part_state), radii);
 }
@@ -336,27 +356,21 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
         l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
   }
 
-  suggestion_view_->content()->SetTextWithStyling(match_.contents,
-                                                  match_.contents_class);
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-      match_.answer_template.has_value()) {
-    omnibox::AnswerData answer_data = match_.answer_template->answers(0);
-    suggestion_view_->content()->AppendTextWithStyling(
-        /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
-        /*answer_type=*/match_.answer_type);
-    // The subhead text may be multiline.
-    suggestion_view_->description()->SetMultilineText(
-        /*formatted_string=*/answer_data.subhead(),
-        /*answer_type=*/match_.answer_type);
-  } else if (match_.answer) {
-    suggestion_view_->content()->AppendExtraText(match_.answer->first_line());
-    suggestion_view_->description()->SetTextWithStyling(
-        match_.answer->second_line());
-  } else {
-    suggestion_view_->description()->SetTextWithStyling(
-        match_.description, match_.description_class);
-  }
   button_row_->UpdateFromModel();
+
+  if (match_.type == AutocompleteMatchType::Type::HISTORY_EMBEDDINGS_ANSWER) {
+    if (!local_answer_header_) {
+      local_answer_header_ =
+          local_answer_header_and_suggestion_and_buttons_->AddChildViewAt(
+              std::make_unique<OmniboxLocalAnswerHeaderView>(), 0);
+    }
+    // TODO(crbug.com/364329824) Set correct icon & text using the autocomplete
+    //   match.
+    local_answer_header_->SetText(u"Summary:");
+    local_answer_header_->SetVisible(true);
+  } else if (local_answer_header_) {
+    local_answer_header_->SetVisible(false);
+  }
 
   ApplyThemeAndRefreshIcons();
   InvalidateLayout();

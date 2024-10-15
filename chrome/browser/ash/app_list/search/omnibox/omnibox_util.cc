@@ -69,6 +69,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::PEDAL:
     case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::STARTER_PACK:
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER:
       return SearchResult::OmniboxType::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:

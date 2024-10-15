@@ -61,6 +61,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "organic-repeatable-query-tile",
     "history-embeddings",
     "featured-enterprise-search",
+    "history-embeddings-answer",
   });
   // clang-format on
   static_assert(strings.size() == AutocompleteMatchType::NUM_TYPES,
@@ -157,6 +158,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // TILE_REPEATABLE_QUERY
       IDS_ACC_AUTOCOMPLETE_HISTORY,          // HISTORY_EMBEDDINGS
       0,                                     // FEATURED_ENTERPRISE_SEARCH
+      0,                                     // HISTORY_EMBEDDINGS_ANSWER
   });
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");

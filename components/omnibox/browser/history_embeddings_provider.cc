@@ -21,7 +21,37 @@
 
 namespace {
 constexpr int kMaxScore = 1000;
+
+// TODO(crbug.com/364329824) Use real/mock answer from service.
+AutocompleteMatch CreateMockAnswer(HistoryEmbeddingsProvider* provider) {
+  AutocompleteMatch match(provider, 1 * kMaxScore, /*deletable=*/false,
+                          AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER);
+  match.destination_url = GURL("chrome://history");
+
+  match.description = AutocompleteMatch::SanitizeString(
+      u"The Matenadaran (Armenian: Մատենադարան), officially the Mesrop "
+      u"Mashtots Institute of Ancient Manuscripts,[a] is a museum, "
+      u"repository of manuscripts, and a research institute in Yerevan, "
+      u"Armenia. It is the world's largest repository of Armenian "
+      u"manuscripts.[5]\n"
+      "\n"
+      "It was established in 1959 on the basis of the nationalized "
+      "collection of the Armenian Church, formerly held at Etchmiadzin. Its "
+      "collection has gradually expanded since its establishment, mostly "
+      "from individual donations. One of the most prominent landmarks of "
+      "Yerevan, it is named after Mesrop Mashtots, the inventor of the "
+      "Armenian alphabet, whose statue stands in front of the building. Its "
+      "collection is included in the register of the UNESCO Memory of the "
+      "World program.");
+  match.description_class = {{0, ACMatchClassification::NONE}};
+
+  match.contents = u"wikipedia.org/wiki/  •  Visited September 30,2024";
+  match.contents_class = {{0, ACMatchClassification::DIM}};
+
+  return match;
 }
+
+}  // namespace
 
 HistoryEmbeddingsProvider::HistoryEmbeddingsProvider(
     AutocompleteProviderClient* client,
@@ -65,6 +95,11 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
       provider_max_matches_,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
                           weak_factory_.GetWeakPtr(), adjusted_input.text()));
+
+  if (history_embeddings::kAnswersInOmniboxScoped.Get()) {
+    matches_.push_back(CreateMockAnswer(this));
+    NotifyListeners(true);
+  }
 }
 
 void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
@@ -83,11 +118,6 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
   // ongoing as the user types.
   if (done_ || last_search_input_ != input_text)
     return;
-
-  // `matches_` should be empty. They're cleared before `Search()` is called,
-  // and checking `done_` above ensures there's at most 1
-  // `OnReceivedSearchResult()` per `Search()`.
-  DCHECK(matches_.empty());
 
   for (const history_embeddings::ScoredUrlRow& scored_url_row :
        result.scored_url_rows) {

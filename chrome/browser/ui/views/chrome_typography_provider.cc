@@ -146,6 +146,10 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
 #endif
   }
 
+  if (style == STYLE_SMALL) {
+    details.size_delta -= 2;
+  }
+
   return details;
 }
 

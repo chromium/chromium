@@ -99,6 +99,10 @@ extern const base::FeatureParam<bool> kOmniboxScoped;
 // the '@history' scope. If true, behaves as if `kOmniboxScoped` is also true.
 extern const base::FeatureParam<bool> kOmniboxUnscoped;
 
+// Whether history embedding answers should be shown in the omnibox when in the
+// '@history' scope. No-op if `kOmniboxScoped` is false.
+extern const base::FeatureParam<bool> kAnswersInOmniboxScoped;
+
 // The maximum number of embeddings to submit to the primary (ML) embedder
 // in a single batch via the scheduling embedder.
 extern const base::FeatureParam<int> kScheduledEmbeddingsMax;

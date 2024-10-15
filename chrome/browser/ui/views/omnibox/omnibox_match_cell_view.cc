@@ -43,7 +43,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/render_text.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/layout_provider.h"
@@ -237,6 +236,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION;
   } else if (match.IsIPHSuggestion()) {
     layout_style_ = LayoutStyle::IPH_SUGGESTION;
+  } else if (match.type ==
+             AutocompleteMatchType::Type::HISTORY_EMBEDDINGS_ANSWER) {
+    layout_style_ = LayoutStyle::HISTORY_EMBEDDING_ANSWER;
   } else {
     layout_style_ = LayoutStyle::DEFAULT_NON_SEARCH_SUGGESTION;
   }
@@ -249,7 +251,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : kColorOmniboxText);
 
   // Set up the separator.
-  separator_view_->SetSize(match.description.empty()
+  separator_view_->SetSize(layout_style_ ==
+                                       LayoutStyle::HISTORY_EMBEDDING_ANSWER ||
+                                   match.description.empty()
                                ? gfx::Size()
                                : separator_view_->GetPreferredSize());
 
@@ -309,6 +313,31 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
           ? match.tail_suggest_common_prefix  // Used for indent calculation.
           : std::u16string());
+
+  // Set content & description texts.
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+      match.answer_template.has_value()) {
+    content_view_->SetTextWithStyling(match.contents, match.contents_class);
+    omnibox::AnswerData answer_data = match.answer_template->answers(0);
+    content_view_->AppendTextWithStyling(
+        /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
+        /*answer_type=*/match.answer_type);
+    // The subhead text may be multiline.
+    description_view_->SetMultilineText(
+        /*formatted_string=*/answer_data.subhead(),
+        /*answer_type=*/match.answer_type);
+  } else if (match.answer) {
+    content_view_->AppendExtraText(match.answer->first_line());
+    description_view_->SetTextWithStyling(match.answer->second_line());
+  } else if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
+    content_view_->SetMultilineText(match.contents);
+    description_view_->SetTextWithStyling(match.description,
+                                          match.description_class);
+  } else {
+    content_view_->SetTextWithStyling(match.contents, match.contents_class);
+    description_view_->SetTextWithStyling(match.description,
+                                          match.description_class);
+  }
 }
 
 void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
@@ -412,6 +441,19 @@ void OmniboxMatchCellView::Layout(PassKey) {
   x += text_indent;
   const int text_width = child_area.width() - text_indent;
 
+  if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
+    // Equally divide the vertical padding.
+    int needed_height = content_view_->GetHeightForWidth(text_width) +
+                        description_view_->GetLineHeight();
+    int leftover_height = row_height - needed_height;
+    content_view_->SetBounds(x, y + leftover_height / 2, text_width,
+                             content_view_->GetHeightForWidth(text_width));
+    description_view_->SetBounds(x, content_view_->bounds().bottom(),
+                                 text_width,
+                                 description_view_->GetLineHeight());
+    return;
+  }
+
   int content_width = content_view_->GetPreferredSize().width();
   int description_width = description_view_->GetPreferredSize().width();
   const gfx::Size separator_size = separator_view_->GetPreferredSize();
@@ -447,9 +489,15 @@ void OmniboxMatchCellView::Layout(PassKey) {
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const int kMargin = 6;
-  int height = kUniformRowHeightIconSize + 2 * kMargin;
-  if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
+  // Initialize height to fit 1 line of text.
+  int height = kRowHeight;
+  if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
+    // Answers have a multiline contents with a 1-ine description. The already
+    // allocated `height` is sufficient for the description; add the height
+    // needed for the multiline contents.
+    height += content_view_->GetHeightForWidth(width() - GetTextIndent());
+  } else if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
+    // IPH suggestions have extra height.
     height += 4;
   }
 
@@ -505,6 +553,11 @@ int OmniboxMatchCellView::GetTextIndent() const {
       icon_view_->GetPreferredSize() == gfx::Size{}) {
     return kIphTextIndent;
   }
+
+  // Answers don't have an icon, and their text needs to line up with the icons
+  // of other suggestions, so they need a smaller indent.
+  if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER)
+    return 18;
 
   // For normal matches, the gap between the left edge of this view and the
   // left edge of its favicon or answer image.
