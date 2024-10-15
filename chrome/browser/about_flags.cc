@@ -10566,16 +10566,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIpProtectionProxyOptOutDescription, kOsAll,
      MULTI_VALUE_TYPE(kIpProtectionProxyOptOutChoices)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-android-n-key-for-fido-authentication",
-     flag_descriptions::kAutofillEnableAndroidNKeyForFidoAuthenticationName,
-     flag_descriptions::
-         kAutofillEnableAndroidNKeyForFidoAuthenticationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableAndroidNKeyForFidoAuthentication)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"protected-audience-debug-token",
      flag_descriptions::kProtectedAudiencesConsentedDebugTokenName,
      flag_descriptions::kProtectedAudiencesConsentedDebugTokenDescription,

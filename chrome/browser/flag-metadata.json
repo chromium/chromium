@@ -630,11 +630,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-enable-android-n-key-for-fido-authentication",
-    "owners": ["longsheng@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-enable-buy-now-pay-later-for-affirm",
     "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145

@@ -473,12 +473,6 @@ const char kAutofillEnableAmountExtractionDesktopDescription[] =
     "page of the allowlisted merchant websites.";
 #endif
 
-const char kAutofillEnableAndroidNKeyForFidoAuthenticationName[] =
-    "Enable Android N Key for FIDO authentication";
-const char kAutofillEnableAndroidNKeyForFidoAuthenticationDescription[] =
-    "When enabled, Android N+ devices will be supported for FIDO "
-    "authentication when autofilling server credit cards.";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 const char kAutofillEnableBuyNowPayLaterForAffirmName[] =

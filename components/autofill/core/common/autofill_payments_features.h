@@ -20,8 +20,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableAmountExtractionDesktop);
 #endif
 
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLaterForAffirm);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLaterForZip);

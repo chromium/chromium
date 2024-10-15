@@ -149,20 +149,13 @@ void CreditCardFidoAuthenticator::IsUserVerifiable(
     return;
   }
 #if BUILDFLAG(IS_ANDROID)
-  // When kAutofillEnableAndroidNKeyForFidoAuthentication is on,
-  // Payments servers only accept WebAuthn credentials for Android N
-  // and above. When kAutofillEnableAndroidNKeyForFidoAuthentication is off,
-  // Payments servers only accept WebAuthn credentials for Android P
-  // and above. Do nothing for the other cases.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAndroidNKeyForFidoAuthentication)) {
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_NOUGAT) {
-      std::move(callback).Run(false);
-      return;
-    }
-  } else if (base::android::BuildInfo::GetInstance()->sdk_int() <
-             base::android::SDK_VERSION_P) {
+  // Due to Android N devices having a low market share, only Android P or
+  // higher version devices are allowed to go through FIDO authentication.
+  // Because Android N key is better than P key and can provide additional PIN
+  // device unlock, payments servers accept WebAuthn credentials for Android N
+  // key so that Android P+ devices can use N key to do the FIDO authentication.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_P) {
     std::move(callback).Run(false);
     return;
   }

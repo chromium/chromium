@@ -17,11 +17,6 @@ BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// When enabled, Android N+ devices will be supported for FIDO authentication.
-BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
-             "AutofillEnableAndroidNKeyForFidoAuthentication",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, buy now pay later (BNPL) in Autofill will be offered through
 // Affirm.
 BASE_FEATURE(kAutofillEnableBuyNowPayLaterForAffirm,
