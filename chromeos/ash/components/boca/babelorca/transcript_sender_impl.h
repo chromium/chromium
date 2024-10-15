@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TRANSCRIPT_SENDER_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TRANSCRIPT_SENDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TRANSCRIPT_SENDER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TRANSCRIPT_SENDER_IMPL_H_
 
 #include <cstddef>
 #include <memory>
@@ -35,14 +35,14 @@ class TachyonRequestDataProvider;
 class TachyonResponse;
 
 // Class to send transcriptions.
-class TranscriptSender {
+class TranscriptSenderImpl {
  public:
   struct Options {
     size_t max_allowed_char = 200;
     size_t max_errors_num = 2;
   };
 
-  TranscriptSender(
+  TranscriptSenderImpl(
       TachyonAuthedClient* authed_client,
       TachyonRequestDataProvider* request_data_provider,
       base::Time init_timestamp,
@@ -50,10 +50,10 @@ class TranscriptSender {
       Options options,
       base::OnceClosure failure_cb);
 
-  TranscriptSender(const TranscriptSender&) = delete;
-  TranscriptSender& operator=(const TranscriptSender&) = delete;
+  TranscriptSenderImpl(const TranscriptSenderImpl&) = delete;
+  TranscriptSenderImpl& operator=(const TranscriptSenderImpl&) = delete;
 
-  ~TranscriptSender();
+  ~TranscriptSenderImpl();
 
   // Returns `true` if will accept sending request, `false` otherwise.
   // Currently, it only rejects sending if max number of errors is reached.
@@ -92,9 +92,9 @@ class TranscriptSender {
   base::OnceClosure failure_cb_;
   size_t errors_num_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  base::WeakPtrFactory<TranscriptSender> weak_ptr_factory{this};
+  base::WeakPtrFactory<TranscriptSenderImpl> weak_ptr_factory{this};
 };
 
 }  // namespace ash::babelorca
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TRANSCRIPT_SENDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TRANSCRIPT_SENDER_IMPL_H_

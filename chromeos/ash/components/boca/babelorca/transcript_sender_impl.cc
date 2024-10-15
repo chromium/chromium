@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/babelorca/transcript_sender.h"
+#include "chromeos/ash/components/boca/babelorca/transcript_sender_impl.h"
 
 #include <cstddef>
 #include <memory>
@@ -86,7 +86,7 @@ std::string CreateRequestString(BabelOrcaMessage message,
 
 }  // namespace
 
-TranscriptSender::TranscriptSender(
+TranscriptSenderImpl::TranscriptSenderImpl(
     TachyonAuthedClient* authed_client,
     TachyonRequestDataProvider* request_data_provider,
     base::Time init_timestamp,
@@ -100,11 +100,11 @@ TranscriptSender::TranscriptSender(
       options_(std::move(options)),
       failure_cb_(std::move(failure_cb)) {}
 
-TranscriptSender::~TranscriptSender() {
+TranscriptSenderImpl::~TranscriptSenderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool TranscriptSender::SendTranscriptionUpdate(
+bool TranscriptSenderImpl::SendTranscriptionUpdate(
     const media::SpeechRecognitionResult& transcript,
     const std::string& language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -121,14 +121,14 @@ bool TranscriptSender::SendTranscriptionUpdate(
                      request_data_provider_->tachyon_token(),
                      request_data_provider_->group_id(),
                      request_data_provider_->sender_email()),
-      base::BindOnce(&TranscriptSender::Send, weak_ptr_factory.GetWeakPtr(),
+      base::BindOnce(&TranscriptSenderImpl::Send, weak_ptr_factory.GetWeakPtr(),
                      /*max_retries=*/transcript.is_final ? 1 : 0));
   // Should be called after `GenerateMessage`.
   UpdateTranscripts(transcript, language);
   return true;
 }
 
-BabelOrcaMessage TranscriptSender::GenerateMessage(
+BabelOrcaMessage TranscriptSenderImpl::GenerateMessage(
     const media::SpeechRecognitionResult& transcript,
     int part_index,
     const std::string& language) {
@@ -172,7 +172,7 @@ BabelOrcaMessage TranscriptSender::GenerateMessage(
   return message;
 }
 
-void TranscriptSender::UpdateTranscripts(
+void TranscriptSenderImpl::UpdateTranscripts(
     const media::SpeechRecognitionResult& transcript,
     const std::string& language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -186,7 +186,7 @@ void TranscriptSender::UpdateTranscripts(
   current_transcript_text_ = "";
 }
 
-void TranscriptSender::Send(int max_retries, std::string request_string) {
+void TranscriptSenderImpl::Send(int max_retries, std::string request_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (request_string.empty()) {
     LOG(ERROR) << "Send request is empty.";
@@ -194,7 +194,7 @@ void TranscriptSender::Send(int max_retries, std::string request_string) {
   }
 
   auto response_callback_wrapper = base::BindOnce(
-      &TranscriptSender::OnSendResponse, weak_ptr_factory.GetWeakPtr());
+      &TranscriptSenderImpl::OnSendResponse, weak_ptr_factory.GetWeakPtr());
   authed_client_->StartAuthedRequestString(
       std::make_unique<RequestDataWrapper>(
           network_traffic_annotation_, kSendMessageUrl, max_retries,
@@ -202,7 +202,7 @@ void TranscriptSender::Send(int max_retries, std::string request_string) {
       std::move(request_string));
 }
 
-void TranscriptSender::OnSendResponse(TachyonResponse response) {
+void TranscriptSenderImpl::OnSendResponse(TachyonResponse response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (response.ok()) {
     errors_num_ = 0;

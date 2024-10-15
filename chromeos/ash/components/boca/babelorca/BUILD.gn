@@ -41,8 +41,8 @@ static_library("babelorca") {
     "transcript_builder.h",
     "transcript_receiver.cc",
     "transcript_receiver.h",
-    "transcript_sender.cc",
-    "transcript_sender.h",
+    "transcript_sender_impl.cc",
+    "transcript_sender_impl.h",
   ]
 
   deps = [
@@ -99,7 +99,7 @@ source_set("unit_tests") {
     "token_manager_impl_unittest.cc",
     "transcript_builder_unittest.cc",
     "transcript_receiver_unittest.cc",
-    "transcript_sender_unittest.cc",
+    "transcript_sender_impl_unittest.cc",
   ]
 
   deps = [

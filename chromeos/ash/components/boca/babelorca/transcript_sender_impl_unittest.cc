@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/babelorca/transcript_sender.h"
+#include "chromeos/ash/components/boca/babelorca/transcript_sender_impl.h"
 
 #include <optional>
 #include <string>
@@ -33,7 +33,7 @@ namespace {
 constexpr char kLanguage[] = "en-US";
 constexpr int64_t kInitTimestampMs = 1724792276909;
 
-struct TranscriptSenderTestCase {
+struct TranscriptSenderImplTestCase {
   std::string test_name;
   std::string transcript1;
   std::string transcript2;
@@ -42,7 +42,8 @@ struct TranscriptSenderTestCase {
   int expected_index;
 };
 
-using TranscriptSenderTest = testing::TestWithParam<TranscriptSenderTestCase>;
+using TranscriptSenderImplTest =
+    testing::TestWithParam<TranscriptSenderImplTestCase>;
 
 void VerifyTranscriptPartProto(const TranscriptPart& transcript_part,
                                int transcript_id,
@@ -57,14 +58,14 @@ void VerifyTranscriptPartProto(const TranscriptPart& transcript_part,
   EXPECT_EQ(transcript_part.language(), language);
 }
 
-TEST(TranscriptSenderTest, SendOneMessageLongerThanMaxAllowed) {
+TEST(TranscriptSenderImplTest, SendOneMessageLongerThanMaxAllowed) {
   base::test::TaskEnvironment task_environment;
   const int kMaxAllowedChar = 5;
   const std::string kTranscriptText = "hello transcription";
   FakeTachyonAuthedClient authed_client;
   FakeTachyonRequestDataProvider request_data_provider;
   base::test::TestFuture<void> failure_future;
-  TranscriptSender sender(
+  TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
       TRAFFIC_ANNOTATION_FOR_TESTS, {.max_allowed_char = kMaxAllowedChar},
@@ -119,7 +120,7 @@ TEST(TranscriptSenderTest, SendOneMessageLongerThanMaxAllowed) {
                             kLanguage);
 }
 
-TEST(TranscriptSenderTest, SendNewTranscript) {
+TEST(TranscriptSenderImplTest, SendNewTranscript) {
   base::test::TaskEnvironment task_environment;
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
@@ -128,7 +129,7 @@ TEST(TranscriptSenderTest, SendNewTranscript) {
   std::string request_string2;
   FakeTachyonRequestDataProvider request_data_provider;
   base::test::TestFuture<void> failure_future;
-  TranscriptSender sender(
+  TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
       TRAFFIC_ANNOTATION_FOR_TESTS, {.max_allowed_char = kMaxAllowedChar},
@@ -181,14 +182,14 @@ TEST(TranscriptSenderTest, SendNewTranscript) {
   EXPECT_EQ(message2.init_timestamp_ms(), kInitTimestampMs);
 }
 
-TEST(TranscriptSenderTest, RejectSendingAndReplyOnMaxErrorsReached) {
+TEST(TranscriptSenderImplTest, RejectSendingAndReplyOnMaxErrorsReached) {
   base::test::TaskEnvironment task_environment;
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
   FakeTachyonAuthedClient authed_client;
   FakeTachyonRequestDataProvider request_data_provider;
   base::test::TestFuture<void> failure_future;
-  TranscriptSender sender(
+  TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
       TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -216,14 +217,14 @@ TEST(TranscriptSenderTest, RejectSendingAndReplyOnMaxErrorsReached) {
   EXPECT_TRUE(failure_future.IsReady());
 }
 
-TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
+TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
   base::test::TaskEnvironment task_environment;
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
   FakeTachyonAuthedClient authed_client;
   FakeTachyonRequestDataProvider request_data_provider;
   base::test::TestFuture<void> failure_future;
-  TranscriptSender sender(
+  TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
       TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -259,14 +260,14 @@ TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
   EXPECT_FALSE(failure_future.IsReady());
 }
 
-TEST(TranscriptSenderTest, InflightRequestsAreHandledOnFailure) {
+TEST(TranscriptSenderImplTest, InflightRequestsAreHandledOnFailure) {
   base::test::TaskEnvironment task_environment;
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
   FakeTachyonAuthedClient authed_client;
   FakeTachyonRequestDataProvider request_data_provider;
   base::test::TestFuture<void> failure_future;
-  TranscriptSender sender(
+  TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
       TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -309,12 +310,12 @@ TEST(TranscriptSenderTest, InflightRequestsAreHandledOnFailure) {
   EXPECT_FALSE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
 }
 
-TEST_P(TranscriptSenderTest, SendTwoMessages) {
+TEST_P(TranscriptSenderImplTest, SendTwoMessages) {
   base::test::TaskEnvironment task_environment;
   FakeTachyonAuthedClient authed_client;
   InboxSendRequest sent_request2;
   FakeTachyonRequestDataProvider request_data_provider;
-  TranscriptSender sender(
+  TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
       TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -340,15 +341,14 @@ TEST_P(TranscriptSenderTest, SendTwoMessages) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    TranscriptSenderTestSuiteInstantiation,
-    TranscriptSenderTest,
-    testing::ValuesIn<TranscriptSenderTestCase>({
+    TranscriptSenderImplTestSuiteInstantiation,
+    TranscriptSenderImplTest,
+    testing::ValuesIn<TranscriptSenderImplTestCase>({
         {"DiffShorterThanMaxAllowed", "hello", "hello world", 7, "o world", 4},
         {"DiffLongerThanMaxAllowed", "hello", "hello world", 1, " world", 5},
     }),
-    [](const testing::TestParamInfo<TranscriptSenderTest::ParamType>& info) {
-      return info.param.test_name;
-    });
+    [](const testing::TestParamInfo<TranscriptSenderImplTest::ParamType>&
+           info) { return info.param.test_name; });
 
 }  // namespace
 }  // namespace ash::babelorca
