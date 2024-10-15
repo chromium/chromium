@@ -327,6 +327,9 @@ void RuntimeApplicationServiceImpl::HandlePostMessage(
 CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  params->renderer_type = mojom::RendererType::MOJO_RENDERER;
+  params->handle_inner_contents = true;
+  params->session_id = runtime_application_->GetCastSessionId();
   params->use_media_blocker = true;
   params->keep_screen_on = false;
   params->gesture_priority = mojom::GesturePriority::MAIN_ACTIVITY;
