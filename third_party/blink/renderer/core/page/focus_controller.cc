@@ -203,13 +203,33 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     DCHECK(reading_flow_container.GetLayoutBox());
     DCHECK(!reading_flow_container_);
     reading_flow_container_ = reading_flow_container;
-    auto* children = MakeGarbageCollected<HeapVector<Member<Element>>>(
-        reading_flow_container_->GetLayoutBox()->ReadingFlowElements());
+    auto* children = MakeGarbageCollected<HeapVector<Member<Element>>>();
     // Layout box only includes elements that are in the reading flow
-    // container's layout. If a child is not in the sorted ReadingFlowElements,
-    // we add them after in DOM order.
+    // container's layout. For each reading flow item, check if itself or its
+    // ancestor should be included in this scope instead, in reading flow order.
+    for (Element* reading_flow_item :
+         reading_flow_container_->GetLayoutBox()->ReadingFlowElements()) {
+      do {
+        if (IsOwnedByRoot(*reading_flow_item)) {
+          // TODO(dizhangg) this check is O(n^2)
+          if (!children->Contains(reading_flow_item)) {
+            children->push_back(reading_flow_item);
+          }
+          break;
+        }
+        reading_flow_item =
+            FlatTreeTraversal::ParentElement(*reading_flow_item);
+        // If parent is reading flow container, then we have traversed all
+        // potential parents and there is no reading flow item to add.
+      } while (reading_flow_item &&
+               reading_flow_item != reading_flow_container_);
+    }
+    // If a child is not in the sorted children, we add it after in DOM order.
+    // This includes elements with computed style display:contents,
+    // position:absolute, and position:fixed.
     for (Element& child : ElementTraversal::ChildrenOf(*root_)) {
-      if (!children->Contains(child)) {
+      // TODO(dizhangg) this check is O(n^2)
+      if (!children->Contains(child) && IsOwnedByRoot(child)) {
 #if DCHECK_IS_ON()
         DCHECK(ShouldBeAtEndOfReadingFlow(child));
 #endif
@@ -223,9 +243,6 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
       // Pseudo elements in reading-flow are not focusable and should not be
       // included in the elements to traverse.
       if (child->IsPseudoElement()) {
-        continue;
-      }
-      if (!IsOwnedByRoot(*child)) {
         continue;
       }
       if (!prev_element) {

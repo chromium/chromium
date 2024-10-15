@@ -5513,13 +5513,14 @@ void AXNodeObject::AddNodeChildren() {
   if (IsA<HTMLFrameElementBase>(GetNode()))
     return;
 
-  // If node is ReadingFlowContainer or if it is display contents and its layout
-  // parent is ReadingFlowContainer, then we should follow reading-flow order.
-  // In this case, the same list of children will be added as in the simple
+  // If node is a ReadingFlowContainer or if its closest layout parent is
+  // ReadingFlowContainer (i.e. node has display: contents), then we should
+  // follow reading-flow order. The same children will be added as in the simple
   // case using only LayoutTreeBuilderTraversal children, with no additions or
   // removals, but in the order defined in CSS.
-  // TODO(crbug.com/346979043): If display: contents is a reading flow item,
-  // this order will be different from the reading flow in focus navigation.
+  // Note that this is only used for the case where the element is a
+  // reading-flow container, and not for the case where the element is a
+  // reading-flow item.
   Element* element = GetElement();
   Element* closest_layout_parent =
       element && element->HasDisplayContentsStyle()
@@ -5528,24 +5529,30 @@ void AXNodeObject::AddNodeChildren() {
   if (closest_layout_parent &&
       closest_layout_parent->IsReadingFlowContainer()) {
     HeapHashSet<Member<Node>> ax_children_added;
-    // Add all reading order items first, in the correct order.
-    for (Element* reading_item :
+    // Add all reading flow items first, in the reading flow order.
+    for (Element* reading_flow_item :
          closest_layout_parent->GetLayoutBox()->ReadingFlowElements()) {
-      // Filter to only add node child if it is a direct child of current
-      // element.
-      if (LayoutTreeBuilderTraversal::Parent(*reading_item) == element) {
-        AddNodeChild(reading_item);
-        ax_children_added.insert(reading_item);
-      }
+      // reading_flow_item or its parent (for example, display: contents) might
+      // be a child of element. Loop the parents and only add the node if its
+      // LayoutTreeBuilderTraversal::Parent is this element.
+      do {
+        auto* parent = LayoutTreeBuilderTraversal::Parent(*reading_flow_item);
+        if (parent == element) {
+          if (ax_children_added.insert(reading_flow_item).is_new_entry) {
+            AddNodeChild(reading_flow_item);
+          }
+          break;
+        }
+        reading_flow_item = DynamicTo<Element>(parent);
+        // If parent is the reading flow container, then we have traversed all
+        // potential parents and there is no reading flow item to add.
+      } while (reading_flow_item && reading_flow_item != closest_layout_parent);
     }
-    // Add all non-reading order items at the end of the reading flow.
+    // Add all non-reading flow items at the end of the reading flow.
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-      if (!ax_children_added.Contains(child)) {
+      if (ax_children_added.insert(child).is_new_entry) {
         AddNodeChild(child);
-#if DCHECK_IS_ON()
-        ax_children_added.insert(child);
-#endif
       }
     }
 #if DCHECK_IS_ON()
