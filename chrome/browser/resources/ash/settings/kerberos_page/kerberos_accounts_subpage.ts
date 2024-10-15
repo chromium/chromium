@@ -18,21 +18,24 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../settings_shared.css.js';
 import './kerberos_add_account_dialog.js';
 
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosErrorType} from './kerberos_accounts_browser_proxy.js';
+import type {KerberosAccount, KerberosAccountsBrowserProxy} from './kerberos_accounts_browser_proxy.js';
+import {KerberosAccountsBrowserProxyImpl, KerberosErrorType} from './kerberos_accounts_browser_proxy.js';
 import {getTemplate} from './kerberos_accounts_subpage.html.js';
 
 const SettingsKerberosAccountsSubpageElementBase = DeepLinkingMixin(
