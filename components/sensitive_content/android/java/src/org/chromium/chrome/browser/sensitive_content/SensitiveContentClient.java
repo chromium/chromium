@@ -12,7 +12,10 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
@@ -22,6 +25,7 @@ import java.lang.ref.WeakReference;
  * Java counterpart of the `AndroidSensitiveContentClient`. Used to retrieve the container view and
  * set its content sensitivity.
  */
+@JNINamespace("sensitive_content")
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserver {
     /** Used to update the content sensitivity of the current container view. */
@@ -61,6 +65,18 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
      */
     private final ContentSensitivitySetter mContentSensitivitySetter;
 
+    private final ObserverList<Observer> mObservers;
+
+    /**
+     * Retrieves the client from {@link WebContents}, by calling the native client. The native
+     * client owns the java client, and the native client has its lifetime tied to the {@link
+     * WebContents}.
+     */
+    public static SensitiveContentClient fromWebContents(WebContents webContents) {
+        return SensitiveContentClientJni.get()
+                .getJavaSensitiveContentClientFromWebContents(webContents);
+    }
+
     @CalledByNative
     private SensitiveContentClient(WebContents webContents) {
         this(
@@ -83,6 +99,7 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
             mLastViewAndroidDelegate.get().addObserver(this);
         }
         mContentSensitivitySetter = contentSensitivitySetter;
+        mObservers = new ObserverList<Observer>();
     }
 
     @CalledByNative
@@ -90,6 +107,7 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
         if (mLastViewAndroidDelegate.get() != null) {
             mLastViewAndroidDelegate.get().removeObserver(this);
         }
+        mObservers.clear();
     }
 
     /**
@@ -113,8 +131,6 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
     @CalledByNative
     @VisibleForTesting
     void setContentSensitivity(boolean contentIsSensitive) {
-        mContentIsSensitive = contentIsSensitive;
-
         ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
         if (mLastViewAndroidDelegate.get() != viewAndroidDelegate) {
             if (mLastViewAndroidDelegate.get() != null) {
@@ -134,6 +150,56 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
             return;
         }
 
-        mContentSensitivitySetter.setContentSensitivity(containerView, mContentIsSensitive);
+        mContentSensitivitySetter.setContentSensitivity(containerView, contentIsSensitive);
+        if (mContentIsSensitive != contentIsSensitive) {
+            mContentIsSensitive = contentIsSensitive;
+            notifyObserversAboutSensitivityChange(contentIsSensitive);
+        }
+    }
+
+    /** Observes changes made by the {@link SensitiveContentClient}. */
+    public static interface Observer {
+        /**
+         * Called when the content sensitivity changed.
+         *
+         * @param contentIsSensitive True if the content is sensitive.
+         */
+        void onContentSensitivityChanged(boolean contentIsSensitive);
+    }
+
+    /**
+     * Add an observer to the list of observers.
+     *
+     * @param observer The {@link Observer} instance to add.
+     */
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Remove an observer from the list of observers.
+     *
+     * @param observer The {@link Observer} instance to remove.
+     */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    /**
+     * Notifies the observers about the sensitivity change.
+     *
+     * @param contentIsSensitive True if the content is sensitive.
+     */
+    private void notifyObserversAboutSensitivityChange(boolean contentIsSensitive) {
+        for (Observer observer : mObservers) {
+            observer.onContentSensitivityChanged(contentIsSensitive);
+        }
+    }
+
+    @NativeMethods
+    @VisibleForTesting
+    public interface Natives {
+        SensitiveContentClient getJavaSensitiveContentClientFromWebContents(
+                WebContents webContents);
     }
 }

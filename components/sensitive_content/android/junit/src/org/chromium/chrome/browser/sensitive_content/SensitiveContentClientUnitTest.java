@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.view.ViewGroup;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +39,7 @@ public class SensitiveContentClientUnitTest {
     @Mock private ViewGroup mSecondContainerView;
     @Mock private ViewGroup mThirdContainerView;
     @Mock private SensitiveContentClient.ContentSensitivitySetter mContentSensitivitySetter;
+    @Mock private SensitiveContentClient.Observer mObserver;
 
     private SensitiveContentClient mClient;
 
@@ -51,6 +53,12 @@ public class SensitiveContentClientUnitTest {
                             return mViewAndroidDelegate;
                         });
         mClient = new SensitiveContentClient(mWebContents, mContentSensitivitySetter);
+        mClient.addObserver(mObserver);
+    }
+
+    @After
+    public void tearDown() {
+        mClient.removeObserver(mObserver);
     }
 
     @Test
@@ -84,5 +92,13 @@ public class SensitiveContentClientUnitTest {
         verify(mContentSensitivitySetter, never()).setContentSensitivity(any(), eq(false));
         verify(mContentSensitivitySetter, never())
                 .setContentSensitivity(eq(mFirstContainerView), anyBoolean());
+    }
+
+    @Test
+    public void sensitiveContent_observersNotifiedOnSensitivityChange() {
+        mClient.setContentSensitivity(/* contentIsSensitive= */ true);
+        verify(mObserver).onContentSensitivityChanged(true);
+        mClient.setContentSensitivity(/* contentIsSensitive= */ false);
+        verify(mObserver).onContentSensitivityChanged(false);
     }
 }

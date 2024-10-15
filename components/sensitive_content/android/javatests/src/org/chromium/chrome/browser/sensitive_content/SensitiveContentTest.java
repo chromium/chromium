@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.sensitive_content;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import android.os.Build;
@@ -11,12 +15,12 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -35,6 +39,20 @@ import org.chromium.net.test.EmbeddedTestServer;
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SensitiveContentTest {
+    private static class TestSensitiveContentClientObserver
+            implements SensitiveContentClient.Observer {
+        private boolean mContentIsSensitive;
+
+        @Override
+        public void onContentSensitivityChanged(boolean contentIsSensitive) {
+            mContentIsSensitive = contentIsSensitive;
+        }
+
+        public boolean getContentSensitivity() {
+            return mContentIsSensitive;
+        }
+    }
+
     public static final String SENSITIVE_FILE =
             "/chrome/test/data/autofill/autofill_creditcard_form_with_autocomplete_attributes.html";
     public static final String NOT_SENSITIVE_FILE =
@@ -57,8 +75,8 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     public void testTabHasSensitiveContentWhileSensitiveFieldsArePresent() throws Exception {
-        Assert.assertEquals(
-                "Initially, the does not have sensitive content",
+        assertEquals(
+                "Initially, the tab does not have sensitive content",
                 mTabContentView.getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_AUTO);
 
@@ -73,5 +91,47 @@ public class SensitiveContentTest {
                 () ->
                         mTabContentView.getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+    }
+
+    @Test
+    @MediumTest
+    public void testSensitiveContentClientObserver() throws Exception {
+        assertEquals(
+                "Initially, the tab does not have sensitive content",
+                mTabContentView.getContentSensitivity(),
+                View.CONTENT_SENSITIVITY_AUTO);
+
+        final SensitiveContentClient client =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                SensitiveContentClient.fromWebContents(
+                                        sActivityTestRule.getWebContents()));
+        final TestSensitiveContentClientObserver observer =
+                new TestSensitiveContentClientObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> client.addObserver(observer));
+
+        assertFalse(observer.getContentSensitivity());
+        sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThread(
+                () ->
+                        mTabContentView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+        assertTrue(observer.getContentSensitivity());
+
+        sActivityTestRule.loadUrl(mTestServer.getURL(NOT_SENSITIVE_FILE));
+        pollUiThread(
+                () ->
+                        mTabContentView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        assertFalse(observer.getContentSensitivity());
+
+        // After observation is removed, the observer will not be notified anymore.
+        ThreadUtils.runOnUiThreadBlocking(() -> client.removeObserver(observer));
+        sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThread(
+                () ->
+                        mTabContentView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+        assertFalse(observer.getContentSensitivity());
     }
 }

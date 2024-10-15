@@ -13,6 +13,8 @@
 
 namespace sensitive_content {
 
+using base::android::ScopedJavaLocalRef;
+
 AndroidSensitiveContentClient::AndroidSensitiveContentClient(
     content::WebContents* web_contents,
     std::string histogram_prefix)
@@ -21,24 +23,40 @@ AndroidSensitiveContentClient::AndroidSensitiveContentClient(
       manager_(web_contents, this),
       histogram_prefix_(std::move(histogram_prefix)) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_sensitive_contents_client_ = Java_SensitiveContentClient_Constructor(
+  java_sensitive_content_client_ = Java_SensitiveContentClient_Constructor(
       env, web_contents->GetJavaWebContents());
 }
 
 AndroidSensitiveContentClient::~AndroidSensitiveContentClient() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SensitiveContentClient_destroy(env, java_sensitive_contents_client_);
+  Java_SensitiveContentClient_destroy(env, java_sensitive_content_client_);
+}
+
+base::android::JavaRef<jobject>&
+AndroidSensitiveContentClient::GetJavaObject() {
+  return java_sensitive_content_client_;
 }
 
 void AndroidSensitiveContentClient::SetContentSensitivity(
     bool content_is_sensitive) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SensitiveContentClient_setContentSensitivity(
-      env, java_sensitive_contents_client_, content_is_sensitive);
+      env, java_sensitive_content_client_, content_is_sensitive);
 }
 
 std::string_view AndroidSensitiveContentClient::GetHistogramPrefix() {
   return histogram_prefix_;
+}
+
+static ScopedJavaLocalRef<jobject>
+JNI_SensitiveContentClient_GetJavaSensitiveContentClientFromWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_web_contents) {
+  AndroidSensitiveContentClient* android_sensitive_content_client =
+      AndroidSensitiveContentClient::FromWebContents(
+          content::WebContents::FromJavaWebContents(java_web_contents));
+  return ScopedJavaLocalRef<jobject>(
+      android_sensitive_content_client->GetJavaObject());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AndroidSensitiveContentClient);
