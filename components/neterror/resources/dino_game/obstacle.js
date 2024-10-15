@@ -36,7 +36,7 @@ export class Obstacle {
     this.gap = 0;
     this.speedOffset = 0;
     this.altGameModeActive = opt_isAltGameMode;
-    this.imageSprite = this.typeConfig.type == 'COLLECTABLE' ?
+    this.imageSprite = this.typeConfig.type === 'COLLECTABLE' ?
         Runner.altCommonImageSprite :
         this.altGameModeActive ? Runner.altGameImageSprite :
                                  Runner.imageSprite;

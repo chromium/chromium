@@ -87,7 +87,7 @@ export class Trex {
         [spriteDefinition.RUNNING_1.x, spriteDefinition.RUNNING_2.x];
     Trex.animFrames.CRASHED.frames = [spriteDefinition.CRASHED.x];
 
-    if (typeof spriteDefinition.JUMPING.x == 'object') {
+    if (typeof spriteDefinition.JUMPING.x === 'object') {
       Trex.animFrames.JUMPING.frames = spriteDefinition.JUMPING.x;
     } else {
       Trex.animFrames.JUMPING.frames = [spriteDefinition.JUMPING.x];
@@ -187,7 +187,7 @@ export class Trex {
     // Update the frame position.
     if (!this.flashing && this.timer >= this.msPerFrame) {
       this.currentFrame =
-          this.currentFrame == this.currentAnimFrames.length - 1 ?
+          this.currentFrame === this.currentAnimFrames.length - 1 ?
           0 :
           this.currentFrame + 1;
       this.timer = 0;
@@ -214,7 +214,7 @@ export class Trex {
     let sourceHeight = this.config.HEIGHT;
     const outputHeight = sourceHeight;
     const outputWidth =
-        this.altGameModeEnabled && this.status == Trex.status.CRASHED ?
+        this.altGameModeEnabled && this.status === Trex.status.CRASHED ?
         this.config.WIDTH_CRASHED :
         this.config.WIDTH;
 
@@ -224,7 +224,7 @@ export class Trex {
     if (this.altGameModeEnabled) {
       if (this.jumping && this.status !== Trex.status.CRASHED) {
         sourceWidth = this.config.WIDTH_JUMP;
-      } else if (this.status == Trex.status.CRASHED) {
+      } else if (this.status === Trex.status.CRASHED) {
         sourceWidth = this.config.WIDTH_CRASHED;
       }
     }

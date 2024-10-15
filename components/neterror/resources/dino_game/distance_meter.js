@@ -159,7 +159,7 @@ export class DistanceMeter {
       distance = this.getActualDistance(distance);
       // Score has gone beyond the initial digit count.
       if (distance > this.maxScore &&
-          this.maxScoreUnits == this.config.MAX_DISTANCE_UNITS) {
+          this.maxScoreUnits === this.config.MAX_DISTANCE_UNITS) {
         this.maxScoreUnits++;
         this.maxScore = parseInt(this.maxScore + '9', 10);
       } else {

@@ -80,7 +80,7 @@ export class Horizon {
         Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
 
         // Convert variable y position obstacles to fixed.
-        if (typeof (Obstacle.types[i].yPos) == 'object') {
+        if (typeof (Obstacle.types[i].yPos) === 'object') {
           Obstacle.types[i].yPos = Obstacle.types[i].yPos[0];
           Obstacle.types[i].yPosMobile = Obstacle.types[i].yPos[0];
         }
@@ -248,7 +248,7 @@ export class Horizon {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-        Obstacle.types[Obstacle.types.length - 1].type != 'COLLECTABLE' ||
+        Obstacle.types[Obstacle.types.length - 1].type !== 'COLLECTABLE' ||
             (Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
              this.altGameModeActive) ?
         Obstacle.types.length - 1 :
@@ -336,7 +336,7 @@ export class Horizon {
       let type = backgroundElTypes[index];
 
       // Add variation if available.
-      while (type == this.lastEl && backgroundElTypes.length > 1) {
+      while (type === this.lastEl && backgroundElTypes.length > 1) {
         index = getRandomNum(0, backgroundElTypes.length - 1);
         type = backgroundElTypes[index];
       }

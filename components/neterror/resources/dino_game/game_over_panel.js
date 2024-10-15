@@ -187,7 +187,7 @@ export class GameOverPanel {
     this.flashTimer += deltaTime;
 
     // Restart Button
-    if (this.currentFrame == 0 &&
+    if (this.currentFrame === 0 &&
         this.animTimer > GameOverPanel.LOGO_PAUSE_DURATION) {
       this.animTimer = 0;
       this.currentFrame++;
@@ -201,7 +201,7 @@ export class GameOverPanel {
       }
     } else if (
         !this.altGameModeActive &&
-        this.currentFrame == GameOverPanel.animConfig.frames.length) {
+        this.currentFrame === GameOverPanel.animConfig.frames.length) {
       this.reset();
       return;
     }
