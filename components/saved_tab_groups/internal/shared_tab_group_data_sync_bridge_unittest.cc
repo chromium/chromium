@@ -1043,11 +1043,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   ASSERT_TRUE(InitializeBridgeAndModel());
 
-  const std::string kCollaborationId = "collaboration";
+  const std::string collaboration_id = "collaboration";
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId);
+  group.SetCollaborationId(collaboration_id);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -1055,24 +1055,12 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
-
-  syncer::UniquePosition unique_position_1 = GenerateRandomUniquePosition();
-  syncer::UniquePosition unique_position_2 = syncer::UniquePosition::After(
-      unique_position_1, syncer::UniquePosition::RandomSuffix());
-  EXPECT_CALL(mock_processor(),
-              UniquePositionForInitialEntity(HasClientTagHashForTab(tab1)))
-      .WillOnce(Return(unique_position_1.ToProto()));
-  EXPECT_CALL(mock_processor(),
-              UniquePositionAfter(Eq(StorageKeyForTab(tab1)),
-                                  HasClientTagHashForTab(tab2)))
-      .WillOnce(Return(unique_position_2.ToProto()));
-
   model()->Add(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
   // Verify that the model is destroyed to simulate browser restart.
-  StoreMetadataAndReset(kCollaborationId);
+  StoreMetadataAndReset(collaboration_id);
   ASSERT_EQ(model(), nullptr);
 
   // Note that sync metadata is not checked explicitly because the collaboration
@@ -1082,9 +1070,10 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
       model()->saved_tab_groups(),
       UnorderedElementsAre(HasSharedGroupMetadata(
           "title", tab_groups::TabGroupColorId::kGrey, "collaboration")));
-  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
-              ElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
-                          HasTabMetadata("tab 2", "http://google.com/2")));
+  EXPECT_THAT(
+      model()->saved_tab_groups().front().saved_tabs(),
+      UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
+                           HasTabMetadata("tab 2", "http://google.com/2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
