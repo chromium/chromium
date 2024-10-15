@@ -17,7 +17,8 @@ const CGFloat kImageContainerSize = 26;
 const CGFloat kFaviconCornerRadius = 4;
 const CGFloat kLabelFontSize = 11;
 
-NSString* const kGridBackgroundColor = @"grid_background_color";
+NSString* const kTabGroupFaviconsGridBackgroundColor =
+    @"tab_group_favicons_grid_background_color";
 
 using LayoutSides::kBottom;
 using LayoutSides::kLeading;
@@ -41,17 +42,25 @@ using LayoutSides::kTrailing;
 
 @implementation TabGroupFaviconsGrid {
   UIView* _innerSquircle;
+
+  UIView* _imageContainerView1;
+  UIView* _imageContainerView2;
+  UIView* _imageContainerView3;
+  UIView* _imageContainerView4;
+
   UIImageView* _imageView1;
   UIImageView* _imageView2;
   UIImageView* _imageView3;
   UIImageView* _imageView4;
+
   UILabel* _label;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+    self.backgroundColor =
+        [UIColor colorNamed:kTabGroupFaviconsGridBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
 
     _innerSquircle = [[UIView alloc] init];
@@ -62,20 +71,20 @@ using LayoutSides::kTrailing;
     [self addSubview:_innerSquircle];
 
     _imageView1 = [self makeFaviconImageView];
-    UIView* imageViewContainer1 = [self wrappedImageView:_imageView1];
-    [_innerSquircle addSubview:imageViewContainer1];
+    _imageContainerView1 = [self wrappedImageView:_imageView1];
+    [_innerSquircle addSubview:_imageContainerView1];
 
     _imageView2 = [self makeFaviconImageView];
-    UIView* imageViewContainer2 = [self wrappedImageView:_imageView2];
-    [_innerSquircle addSubview:imageViewContainer2];
+    _imageContainerView2 = [self wrappedImageView:_imageView2];
+    [_innerSquircle addSubview:_imageContainerView2];
 
     _imageView3 = [self makeFaviconImageView];
-    UIView* imageViewContainer3 = [self wrappedImageView:_imageView3];
-    [_innerSquircle addSubview:imageViewContainer3];
+    _imageContainerView3 = [self wrappedImageView:_imageView3];
+    [_innerSquircle addSubview:_imageContainerView3];
 
     _imageView4 = [self makeFaviconImageView];
-    UIView* imageViewContainer4 = [self wrappedImageView:_imageView4];
-    [_innerSquircle addSubview:imageViewContainer4];
+    _imageContainerView4 = [self wrappedImageView:_imageView4];
+    [_innerSquircle addSubview:_imageContainerView4];
 
     _label = [[UILabel alloc] init];
     _label.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -85,27 +94,27 @@ using LayoutSides::kTrailing;
     [_innerSquircle addSubview:_label];
 
     AddSameConstraintsWithInset(_innerSquircle, self, kSpacing);
-    AddSameConstraintsToSides(imageViewContainer1, _innerSquircle,
+    AddSameConstraintsToSides(_imageContainerView1, _innerSquircle,
                               kTop | kLeading);
-    AddSameConstraintsToSides(imageViewContainer2, _innerSquircle,
+    AddSameConstraintsToSides(_imageContainerView2, _innerSquircle,
                               kTop | kTrailing);
-    AddSameConstraintsToSides(imageViewContainer3, _innerSquircle,
+    AddSameConstraintsToSides(_imageContainerView3, _innerSquircle,
                               kBottom | kLeading);
-    AddSameConstraintsToSides(imageViewContainer4, _innerSquircle,
+    AddSameConstraintsToSides(_imageContainerView4, _innerSquircle,
                               kBottom | kTrailing);
     [NSLayoutConstraint activateConstraints:@[
       // Add the constraints between image view containers.
-      [imageViewContainer2.leadingAnchor
-          constraintEqualToAnchor:imageViewContainer1.trailingAnchor
+      [_imageContainerView2.leadingAnchor
+          constraintEqualToAnchor:_imageContainerView1.trailingAnchor
                          constant:kSpacing],
-      [imageViewContainer3.topAnchor
-          constraintEqualToAnchor:imageViewContainer1.bottomAnchor
+      [_imageContainerView4.topAnchor
+          constraintEqualToAnchor:_imageContainerView1.bottomAnchor
                          constant:kSpacing],
-      [imageViewContainer4.leadingAnchor
-          constraintEqualToAnchor:imageViewContainer3.trailingAnchor
+      [_imageContainerView4.leadingAnchor
+          constraintEqualToAnchor:_imageContainerView3.trailingAnchor
                          constant:kSpacing],
     ]];
-    AddSameConstraints(_label, imageViewContainer4);
+    AddSameConstraints(_label, _imageContainerView4);
   }
   return self;
 }
@@ -139,6 +148,8 @@ using LayoutSides::kTrailing;
 
 - (void)setFavicon1:(UIImage*)favicon1 {
   _imageView1.image = favicon1;
+  [self updateContainerViewBackgroundColor:_imageContainerView1
+                                     empty:favicon1 == nil];
 }
 
 - (UIImage*)favicon2 {
@@ -147,6 +158,8 @@ using LayoutSides::kTrailing;
 
 - (void)setFavicon2:(UIImage*)favicon2 {
   _imageView2.image = favicon2;
+  [self updateContainerViewBackgroundColor:_imageContainerView2
+                                     empty:favicon2 == nil];
 }
 
 - (UIImage*)favicon3 {
@@ -155,6 +168,8 @@ using LayoutSides::kTrailing;
 
 - (void)setFavicon3:(UIImage*)favicon3 {
   _imageView3.image = favicon3;
+  [self updateContainerViewBackgroundColor:_imageContainerView3
+                                     empty:favicon3 == nil];
 }
 
 - (UIImage*)favicon4 {
@@ -163,6 +178,11 @@ using LayoutSides::kTrailing;
 
 - (void)setFavicon4:(UIImage*)favicon4 {
   _imageView4.image = favicon4;
+
+  // If there are more than 4 tabs, the `_imageContainerView4` will display the
+  // total number of saved tabs.
+  BOOL empty = (favicon4 == nil) && (_numberOfTabs < 5);
+  [self updateContainerViewBackgroundColor:_imageContainerView4 empty:empty];
 }
 
 #pragma mark Private
@@ -179,13 +199,22 @@ using LayoutSides::kTrailing;
 // Wraps the image view in a colored rounded rect.
 - (UIView*)wrappedImageView:(UIImageView*)imageView {
   UIView* container = [[UIView alloc] init];
-  container.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  container.backgroundColor =
+      [UIColor colorNamed:kTabGroupFaviconsGridBackgroundColor];
   container.layer.cornerRadius = kFaviconCornerRadius;
   container.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:imageView];
   AddSquareConstraints(container, kImageContainerSize);
   AddSameCenterConstraints(imageView, container);
   return container;
+}
+
+// Updates the `containerView` background color according to the `empty` state.
+- (void)updateContainerViewBackgroundColor:(UIView*)containerView
+                                     empty:(BOOL)empty {
+  containerView.backgroundColor =
+      empty ? [UIColor colorNamed:kTabGroupFaviconsGridBackgroundColor]
+            : [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
 @end

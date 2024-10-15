@@ -80,8 +80,12 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
   UIImage* fallback_image =
       DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
 
-  // Update the 4 favicons.
-  for (int index = 0; index < std::min(4, saved_tabs_count); index++) {
+  // Display up to 4 favicons. If there are more than 4 saved tabs,
+  // the last slot will display the total number of saved tabs.
+  int end = saved_tabs_count > 4 ? 3 : saved_tabs_count;
+
+  // Update the favicons.
+  for (int index = 0; index < end; index++) {
     __block UIImage* favicon;
     favicon = fallback_image;
     const auto saved_tab = saved_tabs[index];
@@ -90,7 +94,7 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
           if (!weak_token) {
             return;
           }
-          if (attributes.usesDefaultImage) {
+          if (attributes.usesDefaultImage || !attributes.faviconImage) {
             UpdateFaviconsGrid(favicons_grid, favicon, index);
           } else {
             UpdateFaviconsGrid(favicons_grid, attributes.faviconImage, index);
