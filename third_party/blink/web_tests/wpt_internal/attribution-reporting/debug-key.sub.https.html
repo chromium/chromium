@@ -1,14 +1,9 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name="variant" content="?input=valid_cookie">
-<meta name="variant" content="?input=valid_cookie&source_only">
-<meta name="variant" content="?input=valid_cookie&trigger_only">
-<meta name="variant" content="?input=missing_cookie">
-<meta name="variant" content="?input=cookie_without_secure">
-<meta name="variant" content="?input=cookie_without_httponly">
-<meta name="variant" content="?input=cookie_without_samesite">
-<meta name="variant" content="?input=cookie_with_narrow_path">
+<meta name="variant" content="?input=valid_field">
+<meta name="variant" content="?input=valid_field&source_only">
+<meta name="variant" content="?input=valid_field&trigger_only">
 <meta name="variant" content="?input=field_with_wrong_type">
 <meta name="variant" content="?input=field_with_invalid_format">
 <script src="/resources/testharness.js"></script>
@@ -26,7 +21,6 @@ attribution_reporting_promise_test(async t => {
 
   registerAttributionSrcByImg(createRedirectChain([
     {
-      cookie: inputJSON.cookie,
       source: {
         debug_key: forTriggerOnly ? undefined : inputJSON.debug_key,
         destination: 'https://{{host}}',

@@ -2443,7 +2443,6 @@ test("content_unittests") {
     "../browser/attribution_reporting/aggregatable_debug_rate_limit_table_unittest.cc",
     "../browser/attribution_reporting/aggregatable_debug_report_unittest.cc",
     "../browser/attribution_reporting/attribution_aggregatable_report_golden_unittest.cc",
-    "../browser/attribution_reporting/attribution_cookie_checker_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_data_host_manager_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_debug_report_unittest.cc",
     "../browser/attribution_reporting/attribution_host_unittest.cc",

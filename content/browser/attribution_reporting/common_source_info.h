@@ -54,6 +54,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   attribution_reporting::mojom::SourceType source_type_;
+  // TODO(crbug.com/369506940): Rename this to `cookie_based_debug_allowed_`.
   bool debug_cookie_set_;
 };
 

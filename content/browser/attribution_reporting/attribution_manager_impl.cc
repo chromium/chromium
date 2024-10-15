@@ -53,8 +53,6 @@
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -611,7 +609,6 @@ AttributionManagerImpl::CreateForTesting(
     size_t max_pending_events,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionResolverDelegate> resolver_delegate,
-    std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionOsLevelManager> os_level_manager,
     StoragePartitionImpl* storage_partition,
@@ -619,8 +616,8 @@ AttributionManagerImpl::CreateForTesting(
   return base::WrapUnique(new AttributionManagerImpl(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(resolver_delegate),
-      std::move(cookie_checker), std::move(report_sender),
-      std::move(os_level_manager), std::move(resolver_task_runner),
+      std::move(report_sender), std::move(os_level_manager),
+      std::move(resolver_task_runner),
       /*debug_mode=*/false));
 }
 
@@ -636,7 +633,6 @@ AttributionManagerImpl::AttributionManagerImpl(
           kMaxPendingEvents,
           std::move(special_storage_policy),
           /*resolver_delegate=*/nullptr,
-          std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
           CreateOsLevelManager(),
@@ -660,7 +656,6 @@ AttributionManagerImpl::AttributionManagerImpl(
     size_t max_pending_events,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionResolverDelegate> resolver_delegate,
-    std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionOsLevelManager> os_level_manager,
     scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner,
@@ -677,7 +672,6 @@ AttributionManagerImpl::AttributionManagerImpl(
       data_host_manager_(
           std::make_unique<AttributionDataHostManagerImpl>(this)),
       special_storage_policy_(std::move(special_storage_policy)),
-      cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)),
       os_level_manager_(std::move(os_level_manager)),
       debug_mode_(debug_mode),
@@ -685,7 +679,6 @@ AttributionManagerImpl::AttributionManagerImpl(
           kAttributionReportDeliveryThirdRetryAttempt)) {
   DCHECK_GT(max_pending_events_, 0u);
   DCHECK(resolver_task_runner_);
-  DCHECK(cookie_checker_);
   DCHECK(report_sender_);
   DCHECK(os_level_manager_);
 
@@ -813,6 +806,12 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
 }
 
 void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
+  if (IsReady()) {
+    DCHECK(pending_events_.empty());
+    ProcessEvent(std::move(event));
+    return;
+  }
+
   const size_t size_before_push = pending_events_.size();
 
   // Avoid unbounded memory growth with adversarial input.
@@ -823,24 +822,16 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
   }
 
   pending_events_.push_back(std::move(event));
-
-  // Only process the new event if it is the only one in the queue. Otherwise,
-  // there's already an async cookie-check in progress.
-  if (size_before_push == 0) {
-    PrepareNextEvent();
-  }
 }
 
-void AttributionManagerImpl::PrepareNextEvent() {
-  if (!IsReady()) {
-    DLOG(WARNING) << "Still waiting for attestations loading";
-    return;
-  }
+enum class AttributionManagerImpl::BrowserPolicy {
+  kProhibited,
+  kAllowedWithDebug,
+  kAllowedWithoutDebug,
+};
 
-  if (pending_events_.empty()) {
-    return;
-  }
-
+AttributionManagerImpl::BrowserPolicy AttributionManagerImpl::GetBrowserPolicy(
+    const SourceOrTriggerRFH& event) {
   const attribution_reporting::SuitableOrigin* cookie_origin = nullptr;
   const attribution_reporting::SuitableOrigin* reporting_origin = nullptr;
   const url::Origin* source_origin = nullptr;
@@ -874,80 +865,81 @@ void AttributionManagerImpl::PrepareNextEvent() {
                 ContentBrowserClient::AttributionReportingOperation::kTrigger;
           },
       },
-      pending_events_.front().source_or_trigger);
+      event.source_or_trigger);
 
-  bool registration_allowed = IsOperationAllowed(
-      *storage_partition_, registration_operation,
-      RenderFrameHost::FromID(pending_events_.front().rfh_id), source_origin,
-      destination_origin, &**reporting_origin);
-
-  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
-  // deprecation experiment.
-  bool can_bypass = false;
-  if (registration_allowed && cookie_origin &&
-      IsOperationAllowed(*storage_partition_, operation,
-                         /*rfh=*/nullptr, source_origin, destination_origin,
-                         &**cookie_origin, &can_bypass)) {
-    cookie_checker_->IsDebugCookieSet(
-        *cookie_origin,
-        base::BindOnce(&AttributionManagerImpl::ProcessNextEvent,
-                       weak_factory_.GetWeakPtr(),
-                       /*registration_allowed=*/true));
-    return;
+  if (!IsOperationAllowed(*storage_partition_, registration_operation,
+                          RenderFrameHost::FromID(event.rfh_id), source_origin,
+                          destination_origin, &**reporting_origin)) {
+    return BrowserPolicy::kProhibited;
   }
 
-  ProcessNextEvent(registration_allowed, /*is_debug_cookie_set=*/can_bypass);
+  if (cookie_origin) {
+    // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
+    // deprecation experiment.
+    bool can_bypass = false;
+    if (IsOperationAllowed(*storage_partition_, operation,
+                           /*rfh=*/nullptr, source_origin, destination_origin,
+                           &**cookie_origin, &can_bypass) ||
+        can_bypass) {
+      return BrowserPolicy::kAllowedWithDebug;
+    }
+  }
+
+  return BrowserPolicy::kAllowedWithoutDebug;
 }
 
-void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
-                                              bool is_debug_cookie_set) {
-  DCHECK(!pending_events_.empty());
+void AttributionManagerImpl::ProcessEvent(SourceOrTriggerRFH event) {
+  BrowserPolicy browser_policy = GetBrowserPolicy(event);
 
   absl::visit(
       base::Overloaded{
           [&](StorableSource& source) {
-            source.set_debug_cookie_set(is_debug_cookie_set &&
-                                        registration_allowed);
-            if (registration_allowed) {
-              StoreSource(std::move(source));
-            } else {
-              OnSourceStored(
-                  /*cleared_debug_key=*/std::nullopt,
-                  StoreSourceResult(
-                      std::move(source),
-                      /*is_noised=*/false,
-                      /*source_time=*/base::Time::Now(),
-                      /*destination_limit=*/std::nullopt,
-                      StoreSourceResult::ProhibitedByBrowserPolicy()));
+            switch (browser_policy) {
+              case BrowserPolicy::kProhibited:
+                OnSourceStored(
+                    /*cleared_debug_key=*/std::nullopt,
+                    StoreSourceResult(
+                        std::move(source),
+                        /*is_noised=*/false,
+                        /*source_time=*/base::Time::Now(),
+                        /*destination_limit=*/std::nullopt,
+                        StoreSourceResult::ProhibitedByBrowserPolicy()));
+                break;
+              case BrowserPolicy::kAllowedWithDebug:
+                source.set_debug_cookie_set(/*value=*/true);
+                StoreSource(std::move(source));
+                break;
+              case BrowserPolicy::kAllowedWithoutDebug:
+                source.set_debug_cookie_set(/*value=*/false);
+                StoreSource(std::move(source));
+                break;
             }
           },
           [&](AttributionTrigger& trigger) {
-            if (registration_allowed) {
-              StoreTrigger(std::move(trigger), is_debug_cookie_set);
-            } else {
-              OnReportStored(
-                  /*cleared_debug_key=*/std::nullopt,
-                  /*is_debug_cookie_set=*/false,
-                  CreateReportResult(
-                      /*trigger_time=*/base::Time::Now(), std::move(trigger),
-                      /*event_level_result=*/
-                      CreateReportResult::ProhibitedByBrowserPolicy(),
-                      /*aggregatable_result=*/
-                      CreateReportResult::ProhibitedByBrowserPolicy(),
-                      /*source=*/std::nullopt,
-                      /*min_null_aggregatable_report_time=*/std::nullopt));
+            switch (browser_policy) {
+              case BrowserPolicy::kProhibited:
+                OnReportStored(
+                    /*cleared_debug_key=*/std::nullopt,
+                    /*is_debug_cookie_set=*/false,
+                    CreateReportResult(
+                        /*trigger_time=*/base::Time::Now(), std::move(trigger),
+                        /*event_level_result=*/
+                        CreateReportResult::ProhibitedByBrowserPolicy(),
+                        /*aggregatable_result=*/
+                        CreateReportResult::ProhibitedByBrowserPolicy(),
+                        /*source=*/std::nullopt,
+                        /*min_null_aggregatable_report_time=*/std::nullopt));
+                break;
+              case BrowserPolicy::kAllowedWithDebug:
+                StoreTrigger(std::move(trigger), /*is_debug_cookie_set=*/true);
+                break;
+              case BrowserPolicy::kAllowedWithoutDebug:
+                StoreTrigger(std::move(trigger), /*is_debug_cookie_set=*/false);
+                break;
             }
           },
       },
-      pending_events_.front().source_or_trigger);
-
-  pending_events_.pop_front();
-
-  if (!pending_events_.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttributionManagerImpl::PrepareNextEvent,
-                                  weak_factory_.GetWeakPtr()));
-  }
+      event.source_or_trigger);
 }
 
 void AttributionManagerImpl::StoreSource(StorableSource source) {
@@ -1663,6 +1655,12 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 }
 
 void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
+  if (IsReady()) {
+    DCHECK(pending_os_events_.empty());
+    ProcessOsEvent(std::move(registration));
+    return;
+  }
+
   const size_t size_before_push = pending_os_events_.size();
 
   // Avoid unbounded memory growth with adversarial input.
@@ -1675,26 +1673,9 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
   }
 
   pending_os_events_.push_back(std::move(registration));
-
-  // Only process the new event if it is the only one in the queue. Otherwise,
-  // there's already an async cookie-check in progress.
-  if (size_before_push == 0) {
-    PrepareNextOsEvent();
-  }
 }
 
-void AttributionManagerImpl::PrepareNextOsEvent() {
-  if (!IsReady()) {
-    DLOG(WARNING) << "Still waiting for attestations loading";
-    return;
-  }
-
-  if (pending_os_events_.empty()) {
-    return;
-  }
-
-  OsRegistration& event = pending_os_events_.front();
-
+void AttributionManagerImpl::ProcessOsEvent(OsRegistration event) {
   ContentBrowserClient::AttributionReportingOperation operation;
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
@@ -1737,12 +1718,6 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
   });
 
   if (event.registration_items.empty()) {
-    pending_os_events_.pop_front();
-    if (!pending_os_events_.empty()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&AttributionManagerImpl::PrepareNextOsEvent,
-                                    weak_factory_.GetWeakPtr()));
-    }
     return;
   }
 
@@ -1757,67 +1732,24 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
       break;
   }
 
-  // This is extracted into a local variable to avoid a use-after-free in
-  // checking the `for` loop condition below in the case that
-  // `IsDebugCookieSet()` invokes the callback synchronously, which would end up
-  // popping `event` *before* the loop condition is checked the last time.
   const size_t num_items = event.registration_items.size();
-
-  auto set_is_debug_cookie_set = base::BindRepeating(
-      [](base::WeakPtr<AttributionManagerImpl> manager,
-         std::vector<bool>& allowed, size_t& remaining, size_t i,
-         bool is_debug_cookie_set) {
-        if (!manager) {
-          return;
-        }
-
-        DCHECK_GT(remaining, 0u);
-        --remaining;
-
-        allowed.at(i) = is_debug_cookie_set;
-
-        if (remaining == 0) {
-          manager->ProcessNextOsEvent(allowed);
-        }
-      },
-      weak_factory_.GetWeakPtr(), base::OwnedRef(std::vector<bool>(num_items)),
-      base::OwnedRef(num_items));
-
+  std::vector<bool> debug_allowed(num_items);
   for (size_t i = 0; i < num_items; ++i) {
     const auto& item = event.registration_items.at(i);
     const auto reporting_origin = url::Origin::Create(item.url);
 
-    bool can_bypass_cookie_check = false;
-    if (IsOperationAllowed(*storage_partition_, operation, /*rfh=*/nullptr,
+    bool can_bypass = false;
+    debug_allowed[i] =
+        IsOperationAllowed(*storage_partition_, operation, /*rfh=*/nullptr,
                            source_origin, destination_origin, &reporting_origin,
-                           &can_bypass_cookie_check)) {
-      cookie_checker_->IsDebugCookieSet(
-          reporting_origin, base::BindOnce(set_is_debug_cookie_set, i));
-    } else {
-      set_is_debug_cookie_set.Run(i, can_bypass_cookie_check);
-    }
-  }
-}
-
-void AttributionManagerImpl::ProcessNextOsEvent(
-    const std::vector<bool>& is_debug_key_allowed) {
-  DCHECK(!pending_os_events_.empty());
-  {
-    auto& event = pending_os_events_.front();
-
-    os_level_manager_->Register(
-        std::move(event), is_debug_key_allowed,
-        base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
-                       weak_factory_.GetWeakPtr(), is_debug_key_allowed));
+                           &can_bypass) ||
+        can_bypass;
   }
 
-  pending_os_events_.pop_front();
-
-  if (!pending_os_events_.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttributionManagerImpl::PrepareNextOsEvent,
-                                  weak_factory_.GetWeakPtr()));
-  }
+  os_level_manager_->Register(
+      std::move(event), debug_allowed,
+      base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
+                     weak_factory_.GetWeakPtr(), debug_allowed));
 }
 
 void AttributionManagerImpl::NotifyTotalOsRegistrationFailure(
@@ -1963,8 +1895,15 @@ void AttributionManagerImpl::OnAttestationsLoaded() {
   scheduler_timer_ = std::make_unique<ReportSchedulerTimer>(
       std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
 
-  PrepareNextEvent();
-  PrepareNextOsEvent();
+  for (SourceOrTriggerRFH& event : pending_events_) {
+    ProcessEvent(std::move(event));
+  }
+  pending_events_.clear();
+
+  for (OsRegistration& event : pending_os_events_) {
+    ProcessOsEvent(std::move(event));
+  }
+  pending_os_events_.clear();
 }
 
 bool AttributionManagerImpl::IsReady() const {

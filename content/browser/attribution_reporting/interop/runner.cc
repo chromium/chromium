@@ -58,7 +58,6 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
@@ -73,6 +72,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
+#include "content/test/test_content_browser_client.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -92,6 +93,9 @@ namespace {
 using ::attribution_reporting::RandomizedResponse;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::network::mojom::AttributionReportingEligibility;
+
+using AttributionReportingOperation =
+    ::content::ContentBrowserClient::AttributionReportingOperation;
 
 constexpr int64_t kNavigationId(-1);
 
@@ -205,9 +209,9 @@ AttributionInteropOutput::Report MakeReport(
       base::Time::Now() - TimeOffset(time_origin), req.url, *std::move(value));
 }
 
-class FakeCookieChecker : public AttributionCookieChecker {
+class AttributionInteropContentBrowserClient : public TestContentBrowserClient {
  public:
-  explicit FakeCookieChecker(
+  explicit AttributionInteropContentBrowserClient(
       const std::vector<AttributionSimulationEvent>& events) {
     std::vector<base::Time> times;
     for (const auto& event : events) {
@@ -217,24 +221,41 @@ class FakeCookieChecker : public AttributionCookieChecker {
         times.push_back(event.time);
       }
     }
-    debug_cookie_set_.replace(std::move(times));
+    debug_allowed_.replace(std::move(times));
   }
-
-  ~FakeCookieChecker() override = default;
-
-  FakeCookieChecker(const FakeCookieChecker&) = delete;
-  FakeCookieChecker(FakeCookieChecker&&) = delete;
-
-  FakeCookieChecker& operator=(const FakeCookieChecker&) = delete;
-  FakeCookieChecker& operator=(FakeCookieChecker&&) = delete;
 
  private:
-  // AttributionCookieChecker:
-  void IsDebugCookieSet(const url::Origin&, Callback callback) override {
-    std::move(callback).Run(debug_cookie_set_.contains(base::Time::Now()));
+  bool IsAttributionReportingOperationAllowed(
+      content::BrowserContext* browser_context,
+      AttributionReportingOperation operation,
+      content::RenderFrameHost* rfh,
+      const url::Origin* source_origin,
+      const url::Origin* destination_origin,
+      const url::Origin* reporting_origin,
+      bool* can_bypass) override {
+    switch (operation) {
+      case AttributionReportingOperation::kSource:
+      case AttributionReportingOperation::kSourceVerboseDebugReport:
+      case AttributionReportingOperation::kTrigger:
+      case AttributionReportingOperation::kTriggerVerboseDebugReport:
+      case AttributionReportingOperation::kOsSource:
+      case AttributionReportingOperation::kOsSourceVerboseDebugReport:
+      case AttributionReportingOperation::kOsTrigger:
+      case AttributionReportingOperation::kOsTriggerVerboseDebugReport:
+      case AttributionReportingOperation::kSourceAggregatableDebugReport:
+      case AttributionReportingOperation::kTriggerAggregatableDebugReport:
+      case AttributionReportingOperation::kReport:
+      case AttributionReportingOperation::kAny:
+        return true;
+      case AttributionReportingOperation::kSourceTransitionalDebugReporting:
+      case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
+      case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
+      case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting:
+        return debug_allowed_.contains(base::Time::Now());
+    }
   }
 
-  base::flat_set<base::Time> debug_cookie_set_;
+  base::flat_set<base::Time> debug_allowed_;
 };
 
 class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
@@ -508,7 +529,8 @@ RunAttributionInteropSimulation(
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
-  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>(run.events);
+  AttributionInteropContentBrowserClient browser_client(run.events);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   AttributionInteropOutput output;
 
@@ -534,7 +556,6 @@ RunAttributionInteropSimulation(
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
       std::make_unique<ControllableStorageDelegate>(run),
-      std::move(fake_cookie_checker),
       std::make_unique<AttributionReportNetworkSender>(
           test_url_loader_factory.GetSafeWeakWrapper()),
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,

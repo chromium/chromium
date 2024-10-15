@@ -12,7 +12,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -58,7 +57,6 @@ namespace content {
 class AggregatableDebugReport;
 class AggregatableReport;
 class AggregatableReportRequest;
-class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionDebugReport;
 class AttributionOsLevelManager;
@@ -109,7 +107,6 @@ class CONTENT_EXPORT AttributionManagerImpl
       size_t max_pending_events,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionResolverDelegate> resolver_delegate,
-      std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionOsLevelManager> os_level_manager,
       StoragePartitionImpl* storage_partition,
@@ -176,21 +173,22 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   struct PendingReportTimings;
 
+  enum class BrowserPolicy;
+
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       size_t max_pending_events,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionResolverDelegate> resolver_delegate,
-      std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionOsLevelManager> os_level_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner,
       bool debug_mode);
 
+  BrowserPolicy GetBrowserPolicy(const SourceOrTriggerRFH&);
   void MaybeEnqueueEvent(SourceOrTriggerRFH);
-  void PrepareNextEvent();
-  void ProcessNextEvent(bool registration_allowed, bool is_debug_cookie_set);
+  void ProcessEvent(SourceOrTriggerRFH);
   void StoreSource(StorableSource source);
   void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
 
@@ -278,8 +276,7 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void OnClearDataComplete(bool was_user_visible);
 
-  void PrepareNextOsEvent();
-  void ProcessNextOsEvent(const std::vector<bool>& is_debug_key_allowed);
+  void ProcessOsEvent(OsRegistration);
   void OnOsRegistration(const std::vector<bool>& is_debug_key_allowed,
                         const OsRegistration&,
                         const std::vector<bool>& success);
@@ -294,12 +291,8 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   const raw_ref<StoragePartitionImpl> storage_partition_;
 
-  // Holds pending sources and triggers in the order they were received by the
-  // browser. For the time being, they must be processed in this order in order
-  // to ensure that behavioral requirements are met. We may be able to loosen
-  // this requirement in the future so that there are conceptually separate
-  // queues per <source origin, destination origin, reporting origin>.
-  base::circular_deque<SourceOrTriggerRFH> pending_events_;
+  // Holds pending sources and triggers before attestations are loaded.
+  std::vector<SourceOrTriggerRFH> pending_events_;
 
   // Controls the maximum size of `pending_events_` to avoid unbounded memory
   // growth with adversarial input.
@@ -324,8 +317,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
-  std::unique_ptr<AttributionCookieChecker> cookie_checker_;
-
   std::unique_ptr<AttributionReportSender> report_sender_;
 
   // Set of all conversion IDs that are currently being sent, deleted, or
@@ -343,7 +334,7 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   const std::unique_ptr<AttributionOsLevelManager> os_level_manager_;
 
-  base::circular_deque<OsRegistration> pending_os_events_;
+  std::vector<OsRegistration> pending_os_events_;
 
   // Guardrail to ensure `OnAttestationsLoaded()` is always called to avoid
   // waiting indefinitely.

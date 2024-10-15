@@ -48,6 +48,7 @@ message AttributionReadOnlySourceData {
 
   optional TriggerDataMatching trigger_data_matching = 5;
 
+  // TODO(crbug.com/369506940): Rename this to `cookie_based_debug_allowed`.
   optional bool debug_cookie_set = 6;
 
   optional double event_level_epsilon = 7;

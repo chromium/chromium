@@ -16,8 +16,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/circular_deque.h"
-#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -56,7 +54,6 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -266,40 +263,6 @@ class MockReportSender : public AttributionReportSender {
               (override));
 };
 
-class MockCookieChecker : public AttributionCookieChecker {
- public:
-  ~MockCookieChecker() override { EXPECT_THAT(callbacks_, IsEmpty()); }
-
-  void AddOriginWithDebugCookieSet(url::Origin origin) {
-    origins_with_debug_cookie_set_.insert(std::move(origin));
-  }
-
-  void DeferCallbacks(bool defer = true) { defer_callbacks_ = defer; }
-
-  void RunNextDeferredCallback(bool is_debug_cookie_set) {
-    if (!callbacks_.empty()) {
-      Callback callback = std::move(callbacks_.front());
-      callbacks_.pop_front();
-      std::move(callback).Run(is_debug_cookie_set);
-    }
-  }
-
- private:
-  // AttributionCookieChecker:
-  void IsDebugCookieSet(const url::Origin& origin, Callback callback) override {
-    if (defer_callbacks_) {
-      callbacks_.emplace_back(std::move(callback));
-    } else {
-      std::move(callback).Run(origins_with_debug_cookie_set_.contains(origin));
-    }
-  }
-
-  base::flat_set<url::Origin> origins_with_debug_cookie_set_;
-
-  bool defer_callbacks_ = false;
-  base::circular_deque<Callback> callbacks_;
-};
-
 class MockAttributionOsLevelManager : public AttributionOsLevelManager {
  public:
   ~MockAttributionOsLevelManager() override = default;
@@ -372,9 +335,6 @@ class AttributionManagerImplTest : public testing::Test {
     // sequence.
     storage_delegate->DetachFromSequence();
 
-    auto cookie_checker = std::make_unique<MockCookieChecker>();
-    cookie_checker_ = cookie_checker.get();
-
     auto report_sender = std::make_unique<MockReportSender>();
     report_sender_ = report_sender.get();
 
@@ -386,15 +346,14 @@ class AttributionManagerImplTest : public testing::Test {
 
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         dir_.GetPath(), kMaxPendingEvents, mock_storage_policy_,
-        std::move(storage_delegate), std::move(cookie_checker),
-        std::move(report_sender), std::move(os_level_manager),
+        std::move(storage_delegate), std::move(report_sender),
+        std::move(os_level_manager),
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()),
         storage_task_runner_);
   }
 
   void ShutdownManager() {
-    cookie_checker_ = nullptr;
     report_sender_ = nullptr;
     os_level_manager_ = nullptr;
     attribution_manager_.reset();
@@ -498,7 +457,6 @@ class AttributionManagerImplTest : public testing::Test {
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
-  raw_ptr<MockCookieChecker> cookie_checker_;
   raw_ptr<MockReportSender> report_sender_;
   raw_ptr<MockAttributionOsLevelManager> os_level_manager_;
   raw_ptr<MockAggregationService> aggregation_service_;
@@ -1170,9 +1128,6 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
   const auto kTopLevelOrigin4 = url::Origin::Create(GURL("https://o4.test"));
   const auto kTopLevelOrigin5 = url::Origin::Create(GURL("https://o5.test"));
 
-  cookie_checker_->AddOriginWithDebugCookieSet(
-      url::Origin::Create(kRegistrationUrl1));
-
   const auto return_origin =
       [](const url::Origin& origin) -> ::testing::Matcher<const url::Origin*> {
     return Pointee(origin);
@@ -1244,7 +1199,7 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
           /*is_within_fenced_frame=*/false, kFrameId, kRegistrar);
       EXPECT_CALL(*os_level_manager_,
                   Register(registration2,
-                           /*is_debug_key_allowed=*/ElementsAre(false), _))
+                           /*is_debug_key_allowed=*/ElementsAre(true), _))
           .WillOnce(base::test::RunOnceCallback<2>(registration2,
                                                    std::vector<bool>{false}));
 
@@ -1265,10 +1220,9 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
            OsRegistrationItem(kRegistrationUrl2, /*debug_reporting=*/false)},
           kTopLevelOrigin5, test_case.input_event,
           /*is_within_fenced_frame=*/false, kFrameId, kRegistrar);
-      EXPECT_CALL(
-          *os_level_manager_,
-          Register(registration5,
-                   /*is_debug_key_allowed=*/ElementsAre(true, false), _))
+      EXPECT_CALL(*os_level_manager_,
+                  Register(registration5,
+                           /*is_debug_key_allowed=*/ElementsAre(true, true), _))
           .WillOnce(base::test::RunOnceCallback<2>(
               registration5, std::vector<bool>{true, true}));
 
@@ -1869,8 +1823,6 @@ TEST_F(AttributionManagerImplTest,
       *SuitableOrigin::Deserialize("https://d.test");
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
 
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
-
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
@@ -2299,74 +2251,11 @@ TEST_F(AttributionManagerImplNoFakeReportTest, NotNotifyObservers) {
   task_environment_.FastForwardBy(base::TimeDelta());
 }
 
-// Test that multiple source and trigger registrations, with and without debug
-// keys present, are handled in the order they are received by the manager.
-TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {
-  cookie_checker_->DeferCallbacks();
-
-  const auto r1 = *SuitableOrigin::Deserialize("https://r1.test");
-  const auto r2 = *SuitableOrigin::Deserialize("https://r2.test");
-
-  attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetSourceEventId(1)
-                                         .SetDebugKey(11)
-                                         .SetReportingOrigin(r1)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build(),
-                                     kFrameId);
-
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetTriggerData(2).SetReportingOrigin(r1).Build(),
-      kFrameId);
-
-  attribution_manager_->HandleTrigger(TriggerBuilder()
-                                          .SetTriggerData(3)
-                                          .SetDebugKey(13)
-                                          .SetReportingOrigin(r2)
-                                          .Build(),
-                                      kFrameId);
-
-  attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetSourceEventId(4)
-                                         .SetDebugKey(14)
-                                         .SetReportingOrigin(r2)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build(),
-                                     kFrameId);
-
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetTriggerData(5).SetReportingOrigin(r2).Build(),
-      kFrameId);
-
-  ASSERT_THAT(StoredSources(), IsEmpty());
-  ASSERT_THAT(StoredReports(), IsEmpty());
-
-  // This should cause the first 2 events to be processed.
-  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
-  ASSERT_THAT(StoredSources(), ElementsAre(SourceEventIdIs(1)));
-  ASSERT_THAT(StoredReports(), ElementsAre(EventLevelDataIs(TriggerDataIs(2))));
-
-  // This should cause the next event to be processed. There's no matching
-  // source, so the trigger should be dropped.
-  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
-  ASSERT_THAT(StoredSources(), ElementsAre(SourceEventIdIs(1)));
-  ASSERT_THAT(StoredReports(), ElementsAre(EventLevelDataIs(TriggerDataIs(2))));
-
-  // This should cause the next 2 events to be processed.
-  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
-  ASSERT_THAT(StoredSources(),
-              UnorderedElementsAre(SourceEventIdIs(1), SourceEventIdIs(4)));
-  ASSERT_THAT(StoredReports(),
-              UnorderedElementsAre(EventLevelDataIs(TriggerDataIs(2)),
-                                   EventLevelDataIs(TriggerDataIs(5))));
-}
-
 namespace {
 
 const struct {
   const char* name;
   std::optional<uint64_t> input_debug_key;
-  const char* reporting_origin;
   std::optional<uint64_t> expected_debug_key;
   std::optional<uint64_t> expected_cleared_key;
   bool cookie_access_allowed;
@@ -2374,54 +2263,40 @@ const struct {
   bool can_bypass = false;
 } kDebugKeyTestCases[] = {
     {
-        "no debug key, no cookie",
-        std::nullopt,
-        "https://r2.test",
+        "no debug key, cookie not allowed",
         std::nullopt,
         std::nullopt,
-        true,
+        std::nullopt,
+        false,
         false,
     },
     {
-        "has debug key, no cookie",
+        "has debug key, cookie not allowed",
         123,
-        "https://r2.test",
-        std::nullopt,
-        123,
-        true,
-        false,
-    },
-    {
-        "no debug key, has cookie",
-        std::nullopt,
-        "https://r1.test",
-        std::nullopt,
-        std::nullopt,
-        true,
-        true,
-    },
-    {
-        "has debug key, has cookie",
-        123,
-        "https://r1.test",
-        123,
-        std::nullopt,
-        true,
-        true,
-    },
-    {
-        "has debug key, no cookie access",
-        123,
-        "https://r1.test",
         std::nullopt,
         123,
         false,
         false,
     },
     {
-        "has debug key, no cookie access, can bypass",
+        "no debug key, cookie allowed",
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        true,
+        true,
+    },
+    {
+        "has debug key, cookie allowed",
         123,
-        "https://r1.test",
+        123,
+        std::nullopt,
+        true,
+        true,
+    },
+    {
+        "has debug key, cookie not allowed, can bypass",
+        123,
         123,
         std::nullopt,
         false,
@@ -2433,9 +2308,6 @@ const struct {
 }  // namespace
 
 TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
-  cookie_checker_->AddOriginWithDebugCookieSet(
-      url::Origin::Create(GURL("https://r1.test")));
-
   for (const auto& test_case : kDebugKeyTestCases) {
     SCOPED_TRACE(test_case.name);
 
@@ -2444,21 +2316,19 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
         observation(&observer);
     observation.Observe(attribution_manager_.get());
 
-    const auto reporting_origin =
-        *SuitableOrigin::Deserialize(test_case.reporting_origin);
     MockAttributionReportingContentBrowserClient browser_client;
     EXPECT_CALL(
         browser_client,
         IsAttributionReportingOperationAllowed(
             _, ContentBrowserClient::AttributionReportingOperation::kSource, _,
-            _, IsNull(), Pointee(*reporting_origin), _))
+            _, IsNull(), _, _))
         .WillRepeatedly(Return(true));
     EXPECT_CALL(browser_client,
                 IsAttributionReportingOperationAllowed(
                     _,
                     ContentBrowserClient::AttributionReportingOperation::
                         kSourceTransitionalDebugReporting,
-                    _, _, IsNull(), Pointee(*reporting_origin), _))
+                    _, _, IsNull(), _, _))
         .WillOnce(
             [&](BrowserContext* browser_context,
                 ContentBrowserClient::AttributionReportingOperation operation,
@@ -2474,7 +2344,6 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
                                           test_case.expected_cleared_key, _));
     attribution_manager_->HandleSource(
         SourceBuilder()
-            .SetReportingOrigin(reporting_origin)
             .SetDebugKey(test_case.input_debug_key)
             .SetExpiry(kImpressionExpiry)
             .Build(),
@@ -2495,9 +2364,6 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
-  cookie_checker_->AddOriginWithDebugCookieSet(
-      url::Origin::Create(GURL("https://r1.test")));
-
   for (const auto& test_case : kDebugKeyTestCases) {
     SCOPED_TRACE(test_case.name);
 
@@ -2505,9 +2371,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
     base::ScopedObservation<AttributionManager, AttributionObserver>
         observation(&observer);
     observation.Observe(attribution_manager_.get());
-
-    const auto reporting_origin =
-        *SuitableOrigin::Deserialize(test_case.reporting_origin);
 
     MockAttributionReportingContentBrowserClient browser_client;
     EXPECT_CALL(
@@ -2518,7 +2381,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                   ContentBrowserClient::AttributionReportingOperation::kTrigger,
                   ContentBrowserClient::AttributionReportingOperation::
                       kSourceTransitionalDebugReporting),
-            _, _, _, Pointee(*reporting_origin), _))
+            _, _, _, _, _))
         .WillRepeatedly(Return(true));
     if (test_case.input_debug_key) {
       EXPECT_CALL(browser_client,
@@ -2526,7 +2389,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                       _,
                       ContentBrowserClient::AttributionReportingOperation::
                           kTriggerTransitionalDebugReporting,
-                      _, IsNull(), _, Pointee(*reporting_origin), _))
+                      _, IsNull(), _, _, _))
           .WillOnce(
               [&](BrowserContext* browser_context,
                   ContentBrowserClient::AttributionReportingOperation operation,
@@ -2540,7 +2403,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
     ScopedContentBrowserClientSetting setting(&browser_client);
 
     attribution_manager_->HandleSource(SourceBuilder()
-                                           .SetReportingOrigin(reporting_origin)
                                            .SetExpiry(kImpressionExpiry)
                                            .Build(),
                                        kFrameId);
@@ -2549,7 +2411,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
     EXPECT_CALL(observer, OnTriggerHandled(test_case.expected_cleared_key, _));
     attribution_manager_->HandleTrigger(
         TriggerBuilder()
-            .SetReportingOrigin(reporting_origin)
             .SetDebugKey(test_case.input_debug_key)
             .Build(),
         kFrameId);
@@ -2567,10 +2428,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
 }
 
 TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
-
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
-
   const struct {
     const char* name;
     std::optional<uint64_t> source_debug_key;
@@ -2596,7 +2453,6 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
     attribution_manager_->HandleSource(
         TestAggregatableSourceProvider()
             .GetBuilder()
-            .SetReportingOrigin(reporting_origin)
             .SetExpiry(kImpressionExpiry)
             .SetDebugKey(test_case.source_debug_key)
             .Build(),
@@ -2635,7 +2491,6 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
 
     attribution_manager_->HandleTrigger(
         DefaultAggregatableTriggerBuilder()
-            .SetReportingOrigin(reporting_origin)
             .SetDebugKey(test_case.trigger_debug_key)
             .Build(),
         kFrameId);
@@ -2659,13 +2514,12 @@ TEST_F(AttributionManagerImplTest,
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  const StorableSource source = SourceBuilder().Build();
+  EXPECT_CALL(observer,
+              OnSourceHandled(SourceBuilder().SetDebugCookieSet(true).Build(),
+                              base::Time::Now(), testing::Eq(std::nullopt),
+                              StorableSource::Result::kSuccess));
 
-  EXPECT_CALL(observer, OnSourceHandled(source, base::Time::Now(),
-                                        testing::Eq(std::nullopt),
-                                        StorableSource::Result::kSuccess));
-
-  attribution_manager_->HandleSource(source, kFrameId);
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
@@ -2958,10 +2812,25 @@ TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {
 }
 
 TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
-  base::HistogramTester histograms;
+  ShutdownManager();
 
-  // Prevent sources from being removed from the queue.
-  cookie_checker_->DeferCallbacks();
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(
+              AttributionReportingOperation::kSource,
+              AttributionReportingOperation::kSourceTransitionalDebugReporting),
+          _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  CreateManager();
+
+  base::HistogramTester histograms;
 
   for (size_t i = 0; i <= kMaxPendingEvents; i++) {
     attribution_manager_->HandleSource(
@@ -2973,12 +2842,7 @@ TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
                                kMaxPendingEvents);
   histograms.ExpectBucketCount("Conversions.EnqueueEventAllowed", false, 1);
 
-  // Unblock the cookie checks. Only the first `kMaxPendingEvents` sources
-  // should be stored.
-  for (size_t i = 0; i <= kMaxPendingEvents; i++) {
-    cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/true);
-    task_environment_.RunUntilIdle();
-  }
+  NotifyAttestationsLoaded();
 
   std::vector<StoredSource> sources = StoredSources();
   ASSERT_THAT(sources, SizeIs(kMaxPendingEvents));
@@ -2990,9 +2854,6 @@ TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
 TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   base::HistogramTester histograms;
 
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
-
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -3003,25 +2864,40 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   }
 
   // Failed without debug reporting.
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetReportingOrigin(reporting_origin).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(TriggerBuilder().Build(), kFrameId);
   task_environment_.RunUntilIdle();
 
   // Trigger registered within a fenced frame failed with debug reporting, but
   // no debug report is sent.
   attribution_manager_->HandleTrigger(TriggerBuilder()
-                                          .SetReportingOrigin(reporting_origin)
                                           .SetDebugReporting(true)
                                           .SetIsWithinFencedFrame(true)
                                           .Build(),
                                       kFrameId);
   task_environment_.RunUntilIdle();
 
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(AttributionReportingOperation::kTrigger,
+                AttributionReportingOperation::kTriggerVerboseDebugReport),
+          _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, AttributionReportingOperation::kTriggerTransitionalDebugReporting,
+          _, _, _, _, _))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
   // Trigger registered outside a fenced frame tree failed with debug reporting
-  // but no debug cookie is set, therefore no debug report is sent.
+  // but debug is not allowed, therefore no debug report is sent.
   attribution_manager_->HandleTrigger(
       TriggerBuilder()
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugReporting(true)
           .Build(),
       kFrameId);
@@ -3034,7 +2910,6 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   // Trigger registered outside a fenced frame tree failed with debug
   // reporting and debug cookie is set.
   attribution_manager_->HandleTrigger(TriggerBuilder()
-                                          .SetReportingOrigin(reporting_origin)
                                           .SetDebugReporting(true)
                                           .Build(),
                                       kFrameId);
@@ -3047,7 +2922,6 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
 TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsTriggerVerboseDebugReport_NoReportSent) {
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
   EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
@@ -3213,9 +3087,6 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   const int kExpectedStatus = 200;
   EXPECT_CALL(observer, OnDebugReportSent(_, kExpectedStatus, _));
 
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
-
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -3232,25 +3103,38 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
 
   // Failed without debug reporting.
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetReportingOrigin(reporting_origin).Build(), kFrameId);
-  task_environment_.RunUntilIdle();
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
 
   // Source registered within a fenced frame failed with debug reporting, but
   // no debug report is sent.
   attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetReportingOrigin(reporting_origin)
                                          .SetDebugReporting(true)
                                          .SetIsWithinFencedFrame(true)
                                          .Build(),
                                      kFrameId);
-  task_environment_.RunUntilIdle();
 
-  // Source registered outside a fenced frame failed with debug reporting but no
-  // debug cookie is set, therefore no debug report is sent.
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(AttributionReportingOperation::kSource,
+                AttributionReportingOperation::kSourceVerboseDebugReport),
+          _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, AttributionReportingOperation::kSourceTransitionalDebugReporting,
+          _, _, _, _, _))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  // Source registered outside a fenced frame failed with debug reporting but
+  // debug is not allowed, therefore no debug report is sent.
   attribution_manager_->HandleSource(
       SourceBuilder()
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugReporting(true)
           .Build(),
       kFrameId);
@@ -3258,10 +3142,9 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
 
   checkpoint.Call(1);
 
-  // Source registered outside a fenced frame with debug reporting and debug
-  // cookie is set.
+  // Source registered outside a fenced frame with debug reporting and debug is
+  // allowed.
   attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetReportingOrigin(reporting_origin)
                                          .SetDebugReporting(true)
                                          .Build(),
                                      kFrameId);
@@ -3270,8 +3153,6 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
 
 TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
        EmbedderDisallowsVerboseDebugReport_NoReportSent) {
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
-
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
@@ -3287,19 +3168,17 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
       IsAttributionReportingOperationAllowed(
           _, AttributionReportingOperation::kSourceVerboseDebugReport, _,
           Pointee(url::Origin::Create(GURL("https://impression.test/"))),
-          IsNull(), Pointee(reporting_origin), _))
+          IsNull(), Pointee(url::Origin::Create(GURL("https://report.test/"))),
+          _))
       .WillRepeatedly(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
   EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
-
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetReportingOrigin(reporting_origin)
                                          .SetDebugReporting(true)
                                          .Build(),
                                      kFrameId);
@@ -3715,30 +3594,6 @@ TEST_F(AttributionManagerImplTest, RegistrationHeaderErrorDebugReport) {
     histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric,
                                   /*sample=*/28, allowed);
   }
-}
-
-// Regression test for http://crbug.com/331915077. This test will fail flakily
-// if the manager's queue processing uses reentrant calls.
-TEST_F(AttributionManagerImplTest, OsQueueNotReentrant) {
-  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state(
-      AttributionOsLevelManager::ApiState::kEnabled);
-
-  const GURL kRegistrationUrl1("https://r1.test/x");
-
-  const auto kTopLevelOrigin1 = url::Origin::Create(GURL("https://o1.test"));
-
-  cookie_checker_->DeferCallbacks();
-
-  for (int i = 0; i < 5; ++i) {
-    attribution_manager_->HandleOsRegistration(OsRegistration(
-        {OsRegistrationItem(kRegistrationUrl1, /*debug_reporting=*/false)},
-        kTopLevelOrigin1, AttributionInputEvent(),
-        /*is_within_fenced_frame=*/false, kFrameId, kRegistrar));
-    cookie_checker_->DeferCallbacks(false);
-  }
-
-  cookie_checker_->RunNextDeferredCallback(true);
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(AttributionManagerImplTest,
