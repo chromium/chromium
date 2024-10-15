@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/metrics/user_metrics.h"
 #include "base/uuid.h"
@@ -21,6 +22,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -161,10 +163,19 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
           group_icon);
     }
 
+    std::optional<int> index = menu_model->GetIndexOfCommandId(command_id);
+    CHECK(index);
+
+    if (tab_group->is_shared_tab_group()) {
+      menu_model->SetMinorIcon(index.value(),
+                               ui::ImageModel::FromVectorIcon(
+                                   kPeopleGroupIcon, ui::kColorMenuIcon,
+                                   ui::SimpleMenuModel::kDefaultIconSize));
+    }
+
     // Set the first tab group item with element id `kTabGroup`.
     if (i == 0) {
-      menu_model->SetElementIdentifierAt(
-          menu_model->GetIndexOfCommandId(command_id).value(), kTabGroup);
+      menu_model->SetElementIdentifierAt(index.value(), kTabGroup);
     }
   }
   return menu_model;

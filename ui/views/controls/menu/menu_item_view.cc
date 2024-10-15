@@ -358,8 +358,9 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   item->SetIcon(icon);
   item->SetForegroundColorId(foreground_color);
   item->SetSelectedColorId(selected_color_id);
-  if (type == Type::kSubMenu || type == Type::kActionableSubMenu)
+  if (type == Type::kSubMenu || type == Type::kActionableSubMenu) {
     item->CreateSubmenu();
+  }
   if (type == Type::kHighlighted) {
     item->set_vertical_margin(MenuConfig::instance().footnote_vertical_margin);
   }
@@ -1138,9 +1139,15 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   const int max_minor_text_width = submenu->max_minor_text_width();
   const MenuConfig& config = MenuConfig::instance();
   const int vertical_margin = GetVerticalMargin();
+  const int submenu_arrow_width =
+      submenu_arrow_image_view_
+          ? submenu_arrow_image_view_->width() + config.item_horizontal_padding
+          : 0;
+
   gfx::Rect minor_text_bounds(
       width() - submenu->trailing_padding() - max_minor_text_width,
-      vertical_margin, max_minor_text_width, height() - vertical_margin * 2);
+      vertical_margin, max_minor_text_width - submenu_arrow_width,
+      height() - vertical_margin * 2);
   minor_text_bounds.set_x(GetMirroredXForRect(minor_text_bounds));
 
   std::unique_ptr<gfx::RenderText> render_text =
