@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/content_extraction/inner_html.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -406,8 +407,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Shows My Activity.
   void ActivityRequestedByEvent(int event_flags);
 
-  // Returns true if IPH is eligible to be shown for the given URL.
-  bool IsUrlEligibleForIPH(const GURL& url);
+  // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
+  // queued IPH.
+  void MaybeShowDelayedTutorialIPH(const GURL& url);
 
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
@@ -472,6 +474,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Returns the lens suggest inputs stored in this controller for testing.
   const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
+
+  // Returns true if tutorial IPH is eligible to be shown for the given URL for
+  // testing.
+  bool IsUrlEligibleForTutorialIPHForTesting(const GURL& url);
 
   const lens::mojom::CenterRotatedBoxPtr& get_selected_region_for_testing() {
     return initialization_data_->selected_region_;
@@ -921,8 +927,14 @@ class LensOverlayController : public LensSearchboxClient,
   // Launches the Lens overlay HaTS survey if eligible.
   void MaybeLaunchSurvey();
 
-  // Initialize the IPH URL matcher from finch config.
-  void InitializeIPHUrlMatcher();
+  // Initialize the tutorial IPH URL matcher from finch config.
+  void InitializeTutorialIPHUrlMatcher();
+
+  // Returns true if tutorial IPH is eligible to be shown for the given URL.
+  bool IsUrlEligibleForTutorialIPH(const GURL& url);
+
+  // Shows the tutorial IPH.
+  void ShowTutorialIPH();
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
@@ -1052,13 +1064,16 @@ class LensOverlayController : public LensSearchboxClient,
   // translate feature promo.
   base::CallbackListSubscription translate_button_shown_subscription_;
 
-  // Matcher for URLs that are eligible to have the IPH shown.
-  std::unique_ptr<url_matcher::URLMatcher> iph_url_matcher_;
+  // Matcher for URLs that are eligible to have the tutorial IPH shown.
+  std::unique_ptr<url_matcher::URLMatcher> tutorial_iph_url_matcher_;
 
   // Filters used by the URL matcher. Used to look up if a matching filter is an
   // allow filter or a block filter.
   std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
       iph_url_filters_;
+
+  // Used to cancel showing a queued tutorial IPH.
+  base::OneShotTimer tutorial_iph_timer_;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is

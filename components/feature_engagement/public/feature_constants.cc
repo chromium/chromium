@@ -99,6 +99,9 @@ const base::FeatureParam<std::string> kIPHLensOverlayUrlAllowFilters{
     &feature_engagement::kIPHLensOverlayFeature, "x_url_allow_filters", "[]"};
 const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters{
     &feature_engagement::kIPHLensOverlayFeature, "x_url_block_filters", "[]"};
+const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime{
+    &feature_engagement::kIPHLensOverlayFeature, "x_wait_time",
+    base::Seconds(7)};
 BASE_FEATURE(kIPHLensOverlayTranslateButtonFeature,
              "IPH_LensOverlayTranslateButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
