@@ -81,6 +81,10 @@ bool TestService::HasDBusThread() {
   return bus_->HasDBusThread();
 }
 
+std::string TestService::GetConnectionName() {
+  return bus_->GetConnectionName();
+}
+
 void TestService::ShutdownAndBlockInternal() {
   if (HasDBusThread())
     bus_->ShutdownOnDBusThreadAndBlock();

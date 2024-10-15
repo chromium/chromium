@@ -50,11 +50,11 @@ class ScopedGObject {
     }
   }
 
-  T* get() { return obj_; }
+  T* get() const { return obj_; }
 
   // Deliberately implicit to allow easier interaction with C APIs.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  operator T*() { return obj_; }
+  operator T*() const { return obj_; }
 
  private:
   template <typename U>

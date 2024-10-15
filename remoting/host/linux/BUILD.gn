@@ -98,7 +98,7 @@ if (enable_me2me_host) {
   }
 }
 
-source_set("utils") {
+source_set("gvariant") {
   sources = [
     "gvariant_ref.cc",
     "gvariant_ref.h",
@@ -106,6 +106,19 @@ source_set("utils") {
     "gvariant_type.h",
   ]
   deps = [ "//base" ]
+}
+
+source_set("utils") {
+  sources = [
+    "gdbus_connection_ref.cc",
+    "gdbus_connection_ref.h",
+  ]
+  public_deps = [ ":gvariant" ]
+  deps = [
+    "dbus_interfaces:interface_headers",
+    "//base",
+    "//ui/base",
+  ]
 }
 
 if (is_linux) {
@@ -162,6 +175,7 @@ source_set("unit_tests") {
   sources = [
     "audio_pipe_reader_unittest.cc",
     "certificate_watcher_unittest.cc",
+    "gdbus_connection_ref_unittest.cc",
     "gnome_display_config_dbus_client_unittest.cc",
     "gvariant_ref_unittest.cc",
     "gvariant_type_unittest.cc",
@@ -180,8 +194,13 @@ source_set("unit_tests") {
 
   configs += [ "//remoting/build/config:version" ]
 
+  # Needed for the dbus test service
+  configs += [ "//build/config/linux/dbus" ]
+
   deps = [
     ":utils",
+    "dbus_interfaces:interface_headers",
+    "//dbus:dbus_test_service",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host:x11_display_utils",
