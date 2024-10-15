@@ -77,22 +77,6 @@ class CORE_EXPORT Range final : public AbstractRange {
   unsigned startOffset() const override { return start_.Offset(); }
   Node* endContainer() const override { return &end_.Container(); }
   unsigned endOffset() const override { return end_.Offset(); }
-  // The following  should only be used by DOMSelection::getComposedRanges().
-  // It exposes range endpoints that can be in different tree scopes.
-  Node* composedStartContainer() const {
-    return composed_range_ ? &composed_range_->start.Container()
-                           : &start_.Container();
-  }
-  unsigned composedStartOffset() const {
-    return composed_range_ ? composed_range_->start.Offset() : start_.Offset();
-  }
-  Node* composedEndContainer() const {
-    return composed_range_ ? &composed_range_->end.Container()
-                           : &end_.Container();
-  }
-  unsigned composedEndOffset() const {
-    return composed_range_ ? composed_range_->end.Offset() : end_.Offset();
-  }
 
   bool collapsed() const override { return start_ == end_; }
   bool IsConnected() const;
@@ -239,12 +223,6 @@ class CORE_EXPORT Range final : public AbstractRange {
       visitor->Trace(end);
     }
   };
-  // composed range is a pointer that is initially null. It is set when the
-  // Range's start and end endpoints changed to be in different tree scopes,
-  // but are still in the same document.
-  // TODO(https://github.com/whatwg/dom/issues/725#issuecomment-2264117903)
-  // Note a composed tree is getting defined.
-  Member<RangeBoundaryPoints> composed_range_;
 
   friend class RangeUpdateScope;
 };
