@@ -38,6 +38,7 @@ public @interface SearchActivityExtras {
         IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
         IntentOrigin.CUSTOM_TAB,
         IntentOrigin.HUB,
+        IntentOrigin.LAUNCHER,
         IntentOrigin.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -57,11 +58,14 @@ public @interface SearchActivityExtras {
         /** Calling component is Hub. */
         int HUB = 4;
 
+        /** User redirected from Launcher MAIN intent (Jump-Start Omnibox). */
+        int LAUNCHER = 5;
+
         /** Total count of items, used for histogram recording. */
-        int COUNT = 5;
+        int COUNT = 6;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:IntentOrigin)
 
     /** The requested typ of service. */
     @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS, SearchType.COUNT})

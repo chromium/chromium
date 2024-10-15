@@ -1361,13 +1361,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Root View was Not Focused (calls Focus())"/>
 </enum>
 
+<!-- LINT.IfChange(IntentOrigin) -->
+
 <enum name="SearchActivityIntentOrigin">
   <int value="0" label="Unknown / External"/>
   <int value="1" label="Search Widget"/>
   <int value="2" label="Shortcuts Widget"/>
   <int value="3" label="Custom Tab"/>
   <int value="4" label="Hub"/>
+  <int value="5" label="Launcher"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/searchactivityutils/java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityExtras.java:IntentOrigin) -->
 
 <enum name="SearchActivitySearchType">
   <int value="0" label="Text"/>
