@@ -53,43 +53,23 @@ EnterpriseWarnPage::GetTypeForTesting() {
   return EnterpriseWarnPage::kTypeForTesting;
 }
 
+enterprise_connectors::EnterpriseInterstitialBase::Type
+EnterpriseWarnPage::type() const {
+  return Type::kWarn;
+}
+
+const std::vector<security_interstitials::UnsafeResource>&
+EnterpriseWarnPage::unsafe_resources() const {
+  return unsafe_resources_;
+}
+
+GURL EnterpriseWarnPage::request_url() const {
+  return security_interstitials::SecurityInterstitialPage::request_url();
+}
+
 void EnterpriseWarnPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
-  PopulateStringsForSharedHTML(load_time_data);
-  load_time_data.Set("tabTitle",
-                     l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_TITLE));
-  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
-                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data.Set(
-      "enhancedProtectionMessage",
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
-
-  load_time_data.Set("heading",
-                     l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_HEADING));
-
-  std::u16string custom_message =
-      enterprise_connectors::GetUrlFilteringCustomMessage(unsafe_resources_);
-  if (!custom_message.empty()) {
-    load_time_data.Set("primaryParagraph",
-                       l10n_util::GetStringFUTF16(
-                           IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH_CUSTOM_MESSAGE,
-                           custom_message));
-  } else {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH,
-            security_interstitials::common_string_util::GetFormattedHostName(
-                request_url()),
-            l10n_util::GetStringUTF16(
-                IDS_ENTERPRISE_INTERSTITIALS_LEARN_MORE_ACCCESSIBILITY_TEXT)));
-  }
-
-  load_time_data.Set(
-      "proceedButtonText",
-      l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_CONTINUE_TO_SITE));
-  load_time_data.Set("primaryButtonText",
-                     l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_GO_BACK));
+  PopulateStrings(load_time_data);
 }
 
 void EnterpriseWarnPage::OnInterstitialClosing() {}
@@ -155,16 +135,3 @@ std::string EnterpriseWarnPage::GetCustomMessageForTesting() {
   return custom_message;
 }
 
-void EnterpriseWarnPage::PopulateStringsForSharedHTML(
-    base::Value::Dict& load_time_data) {
-  load_time_data.Set("enterprise-warn", true);
-  load_time_data.Set("overridable", false);
-  load_time_data.Set("hide_primary_button", false);
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("openDetails", "");
-  load_time_data.Set("explanationParagraph", "");
-  load_time_data.Set("finalParagraph", "");
-  load_time_data.Set("primaryButtonText", "");
-  load_time_data.Set("type", "ENTERPRISE_WARN");
-}

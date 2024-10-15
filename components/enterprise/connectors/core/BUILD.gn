@@ -19,6 +19,8 @@ source_set("core") {
     "connectors_service_base.h",
     "enterprise_connectors_policy_handler.cc",
     "enterprise_connectors_policy_handler.h",
+    "enterprise_interstitial_base.cc",
+    "enterprise_interstitial_base.h",
     "enterprise_interstitial_util.cc",
     "enterprise_interstitial_util.h",
     "realtime_reporting_client_base.cc",
@@ -45,8 +47,10 @@ source_set("core") {
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/strings:components_strings_grit",
+    "//ui/base",
     "//ui/gfx/range",
   ]
 

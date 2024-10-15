@@ -54,40 +54,23 @@ EnterpriseBlockPage::GetTypeForTesting() {
   return EnterpriseBlockPage::kTypeForTesting;
 }
 
+enterprise_connectors::EnterpriseInterstitialBase::Type
+EnterpriseBlockPage::type() const {
+  return Type::kBlock;
+}
+
+const std::vector<security_interstitials::UnsafeResource>&
+EnterpriseBlockPage::unsafe_resources() const {
+  return unsafe_resources_;
+}
+
+GURL EnterpriseBlockPage::request_url() const {
+  return security_interstitials::SecurityInterstitialPage::request_url();
+}
+
 void EnterpriseBlockPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
-  PopulateStringsForSharedHTML(load_time_data);
-  load_time_data.Set("tabTitle",
-                     l10n_util::GetStringUTF16(IDS_ENTERPRISE_BLOCK_TITLE));
-  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
-                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data.Set(
-      "enhancedProtectionMessage",
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
-
-  load_time_data.Set("heading",
-                     l10n_util::GetStringUTF16(IDS_ENTERPRISE_BLOCK_HEADING));
-  std::u16string custom_message =
-      enterprise_connectors::GetUrlFilteringCustomMessage(unsafe_resources_);
-  if (!custom_message.empty()) {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_ENTERPRISE_BLOCK_PRIMARY_PARAGRAPH_CUSTOM_MESSAGE,
-            custom_message));
-  } else {
-    load_time_data.Set(
-        "primaryParagraph",
-        l10n_util::GetStringFUTF16(
-            IDS_ENTERPRISE_BLOCK_PRIMARY_PARAGRAPH,
-            security_interstitials::common_string_util::GetFormattedHostName(
-                request_url()),
-            l10n_util::GetStringUTF16(
-                IDS_ENTERPRISE_INTERSTITIALS_LEARN_MORE_ACCCESSIBILITY_TEXT)));
-  }
-
-  load_time_data.Set("primaryButtonText",
-                     l10n_util::GetStringUTF16(IDS_ENTERPRISE_BLOCK_GO_BACK));
+  PopulateStrings(load_time_data);
 }
 
 void EnterpriseBlockPage::OnInterstitialClosing() {}
@@ -148,18 +131,3 @@ std::string EnterpriseBlockPage::GetCustomMessageForTesting() {
   return custom_message;
 }
 
-void EnterpriseBlockPage::PopulateStringsForSharedHTML(
-    base::Value::Dict& load_time_data) {
-  load_time_data.Set("enterprise-block", true);
-  load_time_data.Set("overridable", false);
-  load_time_data.Set("hide_primary_button", false);
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("openDetails", "");
-  load_time_data.Set("explanationParagraph", "");
-  load_time_data.Set("finalParagraph", "");
-  load_time_data.Set("primaryButtonText", "");
-
-  load_time_data.Set("type", "ENTERPRISE_BLOCK");
-}
