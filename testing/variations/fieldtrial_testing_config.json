@@ -13664,7 +13664,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "LocationProviderManagerMode": "NetworkOnly"
+                        "LocationProviderManagerMode": "HybridPlatform"
                     },
                     "enable_features": [
                         "LocationProviderManager"
