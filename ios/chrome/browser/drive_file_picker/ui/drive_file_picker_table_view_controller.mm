@@ -216,6 +216,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   self.navigationItem.searchController.delegate = self;
   self.navigationItem.searchController.hidesNavigationBarDuringPresentation =
       YES;
+  self.navigationItem.searchController.searchBar.accessibilityIdentifier =
+      kDriveFilePickerSearchBarIdentifier;
 
   // Initialize the table view.
   self.tableView.backgroundColor =
