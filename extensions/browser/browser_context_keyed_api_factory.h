@@ -152,18 +152,22 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
   // These can be effectively overridden with template specializations.
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
-    if (T::kServiceRedirectedInIncognito) {
-      return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-          context, T::kServiceIsCreatedInGuestMode);
+    // The GetContext...() implementations below treat guest sessions like
+    // normal ones, so explicitly exclude guest sessions here if necessary.
+    auto* const client = ExtensionsBrowserClient::Get();
+    if constexpr (!T::kServiceIsCreatedInGuestMode) {
+      if (client->IsGuestSession(context)) {
+        return nullptr;
+      }
     }
 
-    if (T::kServiceHasOwnInstanceInIncognito) {
-      return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-          context, T::kServiceIsCreatedInGuestMode);
+    if constexpr (T::kServiceRedirectedInIncognito) {
+      return client->GetContextRedirectedToOriginal(context);
+    } else if constexpr (T::kServiceHasOwnInstanceInIncognito) {
+      return client->GetContextOwnInstance(context);
+    } else {
+      return client->GetContextForOriginalOnly(context);
     }
-
-    return ExtensionsBrowserClient::Get()->GetContextForOriginalOnly(
-        context, T::kServiceIsCreatedInGuestMode);
   }
 
   bool ServiceIsCreatedWithBrowserContext() const override {

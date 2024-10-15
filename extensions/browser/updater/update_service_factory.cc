@@ -43,8 +43,7 @@ UpdateServiceFactory::BuildServiceInstanceForBrowserContext(
 
 content::BrowserContext* UpdateServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetContextForOriginalOnly(
-      context, /*force_guest_profile=*/true);
+  return ExtensionsBrowserClient::Get()->GetContextForOriginalOnly(context);
 }
 
 }  // namespace extensions
