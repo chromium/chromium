@@ -189,7 +189,12 @@ bool BookmarkMergedSurfaceService::IsParentFolderManaged(
   if (parent.HoldsNonPermanentFolder()) {
     return IsNodeManaged(parent.as_non_permanent_folder());
   }
-  return parent.as_permanent_folder() == PermanentFolderType::kManagedNode;
+
+  if (parent.as_permanent_folder() == PermanentFolderType::kManagedNode) {
+    CHECK(managed_permanent_node());
+    return true;
+  }
+  return false;
 }
 
 bool BookmarkMergedSurfaceService::IsNodeManaged(
