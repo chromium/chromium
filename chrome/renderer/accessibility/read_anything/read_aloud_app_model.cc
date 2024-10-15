@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/accessibility/read_aloud_app_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -11,7 +11,7 @@
 #include "chrome/renderer/accessibility/phrase_segmentation/phrase_segmenter.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/token_boundaries.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/tokenized_sentence.h"
-#include "chrome/renderer/accessibility/read_anything_node_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {

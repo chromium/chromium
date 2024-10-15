@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_TRAVERSAL_UTILS_H_
-#define CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_TRAVERSAL_UTILS_H_
+#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ALOUD_TRAVERSAL_UTILS_H_
+#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ALOUD_TRAVERSAL_UTILS_H_
 
 #include <string>
 
@@ -135,4 +135,4 @@ bool ShouldSplitAtParagraph(
     const ui::AXNodePosition::AXPositionInstance& position,
     const a11y::ReadAloudCurrentGranularity current_granularity);
 
-#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_TRAVERSAL_UTILS_H_
+#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ALOUD_TRAVERSAL_UTILS_H_

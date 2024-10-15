@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_constants.h"
 
 namespace string_constants {
 

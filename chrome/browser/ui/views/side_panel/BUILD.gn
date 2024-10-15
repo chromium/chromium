@@ -125,7 +125,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/tabs:tab_model",
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/common",
-    "//chrome/common/accessibility:mojo_bindings",
+    "//chrome/common/read_anything:mojo_bindings",
     "//components/lens",
     "//components/lens:buildflags",
     "//components/omnibox/browser",

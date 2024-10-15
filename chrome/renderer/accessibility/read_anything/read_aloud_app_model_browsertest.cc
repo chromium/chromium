@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/accessibility/read_aloud_app_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_test.h"

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/renderer/accessibility/read_anything_app_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 
 #include <cstddef>
 #include <string>
@@ -16,8 +16,8 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
-#include "chrome/renderer/accessibility/read_anything_node_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -248,8 +248,8 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
     return;
   }
 
-  // TODO(b/1266555): Consider using ax_position.h here to better manage
-  // selection.
+  // TODO(crbug.com/40802192): Consider using ax_position.h here to better
+  // manage selection.
   // Traverse the tree from and including the first sibling node to the last
   // last sibling node, inclusive. This ensures that when select-to-distill
   // is used to distill non-distillable content (such as Gmail), text
@@ -494,9 +494,9 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
   if (!pending_updates_map_.contains(tree_id)) {
     return;
   }
-  // TODO(b/1266555): Ensure there are no crashes / unexpected behavior if
-  //  an accessibility event is received on the same tree after unserialization
-  //  has begun.
+  // TODO(crbug.com/40802192): Ensure there are no crashes/unexpected behavior
+  // if an accessibility event is received on the same tree after
+  // unserialization has begun.
   std::vector<ui::AXTreeUpdate> update =
       pending_updates_map_.extract(tree_id).mapped();
   DCHECK(update.empty() || tree_id == active_tree_id_);

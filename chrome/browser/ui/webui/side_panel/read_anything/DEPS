@@ -1,5 +1,5 @@
 include_rules = [
-  "+chrome/common/accessibility",
+  "+chrome/common/read_anything",
 ]
 
 specific_include_rules = {

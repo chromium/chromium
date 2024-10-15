@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/accessibility/read_anything_test_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 
 namespace test {
 

@@ -1618,7 +1618,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Blue"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:Colors) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:Colors) -->
 
 <!-- LINT.IfChange(ReadAnythingEmptyState) -->
 
@@ -1627,7 +1627,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="User selection after empty state shown"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingEmptyState) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_constants.h:ReadAnythingEmptyState) -->
 
 <!-- LINT.IfChange(ReadAnythingFontName) -->
 
@@ -1641,7 +1641,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="STIX Two Text"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingFont) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_constants.h:ReadAnythingFont) -->
 
 <!-- LINT.IfChange(ReadAnythingHighlightState) -->
 
@@ -1661,7 +1661,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Wide"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LetterSpacing) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LetterSpacing) -->
 
 <!-- LINT.IfChange(ReadAnythingLineSpacing) -->
 
@@ -1672,7 +1672,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Loose"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LineSpacing) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LineSpacing) -->
 
 <!-- LINT.IfChange(ReadAnythingNewPage) -->
 
@@ -1712,7 +1712,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Main panel scrolled"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingScrollEvent) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_constants.h:ReadAnythingScrollEvent) -->
 
 <!-- LINT.IfChange(ReadAnythingSettingsChange) -->
 

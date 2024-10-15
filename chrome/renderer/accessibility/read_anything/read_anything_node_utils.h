@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_NODE_UTILS_H_
-#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_NODE_UTILS_H_
+#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_NODE_UTILS_H_
+#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_NODE_UTILS_H_
 
 #include "ui/accessibility/ax_node.h"
 
@@ -48,4 +48,4 @@ std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs);
 std::u16string GetNameAttributeText(ui::AXNode* ax_node);
 }  // namespace a11y
 
-#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_NODE_UTILS_H_
+#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_NODE_UTILS_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
-#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
+#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_CONTROLLER_H_
+#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_CONTROLLER_H_
 
 #include <deque>
 #include <map>
@@ -15,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/scoped_observation.h"
-#include "chrome/common/accessibility/read_anything.mojom.h"
-#include "chrome/renderer/accessibility/read_aloud_app_model.h"
-#include "chrome/renderer/accessibility/read_anything_app_model.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,7 +38,6 @@ class RenderFrame;
 
 namespace ui {
 class AXNode;
-class AXSerializableTree;
 class AXTree;
 }  // namespace ui
 
@@ -425,4 +424,4 @@ class ReadAnythingAppController
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
+#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_CONTROLLER_H_

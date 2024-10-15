@@ -60,7 +60,7 @@ browser_exposed_mojom_targets = [
   "//chrome/common:mojo_bindings",
   "//chrome/common:offline_page_auto_fetcher_mojom",
   "//chrome/common:supervised_user_commands_mojom",
-  "//chrome/common/accessibility:mojo_bindings",
+  "//chrome/common/read_anything:mojo_bindings",
   "//chrome/common/cart:mojo_bindings",
   "//chrome/common/compose:mojo_bindings",
   "//chrome/common/importer:interfaces",

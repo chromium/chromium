@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
-#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
+#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_MODEL_H_
+#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_MODEL_H_
 
 #include <map>
 
@@ -12,9 +12,9 @@
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/common/accessibility/read_anything.mojom.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
-#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
+#include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -152,9 +152,7 @@ class ReadAnythingAppModel {
       base::RepeatingCallback<void()> callback);
 
   bool page_finished_loading() const { return page_finished_loading_; }
-  void set_page_finished_loading(bool value) {
-    page_finished_loading_ = value;
-  }
+  void set_page_finished_loading(bool value) { page_finished_loading_ = value; }
   bool requires_tree_lang() const { return requires_tree_lang_; }
   void set_requires_tree_lang(bool value) { requires_tree_lang_ = value; }
 
@@ -384,4 +382,4 @@ class ReadAnythingAppModel {
   base::WeakPtrFactory<ReadAnythingAppModel> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
+#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_MODEL_H_

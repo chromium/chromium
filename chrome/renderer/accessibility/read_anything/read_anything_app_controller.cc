@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/accessibility/read_anything_app_controller.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 
 #include <climits>
 #include <memory>
@@ -19,11 +19,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
-#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
-#include "chrome/renderer/accessibility/read_anything_node_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -548,8 +548,8 @@ void ReadAnythingAppController::AccessibilityLocationChangesReceived(
 }
 
 void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
-  // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
-  // replace this function call with firing an event.
+  // TODO(crbug.com/40802192): Use v8::Function rather than javascript. If
+  // possible, replace this function call with firing an event.
   render_frame()->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 

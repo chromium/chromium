@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/accessibility/read_anything_app_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
-#include "chrome/renderer/accessibility/read_anything_node_utils.h"
-#include "chrome/renderer/accessibility/read_anything_test_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
