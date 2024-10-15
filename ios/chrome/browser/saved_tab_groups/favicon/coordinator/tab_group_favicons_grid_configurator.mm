@@ -11,10 +11,14 @@
 #import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/gfx/favicon_size.h"
 
 namespace {
+
+// Size for the default favicon.
+constexpr CGFloat kFaviconSize = 16;
 
 // Updates the `favicons_grid`s favicon with `favicon` at `index`.
 void UpdateFaviconsGrid(TabGroupFaviconsGrid* favicons_grid,
@@ -77,8 +81,9 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
   const int saved_tabs_count = saved_tabs.size();
   __weak TabGroupFaviconsGridConfigurationToken* weak_token =
       favicons_grid.configurationToken;
-  UIImage* fallback_image =
-      DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
+  UIImage* fallback_image = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
+      @[ [UIColor colorNamed:kGrey400Color] ]);
 
   // Display up to 4 favicons. If there are more than 4 saved tabs,
   // the last slot will display the total number of saved tabs.
