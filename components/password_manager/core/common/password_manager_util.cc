@@ -13,6 +13,16 @@
 
 namespace password_manager::util {
 
+namespace {
+
+// Returns true if the field attributes indicate a password field.
+bool IsLikelyPasswordField(std::u16string_view name, std::u16string_view id) {
+  return autofill::MatchesRegex<constants::kPasswordRe>(name) ||
+         autofill::MatchesRegex<constants::kPasswordRe>(id);
+}
+
+}  // namespace
+
 // The minimum length of the input name that allows considering it as potential
 // single username field.
 const size_t kMinInputNameLengthForSingleUsername = 2;
@@ -28,7 +38,9 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
                    std::string::npos ||
                field.autocomplete_attribute().find(
                    password_manager::constants::kAutocompleteWebAuthn) !=
-                   std::string::npos;
+                   std::string::npos ||
+               IsLikelyPasswordField(field.name_attribute(),
+                                     field.id_attribute());
       });
 }
 

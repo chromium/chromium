@@ -1148,14 +1148,15 @@ void PasswordFormManager::FillNow() {
       ParseFormAndMakeLogging(*observed_form(), FormDataParser::Mode::kFilling);
   parsed_observed_form_ = std::move(form_parsing_result.password_form);
 
-  // Server predicts new password field on a text field. Enable manual
-  // generation on such fields.
-  if (!form_parsing_result.manual_generation_enabled_field.is_null()) {
-    PasswordGenerationFrameHelper* password_generation_helper =
-        driver_->GetPasswordGenerationHelper();
-    if (password_generation_helper) {
+  // Enable manual generation on fields that form parser classified as eligible
+  // for password generation.
+  PasswordGenerationFrameHelper* password_generation_helper =
+      driver_->GetPasswordGenerationHelper();
+  if (password_generation_helper) {
+    for (const autofill::FieldRendererId& field_renderer_id :
+         form_parsing_result.manual_generation_enabled_fields) {
       password_generation_helper->AddManualGenerationEnabledField(
-          form_parsing_result.manual_generation_enabled_field);
+          field_renderer_id);
     }
   }
 

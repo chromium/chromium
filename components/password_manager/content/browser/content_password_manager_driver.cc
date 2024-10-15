@@ -367,13 +367,10 @@ void ContentPasswordManagerDriver::GeneratePassword(
 
 bool ContentPasswordManagerDriver::IsPasswordFieldForPasswordManager(
     autofill::FieldRendererId field_renderer_id,
-    const content::ContextMenuParams& params) {
-  if (params.form_control_type ==
-          blink::mojom::FormControlType::kInputPassword ||
-      params.is_password_type_by_heuristics) {
+    std::optional<blink::mojom::FormControlType> form_control_type) {
+  if (form_control_type == blink::mojom::FormControlType::kInputPassword) {
     return true;
   }
-
   password_manager::PasswordGenerationFrameHelper*
       password_generation_frame_helper = GetPasswordGenerationHelper();
   if (!password_generation_frame_helper) {

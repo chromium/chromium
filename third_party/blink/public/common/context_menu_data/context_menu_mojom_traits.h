@@ -202,11 +202,6 @@ struct BLINK_COMMON_EXPORT
     return r.form_renderer_id;
   }
 
-  static bool is_password_type_by_heuristics(
-      const blink::UntrustworthyContextMenuParams& r) {
-    return r.is_password_type_by_heuristics;
-  }
-
   static bool Read(blink::mojom::UntrustworthyContextMenuParamsDataView r,
                    blink::UntrustworthyContextMenuParams* out);
 };

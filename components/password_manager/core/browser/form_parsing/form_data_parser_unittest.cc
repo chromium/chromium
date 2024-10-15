@@ -58,8 +58,9 @@ enum class ElementRole {
   CONFIRMATION_PASSWORD,
   // Used for fields tagged only for webauthn autocomplete.
   WEBAUTHN,
-  // Text fields with new password server prediction.
-  TYPE_TEXT_NEW_PASSWORD_FIELD,
+  // Fields that are are eligible for manual password generation due to having
+  // weak signals of being a password field.
+  MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
 };
 
 // Expected FormFieldData are constructed based on these descriptions.
@@ -124,7 +125,7 @@ struct ParseResultIds {
   autofill::FieldRendererId new_password_id;
   autofill::FieldRendererId confirmation_password_id;
   std::vector<autofill::FieldRendererId> webauthn_ids;
-  autofill::FieldRendererId manual_generation_enabled_id;
+  std::vector<autofill::FieldRendererId> manual_generation_enabled_ids;
 
   bool IsEmpty() const {
     return username_id.is_null() && password_id.is_null() &&
@@ -161,8 +162,8 @@ void UpdateResultWithIdByRole(ParseResultIds* result,
       DCHECK(result->confirmation_password_id.is_null());
       result->confirmation_password_id = id;
       break;
-    case ElementRole::TYPE_TEXT_NEW_PASSWORD_FIELD:
-      result->manual_generation_enabled_id = id;
+    case ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD:
+      result->manual_generation_enabled_ids.push_back(id);
       break;
   }
 }
@@ -246,8 +247,11 @@ void CheckPasswordFormFields(const FormParsingResult& parsing_result,
              parsing_result.password_form->confirmation_password_element,
              nullptr, "confirmation_password");
 
-  EXPECT_EQ(expectations.manual_generation_enabled_id,
-            parsing_result.manual_generation_enabled_field);
+  // TODO: crbug.com/372635030 - Rewrite tests to look for 1:1 match between
+  // expected output and result output.
+  EXPECT_THAT(
+      parsing_result.manual_generation_enabled_fields,
+      testing::IsSupersetOf(expectations.manual_generation_enabled_ids));
 }
 
 // Checks that in a vector of pairs of string16s, all the first parts of the
@@ -1263,7 +1267,8 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
               {
                   {.form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::USERNAME_AND_EMAIL_ADDRESS},
-                  {.role = ElementRole::TYPE_TEXT_NEW_PASSWORD_FIELD,
+                  {.role =
+                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::NEW_PASSWORD},
               },
@@ -1274,7 +1279,8 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
           .fields =
               {
                   {.form_control_type = FormControlType::kInputText},
-                  {.role = ElementRole::TYPE_TEXT_NEW_PASSWORD_FIELD,
+                  {.role =
+                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::NEW_PASSWORD},
               },
@@ -1307,7 +1313,8 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
               {
                   {.form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::USERNAME_AND_EMAIL_ADDRESS},
-                  {.role = ElementRole::TYPE_TEXT_NEW_PASSWORD_FIELD,
+                  {.role =
+                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
               },
@@ -1318,7 +1325,8 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
           .fields =
               {
                   {.form_control_type = FormControlType::kInputText},
-                  {.role = ElementRole::TYPE_TEXT_NEW_PASSWORD_FIELD,
+                  {.role =
+                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
               },
@@ -3380,6 +3388,45 @@ TEST_F(FormParserTest, PasswordFieldsWithMaxLength) {
                },
            .is_new_password_reliable = false,
        }});
+}
+
+TEST_F(FormParserTest, ManualGenerationEnabledFields) {
+  CheckTestData({
+      {.description_for_logging =
+           "Fields with variations of the word password are eligible for "
+           "manual password generation.",
+       .fields = {{
+           .role = ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
+           .name = u"password",
+           .form_control_type = FormControlType::kInputText,
+       }}},
+  });
+  CheckTestData({
+      {.description_for_logging =
+           "One field must be classified as password while others must be "
+           "eligible for manual password generation.",
+       .fields =
+           {
+               {
+                   .role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"helloworld",
+                   .name = u"password1",
+                   .form_control_type = FormControlType::kInputPassword,
+               },
+               {
+                   .role =
+                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
+                   .name = u"password2",
+                   .form_control_type = FormControlType::kInputPassword,
+               },
+               {
+                   .role =
+                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
+                   .name = u"password3",
+                   .form_control_type = FormControlType::kInputPassword,
+               },
+           }},
+  });
 }
 
 }  // namespace

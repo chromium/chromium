@@ -96,7 +96,7 @@ struct FormParsingResult {
       UsernameDetectionMethod username_detection_method,
       bool is_new_password_reliable,
       std::vector<autofill::FieldRendererId> suggestion_banned_fields,
-      const autofill::FormFieldData* manual_generation_enabled_field);
+      std::vector<autofill::FieldRendererId> manual_generation_enabled_field);
   FormParsingResult(FormParsingResult&& other);
   ~FormParsingResult();
 
@@ -117,9 +117,12 @@ struct FormParsingResult {
   // List of fields that should have no Password Manager filling suggestions.
   std::vector<autofill::FieldRendererId> suggestion_banned_fields;
 
-  // If the parsed form has new password server prediction on the text field,
-  // the field will be stored here.
-  autofill::FieldRendererId manual_generation_enabled_field;
+  // List of the fields that have a signal that password generation should be
+  // allowed on the field. The signals are as follows:
+  // 1) Currently has type password or has been a type password at some point.
+  // 2) id/name attribute has a word "password" or its variations/translations.
+  // 3) Field has a new password server prediction.
+  std::vector<autofill::FieldRendererId> manual_generation_enabled_fields;
 };
 
 // This class takes care of parsing FormData into PasswordForm and managing

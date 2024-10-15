@@ -574,8 +574,9 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
   const bool add_password_generation_option =
       password_manager_util::ManualPasswordGenerationEnabled(
           &password_manager_driver) &&
-      (password_manager_driver.IsPasswordFieldForPasswordManager(
-          autofill::FieldRendererId(params_.field_renderer_id), params_));
+      password_manager_driver.IsPasswordFieldForPasswordManager(
+          autofill::FieldRendererId(params_.field_renderer_id),
+          params_.form_control_type);
 
   const bool add_passkey_from_another_device_option =
       base::FeatureList::IsEnabled(

@@ -124,7 +124,7 @@ class ContentPasswordManagerDriver final
   // 4) The server predicts the field as new password field.
   bool IsPasswordFieldForPasswordManager(
       autofill::FieldRendererId field_renderer_id,
-      const content::ContextMenuParams& params);
+      std::optional<blink::mojom::FormControlType> form_control_type);
 
   content::RenderFrameHost* render_frame_host() const {
     return render_frame_host_;

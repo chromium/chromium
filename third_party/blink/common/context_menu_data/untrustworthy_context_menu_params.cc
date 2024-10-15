@@ -81,7 +81,6 @@ void UntrustworthyContextMenuParams::Assign(
   is_content_editable_for_autofill = other.is_content_editable_for_autofill;
   field_renderer_id = other.field_renderer_id;
   form_renderer_id = other.form_renderer_id;
-  is_password_type_by_heuristics = other.is_password_type_by_heuristics;
 }
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;

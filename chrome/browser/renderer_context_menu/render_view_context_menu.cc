@@ -215,6 +215,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -2670,9 +2671,9 @@ void RenderViewContextMenu::AppendPasswordItems() {
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           GetRenderFrameHost());
 
-  if (!driver ||
-      !driver->IsPasswordFieldForPasswordManager(
-          autofill::FieldRendererId(params_.field_renderer_id), params_)) {
+  if (!driver || !driver->IsPasswordFieldForPasswordManager(
+                     autofill::FieldRendererId(params_.field_renderer_id),
+                     params_.form_control_type)) {
     return;
   }
 

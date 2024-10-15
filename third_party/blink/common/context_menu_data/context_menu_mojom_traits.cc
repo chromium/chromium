@@ -69,7 +69,6 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
   out->opened_from_highlight = data.opened_from_highlight();
   out->is_content_editable_for_autofill =
       data.is_content_editable_for_autofill();
-  out->is_password_type_by_heuristics = data.is_password_type_by_heuristics();
   return true;
 }
 

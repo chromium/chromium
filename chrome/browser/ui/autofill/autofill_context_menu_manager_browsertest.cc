@@ -512,11 +512,27 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     FormData form;
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_name(u"MyForm");
-    form.set_url(GURL("https://myform.com/form.html"));
+    form.set_url(GURL("https://myform.com/"));
     form.set_action(GURL("https://myform.com/submit.html"));
     form.set_fields({test::CreateTestFormField(
         "Password", "password", "", FormControlType::kInputPassword)});
+    password_manager::PasswordFormManager::
+        set_wait_for_server_predictions_for_filling(false);
+    OverrideLastCommittedOrigin(main_rfh(), url::Origin::Create(form.url()));
     AttachForm(form);
+    password_manager::PasswordManagerInterface* password_manager =
+        password_manager_driver()->GetPasswordManager();
+    password_manager->OnPasswordFormsParsed(password_manager_driver(), {form});
+    // First parsing is done for filling case. Password forms are only parsed
+    // when filling is enabled.
+    if (password_manager_client()->IsFillingEnabled(GURL(form.url()))) {
+      // Wait until `form` gets parsed.
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return password_manager->GetPasswordFormCache()->GetPasswordForm(
+            password_manager_driver(), form.renderer_id());
+      }));
+    }
+
     return form;
   }
 
@@ -1579,20 +1595,7 @@ class ManualFallbackMetricsTest
       case AutofillSuggestionTriggerSource::kManualFallbackPasswords: {
         // Create a password form manager for this form, to simulate that its
         // fields are classified as password form fields.
-        FormData form = CreateAndAttachPasswordForm();
-        password_manager::PasswordFormManager::
-            set_wait_for_server_predictions_for_filling(false);
-        password_manager::PasswordManager* password_manager =
-            static_cast<password_manager::PasswordManager*>(
-                password_manager_driver()->GetPasswordManager());
-        password_manager->OnPasswordFormsParsed(password_manager_driver(),
-                                                {form});
-        // Wait until `form` gets parsed.
-        EXPECT_TRUE(base::test::RunUntil([&]() {
-          return password_manager->GetPasswordFormCache()->GetPasswordForm(
-              password_manager_driver(), form.renderer_id());
-        }));
-        return form;
+        return CreateAndAttachPasswordForm();
       }
       default:
         NOTREACHED();

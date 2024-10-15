@@ -102,48 +102,6 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-constexpr char kPasswordRe[] =
-    // Synonyms and abbreviations of password.
-    "pass(?:word|code)|pas(?:word|code)|pswrd|psw|pswd|pwd|parole|watchword|"
-
-    // Translations.
-    "pasahitza|parol|lozinka|sifr|contrasenya|heslo|adgangskode|losen|"
-    "wachtwoord|paswoord|salasana|passe|contrasinal|passwort|jelszo|"
-    "sandi|signum|slaptazodis|kata|passord|haslo|senha|geslo|contrasena|"
-    "khau";
-
-void SetPasswordManagerData(Element* element, ContextMenuData& data) {
-  // Uses heuristics (finding 'password' and its short versions and translations
-  // in field name and id etc.) to recognize a field intended for password input
-  // of plain text HTML field type or `HasBeenPasswordField` which returns true
-  // due to either server predictions or user's masking of input values. It is
-  // used to set the field is_password_type_by_heuristics.
-  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    const AtomicString& id = input->GetIdAttribute();
-    const AtomicString& name = input->GetNameAttribute();
-
-    auto* isolate = element->GetDocument().GetAgent().isolate();
-    auto* per_isolate_data = V8PerIsolateData::From(isolate);
-    if (!per_isolate_data->GetPasswordRegexp()) {
-      per_isolate_data->SetPasswordRegexp(MakeGarbageCollected<ScriptRegexp>(
-          element->GetDocument().GetAgent().isolate(), kPasswordRe,
-          kTextCaseUnicodeInsensitive));
-    }
-
-    auto* password_regexp = per_isolate_data->GetPasswordRegexp();
-    data.is_password_type_by_heuristics =
-        (data.form_control_type == mojom::blink::FormControlType::kInputText ||
-         data.form_control_type == mojom::blink::FormControlType::kInputEmail ||
-         data.form_control_type ==
-             mojom::blink::FormControlType::kInputSearch ||
-         data.form_control_type == mojom::blink::FormControlType::kInputUrl ||
-         data.form_control_type == mojom::blink::FormControlType::kTextArea) &&
-        (password_regexp->Match(id.GetString()) >= 0 ||
-         password_regexp->Match(name.GetString()) >= 0 ||
-         input->HasBeenPasswordField());
-  }
-}
-
 void SetAutofillData(Node* node, ContextMenuData& data) {
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
     data.form_control_type = form_control->FormControlType();
@@ -834,7 +792,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   data.source_type = source_type;
 
   SetAutofillData(result.InnerNode(), data);
-  SetPasswordManagerData(result.InnerElement(), data);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||

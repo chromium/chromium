@@ -83,7 +83,6 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
       data.is_content_editable_for_autofill;
   params.field_renderer_id = data.field_renderer_id;
   params.form_renderer_id = data.form_renderer_id;
-  params.is_password_type_by_heuristics = data.is_password_type_by_heuristics;
 
   // TODO(crbug.com/373340199): Remove `WebMenuSourceType` and static_cast
   params.source_type = static_cast<ui::mojom::MenuSourceType>(data.source_type);

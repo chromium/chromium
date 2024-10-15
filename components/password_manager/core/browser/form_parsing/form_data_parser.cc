@@ -102,22 +102,27 @@ AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
   return result;
 }
 
-// Returns true if the |str| contains words related to CVC fields.
+// Returns true if the `str` contains words related to CVC fields.
 bool StringMatchesCVC(const std::u16string& str) {
   return autofill::MatchesRegex<autofill::kCardCvcRe>(str);
 }
 
-// Returns true if the |str| contains words related to SSN fields.
+// Returns true if the `str` contains words related to SSN fields.
 bool StringMatchesSSN(const std::u16string& str) {
   return autofill::MatchesRegex<constants::kSocialSecurityRe>(str);
 }
 
-// Returns true if the |str| contains words related to one time password fields.
+// Returns true if the `str` contains words related to one time password fields.
 bool StringMatchesOTP(const std::u16string& str) {
   return autofill::MatchesRegex<constants::kOneTimePwdRe>(str);
 }
 
-// Returns true if the |str| consists of one repeated non alphanumeric symbol.
+// Returns true if the `str` contains variations of the word password.
+bool StringMatchesPassword(const std::u16string& str) {
+  return autofill::MatchesRegex<constants::kPasswordRe>(str);
+}
+
+// Returns true if the `str` consists of one repeated non alphanumeric symbol.
 // This is likely a result of website modifying the value, and such value should
 // not be saved.
 bool StringMatchesHiddenValue(const std::u16string& str) {
@@ -198,9 +203,12 @@ struct SignificantFields {
   raw_ptr<const FormFieldData> password = nullptr;
   raw_ptr<const FormFieldData> new_password = nullptr;
   raw_ptr<const FormFieldData> confirmation_password = nullptr;
-  // If server has new password prediction on the text field, such field will be
-  // stored in `manual_generation_enabled_field`.
-  raw_ptr<const FormFieldData> manual_generation_enabled_field = nullptr;
+  // List of the fields that have a signal that password generation should be
+  // allowed on the field. The signals are as follows:
+  // 1) Currently has type password or has been a type password at some point.
+  // 2) id/name attribute has a word "password" or its variations/translations.
+  // 3) Field has a new password server prediction.
+  std::vector<autofill::FieldRendererId> manual_generation_enabled_fields;
   // True if the information about fields could only be derived after relaxing
   // some constraints. The resulting PasswordForm should only be used for
   // fallback UI.
@@ -481,7 +489,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
             } else {
               // Don't show automatic password generation suggestion, but allow
               // the manual generation.
-              result->manual_generation_enabled_field = processed_field->field;
+              result->manual_generation_enabled_fields.push_back(
+                  processed_field->field->renderer_id());
             }
           }
         }
@@ -1100,15 +1109,13 @@ FormParsingResult::FormParsingResult(
     UsernameDetectionMethod username_detection_method,
     bool is_new_password_reliable,
     std::vector<autofill::FieldRendererId> suggestion_banned_fields,
-    const FormFieldData* manual_generation_enabled_field)
+    std::vector<autofill::FieldRendererId> manual_generation_enabled_fields)
     : password_form(std::move(password_form)),
       username_detection_method(username_detection_method),
       is_new_password_reliable(is_new_password_reliable),
       suggestion_banned_fields(std::move(suggestion_banned_fields)),
-      manual_generation_enabled_field(
-          manual_generation_enabled_field
-              ? manual_generation_enabled_field->renderer_id()
-              : autofill::FieldRendererId()) {}
+      manual_generation_enabled_fields(
+          std::move(manual_generation_enabled_fields)) {}
 
 FormParsingResult::FormParsingResult(FormParsingResult&& other) = default;
 
@@ -1167,6 +1174,16 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   // Server classified all fields as not related to credentials, early return.
   if (processed_fields.empty()) {
     return FormParsingResult();
+  }
+
+  // Enable manual generation on all fields that look like password field.
+  for (const ProcessedField& field : processed_fields) {
+    if (field.is_password ||
+        StringMatchesPassword(field.field->name_attribute()) ||
+        StringMatchesPassword(field.field->id_attribute())) {
+      significant_fields.manual_generation_enabled_fields.push_back(
+          field.field->renderer_id());
+    }
   }
 
   // (2) If that failed, try to parse with autocomplete attributes.
@@ -1270,7 +1287,7 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
                            std::move(all_alternative_passwords),
                            std::move(all_alternative_usernames), predictions_),
       method, is_new_password_reliable, suggestion_banned_fields,
-      significant_fields.manual_generation_enabled_field);
+      significant_fields.manual_generation_enabled_fields);
 }
 
 std::unique_ptr<PasswordForm> FormDataParser::Parse(
