@@ -210,22 +210,6 @@ scoped_refptr<base::SequencedTaskRunner> TestProfileIOS::GetIOTaskRunner() {
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-ProfileIOS* TestProfileIOS::GetOriginalChromeBrowserState() {
-  return GetOriginalProfile();
-}
-
-bool TestProfileIOS::HasOffTheRecordChromeBrowserState() const {
-  return HasOffTheRecordProfile();
-}
-
-ProfileIOS* TestProfileIOS::GetOffTheRecordChromeBrowserState() {
-  return GetOffTheRecordProfile();
-}
-
-void TestProfileIOS::DestroyOffTheRecordChromeBrowserState() {
-  return DestroyOffTheRecordProfile();
-}
-
 TestProfileIOS*
 TestProfileIOS::CreateOffTheRecordBrowserStateWithTestingFactories(
     TestingFactories testing_factories) {

@@ -37,13 +37,6 @@ class ProfileIOSImpl final : public ProfileIOS {
   ~ProfileIOSImpl() override;
 
   // ProfileIOS:
-  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
-  ProfileIOS* GetOriginalChromeBrowserState() override;
-  bool HasOffTheRecordChromeBrowserState() const override;
-  ProfileIOS* GetOffTheRecordChromeBrowserState() override;
-  void DestroyOffTheRecordChromeBrowserState() override;
-
-  // ProfileIOS:
   ProfileIOS* GetOriginalProfile() override;
   bool HasOffTheRecordProfile() const override;
   ProfileIOS* GetOffTheRecordProfile() override;

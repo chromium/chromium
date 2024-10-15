@@ -278,16 +278,8 @@ ProfileIOSImpl::~ProfileIOSImpl() {
   DestroyOffTheRecordProfile();
 }
 
-ProfileIOS* ProfileIOSImpl::GetOriginalChromeBrowserState() {
-  return GetOriginalProfile();
-}
-
 ProfileIOS* ProfileIOSImpl::GetOriginalProfile() {
   return this;
-}
-
-ProfileIOS* ProfileIOSImpl::GetOffTheRecordChromeBrowserState() {
-  return GetOffTheRecordProfile();
 }
 
 ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
@@ -299,16 +291,8 @@ ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
   return otr_state_.get();
 }
 
-bool ProfileIOSImpl::HasOffTheRecordChromeBrowserState() const {
-  return HasOffTheRecordProfile();
-}
-
 bool ProfileIOSImpl::HasOffTheRecordProfile() const {
   return !!otr_state_;
-}
-
-void ProfileIOSImpl::DestroyOffTheRecordChromeBrowserState() {
-  return DestroyOffTheRecordProfile();
 }
 
 void ProfileIOSImpl::DestroyOffTheRecordProfile() {

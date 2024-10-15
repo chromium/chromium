@@ -99,13 +99,6 @@ class TestProfileIOS final : public ProfileIOS {
   bool IsOffTheRecord() const override;
 
   // ProfileIOS:
-  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
-  ProfileIOS* GetOriginalChromeBrowserState() override;
-  bool HasOffTheRecordChromeBrowserState() const override;
-  ProfileIOS* GetOffTheRecordChromeBrowserState() override;
-  void DestroyOffTheRecordChromeBrowserState() override;
-
-  // ProfileIOS:
   ProfileIOS* GetOriginalProfile() override;
   bool HasOffTheRecordProfile() const override;
   ProfileIOS* GetOffTheRecordProfile() override;
@@ -135,7 +128,7 @@ class TestProfileIOS final : public ProfileIOS {
   // object, or is itself off-the-record.
   //
   // This method will be called without factories if the
-  // method `GetOffTheRecordChromeBrowserState()` is called on
+  // method `GetOffTheRecordProfile()` is called on
   // this object.
   // TODO(crbug.com/358299863): Remove this function once fully migrated.
   TestProfileIOS* CreateOffTheRecordBrowserStateWithTestingFactories(

@@ -63,22 +63,6 @@ OffTheRecordProfileIOSImpl::~OffTheRecordProfileIOSImpl() {
   GetApplicationContext()->GetIOSChromeIOThread()->ChangedToOnTheRecord();
 }
 
-ProfileIOS* OffTheRecordProfileIOSImpl::GetOriginalChromeBrowserState() {
-  return GetOriginalProfile();
-}
-
-bool OffTheRecordProfileIOSImpl::HasOffTheRecordChromeBrowserState() const {
-  return HasOffTheRecordProfile();
-}
-
-ProfileIOS* OffTheRecordProfileIOSImpl::GetOffTheRecordChromeBrowserState() {
-  return GetOffTheRecordProfile();
-}
-
-void OffTheRecordProfileIOSImpl::DestroyOffTheRecordChromeBrowserState() {
-  return DestroyOffTheRecordProfile();
-}
-
 ProfileIOS* OffTheRecordProfileIOSImpl::GetOriginalProfile() {
   return original_profile_;
 }
