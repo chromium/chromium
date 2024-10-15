@@ -1868,6 +1868,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/desktop_windowing/android:java",
       "//components/browser_ui/device_lock/android:java",
       "//components/browser_ui/display_cutout/android:java",
+      "//components/browser_ui/edge_to_edge/android:java",
       "//components/browser_ui/media/android:java",
       "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/modaldialog/android:java_resources",

@@ -151,6 +151,7 @@ android_library("java") {
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/desktop_windowing/android:java",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",

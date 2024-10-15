@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * A simple implementation of {@link EdgeToEdgePadAdjuster} which can add a padding when e2e is on

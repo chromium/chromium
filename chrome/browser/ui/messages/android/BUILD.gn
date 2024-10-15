@@ -40,6 +40,7 @@ android_library("java") {
     "//chrome/browser/ui/android/edge_to_edge:factory_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/util:java",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
