@@ -25,3 +25,14 @@ component("features") {
   public_deps = [ "//base" ]
   deps = [ "//components/subresource_filter/core/mojom" ]
 }
+
+source_set("prefs") {
+  output_name = "fingerprinting_protection_filter_prefs"
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+    "prefs.cc",
+    "prefs.h",
+  ]
+  deps = [ "//components/prefs" ]
+}
