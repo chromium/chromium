@@ -13,6 +13,7 @@ import org.chromium.base.cached_flags.ValuesReturned;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -57,8 +58,32 @@ public class Features {
     public static void reset(Map<String, Boolean> flagStates) {
         // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
         //     native feature list has been initialized.
-        FeatureList.setTestFeaturesNoResetForTesting(flagStates);
+        Map<String, Boolean> cleanFlagStates = cleanUpFlagStates(flagStates);
+        FeatureList.setTestFeaturesNoResetForTesting(cleanFlagStates);
         // Apply "--force-fieldtrials" passed by @CommandLineFlags.
         FieldTrials.getInstance().applyFieldTrials(CommandLine.getInstance());
+    }
+
+    /**
+     * Removes field trials from the keys of |flagsStates|.
+     *
+     * <p>E.g.: {"FeatureA<Trial1": true} becomes {"FeatureA": true}.
+     */
+    private static Map<String, Boolean> cleanUpFlagStates(Map<String, Boolean> flagStates) {
+        Map<String, Boolean> cleanFlagStates = new HashMap<>();
+        for (Map.Entry<String, Boolean> entry : flagStates.entrySet()) {
+            String rawFeatureName = entry.getKey();
+            Boolean featureFlagValue = entry.getValue();
+            if (rawFeatureName.contains("<")) {
+                assert featureFlagValue
+                        : String.format(
+                                "--disable-features=%s should not have a field trial",
+                                rawFeatureName);
+                cleanFlagStates.put(rawFeatureName.split("<")[0], featureFlagValue);
+            } else {
+                cleanFlagStates.put(rawFeatureName, featureFlagValue);
+            }
+        }
+        return cleanFlagStates;
     }
 }
