@@ -31,6 +31,7 @@ import {CraButton} from '../components/cra/cra-button.js';
 import {CraDialog} from '../components/cra/cra-dialog.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import {withTooltip} from '../components/directives/with-tooltip.js';
 import {
   TranscriptionConsentDialog,
 } from '../components/transcription-consent-dialog.js';
@@ -668,6 +669,10 @@ export class RecordPage extends ReactiveLitElement {
       return nothing;
     }
     const session = this.recordingSession.value;
+    const muteButtonLabel = this.micMuted.value ?
+      i18n.recordUnmuteButtonTooltip :
+      i18n.recordMuteButtonTooltip;
+
     return html`
       <audio-waveform .values=${session.progress.value.powers}>
       </audio-waveform>
@@ -677,7 +682,8 @@ export class RecordPage extends ReactiveLitElement {
         shape="circle"
         @click=${this.onToggleMuted}
         .selected=${this.micMuted.value}
-        aria-label=${i18n.recordMuteButtonTooltip}
+        aria-label=${muteButtonLabel}
+        ${withTooltip()}
       >
         <cra-icon slot="icon" name="mic"></cra-icon>
         <cra-icon slot="selectedIcon" name="mic_mute"></cra-icon>
@@ -859,12 +865,16 @@ export class RecordPage extends ReactiveLitElement {
   }
 
   private renderHeader() {
+    const transcriptButtonTooltip = this.transcriptionShown.value ?
+      i18n.recordHideTranscriptButtonTooltip :
+      i18n.recordShowTranscriptButtonTooltip;
     const toggleTranscriptionButton = html`
       <cra-icon-button
         buttonstyle="toggle"
         @click=${this.toggleTranscriptionShown}
         aria-expanded=${this.transcriptionShown.value}
-        aria-label=${i18n.recordTranscriptButtonTooltip}
+        aria-label=${transcriptButtonTooltip}
+        ${withTooltip()}
       >
         <cra-icon slot="icon" name="notes"></cra-icon>
         <cra-icon slot="selectedIcon" name="notes"></cra-icon>
@@ -876,6 +886,7 @@ export class RecordPage extends ReactiveLitElement {
           buttonstyle="floating"
           @click=${this.onBackClick}
           aria-label=${i18n.backToMainButtonAriaLabel}
+          ${withTooltip(i18n.backToMainButtonTooltip)}
         >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
@@ -887,6 +898,7 @@ export class RecordPage extends ReactiveLitElement {
           @click=${this.toggleMenu}
           id="show-menu"
           aria-label=${i18n.recordMenuButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
@@ -903,6 +915,10 @@ export class RecordPage extends ReactiveLitElement {
     const footerClasses = {
       paused: this.recordingPaused.value,
     };
+
+    const pauseButtonTooltip = this.recordingPaused.value ?
+      i18n.recordResumeButtonTooltip :
+      i18n.recordPauseButtonTooltip;
 
     return html`
       <div id="container" part="container">
@@ -923,6 +939,7 @@ export class RecordPage extends ReactiveLitElement {
             <secondary-button
               @click=${this.onDeleteButtonClick}
               aria-label=${i18n.recordDeleteButtonTooltip}
+              ${withTooltip()}
             >
               <cra-icon slot="icon" name="delete"></cra-icon>
             </secondary-button>
@@ -930,10 +947,11 @@ export class RecordPage extends ReactiveLitElement {
             <secondary-button
               id="pause-button"
               @click=${this.onPauseButtonClick}
-              aria-label=${i18n.recordPauseButtonTooltip}
+              aria-label=${pauseButtonTooltip}
               buttonstyle="toggle"
               class="with-filled-style"
               .selected=${this.recordingPaused.value}
+              ${withTooltip()}
             >
               <cra-icon slot="icon" name="pause"></cra-icon>
               <cra-icon slot="selectedIcon" name="pause"></cra-icon>
