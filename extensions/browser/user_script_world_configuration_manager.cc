@@ -53,7 +53,7 @@ class UserScriptWorldConfigurationManagerFactory
     // incognito-only world specifications and have them cleaned up when the
     // profile is destroyed.
     return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-        context);
+        context, /*force_guest_profile=*/true);
   }
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {

@@ -68,7 +68,7 @@ ExtensionPrefsFactory::BuildServiceInstanceForBrowserContext(
 content::BrowserContext* ExtensionPrefsFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context);
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

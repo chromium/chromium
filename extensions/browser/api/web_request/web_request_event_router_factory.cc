@@ -51,7 +51,7 @@ BrowserContext* WebRequestEventRouterFactory::GetBrowserContextToUse(
   // WebRequestAPI shares an instance between regular and incognito profiles,
   // so this must do the same.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context);
+      context, /*force_guest_profile=*/true);
 }
 
 bool WebRequestEventRouterFactory::ServiceIsCreatedWithBrowserContext() const {

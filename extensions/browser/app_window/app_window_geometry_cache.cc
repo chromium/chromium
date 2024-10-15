@@ -297,7 +297,7 @@ content::BrowserContext*
 AppWindowGeometryCache::Factory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context);
+      context, /*force_guest_profile=*/true);
 }
 
 void AppWindowGeometryCache::AddObserver(Observer* observer) {

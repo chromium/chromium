@@ -45,7 +45,8 @@ BrowserContext* ExtensionRegistryFactory::GetBrowserContextToUse(
   // Redirected in incognito.
   auto* extension_browser_client = ExtensionsBrowserClient::Get();
   DCHECK(extension_browser_client);
-  return extension_browser_client->GetContextRedirectedToOriginal(context);
+  return extension_browser_client->GetContextRedirectedToOriginal(
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

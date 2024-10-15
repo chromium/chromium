@@ -67,7 +67,8 @@ OffscreenDocumentManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   // Use the `context` passed in; this service has separate instances in
   // on-the-record and incognito.
-  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
+      context, /*force_guest_profile=*/true);
 }
 
 KeyedService* OffscreenDocumentManagerFactory::BuildServiceInstanceFor(

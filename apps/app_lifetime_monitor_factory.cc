@@ -46,7 +46,7 @@ bool AppLifetimeMonitorFactory::ServiceIsCreatedWithBrowserContext() const {
 content::BrowserContext* AppLifetimeMonitorFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return extensions::ExtensionsBrowserClient::Get()
-      ->GetContextRedirectedToOriginal(context);
+      ->GetContextRedirectedToOriginal(context, /*force_guest_profile=*/true);
 }
 
 }  // namespace apps

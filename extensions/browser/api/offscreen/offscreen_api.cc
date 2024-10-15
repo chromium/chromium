@@ -37,7 +37,8 @@ content::BrowserContext& GetBrowserContextToUse(
 
   // The on-the-record profile always uses itself.
   if (!calling_context.IsOffTheRecord()) {
-    return *client->GetContextForOriginalOnly(&calling_context);
+    return *client->GetContextForOriginalOnly(&calling_context,
+                                              /*force_guest_profile=*/true);
   }
 
   DCHECK(util::IsIncognitoEnabled(extension.id(), &calling_context))
@@ -46,9 +47,10 @@ content::BrowserContext& GetBrowserContextToUse(
   // Split-mode extensions use the incognito (calling) context; spanning mode
   // extensions fall back to the original profile.
   bool is_split_mode = IncognitoInfo::IsSplitMode(&extension);
-  return is_split_mode
-             ? *client->GetContextOwnInstance(&calling_context)
-             : *client->GetContextRedirectedToOriginal(&calling_context);
+  return is_split_mode ? *client->GetContextOwnInstance(
+                             &calling_context, /*force_guest_profile=*/true)
+                       : *client->GetContextRedirectedToOriginal(
+                             &calling_context, /*force_guest_profile=*/true);
 }
 
 // Similar to the above, returns the OffscreenDocumentManager to use for the

@@ -50,14 +50,19 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
   content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) override;
+
   content::BrowserContext* GetContextRedirectedToOriginal(
-      content::BrowserContext* context) override;
+      content::BrowserContext* context,
+      bool force_guest_profile) override;
   content::BrowserContext* GetContextOwnInstance(
-      content::BrowserContext* context) override;
+      content::BrowserContext* context,
+      bool force_guest_profile) override;
   content::BrowserContext* GetContextForOriginalOnly(
-      content::BrowserContext* context) override;
+      content::BrowserContext* context,
+      bool force_guest_profile) override;
   bool AreExtensionsDisabledForContext(
       content::BrowserContext* context) override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   std::string GetUserIdHashFromContext(
       content::BrowserContext* context) override;

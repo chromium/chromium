@@ -84,7 +84,7 @@ NetworkingPrivateDelegateFactory::BuildServiceInstanceForBrowserContext(
 BrowserContext* NetworkingPrivateDelegateFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context);
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

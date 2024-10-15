@@ -52,7 +52,7 @@ content::BrowserContext* SavedFilesServiceFactory::GetBrowserContextToUse(
   // when apps white-listed in guest sessions attempt to use chrome.fileSystem
   // API.
   return extensions::ExtensionsBrowserClient::Get()
-      ->GetContextRedirectedToOriginal(context);
+      ->GetContextRedirectedToOriginal(context, /*force_guest_profile=*/true);
 }
 
 }  // namespace apps

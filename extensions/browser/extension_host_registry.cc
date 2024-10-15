@@ -56,7 +56,7 @@ content::BrowserContext* ExtensionHostRegistryFactory::GetBrowserContextToUse(
   // the original context. This makes it quite challenging to let this have its
   // own incognito context.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context);
+      context, /*force_guest_profile=*/true);
 }
 
 KeyedService* ExtensionHostRegistryFactory::BuildServiceInstanceFor(

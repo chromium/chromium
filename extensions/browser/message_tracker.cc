@@ -70,7 +70,7 @@ content::BrowserContext* MessageTrackerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   // One instance will exist across incognito and regular contexts.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context);
+      context, /*force_guest_profile=*/true);
 }
 
 std::unique_ptr<KeyedService>

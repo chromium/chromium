@@ -95,18 +95,21 @@ BrowserContext* ShellExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 ShellExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool force_guest_profile) {
   return context;
 }
 
 content::BrowserContext* ShellExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool force_guest_profile) {
   return context;
 }
 
 content::BrowserContext*
 ShellExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool force_guest_profile) {
   return context;
 }
 

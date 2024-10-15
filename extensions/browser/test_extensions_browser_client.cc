@@ -104,17 +104,20 @@ BrowserContext* TestExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 TestExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool force_guest_profile) {
   return GetOriginalContext(context);
 }
 
 content::BrowserContext* TestExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool force_guest_profile) {
   return context;
 }
 
 content::BrowserContext* TestExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool force_guest_profile) {
   // Default implementation of
   // `BrowserContextKeyedServiceFactory::GetBrowserContextToUse()`.
   return context->IsOffTheRecord() ? nullptr : context;
