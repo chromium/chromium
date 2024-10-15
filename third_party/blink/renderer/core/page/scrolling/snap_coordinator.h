@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class Element;
 class LayoutBox;
 
 // Snap Coordinator keeps track of snap containers and all of their associated
@@ -38,7 +39,7 @@ class CORE_EXPORT SnapCoordinator final {
   // Calculate the SnapAreaData for the specific snap area in its snap
   // container.
   static cc::SnapAreaData CalculateSnapAreaData(
-      const LayoutBox& snap_area,
+      Element& snap_area,
       const LayoutBox& snap_container);
 
   // Returns true if the SnapContainerData actually changed.

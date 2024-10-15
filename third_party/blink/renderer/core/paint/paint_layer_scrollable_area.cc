@@ -1938,11 +1938,11 @@ void PaintLayerScrollableArea::UpdateFocusDataForSnapAreas() {
 
   for (auto& fragment : layout_box->PhysicalFragments()) {
     if (auto* snap_areas = fragment.SnapAreas()) {
-      for (const LayoutBox* snap_area : *snap_areas) {
-        cc::ElementId element_id = CompositorElementIdFromDOMNodeId(
-            snap_area->GetNode()->GetDomNodeId());
-        container_data->UpdateSnapAreaFocus(
-            id_to_index.at(element_id), snap_area->GetNode()->HasFocusWithin());
+      for (Element* snap_area : *snap_areas) {
+        cc::ElementId element_id =
+            CompositorElementIdFromDOMNodeId(snap_area->GetDomNodeId());
+        container_data->UpdateSnapAreaFocus(id_to_index.at(element_id),
+                                            snap_area->HasFocusWithin());
       }
     }
   }

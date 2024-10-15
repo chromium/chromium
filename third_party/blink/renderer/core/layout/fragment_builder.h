@@ -24,6 +24,7 @@
 
 namespace blink {
 
+class ColumnPseudoElement;
 class ColumnSpannerPath;
 class EarlyBreak;
 class FragmentItemsBuilder;
@@ -176,6 +177,8 @@ class CORE_EXPORT FragmentBuilder {
 
   void PropagateStickyDescendants(const PhysicalFragment& child);
   void PropagateSnapAreas(const PhysicalFragment& child);
+
+  void AddSnapAreaForColumn(ColumnPseudoElement*);
 
   // Propagate |child|'s anchor for the CSS Anchor Positioning to |this|
   // builder. This includes the anchor of the |child| itself and anchors
@@ -515,7 +518,7 @@ class CORE_EXPORT FragmentBuilder {
   }
 
   HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
-  HeapVector<Member<LayoutBox>>& EnsureSnapAreas();
+  HeapVector<Member<Element>>& EnsureSnapAreas();
   LogicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
@@ -563,7 +566,7 @@ class CORE_EXPORT FragmentBuilder {
   const BreakToken* break_token_ = nullptr;
 
   HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
-  HeapVector<Member<LayoutBox>>* snap_areas_ = nullptr;
+  HeapVector<Member<Element>>* snap_areas_ = nullptr;
   // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target
   const LayoutObject* scroll_start_target_ = nullptr;
   LogicalAnchorQuery* anchor_query_ = nullptr;

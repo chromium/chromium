@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -116,7 +117,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
    public:
     PropagatedData(
         const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
-        const HeapVector<Member<LayoutBox>>* snap_areas,
+        const HeapVector<Member<Element>>* snap_areas,
         const Member<const LayoutObject> scroll_start_target)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
@@ -127,7 +128,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       visitor->Trace(scroll_start_target);
     }
     Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
-    Member<const HeapVector<Member<LayoutBox>>> snap_areas;
+    Member<const HeapVector<Member<Element>>> snap_areas;
     Member<const LayoutObject> scroll_start_target;
   };
 
@@ -661,10 +662,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return IsScrollContainer() ? nullptr : ScrollStartTarget();
   }
 
-  const HeapVector<Member<LayoutBox>>* SnapAreas() const {
+  const HeapVector<Member<Element>>* SnapAreas() const {
     return propagated_data_ ? propagated_data_->snap_areas.Get() : nullptr;
   }
-  const HeapVector<Member<LayoutBox>>* PropagatedSnapAreas() const {
+  const HeapVector<Member<Element>>* PropagatedSnapAreas() const {
     return IsScrollContainer() ? nullptr : SnapAreas();
   }
 

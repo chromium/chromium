@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/not_fatal_until.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
@@ -1071,8 +1072,12 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       const WritingModeConverter converter(
           GetConstraintSpace().GetWritingDirection(),
           LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
-      element->CreateColumnPseudoElement(
+      ColumnPseudoElement* column_pseudo = element->CreateColumnPseudoElement(
           converter.ToPhysical(column_logical_rect));
+      if (column_pseudo->GetComputedStyle()->GetScrollSnapAlign() !=
+          cc::ScrollSnapAlign()) {
+        container_builder_.AddSnapAreaForColumn(column_pseudo);
+      }
     }
   }
 
