@@ -47,7 +47,7 @@ webui_ts_library("build_ts") {
     "cellular_setup/psim_flow_ui_test.ts",
     "cellular_setup/setup_loading_page_test.ts",
     "network/apn_list_item_test.js",
-    "network/apn_list_test.js",
+    "network/apn_list_test.ts",
     "network/apn_selection_dialog_test.js",
     "network/apn_selection_dialog_list_item_test.js",
     "network/cr_policy_network_behavior_mojo_tests.js",

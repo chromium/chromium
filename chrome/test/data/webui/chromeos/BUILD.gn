@@ -210,7 +210,7 @@ webui_ts_library("build_ts") {
     "multidevice_setup/setup_succeeded_page_test.js",
     "multidevice_setup/start_setup_page_test.js",
     "network/apn_list_item_test.js",
-    "network/apn_list_test.js",
+    "network/apn_list_test.ts",
     "network/apn_selection_dialog_list_item_test.js",
     "network/apn_selection_dialog_test.js",
     "network/cr_policy_network_behavior_mojo_tests.js",
