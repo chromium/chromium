@@ -7813,9 +7813,6 @@ test("unit_tests") {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:unit_tests",
       "//chrome/browser/ui/toasts/api:unit_tests",
-
-      # TODO(crbug.com/369756821): Remove when the modularization of //c/b/ui/global_media_controls happens.
-      "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/toolbar/cast:unit_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
