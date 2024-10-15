@@ -46,6 +46,10 @@ class MockOdfsUploader : public ash::cloud_upload::OdfsMigrationUploader {
 
   MOCK_METHOD(void, Cancel, (), (override));
 
+  base::WeakPtr<MockOdfsUploader> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   MockOdfsUploader(Profile* profile,
                    int64_t id,
@@ -77,6 +81,8 @@ class MockOdfsUploader : public ash::cloud_upload::OdfsMigrationUploader {
 
   UploadDoneCallback done_callback_;
   storage::FileSystemURL file_system_url_;
+
+  base::WeakPtrFactory<MockOdfsUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -118,7 +124,7 @@ class OneDriveMigrationCoordinatorTest : public SkyvaultOneDriveTest {
       const base::FilePath& path) {
     scoped_refptr<MockOdfsUploader> uploader = MockOdfsUploader::Create(
         profile, id, file_system_url, path, std::move(run_callback));
-    odfs_uploader_ = uploader.get();
+    odfs_uploader_ = uploader->GetWeakPtr();
     // Whenever an uploader is created, its Run method is immediately called:
     EXPECT_CALL(*odfs_uploader_, Run).Times(1);
     return std::move(uploader);
@@ -128,7 +134,7 @@ class OneDriveMigrationCoordinatorTest : public SkyvaultOneDriveTest {
   // for single file uploads, as only the last created pointer is stored.
   // The lifetime is managed by the Upload method after which the instance is
   // destroyed.
-  raw_ptr<MockOdfsUploader, DanglingUntriaged> odfs_uploader_ = nullptr;
+  base::WeakPtr<MockOdfsUploader> odfs_uploader_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
