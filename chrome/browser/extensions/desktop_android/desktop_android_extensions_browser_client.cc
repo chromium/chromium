@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_web_contents_observer.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/version_info/version_info.h"
@@ -257,7 +258,7 @@ void DesktopAndroidExtensionsBrowserClient::
 std::unique_ptr<RuntimeAPIDelegate>
 DesktopAndroidExtensionsBrowserClient::CreateRuntimeAPIDelegate(
     content::BrowserContext* context) const {
-  return nullptr;
+  return std::make_unique<DesktopAndroidRuntimeApiDelegate>();
 }
 
 const ComponentExtensionResourceManager*

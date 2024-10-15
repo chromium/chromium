@@ -7837,6 +7837,8 @@ static_library("browser") {
       "extensions/desktop_android/desktop_android_extension_web_contents_observer.h",
       "extensions/desktop_android/desktop_android_extensions_browser_client.cc",
       "extensions/desktop_android/desktop_android_extensions_browser_client.h",
+      "extensions/desktop_android/desktop_android_runtime_api_delegate.cc",
+      "extensions/desktop_android/desktop_android_runtime_api_delegate.h",
     ]
     public_deps += [ "//extensions/browser" ]
     deps += [ "//extensions/browser/updater" ]
