@@ -209,7 +209,11 @@ std::string TipsExperimentTrainEnabled() {
 
 BASE_FEATURE(kSegmentationSurveyPage,
              "SegmentationSurveyPage",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
     &kSegmentationSurveyPage, "survey_internals_page", /*default_value=*/true};
