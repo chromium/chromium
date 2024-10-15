@@ -2544,7 +2544,14 @@ StyleColor ResolveColorValue(const CSSValue& value,
   if (ShouldConvertLegacyColorSpaceToSRGB(value) && result.IsAbsoluteColor()) {
     Color color = result.GetColor();
     if (Color::IsLegacyColorSpace(color.GetColorSpace())) {
-      color.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+      // Missing components can be carried forward when converting rgb(...) to
+      // color(srgb, ...) since the two color spaces have analogous components.
+      // For other legacy spaces, conversion to color(srgb, ...) requires
+      // resolving missing components.
+      const bool resolve_missing_components =
+          (color.GetColorSpace() != Color::ColorSpace::kSRGBLegacy);
+      color.ConvertToColorSpace(Color::ColorSpace::kSRGB,
+                                resolve_missing_components);
       result = StyleColor(color);
     }
   }

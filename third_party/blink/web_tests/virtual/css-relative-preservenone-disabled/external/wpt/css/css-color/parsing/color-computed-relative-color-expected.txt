@@ -1,5 +1,15 @@
 This is a testharness.js-based test.
-Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'rgb(from rebeccapurple none none none)'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'rgb(from rebeccapurple none none none / none)'
+  Colors do not match.\nActual:   color(srgb 0 0 0 / none)\nExpected: color(srgb none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'rgb(from rebeccapurple r g none)'
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0)\nExpected: color(srgb 0.4 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'rgb(from rebeccapurple r g none / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0)\nExpected: color(srgb 0.4 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'rgb(from rgb(20% 40% 60% / 80%) r g none / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.2 0.4 0 / 0.8)\nExpected: color(srgb 0.2 0.4 none / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] Property color value 'color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple)'
   Colors do not match.\nActual:   color(srgb 0.2 0.2 0.6)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.2
 [FAIL] Property color value 'light-dark(color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple), color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple))'
