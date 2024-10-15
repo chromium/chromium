@@ -63,6 +63,7 @@ LobsterSessionImpl::~LobsterSessionImpl() = default;
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                                            const base::FilePath& file_path,
                                            StatusCallback status_callback) {
+  RecordLobsterState(LobsterMetricState::kCandidateDownload);
   InflateCandidateAndPerformAction(
       candidate_id,
       base::BindOnce(
