@@ -679,15 +679,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORD_SETTINGS_SAVE_PASSWORDS" desc="Title for the checkbox toggling whether passwords are saved or not. [CHAR_LIMIT=32]">
         Save passwords
       </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_TOGGLE_TITLE" desc="Title for the toggle in settings that controls whether signed-in users can save/autofill passwords to/from their account.">
-        Use and save passwords in your Google Account
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_TOGGLE_SUMMARY" desc="Summary for the toggle in settings that controls whether signed-in users can save/autofill passwords to/from their account.">
-        When on, passwords are saved in <ph name="ACCOUNT">%1$s<ex>foo@gmail.com</ex></ph>. When off, passwords are saved only to this device.
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_TOGGLE_SUMMARY_NO_EMAIL" desc="Same as IDS_PASSWORDS_ACCOUNT_STORAGE_TOGGLE_SUMMARY but for accounts whose emails we cannot display.">
-        When on, passwords are saved in your account. When off, passwords are saved only to this device.
-      </message>
       <message name="IDS_PASSWORDS_AUTO_SIGNIN_TITLE" desc="Title for checkbox to enable automatically signing the user in to websites">
         Auto Sign-in
       </message>

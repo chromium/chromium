@@ -17,7 +17,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -175,16 +174,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT, true);
-        // The toggle to disable account storage lives on different fragments depending on the flag.
-        @SettingsFragment
-        int fragment =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? SettingsFragment.MANAGE_SYNC
-                        : SettingsFragment.GOOGLE_SERVICES;
         Intent intent =
                 SettingsNavigationFactory.createSettingsNavigation()
-                        .createSettingsIntent(context, fragment, fragmentArgs);
+                        .createSettingsIntent(context, SettingsFragment.MANAGE_SYNC, fragmentArgs);
         mWindowAndroid.showIntent(intent, this::onSettingsClosed, /* errorId= */ null);
     }
 
