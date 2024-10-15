@@ -743,7 +743,11 @@ BASE_FEATURE(kUnifiedAutoplay,
 // on chromeos, but needs an experiment on linux.
 BASE_FEATURE(kAcceleratedVideoDecodeLinux,
              "AcceleratedVideoDecoder",
+#if BUILDFLAG(USE_VAAPI)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kAcceleratedVideoDecodeLinuxGL,
              "AcceleratedVideoDecodeLinuxGL",
