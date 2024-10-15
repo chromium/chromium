@@ -10,7 +10,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
@@ -20,15 +19,18 @@ namespace ash {
 
 namespace {
 
-bool ShouldIgnoreWindow(aura::Window* window) {
-  // ArcWindowWatcher doesn't interested in Ash browser windows.
-  return chrome::FindBrowserWithWindow(window);
-}
-
 class Tracker : public aura::WindowObserver {
  public:
   explicit Tracker(aura::Window* window) : window_(window) {
     window->AddObserver(this);
+
+    // If the app type of `window` is ARC, add it to `arc_window_`. Note that
+    // the app type might be not set yet at this point. In such case, `window`
+    // will be set to `arc_window_` when kAppTyeKey property is updated.
+    if (ash::IsArcWindow(window)) {
+      arc_window_ = window;
+      ash::ArcWindowWatcher::instance()->OnArcWindowAdded();
+    }
   }
 
   Tracker(const Tracker&) = delete;
@@ -49,14 +51,6 @@ class Tracker : public aura::WindowObserver {
     ash::ArcWindowWatcher::instance()->BroadcastArcWindowDisplay(*pkg_name);
   }
 
-  void MaybeTagArcWindow() {
-    if (!ash::IsArcWindow(window_)) {
-      return;
-    }
-    arc_window_ = window_;
-    ash::ArcWindowWatcher::instance()->OnArcWindowAdded();
-  }
-
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     ash::ArcWindowWatcher::instance()->OnTrackerRemoved(
@@ -67,6 +61,8 @@ class Tracker : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
+    CHECK_EQ(window_, window);
+
     if (arc_window_) {
       if (key == ash::kArcPackageNameKey) {
         OnPackageNameChanged();
@@ -74,16 +70,21 @@ class Tracker : public aura::WindowObserver {
       return;
     }
 
-    if (ShouldIgnoreWindow(window)) {
+    // No additional step needed if the updated property is not AppType.
+    if (key != chromeos::kAppTypeKey) {
+      return;
+    }
+
+    // We should ignore non-Arc window.
+    if (!ash::IsArcWindow(window)) {
       ash::ArcWindowWatcher::instance()->OnTrackerRemoved(this, nullptr);
       // WARNING: this is deleted here - must return immediately.
       return;
     }
 
-    if (key == chromeos::kAppTypeKey) {
-      // Maybe it just became an ARC window.
-      MaybeTagArcWindow();
-    }
+    // Set `window` to `arc_window_` if the app type just became ARC.
+    arc_window_ = window;
+    ash::ArcWindowWatcher::instance()->OnArcWindowAdded();
   }
 
  private:
@@ -138,12 +139,7 @@ void ArcWindowWatcher::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  if (ShouldIgnoreWindow(window)) {
-    return;
-  }
-
   trackers_.push_back(std::make_unique<Tracker>(window));
-  trackers_.back()->MaybeTagArcWindow();
 }
 
 // This is the main "plus" point, where we know an ARC window is born.
