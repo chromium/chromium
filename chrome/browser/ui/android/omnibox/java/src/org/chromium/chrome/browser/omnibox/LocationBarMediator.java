@@ -1610,6 +1610,7 @@ class LocationBarMediator
 
     @Override
     public void onPauseWithNative() {
+        OmniboxFeatures.updateLastExitTimestamp();
         if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()) {
             GeolocationHeader.stopListeningForLocationUpdates();
         }

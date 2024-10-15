@@ -4,6 +4,8 @@
 
 package org.chromium.components.omnibox;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BaseSwitches;
@@ -11,6 +13,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -23,6 +26,14 @@ import java.util.List;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
 public class OmniboxFeatures {
+    private static final SharedPreferences sPrefs = ContextUtils.getAppSharedPreferences();
+
+    /** The state of the Jump Start Omnibox feature. */
+    public static final String KEY_JUMP_START_OMNIBOX = "jump_start_omnibox";
+
+    /** The timestamp representing the last time the user exited Chrome. */
+    public static final String KEY_LAST_EXIT_TIMESTAMP = "last_exit_timestamp";
+
     // Threshold for low RAM devices. We won't be showing suggestion images
     // on devices that have less RAM than this to avoid bloat and reduce user-visible
     // slowdown while spinning up an image decompression process.
@@ -35,9 +46,6 @@ public class OmniboxFeatures {
 
     // Timeout requests after 30 minutes if we somehow fail to remove our listener.
     private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 30;
-
-    // Preference key preserving the state of the Jump Start Omnibox feature.
-    public static final String KEY_JUMP_START_OMNIBOX = "jump_start_omnibox";
 
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
@@ -110,6 +118,15 @@ public class OmniboxFeatures {
                     sRichInlineAutocomplete,
                     "rich_autocomplete_minimum_characters",
                     Integer.MAX_VALUE);
+
+    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMemoryThresholdKb =
+            newIntParam(sJumpStartOmnibox, "jump_start_memory_threshold_kb", 2 * 1024 * 1024);
+
+    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMinAwayTimeMinutes =
+            newIntParam(sJumpStartOmnibox, "jump_start_min_away_time_minutes", 0 * 60);
+
+    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMaxAwayTimeMinutes =
+            newIntParam(sJumpStartOmnibox, "jump_start_max_away_time_minutes", 8 * 60);
 
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
     private static Boolean sShouldRetainOmniboxOnFocusForTesting;
@@ -283,26 +300,47 @@ public class OmniboxFeatures {
                 && DeviceInput.supportsPrecisionPointer();
     }
 
-    /** Returns whether Jump Start Omnibox feature can engage. */
-    public static boolean isJumpStartOmniboxEnabled() {
-        if (!sJumpStartOmnibox.isEnabled()) return false;
+    /**
+     * Returns true if Jump-Start Omnibox should engage, redirecting the user to the SearchActivity.
+     */
+    public static boolean shouldJumpStartOmniboxEngage() {
+        long elapsedTimeSinceLastExit = getTimeSinceLastExit();
+        return isJumpStartOmniboxEnabled()
+                && (elapsedTimeSinceLastExit
+                        >= sJumpStartOmniboxMinAwayTimeMinutes.getValue()
+                                * TimeUtils.MILLISECONDS_PER_MINUTE)
+                && (elapsedTimeSinceLastExit
+                        < sJumpStartOmniboxMaxAwayTimeMinutes.getValue()
+                                * TimeUtils.MILLISECONDS_PER_MINUTE);
+    }
 
+    /** Returns the cached value of the Jump-Start settings toggle. */
+    public static boolean isJumpStartOmniboxEnabled() {
+        if (!OmniboxFeatures.sJumpStartOmnibox.isEnabled()) return false;
         if (sActivateJumpStartOmnibox == null) {
-            sActivateJumpStartOmnibox =
-                    ContextUtils.getAppSharedPreferences()
-                            .getBoolean(KEY_JUMP_START_OMNIBOX, isLowMemoryDevice());
+            boolean isEligibleDevice =
+                    !DeviceFormFactor.isTablet()
+                            && SysUtils.amountOfPhysicalMemoryKB()
+                                    <= sJumpStartOmniboxMemoryThresholdKb.getValue();
+            sActivateJumpStartOmnibox = sPrefs.getBoolean(KEY_JUMP_START_OMNIBOX, isEligibleDevice);
         }
         return sActivateJumpStartOmnibox;
     }
 
-    /** Specifies whether Jump Start Omnibox feature can engage. */
-    public static void setJumpStartOmniboxEnabled(boolean enableJumpStartOmnibox) {
-        assert sJumpStartOmnibox.isEnabled();
+    /** Updates the cached value of the Jump-Start settings toggle. */
+    public static void setJumpStartOmniboxEnabled(boolean isEnabled) {
+        assert OmniboxFeatures.sJumpStartOmnibox.isEnabled();
+        sActivateJumpStartOmnibox = isEnabled;
+        sPrefs.edit().putBoolean(KEY_JUMP_START_OMNIBOX, isEnabled).apply();
+    }
 
-        sActivateJumpStartOmnibox = enableJumpStartOmnibox;
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(KEY_JUMP_START_OMNIBOX, enableJumpStartOmnibox)
-                .apply();
+    /** Returns the time ellapsed since the user exited Chrome, expressed in miliiseconds. */
+    public static long getTimeSinceLastExit() {
+        return TimeUtils.currentTimeMillis() - sPrefs.getLong(KEY_LAST_EXIT_TIMESTAMP, 0L);
+    }
+
+    /** Record the current time as the time the User exited Chrome. */
+    public static void updateLastExitTimestamp() {
+        sPrefs.edit().putLong(KEY_LAST_EXIT_TIMESTAMP, TimeUtils.currentTimeMillis()).apply();
     }
 }
