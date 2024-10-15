@@ -44,6 +44,8 @@ static_library("babelorca") {
     "transcript_sender.h",
     "transcript_sender_impl.cc",
     "transcript_sender_impl.h",
+    "transcript_sender_rate_limiter.cc",
+    "transcript_sender_rate_limiter.h",
   ]
 
   deps = [
@@ -101,6 +103,7 @@ source_set("unit_tests") {
     "transcript_builder_unittest.cc",
     "transcript_receiver_unittest.cc",
     "transcript_sender_impl_unittest.cc",
+    "transcript_sender_rate_limiter_unittest.cc",
   ]
 
   deps = [
