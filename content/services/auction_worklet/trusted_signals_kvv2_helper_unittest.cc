@@ -396,6 +396,65 @@ class TrustedSignalsKVv2RequestHelperTest : public testing::Test {
 };
 
 TEST_F(TrustedSignalsKVv2RequestHelperTest,
+       TrustedBiddingSignalsMinimallyPopulatedFields) {
+  std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
+      helper_builder =
+          std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
+              kHostName, /*experiment_group_id=*/std::nullopt,
+              std::move(public_key_),
+              /*trusted_bidding_signals_slot_size_param=*/"");
+
+  helper_builder->AddTrustedSignalsRequest(
+      std::string("groupA"), /*bidding_keys=*/{},
+      url::Origin::Create(GURL(kOriginFooUrl)),
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode);
+
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
+      helper_builder->Build();
+
+  std::vector<uint8_t> body_bytes =
+      DecryptRequestBody(helper->TakePostRequestBody(), kKeyId);
+
+  std::string expected_request_body =
+      test::CreateKVv2RequestBody(test::ToCborString(
+          R"({
+            "metadata": {
+              "hostname": "publisher.test"
+            },
+            "partitions": [
+              {
+                "id": 0,
+                "metadata": {},
+                "arguments": [
+                  {
+                    "data": [
+                      "groupA"
+                    ],
+                    "tags": [
+                      "interestGroupNames"
+                    ]
+                  },
+                  {
+                    "data": [],
+                    "tags": [
+                      "keys"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 0
+              }
+            ],
+            "acceptCompression": [
+              "none",
+              "gzip"
+            ]
+          })"));
+
+  EXPECT_EQ(base::HexEncode(body_bytes),
+            base::HexEncode(expected_request_body));
+}
+
+TEST_F(TrustedSignalsKVv2RequestHelperTest,
        TrustedBiddingSignalsRequestEncoding) {
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
       helper_builder =
@@ -675,6 +734,58 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
           std::string("groupH"), std::set<std::string>{"key"},
           url::Origin::Create(GURL(kOriginBarUrl)),
           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode));
+}
+
+TEST_F(TrustedSignalsKVv2RequestHelperTest,
+       TrustedScoringSignalsMinimallyPopulatedFields) {
+  std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+      helper_builder =
+          std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
+              kHostName, /*experiment_group_id=*/std::nullopt,
+              std::move(public_key_));
+
+  helper_builder->AddTrustedSignalsRequest(
+      GURL(kOriginFooUrl), /*ad_component_render_urls=*/{},
+      url::Origin::Create(GURL(kOwnerOriginA)),
+      url::Origin::Create(GURL(kJoiningOriginA)));
+
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
+      helper_builder->Build();
+
+  std::vector<uint8_t> body_bytes =
+      DecryptRequestBody(helper->TakePostRequestBody(), kKeyId);
+
+  std::string expected_request_body =
+      test::CreateKVv2RequestBody(test::ToCborString(
+          R"({
+            "metadata": {
+              "hostname": "publisher.test"
+            },
+            "partitions": [
+              {
+                "compressionGroupId": 0,
+                "id": 0,
+                "metadata": {},
+                "arguments": [
+                  {
+                    "data": [
+                      "https://foo.test/"
+                    ],
+                    "tags": [
+                      "renderUrls"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "acceptCompression": [
+              "none",
+              "gzip"
+            ]
+          })"));
+
+  EXPECT_EQ(base::HexEncode(body_bytes),
+            base::HexEncode(expected_request_body));
 }
 
 TEST_F(TrustedSignalsKVv2RequestHelperTest,

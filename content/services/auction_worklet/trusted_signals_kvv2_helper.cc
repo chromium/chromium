@@ -738,7 +738,8 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
     const std::string& interest_group_name,
     const std::set<std::string>& bidding_keys,
     const std::optional<int>& experiment_group_id,
-    std::pair<std::string, std::string> trusted_bidding_signals_slot_size_param)
+    const std::optional<std::pair<std::string, std::string>>&
+        trusted_bidding_signals_slot_size_param)
     : partition_id(partition_id),
       interest_group_names({interest_group_name}),
       bidding_signals_keys(bidding_keys) {
@@ -746,8 +747,10 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
     additional_params.Set("experimentGroupId",
                           base::NumberToString(experiment_group_id.value()));
   }
-  additional_params.Set(trusted_bidding_signals_slot_size_param.first,
-                        trusted_bidding_signals_slot_size_param.second);
+  if (trusted_bidding_signals_slot_size_param) {
+    additional_params.Set(trusted_bidding_signals_slot_size_param->first,
+                          trusted_bidding_signals_slot_size_param->second);
+  }
 }
 
 TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
@@ -789,8 +792,8 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::
     CHECK_NE(pos, std::string::npos);
     std::string key = trusted_bidding_signals_slot_size_param.substr(0, pos);
     std::string value = trusted_bidding_signals_slot_size_param.substr(pos + 1);
-    trusted_bidding_signals_slot_size_param_ = {std::move(key),
-                                                std::move(value)};
+    trusted_bidding_signals_slot_size_param_ = {
+        {std::move(key), std::move(value)}};
   }
 }
 
@@ -970,8 +973,10 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument("renderUrls", partition.render_urls));
-  arguments.emplace_back(MakeArgument("adComponentRenderUrls",
-                                      partition.ad_component_render_urls));
+  if (!partition.ad_component_render_urls.empty()) {
+    arguments.emplace_back(MakeArgument("adComponentRenderUrls",
+                                        partition.ad_component_render_urls));
+  }
 
   partition_cbor_map.try_emplace(cbor::Value("arguments"),
                                  cbor::Value(std::move(arguments)));
