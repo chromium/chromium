@@ -428,24 +428,6 @@ public class MainSettingsFragmentTest {
     }
 
     @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testSignInRowLaunchesSyncFlowForSignedOutAccounts() {
-        // When there are no accounts, sync promo and the signin preference shows the same text.
-        mSyncTestRule.addTestAccount();
-        startSettings();
-
-        onViewWaiting(allOf(withId(R.id.recycler_view), isDisplayed()));
-        onView(withId(R.id.recycler_view))
-                .perform(scrollTo(hasDescendant(withText(R.string.sync_promo_turn_on_sync))));
-        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
-
-        verify(mSyncConsentActivityLauncher)
-                .launchActivityIfAllowed(
-                        any(Activity.class), eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
-    }
-
-    @Test
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
@@ -479,7 +461,7 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testPressingTurnOffSyncWhileTheUNOFlagIsEnabled() {
+    public void testPressingTurnOffSyncWhileTheUnoFlagIsEnabled() {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
 
         startSettings();
@@ -529,25 +511,6 @@ public class MainSettingsFragmentTest {
                         eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL),
                         eq(SigninAccessPoint.SETTINGS),
                         isNull());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testSyncRowLaunchesSignInFlowForSignedInAccounts() {
-        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
-        startSettings();
-
-        onViewWaiting(allOf(withId(R.id.recycler_view), isDisplayed()));
-        onView(withId(R.id.recycler_view))
-                .perform(scrollTo(hasDescendant(withText(R.string.sync_category_title))));
-        onView(withText(R.string.sync_category_title)).perform(click());
-
-        verify(mSyncConsentActivityLauncher)
-                .launchActivityForPromoDefaultFlow(
-                        any(Activity.class),
-                        eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW),
-                        eq(accountInfo.getEmail()));
     }
 
     // Tests that no alert icon is visible if there are no identity errors.
@@ -614,35 +577,6 @@ public class MainSettingsFragmentTest {
                         ? ManageSyncSettings.class
                         : AccountManagementFragment.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testRenderOnIdentityErrorForSignedInUsers_withoutReplaceSyncPromos()
-            throws IOException {
-        FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
-        // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
-        // Sign in and wait for sync machinery to be active.
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
-
-        startSettings();
-
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
-        mRenderTestRule.render(view, "main_settings_signed_in_identity_error");
     }
 
     @Test
