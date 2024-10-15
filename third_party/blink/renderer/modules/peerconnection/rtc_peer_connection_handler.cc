@@ -816,8 +816,6 @@ bool RTCPeerConnectionHandler::Initialize(
   // Configure optional SRTP configurations enabled via the command line.
   configuration_.crypto_options = webrtc::CryptoOptions{};
   configuration_.crypto_options->srtp.enable_gcm_crypto_suites = true;
-  configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
-      blink::Platform::Current()->IsWebRtcSrtpEncryptedHeadersEnabled();
   configuration_.enable_implicit_rollback = true;
 
   // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
