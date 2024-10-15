@@ -52,7 +52,7 @@ class AudioTrackEncoder {
   void set_paused(bool paused) { paused_ = paused; }
 
  protected:
-  bool paused_;
+  bool paused_ = false;
 
   const OnEncodedAudioCB on_encoded_audio_cb_;
 

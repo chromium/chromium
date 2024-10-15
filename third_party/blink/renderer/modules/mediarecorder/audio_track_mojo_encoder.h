@@ -103,6 +103,12 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
   // The encoder has encountered an error and will need to be reinitialized.
   bool has_error_ = true;
 
+  // Timestamps from AudioEncoder are dead-reckoned and based on sample count.
+  // These attributes track time spent in pause and add this amount to outgoing
+  // timestamps for correct AV sync with video.
+  std::optional<base::TimeTicks> pause_begin_timestamp_;
+  base::TimeDelta accumulated_paused_duration_;
+
   base::WeakPtrFactory<AudioTrackMojoEncoder> weak_factory_{this};
 };
 
