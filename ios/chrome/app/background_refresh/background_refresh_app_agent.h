@@ -10,11 +10,15 @@
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
 @class AppRefreshProvider;
+@protocol BackgroundRefreshAudience;
 
 // An app agent that manages background refresh tasks.
 // DEBUGGING/TESTING note: App refresh does not work on simulators; you must
 // use a device.
 @interface BackgroundRefreshAppAgent : SceneObservingAppAgent
+
+// Audience for the background refresh lifecycle.
+@property(nonatomic, weak) id<BackgroundRefreshAudience> audience;
 
 // Register `provider` as providing app refresh tasks. Registration must happen
 // before refresh tasks execute, ideally during basic app init.

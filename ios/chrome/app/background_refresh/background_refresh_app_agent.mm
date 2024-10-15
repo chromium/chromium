@@ -12,6 +12,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
+#import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -178,9 +179,9 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 
   __weak __typeof(self) weakSelf = self;
   __weak __typeof(task) weakTask = task;
-  task.expirationHandler = ^{
+  [task setExpirationHandler:^{
     [weakSelf systemTriggeredExpirationForTask:weakTask];
-  };
+  }];
 
   // TODO(crbug.com/354918794): Remove this code once not needed anymore.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -232,7 +233,6 @@ NSString* dirtyShutdownDuringAppRefreshKey =
       // Track running providers. The completion handler will remove tasks as
       // they complete.
       [self.activeProviders addObject:provider];
-
       __weak __typeof(self) weakSelf = self;
       ProceduralBlock completion = ^{
         [weakSelf handleCompletedProvider:provider forTask:task];
@@ -240,8 +240,10 @@ NSString* dirtyShutdownDuringAppRefreshKey =
       [provider handleRefreshWithCompletion:completion];
     }
   }
-  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
   if (self.activeProviders.count == 0) {
+    [task setTaskCompletedWithSuccess:YES];
+    [self refreshComplete];
+    // TODO(crbug.com/354918794): Remove this code once not needed anymore.
     [defaults
         setInteger:
             [defaults integerForKey:noTasksDueCountDuringBackgroundRefreshKey] +
@@ -263,6 +265,8 @@ NSString* dirtyShutdownDuringAppRefreshKey =
   }
   // Stop tracking all remaining providers.
   [self.activeProviders removeAllObjects];
+  // Mark the task unsuccessful.
+  [task setTaskCompletedWithSuccess:NO];
   // Signal that the refresh is complete.
   [self refreshComplete];
 }
@@ -288,6 +292,7 @@ NSString* dirtyShutdownDuringAppRefreshKey =
   //
   // The design intent for this class is that it is agnostic to whether the app
   // is actually foregrounded or not.
+  [self.audience backgroundRefreshDidStart];
 }
 
 - (void)refreshComplete {
@@ -300,6 +305,8 @@ NSString* dirtyShutdownDuringAppRefreshKey =
   // is actually foregrounded or not. The app state will care about how to
   // handle -refreshComplete in the foreground vs the background, but this class
   // will not.
+
+  [self.audience backgroundRefreshDidEnd];
 }
 
 // Request that app refresh runs no sooner than `delay` seconds from now.
