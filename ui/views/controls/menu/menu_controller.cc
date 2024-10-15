@@ -2614,6 +2614,20 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     if (!monitor_bounds.IsEmpty()) {
       int max_width = monitor_bounds.width() + border_insets.width();
       int max_height = monitor_bounds.height() + border_insets.height();
+      // In case of bubbles, the maximum width is limited by the space
+      // between the display corner and the target area + the tip size.
+      const bool is_bubble_menu =
+          menu_config.use_bubble_border && corner_radius;
+      if (is_anchored_bubble || is_bubble_menu ||
+          item->actual_menu_position() == MenuPosition::kAboveBounds) {
+        // menu_size is expected to include not just the content size
+        // but also the (border and shadow) insets, which can go offscreen.
+        max_height =
+            std::max(anchor_bounds.y() - monitor_bounds.y(),
+                     monitor_bounds.bottom() - anchor_bounds.bottom()) -
+            (is_bubble_menu ? 0 : menu_config.touchable_anchor_offset) +
+            border_insets.height();
+      }
       // The menu should always have a non-empty available area.
       DCHECK_GE(max_width, kBubbleTipSizeLeftRight);
       DCHECK_GE(max_height, kBubbleTipSizeTopBottom);
