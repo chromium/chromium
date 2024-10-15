@@ -7835,6 +7835,8 @@ static_library("browser") {
       # TODO(https://crbug.com/356905053): These files are temporary workarounds
       # allow for a lightweight extensions runtime in desktop-android builds.
       # They should be removed.
+      "extensions/desktop_android/desktop_android_extension_host_delegate.cc",
+      "extensions/desktop_android/desktop_android_extension_host_delegate.h",
       "extensions/desktop_android/desktop_android_extension_system.cc",
       "extensions/desktop_android/desktop_android_extension_system.h",
       "extensions/desktop_android/desktop_android_extension_web_contents_observer.cc",
