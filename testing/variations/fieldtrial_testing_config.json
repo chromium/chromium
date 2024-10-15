@@ -8260,29 +8260,6 @@
             ]
         }
     ],
-    "DevToolAiAssistancePerformanceAgentDogfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "params": {
-                        "aida_model_id": "codey_gemit_mpp_streaming",
-                        "aida_temperature": "0"
-                    },
-                    "enable_features": [
-                        "DevToolAiAssistancePerformanceAgentDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
     "DevToolsAiAssistanceFileAgentDogfood": [
         {
             "platforms": [
@@ -8301,6 +8278,29 @@
                     },
                     "enable_features": [
                         "DevToolsAiAssistanceFileAgentDogfood"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DevToolsAiAssistancePerformanceAgentDogfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "params": {
+                        "aida_model_id": "codey_gemit_mpp_streaming",
+                        "aida_temperature": "0"
+                    },
+                    "enable_features": [
+                        "DevToolsAiAssistancePerformanceAgentDogfood"
                     ]
                 }
             ]

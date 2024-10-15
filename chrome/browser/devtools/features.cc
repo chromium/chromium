@@ -87,7 +87,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 
 // Whether the DevTools AI Assistance Performance Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistancePerformanceAgentDogfood,
-             "DevToolAiAssistancePerformanceAgentDogfood",
+             "DevToolsAiAssistancePerformanceAgentDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string>
     kDevToolsAiAssistancePerformanceAgentDogfoodModelId{
