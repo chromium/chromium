@@ -957,11 +957,15 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(1u, message_center()->NotificationCount());
 }
 
+// Verifies that notifications are not shown for the Logi Bolt receiver when
+// it's first plugged in. This is because the Bolt receiver VID/PID identifies
+// the receiver itself, not the connected mouse or keyboard, and the Bolt may
+// not yet be connected to a mouse or keyboard.
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotificationBlockedForLogiBoltReceiver) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
-  // 046d:c548 is the VID/PID for the receiver,
-  mojom_mouse->device_key = "046d:c548";
+  const char kLogiBoltReceiverKey[] = "046d:c548";
+  mojom_mouse->device_key = kLogiBoltReceiverKey;
   mojom_mouse->id = 1;
   mojom_mouse->is_external = false;
   mojom_mouse->settings = mojom::MouseSettings::New();

@@ -169,6 +169,10 @@ constexpr auto kKeyCodeToSixPackKeyRemappingNudgeLastShownPref =
 // Device key of the virtual mouse often used by integration tests, avoid
 // showing notification in this case.
 const char kVirtualMouseDeviceKey[] = "0000:0000";
+// Device key for the Logitech Bolt receiver. This identifies the receiver
+// itself, not the connected mouse or keyboard. We should avoid showing
+// notifications for this VID/PID when the receiver is first plugged in,
+// as the Bolt may not yet be connected to a mouse or keyboard.
 const char kLogiBoltReceiverKey[] = "046d:c548";
 
 const char kNotifierId[] = "input_device_settings_controller";
@@ -637,7 +641,12 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
   }
 
   // Avoid showing notifications for the virtual mouse device and Logi Bolt
-  // receiver.
+  // receiver. The virtual mouse device is primarily used in integration tests
+  // and doesn't represent a physical device that requires user notifications.
+  // The Logi Bolt receiver is a special case because it identifies the
+  // receiver itself, not the connected mouse or keyboard. We should avoid
+  // showing notifications for the receiver when it's first plugged in,
+  // as the Bolt may not yet be connected to a mouse or keyboard.
   if (mouse.device_key == kVirtualMouseDeviceKey ||
       mouse.device_key == kLogiBoltReceiverKey) {
     return;
