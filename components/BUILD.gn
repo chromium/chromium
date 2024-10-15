@@ -830,6 +830,7 @@ test("components_unittests") {
     deps += [
       "//components/dbus/menu:unit_tests",
       "//components/dbus/properties:unit_tests",
+      "//components/dbus/utils:unit_tests",
     ]
   }
 
