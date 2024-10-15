@@ -413,7 +413,7 @@ bool EditContext::SetCompositionFromExistingText(
   if (composition_start < 0 || composition_end < 0)
     return false;
 
-  CHECK_GT(composition_end, composition_start);
+  CHECK_GE(composition_end, composition_start);
 
   if (!has_composition_) {
     if (!DispatchCompositionStartEvent(""))
