@@ -27015,6 +27015,35 @@
             ]
         }
     ],
+    "WhatsNewSparkEdition": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_benefits",
+                    "params": {
+                        "whats_new_customization": "BENEFITS"
+                    },
+                    "enable_features": [
+                        "Spark"
+                    ]
+                },
+                {
+                    "name": "Enabled_original",
+                    "params": {
+                        "whats_new_customization": "ORIGINAL"
+                    },
+                    "enable_features": [
+                        "Spark"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [

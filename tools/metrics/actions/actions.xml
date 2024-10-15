@@ -45902,6 +45902,7 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="SafetyAwareness" label="Safety Awareness edition."/>
+  <suffix name="Spark" label="Spark edition."/>
   <suffix name="TestEdition" label="Test edition."/>
   <affected-action name="UserEducation.WhatsNew.EditionShown"/>
 </action-suffix>
