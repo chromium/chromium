@@ -152,6 +152,11 @@ crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.
 crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_2 [ Failure ]
 crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_3 [ Failure ]
 
+# Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
+crbug.com/371802469 [ mac intel graphite-disabled ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/371802469 [ mac intel graphite-disabled ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/371802469 [ mac intel graphite-disabled ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
