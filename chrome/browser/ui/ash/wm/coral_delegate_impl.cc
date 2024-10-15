@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

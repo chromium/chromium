@@ -20,11 +20,7 @@ include_rules = [
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
-  "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/web_applications/mojom",
-  "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app.h",
@@ -39,5 +35,14 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/web_applications/test",
+    "+chrome/browser/web_applications/test",
+    "+chrome/test/base",
+  ],
+}
