@@ -57,7 +57,7 @@ config("runtime_library") {
   # dependency tracking (because it's an #include of headers included via
   # -isysroot).
   # TODO(thakis): Remove this after a few days.
-  defines += [ "TEMP_REBUILD_HACK" ]
+  defines += [ "TMP_REBUILD_HACK" ]
 
   if (is_win) {
     # Intentionally not using libc++abi on Windows because libc++abi only

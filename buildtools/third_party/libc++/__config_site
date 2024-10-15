@@ -76,4 +76,7 @@
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
 
+// Disable header include for parallel algorithms.
+#define _LIBCPP_HAS_NO_INCOMPLETE_PSTL
+
 #endif // _LIBCPP_CONFIG_SITE
