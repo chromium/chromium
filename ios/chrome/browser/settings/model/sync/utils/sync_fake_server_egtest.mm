@@ -132,6 +132,8 @@ void ClearRelevantData() {
       [self isRunningTest:@selector
             (testMigrateSyncToSignin_ReadingListDisabled)] ||
       [self isRunningTest:@selector(testMigrateSyncToSignin_SyncNotActive)] ||
+      [self isRunningTest:@selector
+            (testMigrateSyncToSignin_SyncNotActive_Force)] ||
       [self
           isRunningTest:@selector(testMigrateSyncToSignin_CustomPassphrase)] ||
       [self isRunningTest:@selector
@@ -727,7 +729,7 @@ void ClearRelevantData() {
   // phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
              enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
-            disabledFeatures:{}];
+            disabledFeatures:{switches::kForceMigrateSyncingUserToSignedIn}];
 
   // Because Sync wasn't active at the time of the migration attempt, the
   // migration should NOT have happened, and Sync-the-feature should still be
@@ -743,8 +745,47 @@ void ClearRelevantData() {
   // Relaunch again - this time the migration should trigger.
   [self relaunchWithIdentity:fakeIdentity
              enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
-            disabledFeatures:{}];
+            disabledFeatures:{switches::kForceMigrateSyncingUserToSignedIn}];
   // ...and Sync-the-feature should NOT be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+}
+
+- (void)testMigrateSyncToSignin_SyncNotActive_Force {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Disable a data type (so that we can later re-enable it to trigger a
+  // reconfiguration).
+  [self disableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Disconnect the fake server, simulating a network/connection issue.
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
+  [self setTearDownHandler:^{
+    [ChromeEarlGrey connectFakeSyncServerNetwork];
+  }];
+
+  // Re-enable the data type that was previously disabled. This causes a
+  // reconfiguration, which will not complete due to the network issue.
+  [self enableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Now, while Sync is not active (it's reconfiguring), restart Chrome with UNO
+  // phase 3 (i.e. the migration) enabled, including force-migration.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn,
+                              switches::kForceMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+
+  // Even though Sync wasn't active at the time of the migration attempt, the
+  // migration should have happened, because the force-migration flag is
+  // enabled.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
                                 syncTimeout:kSyncOperationTimeout];
 }
