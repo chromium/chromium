@@ -14,7 +14,7 @@
     [CEReactions, Measure] attribute FrozenArray<Element>? ariaErrorMessageElements;
     [CEReactions, Measure] attribute FrozenArray<Element>? ariaFlowToElements;
     [CEReactions, Measure] attribute FrozenArray<Element>? ariaLabelledByElements;
-    [CEReactions, Measure] attribute FrozenArray<Element>? ariaOwnsElements;
+    [CEReactions, Measure, RuntimeEnabled=AOMAriaRelationshipPropertiesAriaOwns] attribute FrozenArray<Element>? ariaOwnsElements;
 };
 
 Element includes AriaRelationshipAttributes;

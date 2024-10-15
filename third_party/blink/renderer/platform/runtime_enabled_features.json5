@@ -382,6 +382,12 @@
       status: "experimental",
     },
     {
+      name: "AOMAriaRelationshipPropertiesAriaOwns",
+      public: true,
+      status: "experimental",
+      depends_on: ["AOMAriaRelationshipProperties"],
+    },
+    {
       name: "AppTitle",
       status: "experimental",
       origin_trial_feature_name: "AppTitle",
