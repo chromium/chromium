@@ -512,8 +512,11 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
       env,
       static_cast<jlong>(bank_account.payment_instrument().instrument_id()),
       jnickname, jdisplay_icon_url,
-      ToJavaIntArray(env, supported_payment_rails_array), jbank_name,
-      jaccount_number_suffix, static_cast<jint>(bank_account.account_type()));
+      ToJavaIntArray(env, supported_payment_rails_array),
+      static_cast<jboolean>(
+          bank_account.payment_instrument().is_fido_enrolled()),
+      jbank_name, jaccount_number_suffix,
+      static_cast<jint>(bank_account.account_type()));
 }
 
 // static
