@@ -210,41 +210,6 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testSigningOut_Legacy() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        final ClearBrowsingDataFragment preferences =
-                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return mSettingsActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.menu_id_targeted_help)
-                            != null;
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView =
-                            preferences.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                });
-        onView(withText(preferences.buildSignOutOfChromeText().toString()))
-                .perform(clickOnSignOutLink());
-        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
-        CriteriaHelper.pollUiThread(
-                () ->
-                        !IdentityServicesProvider.get()
-                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                .hasPrimaryAccount(ConsentLevel.SIGNIN),
-                "Account should be signed out!");
-
-        // Footer should be hidden after sign-out.
-        onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());
-    }
-
-    @Test
-    @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSigningOut() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
