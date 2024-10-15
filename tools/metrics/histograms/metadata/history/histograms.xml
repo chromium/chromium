@@ -357,16 +357,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.ClearBrowsingData.ShownHistoryNoticeAfterClearing"
-    enum="BooleanShown" expires_after="M81">
-  <owner>msramek@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    Whether a dialog with a notice about other forms of browsing history was
-    shown after the user deleted data from the Clear Browsing Data dialog.
-  </summary>
-</histogram>
-
 <histogram name="History.ClearBrowsingData.TaskQueueAtShutdown" units="units"
     expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->

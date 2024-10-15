@@ -760,9 +760,6 @@ BOOL UIIsBlocking(Browser* browser) {
     if (!showDialog) {
       return;
     }
-    UMA_HISTOGRAM_BOOLEAN(
-        "History.ClearBrowsingData.ShownHistoryNoticeAfterClearing",
-        showDialog);
 
     // Increment the preference.
     prefService->SetInteger(

@@ -297,10 +297,6 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
         history_notice_shown_times + 1);
   }
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "History.ClearBrowsingData.ShownHistoryNoticeAfterClearing",
-      show_history_notice);
-
   bool show_passwords_notice =
       (failed_data_types & chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
 

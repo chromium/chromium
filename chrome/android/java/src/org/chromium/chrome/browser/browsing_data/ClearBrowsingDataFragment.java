@@ -201,10 +201,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     /** The tag used for logging. */
     public static final String TAG = "ClearBrowsingDataFragment";
 
-    /** The histogram for the dialog about other forms of browsing history. */
-    private static final String DIALOG_HISTOGRAM =
-            "History.ClearBrowsingData.ShownHistoryNoticeAfterClearing";
-
     /**
      * Used for the onActivityResult pattern. The value is arbitrary, just to distinguish from other
      * activities that we might be using onActivityResult with as well.
@@ -495,11 +491,9 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             FragmentActivity fragmentActivity = (FragmentActivity) getActivity();
             mDialogAboutOtherFormsOfBrowsingHistory.show(fragmentActivity);
             dismissProgressDialog();
-            RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, true);
         } else {
             dismissProgressDialog();
             SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
-            RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, false);
         }
     }
 
