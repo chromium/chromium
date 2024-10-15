@@ -5324,8 +5324,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AcceptChForOrigin" enum="Boolean"
-    expires_after="2024-11-27">
-  <owner>bnc@chromium.org</owner>
+    expires_after="2025-10-14">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Records whether the HTTP/2 session received an Accept-CH entry for the given
@@ -5396,8 +5396,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.GoAwayReceived" enum="Http2WireErrorCodes"
-    expires_after="2024-11-27">
-  <owner>bnc@chromium.org</owner>
+    expires_after="2025-10-14">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Records the error code value received in each HTTP/2 GOAWAY frame.
