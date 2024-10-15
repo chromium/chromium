@@ -183,6 +183,7 @@ source_set("browser_tests") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/search/background:background",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/lens",
@@ -225,6 +226,7 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/webui/boca_ui",
+      "//ash/webui/sanitize_ui:sanitize_ui",
       "//ash/webui/shimless_rma",
       "//ash/webui/vc_background_ui",
       "//chrome/browser/ash/crostini:test_support",
@@ -235,6 +237,7 @@ source_set("browser_tests") {
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/ash/extended_updates",
       "//chrome/browser/ui/webui/ash/login",
+      "//chrome/browser/ui/webui/ash/settings:settings",
       "//chromeos/ash/components/standalone_browser",
       "//components/manta",
     ]

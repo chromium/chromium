@@ -65,6 +65,12 @@ class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
     receiver_.Bind(std::move(receiver));
   }
 
+  void SetAttemptRestartForTesting(  // IN-TEST
+      const base::RepeatingClosure& restart_attempt) {
+    sanitize_ui_delegate_->SetAttemptRestartForTesting(  // IN-TEST
+        restart_attempt);
+  }
+
  private:
   std::unique_ptr<SanitizeUIDelegate> sanitize_ui_delegate_;
   mojo::Receiver<sanitize_ui::mojom::SettingsResetter> receiver_{this};
@@ -156,6 +162,12 @@ void SanitizeDialogUI::BindInterface(
 void SanitizeDialogUI::BindInterface(
     mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {
   sanitize_settings_resetter_->BindInterface(std::move(receiver));
+}
+
+void SanitizeDialogUI::SetAttemptRestartForTesting(
+    const base::RepeatingClosure& restart_attempt) {
+  sanitize_settings_resetter_->SetAttemptRestartForTesting(  // IN-TEST
+      restart_attempt);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SanitizeDialogUI)

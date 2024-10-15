@@ -43,6 +43,8 @@ class SanitizeDialogUI : public ui::MojoWebDialogUI {
           receiver);
   void BindInterface(
       mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver);
+  void SetAttemptRestartForTesting(
+      const base::RepeatingClosure& restart_attempt);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

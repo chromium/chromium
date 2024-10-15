@@ -17,7 +17,8 @@ namespace ash {
 
 ChromeSanitizeUIDelegate::~ChromeSanitizeUIDelegate() = default;
 
-ChromeSanitizeUIDelegate::ChromeSanitizeUIDelegate(content::WebUI* web_ui) {
+ChromeSanitizeUIDelegate::ChromeSanitizeUIDelegate(content::WebUI* web_ui)
+    : restart_attempt_(base::BindRepeating(&chrome::AttemptRestart)) {
   auto* profile = Profile::FromWebUI(web_ui);
   resetter_ = std::make_unique<ProfileResetter>(profile);
   pref_service_ = profile->GetPrefs();
@@ -29,7 +30,7 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
       ProfileResetter::EXTENSIONS | ProfileResetter::STARTUP_PAGES |
       ProfileResetter::PINNED_TABS | ProfileResetter::SHORTCUTS |
       ProfileResetter::NTP_CUSTOMIZATIONS | ProfileResetter::LANGUAGES |
-      ProfileResetter::DNS_CONFIGURATIONS;
+      ProfileResetter::DNS_CONFIGURATIONS | ProfileResetter::PROXY_SETTINGS;
 
   GetResetter()->ResetSettings(
       to_sanitize, nullptr,
@@ -39,18 +40,20 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
   base::RecordAction(base::UserMetricsAction("Sanitize"));
 }
 
-ProfileResetter* ChromeSanitizeUIDelegate::GetResetter() {
-  return resetter_.get();
+void ChromeSanitizeUIDelegate::SetAttemptRestartForTesting(
+    const base::RepeatingClosure& restart_attempt) {
+  CHECK(!restart_attempt.is_null());
+  restart_attempt_ = restart_attempt;
 }
 
-void ChromeSanitizeUIDelegate::RestartChrome() {
-  chrome::AttemptRestart();
+ProfileResetter* ChromeSanitizeUIDelegate::GetResetter() {
+  return resetter_.get();
 }
 
 void ChromeSanitizeUIDelegate::OnSanitizeDone() {
   pref_service_->SetBoolean(ash::settings::prefs::kSanitizeCompleted, true);
   pref_service_->CommitPendingWrite();
-  RestartChrome();
+  restart_attempt_.Run();
 }
 
 }  // namespace ash
