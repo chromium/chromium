@@ -285,6 +285,10 @@ void LocalGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   std::move(callback).Run(false);
 }
 
+bool LocalGpuMemoryBufferManager::IsConnected() {
+  return true;
+}
+
 std::unique_ptr<gfx::GpuMemoryBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,
     const gfx::Size& size,

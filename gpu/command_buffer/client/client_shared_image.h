@@ -266,6 +266,8 @@ class GPU_EXPORT ClientSharedImage
         base::UnsafeSharedMemoryRegion memory_region,
         base::OnceCallback<void(bool)> callback) final;
 
+    bool IsConnected() final;
+
    private:
     // Points to the parent ClientSharedImage. It will be used to access SII via
     // SII holder.

@@ -415,7 +415,10 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       // On Windows it might happen that the Renderer process loses GPU
       // connection, while the capturer process will continue to produce
       // GPU backed frames.
-      if (!gpu_factories_ || !media_task_runner_ || gmb_not_supported_) {
+      if (!gpu_factories_ || !media_task_runner_ ||
+          (gpu_factories_->GpuMemoryBufferManager() &&
+           !gpu_factories_->GpuMemoryBufferManager()->IsConnected()) ||
+          gmb_not_supported_) {
         RequirePremappedFrames();
         if (!video_frame_init_data.ready_buffer->info->is_premapped ||
             !buffer_context->data()) {

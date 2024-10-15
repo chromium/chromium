@@ -233,6 +233,10 @@ void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   }
 }
 
+bool HostGpuMemoryBufferManager::IsConnected() {
+  return GetGpuService() != nullptr;
+}
+
 bool HostGpuMemoryBufferManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {

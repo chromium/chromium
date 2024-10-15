@@ -197,4 +197,8 @@ void TestGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   std::move(callback).Run(false);
 }
 
+bool TestGpuMemoryBufferManager::IsConnected() {
+  return true;
+}
+
 }  // namespace gpu

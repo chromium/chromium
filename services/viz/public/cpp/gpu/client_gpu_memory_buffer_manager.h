@@ -71,6 +71,7 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback) override;
+  bool IsConnected() override;
 
   int counter_ = 0;
   // TODO(sad): Explore the option of doing this from an existing thread.

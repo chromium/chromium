@@ -186,4 +186,8 @@ void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
                                                   /*result=*/false));
 }
 
+bool ClientGpuMemoryBufferManager::IsConnected() {
+  return static_cast<bool>(gpu_direct_);
+}
+
 }  // namespace viz

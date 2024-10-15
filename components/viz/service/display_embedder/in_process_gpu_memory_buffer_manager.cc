@@ -85,6 +85,10 @@ void InProcessGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   std::move(callback).Run(false);
 }
 
+bool InProcessGpuMemoryBufferManager::IsConnected() {
+  return true;
+}
+
 bool InProcessGpuMemoryBufferManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
