@@ -87,7 +87,7 @@ class ExternalAppRedirectCheckingTest : public ::testing::Test {
 TEST_F(ExternalAppRedirectCheckingTest, ShouldReportExternalAppRedirect) {
   base::test::TestFuture<bool> future;
   ShouldReportExternalAppRedirect(mock_database(), web_contents(), "test.app",
-                                  future.GetCallback());
+                                  "https://evil.com", future.GetCallback());
   EXPECT_TRUE(future.Get());
 }
 
@@ -97,7 +97,7 @@ TEST_F(ExternalAppRedirectCheckingTest,
 
   base::test::TestFuture<bool> future;
   ShouldReportExternalAppRedirect(mock_database(), web_contents(), "test.app",
-                                  future.GetCallback());
+                                  "https://evil.com", future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 
@@ -110,7 +110,7 @@ TEST_F(ExternalAppRedirectCheckingTest,
 
   base::test::TestFuture<bool> future;
   ShouldReportExternalAppRedirect(mock_database(), web_contents(), "test.app",
-                                  future.GetCallback());
+                                  "https://evil.com", future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 
@@ -121,7 +121,7 @@ TEST_F(ExternalAppRedirectCheckingTest,
 
   base::test::TestFuture<bool> future;
   ShouldReportExternalAppRedirect(mock_database(), web_contents(), "test.app",
-                                  future.GetCallback());
+                                  "https://evil.com", future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 
@@ -135,7 +135,15 @@ TEST_F(ExternalAppRedirectCheckingTest,
 
   base::test::TestFuture<bool> future;
   ShouldReportExternalAppRedirect(mock_database(), otr_web_contents.get(),
-                                  "test.app", future.GetCallback());
+                                  "test.app", "https://evil.com",
+                                  future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ExternalAppRedirectCheckingTest, ShouldReportExternalAppRedirect_NoUri) {
+  base::test::TestFuture<bool> future;
+  ShouldReportExternalAppRedirect(mock_database(), web_contents(), "test.app",
+                                  /*uri=*/"", future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 

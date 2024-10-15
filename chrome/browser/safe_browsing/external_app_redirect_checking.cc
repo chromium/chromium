@@ -65,8 +65,9 @@ void ShouldReportExternalAppRedirect(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     content::WebContents* web_contents,
     std::string_view app_name,
+    std::string_view uri,
     base::OnceCallback<void(bool)> callback) {
-  if (!base::FeatureList::IsEnabled(kExternalAppRedirectTelemetry)) {
+  if (uri.empty()) {
     // Always run `callback` asynchronously, to make calling code simpler.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -83,6 +84,12 @@ void ShouldReportExternalAppRedirect(
 
   PrefService& prefs = *profile->GetPrefs();
   if (!IsEnhancedProtectionEnabled(prefs)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(kExternalAppRedirectTelemetry)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;

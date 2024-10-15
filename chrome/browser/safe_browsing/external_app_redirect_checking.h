@@ -27,6 +27,7 @@ void ShouldReportExternalAppRedirect(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     content::WebContents* web_contents,
     std::string_view app_name,
+    std::string_view uri,
     base::OnceCallback<void(bool)> callback);
 
 // Log the current time as the most recent usage of a redirect to the given app.

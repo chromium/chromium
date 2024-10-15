@@ -394,7 +394,7 @@ void SafeBrowsingServiceImpl::ReportExternalAppRedirect(
   }
 
   ShouldReportExternalAppRedirect(
-      database_manager(), web_contents, app_name,
+      database_manager(), web_contents, app_name, uri,
       base::BindOnce(
           &SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport, this,
           Profile::FromBrowserContext(web_contents->GetBrowserContext()),
