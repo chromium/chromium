@@ -10889,6 +10889,7 @@ if (!is_android && !is_chromeos_device) {
         sources += [ "../browser/pdf/pdf_extension_interactive_uitest.cc" ]
         deps += [
           "../browser/pdf:pdf_extension_test_utils",
+          "//components/pdf/browser",
           "//pdf:features",
         ]
       }

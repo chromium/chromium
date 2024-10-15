@@ -2365,8 +2365,11 @@ void PDFiumEngine::SelectAll() {
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   if (focus_field_type_ == FocusFieldType::kText) {
-    if (PageIndexInBounds(last_focused_page_))
-      FORM_SelectAllText(form(), pages_[last_focused_page_]->GetPage());
+    if (PageIndexInBounds(last_focused_page_)) {
+      FPDF_PAGE page = pages_[last_focused_page_]->GetPage();
+      FORM_SelectAllText(form(), page);
+      SetFormSelectedText(form(), page);
+    }
     return;
   }
 
