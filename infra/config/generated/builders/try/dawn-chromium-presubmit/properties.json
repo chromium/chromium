@@ -13,7 +13,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Chromium Presubmit",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -41,7 +41,7 @@
         {
           "bucket": "ci",
           "builder": "Dawn Chromium Presubmit",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "retry_failed_shards": false,

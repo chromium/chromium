@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-rel",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -50,7 +50,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-rel-gtest",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -81,7 +81,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "chromeos-amd64-generic-rel",
-                "project": "chromium"
+                "project": "chromium-m131"
               }
             }
           },
@@ -89,7 +89,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-rel-tast",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -120,7 +120,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "chromeos-amd64-generic-rel",
-                "project": "chromium"
+                "project": "chromium-m131"
               }
             }
           }
@@ -130,19 +130,19 @@
         {
           "bucket": "ci",
           "builder": "chromeos-amd64-generic-rel",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "chromeos-amd64-generic-rel-gtest",
-          "project": "chromium"
+          "project": "chromium-m131"
         },
         {
           "bucket": "ci",
           "builder": "chromeos-amd64-generic-rel-tast",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ]
     }

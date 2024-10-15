@@ -9,103 +9,8 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Android FYI Experimental Release (Pixel 6)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "download_xr_test_apks"
-                ],
-                "config": "android",
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Android FYI Release (Motorola Moto G Power 5G)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
-              },
-              "legacy_chromium_config": {
-                "config": "android",
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Android FYI Release (Nexus 5X)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "download_xr_test_apks"
-                ],
-                "config": "android",
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Android FYI Release (Pixel 6)",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -129,37 +34,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Android FYI Release (Samsung S23)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
-              },
-              "legacy_chromium_config": {
-                "config": "android",
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
+                "project": "chromium-m131"
               },
               "run_tests_serially": true
             }
@@ -168,7 +43,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Android arm64 Builder",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -197,59 +72,19 @@
         {
           "bucket": "ci",
           "builder": "GPU FYI Android arm64 Builder",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Android FYI Experimental Release (Pixel 6)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Android FYI Release (Motorola Moto G Power 5G)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Android FYI Release (Nexus 5X)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "Android FYI Release (Pixel 6)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Android FYI Release (Samsung S23)",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "gpu-fyi-cq-android-arm64",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-fyi-try-android-m-nexus-5x-64",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-fyi-try-android-moto-g-power-5g-64",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-fyi-try-android-pixel-6-64",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-fyi-try-android-pixel-6-64-exp",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "gpu-fyi-try-android-s23-64",
           "group": "tryserver.chromium.android"
         }
       ],
@@ -280,11 +115,11 @@
   },
   "builder_group": "chromium.gpu.fyi",
   "gardener_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

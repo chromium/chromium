@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -56,7 +56,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m131"
               },
               "run_tests_serially": true
             }
@@ -65,7 +65,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -86,7 +86,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m131"
               },
               "run_tests_serially": true
             }
@@ -97,19 +97,19 @@
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m131"
         },
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ]
     }

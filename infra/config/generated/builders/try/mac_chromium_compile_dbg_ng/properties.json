@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac14-tests-dbg",
-              "project": "chromium"
+              "project": "chromium-m131"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -57,7 +57,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m131"
               }
             }
           }
@@ -67,14 +67,14 @@
         {
           "bucket": "ci",
           "builder": "Mac Builder (dbg)",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "mac14-tests-dbg",
-          "project": "chromium"
+          "project": "chromium-m131"
         }
       ],
       "is_compile_only": true,
