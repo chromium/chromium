@@ -13,6 +13,7 @@
 
 namespace views {
 class ImageButton;
+class View;
 }  // namespace views
 
 namespace autofill {
@@ -65,6 +66,7 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   // The FocusableControl currently focused. Pressing enter will run their
   // respective controller method.s
   std::optional<FocusableControl> focused_control_;
+  raw_ptr<views::View> manage_prediction_improvements_link_ = nullptr;
   raw_ptr<views::ImageButton> thumbs_up_button_ = nullptr;
   raw_ptr<views::ImageButton> thumbs_down_button_ = nullptr;
 };

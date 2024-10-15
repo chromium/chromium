@@ -57,8 +57,9 @@ class PopupRowPredictionImprovementsFeedbackViewTest
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    controller_.set_suggestions(
-        {Suggestion(SuggestionType::kPredictionImprovementsFeedback)});
+    Suggestion suggestion(SuggestionType::kPredictionImprovementsFeedback);
+    suggestion.voice_over = u"Required a11y text";
+    controller_.set_suggestions({std::move(suggestion)});
   }
 
   void ShowView(
