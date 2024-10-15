@@ -88,7 +88,11 @@ unsigned MaximumSpecificity(
 
 struct SameSizeAsCSSSelector {
   unsigned bitfields;
-  void* pointers[1];
+  union {
+    AtomicString value_;
+    QualifiedName tag_q_name_or_attribute_;
+    Member<void*> rare_data_;
+  } pointers;
 };
 
 ASSERT_SIZE(CSSSelector, SameSizeAsCSSSelector);

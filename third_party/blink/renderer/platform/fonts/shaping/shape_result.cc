@@ -75,7 +75,7 @@ struct SameSizeAsRunInfo {
     void* pointers[2];
     unsigned integer;
   } glyph_data;
-  void* pointer;
+  Member<void*> pointer;
   Vector<int> vector;
   int integers[6];
 };

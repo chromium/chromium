@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -88,8 +89,13 @@ struct CORE_EXPORT MatchedProperties {
   Member<CSSPropertyValueSet> properties;
   Data data_;
 };
-static_assert(sizeof(MatchedProperties) <= 12,
-              "MatchedProperties should not grow without thinking");
+
+struct SameSizeAsMatchedProperties {
+  Member<void*> properties;
+  uint8_t data_[8];
+};
+
+ASSERT_SIZE(MatchedProperties, SameSizeAsMatchedProperties);
 
 }  // namespace blink
 
