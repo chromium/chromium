@@ -152,14 +152,15 @@ class CreateOnDeviceSessionTask
     : public AIContextBoundObject,
       public optimization_guide::OnDeviceModelAvailabilityObserver {
  public:
-  CreateOnDeviceSessionTask(content::BrowserContext& browser_context,
+  CreateOnDeviceSessionTask(content::BrowserContext* browser_context,
                             optimization_guide::ModelBasedCapabilityKey feature)
-      : service_(OptimizationGuideKeyedServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(&browser_context))),
-        feature_(feature) {}
+      : browser_context_(browser_context), feature_(feature) {}
   ~CreateOnDeviceSessionTask() override {
     if (observing_availability_) {
-      service_->RemoveOnDeviceModelAvailabilityChangeObserver(feature_, this);
+      OptimizationGuideKeyedService* service = GetOptimizationGuideService();
+      if (service) {
+        service->RemoveOnDeviceModelAvailabilityChangeObserver(feature_, this);
+      }
     }
   }
   CreateOnDeviceSessionTask(const CreateOnDeviceSessionTask&) = delete;
@@ -182,23 +183,25 @@ class CreateOnDeviceSessionTask
   //   * Otherwise (for non-recoverable errors), calls `OnFinish()` with a
   //     nullptr.
   void Run() {
-    if (!service_) {
+    OptimizationGuideKeyedService* service = GetOptimizationGuideService();
+    if (!service) {
       OnFinish(nullptr);
       return;
     }
+
     if (auto session = StartSession()) {
       OnFinish(std::move(session));
       return;
     }
     optimization_guide::OnDeviceModelEligibilityReason reason;
-    bool can_create = service_->CanCreateOnDeviceSession(feature_, &reason);
+    bool can_create = service->CanCreateOnDeviceSession(feature_, &reason);
     CHECK(!can_create);
     if (!kWaitableReasons.contains(reason)) {
       OnFinish(nullptr);
       return;
     }
     observing_availability_ = true;
-    service_->AddOnDeviceModelAvailabilityChangeObserver(feature_, this);
+    service->AddOnDeviceModelAvailabilityChangeObserver(feature_, this);
   }
 
  protected:
@@ -236,6 +239,11 @@ class CreateOnDeviceSessionTask
 
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
   StartSession() {
+    OptimizationGuideKeyedService* service = GetOptimizationGuideService();
+    if (!service) {
+      return nullptr;
+    }
+
     using ::optimization_guide::SessionConfigParams;
     SessionConfigParams config_params = SessionConfigParams{
         .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
@@ -243,10 +251,15 @@ class CreateOnDeviceSessionTask
     };
 
     UpdateSessionConfigParams(&config_params);
-    return service_->StartSession(feature_, config_params);
+    return service->StartSession(feature_, config_params);
   }
 
-  const raw_ptr<OptimizationGuideKeyedService> service_;
+  OptimizationGuideKeyedService* GetOptimizationGuideService() {
+    return OptimizationGuideKeyedServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(browser_context_));
+  }
+
+  const raw_ptr<content::BrowserContext> browser_context_;
   const optimization_guide::ModelBasedCapabilityKey feature_;
   bool observing_availability_ = false;
   base::OnceClosure deletion_callback_;
@@ -263,7 +276,7 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
           std::unique_ptr<
               optimization_guide::OptimizationGuideModelExecutor::Session>,
           mojo::PendingReceiver<ContextBoundObjectReceiverInterface>)>;
-  static void Start(content::BrowserContext& browser_context,
+  static void Start(content::BrowserContext* browser_context,
                     optimization_guide::ModelBasedCapabilityKey feature,
                     AIContextBoundObjectSet::ReceiverContext context,
                     CreateOptionsPtrType options,
@@ -282,7 +295,7 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
 
   CreateContextBoundObjectTask(
       base::PassKey<CreateContextBoundObjectTask>,
-      content::BrowserContext& browser_context,
+      content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
       AIContextBoundObjectSet::ReceiverContext context,
       CreateOptionsPtrType options,
@@ -349,7 +362,7 @@ class AIManagerReceiverRemover : public AIContextBoundObject {
 class CreateAssistantOnDeviceSessionTask : public CreateOnDeviceSessionTask {
  public:
   CreateAssistantOnDeviceSessionTask(
-      content::BrowserContext& browser_context,
+      content::BrowserContext* browser_context,
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       base::OnceCallback<
           void(std::unique_ptr<
@@ -434,7 +447,7 @@ void AIManagerKeyedService::CreateAssistantInternal(
     const std::optional<const AIAssistant::Context>& context) {
   CHECK(browser_context_);
   auto task = std::make_unique<CreateAssistantOnDeviceSessionTask>(
-      *browser_context_.get(), sampling_params,
+      browser_context_.get(), sampling_params,
       base::BindOnce(
           [](base::WeakPtr<content::BrowserContext> browser_context,
              AIContextBoundObjectSet* context_bound_object_set,
@@ -538,7 +551,7 @@ void AIManagerKeyedService::CreateSummarizer(
   CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
                                blink::mojom::AIManagerCreateSummarizerClient,
                                blink::mojom::AISummarizerCreateOptionsPtr>::
-      Start(*browser_context_,
+      Start(browser_context_,
             optimization_guide::ModelBasedCapabilityKey::kSummarize,
             receivers_.current_context(), std::move(options),
             std::move(client));
@@ -556,7 +569,7 @@ void AIManagerKeyedService::CreateWriter(
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
-      Start(*browser_context_,
+      Start(browser_context_,
             optimization_guide::ModelBasedCapabilityKey::kCompose,
             receivers_.current_context(), std::move(options),
             std::move(client));
@@ -579,7 +592,7 @@ void AIManagerKeyedService::CreateRewriter(
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::
-      Start(*browser_context_,
+      Start(browser_context_,
             optimization_guide::ModelBasedCapabilityKey::kCompose,
             receivers_.current_context(), std::move(options),
             std::move(client));
