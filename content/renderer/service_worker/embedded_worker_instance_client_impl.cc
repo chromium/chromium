@@ -38,7 +38,7 @@ namespace content {
 // successfully initialized.
 BASE_FEATURE(kServiceWorkerDebugCorsExemptHeaderList,
              "ServiceWorkerDebugCorsExemptHeaderList",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 void EmbeddedWorkerInstanceClientImpl::Create(
