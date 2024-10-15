@@ -140,14 +140,14 @@ void NoDeleteBrowsingDataDialogHistogram(
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey resetBrowsingDataPrefs];
   // Close any open UI to avoid test flakiness.
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

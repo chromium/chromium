@@ -127,11 +127,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 @implementation SaveProfileEGTest
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clear existing profile.
   [AutofillAppInterface clearProfilesStore];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

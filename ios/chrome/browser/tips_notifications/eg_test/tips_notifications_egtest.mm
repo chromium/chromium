@@ -149,11 +149,11 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [ChromeEarlGrey removeUserDefaultsObjectForKey:@"edoTestPort"];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helpers

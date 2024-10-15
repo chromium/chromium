@@ -70,7 +70,7 @@ using chrome_test_util::SettingsDoneButton;
              @"Failed to assert that UKM was enabled.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       waitForSyncEngineInitialized:YES
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
@@ -96,7 +96,7 @@ using chrome_test_util::SettingsDoneButton;
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helpers

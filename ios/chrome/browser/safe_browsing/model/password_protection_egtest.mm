@@ -88,10 +88,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   GREYAssertEqual(1, credentialsCount, @"There should be one credential.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)typePasswordIntoWebInput {

@@ -273,7 +273,7 @@ void CompleteSigninFlow() {
   [super setUp];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Sign out then wait for the sign-in screen to reappear if not already
   // displayed. This is to avoid a conflict between the dismiss animation and
   // the presentation animation of the sign-in screen UI which can be triggered
@@ -284,7 +284,7 @@ void CompleteSigninFlow() {
   [ChromeEarlGrey signOutAndClearIdentities];
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

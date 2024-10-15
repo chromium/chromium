@@ -92,9 +92,9 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   _callURI = GURL("tel://0123456789");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testDisplayActions {

@@ -156,8 +156,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tear down called once per test.
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [PolicyAppInterface clearPolicies];
 }
 

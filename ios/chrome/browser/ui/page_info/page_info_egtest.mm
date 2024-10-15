@@ -172,8 +172,8 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
                 @"Failed to set up histogram tester.");
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
 }

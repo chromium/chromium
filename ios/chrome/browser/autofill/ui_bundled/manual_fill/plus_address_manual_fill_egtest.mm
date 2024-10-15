@@ -144,11 +144,11 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [AutofillAppInterface saveExampleAccountProfile];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
   [SigninEarlGrey signOut];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Opens the expanded manual fill view for a given `dataType`. `fieldToFill` is

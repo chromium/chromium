@@ -70,8 +70,8 @@ id<GREYMatcher> TabGridButton() {
   return config;
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
 }
 
 // When the IncognitoModeAvailability policy is set to available, the tools

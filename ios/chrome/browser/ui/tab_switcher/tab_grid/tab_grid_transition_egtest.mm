@@ -102,13 +102,13 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
-- (void)tearDown {
+- (void)tearDownHelper {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
 
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Sets up the EmbeddedTestServer as needed for tests.

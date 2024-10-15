@@ -50,10 +50,10 @@
   [SettingsAppInterface resetSearchEngine];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset the search engine for any other tests.
   [SettingsAppInterface resetSearchEngine];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

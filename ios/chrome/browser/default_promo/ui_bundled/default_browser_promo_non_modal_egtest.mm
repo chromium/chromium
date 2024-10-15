@@ -50,8 +50,8 @@ id<GREYMatcher> NonModalTitleMatcher() {
   [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 

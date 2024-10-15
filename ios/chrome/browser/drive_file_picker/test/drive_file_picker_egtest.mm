@@ -71,9 +71,9 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   return config;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [DriveFilePickerAppInterface hideDriveFilePicker];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

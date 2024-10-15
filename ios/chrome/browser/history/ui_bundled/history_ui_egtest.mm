@@ -182,7 +182,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
@@ -205,7 +205,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   // Shutdown network process after tests run to avoid hanging from
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // From history, delets browsing data with the default values which is 15min

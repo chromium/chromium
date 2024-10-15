@@ -325,7 +325,7 @@ void DismissPaymentBottomSheet() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearAllServerDataForTesting];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -334,7 +334,7 @@ void DismissPaymentBottomSheet() {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

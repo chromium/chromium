@@ -150,7 +150,7 @@ NSString* HostnameFromGURL(GURL URL) {
   [ChromeEarlGrey openNewTab];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
@@ -159,7 +159,7 @@ NSString* HostnameFromGURL(GURL URL) {
                                                  kTabResumptioDisabledPref];
   [ChromeEarlGrey clearUserPrefWithName:tab_resumption_prefs::
                                             kTabResumptionLastOpenedTabURLPref];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the tab resumption tile is correctly displayed for a distant tab.

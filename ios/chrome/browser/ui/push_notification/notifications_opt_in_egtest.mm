@@ -63,11 +63,11 @@ id<GREYMatcher> OptInScreenMatcher() {
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [NewTabPageAppInterface resetSetUpListPrefs];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Triggers the Notifications Opt-In Screen through the Set Up List "See more"

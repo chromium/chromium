@@ -672,7 +672,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                     ReauthenticationResult::kSuccess];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Snackbars triggered by tests stay up for a limited time even if the
   // settings get closed. Ensure that they are closed to avoid interference with
   // other tests.
@@ -688,7 +688,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

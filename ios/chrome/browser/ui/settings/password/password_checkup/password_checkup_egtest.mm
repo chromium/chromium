@@ -293,9 +293,9 @@ NSString* LeakedPasswordDescription() {
                                     ReauthenticationResult::kSuccess];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

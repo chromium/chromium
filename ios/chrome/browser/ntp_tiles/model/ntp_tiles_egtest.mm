@@ -28,9 +28,9 @@ using web::test::HttpServer;
 
 @implementation NTPTilesTest
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearBrowsingHistory];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

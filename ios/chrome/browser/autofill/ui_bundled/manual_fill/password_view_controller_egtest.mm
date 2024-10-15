@@ -255,7 +255,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilePasswordStore];
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
@@ -263,7 +263,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

@@ -82,12 +82,12 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setUpTestUrlLoaderFactoryHelper];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey closeCurrentTab];
   [SupervisedUserSettingsAppInterface resetSupervisedUserURLFilterBehavior];
   [SupervisedUserSettingsAppInterface resetManualUrlFiltering];
   [SupervisedUserSettingsAppInterface tearDownTestUrlLoaderFactoryHelper];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)checkRequestSentMessageVisibility:(BOOL)isVisible {

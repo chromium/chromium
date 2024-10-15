@@ -105,8 +105,8 @@ void OpensPasswordsInOtherApps() {
                                     ReauthenticationResult::kSuccess];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [PasswordsInOtherAppsAppInterface resetManager];
   _passwordAutoFillStatusSwizzler.reset();
   // Remove mock to keep the app in the same state as before running the test.

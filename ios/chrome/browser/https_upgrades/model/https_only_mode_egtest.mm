@@ -83,11 +83,11 @@ enum class TestType {
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
   [HttpsUpgradeAppInterface clearAllowlist];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Returns true if the HTTPS-Only Mode interstitial is enabled.

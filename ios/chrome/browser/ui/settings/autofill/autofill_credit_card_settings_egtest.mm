@@ -105,7 +105,7 @@ id<GREYMatcher> BottomToolbar() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearMockReauthenticationModule];
 
@@ -113,7 +113,7 @@ id<GREYMatcher> BottomToolbar() {
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Returns the label for `creditCard` in the settings page for Autofill credit

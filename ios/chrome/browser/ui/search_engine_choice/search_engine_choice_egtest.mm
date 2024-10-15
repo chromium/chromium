@@ -32,13 +32,13 @@
                 @"Failed to set up histogram tester.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset the default search engine to Google
   [SettingsAppInterface resetSearchEngine];
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

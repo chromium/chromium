@@ -71,7 +71,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 
 @implementation SettingsTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // It is possible for a test to fail with a menu visible, which can cause
   // future tests to fail.
 
@@ -99,7 +99,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

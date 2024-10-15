@@ -38,9 +38,9 @@
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   CleanUp();
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that non Android Switchers should not see the prompt, even if they have

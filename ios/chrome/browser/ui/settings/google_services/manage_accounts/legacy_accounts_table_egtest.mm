@@ -51,13 +51,13 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 @implementation LegacyAccountsTableTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 
   [ChromeEarlGrey clearFakeSyncServerData];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)setUp {

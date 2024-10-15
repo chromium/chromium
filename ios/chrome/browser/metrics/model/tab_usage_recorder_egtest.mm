@@ -148,10 +148,10 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey removeBrowsingCache];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the recorder actual recorde tab state.

@@ -68,10 +68,10 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Tear down called once per test.
-- (void)tearDown {
+- (void)tearDownHelper {
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - BookmarksEntriesTestCase Tests

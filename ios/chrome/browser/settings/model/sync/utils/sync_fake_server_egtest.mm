@@ -113,10 +113,10 @@ void ClearRelevantData() {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   ClearRelevantData();
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

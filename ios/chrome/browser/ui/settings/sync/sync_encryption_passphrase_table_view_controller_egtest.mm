@@ -41,14 +41,14 @@ NSString* const kPassphrase = @"hello";
 
 @implementation SyncEncryptionPassphraseTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)setUp {

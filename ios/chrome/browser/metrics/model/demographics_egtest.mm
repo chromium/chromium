@@ -48,12 +48,12 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   [self grantMetricsConsent];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearFakeSyncServerData];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

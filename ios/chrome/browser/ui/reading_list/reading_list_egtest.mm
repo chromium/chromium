@@ -482,9 +482,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey stopWatcher];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey stopWatcher];
-  [super tearDown];
+  [super tearDownHelper];
   [ReadingListAppInterface resetConnectionType];
 }
 

@@ -76,10 +76,10 @@ void WaitForPreferenceValue(int pref_value) {
   [ChromeEarlGrey clearFakeSyncServerData];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearUserPrefWithName:kTestSyncablePref];
   [ChromeEarlGrey clearFakeSyncServerData];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - SyncPreferencesTestCase Tests

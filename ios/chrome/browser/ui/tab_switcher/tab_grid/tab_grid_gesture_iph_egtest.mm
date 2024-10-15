@@ -60,10 +60,10 @@ using ::chrome_test_util::TabGridSearchTabsButton;
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
   ResetFirstRunRecency();
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the swipe IPH can be shown and dismissed on timeout.

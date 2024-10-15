@@ -282,13 +282,13 @@ void VerifyNoActionsRan() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PolicyAppInterface clearPolicies];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

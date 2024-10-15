@@ -136,9 +136,9 @@ id<GREYMatcher> MigrateToAccountButton() {
   [AutofillAppInterface clearProfilesStore];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Helper to open the settings page for Autofill profiles.

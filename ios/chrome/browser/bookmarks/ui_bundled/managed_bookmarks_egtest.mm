@@ -123,8 +123,8 @@ void SearchBookmarksForText(NSString* search_text) {
 }
 
 // Tear down called once per test.
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 

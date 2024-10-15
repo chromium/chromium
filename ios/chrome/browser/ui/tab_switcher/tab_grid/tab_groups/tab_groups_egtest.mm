@@ -230,10 +230,10 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

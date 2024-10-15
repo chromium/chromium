@@ -133,7 +133,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
@@ -142,7 +142,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

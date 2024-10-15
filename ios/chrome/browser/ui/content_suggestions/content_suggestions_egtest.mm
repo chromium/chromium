@@ -144,10 +144,10 @@ void TapSecondaryActionButton() {
   [super setUp];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey removeFirstRunSentinel];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

@@ -135,13 +135,13 @@ NSString* const kDomain2 = @"domain2.com";
   std::unique_ptr<policy::EmbeddedPolicyTestServer> _server;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   if (_settingsOpened) {
     [ChromeEarlGrey dismissSettings];
     [ChromeEarlGreyUI waitForAppToIdle];
   }
   [PolicyAppInterface clearPolicies];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)openSettingsMenu {

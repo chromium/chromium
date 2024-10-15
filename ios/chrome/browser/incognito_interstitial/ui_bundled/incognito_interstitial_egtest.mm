@@ -42,11 +42,11 @@ using chrome_test_util::NTPIncognitoView;
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   scopedPolicies.Reset();
   [ChromeEarlGrey setBoolValue:NO
              forLocalStatePref:prefs::kIncognitoInterstitialEnabled];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Test the "Open in Chrome Incognito" journey through the Incognito

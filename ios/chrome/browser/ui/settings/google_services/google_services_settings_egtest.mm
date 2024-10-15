@@ -104,8 +104,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGrey clearBookmarks];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   // Some tests change the value of this pref, so reset.
   [ChromeEarlGrey clearUserPrefWithName:prefs::kSigninAllowed];
   [BookmarkEarlGrey clearBookmarks];

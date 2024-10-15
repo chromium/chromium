@@ -34,9 +34,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 @implementation ManageAccountsTableTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearFakeSyncServerData];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

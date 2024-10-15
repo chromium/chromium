@@ -38,11 +38,11 @@
                 forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Resets preferences back to default values.
   [ChromeEarlGrey setIntegerValue:0
                 forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Ensures that the tabs settings open.

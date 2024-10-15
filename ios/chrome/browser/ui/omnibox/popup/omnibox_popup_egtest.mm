@@ -482,9 +482,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testTapAppendArrowButton {
@@ -571,9 +571,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
-  [super tearDown];
+  [super tearDownHelper];
   // HW keyboard simulation does mess up the SW keyboard simulator state.
   // Relaunching resets the state.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];

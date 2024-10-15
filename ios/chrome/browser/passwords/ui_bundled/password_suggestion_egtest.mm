@@ -92,12 +92,12 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   [PasswordSettingsAppInterface clearPasswordStores];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearUserPrefWithName:
                       prefs::kIosPasswordGenerationBottomSheetDismissCount];
   // The test may leave stored crendentials behind so clear them.
   [PasswordSettingsAppInterface clearPasswordStores];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

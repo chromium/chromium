@@ -56,7 +56,7 @@
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [SigninEarlGrey signOut];
 
   [ChromeEarlGrey
@@ -77,7 +77,7 @@
       clearUserPrefWithName:unified_consent::prefs::
                                 kUrlKeyedAnonymizedDataCollectionEnabled];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - BaseEarlGreyTestCase

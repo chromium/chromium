@@ -46,11 +46,11 @@
       @"Inactive tabs preference is not set to default value.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset preferences back to default values.
   [ChromeEarlGrey setIntegerValue:0
                 forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Ensures that the inactive tabs settings open.

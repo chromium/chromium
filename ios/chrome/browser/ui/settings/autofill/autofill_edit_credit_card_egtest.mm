@@ -80,10 +80,10 @@ id<GREYMatcher> YearOfExpiryTextField() {
       performAction:grey_tap()];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearMockReauthenticationModule];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Test that all fields on the 'Add Credit Card' screen appear

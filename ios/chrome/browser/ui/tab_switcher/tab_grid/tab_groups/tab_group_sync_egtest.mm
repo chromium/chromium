@@ -109,8 +109,8 @@ void CloseGroupAtIndex(int group_cell_index) {
 
 @implementation TabGroupSyncTestCase
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   // Delete all saved groups.
   [TabGroupSyncEarlGrey cleanup];
 }

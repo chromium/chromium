@@ -83,9 +83,9 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   [self signIn];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self reset];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

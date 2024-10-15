@@ -69,8 +69,8 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
 }
 
 // Asserts that the navigation wasn't upgraded.

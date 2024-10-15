@@ -220,10 +220,10 @@ void WaitForVisibleChromeManagementURL() {
   [super setUp];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   ClearUserPolicyPrefs();
   [PolicyAppInterface clearPolicies];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

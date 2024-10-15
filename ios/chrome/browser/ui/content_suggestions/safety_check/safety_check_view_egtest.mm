@@ -66,13 +66,13 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   [NewTabPageAppInterface disableSetUpList];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [[self class] closeAllTabs];
 
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

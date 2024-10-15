@@ -164,10 +164,10 @@ void TriggerEditMenu() {
                    setDefault:YES];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [SearchEnginesAppInterface setSearchEngineTo:self.defaultSearchEngine];
   [SearchEnginesAppInterface removeSearchEngineWithName:@"test"];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Conveniently load a page that has "text" in a selectable field.

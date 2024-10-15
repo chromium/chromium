@@ -171,12 +171,12 @@ void LoginOnUff() {
   [AutofillAppInterface clearProfilesStore];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [AutofillAppInterface clearProfilesStore];
   [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

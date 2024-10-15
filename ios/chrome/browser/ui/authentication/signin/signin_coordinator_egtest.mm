@@ -137,8 +137,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                 @"Failed to set up histogram tester.");
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");

@@ -274,7 +274,7 @@ void TapSuppressDialogsButton() {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   NSError* errorOK = nil;
   NSError* errorCancel = nil;
 
@@ -291,7 +291,7 @@ void TapSuppressDialogsButton() {
   if (!errorOK || !errorCancel) {
     GREYFail(@"There are still alerts");
   }
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

@@ -81,11 +81,11 @@ void ReloadFromOmnibox() {
   MakeFirstRunRecent();
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey closeAllExtraWindows];
   [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
   ResetFirstRunRecency();
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox

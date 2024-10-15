@@ -80,9 +80,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), false);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PolicyAppInterface clearPolicies];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that pages are not blocked when the blocklist exists, but is empty.

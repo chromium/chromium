@@ -105,11 +105,11 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reactivate translation.
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:translate::prefs::kOfferTranslateEnabled];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Verifies that the content offset of the web view is set up at the correct

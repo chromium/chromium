@@ -158,11 +158,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
                                    NOSCRIPT];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

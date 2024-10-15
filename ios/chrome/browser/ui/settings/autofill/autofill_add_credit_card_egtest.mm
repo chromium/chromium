@@ -104,9 +104,9 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
       performAction:grey_tap()];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Test that all fields on the 'Add Credit Card' screen appear

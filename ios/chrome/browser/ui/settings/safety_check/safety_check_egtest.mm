@@ -128,9 +128,9 @@ void ResetLastPasswordCheckTimestamp() {
   ResetLastPasswordCheckTimestamp();
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
-  [super tearDown];
+  [super tearDownHelper];
 
   [PasswordSettingsAppInterface
       setFakeBulkLeakCheckBufferedState:

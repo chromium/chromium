@@ -247,8 +247,8 @@ id<GREYMatcher> AutofillFormButton() {
                                     ReauthenticationResult::kSuccess];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
 
   // Clear the stores.
   [AutofillAppInterface clearProfilePasswordStore];

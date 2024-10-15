@@ -110,10 +110,10 @@ id<GREYMatcher> OtpNewCodeLink() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface tearDownFakeCreditCardServer];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)showOtpInputDialog {

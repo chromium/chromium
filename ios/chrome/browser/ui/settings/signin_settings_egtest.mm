@@ -37,10 +37,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 @implementation SigninSettingsTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PolicyAppInterface clearPolicies];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testPromoCardHidden {

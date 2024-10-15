@@ -180,7 +180,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Reset preference to its non-default state (which should be the case
@@ -192,7 +192,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
       setBoolValue:YES
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testShareButtonVisibility {

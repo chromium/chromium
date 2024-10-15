@@ -244,7 +244,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Ensure that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0
                 forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
@@ -272,7 +272,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // deleting browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

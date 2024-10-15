@@ -233,9 +233,14 @@ void ResetAuthentication() {
   [ChromeTestCaseAppInterface blockSigninIPH];
 }
 
+- (void)tearDownHelper {
+}
+
 // Tear down called once per test, to close all tabs and menus, and clear the
 // tracked tests accounts. It also makes sure mock authentication is running.
 - (void)tearDown {
+  [self tearDownHelper];
+
   const bool appShouldBeRunning = !IsAppInAllowedCrashState();
 
   if (appShouldBeRunning) {
@@ -281,8 +286,8 @@ void ResetAuthentication() {
     // attempt to run in other orientations.
     [EarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
   }
-  [super tearDown];
   _executedTestMethodSetUp = NO;
+  [super tearDown];
 }
 
 #pragma mark - Public methods

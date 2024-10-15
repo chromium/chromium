@@ -111,9 +111,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey signOutAndClearIdentities];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Prepaes the NTP start surface.

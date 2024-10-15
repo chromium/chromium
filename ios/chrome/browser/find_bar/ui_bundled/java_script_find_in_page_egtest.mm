@@ -97,17 +97,17 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
   [self openFindInPage];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Disabled for iOS 16.1.1+.
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
-    [super tearDown];
+    [super tearDownHelper];
     return;
   }
 
   // Close find in page view.
   [self closeFindInPage];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests.

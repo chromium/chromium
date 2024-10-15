@@ -100,9 +100,9 @@ const char kLookalikeInNewTabContent[] = "New tab";
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [LookalikeUrlAppInterface tearDownLookalikeUrlDeciderForWebState];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that non-lookalike URLs are not blocked.

@@ -206,7 +206,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Ensure that Safe Browsing is reset to its original value.
   [ChromeEarlGrey setBoolValue:_safeBrowsingEnabledPrefDefault
                    forUserPref:prefs::kSafeBrowsingEnabled];
@@ -223,7 +223,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   // value.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helper methods

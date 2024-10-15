@@ -143,10 +143,10 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [BookmarkEarlGrey clearBookmarks];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 @end
@@ -169,8 +169,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
                 @"Cannot setup histogram tester.");
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
 }

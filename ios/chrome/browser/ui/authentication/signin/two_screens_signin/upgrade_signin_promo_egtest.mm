@@ -88,10 +88,10 @@ void OpenNTPAndBackgroundAndForegroundApp() {
       removeUserDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

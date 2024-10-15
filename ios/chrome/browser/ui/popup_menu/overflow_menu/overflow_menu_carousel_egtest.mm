@@ -115,7 +115,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clean up sign-in and Sync data.
   [SigninEarlGrey signOut];
   [ChromeEarlGrey
@@ -125,7 +125,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   CleanupDestinationsHighlightFeaturesData();
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

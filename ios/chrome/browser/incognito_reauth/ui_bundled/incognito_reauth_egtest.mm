@@ -33,10 +33,10 @@
       resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Enable the feature and background/foreground the app to lock incognito tabs.

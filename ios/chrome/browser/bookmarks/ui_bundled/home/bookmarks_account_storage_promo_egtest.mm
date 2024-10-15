@@ -48,8 +48,8 @@ using chrome_test_util::SecondarySignInButton;
 }
 
 // Tear down called once per test.
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }

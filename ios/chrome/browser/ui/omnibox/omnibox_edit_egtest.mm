@@ -136,8 +136,8 @@
   [ChromeEarlGrey clearBrowsingHistory];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [OmniboxAppInterface tearDownFakeSuggestionsService];
 }
 

@@ -33,9 +33,9 @@
   url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   _schemeRegistry = nullptr;
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that chrome://interstitials loads correctly.

@@ -286,9 +286,9 @@ void TestResponseProvider::GetLanguageResponse(
   [TranslateAppInterface setUpWithScriptServer:translateScriptSwitchValue];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [TranslateAppInterface tearDown];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Test Cases

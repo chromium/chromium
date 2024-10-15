@@ -229,8 +229,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SettingsAppInterface overrideSearchEngineWithURL:templateURL];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [SettingsAppInterface resetSearchEngine];
   _camera_controller_swizzler.reset();
 }

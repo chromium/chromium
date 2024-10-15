@@ -326,12 +326,12 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   _setUpHistogramTesterCalled = true;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   if (_setUpHistogramTesterCalled) {
     GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                   @"Failed to release histogram tester.");
   }
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that selecting "Open Image" from the context menu properly opens the

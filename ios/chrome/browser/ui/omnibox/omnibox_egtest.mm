@@ -282,9 +282,9 @@ void FocusFakebox() {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helpers
@@ -520,9 +520,9 @@ void FocusFakebox() {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tapping on steady view starts editing.
@@ -764,10 +764,10 @@ void FocusFakebox() {
   [ChromeEarlGrey clearPasteboard];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clear the pasteboard after every test.
   [ChromeEarlGrey clearPasteboard];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that tapping on steady view on webpage and starting typing a query
@@ -1241,8 +1241,8 @@ void FocusFakebox() {
   [ChromeEarlGrey clearPasteboard];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   // HW keyboard simulation can mess up the SW keyboard simulator state.
   // Relaunching resets the state.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];

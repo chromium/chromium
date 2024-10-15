@@ -345,7 +345,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   web::test::SetUpSimpleHttpServer(responses);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Ensure that the default search engine is reset.
   if ([self isRunningTest:@selector
             (testSearchOnWebSuggestedActionInRegularTabsSearch)] ||
@@ -375,7 +375,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
     [ChromeEarlGrey signOutAndClearIdentities];
   }
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests entering and leaving the tab grid.
