@@ -15035,6 +15035,7 @@ from previous Chrome versions.
   <int value="-2129531046" label="LacrosProfileBackwardMigration:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
+  <int value="-2128201506" label="PlusAddressFullFormFill:enabled"/>
   <int value="-2127806304" label="Enable16Desks:disabled"/>
   <int value="-2127319228" label="enable-media-internals:disabled"/>
   <int value="-2126697213" label="EnablePalmSuppression:disabled"/>
@@ -22369,6 +22370,7 @@ from previous Chrome versions.
   <int value="851085848" label="enable-settings-window"/>
   <int value="851114149" label="SystemTransliterationPhysicalTyping:enabled"/>
   <int value="851238417" label="VirtualKeyboardFloatingResizable:enabled"/>
+  <int value="851531650" label="PlusAddressFullFormFill:disabled"/>
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
   <int value="852703179" label="OptimizeNetworkBuffers:enabled"/>

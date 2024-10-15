@@ -144,6 +144,7 @@
 #include "components/payments/core/features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
+#include "components/plus_addresses/features.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -9881,6 +9882,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSafetyHub,
                                     kSafetyHubVariations,
                                     "SafetyHub")},
+    {"plus-address-full-form-fill",
+     flag_descriptions::kPlusAddressFullFormFillName,
+     flag_descriptions::kPlusAddressFullFormFillDescription, kOsAll,
+     FEATURE_VALUE_TYPE(plus_addresses::features::kPlusAddressFullFormFill)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"record-permissions-expiration-timestamp",
