@@ -632,8 +632,10 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
 #endif
 
   if (external_begin_frame_source_) {
+    // Start with the maximum supported refresh rate by setting
+    // |display_frame_interval_| to the minimum frame interval.
     display_frame_interval_ =
-        external_begin_frame_source_->GetMaximumRefreshFrameInterval();
+        external_begin_frame_source_->GetMinimumFrameInterval();
   }
 
 #if BUILDFLAG(IS_ANDROID)

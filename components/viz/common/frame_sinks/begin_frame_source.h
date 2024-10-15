@@ -432,8 +432,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // observers.
   virtual void SetPreferredInterval(base::TimeDelta interval) {}
 
-  // Returns the maximum supported refresh rate interval for a given BFS.
-  virtual base::TimeDelta GetMaximumRefreshFrameInterval();
+  // Returns the minimium supported frame interval for a given BFS.
+  // This gives the maximium refresh rate that can be requested.
+  virtual base::TimeDelta GetMinimumFrameInterval();
 
   virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);

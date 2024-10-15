@@ -599,7 +599,7 @@ BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(
   return missed_args;
 }
 
-base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
+base::TimeDelta ExternalBeginFrameSource::GetMinimumFrameInterval() {
   return BeginFrameArgs::DefaultInterval();
 }
 

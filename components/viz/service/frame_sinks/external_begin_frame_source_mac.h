@@ -50,7 +50,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // BeginFrameSource implementation.
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
-  base::TimeDelta GetMaximumRefreshFrameInterval() override;
+  base::TimeDelta GetMinimumFrameInterval() override;
   base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval) override;
 
