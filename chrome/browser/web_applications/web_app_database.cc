@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -910,6 +911,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
             isolation_data.update_manifest_url()) {
       mutable_data->set_update_manifest_url(update_manifest_url->spec());
     }
+
+    if (const auto& update_channel = isolation_data.update_channel()) {
+      mutable_data->set_update_channel(update_channel->ToString());
+    }
   }
 
   local_data->set_user_link_capturing_preference(
@@ -1745,6 +1750,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       isolation_data_builder.SetUpdateManifestUrl(
           std::move(update_manifest_url));
     }
+
+    if (local_data.isolation_data().has_update_channel()) {
+      auto update_channel =
+          UpdateChannel::Create(local_data.isolation_data().update_channel());
+      if (!update_channel.has_value()) {
+        DLOG(ERROR)
+            << "WebApp proto isolation_data.update_channel is not valid.";
+        return nullptr;
+      }
+      isolation_data_builder.SetUpdateChannel(std::move(*update_channel));
+    }
+
     web_app->SetIsolationData(std::move(isolation_data_builder).Build());
   }
 

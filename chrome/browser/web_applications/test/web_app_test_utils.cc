@@ -56,6 +56,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_isolation_data.pb.h"
@@ -1073,6 +1074,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     }
     if (dev_mode && random.next_bool()) {
       idb.SetUpdateManifestUrl(GURL("https://update-manifest.com"));
+      idb.SetUpdateChannel(UpdateChannel::default_channel());
     }
     app->SetIsolationData(std::move(idb).Build());
   }

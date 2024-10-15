@@ -19,6 +19,9 @@ void PersistFieldsForUpdateImpl(IsolationData::Builder& builder,
   if (isolation_data.update_manifest_url()) {
     builder.SetUpdateManifestUrl(*isolation_data.update_manifest_url());
   }
+  if (isolation_data.update_channel()) {
+    builder.SetUpdateChannel(*isolation_data.update_channel());
+  }
 }
 
 }  // namespace
@@ -29,13 +32,15 @@ IsolationData::IsolationData(
     std::set<std::string> controlled_frame_partitions,
     std::optional<PendingUpdateInfo> pending_update_info,
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
-    std::optional<GURL> update_manifest_url)
+    std::optional<GURL> update_manifest_url,
+    std::optional<UpdateChannel> update_channel)
     : location_(std::move(location)),
       version_(std::move(version)),
       controlled_frame_partitions_(std::move(controlled_frame_partitions)),
       pending_update_info_(std::move(pending_update_info)),
       integrity_block_data_(std::move(integrity_block_data)),
-      update_manifest_url_(std::move(update_manifest_url)) {}
+      update_manifest_url_(std::move(update_manifest_url)),
+      update_channel_(std::move(update_channel)) {}
 
 IsolationData::~IsolationData() = default;
 IsolationData::IsolationData(const IsolationData&) = default;
@@ -59,6 +64,9 @@ base::Value IsolationData::AsDebugValue() const {
 
   if (update_manifest_url_) {
     debug_dict.Set("update_manifest_url", update_manifest_url_->spec());
+  }
+  if (update_channel_) {
+    debug_dict.Set("update_channel", update_channel_->ToString());
   }
 
   return base::Value(std::move(debug_dict));
@@ -100,7 +108,8 @@ IsolationData::Builder::Builder(const IsolationData& isolation_data)
           isolation_data.controlled_frame_partitions()),
       pending_update_info_(isolation_data.pending_update_info()),
       integrity_block_data_(isolation_data.integrity_block_data()),
-      update_manifest_url_(isolation_data.update_manifest_url()) {}
+      update_manifest_url_(isolation_data.update_manifest_url()),
+      update_channel_(isolation_data.update_channel()) {}
 
 IsolationData::Builder::~Builder() = default;
 
@@ -177,6 +186,24 @@ IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
   return std::move(*this);
 }
 
+IsolationData::Builder& IsolationData::Builder::SetUpdateChannel(
+    UpdateChannel update_channel) & {
+  CHECK(location_.dev_mode())
+      << "This field is supposed to be used only with dev mode installs via "
+         "chrome://web-app-internals.";
+  update_channel_ = std::move(update_channel);
+  return *this;
+}
+
+IsolationData::Builder&& IsolationData::Builder::SetUpdateChannel(
+    UpdateChannel update_channel) && {
+  CHECK(location_.dev_mode())
+      << "This field is supposed to be used only with dev mode installs via "
+         "chrome://web-app-internals.";
+  update_channel_ = std::move(update_channel);
+  return std::move(*this);
+}
+
 IsolationData::Builder& IsolationData::Builder::PersistFieldsForUpdate(
     const IsolationData& isolation_data) & {
   PersistFieldsForUpdateImpl(*this, isolation_data);
@@ -193,7 +220,8 @@ IsolationData IsolationData::Builder::Build() && {
   return IsolationData(
       std::move(location_), std::move(version_),
       std::move(controlled_frame_partitions_), std::move(pending_update_info_),
-      std::move(integrity_block_data_), std::move(update_manifest_url_));
+      std::move(integrity_block_data_), std::move(update_manifest_url_),
+      std::move(update_channel_));
 }
 
 }  // namespace web_app

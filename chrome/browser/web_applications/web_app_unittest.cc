@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -406,6 +407,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
 
   static constexpr std::string_view kUpdateManifestUrl =
       "https://update-manifest.com";
+  static const UpdateChannel kUpdateChannel = UpdateChannel::default_channel();
 
   auto integrity_block_data = CreateIntegrityBlockData();
   app.SetIsolationData(
@@ -418,6 +420,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
               base::Version("2.0.0"), integrity_block_data))
           .SetIntegrityBlockData(integrity_block_data)
           .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
+          .SetUpdateChannel(kUpdateChannel)
           .Build());
 
   EXPECT_TRUE(app.isolation_data().has_value());
@@ -449,14 +452,16 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
           "integrity_block_data": $1
         },
         "integrity_block_data": $2,
-        "update_manifest_url": "$3"
+        "update_manifest_url": "$3",
+        "update_channel": "$4"
       })|";
 
-  base::Value expected_isolation_data = *base::JSONReader::Read(
-      base::ReplaceStringPlaceholders(kExpectedIsolationDataFormat,
-                                      {ib_data_serialized, ib_data_serialized,
-                                       GURL(kUpdateManifestUrl).spec()},
-                                      /*offsets=*/nullptr));
+  base::Value expected_isolation_data =
+      *base::JSONReader::Read(base::ReplaceStringPlaceholders(
+          kExpectedIsolationDataFormat,
+          {ib_data_serialized, ib_data_serialized,
+           GURL(kUpdateManifestUrl).spec(), kUpdateChannel.ToString()},
+          /*offsets=*/nullptr));
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
   base::Value::Dict* debug_isolation_data =

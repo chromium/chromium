@@ -99,4 +99,6 @@ message IsolationData {
   optional IntegrityBlockData integrity_block_data = 7;
 
   optional string update_manifest_url = 8;
+
+  optional string update_channel = 9;
 }

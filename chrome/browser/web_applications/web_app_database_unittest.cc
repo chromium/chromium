@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -1228,6 +1229,7 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
 
   static constexpr std::string_view kUpdateManifestUrl =
       "https://update-manifest.com";
+  static const UpdateChannel kUpdateChannel = UpdateChannel::default_channel();
 
   auto integrity_block_data =
       IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
@@ -1240,6 +1242,7 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
               integrity_block_data))
           .SetIntegrityBlockData(integrity_block_data)
           .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
+          .SetUpdateChannel(kUpdateChannel)
           .Build();
 
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(isolation_data);

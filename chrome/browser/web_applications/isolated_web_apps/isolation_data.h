@@ -12,6 +12,7 @@
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -71,6 +72,9 @@ class IsolationData {
   const std::optional<GURL>& update_manifest_url() const {
     return update_manifest_url_;
   }
+  const std::optional<UpdateChannel>& update_channel() const {
+    return update_channel_;
+  }
 
  private:
   IsolationData(
@@ -79,7 +83,8 @@ class IsolationData {
       std::set<std::string> controlled_frame_partitions,
       std::optional<PendingUpdateInfo> pending_update_info,
       std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
-      std::optional<GURL> update_manifest_url);
+      std::optional<GURL> update_manifest_url,
+      std::optional<UpdateChannel> update_channel);
 
   IsolatedWebAppStorageLocation location_;
   base::Version version_;
@@ -97,12 +102,14 @@ class IsolationData {
   // key. Please don't rely on it for anything security-critical!
   std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
 
-  // Informs the browser where to look up the update manifest for this IWA.
-  // This field is only used for dev mode installs from update manifest via
-  // chrome://web-app-internals; for all other install types this field is
-  // left blank. For unmanaged installs this will likely need to have a
-  // counterpart in PendingUpdateInfo.
+  // Informs the browser where to look up the update manifest for this IWA and
+  // which update channel to use.
+  // These fields are only used for dev mode installs from update manifest via
+  // chrome://web-app-internals; for all other install types they are left
+  // blank. For unmanaged installs this will likely need to have a counterpart
+  // in PendingUpdateInfo.
   std::optional<GURL> update_manifest_url_;
+  std::optional<UpdateChannel> update_channel_;
 
  public:
   class Builder {
@@ -138,9 +145,14 @@ class IsolationData {
         IsolatedWebAppIntegrityBlockData integrity_block_data) &&;
 
     // Update manifest is supposed to be set only for selected dev-mode
-    // installs. Will `CHECK` if applied to a prod-mode location.
+    // installs. Will `CHECK`-fail if applied to a prod-mode location.
     Builder& SetUpdateManifestUrl(GURL update_manifest_url) &;
     Builder&& SetUpdateManifestUrl(GURL update_manifest_url) &&;
+
+    // Update channel is supposed to be set only for selected dev-mode
+    // installs. Will `CHECK`-fail if applied to a prod-mode location.
+    Builder& SetUpdateChannel(UpdateChannel update_channel) &;
+    Builder&& SetUpdateChannel(UpdateChannel update_channel) &&;
 
     // During an update the foundational pieces of the IWA (`location` and
     // `version`) of the IWA change, and hence the IsolationData has to be
@@ -163,6 +175,7 @@ class IsolationData {
     std::optional<IsolationData::PendingUpdateInfo> pending_update_info_;
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
     std::optional<GURL> update_manifest_url_;
+    std::optional<UpdateChannel> update_channel_;
   };
 };
 
