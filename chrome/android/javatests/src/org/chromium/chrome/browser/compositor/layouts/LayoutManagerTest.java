@@ -179,7 +179,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         mTabModelSelector =
                 new MockTabModelSelector(
                         ProfileManager.getLastUsedRegularProfile(),
-                        ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                        ProfileManager.getLastUsedRegularProfile().getPrimaryOtrProfile(true),
                         standardTabCount,
                         incognitoTabCount,
                         this);
@@ -772,6 +772,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public MockTab createTab(int id, boolean incognito) {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         return MockTab.createAndInitialize(
-                id, incognito ? profile.getPrimaryOTRProfile(true) : profile);
+                id, incognito ? profile.getPrimaryOtrProfile(true) : profile);
     }
 }
