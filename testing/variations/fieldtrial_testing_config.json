@@ -11989,6 +11989,21 @@
             ]
         }
     ],
+    "IOSOmahaResyncTimerOnForeground": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmahaResyncTimerOnForeground"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOverflowMenuCustomization": [
         {
             "platforms": [
