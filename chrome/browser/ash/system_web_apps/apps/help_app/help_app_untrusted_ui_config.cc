@@ -48,6 +48,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
@@ -190,6 +191,12 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "rgbKeyboard",
       rgb_keyboard_manager && rgb_keyboard_manager->IsRgbKeyboardSupported());
+  // Whether or not there is a function key on any keyboard.
+  ui::KeyboardCapability* keyboard_capability =
+      Shell::Get()->keyboard_capability();
+  source->AddBoolean("hasFunctionKey",
+                     keyboard_capability &&
+                         keyboard_capability->HasFunctionKeyOnAnyKeyboard());
 
   // Checks if there are active touch screens.
   source->AddBoolean(

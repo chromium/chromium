@@ -78,6 +78,7 @@ static_library("help_app") {
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/display",
+    "//ui/events/ash",
     "//ui/events/devices",
     "//url",
   ]
