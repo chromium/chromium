@@ -304,9 +304,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(ink::Color::FromUint8(/*red=*/10, /*green=*/255, /*blue=*/50,
-                                  /*alpha=*/255),
-            ink_brush.GetColor());
+  EXPECT_EQ(SkColorSetRGB(10, 255, 50), GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -332,9 +330,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(ink::Color::FromUint8(/*red=*/240, /*green=*/133, /*blue=*/0,
-                                  /*alpha=*/255),
-            ink_brush.GetColor());
+  EXPECT_EQ(SkColorSetRGB(240, 133, 0), GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -359,7 +355,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(ink::Color::Black(), ink_brush.GetColor());
+  EXPECT_EQ(SK_ColorBLACK, GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
