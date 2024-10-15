@@ -8329,29 +8329,6 @@
             ]
         }
     ],
-    "DevToolsFreestyler": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "params": {
-                        "aida_model_id": "codey_gemit_mpp_streaming",
-                        "aida_temperature": "-1"
-                    },
-                    "enable_features": [
-                        "DevToolsFreestyler"
-                    ]
-                }
-            ]
-        }
-    ],
     "DevToolsFreestylerDogfood": [
         {
             "platforms": [

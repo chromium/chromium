@@ -51,9 +51,10 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 // Whether the DevTools styling assistant is enabled.
 BASE_FEATURE(kDevToolsFreestyler,
              "DevToolsFreestyler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsFreestylerModelId{
-    &kDevToolsFreestyler, "aida_model_id", /*default_value=*/""};
+    &kDevToolsFreestyler, "aida_model_id",
+    /*default_value=*/"codey_gemit_mpp_streaming"};
 const base::FeatureParam<double> kDevToolsFreestylerTemperature{
     &kDevToolsFreestyler, "aida_temperature", /*default_value=*/-1};
 const base::FeatureParam<DevToolsFreestylerUserTier>
