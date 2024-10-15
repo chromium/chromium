@@ -54,6 +54,9 @@ class DriveSkyvaultUploader
   // Initiated by the `Upload` static method.
   void Run();
 
+  // Cancels the upload, if possible.
+  void Cancel();
+
   DriveSkyvaultUploader(const DriveSkyvaultUploader&) = delete;
   DriveSkyvaultUploader& operator=(const DriveSkyvaultUploader&) = delete;
 
@@ -124,6 +127,10 @@ class DriveSkyvaultUploader
 
   // Whether `EndCopy()` was called.
   bool copy_ended_ = false;
+
+  // Set to `true` if upload is explicitly cancelled by owner. Forces every step
+  // to exit early.
+  bool cancelled_ = false;
 
   // Stores the first encountered error, if any.
   std::optional<MigrationUploadError> error_;
