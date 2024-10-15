@@ -87,6 +87,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
+  void WillStartInitialSync() override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,

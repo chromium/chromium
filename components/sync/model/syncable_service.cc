@@ -5,6 +5,9 @@
 #include "components/sync/model/syncable_service.h"
 
 namespace syncer {
+
+void SyncableService::WillStartInitialSync() {}
+
 void SyncableService::OnBrowserShutdown(DataType type) {
   // Stop the syncable service to make sure instances of LocalChangeProcessor
   // are not continued to be used.

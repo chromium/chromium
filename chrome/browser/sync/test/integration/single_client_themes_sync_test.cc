@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -32,6 +33,7 @@ using themes_helper::UseDefaultTheme;
 using themes_helper::UseSystemTheme;
 using themes_helper::UsingCustomTheme;
 using themes_helper::UsingDefaultTheme;
+using themes_helper::UsingGrayscaleTheme;
 using themes_helper::UsingSystemTheme;
 
 // Note: All of these matchers take a sync_pb::ThemeSpecifics.
@@ -87,6 +89,16 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateCustomThemeEntity(
   specifics.mutable_theme()->set_use_custom_theme(true);
   specifics.mutable_theme()->set_custom_theme_id(theme_id);
   specifics.mutable_theme()->set_custom_theme_name("custom theme");
+  return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+      ThemeSyncableService::kSyncEntityTitle,
+      ThemeSyncableService::kSyncEntityClientTag, specifics,
+      /*creation_time=*/0, /*last_modified_time=*/0);
+}
+
+std::unique_ptr<syncer::LoopbackServerEntity> CreateGrayscaleThemeEntity() {
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_theme()->set_use_custom_theme(false);
+  specifics.mutable_theme()->mutable_grayscale_theme_enabled();
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
       ThemeSyncableService::kSyncEntityTitle,
       ThemeSyncableService::kSyncEntityClientTag, specifics,
@@ -568,6 +580,55 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
   // Local custom theme is not uploaded to the account.
   EXPECT_TRUE(ServerThemeMatchChecker(HasDefaultTheme()).Wait());
   EXPECT_TRUE(UsingCustomTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldRestoreLocalThemeUponSyncStop) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme should get re-applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       PRE_ShouldPersistSavedLocalThemeOverBrowserRestart) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldPersistSavedLocalThemeOverBrowserRestart) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme should get re-applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 }
 
 }  // namespace

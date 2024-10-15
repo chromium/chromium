@@ -70,6 +70,7 @@ MATCHER_P(HasName, name, "") {
 class MockSyncableService : public SyncableService {
  public:
   MOCK_METHOD(void, WaitUntilReadyToSync, (base::OnceClosure done), (override));
+  MOCK_METHOD(void, WillStartInitialSync, (), (override));
   MOCK_METHOD(std::optional<syncer::ModelError>,
               MergeDataAndStartSyncing,
               (DataType type,
@@ -728,6 +729,33 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
+}
+
+TEST_F(SyncableServiceBasedBridgeTest, ShouldCallWillStartInitialSync) {
+  ::testing::InSequence in_sequence;
+  EXPECT_CALL(syncable_service_, WillStartInitialSync);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotCallWillStartInitialSyncUponBrowserRestart) {
+  // The following writes data into store for the next run.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+
+  // Mimic restart.
+  ShutdownBridge();
+
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+  EXPECT_CALL(syncable_service_, WillStartInitialSync).Times(0);
+  // Initial data is loaded from the store.
+  InitializeBridge();
+  StartSyncing();
 }
 
 }  // namespace
