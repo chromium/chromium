@@ -157,9 +157,9 @@ source_set("webui_internal") {
 
   if (build_with_internal_optimization_guide) {
     deps += [
-      "//components/optimization_guide/internal:optimization_guide_internal+bundle",
-      "//components/optimization_guide/internal:optimization_guide_internal+link",
-      "//ios/chrome/browser/optimization_guide/resources:on_device_llm_bundle_data",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:features",
+      "//ios/chrome/browser/optimization_guide/model",
     ]
   }
 

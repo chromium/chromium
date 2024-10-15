@@ -24,7 +24,10 @@ OnDeviceModelServiceControllerIOS::~OnDeviceModelServiceControllerIOS() {}
 
 void OnDeviceModelServiceControllerIOS::LaunchService() {
   receiver_ = service_remote_.BindNewPipeAndPassReceiver();
-  base::ThreadPool::PostTask(
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  background_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceModelServiceControllerIOS::CreateModelService,
                      weak_factory_.GetWeakPtr()));
