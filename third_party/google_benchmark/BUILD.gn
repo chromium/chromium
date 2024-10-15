@@ -76,7 +76,7 @@ component("google_benchmark") {
     "HAVE_STD_REGEX=1",
 
     # google_benchmark expects a BENCHMARK_VERSION definition
-    "BENCHMARK_VERSION=\"1.8.3\"",
+    "BENCHMARK_VERSION=\"1.9.0\"",
   ]
 }
 
