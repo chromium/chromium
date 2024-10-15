@@ -4,10 +4,9 @@
 
 #include "chrome/browser/apps/app_service/app_install/test_app_install_server.h"
 
+#include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
-#include "chrome/browser/chromeos/crosapi/test_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -26,10 +25,7 @@ bool TestAppInstallServer::SetUp() {
   }
 
   std::string server_url = server_.GetURL("/").spec();
-
-  crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
-      .SetAlmanacEndpointUrlForTesting(server_url);
-
+  apps::SetAlmanacEndpointUrlForTesting(server_url);
   return true;
 }
 
