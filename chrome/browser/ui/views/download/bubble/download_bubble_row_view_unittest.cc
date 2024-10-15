@@ -138,7 +138,6 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
   ON_CALL(*download_item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanShowInFolder()).WillByDefault(Return(true));
-  row_view()->UpdateRowForHover(/*hovered=*/true);
   info_->SetQuickActionsForTesting(
       {{DownloadCommands::PAUSE, u"label", &vector_icons::kPauseIcon},
        {DownloadCommands::SHOW_IN_FOLDER, u"label",
@@ -168,7 +167,6 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
 
 // Test that the input protector can deny button clicks.
 TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
-  row_view()->UpdateRowForHover(/*hovered=*/true);
   EXPECT_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_))
       .WillRepeatedly(Return(true));
 
