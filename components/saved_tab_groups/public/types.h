@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_TYPES_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/logging.h"
 #include "base/token.h"
