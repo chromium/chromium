@@ -1803,6 +1803,8 @@ static_library("browser") {
     # includes c/b/enterprise/connectors/analyzis/content_analysis_delegate.h
     # and c/b/translate/chrome_translate_client.h.
     "//chrome/browser/ui/tab_contents:impl",
+
+    "//chrome/browser/updates/announcement_notification:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1983,6 +1985,7 @@ static_library("browser") {
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updater:scheduler",
     "//chrome/browser/updates/announcement_notification",
+    "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/browser/web_share_target",
     "//chrome/common:channel_info",
     "//chrome/common:supervised_user_commands_mojom",

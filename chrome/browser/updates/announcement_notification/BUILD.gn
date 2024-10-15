@@ -10,18 +10,44 @@ if (is_android) {
 
 source_set("announcement_notification") {
   sources = [
-    "announcement_notification_service.cc",
     "announcement_notification_service.h",
-    "announcement_notification_service_factory.cc",
     "announcement_notification_service_factory.h",
-    "empty_announcement_notification_service.cc",
     "empty_announcement_notification_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//url",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_android) {
+    sources += [ "announcement_notification_delegate_android.h" ]
+  } else {
+    sources += [
+      "announcement_notification_delegate.h",
+      "announcement_notification_handler.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "announcement_notification_service.cc",
+    "announcement_notification_service_factory.cc",
+    "empty_announcement_notification_service.cc",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   # TODO(xingliu): Move code depends on //chrome/browser out of this module.
   deps = [
+    ":announcement_notification",
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
@@ -38,22 +64,16 @@ source_set("announcement_notification") {
   }
 
   if (is_android) {
-    sources += [
-      "announcement_notification_delegate_android.cc",
-      "announcement_notification_delegate_android.h",
-    ]
+    sources += [ "announcement_notification_delegate_android.cc" ]
 
     deps += [ "//chrome/android:chrome_jni_headers" ]
   } else {
     sources += [
       "announcement_notification_delegate.cc",
-      "announcement_notification_delegate.h",
       "announcement_notification_handler.cc",
-      "announcement_notification_handler.h",
     ]
 
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//ui/message_center/public/cpp",
     ]

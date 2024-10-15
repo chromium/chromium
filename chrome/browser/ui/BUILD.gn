@@ -427,6 +427,8 @@ static_library("ui") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/zoom",
+    "//chrome/browser/updates/announcement_notification",
+    "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/common",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
@@ -740,6 +742,7 @@ static_library("ui") {
     "//chrome/browser/content_settings:content_settings_factory_impl",
     "//chrome/browser/content_settings:impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
+    "//chrome/browser/updates/announcement_notification:impl",
   ]
 
   if (enable_vr && is_win) {
