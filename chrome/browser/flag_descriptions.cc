@@ -5166,17 +5166,6 @@ const char kPressAndHoldEscToExitBrowserFullscreenName[] =
 const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =
     "Allows users to press and hold Esc key to exit browser fullscreen.";
 
-const char kReadAnythingWithScreen2xName[] = "Reading Mode with Screen2x";
-const char kReadAnythingWithScreen2xDescription[] =
-    "Have Reading Mode use a local machine learning model for web page "
-    "distillation.";
-
-const char kReadAnythingWithAlgorithmName[] =
-    "Reading Mode with rules based algorithm.";
-const char kReadAnythingWithAlgorithmDescription[] =
-    "Have Reading Mode use a local rules based algorithm for web page "
-    "distillation.";
-
 const char kReadAnythingImagesViaAlgorithmName[] =
     "Reading Mode with images added via algorithm";
 const char kReadAnythingImagesViaAlgorithmDescription[] =

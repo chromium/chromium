@@ -7468,16 +7468,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingReadAloudPhraseHighlighting)},
 
-    {"read-anything-with-screen2x",
-     flag_descriptions::kReadAnythingWithScreen2xName,
-     flag_descriptions::kReadAnythingWithScreen2xDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReadAnythingWithScreen2x)},
-
-    {"read-anything-with-algorithm",
-     flag_descriptions::kReadAnythingWithAlgorithmName,
-     flag_descriptions::kReadAnythingWithAlgorithmDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReadAnythingWithAlgorithm)},
-
     {"read-anything-images-via-algorithm",
      flag_descriptions::kReadAnythingImagesViaAlgorithmName,
      flag_descriptions::kReadAnythingImagesViaAlgorithmDescription, kOsDesktop,

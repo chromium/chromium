@@ -7522,7 +7522,7 @@
       "basiaz@google.com",
       "iwells@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-aloud-background-playback",
@@ -7530,7 +7530,7 @@
       "basiaz@google.com",
       "iwells@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-aloud-in-cct",
@@ -7538,7 +7538,7 @@
       "basiaz@google.com",
       "iwells@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-aloud-playback",
@@ -7546,7 +7546,7 @@
       "basiaz@google.com",
       "iwells@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-aloud-tap-to-seek",
@@ -7555,42 +7555,37 @@
       "basiaz@google.com",
       "iwells@google.com"
     ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "read-anything",
-    "owners": [ "abigailbklein@google.com", "jocelyntran@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-docs-integration",
     "owners": [ "abigailbklein@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-docs-load-more-button",
     "owners": [ "sophiatran@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-images-via-algorithm",
     "owners": [ "abigailbklein@google.com", "francisjp@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-read-aloud",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-read-aloud-auto-voice-switching",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-read-aloud-automatic-word-highlighting",
     "owners": [ "lwinston@google.com", "kristislee@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-read-aloud-language-pack-downloading",
@@ -7599,7 +7594,7 @@
       "lwinston@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-read-aloud-phrase-highlighting",
@@ -7609,22 +7604,12 @@
       "ajitnarayanan@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 136
   },
   {
     "name": "read-anything-webui-toolbar",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 133
-  },
-  {
-    "name": "read-anything-with-algorithm",
-    "owners": [ "abigailbklein@google.com", "francisjp@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "read-anything-with-screen2x",
-    "owners": [ "abigailbklein@google.com", "rhalavati@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
   },
   {
     "name": "read-printer-capabilities-with-xps",
