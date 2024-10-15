@@ -31,8 +31,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
   {
     // This icon has all transparent pixels, so it will fail.
     icon_path = test_dir.AppendASCII("transparent_icon.png");
-    SkBitmap transparent_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &transparent_icon));
+    SkBitmap transparent_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(transparent_icon.isNull());
     EXPECT_FALSE(image_util::IsIconSufficientlyVisible(transparent_icon));
     EXPECT_FALSE(image_util::IsRenderedIconSufficientlyVisible(transparent_icon,
                                                                SK_ColorWHITE));
@@ -40,8 +40,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
   {
     // Test with an icon that has one opaque pixel.
     icon_path = test_dir.AppendASCII("one_pixel_opaque_icon.png");
-    SkBitmap visible_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
+    SkBitmap visible_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(visible_icon.isNull());
     EXPECT_FALSE(image_util::IsIconSufficientlyVisible(visible_icon));
     EXPECT_FALSE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
                                                                SK_ColorWHITE));
@@ -49,8 +49,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
   {
     // Test with an icon that has one transparent pixel.
     icon_path = test_dir.AppendASCII("one_pixel_transparent_icon.png");
-    SkBitmap visible_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
+    SkBitmap visible_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(visible_icon.isNull());
     EXPECT_TRUE(image_util::IsIconSufficientlyVisible(visible_icon));
     EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
                                                               SK_ColorWHITE));
@@ -58,8 +58,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
   {
     // Test with an icon that is completely opaque.
     icon_path = test_dir.AppendASCII("opaque_icon.png");
-    SkBitmap visible_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
+    SkBitmap visible_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(visible_icon.isNull());
     EXPECT_TRUE(image_util::IsIconSufficientlyVisible(visible_icon));
     EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
                                                               SK_ColorWHITE));
@@ -67,8 +67,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
   {
     // Test with an icon that is rectangular.
     icon_path = test_dir.AppendASCII("rectangle.png");
-    SkBitmap visible_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
+    SkBitmap visible_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(visible_icon.isNull());
     EXPECT_TRUE(image_util::IsIconSufficientlyVisible(visible_icon));
     EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
                                                               SK_ColorWHITE));
@@ -78,8 +78,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
     // color as the background color in the call to analyze its visibility.
     // It should be invisible in this case.
     icon_path = test_dir.AppendASCII("grey_21x21.png");
-    SkBitmap solid_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &solid_icon));
+    SkBitmap solid_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(solid_icon.isNull());
     const SkColor pixel_color = solid_icon.getColor(0, 0);
     EXPECT_FALSE(
         image_util::IsRenderedIconSufficientlyVisible(solid_icon, pixel_color));
@@ -89,8 +89,8 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
     // icon's colors as the background color in the call to analyze its
     // visibility. It should be visible in this case.
     icon_path = test_dir.AppendASCII("two_color_21x21.png");
-    SkBitmap two_color_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &two_color_icon));
+    SkBitmap two_color_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(two_color_icon.isNull());
     const SkColor pixel_color = two_color_icon.getColor(0, 0);
     EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(two_color_icon,
                                                               pixel_color));
@@ -104,9 +104,9 @@ TEST(ImageUtilTest, IconTooLargeForAnalysis) {
   // visible. However, it exceeds the max allowed size for analysis,
   // so it will fail.
   base::FilePath icon_path = test_dir.AppendASCII("3000x3000.png");
-  SkBitmap large_icon;
+  SkBitmap large_icon = image_util::LoadPngFromFile(icon_path);
+  ASSERT_FALSE(large_icon.isNull());
   SkBitmap rendered_icon;
-  ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &large_icon));
   EXPECT_FALSE(image_util::RenderIconForVisibilityAnalysis(
       large_icon, SK_ColorWHITE, &rendered_icon));
 
@@ -126,12 +126,12 @@ TEST(ImageUtilTest, MANUAL_IsIconSufficientlyVisiblePerfTest) {
   base::FilePath icon_path;
   // This icon has all transparent pixels.
   icon_path = test_dir.AppendASCII("transparent_icon.png");
-  SkBitmap invisible_icon;
-  ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &invisible_icon));
+  SkBitmap invisible_icon = image_util::LoadPngFromFile(icon_path);
+  ASSERT_FALSE(invisible_icon.isNull());
   // This icon is completely opaque.
   icon_path = test_dir.AppendASCII("opaque_icon.png");
-  SkBitmap visible_icon;
-  ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
+  SkBitmap visible_icon = image_util::LoadPngFromFile(icon_path);
+  ASSERT_FALSE(visible_icon.isNull());
 
   static constexpr char kInvisibleTimerId[] = "InvisibleIcon";
   static constexpr char kVisibleTimerId[] = "VisibleIcon";
@@ -172,9 +172,9 @@ void WriteRenderedIcon(const SkBitmap& icon,
   SkBitmap bitmap;
   DCHECK(image_util::RenderIconForVisibilityAnalysis(icon, background_color,
                                                      &bitmap));
-  std::vector<unsigned char> output_data;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output_data));
-  ASSERT_TRUE(base::WriteFile(rendered_icon_path, output_data));
+  std::optional<std::vector<uint8_t>> output_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  ASSERT_TRUE(base::WriteFile(rendered_icon_path, output_data.value()));
 }
 
 }  // namespace
@@ -205,8 +205,8 @@ TEST(ImageUtilTest, DISABLED_AnalyzeAllDownloadedIcons) {
   for (const std::string_view url : urls) {
     const std::string file_name = GURL(url).ExtractFileName();
     base::FilePath icon_path = downloaded_icons_path.AppendASCII(file_name);
-    SkBitmap current_icon;
-    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &current_icon));
+    SkBitmap current_icon = image_util::LoadPngFromFile(icon_path);
+    ASSERT_FALSE(current_icon.isNull());
     if (!image_util::IsRenderedIconSufficientlyVisible(current_icon,
                                                        SK_ColorWHITE)) {
       output_file.WriteAtCurrentPos(base::as_byte_span(url));

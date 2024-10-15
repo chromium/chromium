@@ -78,13 +78,11 @@ gfx::Image LoadIcon(const std::string& filename) {
   base::PathService::Get(chrome::DIR_TEST_DATA, &path);
   path = path.AppendASCII("extensions/api_test").AppendASCII(filename);
 
-  std::string file_contents;
-  base::ReadFileToString(path, &file_contents);
-  const unsigned char* data =
-      reinterpret_cast<const unsigned char*>(file_contents.data());
+  std::optional<std::vector<uint8_t>> file_contents =
+      base::ReadFileToBytes(path);
 
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(data, file_contents.length(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(file_contents.value());
+  CHECK(!bitmap.isNull());
 
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }

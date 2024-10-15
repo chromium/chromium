@@ -273,13 +273,15 @@ void RunFaviconCallbackAsync(favicon_base::FaviconResultsCallback callback,
   const std::vector<gfx::ImageSkiaRep>& image_reps =
       image.AsImageSkia().image_reps();
   for (const gfx::ImageSkiaRep& image_rep : image_reps) {
-    auto bitmap_data = base::MakeRefCounted<base::RefCountedBytes>();
-    if (gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(), false,
-                                          &bitmap_data->as_vector())) {
+    std::optional<std::vector<uint8_t>> png_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(),
+                                          /*discard_transparency=*/false);
+    if (png_data) {
       favicon_base::FaviconRawBitmapResult bitmap_result;
-      bitmap_result.bitmap_data = bitmap_data;
-      bitmap_result.pixel_size = gfx::Size(image_rep.pixel_width(),
-                                            image_rep.pixel_height());
+      bitmap_result.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(png_data.value()));
+      bitmap_result.pixel_size =
+          gfx::Size(image_rep.pixel_width(), image_rep.pixel_height());
       // Leave |bitmap_result|'s icon URL as the default of GURL().
       bitmap_result.icon_type = favicon_base::IconType::kFavicon;
 

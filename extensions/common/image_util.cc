@@ -60,8 +60,8 @@ bool IsIconSufficientlyVisible(const SkBitmap& bitmap) {
 }
 
 bool IsIconAtPathSufficientlyVisible(const base::FilePath& path) {
-  SkBitmap icon;
-  if (!LoadPngFromFile(path, &icon)) {
+  SkBitmap icon = LoadPngFromFile(path);
+  if (icon.isNull()) {
     return false;
   }
   return IsIconSufficientlyVisible(icon);
@@ -131,21 +131,20 @@ bool RenderIconForVisibilityAnalysis(const SkBitmap& icon,
 
 bool IsRenderedIconAtPathSufficientlyVisible(const base::FilePath& path,
                                              SkColor background_color) {
-  SkBitmap icon;
-  if (!LoadPngFromFile(path, &icon)) {
+  SkBitmap icon = LoadPngFromFile(path);
+  if (icon.isNull()) {
     return false;
   }
   return IsRenderedIconSufficientlyVisible(icon, background_color);
 }
 
-bool LoadPngFromFile(const base::FilePath& path, SkBitmap* dst) {
-  std::string png_bytes;
-  if (!base::ReadFileToString(path, &png_bytes)) {
-    return false;
+SkBitmap LoadPngFromFile(const base::FilePath& path) {
+  std::optional<std::vector<uint8_t>> png_bytes = base::ReadFileToBytes(path);
+  if (!png_bytes) {
+    return SkBitmap();
   }
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_bytes.data()),
-      png_bytes.length(), dst);
+
+  return gfx::PNGCodec::Decode(png_bytes.value());
 }
 
 }  // namespace extensions::image_util

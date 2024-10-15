@@ -2324,23 +2324,21 @@ void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
 void TabsCaptureVisibleTabFunction::EncodeBitmapOnWorkerThread(
     scoped_refptr<base::TaskRunner> reply_task_runner,
     const SkBitmap& bitmap) {
-  std::string base64_result;
-  bool success = EncodeBitmap(bitmap, &base64_result);
+  std::optional<std::string> base64_result = EncodeBitmap(bitmap);
   reply_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&TabsCaptureVisibleTabFunction::OnBitmapEncodedOnUIThread,
-                     this, success, std::move(base64_result)));
+                     this, std::move(base64_result)));
 }
 
 void TabsCaptureVisibleTabFunction::OnBitmapEncodedOnUIThread(
-    bool success,
-    std::string base64_result) {
-  if (!success) {
+    std::optional<std::string> base64_result) {
+  if (!base64_result) {
     OnCaptureFailure(FAILURE_REASON_ENCODING_FAILED);
     return;
   }
 
-  Respond(WithArguments(std::move(base64_result)));
+  Respond(WithArguments(std::move(base64_result.value())));
 }
 
 void TabsCaptureVisibleTabFunction::OnCaptureFailure(CaptureResult result) {

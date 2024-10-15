@@ -44,14 +44,6 @@ std::tuple<std::vector<uint8_t>, bool, bool> ReadAndDeleteBinaryFile(
   return std::make_tuple(std::move(contents), read_success, delete_success);
 }
 
-std::pair<bool, std::vector<unsigned char>> EncodeImage(const SkBitmap& image) {
-  std::vector<unsigned char> image_data;
-  bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-      image,
-      /*discard_transparency=*/false, &image_data);
-  return std::make_pair(success, std::move(image_data));
-}
-
 bool WriteFile(const base::FilePath& path,
                const std::vector<unsigned char>& data) {
   return base::WriteFile(path, data);
@@ -163,11 +155,15 @@ void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
     return;
   }
 
-  // TODO(mpcomplete): It's lame that we're encoding all images as PNG, even
-  // though they may originally be .jpg, etc.  Figure something out.
-  // http://code.google.com/p/chromium/issues/detail?id=12459
+  // TODO(https://crbug.com/370696612): Remove this disambiguating cast when the
+  // deprecated APIs are removed.
+  using NonDeprecatedVersion =
+      std::optional<std::vector<uint8_t>> (*)(const SkBitmap&, bool);
   io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&EncodeImage, decoded_image),
+      FROM_HERE,
+      base::BindOnce((NonDeprecatedVersion)gfx::PNGCodec::EncodeBGRASkBitmap,
+                     decoded_image,
+                     /*discard_transparency=*/false),
       base::BindOnce(&ImageSanitizer::ImageReencoded,
                      weak_factory_.GetWeakPtr(), image_path));
 
@@ -177,9 +173,8 @@ void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
 
 void ImageSanitizer::ImageReencoded(
     const base::FilePath& image_path,
-    std::pair<bool, std::vector<unsigned char>> result) {
-  bool success = result.first;
-  std::vector<unsigned char> image_data = std::move(result.second);
+    std::optional<std::vector<uint8_t>> result) {
+  bool success = result.has_value();
   if (!success) {
     ReportError(Status::kEncodingError, image_path);
     return;
@@ -188,7 +183,7 @@ void ImageSanitizer::ImageReencoded(
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteFile, image_dir_.Append(image_path),
-                     std::move(image_data)),
+                     std::move(result.value())),
       base::BindOnce(&ImageSanitizer::ImageWritten, weak_factory_.GetWeakPtr(),
                      image_path));
 }

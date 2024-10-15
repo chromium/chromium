@@ -51,7 +51,7 @@ inline constexpr int kMaxAllowedPixels = 2048 * 2048;
                                                    SkBitmap* rendered_icon);
 
 // Load a PNG image from a file into the destination bitmap.
-bool LoadPngFromFile(const base::FilePath& path, SkBitmap* dst);
+SkBitmap LoadPngFromFile(const base::FilePath& path);
 
 }  // namespace extensions::image_util
 

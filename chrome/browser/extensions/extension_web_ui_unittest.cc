@@ -265,11 +265,7 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   for (const auto& favicon : favicon_results) {
     EXPECT_TRUE(favicon.is_valid());
 
-    SkBitmap bitmap;
-    bool result =
-        gfx::PNGCodec::Decode(favicon.bitmap_data.get()->front(),
-                              favicon.bitmap_data.get()->size(), &bitmap);
-    EXPECT_TRUE(result);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(*favicon.bitmap_data);
     EXPECT_FALSE(bitmap.isNull());
     EXPECT_FALSE(bitmap.drawsNothing());
   }
