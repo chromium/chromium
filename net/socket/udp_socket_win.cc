@@ -1081,8 +1081,8 @@ int UDPSocketWin::InternalRecvFromNonBlocking(IOBuffer* buf,
     DWORD bytes_read;
     PopulateWSAMSG(message, storage, &read_buffer, control_buffer, false);
     rv = wsa_recv_msg_(socket_, &message, &bytes_read, nullptr, nullptr);
-    SetLastTosFromWSAMSG(message);
     if (rv == 0) {
+      SetLastTosFromWSAMSG(message);
       rv = bytes_read;  // WSARecvMsg() returns zero on delivery, but recvfrom
                         // returns the number of bytes received.
     }
