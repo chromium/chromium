@@ -73,5 +73,8 @@
     <string name="custom_scheme">Custom scheme:</string>
     <string name="auth_tab_result">Received auth result.</string>
     <string name="auth_tab_canceled">AuthTab canceled</string>
+    <string name="auth_tab_verification_failed">AuthTab verification failed</string>
+    <string name="auth_tab_verification_timed_out">AuthTab verification timed out</string>
+    <string name="auth_tab_unknown_result">AuthTab unknown result</string>
     <string name="missing_scheme">Please specify a custom scheme.</string>
 </resources>

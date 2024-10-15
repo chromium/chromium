@@ -83,12 +83,10 @@ import org.chromium.customtabsclient.shared.CustomTabsHelper;
 import org.chromium.customtabsclient.shared.ServiceConnection;
 import org.chromium.customtabsclient.shared.ServiceConnectionCallback;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 /** Example client activity for using Chrome Custom Tabs. */
 public class MainActivity extends AppCompatActivity
@@ -201,13 +199,21 @@ public class MainActivity extends AppCompatActivity
     private final ActivityResultLauncher<Intent> mLauncher =
             AuthTabIntent.registerActivityResultLauncher(this, this::handleAuthResult);
 
-    private void handleAuthResult(Uri uri) {
-        // Canceling CCT also invokes this method. See if the uri is empty.
-        boolean success = !Objects.equals(uri, Uri.EMPTY);
-        String message =
-                getResources()
-                        .getString(success ? R.string.auth_tab_result : R.string.auth_tab_canceled);
-        message += " uri: " + uri;
+    private void handleAuthResult(AuthTabIntent.AuthResult result) {
+        int messageRes =
+                switch (result.resultCode) {
+                    case AuthTabIntent.RESULT_OK -> R.string.auth_tab_result;
+                    case AuthTabIntent.RESULT_CANCELED -> R.string.auth_tab_canceled;
+                    case AuthTabIntent.RESULT_VERIFICATION_FAILED -> R.string
+                            .auth_tab_verification_failed;
+                    case AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT -> R.string
+                            .auth_tab_verification_timed_out;
+                    default -> R.string.auth_tab_unknown_result;
+                };
+        String message = getResources().getString(messageRes);
+        if (result.resultCode == AuthTabIntent.RESULT_OK) {
+            message += " Uri: " + result.resultUri;
+        }
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         Log.i(TAG, message);
     }
@@ -1121,19 +1127,7 @@ public class MainActivity extends AppCompatActivity
 
     private void launchAuthTab(String url) {
         AuthTabIntent authIntent = new AuthTabIntent.Builder().build();
-        try {
-            // Set the package name of the Chrome to use. The Android intent wrapped in
-            // AuthTabIntent is a private field that doesn't allow the access. Use reflection
-            // for testing. This is not likely necessary for production since the AuthTab
-            // launches a CCT of the default browser.
-            Field intentField = AuthTabIntent.class.getDeclaredField("mIntent");
-            intentField.setAccessible(true);
-            Intent intent = (Intent) intentField.get(authIntent);
-            intent.setPackage(mPackageNameToBind);
-        } catch (Exception e) {
-            Log.e(TAG, "Error setting the Chrome package to the Intent!");
-            return;
-        }
+        authIntent.intent.setPackage(mPackageNameToBind);
         String scheme = ((EditText) findViewById(R.id.custom_scheme)).getText().toString();
         if (TextUtils.isEmpty(scheme)) {
             String message = getResources().getString(R.string.missing_scheme);
