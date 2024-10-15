@@ -650,16 +650,18 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeEnforcePermissionPolicyContributeOnEvent);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
-    kForceDarkInversionMethodParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkImageBehavior>
-    kForceDarkImageBehaviorParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kForceDarkForegroundLightnessThresholdParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kForceDarkBackgroundLightnessThresholdParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkImageClassifier>
-    kForceDarkImageClassifierParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkInversionMethod,
+                                               kForceDarkInversionMethodParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkImageBehavior,
+                                               kForceDarkImageBehaviorParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kForceDarkForegroundLightnessThresholdParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kForceDarkBackgroundLightnessThresholdParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkImageClassifier,
+                                               kForceDarkImageClassifierParam);
 
 // Forces the attribute powerPreference to be set to "high-performance" for
 // WebGL contexts.
@@ -707,16 +709,20 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
 
 // Backend storage + kill switch for Interest Group API origin trials.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInterestGroupStorage);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInterestGroupStorageMaxOwners;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInterestGroupStorageMaxStoragePerOwner;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInterestGroupStorageMaxGroupsPerOwner;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInterestGroupStorageMaxNegativeGroupsPerOwner;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kInterestGroupStorageMaxOpsBeforeMaintenance;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kInterestGroupStorageMaxOwners);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInterestGroupStorageMaxStoragePerOwner);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInterestGroupStorageMaxGroupsPerOwner);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInterestGroupStorageMaxNegativeGroupsPerOwner);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInterestGroupStorageMaxOpsBeforeMaintenance);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);
 enum class IsolateSandboxedIframesGrouping {
@@ -732,9 +738,9 @@ enum class IsolateSandboxedIframesGrouping {
   // per document.
   kPerDocument,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    IsolateSandboxedIframesGrouping>
-    kIsolateSandboxedIframesGroupingParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    IsolateSandboxedIframesGrouping,
+    kIsolateSandboxedIframesGroupingParam);
 
 // Kill-switch for the fetch keepalive request infra migration.
 // If enabled, all keepalive requests will be proxied via the browser process.
@@ -763,8 +769,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPCriticalPathPredictor);
 
 // If false, LCP critical path predictor mechanism doesn't change the fetch
 // priority but still the rest will work.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPCriticalPathAdjustImageLoadPriority;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLCPCriticalPathAdjustImageLoadPriority);
 
 // The maximum element locator length for LCPP.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -773,8 +780,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 // If true, LCP critical path predictor mechanism overrides the first N image
 // prioritization when there is LCP hint.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost);
 
 // The type of LCP elements recorded by LCPP.
 enum class LcppRecordedLcpElementTypes {
@@ -782,8 +790,9 @@ enum class LcppRecordedLcpElementTypes {
   kImageOnly,
 };
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppRecordedLcpElementTypes>
-    kLCPCriticalPathPredictorRecordedLcpElementTypes;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppRecordedLcpElementTypes,
+    kLCPCriticalPathPredictorRecordedLcpElementTypes);
 
 // TODO(crbug.com/1419756): We should merge this to ResourceLoadPriority.
 enum class LcppResourceLoadPriority {
@@ -793,50 +802,59 @@ enum class LcppResourceLoadPriority {
 };
 
 // The ResourceLoadPriority for images that are expected to be LCP.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPCriticalPathPredictorImageLoadPriority;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppResourceLoadPriority,
+    kLCPCriticalPathPredictorImageLoadPriority);
 
 // Enable ResourceLoadPriority changes for all HTMLImageElement loaded images.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement);
 
 // Size of LRU caches for the host data for LCP critical path predictor (LCPP).
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPCriticalPathPredictorMaxHostsToTrack;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPCriticalPathPredictorMaxHostsToTrack);
 
 // The virtual sliding window size for LCP critical path predictor (LCPP)
 // histogram.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPCriticalPathPredictorHistogramSlidingWindowSize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPCriticalPathPredictorHistogramSlidingWindowSize);
 
 // The max histogram bucket count that can be stored in the LCP critical path
 // predictor (LCPP) database.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPCriticalPathPredictorMaxHistogramBuckets;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPCriticalPathPredictorMaxHistogramBuckets);
 
 // If enabled, script execution is observed to determine script dependencies of
 // the LCP element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);
 
 // The ResourceLoadPriority for scripts that are expected to be LCP influencers.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPScriptObserverScriptLoadPriority;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppResourceLoadPriority,
+    kLCPScriptObserverScriptLoadPriority);
 
 // The ResourceLoadPriority for images that are expected to LCP elements.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPScriptObserverImageLoadPriority;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppResourceLoadPriority,
+    kLCPScriptObserverImageLoadPriority);
 
 // The maximum URL count for LCPP.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPScriptObserverMaxUrlCountPerOrigin;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kLCPScriptObserverMaxUrlCountPerOrigin);
 
 // The maximum URL length allowed for LCPP.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPScriptObserverMaxUrlLength;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kLCPScriptObserverMaxUrlLength);
 
 // Enable ResourceLoadPriority changes for all HTMLImageElement loaded images.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPScriptObserverAdjustImageLoadPriority;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLCPScriptObserverAdjustImageLoadPriority);
 
 // If enabled, Prerender2 by Speculation Rules API is delayed until
 // LCP is finished.
@@ -847,12 +865,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPAutoPreconnectLcpOrigin);
 
 // Origins are automatically preconnected if frequencies are above this
 // threshold.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kLCPPAutoPreconnectFrequencyThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kLCPPAutoPreconnectFrequencyThreshold);
 
 // The maximum number of origins to be preconnected
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kkLCPPAutoPreconnectMaxPreconnectOriginsCount;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kkLCPPAutoPreconnectMaxPreconnectOriginsCount);
 
 // If enabled, unused preload requests are deferred to the timing on LCP.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
@@ -864,13 +884,14 @@ enum class LcppDeferUnusedPreloadExcludedResourceType {
   kScript,
   kMock,  // Only for testing.
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    LcppDeferUnusedPreloadExcludedResourceType>
-    kLcppDeferUnusedPreloadExcludedResourceType;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppDeferUnusedPreloadExcludedResourceType,
+    kLcppDeferUnusedPreloadExcludedResourceType);
 
 // Unused preload requests are deferred if frequencies are above this threshold.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kLCPPDeferUnusedPreloadFrequencyThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kLCPPDeferUnusedPreloadFrequencyThreshold);
 
 // The type of preload for potentially unused preload resources.
 enum class LcppDeferUnusedPreloadPreloadedReason {
@@ -889,9 +910,9 @@ enum class LcppDeferUnusedPreloadPreloadedReason {
   kBrowserSpeculativePreloadOnly,
 };
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    LcppDeferUnusedPreloadPreloadedReason>
-    kLcppDeferUnusedPreloadPreloadedReason;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppDeferUnusedPreloadPreloadedReason,
+    kLcppDeferUnusedPreloadPreloadedReason);
 
 // The type of load timing for potentially unused preload resources.
 enum class LcppDeferUnusedPreloadTiming {
@@ -903,41 +924,48 @@ enum class LcppDeferUnusedPreloadTiming {
   kLcpTimingPredictorWithPostTask,
 };
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    LcppDeferUnusedPreloadTiming>
-    kLcppDeferUnusedPreloadTiming;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(LcppDeferUnusedPreloadTiming,
+                                               kLcppDeferUnusedPreloadTiming);
 
 // If enabled, fetched font URLs are observed to predict font usage in the
 // future navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPFontURLPredictor);
 
 // The maximum URL length for LCPP font URL predictor.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPPFontURLPredictorMaxUrlLength;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kLCPPFontURLPredictorMaxUrlLength);
 
 // The maximum URL count allowed for LCPP font URL predictor.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPPFontURLPredictorMaxUrlCountPerOrigin;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kLCPPFontURLPredictorMaxUrlCountPerOrigin);
 
 // Fonts are preloaded if frequencies are above this threshold.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kLCPPFontURLPredictorFrequencyThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kLCPPFontURLPredictorFrequencyThreshold);
 
 // The maximum number of Fonts to be sent for preload.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLCPPFontURLPredictorMaxPreloadCount;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPFontURLPredictorMaxPreloadCount);
 
 // Enables prefetch using the LCPP font URL predictor.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPPFontURLPredictorEnablePrefetch;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLCPPFontURLPredictorEnablePrefetch);
 
 // Enables prefetch/preload if upper limit bandwidth for the network is
 // larger than this value.
 // The value <=0 is used for disabling the feature.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kLCPPFontURLPredictorThresholdInMbps;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kLCPPFontURLPredictorThresholdInMbps);
 
 // A list of hosts to be excluded from the LCPPFontURLPredictor feature.
+// Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
+// gets this value only once.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kLCPPFontURLPredictorExcludedHosts;
 
@@ -951,13 +979,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPInitiatorOrigin);
 
 // The virtual sliding window size for LCP critical path predictor (LCPP)
 // histogram for kLCPPInitiatorOrigin option.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLcppInitiatorOriginHistogramSlidingWindowSize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLcppInitiatorOriginHistogramSlidingWindowSize);
 
 // The max histogram bucket count that can be stored in the LCP critical path
 // predictor (LCPP) database for kLCPPInitiatorOrigin option.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLcppInitiatorOriginMaxHistogramBuckets;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLcppInitiatorOriginMaxHistogramBuckets);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 
@@ -978,18 +1008,21 @@ enum class LcppPreloadLazyLoadImageType {
   kCustomLazyLoading,
   kAll,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    LcppPreloadLazyLoadImageType>
-    kLCPCriticalPathPredictorPreloadLazyLoadImageType;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    LcppPreloadLazyLoadImageType,
+    kLCPCriticalPathPredictorPreloadLazyLoadImageType);
 
 // If enabled, some system fonts are preloaded.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadSystemFonts);
 
+// Note: Declared without BASE_DECLARE_FEATURE_PARAM because the production code
+// gets this value only once.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kPreloadSystemFontsTargets;
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kPreloadSystemFontsRequiredMemoryGB;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPreloadSystemFontsRequiredMemoryGB);
 
 // If enabled, LCPP learns with additional first-level-path key to origin.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPMultipleKey);
@@ -1003,18 +1036,20 @@ enum class LcppMultipleKeyTypes {
   kLcppKeyStat,
 };
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppMultipleKeyTypes>
-    kLcppMultipleKeyType;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(LcppMultipleKeyTypes,
+                                               kLcppMultipleKeyType);
 
 // The virtual sliding window size for LCP critical path predictor (LCPP)
 // histogram for LcppMultipleKeyTypes::kLcppKeyStat option.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLcppMultipleKeyHistogramSlidingWindowSize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLcppMultipleKeyHistogramSlidingWindowSize);
 
 // The max histogram bucket count that can be stored in the LCP critical path
 // predictor (LCPP) database for LcppMultipleKeyTypes::kLcppKeyStat option.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kLcppMultipleKeyMaxHistogramBuckets;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLcppMultipleKeyMaxHistogramBuckets);
 
 // If enabled, LCPP prefetches the subresources based on LCP prewarmed HTTP disk
 // cache data.

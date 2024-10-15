@@ -36,9 +36,7 @@ const char kHistogramLCPPActualLCPIndex[] =
 namespace {
 
 size_t GetLCPPFontURLPredictorMaxUrlCountPerOrigin() {
-  static size_t max_allowed_url_count = base::checked_cast<size_t>(
-      blink::features::kLCPPFontURLPredictorMaxUrlCountPerOrigin.Get());
-  return max_allowed_url_count;
+  return blink::features::kLCPPFontURLPredictorMaxUrlCountPerOrigin.Get();
 }
 
 void RemoveFetchedSubresourceUrlsAfterLCP(

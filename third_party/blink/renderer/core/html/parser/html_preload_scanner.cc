@@ -1327,7 +1327,7 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
-  static const features::LcppPreloadLazyLoadImageType
+  const features::LcppPreloadLazyLoadImageType
       kPreloadLazyLoadImageType =
           features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
   preload_lazy_load_image_type =

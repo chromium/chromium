@@ -19,9 +19,7 @@ namespace blink {
 namespace {
 
 size_t GetLCPPFontURLPredictorMaxUrlLength() {
-  static size_t max_length = base::checked_cast<size_t>(
-      features::kLCPPFontURLPredictorMaxUrlLength.Get());
-  return max_length;
+  return features::kLCPPFontURLPredictorMaxUrlLength.Get();
 }
 
 bool IsTimingPredictorEnabled() {
@@ -30,9 +28,7 @@ bool IsTimingPredictorEnabled() {
     return true;
   }
   if (base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload)) {
-    static const features::LcppDeferUnusedPreloadTiming timing =
-        features::kLcppDeferUnusedPreloadTiming.Get();
-    switch (timing) {
+    switch (features::kLcppDeferUnusedPreloadTiming.Get()) {
       case features::LcppDeferUnusedPreloadTiming::kPostTask:
         return false;
       case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
@@ -247,10 +243,10 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     if (const HTMLImageElement* image_element =
             DynamicTo<HTMLImageElement>(lcp_element)) {
       auto& creators = image_element->creator_scripts();
-      size_t max_allowed_url_length = base::checked_cast<size_t>(
-          features::kLCPScriptObserverMaxUrlLength.Get());
-      size_t max_allowed_url_count = base::checked_cast<size_t>(
-          features::kLCPScriptObserverMaxUrlCountPerOrigin.Get());
+      size_t max_allowed_url_length =
+          features::kLCPScriptObserverMaxUrlLength.Get();
+      size_t max_allowed_url_count =
+          features::kLCPScriptObserverMaxUrlCountPerOrigin.Get();
       size_t max_url_length_encountered = 0;
       size_t prediction_match_count = 0;
 

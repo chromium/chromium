@@ -1106,11 +1106,12 @@ const base::FeatureParam<ForceDarkInversionMethod>::Option
         {ForceDarkInversionMethod::kCielabBased, "cielab_based"},
         {ForceDarkInversionMethod::kRgbBased, "rgb_based"}};
 
-const base::FeatureParam<ForceDarkInversionMethod>
-    kForceDarkInversionMethodParam{&kForceWebContentsDarkMode,
-                                   "inversion_method",
-                                   ForceDarkInversionMethod::kUseBlinkSettings,
-                                   &forcedark_inversion_method_options};
+BASE_FEATURE_ENUM_PARAM(ForceDarkInversionMethod,
+                        kForceDarkInversionMethodParam,
+                        &kForceWebContentsDarkMode,
+                        "inversion_method",
+                        ForceDarkInversionMethod::kUseBlinkSettings,
+                        &forcedark_inversion_method_options);
 
 // Should images be inverted?
 const base::FeatureParam<ForceDarkImageBehavior>::Option
@@ -1120,22 +1121,30 @@ const base::FeatureParam<ForceDarkImageBehavior>::Option
         {ForceDarkImageBehavior::kInvertNone, "none"},
         {ForceDarkImageBehavior::kInvertSelectively, "selective"}};
 
-const base::FeatureParam<ForceDarkImageBehavior> kForceDarkImageBehaviorParam{
-    &kForceWebContentsDarkMode, "image_behavior",
-    ForceDarkImageBehavior::kUseBlinkSettings,
-    &forcedark_image_behavior_options};
+BASE_FEATURE_ENUM_PARAM(ForceDarkImageBehavior,
+                        kForceDarkImageBehaviorParam,
+                        &kForceWebContentsDarkMode,
+                        "image_behavior",
+                        ForceDarkImageBehavior::kUseBlinkSettings,
+                        &forcedark_image_behavior_options);
 
 // Do not invert text lighter than this.
 // Range: 0 (do not invert any text) to 255 (invert all text)
 // Can also set to -1 to let Blink's internal settings control the value
-const base::FeatureParam<int> kForceDarkForegroundLightnessThresholdParam{
-    &kForceWebContentsDarkMode, "foreground_lightness_threshold", -1};
+BASE_FEATURE_PARAM(int,
+                   kForceDarkForegroundLightnessThresholdParam,
+                   &kForceWebContentsDarkMode,
+                   "foreground_lightness_threshold",
+                   -1);
 
 // Do not invert backgrounds darker than this.
 // Range: 0 (invert all backgrounds) to 255 (invert no backgrounds)
 // Can also set to -1 to let Blink's internal settings control the value
-const base::FeatureParam<int> kForceDarkBackgroundLightnessThresholdParam{
-    &kForceWebContentsDarkMode, "background_lightness_threshold", -1};
+BASE_FEATURE_PARAM(int,
+                   kForceDarkBackgroundLightnessThresholdParam,
+                   &kForceWebContentsDarkMode,
+                   "background_lightness_threshold",
+                   -1);
 
 const base::FeatureParam<ForceDarkImageClassifier>::Option
     forcedark_image_classifier_policy_options[] = {
@@ -1147,11 +1156,12 @@ const base::FeatureParam<ForceDarkImageClassifier>::Option
          "transparency_and_num_colors"},
 };
 
-const base::FeatureParam<ForceDarkImageClassifier>
-    kForceDarkImageClassifierParam{&kForceWebContentsDarkMode,
-                                   "classifier_policy",
-                                   ForceDarkImageClassifier::kUseBlinkSettings,
-                                   &forcedark_image_classifier_policy_options};
+BASE_FEATURE_ENUM_PARAM(ForceDarkImageClassifier,
+                        kForceDarkImageClassifierParam,
+                        &kForceWebContentsDarkMode,
+                        "classifier_policy",
+                        ForceDarkImageClassifier::kUseBlinkSettings,
+                        &forcedark_image_classifier_policy_options);
 
 // Enables the frequency capping for detecting large sticky ads.
 // Large-sticky-ads are those ads that stick to the bottom of the page
@@ -1223,16 +1233,31 @@ BASE_FEATURE(kInterestGroupStorage,
              "InterestGroupStorage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/1197209): Adjust these limits in response to usage.
-const base::FeatureParam<int> kInterestGroupStorageMaxOwners{
-    &kInterestGroupStorage, "max_owners", 1000};
-const base::FeatureParam<int> kInterestGroupStorageMaxStoragePerOwner{
-    &kInterestGroupStorage, "max_storage_per_owner", 10 * 1024 * 1024};
-const base::FeatureParam<int> kInterestGroupStorageMaxGroupsPerOwner{
-    &kInterestGroupStorage, "max_groups_per_owner", 2000};
-const base::FeatureParam<int> kInterestGroupStorageMaxNegativeGroupsPerOwner{
-    &kInterestGroupStorage, "max_negative_groups_per_owner", 20000};
-const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
-    &kInterestGroupStorage, "max_ops_before_maintenance", 1000};
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxOwners,
+                   &kInterestGroupStorage,
+                   "max_owners",
+                   1000);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxStoragePerOwner,
+                   &kInterestGroupStorage,
+                   "max_storage_per_owner",
+                   10 * 1024 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxGroupsPerOwner,
+                   &kInterestGroupStorage,
+                   "max_groups_per_owner",
+                   2000);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxNegativeGroupsPerOwner,
+                   &kInterestGroupStorage,
+                   "max_negative_groups_per_owner",
+                   20000);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxOpsBeforeMaintenance,
+                   &kInterestGroupStorage,
+                   "max_ops_before_maintenance",
+                   1000);
 
 // Allow process isolation of iframes with the 'sandbox' attribute set. Whether
 // or not such an iframe will be isolated may depend on options specified with
@@ -1246,11 +1271,12 @@ const base::FeatureParam<IsolateSandboxedIframesGrouping>::Option
         {IsolateSandboxedIframesGrouping::kPerSite, "per-site"},
         {IsolateSandboxedIframesGrouping::kPerOrigin, "per-origin"},
         {IsolateSandboxedIframesGrouping::kPerDocument, "per-document"}};
-const base::FeatureParam<IsolateSandboxedIframesGrouping>
-    kIsolateSandboxedIframesGroupingParam{
-        &kIsolateSandboxedIframes, "grouping",
-        IsolateSandboxedIframesGrouping::kPerOrigin,
-        &isolated_sandboxed_iframes_grouping_types};
+BASE_FEATURE_ENUM_PARAM(IsolateSandboxedIframesGrouping,
+                        kIsolateSandboxedIframesGroupingParam,
+                        &kIsolateSandboxedIframes,
+                        "grouping",
+                        IsolateSandboxedIframesGrouping::kPerOrigin,
+                        &isolated_sandboxed_iframes_grouping_types);
 
 BASE_FEATURE(kKalmanDirectionCutOff,
              "KalmanDirectionCutOff",
@@ -1272,8 +1298,11 @@ BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kLCPCriticalPathAdjustImageLoadPriority{
-    &kLCPCriticalPathPredictor, "lcpp_adjust_image_load_priority", false};
+BASE_FEATURE_PARAM(bool,
+                   kLCPCriticalPathAdjustImageLoadPriority,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_adjust_image_load_priority",
+                   false);
 
 BASE_FEATURE_PARAM(size_t,
                    kLCPCriticalPathPredictorMaxElementLocatorLength,
@@ -1281,20 +1310,23 @@ BASE_FEATURE_PARAM(size_t,
                    "lcpp_max_element_locator_length",
                    1024);
 
-const base::FeatureParam<bool>
-    kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost{
-        &kLCPCriticalPathPredictor,
-        "lcpp_adjust_image_load_priority_override_first_n_boost", false};
+BASE_FEATURE_PARAM(bool,
+                   kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_adjust_image_load_priority_override_first_n_boost",
+                   false);
 
 const base::FeatureParam<LcppRecordedLcpElementTypes>::Option
     lcpp_recorded_element_types[] = {
         {LcppRecordedLcpElementTypes::kAll, "all"},
         {LcppRecordedLcpElementTypes::kImageOnly, "image_only"},
 };
-const base::FeatureParam<LcppRecordedLcpElementTypes>
-    kLCPCriticalPathPredictorRecordedLcpElementTypes{
-        &kLCPCriticalPathPredictor, "lcpp_recorded_lcp_element_types",
-        LcppRecordedLcpElementTypes::kImageOnly, &lcpp_recorded_element_types};
+BASE_FEATURE_ENUM_PARAM(LcppRecordedLcpElementTypes,
+                        kLCPCriticalPathPredictorRecordedLcpElementTypes,
+                        &kLCPCriticalPathPredictor,
+                        "lcpp_recorded_lcp_element_types",
+                        LcppRecordedLcpElementTypes::kImageOnly,
+                        &lcpp_recorded_element_types);
 
 const base::FeatureParam<LcppResourceLoadPriority>::Option
     lcpp_resource_load_priorities[] = {
@@ -1302,49 +1334,73 @@ const base::FeatureParam<LcppResourceLoadPriority>::Option
         {LcppResourceLoadPriority::kHigh, "high"},
         {LcppResourceLoadPriority::kVeryHigh, "very_high"},
 };
-const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPCriticalPathPredictorImageLoadPriority{
-        &kLCPCriticalPathPredictor, "lcpp_image_load_priority",
-        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
+BASE_FEATURE_ENUM_PARAM(LcppResourceLoadPriority,
+                        kLCPCriticalPathPredictorImageLoadPriority,
+                        &kLCPCriticalPathPredictor,
+                        "lcpp_image_load_priority",
+                        LcppResourceLoadPriority::kVeryHigh,
+                        &lcpp_resource_load_priorities);
 
-const base::FeatureParam<bool>
-    kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement{
-        &kLCPCriticalPathPredictor,
-        "lcpp_enable_image_load_priority_for_htmlimageelement", false};
+BASE_FEATURE_PARAM(
+    bool,
+    kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement,
+    &kLCPCriticalPathPredictor,
+    "lcpp_enable_image_load_priority_for_htmlimageelement",
+    false);
 
-const base::FeatureParam<int> kLCPCriticalPathPredictorMaxHostsToTrack{
-    &kLCPCriticalPathPredictor, "lcpp_max_hosts_to_track", 100};
+BASE_FEATURE_PARAM(int,
+                   kLCPCriticalPathPredictorMaxHostsToTrack,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_max_hosts_to_track",
+                   100);
 
-const base::FeatureParam<int>
-    kLCPCriticalPathPredictorHistogramSlidingWindowSize{
-        &kLCPCriticalPathPredictor, "lcpp_histogram_sliding_window_size", 1000};
+BASE_FEATURE_PARAM(int,
+                   kLCPCriticalPathPredictorHistogramSlidingWindowSize,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_histogram_sliding_window_size",
+                   1000);
 
-const base::FeatureParam<int> kLCPCriticalPathPredictorMaxHistogramBuckets{
-    &kLCPCriticalPathPredictor, "lcpp_max_histogram_buckets", 10};
+BASE_FEATURE_PARAM(int,
+                   kLCPCriticalPathPredictorMaxHistogramBuckets,
+                   &kLCPCriticalPathPredictor,
+                   "lcpp_max_histogram_buckets",
+                   10);
 
 BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPScriptObserverScriptLoadPriority{
-        &kLCPScriptObserver, "lcpscriptobserver_script_load_priority",
-        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
+BASE_FEATURE_ENUM_PARAM(LcppResourceLoadPriority,
+                        kLCPScriptObserverScriptLoadPriority,
+                        &kLCPScriptObserver,
+                        "lcpscriptobserver_script_load_priority",
+                        LcppResourceLoadPriority::kVeryHigh,
+                        &lcpp_resource_load_priorities);
 
-const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPScriptObserverImageLoadPriority{
-        &kLCPScriptObserver, "lcpscriptobserver_image_load_priority",
-        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
+BASE_FEATURE_ENUM_PARAM(LcppResourceLoadPriority,
+                        kLCPScriptObserverImageLoadPriority,
+                        &kLCPScriptObserver,
+                        "lcpscriptobserver_image_load_priority",
+                        LcppResourceLoadPriority::kVeryHigh,
+                        &lcpp_resource_load_priorities);
 
-const base::FeatureParam<int> kLCPScriptObserverMaxUrlLength{
-    &kLCPScriptObserver, "lcpscriptobserver_script_max_url_length", 1024};
+BASE_FEATURE_PARAM(size_t,
+                   kLCPScriptObserverMaxUrlLength,
+                   &kLCPScriptObserver,
+                   "lcpscriptobserver_script_max_url_length",
+                   1024);
 
-const base::FeatureParam<int> kLCPScriptObserverMaxUrlCountPerOrigin{
-    &kLCPScriptObserver, "lcpscriptobserver_script_max_url_count_per_origin",
-    5};
+BASE_FEATURE_PARAM(size_t,
+                   kLCPScriptObserverMaxUrlCountPerOrigin,
+                   &kLCPScriptObserver,
+                   "lcpscriptobserver_script_max_url_count_per_origin",
+                   5);
 
-const base::FeatureParam<bool> kLCPScriptObserverAdjustImageLoadPriority{
-    &kLCPScriptObserver, "lcpscriptobserver_adjust_image_load_priority", false};
+BASE_FEATURE_PARAM(bool,
+                   kLCPScriptObserverAdjustImageLoadPriority,
+                   &kLCPScriptObserver,
+                   "lcpscriptobserver_adjust_image_load_priority",
+                   false);
 
 BASE_FEATURE(kLCPTimingPredictorPrerender2,
              "LCPTimingPredictorPrerender2",
@@ -1354,11 +1410,17 @@ BASE_FEATURE(kLCPPAutoPreconnectLcpOrigin,
              "LCPPAutoPreconnectLcpOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<double> kLCPPAutoPreconnectFrequencyThreshold{
-    &kLCPPAutoPreconnectLcpOrigin, "lcpp_preconnect_frequency_threshold", 0.5};
+BASE_FEATURE_PARAM(double,
+                   kLCPPAutoPreconnectFrequencyThreshold,
+                   &kLCPPAutoPreconnectLcpOrigin,
+                   "lcpp_preconnect_frequency_threshold",
+                   0.5);
 
-const base::FeatureParam<int> kkLCPPAutoPreconnectMaxPreconnectOriginsCount{
-    &kLCPPAutoPreconnectLcpOrigin, "lcpp_preconnect_max_origins", 2};
+BASE_FEATURE_PARAM(int,
+                   kkLCPPAutoPreconnectMaxPreconnectOriginsCount,
+                   &kLCPPAutoPreconnectLcpOrigin,
+                   "lcpp_preconnect_max_origins",
+                   2);
 
 BASE_FEATURE(kLCPPDeferUnusedPreload,
              "LCPPDeferUnusedPreload",
@@ -1372,14 +1434,18 @@ const base::FeatureParam<LcppDeferUnusedPreloadExcludedResourceType>::Option
         {LcppDeferUnusedPreloadExcludedResourceType::kMock, "mock"},
 };
 
-const base::FeatureParam<LcppDeferUnusedPreloadExcludedResourceType>
-    kLcppDeferUnusedPreloadExcludedResourceType{
-        &kLCPPDeferUnusedPreload, "excluded_resource_type",
-        LcppDeferUnusedPreloadExcludedResourceType::kNone,
-        &lcpp_defer_unused_preload_excluded_resource_type};
+BASE_FEATURE_ENUM_PARAM(LcppDeferUnusedPreloadExcludedResourceType,
+                        kLcppDeferUnusedPreloadExcludedResourceType,
+                        &kLCPPDeferUnusedPreload,
+                        "excluded_resource_type",
+                        LcppDeferUnusedPreloadExcludedResourceType::kNone,
+                        &lcpp_defer_unused_preload_excluded_resource_type);
 
-const base::FeatureParam<double> kLCPPDeferUnusedPreloadFrequencyThreshold{
-    &kLCPPDeferUnusedPreload, "lcpp_unused_preload_frequency_threshold", 0.5};
+BASE_FEATURE_PARAM(double,
+                   kLCPPDeferUnusedPreloadFrequencyThreshold,
+                   &kLCPPDeferUnusedPreload,
+                   "lcpp_unused_preload_frequency_threshold",
+                   0.5);
 
 const base::FeatureParam<LcppDeferUnusedPreloadPreloadedReason>::Option
     lcpp_defer_unused_preload_preloaded_reason[] = {
@@ -1390,11 +1456,12 @@ const base::FeatureParam<LcppDeferUnusedPreloadPreloadedReason>::Option
          "speculative_preload"},
 };
 
-const base::FeatureParam<LcppDeferUnusedPreloadPreloadedReason>
-    kLcppDeferUnusedPreloadPreloadedReason{
-        &kLCPPDeferUnusedPreload, "preloaded_reason",
-        LcppDeferUnusedPreloadPreloadedReason::kAll,
-        &lcpp_defer_unused_preload_preloaded_reason};
+BASE_FEATURE_ENUM_PARAM(LcppDeferUnusedPreloadPreloadedReason,
+                        kLcppDeferUnusedPreloadPreloadedReason,
+                        &kLCPPDeferUnusedPreload,
+                        "preloaded_reason",
+                        LcppDeferUnusedPreloadPreloadedReason::kAll,
+                        &lcpp_defer_unused_preload_preloaded_reason);
 
 const base::FeatureParam<LcppDeferUnusedPreloadTiming>::Option
     lcpp_defer_unused_preload_timing[] = {
@@ -1405,33 +1472,53 @@ const base::FeatureParam<LcppDeferUnusedPreloadTiming>::Option
          "lcp_timing_predictor_with_post_task"},
 };
 
-const base::FeatureParam<LcppDeferUnusedPreloadTiming>
-    kLcppDeferUnusedPreloadTiming{&kLCPPDeferUnusedPreload, "load_timing",
-                                  LcppDeferUnusedPreloadTiming::kPostTask,
-                                  &lcpp_defer_unused_preload_timing};
+BASE_FEATURE_ENUM_PARAM(LcppDeferUnusedPreloadTiming,
+                        kLcppDeferUnusedPreloadTiming,
+                        &kLCPPDeferUnusedPreload,
+                        "load_timing",
+                        LcppDeferUnusedPreloadTiming::kPostTask,
+                        &lcpp_defer_unused_preload_timing);
 
 BASE_FEATURE(kLCPPFontURLPredictor,
              "LCPPFontURLPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kLCPPFontURLPredictorMaxUrlLength{
-    &kLCPPFontURLPredictor, "lcpp_max_font_url_length", 1024};
+BASE_FEATURE_PARAM(size_t,
+                   kLCPPFontURLPredictorMaxUrlLength,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_max_font_url_length",
+                   1024);
 
-const base::FeatureParam<int> kLCPPFontURLPredictorMaxUrlCountPerOrigin{
-    &kLCPPFontURLPredictor, "lcpp_max_font_url_count_per_origin", 10};
+BASE_FEATURE_PARAM(size_t,
+                   kLCPPFontURLPredictorMaxUrlCountPerOrigin,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_max_font_url_count_per_origin",
+                   10);
 
-const base::FeatureParam<double> kLCPPFontURLPredictorFrequencyThreshold{
-    &kLCPPFontURLPredictor, "lcpp_font_url_frequency_threshold", 0.5};
+BASE_FEATURE_PARAM(double,
+                   kLCPPFontURLPredictorFrequencyThreshold,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_font_url_frequency_threshold",
+                   0.5);
 
-const base::FeatureParam<int> kLCPPFontURLPredictorMaxPreloadCount{
-    &kLCPPFontURLPredictor, "lcpp_max_font_url_to_preload", 5};
+BASE_FEATURE_PARAM(int,
+                   kLCPPFontURLPredictorMaxPreloadCount,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_max_font_url_to_preload",
+                   5);
 
-const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
-    &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
+BASE_FEATURE_PARAM(bool,
+                   kLCPPFontURLPredictorEnablePrefetch,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_enable_font_prefetch",
+                   false);
 
 // Negative value is used for disabling this threshold.
-const base::FeatureParam<double> kLCPPFontURLPredictorThresholdInMbps{
-    &kLCPPFontURLPredictor, "lcpp_font_prefetch_threshold", -1};
+BASE_FEATURE_PARAM(double,
+                   kLCPPFontURLPredictorThresholdInMbps,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_font_prefetch_threshold",
+                   -1);
 
 const base::FeatureParam<std::string> kLCPPFontURLPredictorExcludedHosts{
     &kLCPPFontURLPredictor, "lcpp_font_prefetch_excluded_hosts", ""};
@@ -1446,12 +1533,17 @@ BASE_FEATURE(kLCPPInitiatorOrigin,
              "LCPPInitiatorOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kLcppInitiatorOriginHistogramSlidingWindowSize{
-    &kLCPPInitiatorOrigin,
-    "lcpp_initiator_origin_histogram_sliding_window_size", 10000};
+BASE_FEATURE_PARAM(int,
+                   kLcppInitiatorOriginHistogramSlidingWindowSize,
+                   &kLCPPInitiatorOrigin,
+                   "lcpp_initiator_origin_histogram_sliding_window_size",
+                   10000);
 
-const base::FeatureParam<int> kLcppInitiatorOriginMaxHistogramBuckets{
-    &kLCPPInitiatorOrigin, "lcpp_initiator_origin_max_histogram_buckets", 100};
+BASE_FEATURE_PARAM(int,
+                   kLcppInitiatorOriginMaxHistogramBuckets,
+                   &kLCPPInitiatorOrigin,
+                   "lcpp_initiator_origin_max_histogram_buckets",
+                   100);
 
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
@@ -1471,10 +1563,12 @@ const base::FeatureParam<
     {LcppPreloadLazyLoadImageType::kCustomLazyLoading, "custom_lazy_loading"},
     {LcppPreloadLazyLoadImageType::kAll, "all"},
 };
-const base::FeatureParam<LcppPreloadLazyLoadImageType>
-    kLCPCriticalPathPredictorPreloadLazyLoadImageType{
-        &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
-        LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
+BASE_FEATURE_ENUM_PARAM(LcppPreloadLazyLoadImageType,
+                        kLCPCriticalPathPredictorPreloadLazyLoadImageType,
+                        &kLCPPLazyLoadImagePreload,
+                        "lcpp_preload_lazy_load_image_type",
+                        LcppPreloadLazyLoadImageType::kNone,
+                        &lcpp_preload_lazy_load_image);
 
 BASE_FEATURE(kPreloadSystemFonts,
              "PreloadSystemFonts",
@@ -1483,8 +1577,11 @@ BASE_FEATURE(kPreloadSystemFonts,
 const base::FeatureParam<std::string> kPreloadSystemFontsTargets{
     &kPreloadSystemFonts, "preload_system_fonts_targets", "[]"};
 
-const base::FeatureParam<int> kPreloadSystemFontsRequiredMemoryGB{
-    &kPreloadSystemFonts, "preload_system_fonts_required_memory_gb", 4};
+BASE_FEATURE_PARAM(int,
+                   kPreloadSystemFontsRequiredMemoryGB,
+                   &kPreloadSystemFonts,
+                   "preload_system_fonts_required_memory_gb",
+                   4);
 
 BASE_FEATURE(kLCPPMultipleKey,
              "LCPPMultipleKey",
@@ -1499,15 +1596,24 @@ const base::FeatureParam<LcppMultipleKeyTypes>::Option
         {LcppMultipleKeyTypes::kLcppKeyStat, "lcpp_key_stat"},
 };
 
-const base::FeatureParam<LcppMultipleKeyTypes> kLcppMultipleKeyType{
-    &kLCPPMultipleKey, "lcpp_multiple_key_type", LcppMultipleKeyTypes::kDefault,
-    &lcpp_multiple_key_types};
+BASE_FEATURE_ENUM_PARAM(LcppMultipleKeyTypes,
+                        kLcppMultipleKeyType,
+                        &kLCPPMultipleKey,
+                        "lcpp_multiple_key_type",
+                        LcppMultipleKeyTypes::kDefault,
+                        &lcpp_multiple_key_types);
 
-const base::FeatureParam<int> kLcppMultipleKeyHistogramSlidingWindowSize{
-    &kLCPPMultipleKey, "lcpp_multiple_key_histogram_sliding_window_size", 1000};
+BASE_FEATURE_PARAM(int,
+                   kLcppMultipleKeyHistogramSlidingWindowSize,
+                   &kLCPPMultipleKey,
+                   "lcpp_multiple_key_histogram_sliding_window_size",
+                   1000);
 
-const base::FeatureParam<int> kLcppMultipleKeyMaxHistogramBuckets{
-    &kLCPPMultipleKey, "lcpp_multiple_key_max_histogram_buckets", 10};
+BASE_FEATURE_PARAM(int,
+                   kLcppMultipleKeyMaxHistogramBuckets,
+                   &kLCPPMultipleKey,
+                   "lcpp_multiple_key_max_histogram_buckets",
+                   10);
 
 BASE_FEATURE(kLCPPPrefetchSubresource,
              "LCPPPrefetchSubresource",

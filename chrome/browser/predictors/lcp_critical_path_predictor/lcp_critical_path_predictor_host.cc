@@ -13,9 +13,7 @@
 namespace {
 
 size_t GetLCPPFontURLPredictorMaxUrlLength() {
-  static size_t max_length = base::checked_cast<size_t>(
-      blink::features::kLCPPFontURLPredictorMaxUrlLength.Get());
-  return max_length;
+  return blink::features::kLCPPFontURLPredictorMaxUrlLength.Get();
 }
 
 }  // namespace
