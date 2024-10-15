@@ -18,9 +18,6 @@ class TextClassifierModelService;
 class TextClassifierModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static TextClassifierModelService* GetForBrowserState(ProfileIOS* profile);
-
   static TextClassifierModelService* GetForProfile(ProfileIOS* profile);
   static TextClassifierModelServiceFactory* GetInstance();
 
