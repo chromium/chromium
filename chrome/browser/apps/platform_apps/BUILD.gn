@@ -50,7 +50,7 @@ source_set("platform_apps") {
     "//apps",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/platform_apps/api:api_registration",
-    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profile_attributes",
     "//chrome/common/apps/platform_apps/api",
   ]
 

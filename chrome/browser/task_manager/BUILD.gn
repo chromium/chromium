@@ -62,7 +62,7 @@ source_set("task_manager") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profile_attributes",
     "//components/favicon/core",
     "//components/nacl/common:buildflags",
     "//components/sessions:session_id",

@@ -22,7 +22,7 @@ static_library("user_annotations") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profile_attributes",
     "//content/public/browser",
   ]
   deps = [

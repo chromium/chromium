@@ -126,7 +126,7 @@ source_set("webrtc") {
     "//chrome/browser/media/prefs",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
-    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profile_attributes",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",

@@ -97,10 +97,6 @@ source_set("profile_util") {
   sources = [
     "nuke_profile_directory_utils.h",
     "pref_service_builder_utils.h",
-    "profile_attributes_entry.h",
-    "profile_attributes_init_params.h",
-    "profile_attributes_storage.h",
-    "profile_attributes_storage_observer.h",
     "profile_avatar_icon_util.h",
     "reporting_util.h",
   ]
@@ -108,7 +104,6 @@ source_set("profile_util") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/account_id",
     "//components/enterprise/common/proto:connectors_proto",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",
@@ -130,6 +125,7 @@ source_set("profile_util_impl") {
 
   deps = [
     ":profile",
+    ":profile_attributes",
     ":profile_util",
     "//base",
     "//build:chromeos_buildflags",
@@ -172,6 +168,23 @@ source_set("profile_util_impl") {
   }
 }
 
+source_set("profile_attributes") {
+  sources = [
+    "profile_attributes_entry.h",
+    "profile_attributes_init_params.h",
+    "profile_attributes_storage.h",
+    "profile_attributes_storage_observer.h",
+  ]
+
+  public_deps = [
+    ":profile_util",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/account_id",
+    "//ui/gfx",
+  ]
+}
+
 source_set("profile_attributes_impl") {
   sources = [
     "profile_attributes_entry.cc",
@@ -182,6 +195,7 @@ source_set("profile_attributes_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":profile_attributes",
     ":profile_util",
     "//base",
     "//base:i18n",
