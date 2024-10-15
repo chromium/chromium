@@ -557,8 +557,8 @@ std::string GetExpectationsFileSuffix(
 // reused and what type gets launched).
 //
 // The test expectations are read from json files that are stored here.
-// The main test expectations file:
-// chrome/test/data/web_apps/link_capture_test_input.json
+// The main test expectations files:
+// chrome/test/data/web_apps/navigation_capture_expectations*.json
 // Secondary: For tests that expect App B to be launched when the test starts.
 // chrome/test/data/web_apps/navigation_capture_test_launch_app_b.json
 //
@@ -593,8 +593,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // Returns the expectations JSON file name without extension.
   virtual std::string GetExpectationsFileBaseName() const {
-    // TODO(finnur): Rename to 'navigation_capture_test_expectation'.
-    return "link_capture_test_input";
+    return "navigation_capture_expectations";
   }
 
   // This function allows derived test suites to configure custom
@@ -1554,9 +1553,8 @@ INSTANTIATE_TEST_SUITE_P(
 class NavigationCapturingTestWithAppBLaunched
     : public WebAppLinkCapturingParameterizedBrowserTest {
  public:
-  // Returns the expectations JSON file name without extension.
   std::string GetExpectationsFileBaseName() const override {
-    return "navigation_capture_test_launch_app_b";
+    return "navigation_capture_expectations_with_b_launched_in_setup";
   }
 
   void MaybeCustomSetup(const webapps::AppId& app_a,
