@@ -2413,9 +2413,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FullRestoreTabCount" units="count"
-    expires_after="2025-03-25">
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the number of tabs restored by full restore. Note that this is not
     recorded for lacros browsers.
@@ -2423,9 +2424,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FullRestoreWindowCount2" units="count"
-    expires_after="2025-03-25">
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the number of windows restored by full restore. Records 0 if the
     full restore file is empty, but we chose the always or ask every time
@@ -2754,9 +2756,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreBrowserResult" enum="RestoreTabResult"
-    expires_after="2025-02-23">
-  <owner>nancylingwang@chromium.org</owner>
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the browser restore result, whether tabs can be restored, when the
     browser is restored during the system startup phase.
@@ -2764,9 +2767,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoredAppLaunch" enum="AppType"
-    expires_after="2025-03-09">
-  <owner>nancylingwang@chromium.org</owner>
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the number of app launching restored grouped by app type, when the
     system startup.
@@ -2774,9 +2778,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreForCrashNotification" enum="RestoreAction"
-    expires_after="2025-03-09">
-  <owner>nancylingwang@chromium.org</owner>
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records user actions on the full restore for crash notification, when the
     notification is closed.
@@ -2784,9 +2789,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
-    expires_after="2025-03-09">
-  <owner>nancylingwang@chromium.org</owner>
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the restore apps and pages preference setting, when a profile is
     loaded.
@@ -2804,9 +2810,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreSetting" enum="RestoreSetting"
-    expires_after="2025-03-09">
-  <owner>nancylingwang@chromium.org</owner>
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the restore apps and pages preference setting, when the preference
     setting is changed.
@@ -2895,9 +2902,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
-    expires_after="2024-10-24">
-  <owner>nancylingwang@chromium.org</owner>
+    expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the last session restore exit result. This is logged when the
     restoration process finishes during the system startup phase.
@@ -2905,9 +2913,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.SessionRestoreWindowCount"
-    enum="SessionRestoreWindowCount" expires_after="2024-09-01">
-  <owner>nancylingwang@chromium.org</owner>
+    enum="SessionRestoreWindowCount" expires_after="2025-10-15">
   <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Records the restored browser window count from session restore. This is
     logged when the restoration process finishes during the system startup
