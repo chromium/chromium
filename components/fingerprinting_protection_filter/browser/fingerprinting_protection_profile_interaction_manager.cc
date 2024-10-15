@@ -54,7 +54,7 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
     return initial_activation_level;
   }
   bool enable_fp = features::IsFingerprintingProtectionFeatureEnabled();
-  if (features::kEnableOn3pcBlocked.Get()) {
+  if (features::kEnableOnlyIf3pcBlocked.Get()) {
     // The value of prefs::kCookieControlsMode reflects the state of third-party
     // cookies being disabled, i.e. 3PCD is on or user blocks 3PC.
     // TrackingProtectionSettings API only covers 3PCD case.

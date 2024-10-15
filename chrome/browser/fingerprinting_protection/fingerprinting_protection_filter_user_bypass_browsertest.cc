@@ -168,7 +168,7 @@ class FingerprintingProtectionFilterEnabled3PCookiesBlockedBrowserTest
         /*enabled_features=*/
         {{features::kEnableFingerprintingProtectionFilter,
           {{"activation_level", "enabled"},
-           {"enable_on_3pc_blocked", "true"}}}},
+           {"enable_only_if_3pc_blocked", "true"}}}},
         /*disabled_features=*/{});
   }
 

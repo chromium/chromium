@@ -56,7 +56,7 @@ extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
 // Toggle whether to enable fingerprinting protection only when legacy 3pcd
 // (i.e. not the tracking protection version) is enabled.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
-extern const base::FeatureParam<bool> kEnableOn3pcBlocked;
+extern const base::FeatureParam<bool> kEnableOnlyIf3pcBlocked;
 
 // Toggle whether to enable console logging of blocked resources in the
 // ActivationState.

@@ -65,8 +65,9 @@ const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
                      subresource_filter::mojom::ActivationLevel::kEnabled,
                      &kActivationLevelOptions};
 
-const base::FeatureParam<bool> kEnableOn3pcBlocked{
-    &kEnableFingerprintingProtectionFilter, "enable_on_3pc_blocked", false};
+const base::FeatureParam<bool> kEnableOnlyIf3pcBlocked{
+    &kEnableFingerprintingProtectionFilter, "enable_only_if_3pc_blocked",
+    false};
 
 const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito{
     &kEnableFingerprintingProtectionFilter, kEnableConsoleLoggingParam, false};

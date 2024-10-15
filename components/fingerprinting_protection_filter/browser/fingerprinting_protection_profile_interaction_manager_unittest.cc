@@ -66,7 +66,7 @@ class ProfileInteractionManagerTest
     if (is_enabled) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kEnableFingerprintingProtectionFilter,
-            {{"enable_on_3pc_blocked",
+            {{"enable_only_if_3pc_blocked",
               is_on_3pc_blocked_enabled ? "true" : "false"}}}},
           {});
     } else {

@@ -10174,7 +10174,7 @@
                     "name": "Enabled_DryRun_20240729_Dogfood",
                     "params": {
                         "activation_level": "dry_run",
-                        "enable_on_3pc_blocked": "false"
+                        "enable_only_if_3pc_blocked": "false"
                     },
                     "enable_features": [
                         "EnableFingerprintingProtectionFilter"
@@ -10188,7 +10188,7 @@
                     "name": "Enabled",
                     "params": {
                         "activation_level": "dry_run",
-                        "enable_on_3pc_blocked": "false"
+                        "enable_only_if_3pc_blocked": "false"
                     },
                     "enable_features": [
                         "EnableFingerprintingProtectionFilter"
