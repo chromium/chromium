@@ -156,6 +156,16 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         return false;
     }
 
+    /** Returns the calculated total height of all visible layers. */
+    public int getTotalHeight() {
+        return mTotalHeight;
+    }
+
+    /** Returns the calculated total min height of all visible layers. */
+    public int getTotalMinHeight() {
+        return mTotalMinHeight;
+    }
+
     /**
      * Trigger the browser controls height update based on the current layer status. If there's
      * already an animated transition running, this call might cause it to skip to the end state.

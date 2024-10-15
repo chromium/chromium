@@ -1337,7 +1337,8 @@ public class ToolbarManager
                         ContextUtils.getAppSharedPreferences(),
                         mIsNtpShowingSupplier,
                         mOmniboxFocusStateSupplier,
-                        mControlContainer);
+                        mControlContainer,
+                        mBottomControlsStacker);
     }
 
     // TODO(b/315204103): add tests

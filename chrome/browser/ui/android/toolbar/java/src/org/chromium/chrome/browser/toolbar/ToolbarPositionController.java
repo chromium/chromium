@@ -14,6 +14,11 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -28,6 +33,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final ObservableSupplier<Boolean> mIsNtpShowingSupplier;
     private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
     private final ControlContainer mControlContainer;
+    private final BottomControlsStacker mBottomControlsStacker;
+    @LayerVisibility private int mLayerVisibility;
+    private final BottomControlsLayer mBottomToolbarLayer;
 
     @ControlsPosition private int mCurrentPosition;
 
@@ -40,23 +48,59 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * @param isOmniboxFocusedSupplier Supplier of the current omnibox focus state. Must have a
      *     non-null value immediately available.
      * @param controlContainer The control container for the current context.
+     * @param bottomControlsStacker {@link BottomControlsStacker} used to harmonize the position of
+     *     the bottom toolbar with other bottom-anchored UI.
      */
     public ToolbarPositionController(
             @NonNull BrowserControlsSizer browserControlsSizer,
             @NonNull SharedPreferences sharedPreferences,
             @NonNull ObservableSupplier<Boolean> isNtpShowingSupplier,
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
-            @NonNull ControlContainer controlContainer) {
+            @NonNull ControlContainer controlContainer,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         mBrowserControlsSizer = browserControlsSizer;
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mControlContainer = controlContainer;
+        mBottomControlsStacker = bottomControlsStacker;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        mLayerVisibility = LayerVisibility.HIDDEN;
+        mBottomToolbarLayer =
+                new BottomControlsLayer() {
+                    @Override
+                    public int getType() {
+                        return LayerType.BOTTOM_TOOLBAR;
+                    }
+
+                    @Override
+                    public int getScrollBehavior() {
+                        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+                    }
+
+                    @Override
+                    public int getHeight() {
+                        return mControlContainer.getToolbarHeight();
+                    }
+
+                    @Override
+                    public int getLayerVisibility() {
+                        return mLayerVisibility;
+                    }
+
+                    @Override
+                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+                        if (mLayerVisibility == LayerVisibility.VISIBLE) {
+                            mControlContainer.getView().setTranslationY(layerYOffset);
+                        }
+                    }
+                };
+        mBottomControlsStacker.addLayer(mBottomToolbarLayer);
         updateCurrentPosition();
     }
 
@@ -98,26 +142,26 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (newControlsPosition == mCurrentPosition) return;
 
         int newTopHeight;
-        int newBottomHeight;
         int controlContainerHeight = mControlContainer.getToolbarHeight();
 
         if (newControlsPosition == ControlsPosition.TOP) {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + controlContainerHeight;
-            newBottomHeight =
-                    mBrowserControlsSizer.getBottomControlsHeight() - controlContainerHeight;
+            mLayerVisibility = LayerVisibility.HIDDEN;
+            mControlContainer.getView().setTranslationY(0);
         } else {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
-            newBottomHeight =
-                    mBrowserControlsSizer.getBottomControlsHeight() + controlContainerHeight;
+            mLayerVisibility = LayerVisibility.VISIBLE;
         }
+
+        mBottomControlsStacker.requestLayerUpdate(false);
 
         mCurrentPosition = newControlsPosition;
         mBrowserControlsSizer.setControlsPosition(
                 mCurrentPosition,
                 newTopHeight,
                 mBrowserControlsSizer.getTopControlsMinHeight(),
-                newBottomHeight,
-                mBrowserControlsSizer.getBottomControlsMinHeight());
+                mBottomControlsStacker.getTotalHeight(),
+                mBottomControlsStacker.getTotalMinHeight());
 
         CoordinatorLayout.LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
         int verticalGravity =

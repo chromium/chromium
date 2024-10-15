@@ -8,10 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.Gravity;
+import android.view.View;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -32,6 +34,11 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -190,10 +197,12 @@ public class ToolbarPositionControllerTest {
     private CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
             new CoordinatorLayout.LayoutParams(400, TOOLBAR_HEIGHT);
     @Mock private ControlContainer mControlContainer;
+    @Mock private View mControlContainerView;
 
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>();
+    private BottomControlsStacker mBottomControlsStacker;
 
     private ToolbarPositionController mController;
 
@@ -201,7 +210,9 @@ public class ToolbarPositionControllerTest {
     public void setUp() {
         doReturn(TOOLBAR_HEIGHT).when(mControlContainer).getToolbarHeight();
         doReturn(mControlContainerLayoutParams).when(mControlContainer).mutateLayoutParams();
+        doReturn(mControlContainerView).when(mControlContainer).getView();
         mContext = ContextUtils.getApplicationContext();
+        mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
         mBrowserControlsSizer.setControlsPosition(ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0);
         mControlContainerLayoutParams.gravity = Gravity.START | Gravity.TOP;
         mIsNtpShowing.set(false);
@@ -212,7 +223,8 @@ public class ToolbarPositionControllerTest {
                         ContextUtils.getAppSharedPreferences(),
                         mIsNtpShowing,
                         mIsOmniboxFocused,
-                        mControlContainer);
+                        mControlContainer,
+                        mBottomControlsStacker);
     }
 
     @Test
@@ -308,6 +320,32 @@ public class ToolbarPositionControllerTest {
 
         mIsOmniboxFocused.set(false);
         assertControlsAtBottom();
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testBottomControlsStacker() {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
+                .commit();
+        assertControlsAtBottom();
+
+        assertEquals(mBottomControlsStacker.getTotalHeight(), TOOLBAR_HEIGHT);
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+        assertEquals(toolbarLayer.getHeight(), TOOLBAR_HEIGHT);
+        assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
+        assertEquals(toolbarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
+
+        toolbarLayer.onBrowserControlsOffsetUpdate(12);
+        verify(mControlContainerView).setTranslationY(12);
+
+        mIsOmniboxFocused.set(true);
+        assertControlsAtTop();
+        assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.HIDDEN);
+        verify(mControlContainerView).setTranslationY(0);
     }
 
     private void assertControlsAtBottom() {
