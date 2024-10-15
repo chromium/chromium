@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.InternalErrorCode"
-    enum="UpdateEngineErrorCode" expires_after="2025-02-10">
+    enum="UpdateEngineErrorCode" expires_after="2025-04-13">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.ConsumerAutoUpdate" enum="BooleanOptedOut"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>yuanpengni@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationMinutes"
-    units="minutes" expires_after="2025-02-10">
+    units="minutes" expires_after="2025-04-13">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

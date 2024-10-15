@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.Suggestion.Events"
-    enum="PlusAddressSuggestionEvent2" expires_after="2024-12-31">
+    enum="PlusAddressSuggestionEvent2" expires_after="2025-04-13">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>

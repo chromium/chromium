@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Interaction.Resolution"
-    enum="AssistantInteractionResolution" expires_after="2025-02-10">
+    enum="AssistantInteractionResolution" expires_after="2025-04-13">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcInstallResult"
-    enum="Assistant.LibassistantDlcInstallResult" expires_after="2025-02-10">
+    enum="Assistant.LibassistantDlcInstallResult" expires_after="2025-04-13">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcLoadStatus"
-    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2025-02-10">
+    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2025-04-13">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

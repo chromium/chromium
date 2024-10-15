@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.OrphanStorageAreasOnStartupCount" units="areas"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

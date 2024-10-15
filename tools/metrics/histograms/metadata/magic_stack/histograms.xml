@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.ContextMenu.RemoveModuleV2"
-    enum="ModuleType" expires_after="2025-02-10">
+    enum="ModuleType" expires_after="2025-04-13">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.Click" enum="ModuleType"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutTypeV2"
-    enum="ModuleType" expires_after="2025-02-10">
+    enum="ModuleType" expires_after="2025-04-13">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.TopImpressionV2"
-    enum="ModuleType" expires_after="2025-02-10">
+    enum="ModuleType" expires_after="2025-04-13">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AddSupervisionDialog.EnrollmentCompletedUserTime" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AddSupervisionDialog.EnrollmentNotCompletedUserTime"
-    units="ms" expires_after="2025-02-10">
+    units="ms" expires_after="2025-04-13">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AddSupervisionDialog.SignoutCompletedUserTime" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildAccountReconcilor.ForcedUserExitOnReconcileError"
-    enum="BooleanHit" expires_after="2025-02-10">
+    enum="BooleanHit" expires_after="2025-04-13">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>ljjlee@google.com</owner>
   <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -365,7 +365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchStatus"
-    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-02-10">
+    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-04-13">
   <owner>ljjlee@google.com</owner>
   <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
-    enum="Boolean" expires_after="2025-02-10">
+    enum="Boolean" expires_after="2025-04-13">
   <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.GaiaUsersCount" units="Number of Users"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.RequestPermissionSource"
-    enum="ManagedUserURLRequestPermissionSource" expires_after="2025-02-10">
+    enum="ManagedUserURLRequestPermissionSource" expires_after="2025-04-13">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -802,7 +802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
-    units="Extensions" expires_after="2025-02-10">
+    units="Extensions" expires_after="2025-04-13">
   <owner>anthie@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionInstallDialog"
-    enum="SupervisedUserExtensionInstallDialog" expires_after="2025-02-10">
+    enum="SupervisedUserExtensionInstallDialog" expires_after="2025-04-13">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -847,7 +847,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SupervisedUsers.ExtensionParentApprovalEntryPoint"
     enum="SupervisedUserExtensionParentApprovalEntryPoint"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SupervisedUsers.ImplicitParentApprovalGrantEntryPoint"
     enum="SupervisedUserImplicitParentApprovalGrantEntryPoint"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -882,7 +882,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac"
-    units="Extensions" expires_after="2025-02-10">
+    units="Extensions" expires_after="2025-04-13">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.ParentPermissionDialog"
-    enum="SupervisedUserParentPermissionDialog" expires_after="2025-02-10">
+    enum="SupervisedUserParentPermissionDialog" expires_after="2025-04-13">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>

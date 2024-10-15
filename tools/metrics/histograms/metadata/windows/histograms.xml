@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.TimeInSelectFileDialog" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <summary>

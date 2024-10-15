@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
-    enum="SearchEngineChoiceScrollState" expires_after="2025-02-11">
+    enum="SearchEngineChoiceScrollState" expires_after="2025-04-13">
   <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenDefaultSearchEngineType"
-    enum="OmniboxSearchEngineType" expires_after="2025-02-10">
+    enum="OmniboxSearchEngineType" expires_after="2025-04-13">
   <owner>dgn@chromium.org</owner>
   <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenEvents"
-    enum="SearchEngineChoiceScreenEvents" expires_after="2025-02-10">
+    enum="SearchEngineChoiceScreenEvents" expires_after="2025-04-13">
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenNavigationConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2025-02-10">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2025-04-13">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1381,7 +1381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchProviderOverrideStatus"
-    enum="SearchProviderOverrideStatus" expires_after="2025-02-10">
+    enum="SearchProviderOverrideStatus" expires_after="2025-04-13">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

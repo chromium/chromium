@@ -210,7 +210,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"
-    units="pages" expires_after="2025-02-10">
+    units="pages" expires_after="2025-04-13">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -229,7 +229,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.QuiescentPageCount" units="pages"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -371,7 +371,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
-    enum="EfficiencyMode" expires_after="2025-02-10">
+    enum="EfficiencyMode" expires_after="2025-04-13">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
