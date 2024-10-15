@@ -18,7 +18,8 @@ class TachyonResponse {
     kHttpError,
     kNetworkError,
     kInternalError,
-    kAuthError
+    kAuthError,
+    kTimeout
   };
   explicit TachyonResponse(Status status);
   explicit TachyonResponse(int rpc_code, const std::string& error_message = "");

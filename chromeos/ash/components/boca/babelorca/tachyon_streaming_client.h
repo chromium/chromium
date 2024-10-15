@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-shared.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
@@ -66,6 +67,8 @@ class TachyonStreamingClient : public TachyonClient,
                 mojom::StreamStatusPtr stream_status);
   void OnParsingServiceDisconnected();
 
+  void OnTimeout();
+
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const ParsingServiceBinder binder_callback_;
   const OnMessageCallback on_message_callback_;
@@ -82,6 +85,8 @@ class TachyonStreamingClient : public TachyonClient,
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::OneShotTimer timeout_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace ash::babelorca

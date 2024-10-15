@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-shared.h"
@@ -129,7 +131,8 @@ class TachyonStreamingClientTest : public testing::Test {
   base::test::TestFuture<TachyonResponse> result_future_;
   base::test::RepeatingTestFuture<mojom::BabelOrcaMessagePtr>
       on_message_future_;
-  base::test::TaskEnvironment task_env_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(TachyonStreamingClientTest, SuccessfulRequestNoDataStreamed) {
@@ -138,8 +141,10 @@ TEST_F(TachyonStreamingClientTest, SuccessfulRequestNoDataStreamed) {
   CreateStreamingClient();
   client_->StartRequest(request_data(), kOAuthToken,
                         auth_failure_future_.GetCallback());
-
   TachyonResponse result = result_future_.Take();
+  // Advance time to verify timeout reset.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
   EXPECT_TRUE(result.ok());
   EXPECT_TRUE(on_message_future_.IsEmpty());
   EXPECT_FALSE(auth_failure_future_.IsReady());
@@ -152,8 +157,10 @@ TEST_F(TachyonStreamingClientTest, HttpErrorNoDataStreamed) {
   CreateStreamingClient();
   client_->StartRequest(request_data(), kOAuthToken,
                         auth_failure_future_.GetCallback());
-
   TachyonResponse result = result_future_.Take();
+  // Advance time to verify timeout reset.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
   EXPECT_EQ(result.status(), TachyonResponse::Status::kHttpError);
   EXPECT_TRUE(on_message_future_.IsEmpty());
   EXPECT_FALSE(auth_failure_future_.IsReady());
@@ -166,10 +173,78 @@ TEST_F(TachyonStreamingClientTest, AuthErrorNoDataStreamed) {
   CreateStreamingClient();
   client_->StartRequest(request_data(), kOAuthToken,
                         auth_failure_future_.GetCallback());
-
   RequestDataPtr auth_request_data = auth_failure_future_.Take();
+  // Advance time to verify timeout reset.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
   EXPECT_FALSE(auth_request_data->response_cb.is_null());
   EXPECT_TRUE(on_message_future_.IsEmpty());
+}
+
+TEST_F(TachyonStreamingClientTest, TimeoutAfterStartRequest) {
+  CreateStreamingClient();
+  client_->StartRequest(request_data(), kOAuthToken,
+                        auth_failure_future_.GetCallback());
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  TachyonResponse result = result_future_.Take();
+  EXPECT_EQ(result.status(), TachyonResponse::Status::kTimeout);
+}
+
+TEST_F(TachyonStreamingClientTest, TimeoutAfterDataReceived) {
+  CreateStreamingClient();
+  client_->StartRequest(request_data(), kOAuthToken,
+                        auth_failure_future_.GetCallback());
+  client_->OnDataReceived("123", resume_future_.GetCallback());
+  std::vector<mojom::BabelOrcaMessagePtr> messages;
+  messages.emplace_back(babel_orca_message_mojom());
+  parsing_service_->RunParseCallback(mojom::ParsingState::kOk,
+                                     std::move(messages), nullptr);
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  TachyonResponse result = result_future_.Take();
+  EXPECT_EQ(result.status(), TachyonResponse::Status::kTimeout);
+}
+
+TEST_F(TachyonStreamingClientTest, TimeoutAfterRetry) {
+  CreateStreamingClient();
+  client_->StartRequest(request_data(), kOAuthToken,
+                        auth_failure_future_.GetCallback());
+  client_->OnRetry(base::DoNothing());
+  // Timeout timer should reset on retry.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  EXPECT_TRUE(result_future_.IsReady());
+  TachyonResponse result = result_future_.Take();
+  EXPECT_EQ(result.status(), TachyonResponse::Status::kTimeout);
+}
+
+TEST_F(TachyonStreamingClientTest, TimeoutResetAfterRetry) {
+  CreateStreamingClient();
+  client_->StartRequest(request_data(), kOAuthToken,
+                        auth_failure_future_.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(30));
+  client_->OnRetry(base::DoNothing());
+  // Timeout timer should reset on retry.
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  EXPECT_FALSE(result_future_.IsReady());
+}
+
+TEST_F(TachyonStreamingClientTest, TimeoutResetOnDataReceived) {
+  CreateStreamingClient();
+  client_->StartRequest(request_data(), kOAuthToken,
+                        auth_failure_future_.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  client_->OnDataReceived("123", resume_future_.GetCallback());
+  std::vector<mojom::BabelOrcaMessagePtr> messages;
+  messages.emplace_back(babel_orca_message_mojom());
+  parsing_service_->RunParseCallback(mojom::ParsingState::kOk,
+                                     std::move(messages), nullptr);
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  EXPECT_FALSE(result_future_.IsReady());
 }
 
 TEST_F(TachyonStreamingClientTest, DataStreamedSuccess) {
@@ -205,8 +280,10 @@ TEST_F(TachyonStreamingClientTest, DataStreamedSuccessClosed) {
   parsing_service_->RunParseCallback(mojom::ParsingState::kClosed,
                                      std::move(messages),
                                      std::move(stream_status));
-
   TachyonResponse result = result_future_.Take();
+  // Advance time to verify timeout reset.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
   EXPECT_TRUE(result.ok());
   EXPECT_FALSE(auth_failure_future_.IsReady());
   EXPECT_FALSE(resume_future_.IsReady());
@@ -229,6 +306,9 @@ TEST_F(TachyonStreamingClientTest, DataStreamedParsingError) {
                                      std::move(stream_status));
 
   TachyonResponse result = result_future_.Take();
+  // Advance time to verify timeout reset.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
   EXPECT_EQ(result.status(), TachyonResponse::Status::kInternalError);
   EXPECT_FALSE(auth_failure_future_.IsReady());
   EXPECT_FALSE(resume_future_.IsReady());
@@ -264,6 +344,9 @@ TEST_F(TachyonStreamingClientTest, ParsingServiceDisconnected) {
   parsing_service_.reset();
 
   TachyonResponse result = result_future_.Take();
+  // Advance time to verify timeout reset.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
   EXPECT_EQ(result.status(), TachyonResponse::Status::kInternalError);
 }
 
