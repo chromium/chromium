@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -90,13 +91,16 @@ void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
 
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
-  const bool include_variations_cmd = args[1].GetBool();
+  const bool return_raw_variations_cmd = args[1].GetBool();
 
   base::Value::Dict response;
   response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
-  if (include_variations_cmd) {
+  if (return_raw_variations_cmd) {
     response.Set(version_ui::kKeyVariationsCmd,
-                 version_ui::GetVariationsCommandLineAsValue());
+                 version_ui::GetVariationsCommandLine());
+  } else {
+    response.Set(version_ui::kKeyVariationsCmd,
+                 base::Base64Encode(version_ui::GetVariationsCommandLine()));
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

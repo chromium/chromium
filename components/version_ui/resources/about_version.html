@@ -185,13 +185,19 @@ about:version template page
           <td class="label">$i18n{variations_seed_name}</td>
           <td class="version" id="variations-seed">$i18n{variations_seed}</td>
         </tr>
+        <tr id="variations-cmd-section">
+          <td class="label">$i18n{variations_cmd_name}</td>
+          <td class="version-wide" id="variations-cmd"></td>
+          <td>
+            <button id="copy-variations-to-clipboard"
+                aria-label="$i18n{copy_variations_label}">
+              <div id="copy-to-clipboard-icon"></div>
+            </button>
+          </td>
+        </tr>
         <tr id="variations-section">
           <td class="label">$i18n{variations_name}</td>
           <td class="version" id="variations-list"></td>
-        </tr>
-        <tr id="variations-cmd-section" hidden>
-          <td class="label">$i18n{variations_cmd_name}</td>
-          <td class="version-wide" id="variations-cmd"></td>
         </tr>
         <tr id="sanitizer-section" hidden>
           <td class="label">Sanitizer</td>

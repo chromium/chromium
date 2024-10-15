@@ -87,9 +87,8 @@ base::Value::List GetVariationsList() {
   return variations_list;
 }
 
-base::Value GetVariationsCommandLineAsValue() {
-  return base::Value(
-      variations::VariationsCommandLine::GetForCurrentProcess().ToString());
+std::string GetVariationsCommandLine() {
+  return variations::VariationsCommandLine::GetForCurrentProcess().ToString();
 }
 
 }  // namespace version_ui

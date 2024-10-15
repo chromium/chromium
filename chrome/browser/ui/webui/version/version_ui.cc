@@ -78,33 +78,36 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
       WebUIDataSource::CreateAndAdd(profile, chrome::kChromeUIVersionHost);
   // These localized strings are used to label version details.
   static constexpr webui::LocalizedString kStrings[] = {
-    {version_ui::kTitle, IDS_VERSION_UI_TITLE},
-    {version_ui::kLogoAltText, IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
-    {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
-    {version_ui::kCompany, IDS_ABOUT_VERSION_COMPANY_NAME},
-    {version_ui::kCopyLabel, IDS_VERSION_UI_COPY_LABEL},
-    {version_ui::kCopyNotice, IDS_VERSION_UI_COPY_NOTICE},
-    {version_ui::kRevision, IDS_VERSION_UI_REVISION},
-    {version_ui::kUserAgentName, IDS_VERSION_UI_USER_AGENT},
-    {version_ui::kCommandLineName, IDS_VERSION_UI_COMMAND_LINE},
-    {version_ui::kExecutablePathName, IDS_VERSION_UI_EXECUTABLE_PATH},
-    {version_ui::kProfilePathName, IDS_VERSION_UI_PROFILE_PATH},
-    {version_ui::kVariationsName, IDS_VERSION_UI_VARIATIONS},
-    {version_ui::kVariationsCmdName, IDS_VERSION_UI_VARIATIONS_CMD},
-    {version_ui::kVariationsSeedName, IDS_VERSION_UI_VARIATIONS_SEED_NAME},
+      {version_ui::kTitle, IDS_VERSION_UI_TITLE},
+      {version_ui::kLogoAltText, IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
+      {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
+      {version_ui::kCompany, IDS_ABOUT_VERSION_COMPANY_NAME},
+      {version_ui::kCopyLabel, IDS_VERSION_UI_COPY_LABEL},
+      {version_ui::kCopyNotice, IDS_VERSION_UI_COPY_NOTICE},
+      {version_ui::kRevision, IDS_VERSION_UI_REVISION},
+      {version_ui::kUserAgentName, IDS_VERSION_UI_USER_AGENT},
+      {version_ui::kCommandLineName, IDS_VERSION_UI_COMMAND_LINE},
+      {version_ui::kExecutablePathName, IDS_VERSION_UI_EXECUTABLE_PATH},
+      {version_ui::kProfilePathName, IDS_VERSION_UI_PROFILE_PATH},
+      {version_ui::kVariationsName, IDS_VERSION_UI_VARIATIONS},
+      {version_ui::kVariationsCmdName, IDS_VERSION_UI_VARIATIONS_CMD},
+      {version_ui::kCopyVariationsLabel, IDS_VERSION_UI_COPY_VARIATIONS_LABEL},
+      {version_ui::kCopyVariationsNotice,
+       IDS_VERSION_UI_COPY_VARIATIONS_NOTICE},
+      {version_ui::kVariationsSeedName, IDS_VERSION_UI_VARIATIONS_SEED_NAME},
 #if BUILDFLAG(IS_CHROMEOS)
-    {version_ui::kARC, IDS_ARC_LABEL},
-    {version_ui::kPlatform, IDS_PLATFORM_LABEL},
-    {version_ui::kCustomizationId, IDS_VERSION_UI_CUSTOMIZATION_ID},
-    {version_ui::kFirmwareVersion, IDS_VERSION_UI_FIRMWARE_VERSION},
-    {version_ui::kOsVersionHeaderText1, IDS_VERSION_UI_OS_TEXT1_LABEL},
-    {version_ui::kOsVersionHeaderText2, IDS_VERSION_UI_OS_TEXT2_LABEL},
+      {version_ui::kARC, IDS_ARC_LABEL},
+      {version_ui::kPlatform, IDS_PLATFORM_LABEL},
+      {version_ui::kCustomizationId, IDS_VERSION_UI_CUSTOMIZATION_ID},
+      {version_ui::kFirmwareVersion, IDS_VERSION_UI_FIRMWARE_VERSION},
+      {version_ui::kOsVersionHeaderText1, IDS_VERSION_UI_OS_TEXT1_LABEL},
+      {version_ui::kOsVersionHeaderText2, IDS_VERSION_UI_OS_TEXT2_LABEL},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    {version_ui::kOSName, IDS_VERSION_UI_OS},
+      {version_ui::kOSName, IDS_VERSION_UI_OS},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)
-    {version_ui::kGmsName, IDS_VERSION_UI_GMS},
+      {version_ui::kGmsName, IDS_VERSION_UI_GMS},
 #endif  // BUILDFLAG(IS_ANDROID)
   };
   html_source->AddLocalizedStrings(kStrings);
