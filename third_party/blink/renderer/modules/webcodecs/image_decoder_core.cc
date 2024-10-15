@@ -390,18 +390,13 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   return result;
 }
 
-void ImageDecoderCore::AppendData(size_t data_size,
-                                  std::unique_ptr<uint8_t[]> data,
-                                  bool data_complete) {
+void ImageDecoderCore::AppendData(Vector<uint8_t> data, bool data_complete) {
   DCHECK(stream_buffer_);
   DCHECK(stream_buffer_);
   DCHECK(!data_complete_);
   data_complete_ = data_complete;
-  if (data) {
-    stream_buffer_->Append(reinterpret_cast<const char*>(data.get()),
-                           base::checked_cast<wtf_size_t>(data_size));
-  } else {
-    DCHECK_EQ(data_size, 0u);
+  if (!data.empty()) {
+    stream_buffer_->Append(std::move(data));
   }
 
   // We may not have a decoder if Clear() was called while data arrives.

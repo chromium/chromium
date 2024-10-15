@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_external.h"
 
 #include "base/logging.h"
@@ -223,22 +218,16 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   base::span<const uint8_t> array_span;
   switch (init->data()->GetContentType()) {
     case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
-      if (auto* data_ptr = init->data()->GetAsArrayBufferAllowShared()) {
-        if (!data_ptr->IsDetached()) {
-          array_span = base::span<const uint8_t>(
-              reinterpret_cast<const uint8_t*>(data_ptr->DataMaybeShared()),
-              data_ptr->ByteLength());
+      if (auto* buffer = init->data()->GetAsArrayBufferAllowShared()) {
+        if (!buffer->IsDetached()) {
+          array_span = buffer->ByteSpanMaybeShared();
         }
       }
       break;
     case V8ImageBufferSource::ContentType::kArrayBufferViewAllowShared:
-      if (auto* data_ptr =
-              init->data()->GetAsArrayBufferViewAllowShared().Get()) {
-        if (!data_ptr->IsDetached()) {
-          array_span =
-              base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
-                                            data_ptr->BaseAddressMaybeShared()),
-                                        data_ptr->byteLength());
+      if (auto* view = init->data()->GetAsArrayBufferViewAllowShared().Get()) {
+        if (!view->IsDetached()) {
+          array_span = view->ByteSpanMaybeShared();
         }
       }
       break;
@@ -435,11 +424,11 @@ void ImageDecoderExternal::OnStateChange() {
     if (result == BytesConsumer::Result::kShouldWait)
       return;
 
-    std::unique_ptr<uint8_t[]> data;
+    Vector<uint8_t> data;
     if (result == BytesConsumer::Result::kOk) {
       if (!buffer.empty()) {
-        data.reset(new uint8_t[buffer.size()]);
-        memcpy(data.get(), buffer.data(), buffer.size());
+        data.ReserveInitialCapacity(static_cast<wtf_size_t>(buffer.size()));
+        data.AppendSpan(buffer);
         bytes_read_ += buffer.size();
       }
       result = consumer_->EndRead(buffer.size());
@@ -449,7 +438,7 @@ void ImageDecoderExternal::OnStateChange() {
                                result == BytesConsumer::Result::kError;
     if (!buffer.empty() || data_complete != internal_data_complete_) {
       decoder_->AsyncCall(&ImageDecoderCore::AppendData)
-          .WithArgs(buffer.size(), std::move(data), data_complete);
+          .WithArgs(std::move(data), data_complete);
       // Note: Requiring a selected track to DecodeMetadata() means we won't
       // resolve completed if all data comes in while there's no selected
       // track. This is intentional since if we resolve completed while there's
