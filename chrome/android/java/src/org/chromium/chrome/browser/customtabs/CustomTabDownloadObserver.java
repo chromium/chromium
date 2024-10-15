@@ -70,7 +70,7 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
                             return;
                         }
                         DownloadManagerService.getDownloadManagerService()
-                                .getMessageUiController(/* otrProfileID= */ null)
+                                .getMessageUiController(/* otrProfileId= */ null)
                                 .addDownloadInterstitialSource(tab.getOriginalUrl());
                     };
 

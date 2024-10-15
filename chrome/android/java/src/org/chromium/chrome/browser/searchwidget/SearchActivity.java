@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -474,7 +474,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 new ActivityProfileProvider(getLifecycleDispatcher()) {
                     @Nullable
                     @Override
-                    protected OTRProfileID createOffTheRecordProfileID() {
+                    protected OtrProfileId createOffTheRecordProfileID() {
                         throw new IllegalStateException(
                                 "Attempting to access incognito from the search activity");
                     }

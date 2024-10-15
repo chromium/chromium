@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadMessageUiController;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -66,14 +66,14 @@ public class DownloadMessageUiDelegate implements DownloadMessageUiController.De
     }
 
     @Override
-    public void openDownloadsPage(OTRProfileID otrProfileID, int source) {
-        DownloadManagerService.openDownloadsPage(otrProfileID, source);
+    public void openDownloadsPage(OtrProfileId otrProfileId, int source) {
+        DownloadManagerService.openDownloadsPage(otrProfileId, source);
     }
 
     @Override
     public void openDownload(
-            ContentId contentId, OTRProfileID otrProfileID, int source, Context context) {
-        DownloadUtils.openItem(contentId, otrProfileID, source, context);
+            ContentId contentId, OtrProfileId otrProfileId, int source, Context context) {
+        DownloadUtils.openItem(contentId, otrProfileId, source, context);
     }
 
     @Override

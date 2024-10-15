@@ -36,7 +36,7 @@ public class DownloadMessageBridge {
     public void showIncognitoDownloadMessage(long callbackId) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
-                        .getMessageUiController(/* otrProfileID= */ null);
+                        .getMessageUiController(/* otrProfileId= */ null);
         messageUiController.showIncognitoDownloadMessage(
                 (accepted) -> {
                     onConfirmed(callbackId, accepted);

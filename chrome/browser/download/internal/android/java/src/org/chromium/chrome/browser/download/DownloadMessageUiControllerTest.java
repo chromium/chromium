@@ -22,7 +22,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.messages.MessageDispatcher;
@@ -99,11 +99,11 @@ public class DownloadMessageUiControllerTest {
         }
 
         @Override
-        public void openDownloadsPage(OTRProfileID otrProfileID, int source) {}
+        public void openDownloadsPage(OtrProfileId otrProfileId, int source) {}
 
         @Override
         public void openDownload(
-                ContentId contentId, OTRProfileID otrProfileID, int source, Context context) {}
+                ContentId contentId, OtrProfileId otrProfileId, int source, Context context) {}
 
         @Override
         public void removeNotification(int notificationId, DownloadInfo downloadInfo) {}

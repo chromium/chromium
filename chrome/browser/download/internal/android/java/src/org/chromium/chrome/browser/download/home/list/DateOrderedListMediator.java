@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator
 import org.chromium.chrome.browser.download.home.list.mutator.DateOrderedListMutator;
 import org.chromium.chrome.browser.download.home.list.mutator.ListMutationController;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProviderImpl;
@@ -200,7 +200,7 @@ class DateOrderedListMediator implements BackPressHandler {
         mSource = new OfflineItemSource(mProvider);
         mOffTheRecordFilter =
                 new OffTheRecordOfflineItemFilter(
-                        OTRProfileID.isOffTheRecord(config.otrProfileID), mSource);
+                        OtrProfileId.isOffTheRecord(config.otrProfileId), mSource);
         mInvalidStateFilter = new InvalidStateOfflineItemFilter(mOffTheRecordFilter);
         mDeleteUndoFilter = new DeleteUndoOfflineItemFilter(mInvalidStateFilter);
         mSearchFilter = new SearchOfflineItemFilter(mDeleteUndoFilter);
@@ -334,7 +334,7 @@ class DateOrderedListMediator implements BackPressHandler {
 
     private void onOpenItem(OfflineItem item) {
         OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_HOME);
-        openParams.openInIncognito = OTRProfileID.isOffTheRecord(mUiConfig.otrProfileID);
+        openParams.openInIncognito = OtrProfileId.isOffTheRecord(mUiConfig.otrProfileId);
         mProvider.openItem(openParams, item.id);
     }
 

@@ -55,7 +55,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testIncognitoProfileConsistency() throws Exception {
-        Assert.assertNull(mRegularProfile.getOTRProfileID());
+        Assert.assertNull(mRegularProfile.getOtrProfileId());
         // Open an new Incognito Tab page to create a new primary OTR profile.
         sActivityTestRule.loadUrlInNewTab("about:blank", true);
 
@@ -91,7 +91,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testNonPrimaryProfileConsistency() throws Exception {
-        OTRProfileID profileID = new OTRProfileID("test::OTRProfile");
+        OtrProfileId profileID = new OtrProfileId("test::OTRProfile");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -119,14 +119,14 @@ public class ProfileTest {
 
         Assert.assertEquals(
                 "OTR profile id should be returned as it is set.",
-                nonPrimaryOtrProfile1.getOTRProfileID(),
+                nonPrimaryOtrProfile1.getOtrProfileId(),
                 profileID);
 
         Profile nonPrimaryOtrProfile2 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        new OTRProfileID("test::OTRProfile"),
+                                        new OtrProfileId("test::OTRProfile"),
                                         /* createIfNeeded= */ true));
 
         Assert.assertSame(
@@ -140,14 +140,14 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testCreatingTwoNonPrimaryProfiles() throws Exception {
-        OTRProfileID profileID1 = new OTRProfileID("test::OTRProfile-1");
+        OtrProfileId profileID1 = new OtrProfileId("test::OTRProfile-1");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileID1, /* createIfNeeded= */ true));
 
-        OTRProfileID profileID2 = new OTRProfileID("test::OTRProfile-2");
+        OtrProfileId profileID2 = new OtrProfileId("test::OTRProfile-2");
         Profile nonPrimaryOtrProfile2 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -196,14 +196,14 @@ public class ProfileTest {
     /** Test if creating unique otr profile ids works as expected. */
     @Test
     @LargeTest
-    public void testCreatingUniqueOTRProfileIDs() throws Exception {
+    public void testCreatingUniqueOtrProfileIds() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID profileID1 = OTRProfileID.createUnique("test::OTRProfile");
-                    OTRProfileID profileID2 = OTRProfileID.createUnique("test::OTRProfile");
+                    OtrProfileId profileID1 = OtrProfileId.createUnique("test::OTRProfile");
+                    OtrProfileId profileID2 = OtrProfileId.createUnique("test::OTRProfile");
 
                     Assert.assertNotSame(
-                            "Two calls to OTRProfileID.CreateUnique with the same prefix"
+                            "Two calls to OtrProfileId.CreateUnique with the same prefix"
                                     + "should return different objects.",
                             profileID1,
                             profileID2);
@@ -213,14 +213,14 @@ public class ProfileTest {
     /** Test if creating unique iCCT profile ids works as expected. */
     @Test
     @LargeTest
-    public void testCreatingUniqueIncognitoCCTOTRProfileIDs() throws Exception {
+    public void testCreatingUniqueIncognitoCCTOtrProfileIds() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID incognitoCCTId1 = OTRProfileID.createUniqueIncognitoCCTId();
-                    OTRProfileID incognitoCCTId2 = OTRProfileID.createUniqueIncognitoCCTId();
+                    OtrProfileId incognitoCCTId1 = OtrProfileId.createUniqueIncognitoCCTId();
+                    OtrProfileId incognitoCCTId2 = OtrProfileId.createUniqueIncognitoCCTId();
 
                     Assert.assertNotSame(
-                            "Two calls to OTRProfileID.createUniqueIncognitoCCTId"
+                            "Two calls to OtrProfileId.createUniqueIncognitoCCTId"
                                     + "should return different objects.",
                             incognitoCCTId1,
                             incognitoCCTId2);
@@ -233,7 +233,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testIncognitoCCTProfileCreation() throws Exception {
-        OTRProfileID incognitoCCTId = OTRProfileID.createUniqueIncognitoCCTId();
+        OtrProfileId incognitoCCTId = OtrProfileId.createUniqueIncognitoCCTId();
         Profile incognitoCCTProfile =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -290,10 +290,10 @@ public class ProfileTest {
     public void testBrowserProfileTypeFromNonPrimaryOTRProfile() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID otrProfileID = new OTRProfileID("test::OTRProfile");
+                    OtrProfileId otrProfileId = new OtrProfileId("test::OTRProfile");
                     Profile nonPrimaryOtrProfile =
                             mRegularProfile.getOffTheRecordProfile(
-                                    otrProfileID, /* createIfNeeded= */ true);
+                                    otrProfileId, /* createIfNeeded= */ true);
                     Assert.assertEquals(
                             BrowserProfileType.OTHER_OFF_THE_RECORD_PROFILE,
                             Profile.getBrowserProfileTypeFromProfile(nonPrimaryOtrProfile));
@@ -306,7 +306,7 @@ public class ProfileTest {
     @RequiresRestart(
             "crbug/1161449 - Other tests create profiles which invalidate the first assertion.")
     public void testGetOffTheRecordProfile() throws Exception {
-        OTRProfileID profileID = new OTRProfileID("test::OTRProfile");
+        OtrProfileId profileID = new OtrProfileId("test::OTRProfile");
 
         // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
         Profile profile1 =

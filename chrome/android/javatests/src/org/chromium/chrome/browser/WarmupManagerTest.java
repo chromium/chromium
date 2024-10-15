@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.WarmupManager.SpareTabFinalStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -230,10 +230,10 @@ public class WarmupManagerTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
-                            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                            OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
                             return ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                         });
     }
 

@@ -252,7 +252,7 @@ public class NativePageFactory {
                     mActivity,
                     mSnackbarManagerSupplier.get(),
                     mWindowAndroid.getModalDialogManager(),
-                    profile.getOTRProfileID(),
+                    profile.getOtrProfileId(),
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
         }
 

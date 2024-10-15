@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
 import org.chromium.chrome.browser.pdf.PdfUtils;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -92,7 +92,7 @@ public class DownloadUtils {
      *
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
-     * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
+     * @param otrProfileId The {@link OtrProfileId} to determine whether download home should be
      *     opened in incognito mode. If null, download page will be opened in normal profile.
      * @param source The source where the user action is coming from.
      * @return Whether the UI was shown.
@@ -100,9 +100,9 @@ public class DownloadUtils {
     public static boolean showDownloadManager(
             @Nullable Activity activity,
             @Nullable Tab tab,
-            @Nullable OTRProfileID otrProfileID,
+            @Nullable OtrProfileId otrProfileId,
             @DownloadOpenSource int source) {
-        return showDownloadManager(activity, tab, otrProfileID, source, false);
+        return showDownloadManager(activity, tab, otrProfileId, source, false);
     }
 
     /**
@@ -110,7 +110,7 @@ public class DownloadUtils {
      *
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
-     * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
+     * @param otrProfileId The {@link OtrProfileId} to determine whether download home should be
      *     opened in incognito mode. Only used when no valid current or recent tab presents.
      * @param source The source where the user action is coming from.
      * @param showPrefetchedContent Whether the manager should start with prefetched content section
@@ -121,7 +121,7 @@ public class DownloadUtils {
     public static boolean showDownloadManager(
             @Nullable Activity activity,
             @Nullable Tab tab,
-            @Nullable OTRProfileID otrProfileID,
+            @Nullable OtrProfileId otrProfileId,
             @DownloadOpenSource int source,
             boolean showPrefetchedContent) {
         // Figure out what tab was last being viewed by the user.
@@ -139,14 +139,14 @@ public class DownloadUtils {
         }
 
         // Use tab's profile if a valid tab exists.
-        if (otrProfileID == null && tab != null) {
-            otrProfileID = tab.getProfile().getOTRProfileID();
+        if (otrProfileId == null && tab != null) {
+            otrProfileId = tab.getProfile().getOtrProfileId();
         }
 
         // If the profile is off-the-record and it does not exist, then do not start the activity.
-        if (OTRProfileID.isOffTheRecord(otrProfileID)
+        if (OtrProfileId.isOffTheRecord(otrProfileId)
                 && !ProfileManager.getLastUsedRegularProfile()
-                        .hasOffTheRecordProfile(otrProfileID)) {
+                        .hasOffTheRecordProfile(otrProfileId)) {
             return false;
         }
 
@@ -174,16 +174,16 @@ public class DownloadUtils {
             }
         } else {
             DownloadActivityLauncher.getInstance()
-                    .showDownloadActivity(activity, otrProfileID, showPrefetchedContent);
+                    .showDownloadActivity(activity, otrProfileId, showPrefetchedContent);
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             Profile profile =
-                    otrProfileID == null
+                    otrProfileId == null
                             ? ProfileManager.getLastUsedRegularProfile()
                             : ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_HOME_OPENED);
         }
@@ -193,11 +193,11 @@ public class DownloadUtils {
 
     /**
      * @param intent An {@link Intent} instance.
-     * @return The {@link OTRProfileID} that is attached to the given intent.
+     * @return The {@link OtrProfileId} that is attached to the given intent.
      */
-    public static OTRProfileID getOTRProfileIDFromIntent(Intent intent) {
+    public static OtrProfileId getOtrProfileIdFromIntent(Intent intent) {
         String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
-        return OTRProfileID.deserialize(serializedId);
+        return OtrProfileId.deserialize(serializedId);
     }
 
     /**
@@ -211,14 +211,15 @@ public class DownloadUtils {
         }
 
         String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
-        OTRProfileID otrProfileID = OTRProfileID.deserializeWithoutVerify(serializedId);
+        OtrProfileId otrProfileId = OtrProfileId.deserializeWithoutVerify(serializedId);
 
-        return otrProfileID == null
-                || ProfileManager.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
+        return otrProfileId == null
+                || ProfileManager.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileId);
     }
 
     /**
      * Called to determine whether to use user initiated Jobs API for ensuring download completion.
+     *
      * @return True for using Jobs. False for using Foreground service.
      */
     public static boolean shouldUseUserInitiatedJobs() {
@@ -356,13 +357,14 @@ public class DownloadUtils {
     /**
      * Utility method to open an {@link OfflineItem}, which can be a chrome download, offline page.
      * Falls back to open download home.
+     *
      * @param contentId The {@link ContentId} of the associated offline item.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      * @param source The location from which the download was opened.
      */
     public static void openItem(
             ContentId contentId,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             @DownloadOpenSource int source,
             Context context) {
         if (LegacyHelpers.isLegacyAndroidDownload(contentId)) {
@@ -372,17 +374,18 @@ public class DownloadUtils {
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
             OpenParams openParams = new OpenParams(LaunchLocation.PROGRESS_BAR);
-            openParams.openInIncognito = OTRProfileID.isOffTheRecord(otrProfileID);
+            openParams.openInIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
             OfflineContentAggregatorFactory.get().openItem(openParams, contentId);
         }
     }
 
     /**
      * Opens a file in Chrome or in another app if appropriate.
+     *
      * @param filePath Path to the file to open, can be a content Uri.
      * @param mimeType mime type of the file.
      * @param downloadGuid The associated download GUID.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      * @param originalUrl The original url of the downloaded file.
      * @param referrer Referrer of the downloaded file.
      * @param source The source that tries to open the download file.
@@ -392,7 +395,7 @@ public class DownloadUtils {
             String filePath,
             String mimeType,
             String downloadGuid,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             String originalUrl,
             String referrer,
             @DownloadOpenSource int source,
@@ -425,7 +428,7 @@ public class DownloadUtils {
                             !isAutomotive,
                             context);
             IntentHandler.startActivityForTrustedIntent(context, intent);
-            service.updateLastAccessTime(downloadGuid, otrProfileID);
+            service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
         }
 
@@ -439,7 +442,7 @@ public class DownloadUtils {
             Intent viewIntent =
                     MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
             context.startActivity(viewIntent);
-            service.updateLastAccessTime(downloadGuid, otrProfileID);
+            service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Cannot start activity to open file", e);
@@ -480,7 +483,7 @@ public class DownloadUtils {
      * @param filePath File path on disk of the download to open.
      * @param mimeType MIME type of the downloaded file.
      * @param downloadGuid Unique GUID of the download.
-     * @param otrProfileID User's OTRProfileID.
+     * @param otrProfileId User's OtrProfileId.
      * @param originalUrl URL which initially triggered the download itself.
      * @param referer URL of the page which redirected to the download URL.
      * @param source Where this download was initiated from.
@@ -490,7 +493,7 @@ public class DownloadUtils {
             @JniType("std::string") String filePath,
             @JniType("std::string") String mimeType,
             @JniType("std::string") String downloadGuid,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             @JniType("std::string") String originalUrl,
             @JniType("std::string") String referer,
             @DownloadOpenSource int source) {
@@ -509,10 +512,10 @@ public class DownloadUtils {
             // TODO(crbug.com/356713476): Stop using the deprecated method.
             tab = chromeActivity.getActivityTab();
         }
-        if (otrProfileID == null && tab != null) {
-            otrProfileID = tab.getProfile().getOTRProfileID();
+        if (otrProfileId == null && tab != null) {
+            otrProfileId = tab.getProfile().getOtrProfileId();
         }
-        boolean isIncognito = OTRProfileID.isOffTheRecord(otrProfileID);
+        boolean isIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
         // TODO(https://crbug.com/327680567): Ensure the pdf page is opened in the intended window.
         if (PdfUtils.shouldOpenPdfInline(isIncognito)
                 && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
@@ -526,13 +529,13 @@ public class DownloadUtils {
                         filePath,
                         newMimeType,
                         downloadGuid,
-                        otrProfileID,
+                        otrProfileId,
                         originalUrl,
                         referer,
                         source,
                         activity == null ? ContextUtils.getApplicationContext() : activity);
         if (!canOpen) {
-            DownloadUtils.showDownloadManager(null, null, otrProfileID, source);
+            DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
         }
     }
 

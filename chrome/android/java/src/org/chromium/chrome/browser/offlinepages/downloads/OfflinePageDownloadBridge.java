@@ -191,7 +191,7 @@ public class OfflinePageDownloadBridge {
     @CalledByNative
     public static void showDownloadingToast() {
         DownloadManagerService.getDownloadManagerService()
-                .getMessageUiController(/* otrProfileID= */ null)
+                .getMessageUiController(/* otrProfileId= */ null)
                 .onDownloadStarted();
     }
 

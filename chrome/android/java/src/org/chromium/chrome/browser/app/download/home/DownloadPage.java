@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -30,17 +30,18 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
 
     /**
      * Create a new instance of the downloads page.
+     *
      * @param activity The activity to get context and manage fragments.
      * @param snackbarManager The {@link SnackbarManager} to show snack bars.
      * @param modalDialogManager The {@link ModalDialogManager} associated with the activity.
-     * @param otrProfileId The {@link OTRProfileID} for the profile. Null for regular profile.
+     * @param otrProfileId The {@link OtrProfileId} for the profile. Null for regular profile.
      * @param host A NativePageHost to load urls.
      */
     public DownloadPage(
             Activity activity,
             SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager,
-            OTRProfileID otrProfileId,
+            OtrProfileId otrProfileId,
             NativePageHost host) {
         super(host);
 
@@ -48,7 +49,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
 
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setOTRProfileID(otrProfileId)
+                        .setOtrProfileId(otrProfileId)
                         .setIsSeparateActivity(false)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .build();

@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -146,13 +146,13 @@ public final class DownloadNotificationFactory {
                                 context,
                                 ACTION_DOWNLOAD_PAUSE,
                                 downloadUpdate.getContentId(),
-                                downloadUpdate.getOTRProfileID());
+                                downloadUpdate.getOtrProfileId());
                 Intent cancelIntent =
                         buildActionIntent(
                                 context,
                                 ACTION_DOWNLOAD_CANCEL,
                                 downloadUpdate.getContentId(),
-                                downloadUpdate.getOTRProfileID());
+                                downloadUpdate.getOtrProfileId());
                 cancelIntent.putExtra(
                         NotificationConstants.EXTRA_NOTIFICATION_ID,
                         downloadUpdate.getNotificationId());
@@ -211,13 +211,13 @@ public final class DownloadNotificationFactory {
                                 context,
                                 ACTION_DOWNLOAD_RESUME,
                                 downloadUpdate.getContentId(),
-                                downloadUpdate.getOTRProfileID());
+                                downloadUpdate.getOtrProfileId());
                 cancelIntent =
                         buildActionIntent(
                                 context,
                                 ACTION_DOWNLOAD_CANCEL,
                                 downloadUpdate.getContentId(),
-                                downloadUpdate.getOTRProfileID());
+                                downloadUpdate.getOtrProfileId());
 
                 builder.setAutoCancel(false)
                         .addAction(
@@ -336,7 +336,7 @@ public final class DownloadNotificationFactory {
                             context,
                             ACTION_NOTIFICATION_CLICKED,
                             null,
-                            downloadUpdate.getOTRProfileID());
+                            downloadUpdate.getOtrProfileId());
             builder.setContentIntent(
                     PendingIntentProvider.getService(
                             context,
@@ -374,13 +374,14 @@ public final class DownloadNotificationFactory {
 
     /**
      * Helper method to build an download action Intent from the provided information.
+     *
      * @param context {@link Context} to pull resources from.
      * @param action Download action to perform.
      * @param id The {@link ContentId} of the download.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     public static Intent buildActionIntent(
-            Context context, String action, ContentId id, OTRProfileID otrProfileID) {
+            Context context, String action, ContentId id, OtrProfileId otrProfileId) {
         ComponentName component =
                 new ComponentName(
                         context.getPackageName(), DownloadBroadcastManager.class.getName());
@@ -388,8 +389,8 @@ public final class DownloadNotificationFactory {
         intent.setComponent(component);
         intent.putExtra(EXTRA_DOWNLOAD_CONTENTID_ID, id != null ? id.id : "");
         intent.putExtra(EXTRA_DOWNLOAD_CONTENTID_NAMESPACE, id != null ? id.namespace : "");
-        intent.putExtra(EXTRA_IS_OFF_THE_RECORD, OTRProfileID.isOffTheRecord(otrProfileID));
-        intent.putExtra(EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(otrProfileID));
+        intent.putExtra(EXTRA_IS_OFF_THE_RECORD, OtrProfileId.isOffTheRecord(otrProfileId));
+        intent.putExtra(EXTRA_OTR_PROFILE_ID, OtrProfileId.serialize(otrProfileId));
         return intent;
     }
 }

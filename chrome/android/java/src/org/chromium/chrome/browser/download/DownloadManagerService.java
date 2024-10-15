@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
@@ -107,7 +107,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     // Deprecated after new download backend.
     /** Generic interface for notifying external UI components about downloads and their states. */
     public interface DownloadObserver extends DownloadSharedPreferenceHelper.Observer {
-        /** Called in response to {@link DownloadManagerService#getAllDownloads(OTRProfileID)}. */
+        /** Called in response to {@link DownloadManagerService#getAllDownloads(OtrProfileId)}. */
         void onAllDownloadsRetrieved(final List<DownloadItem> list, ProfileKey profileKey);
 
         /** Called when a download is created. */
@@ -248,8 +248,10 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         return mDownloadNotifier;
     }
 
-    /** @return The {@link DownloadMessageUiController} controller associated with the profile. */
-    public DownloadMessageUiController getMessageUiController(OTRProfileID otrProfileID) {
+    /**
+     * @return The {@link DownloadMessageUiController} controller associated with the profile.
+     */
+    public DownloadMessageUiController getMessageUiController(OtrProfileId otrProfileId) {
         return mMessageUiController;
     }
 
@@ -617,7 +619,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
 
         DownloadMessageUiController messageUiController =
-                getMessageUiController(downloadItem.getDownloadInfo().getOTRProfileId());
+                getMessageUiController(downloadItem.getDownloadInfo().getOtrProfileId());
         if (messageUiController != null) messageUiController.onDownloadStarted();
     }
 
@@ -748,7 +750,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 ContextUtils.getApplicationContext(),
                 downloadInfo.getFilePath(),
                 isSupportedMimeType(downloadInfo.getMimeType()),
-                downloadInfo.getOTRProfileId(),
+                downloadInfo.getOtrProfileId(),
                 downloadInfo.getDownloadGuid(),
                 downloadId,
                 downloadInfo.getOriginalUrl().getSpec(),
@@ -761,22 +763,22 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * Launch the intent for a given download item, or Download Home if that's not possible.
      * TODO(qinmin): Move this to DownloadManagerBridge.
      *
-     * @param context             Context to use.
-     * @param filePath            Path to the downloaded item.
+     * @param context Context to use.
+     * @param filePath Path to the downloaded item.
      * @param isSupportedMimeType Whether the MIME type is supported by Chrome.
-     * @param otrProfileID        The {@link OTRProfileID} of the download. Null if in regular mode.
-     * @param downloadGuid        GUID of the download item in DownloadManager.
-     * @param downloadId          ID of the download item in DownloadManager.
-     * @param originalUrl         The original url of the downloaded file.
-     * @param referrer            Referrer of the downloaded file.
-     * @param source              The source that tries to open the download.
-     * @param mimeType            MIME type of the download, could be null.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
+     * @param downloadGuid GUID of the download item in DownloadManager.
+     * @param downloadId ID of the download item in DownloadManager.
+     * @param originalUrl The original url of the downloaded file.
+     * @param referrer Referrer of the downloaded file.
+     * @param source The source that tries to open the download.
+     * @param mimeType MIME type of the download, could be null.
      */
     protected static void openDownloadedContent(
             final Context context,
             final String filePath,
             final boolean isSupportedMimeType,
-            final OTRProfileID otrProfileID,
+            final OtrProfileId otrProfileId,
             final String downloadGuid,
             final long downloadId,
             final String originalUrl,
@@ -798,13 +800,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                                 && DownloadUtils.fireOpenIntentForDownload(context, intent);
 
                 if (!didLaunchIntent) {
-                    openDownloadsPage(otrProfileID, source);
+                    openDownloadsPage(otrProfileId, source);
                     return;
                 }
 
                 if (didLaunchIntent && hasDownloadManagerService()) {
                     DownloadManagerService.getDownloadManagerService()
-                            .updateLastAccessTime(downloadGuid, otrProfileID);
+                            .updateLastAccessTime(downloadGuid, otrProfileId);
                     DownloadManager manager =
                             (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                     String mimeType = manager.getMimeTypeForDownloadedFile(downloadId);
@@ -828,7 +830,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             mDownloadSnackbarController.onDownloadFailed(
                     failureMessage,
                     reason == DownloadManager.ERROR_FILE_ALREADY_EXISTS,
-                    item.getDownloadInfo().getOTRProfileId());
+                    item.getDownloadInfo().getOtrProfileId());
         } else {
             Toast.makeText(ContextUtils.getApplicationContext(), failureMessage, Toast.LENGTH_SHORT)
                     .show();
@@ -838,14 +840,14 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     /**
      * Open the Activity which shows a list of all downloads.
      *
-     * @param otrProfileID The {@link OTRProfileID} to determine whether to open download page in
+     * @param otrProfileId The {@link OtrProfileId} to determine whether to open download page in
      *     incognito profile. If null, download page will be opened in normal profile.
      * @param source The source where the user action coming from.
      */
     @CalledByNative
     public static void openDownloadsPage(
-            OTRProfileID otrProfileID, @DownloadOpenSource int source) {
-        if (DownloadUtils.showDownloadManager(null, null, otrProfileID, source)) return;
+            OtrProfileId otrProfileId, @DownloadOpenSource int source) {
+        if (DownloadUtils.showDownloadManager(null, null, otrProfileId, source)) return;
 
         // Open the Android Download Manager.
         Intent pageView = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
@@ -891,29 +893,30 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         // Downloads started from incognito mode should not be resumed in reduced mode.
         if (!ProfileManager.isInitialized() && item.getDownloadInfo().isOffTheRecord()) return;
 
-        OTRProfileID otrProfileID = item.getDownloadInfo().getOTRProfileId();
+        OtrProfileId otrProfileId = item.getDownloadInfo().getOtrProfileId();
         DownloadManagerServiceJni.get()
                 .resumeDownload(
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
                         item.getId(),
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
 
     /**
      * Called to cancel a download.
+     *
      * @param id The {@link ContentId} of the download to cancel.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
     @Override
-    public void cancelDownload(ContentId id, OTRProfileID otrProfileID) {
+    public void cancelDownload(ContentId id, OtrProfileId otrProfileId) {
         DownloadManagerServiceJni.get()
                 .cancelDownload(
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
                         id.id,
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
         if (progress != null) {
             DownloadInfo info =
@@ -928,18 +931,19 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Called to pause a download.
+     *
      * @param id The {@link ContentId} of the download to pause.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
     @Override
-    public void pauseDownload(ContentId id, OTRProfileID otrProfileID) {
+    public void pauseDownload(ContentId id, OtrProfileId otrProfileId) {
         DownloadManagerServiceJni.get()
                 .pauseDownload(
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
                         id.id,
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
         // Calling pause will stop listening to the download item. Update its progress now.
         // If download is already completed, canceled or failed, there is no need to update the
@@ -963,12 +967,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Removes a download from the list.
+     *
      * @param downloadGuid GUID of the download.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      * @param externallyRemoved If the file is externally removed by other applications.
      */
     public void removeDownload(
-            final String downloadGuid, OTRProfileID otrProfileID, boolean externallyRemoved) {
+            final String downloadGuid, OtrProfileId otrProfileId, boolean externallyRemoved) {
         mHandler.post(
                 () -> {
                     DownloadManagerServiceJni.get()
@@ -976,7 +981,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                                     getNativeDownloadManagerService(),
                                     DownloadManagerService.this,
                                     downloadGuid,
-                                    IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                                    IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
                     removeDownloadProgress(downloadGuid);
                 });
     }
@@ -1038,6 +1043,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Called when download success notification is shown.
+     *
      * @param info Information about the download.
      * @param canResolve Whether to open the download automatically.
      * @param notificationId Notification ID of the download.
@@ -1045,17 +1051,17 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     public void onSuccessNotificationShown(
             DownloadInfo info, boolean canResolve, int notificationId, long systemDownloadId) {
-        if (getMessageUiController(info.getOTRProfileId()) != null) {
-            getMessageUiController(info.getOTRProfileId())
+        if (getMessageUiController(info.getOtrProfileId()) != null) {
+            getMessageUiController(info.getOtrProfileId())
                     .onNotificationShown(info.getContentId(), notificationId);
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             Profile profile = ProfileManager.getLastUsedRegularProfile();
-            if (OTRProfileID.isOffTheRecord(info.getOTRProfileId())) {
+            if (OtrProfileId.isOffTheRecord(info.getOtrProfileId())) {
                 profile =
                         profile.getOffTheRecordProfile(
-                                info.getOTRProfileId(), /* createIfNeeded= */ true);
+                                info.getOtrProfileId(), /* createIfNeeded= */ true);
             }
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_COMPLETED);
@@ -1118,7 +1124,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                             } else {
                                 DownloadMessageUiController infoBarController =
                                         getMessageUiController(
-                                                item.getDownloadInfo().getOTRProfileId());
+                                                item.getDownloadInfo().getOtrProfileId());
                                 if (infoBarController != null) {
                                     infoBarController.onItemUpdated(
                                             DownloadItem.createOfflineItem(item), null);
@@ -1186,24 +1192,24 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     }
 
     /**
-     * Begins sending back information about all entries in the user's DownloadHistory via
-     * {@link #onAllDownloadsRetrieved}.  If the DownloadHistory is not initialized yet, the
-     * callback will be delayed.
+     * Begins sending back information about all entries in the user's DownloadHistory via {@link
+     * #onAllDownloadsRetrieved}. If the DownloadHistory is not initialized yet, the callback will
+     * be delayed.
      *
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
-    public void getAllDownloads(OTRProfileID otrProfileID) {
+    public void getAllDownloads(OtrProfileId otrProfileId) {
         DownloadManagerServiceJni.get()
                 .getAllDownloads(
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
 
     /**
-     * Fires an Intent that alerts the DownloadNotificationService that an action must be taken
-     * for a particular item.
+     * Fires an Intent that alerts the DownloadNotificationService that an action must be taken for
+     * a particular item.
      */
     // Deprecated after new download backend.
     public void broadcastDownloadAction(DownloadItem downloadItem, String action) {
@@ -1213,7 +1219,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         appContext,
                         action,
                         LegacyHelpers.buildLegacyContentId(false, downloadItem.getId()),
-                        downloadItem.getDownloadInfo().getOTRProfileId());
+                        downloadItem.getDownloadInfo().getOtrProfileId());
         appContext.startService(intent);
     }
 
@@ -1222,7 +1228,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             ContentId id,
             String name,
             Callback<Integer /*RenameResult*/> callback,
-            OTRProfileID otrProfileID) {
+            OtrProfileId otrProfileId) {
         DownloadManagerServiceJni.get()
                 .renameDownload(
                         getNativeDownloadManagerService(),
@@ -1230,11 +1236,12 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         id.id,
                         name,
                         callback,
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
 
     /**
      * Checks if the files associated with any downloads have been removed by an external action.
+     *
      * @param profileKey The {@link ProfileKey} to check the downloads for the the given profile.
      */
     public void checkForExternallyRemovedDownloads(ProfileKey profileKey) {
@@ -1363,7 +1370,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemRemoved(
-            @JniType("std::string") String guid, OTRProfileID otrProfileID) {
+            @JniType("std::string") String guid, OtrProfileId otrProfileId) {
         for (DownloadObserver adapter : mDownloadObservers) {
             adapter.onDownloadItemRemoved(guid);
         }
@@ -1378,31 +1385,32 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         downloadInfo.getFilePath(),
                         downloadInfo.getMimeType(),
                         downloadInfo.getDownloadGuid(),
-                        downloadInfo.getOTRProfileId(),
+                        downloadInfo.getOtrProfileId(),
                         downloadInfo.getOriginalUrl().getSpec(),
                         downloadInfo.getReferrer().getSpec(),
                         source,
                         ContextUtils.getApplicationContext());
         if (!canOpen) {
-            openDownloadsPage(downloadInfo.getOTRProfileId(), source);
+            openDownloadsPage(downloadInfo.getOtrProfileId(), source);
         }
     }
 
     /**
      * Opens a download. If the download cannot be opened, download home will be opened instead.
+     *
      * @param id The {@link ContentId} of the download to be opened.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      * @param source The source where the user opened this download.
      */
     // Deprecated after new download backend.
     public void openDownload(
-            ContentId id, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+            ContentId id, OtrProfileId otrProfileId, @DownloadOpenSource int source) {
         DownloadManagerServiceJni.get()
                 .openDownload(
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
                         id.id,
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID),
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId),
                         source);
     }
 
@@ -1606,11 +1614,12 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Updates the last access time of a download.
+     *
      * @param downloadGuid Download GUID.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
-    public void updateLastAccessTime(String downloadGuid, OTRProfileID otrProfileID) {
+    public void updateLastAccessTime(String downloadGuid, OtrProfileId otrProfileId) {
         if (TextUtils.isEmpty(downloadGuid)) return;
 
         DownloadManagerServiceJni.get()
@@ -1618,7 +1627,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
                         downloadGuid,
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
+                        IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
 
     @NativeMethods

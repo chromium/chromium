@@ -169,7 +169,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSurveyController;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -2864,12 +2864,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         .setUrlBarFocus(true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
         } else if (id == R.id.downloads_menu_id) {
-            OTRProfileID otrProfileID = null;
+            OtrProfileId otrProfileId = null;
             if (currentTab != null) {
-                otrProfileID = currentTab.getProfile().getOTRProfileID();
+                otrProfileId = currentTab.getProfile().getOtrProfileId();
             }
             DownloadUtils.showDownloadManager(
-                    this, currentTab, otrProfileID, DownloadOpenSource.MENU);
+                    this, currentTab, otrProfileId, DownloadOpenSource.MENU);
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_DOWNLOADS_MANAGER);
             }

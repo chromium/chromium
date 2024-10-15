@@ -23,7 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.messages.DismissReason;
@@ -1032,7 +1032,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (itemId != null) {
             mDelegate.openDownload(
                     itemId,
-                    OTRProfileID.deserializeWithoutVerify(
+                    OtrProfileId.deserializeWithoutVerify(
                             offlineItem == null ? null : offlineItem.otrProfileId),
                     DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE,
                     getContext());
@@ -1041,19 +1041,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             // TODO(shaktisahu): Make a best guess for which profile, maybe from the last updated
             // item.
             mDelegate.openDownloadsPage(
-                    getOTRProfileIDForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
+                    getOtrProfileIdForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
             recordLinkClicked(/* openItem= */ false);
         }
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
-    private OTRProfileID getOTRProfileIDForTrackedItems() {
+    private OtrProfileId getOtrProfileIdForTrackedItems() {
         String otrProfileId = null;
         for (OfflineItem offlineItem : mTrackedItems.values()) {
             if (TextUtils.isEmpty(offlineItem.otrProfileId)) continue;
             otrProfileId = offlineItem.otrProfileId;
         }
-        return OTRProfileID.deserializeWithoutVerify(otrProfileId);
+        return OtrProfileId.deserializeWithoutVerify(otrProfileId);
     }
 
     private void onMessageDismissed(Integer dismissReason) {

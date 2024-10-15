@@ -12,7 +12,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.offline_items_collection.LaunchLocation;
@@ -46,7 +46,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     public void onAction(Object actionData) {
         if (!(actionData instanceof ActionDataInfo)) {
             DownloadManagerService.openDownloadsPage(
-                    /* otrProfileID= */ null, DownloadOpenSource.SNACK_BAR);
+                    /* otrProfileId= */ null, DownloadOpenSource.SNACK_BAR);
             return;
         }
 
@@ -83,14 +83,14 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     /**
      * Called to display the download failed snackbar.
      *
-     * @param errorMessage     The message to show on the snackbar.
+     * @param errorMessage The message to show on the snackbar.
      * @param showAllDownloads Whether to show all downloads in case the failure is caused by
-     *                         duplicated files.
-     * @param otrProfileID     The {@link OTRProfileID} of the download. Null if in regular mode.
+     *     duplicated files.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     public void onDownloadFailed(
-            String errorMessage, boolean showAllDownloads, OTRProfileID otrProfileID) {
-        if (isShowingDownloadInfoBar(otrProfileID)) return;
+            String errorMessage, boolean showAllDownloads, OtrProfileId otrProfileId) {
+        if (isShowingDownloadInfoBar(otrProfileId)) return;
         if (getSnackbarManager() == null) return;
         // TODO(qinmin): Coalesce snackbars if multiple downloads finish at the same time.
         Snackbar snackbar =
@@ -144,10 +144,10 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         return null;
     }
 
-    private boolean isShowingDownloadInfoBar(OTRProfileID otrProfileID) {
+    private boolean isShowingDownloadInfoBar(OtrProfileId otrProfileId) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
-                        .getMessageUiController(otrProfileID);
+                        .getMessageUiController(otrProfileId);
         return messageUiController == null ? false : messageUiController.isShowing();
     }
 }

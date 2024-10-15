@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunActivityBase;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -192,7 +192,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 new ActivityProfileProvider(getLifecycleDispatcher()) {
                     @Nullable
                     @Override
-                    protected OTRProfileID createOffTheRecordProfileID() {
+                    protected OtrProfileId createOffTheRecordProfileID() {
                         throw new IllegalStateException(
                                 "Attempting to access incognito in the sign-in & history sync"
                                         + " opt-in flow");

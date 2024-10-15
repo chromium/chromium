@@ -68,7 +68,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -269,12 +269,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         return new ActivityProfileProvider(getLifecycleDispatcher()) {
             @Nullable
             @Override
-            protected OTRProfileID createOffTheRecordProfileID() {
+            protected OtrProfileId createOffTheRecordProfileID() {
                 switch (getIntentDataProvider().getCustomTabMode()) {
                     case CustomTabProfileType.INCOGNITO:
-                        return OTRProfileID.createUniqueIncognitoCCTId();
+                        return OtrProfileId.createUniqueIncognitoCCTId();
                     case CustomTabProfileType.EPHEMERAL:
-                        return OTRProfileID.createUnique("CCT:Ephemeral");
+                        return OtrProfileId.createUnique("CCT:Ephemeral");
                     default:
                         throw new IllegalStateException(
                                 "Attempting to create an OTR profile in a non-OTR session");

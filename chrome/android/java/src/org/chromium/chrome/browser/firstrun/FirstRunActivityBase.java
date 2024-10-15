@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -160,7 +160,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         return new ActivityProfileProvider(getLifecycleDispatcher()) {
             @Nullable
             @Override
-            protected OTRProfileID createOffTheRecordProfileID() {
+            protected OtrProfileId createOffTheRecordProfileID() {
                 throw new IllegalStateException("Attempting to access incognito in the FRE");
             }
         };

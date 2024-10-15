@@ -20,8 +20,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.OTRProfileIDJni;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.profiles.OtrProfileIdJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -34,7 +34,7 @@ import java.util.Collection;
 public class OffTheRecordOfflineItemFilterTest {
     @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock private OTRProfileID.Natives mOTRProfileIDNatives;
+    @Mock private OtrProfileId.Natives mOtrProfileIdNatives;
 
     @Mock private OfflineItemFilterSource mSource;
 
@@ -47,13 +47,13 @@ public class OffTheRecordOfflineItemFilterTest {
     @Before
     public void setup() {
         ProfileManager.setLastUsedProfileForTesting(mRegularProfile);
-        mMocker.mock(OTRProfileIDJni.TEST_HOOKS, mOTRProfileIDNatives);
+        mMocker.mock(OtrProfileIdJni.TEST_HOOKS, mOtrProfileIdNatives);
         when(mRegularProfile.hasOffTheRecordProfile(any())).thenReturn(true);
     }
 
     @Test
     public void testPassthrough() {
-        OfflineItem item1 = buildItem(OTRProfileID.getPrimaryOTRProfileID());
+        OfflineItem item1 = buildItem(OtrProfileId.getPrimaryOtrProfileId());
         OfflineItem item2 = buildItem(null);
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2);
         when(mSource.getItems()).thenReturn(sourceItems);
@@ -64,7 +64,7 @@ public class OffTheRecordOfflineItemFilterTest {
 
     @Test
     public void testFiltersOutItems() {
-        OfflineItem item1 = buildItem(OTRProfileID.getPrimaryOTRProfileID());
+        OfflineItem item1 = buildItem(OtrProfileId.getPrimaryOtrProfileId());
         OfflineItem item2 = buildItem(null);
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2);
         when(mSource.getItems()).thenReturn(sourceItems);
@@ -75,9 +75,9 @@ public class OffTheRecordOfflineItemFilterTest {
 
     @Test
     public void testFiltersOutItemsForNonPrimaryOTRProfiles() {
-        OfflineItem item1 = buildItem(OTRProfileID.getPrimaryOTRProfileID());
+        OfflineItem item1 = buildItem(OtrProfileId.getPrimaryOtrProfileId());
         OfflineItem item2 = buildItem(null);
-        OfflineItem item3 = buildItem(new OTRProfileID("profile::CCT-Test"));
+        OfflineItem item3 = buildItem(new OtrProfileId("profile::CCT-Test"));
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2, item3);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -85,10 +85,10 @@ public class OffTheRecordOfflineItemFilterTest {
         Assert.assertEquals(CollectionUtil.newHashSet(item1, item2), filter.getItems());
     }
 
-    private static OfflineItem buildItem(OTRProfileID otrProfileID) {
+    private static OfflineItem buildItem(OtrProfileId otrProfileId) {
         OfflineItem item = new OfflineItem();
-        item.isOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileID);
-        item.otrProfileId = OTRProfileID.serialize(otrProfileID);
+        item.isOffTheRecord = OtrProfileId.isOffTheRecord(otrProfileId);
+        item.otrProfileId = OtrProfileId.serialize(otrProfileId);
         return item;
     }
 }

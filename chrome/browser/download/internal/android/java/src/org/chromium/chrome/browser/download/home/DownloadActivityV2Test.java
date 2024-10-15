@@ -177,7 +177,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     private void setUpUi() {
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setOTRProfileID(null)
+                        .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
                         .build();
 

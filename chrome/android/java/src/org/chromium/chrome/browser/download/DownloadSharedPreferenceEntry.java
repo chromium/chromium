@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 
@@ -28,7 +28,7 @@ public class DownloadSharedPreferenceEntry {
     @VisibleForTesting static final int VERSION = 7;
 
     public final int notificationId;
-    public final OTRProfileID otrProfileID; // The OTRProfileID of download.
+    public final OtrProfileId otrProfileId; // The OtrProfileId of download.
     public final boolean canDownloadWhileMetered;
     public final String fileName;
     // This can only be false for paused downloads. For downloads that are pending or in progress,
@@ -43,13 +43,13 @@ public class DownloadSharedPreferenceEntry {
     DownloadSharedPreferenceEntry(
             ContentId id,
             int notificationId,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             String fileName,
             boolean isAutoResumable,
             boolean isTransient) {
         this.notificationId = notificationId;
-        this.otrProfileID = otrProfileID;
+        this.otrProfileId = otrProfileId;
         this.canDownloadWhileMetered = canDownloadWhileMetered;
         this.fileName = fileName;
         this.isAutoResumable = isAutoResumable;
@@ -108,7 +108,7 @@ public class DownloadSharedPreferenceEntry {
         boolean onTheRecord = "1".equals(stringOnTheRecord);
         // If the item is on-the-record, then it belongs to the regular profile. Otherwise, it
         // belongs to the primary OTR profile.
-        OTRProfileID otrProfileID = onTheRecord ? null : OTRProfileID.getPrimaryOTRProfileID();
+        OtrProfileId otrProfileId = onTheRecord ? null : OtrProfileId.getPrimaryOtrProfileId();
         boolean metered = "1".equals(stringMetered);
         int version;
         int notificationId;
@@ -125,7 +125,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 LegacyHelpers.buildLegacyContentId(false, stringGuid),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 true,
@@ -146,7 +146,7 @@ public class DownloadSharedPreferenceEntry {
         boolean offTheRecord = "1".equals(stringOffTheRecord);
         // If the item is off-the-record, then it belongs to the primary OTR profile. Otherwise, it
         // belongs to the regular profile.
-        OTRProfileID otrProfileID = offTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
+        OtrProfileId otrProfileId = offTheRecord ? OtrProfileId.getPrimaryOtrProfileId() : null;
         boolean metered = "1".equals(stringMetered);
         int version;
         int notificationId;
@@ -163,7 +163,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 LegacyHelpers.buildLegacyContentId(false, stringGuid),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 true,
@@ -188,7 +188,7 @@ public class DownloadSharedPreferenceEntry {
         boolean offTheRecord = "1".equals(stringOffTheRecord);
         // If the item is off-the-record, then it belongs to the primary OTR profile. Otherwise, it
         // belongs to the regular profile.
-        OTRProfileID otrProfileID = offTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
+        OtrProfileId otrProfileId = offTheRecord ? OtrProfileId.getPrimaryOtrProfileId() : null;
         boolean metered = "1".equals(stringMetered);
         int version;
         int notificationId;
@@ -212,7 +212,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 LegacyHelpers.buildLegacyContentId(isOfflinePage, stringGuid),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 true,
@@ -238,7 +238,7 @@ public class DownloadSharedPreferenceEntry {
         boolean offTheRecord = "1".equals(stringOffTheRecord);
         // If the item is off-the-record, then it belongs to the primary OTR profile. Otherwise, it
         // belongs to the regular profile.
-        OTRProfileID otrProfileID = offTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
+        OtrProfileId otrProfileId = offTheRecord ? OtrProfileId.getPrimaryOtrProfileId() : null;
         boolean metered = "1".equals(stringMetered);
         boolean autoResume = "1".equals(stringAutoResume);
         int version;
@@ -263,7 +263,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 LegacyHelpers.buildLegacyContentId(isOfflinePage, stringGuid),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 autoResume,
@@ -286,7 +286,7 @@ public class DownloadSharedPreferenceEntry {
         boolean offTheRecord = "1".equals(stringOffTheRecord);
         // If the item is off-the-record, then it belongs to the primary OTR profile. Otherwise, it
         // belongs to the regular profile.
-        OTRProfileID otrProfileID = offTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
+        OtrProfileId otrProfileId = offTheRecord ? OtrProfileId.getPrimaryOtrProfileId() : null;
         boolean metered = "1".equals(stringMetered);
         boolean autoResume = "1".equals(stringAutoResume);
         int version;
@@ -305,7 +305,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 new ContentId(stringNamespace, stringGuid),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 autoResume,
@@ -330,7 +330,7 @@ public class DownloadSharedPreferenceEntry {
         boolean offTheRecord = "1".equals(stringOffTheRecord);
         // If the item is off-the-record, then it belongs to the primary OTR profile. Otherwise, it
         // belongs to the regular profile.
-        OTRProfileID otrProfileID = offTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
+        OtrProfileId otrProfileId = offTheRecord ? OtrProfileId.getPrimaryOtrProfileId() : null;
         boolean metered = "1".equals(stringMetered);
         boolean autoResume = "1".equals(stringAutoResume);
         boolean isTransient = "1".equals(stringTransient);
@@ -350,7 +350,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 new ContentId(stringNamespace, stringId),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 autoResume,
@@ -366,7 +366,7 @@ public class DownloadSharedPreferenceEntry {
         String stringNotificationId = entries[1];
         String stringNamespace = entries[2];
         String stringId = entries[3];
-        String stringOTRProfileID = entries[4];
+        String stringOtrProfileId = entries[4];
         String stringMetered = entries[5];
         String stringAutoResume = entries[6];
         String stringTransient = entries[7];
@@ -375,18 +375,18 @@ public class DownloadSharedPreferenceEntry {
         if (TextUtils.isEmpty(stringId)) return INVALID_ENTRY;
         if (TextUtils.isEmpty(stringNamespace)) return INVALID_ENTRY;
 
-        // If stringOTRProfileID is null, then it belongs to the regular profile and OTRProfileID
+        // If stringOtrProfileId is null, then it belongs to the regular profile and OtrProfileId
         // should be null too. Otherwise, it belongs to an off-the-record-profile with a non-null
-        // OTRProfileID.
-        OTRProfileID otrProfileID = null;
-        if (!NO_OTR_PROFILE_ID.equals(stringOTRProfileID)) {
+        // OtrProfileId.
+        OtrProfileId otrProfileId = null;
+        if (!NO_OTR_PROFILE_ID.equals(stringOtrProfileId)) {
             try {
-                // OTRProfileID#deserialize function may throw IllegalStateException if the related
+                // OtrProfileId#deserialize function may throw IllegalStateException if the related
                 // OTR profile has been already destroyed. For such cases, we need to use primary
-                // OTRProfileID to cancel the download notification.
-                otrProfileID = OTRProfileID.deserialize(stringOTRProfileID);
+                // OtrProfileId to cancel the download notification.
+                otrProfileId = OtrProfileId.deserialize(stringOtrProfileId);
             } catch (IllegalStateException e) {
-                otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
+                otrProfileId = OtrProfileId.getPrimaryOtrProfileId();
             }
         }
         boolean metered = "1".equals(stringMetered);
@@ -405,7 +405,7 @@ public class DownloadSharedPreferenceEntry {
         return new DownloadSharedPreferenceEntry(
                 new ContentId(stringNamespace, stringId),
                 notificationId,
-                otrProfileID,
+                otrProfileId,
                 metered,
                 stringFileName,
                 autoResume,
@@ -423,7 +423,7 @@ public class DownloadSharedPreferenceEntry {
         serialized += id.namespace + ",";
         serialized += id.id + ",";
         serialized +=
-                (otrProfileID != null ? OTRProfileID.serialize(otrProfileID) : NO_OTR_PROFILE_ID)
+                (otrProfileId != null ? OtrProfileId.serialize(otrProfileId) : NO_OTR_PROFILE_ID)
                         + ",";
         serialized += (canDownloadWhileMetered ? "1" : "0") + ",";
         serialized += (isAutoResumable ? "1" : "0") + ",";
@@ -460,7 +460,7 @@ public class DownloadSharedPreferenceEntry {
                         .setDownloadGuid(id.id)
                         .setIsOfflinePage(LegacyHelpers.isLegacyOfflinePage(id))
                         .setFileName(fileName)
-                        .setOTRProfileId(otrProfileID)
+                        .setOtrProfileId(otrProfileId)
                         .setBytesReceived(DownloadManagerService.UNKNOWN_BYTES_RECEIVED)
                         .setContentId(id)
                         .setIsTransient(isTransient)
@@ -477,7 +477,7 @@ public class DownloadSharedPreferenceEntry {
         return id.equals(other.id)
                 && TextUtils.equals(fileName, other.fileName)
                 && notificationId == other.notificationId
-                && OTRProfileID.areEqual(otrProfileID, other.otrProfileID)
+                && OtrProfileId.areEqual(otrProfileId, other.otrProfileId)
                 && canDownloadWhileMetered == other.canDownloadWhileMetered
                 && isAutoResumable == other.isAutoResumable
                 && isTransient == other.isTransient;
@@ -486,7 +486,7 @@ public class DownloadSharedPreferenceEntry {
     @Override
     public int hashCode() {
         int hash = 31;
-        hash = 37 * hash + (otrProfileID != null ? otrProfileID.hashCode() : 0);
+        hash = 37 * hash + (otrProfileId != null ? otrProfileId.hashCode() : 0);
         hash = 37 * hash + (canDownloadWhileMetered ? 1 : 0);
         hash = 37 * hash + (isAutoResumable ? 1 : 0);
         hash = 37 * hash + notificationId;

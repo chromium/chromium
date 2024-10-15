@@ -14,7 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -30,15 +30,16 @@ public class DuplicateDownloadDialog {
 
     /**
      * Called to show a warning dialog for duplicate download.
+     *
      * @param context Context for showing the dialog.
      * @param modalDialogManager Manager for managing the modal dialog.
      * @param filePath Path of the download file.
      * @param pageUrl URL of the page, empty for file downloads.
      * @param totalBytes Total bytes of the file.
      * @param duplicateExists Whether a duplicate download is in progress.
-     * @param otrProfileID Off the record profile ID.
+     * @param otrProfileId Off the record profile ID.
      * @param callback Callback to run when confirming the download, true for accept the download,
-     *         false otherwise.
+     *     false otherwise.
      */
     public void show(
             Context context,
@@ -47,7 +48,7 @@ public class DuplicateDownloadDialog {
             String pageUrl,
             long totalBytes,
             boolean duplicateExists,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             Callback<Boolean> callback) {
         var resources = context.getResources();
         mModalDialogManager = modalDialogManager;
@@ -70,7 +71,7 @@ public class DuplicateDownloadDialog {
                                         pageUrl,
                                         totalBytes,
                                         duplicateExists,
-                                        otrProfileID))
+                                        otrProfileId))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,
@@ -81,7 +82,7 @@ public class DuplicateDownloadDialog {
                                 R.string.cancel)
                         .build();
 
-        if (OTRProfileID.isOffTheRecord(otrProfileID)) {
+        if (OtrProfileId.isOffTheRecord(otrProfileId)) {
             mPropertyModel.set(
                     ModalDialogProperties.MESSAGE_PARAGRAPH_2,
                     resources.getString(R.string.download_location_incognito_warning));
@@ -135,12 +136,13 @@ public class DuplicateDownloadDialog {
 
     /**
      * Gets the clickable span to display on the dialog.
+     *
      * @param context Context for showing the dialog.
      * @param filePath Path of the download file. Or the actual page URL for offline page download.
      * @param pageUrl URL of the page, formatted for better display and empty for file downloads.
      * @param totalBytes Total bytes of the file.
      * @param duplicateExists Whether a duplicate download is in progress.
-     * @param otrProfileID Off the record profile ID.
+     * @param otrProfileId Off the record profile ID.
      */
     private CharSequence getClickableSpan(
             Context context,
@@ -148,13 +150,13 @@ public class DuplicateDownloadDialog {
             String pageUrl,
             long totalBytes,
             boolean duplicateExists,
-            OTRProfileID otrProfileID) {
+            OtrProfileId otrProfileId) {
         if (pageUrl.isEmpty()) {
             DuplicateDownloadClickableSpan span =
                     new DuplicateDownloadClickableSpan(
                             filePath,
                             () -> this.closeDialog(),
-                            otrProfileID,
+                            otrProfileId,
                             DownloadOpenSource.DUPLICATE_DOWNLOAD_DIALOG);
             String template = context.getString(R.string.duplicate_download_dialog_text);
             return DownloadUtils.getDownloadMessageText(

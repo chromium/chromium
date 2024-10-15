@@ -237,7 +237,7 @@ public class IncognitoDownloadLeakageTest {
                 () -> {
                     Profile profile = incognitoTab.getProfile();
                     DownloadManagerService.getDownloadManagerService()
-                            .getAllDownloads(profile.getOTRProfileID());
+                            .getAllDownloads(profile.getOtrProfileId());
                 });
         mRetrieveDownloadsCallback.waitForCallback(0);
 
@@ -283,7 +283,7 @@ public class IncognitoDownloadLeakageTest {
                 () -> {
                     Profile profile = incognitoTab1.getProfile();
                     DownloadManagerService.getDownloadManagerService()
-                            .getAllDownloads(profile.getOTRProfileID());
+                            .getAllDownloads(profile.getOtrProfileId());
                 });
         mRetrieveDownloadsCallback.waitForCallback(0);
 
@@ -300,7 +300,7 @@ public class IncognitoDownloadLeakageTest {
                 () -> {
                     Profile profile = incognitoTab2.getProfile();
                     DownloadManagerService.getDownloadManagerService()
-                            .getAllDownloads(profile.getOTRProfileID());
+                            .getAllDownloads(profile.getOtrProfileId());
                 });
         mRetrieveDownloadsCallback.waitForCallback(1);
 

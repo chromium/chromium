@@ -19,7 +19,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ReducedModeNativeTestRule;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -52,7 +52,7 @@ public final class ServicificationDownloadTest {
                 String filePath,
                 String fileName,
                 long systemDownloadId,
-                OTRProfileID otrProfileID,
+                OtrProfileId otrProfileId,
                 boolean isSupportedMimeType,
                 boolean isOpenable,
                 Bitmap icon,

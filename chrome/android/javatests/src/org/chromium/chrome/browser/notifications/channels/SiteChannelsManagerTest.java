@@ -33,7 +33,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -235,11 +235,11 @@ public class SiteChannelsManagerTest {
                         SessionModel.DURABLE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                    OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
                     Profile nonPrimaryOTRProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                     assertNotNull(nonPrimaryOTRProfile);
                     assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
                     info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);

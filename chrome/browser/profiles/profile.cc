@@ -52,7 +52,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/android/jni_headers/OTRProfileID_jni.h"
+#include "chrome/browser/profiles/android/jni_headers/OtrProfileId_jni.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -126,7 +126,7 @@ bool Profile::OTRProfileID::IsCaptivePortal() const {
 // static
 const Profile::OTRProfileID Profile::OTRProfileID::PrimaryID() {
   // OTRProfileID value should be same as
-  // |OTRProfileID.java#sPrimaryOTRProfileID| variable.
+  // |OtrProfileId.java#sPrimaryOtrProfileId| variable.
   return OTRProfileID("profile::primary_otr");
 }
 
@@ -173,7 +173,7 @@ std::ostream& operator<<(std::ostream& out,
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 Profile::OTRProfileID::ConvertToJavaOTRProfileID(JNIEnv* env) const {
-  return Java_OTRProfileID_Constructor(
+  return Java_OtrProfileId_Constructor(
       env, base::android::ConvertUTF8ToJavaString(env, profile_id_));
 }
 
@@ -182,12 +182,12 @@ Profile::OTRProfileID Profile::OTRProfileID::ConvertFromJavaOTRProfileID(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_otr_profile_id) {
   return OTRProfileID(base::android::ConvertJavaStringToUTF8(
-      env, Java_OTRProfileID_getProfileID(env, j_otr_profile_id)));
+      env, Java_OtrProfileId_getProfileId(env, j_otr_profile_id)));
 }
 
 // static
 base::android::ScopedJavaLocalRef<jobject>
-JNI_OTRProfileID_CreateUniqueOTRProfileID(
+JNI_OtrProfileId_CreateUniqueOtrProfileId(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_profile_id_prefix) {
   Profile::OTRProfileID profile_id = Profile::OTRProfileID::CreateUnique(
@@ -196,7 +196,7 @@ JNI_OTRProfileID_CreateUniqueOTRProfileID(
 }
 
 // static
-base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
+base::android::ScopedJavaLocalRef<jobject> JNI_OtrProfileId_GetPrimaryId(
     JNIEnv* env) {
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
@@ -208,14 +208,14 @@ Profile::OTRProfileID Profile::OTRProfileID::Deserialize(
   base::android::ScopedJavaLocalRef<jstring> j_value =
       base::android::ConvertUTF8ToJavaString(env, value);
   base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id =
-      Java_OTRProfileID_deserializeWithoutVerify(env, j_value);
+      Java_OtrProfileId_deserializeWithoutVerify(env, j_value);
   return ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
 }
 
 std::string Profile::OTRProfileID::Serialize() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ConvertJavaStringToUTF8(
-      env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
+      env, Java_OtrProfileId_serialize(env, ConvertToJavaOTRProfileID(env)));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

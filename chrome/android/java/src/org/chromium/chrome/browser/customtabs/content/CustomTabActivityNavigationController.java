@@ -376,7 +376,7 @@ public class CustomTabActivityNavigationController
         if (isOffTheRecord) {
             // If "Open in browser" was triggered in an OTR CCT, always open in a new Chrome
             // Incognito tab instead of re-parenting the tab to prevent profile-mismatch with the
-            // TabModel as both eCCT & iCCT have a different OTRProfileID from the primary OTR
+            // TabModel as both eCCT & iCCT have a different OtrProfileId from the primary OTR
             // profile.
             intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
             intent.setPackage(ContextUtils.getApplicationContext().getPackageName());

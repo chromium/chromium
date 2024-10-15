@@ -78,7 +78,7 @@ public class ProfileResolverTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile regularProfile = ProfileManager.getLastUsedRegularProfile();
-                    OTRProfileID otrProfileId = OTRProfileID.createUnique(profileIdPrefix);
+                    OtrProfileId otrProfileId = OtrProfileId.createUnique(profileIdPrefix);
                     return regularProfile.getOffTheRecordProfile(
                             otrProfileId, /* createIfNeeded= */ true);
                 });
