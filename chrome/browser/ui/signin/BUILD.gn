@@ -34,7 +34,6 @@ source_set("signin") {
 
   if (enable_dice_support) {
     sources += [
-      "bubble_signin_promo_delegate.h",
       "chrome_signout_confirmation_prompt.h",
       "dice_web_signin_interceptor_delegate.h",
     ]
@@ -97,6 +96,13 @@ source_set("impl") {
   if (!is_chromeos_ash) {
     sources += [ "signin_reauth_view_controller.cc" ]
     deps += [ "//components/consent_auditor" ]
+  }
+}
+
+if (enable_dice_support) {
+  # Extracted to a separate target to avoid circular deps in //c/b/ui/bookmarks.
+  source_set("bubble_signin_promo_delegate") {
+    sources = [ "bubble_signin_promo_delegate.h" ]
   }
 }
 

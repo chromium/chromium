@@ -5756,6 +5756,10 @@ static_library("ui_public_dependencies") {
     public_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
   }
+
+  if (enable_dice_support) {
+    public_deps += [ "//chrome/browser/ui/signin:bubble_signin_promo_delegate" ]
+  }
 }
 
 source_set("url_identity") {
