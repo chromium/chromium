@@ -102,11 +102,9 @@ TEST(ProtoUtilTest, HeartsEnabled) {
               Contains(feedwire::Capability::HEART));
 }
 
-// kFeedBottomSyncStringRemoval is mobile-only.
+// SYNC_STRING_REMOVAL is mobile-only.
 #if BUILDFLAG(IS_ANDROID)
 TEST(ProtoUtilTest, SyncRestringEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kFeedBottomSyncStringRemoval}, {});
   feedwire::FeedRequest request =
       CreateFeedQueryRefreshRequest(
           StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
