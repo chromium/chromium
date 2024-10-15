@@ -87,6 +87,10 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                            RemoveTabIfInvalidContextMenu);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, SwitchTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, UngroupTab);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
+                           NoopMoveGroupAcrossWindowsBreaksContiguity);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
+                           MoveTabAcrossWindowsInBetweenGroup);
 
   void OnLongPressTimer();
   tab_strip::mojom::TabPtr GetTabData(content::WebContents* contents,

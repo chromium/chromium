@@ -640,17 +640,8 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     return;
   }
 
-  target_browser->tab_strip_model()->group_model()->AddTabGroup(
-      group_id.value(),
-      std::optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
-
-  gfx::Range source_tab_indices = group->ListTabs();
-  const int tab_count = source_tab_indices.length();
-  const int from_index = source_tab_indices.start();
-  for (int i = 0; i < tab_count; i++) {
-    tab_strip_ui::MoveTabAcrossWindows(source_browser, from_index,
-                                       target_browser, to_index + i, group_id);
-  }
+  tab_strip_ui::MoveGroupAcrossWindows(source_browser, target_browser, to_index,
+                                       group_id.value());
 }
 
 void TabStripPageHandler::MoveTab(int32_t tab_id, int32_t to_index) {
@@ -675,8 +666,26 @@ void TabStripPageHandler::MoveTab(int32_t tab_id, int32_t to_index) {
     return;
   }
 
+  std::optional<tab_groups::TabGroupId> to_group_id = std::nullopt;
+
+  TabStripModel* target_tab_strip = browser_->GetTabStripModel();
+
+  // If the tab is being inserted in the middle of a group, the tab should be a
+  // part of the group.
+  if (target_tab_strip->SupportsTabGroups()) {
+    std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(to_index);
+    std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(to_index - 1);
+
+    if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+        next_tab_dst_group == prev_tab_dst_group) {
+      to_group_id = next_tab_dst_group;
+    }
+  }
+
   tab_strip_ui::MoveTabAcrossWindows(source_browser, from_index, browser_,
-                                     to_index);
+                                     to_index, to_group_id);
 }
 
 void TabStripPageHandler::CloseContainer() {
