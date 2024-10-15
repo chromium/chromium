@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_DISKS_SUSPEND_UNMOUNT_MANAGER_H_
 
-#include <set>
 #include <string>
+#include <unordered_set>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) SuspendUnmountManager
   const raw_ptr<DiskMountManager> disk_mount_manager_;
 
   // The paths that the manager currently tries to unmount for suspend.
-  std::set<std::string> unmounting_paths_;
+  std::unordered_set<std::string> unmounting_paths_;
 
   base::UnguessableToken block_suspend_token_;
   base::TimeTicks block_suspend_time_;
