@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/color_palette.h"
 
 class TabContainer;
@@ -50,7 +51,7 @@ class FakeTabSlotController : public TabSlotController {
 
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
-                             ui::MenuSourceType source_type) override {}
+                             ui::mojom::MenuSourceType source_type) override {}
   bool IsActiveTab(const Tab* tab) const override;
   bool IsTabSelected(const Tab* tab) const override;
   bool IsTabPinned(const Tab* tab) const override;

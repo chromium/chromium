@@ -31,6 +31,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -372,7 +373,7 @@ void TabContainerImpl::OnGroupEditorOpened(
   // TabStripTest.
   if (tab_slot_controller_->GetBrowser()) {
     group_views_[group]->header()->ShowContextMenuForViewImpl(
-        this, gfx::Point(), ui::MENU_SOURCE_NONE);
+        this, gfx::Point(), ui::mojom::MenuSourceType::kNone);
   }
 }
 
@@ -534,8 +535,8 @@ void TabContainerImpl::HandleLongTap(ui::GestureEvent* event) {
   Tab* tab = FindTabHitByPoint(local_point);
   if (tab) {
     ConvertPointToScreen(this, &local_point);
-    tab_slot_controller_->ShowContextMenuForTab(tab, local_point,
-                                                ui::MENU_SOURCE_TOUCH);
+    tab_slot_controller_->ShowContextMenuForTab(
+        tab, local_point, ui::mojom::MenuSourceType::kTouch);
   }
 }
 

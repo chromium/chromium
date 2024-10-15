@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -61,9 +62,10 @@ class TabGroupHeader : public TabSlotView,
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,

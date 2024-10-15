@@ -74,6 +74,7 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/types/event_type.h"
@@ -918,7 +919,7 @@ bool TabGroupEditorBubbleView::TitleFieldController::HandleKeyEvent(
 
 void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // There is no easy way to stop the propagation of a ShowContextMenu event,
   // which is sometimes used to open the bubble itself. So when the bubble is
   // opened this way, we manually hide the textfield's context menu the first

@@ -70,6 +70,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -128,7 +129,8 @@ class BrowserTabStripController::TabContextMenuContents
       menu_runner_->Cancel();
   }
 
-  void RunMenuAt(const gfx::Point& point, ui::MenuSourceType source_type) {
+  void RunMenuAt(const gfx::Point& point,
+                 ui::mojom::MenuSourceType source_type) {
     menu_runner_->RunMenuAt(tab_->GetWidget(), nullptr,
                             gfx::Rect(point, gfx::Size()),
                             views::MenuAnchorPosition::kTopLeft, source_type);
@@ -481,7 +483,7 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
 void BrowserTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   context_menu_contents_ = std::make_unique<TabContextMenuContents>(tab, this);
   context_menu_contents_->RunMenuAt(p, source_type);
   base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",

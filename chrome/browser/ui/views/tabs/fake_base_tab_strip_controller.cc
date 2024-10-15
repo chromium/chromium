@@ -12,6 +12,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/range/range.h"
@@ -242,8 +243,7 @@ void FakeBaseTabStripController::CloseTab(int index) {
 void FakeBaseTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
-}
+    ui::mojom::MenuSourceType source_type) {}
 
 int FakeBaseTabStripController::HasAvailableDragActions() const {
   return 0;

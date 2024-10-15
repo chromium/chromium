@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -166,7 +167,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
     // views::Textfield:
     void ShowContextMenu(const gfx::Point& p,
-                         ui::MenuSourceType source_type) override;
+                         ui::mojom::MenuSourceType source_type) override;
 
    private:
     // Whether the context menu should be hidden the first time it shows.

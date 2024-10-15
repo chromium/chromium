@@ -19,6 +19,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class Browser;
 class BrowserNonClientFrameView;
@@ -88,7 +89,7 @@ class BrowserTabStripController : public TabStripController,
       ToggleTabGroupCollapsedStateOrigin origin) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
-                             ui::MenuSourceType source_type) override;
+                             ui::mojom::MenuSourceType source_type) override;
   int HasAvailableDragActions() const override;
   void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
   void CreateNewTab() override;

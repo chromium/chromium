@@ -93,6 +93,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
@@ -1702,7 +1703,7 @@ void TabStrip::NotifyTabGroupEditorBubbleClosed() {
 
 void TabStrip::ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,
-                                     ui::MenuSourceType source_type) {
+                                     ui::mojom::MenuSourceType source_type) {
   controller_->ShowContextMenuForTab(tab, p, source_type);
 }
 
@@ -2321,7 +2322,7 @@ TabStrip::TabContextMenuController::TabContextMenuController(TabStrip* parent)
 void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // We are only intended to be installed as a context-menu handler for tabs, so
   // this cast should be safe.
   CHECK(views::IsViewClass<Tab>(source), base::NotFatalUntil::M128)
