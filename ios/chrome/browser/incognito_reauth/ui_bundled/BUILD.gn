@@ -42,6 +42,7 @@ source_set("ui") {
     "incognito_reauth_view_label.mm",
   ]
   deps = [
+    ":features",
     ":incognito_reauth_util",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",

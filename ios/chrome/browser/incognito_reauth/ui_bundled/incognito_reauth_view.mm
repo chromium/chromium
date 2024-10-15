@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -79,7 +82,6 @@ const CGFloat kVerticalContentPadding = 70.0f;
         [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
     _tabSwitcherButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _tabSwitcherButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-
     _tabSwitcherButton.pointerInteractionEnabled = YES;
 
     UIView* authButtonContainer =
@@ -90,6 +92,38 @@ const CGFloat kVerticalContentPadding = 70.0f;
 
     [blurBackgroundView.contentView addSubview:_tabSwitcherButton];
     AddSameCenterXConstraint(_tabSwitcherButton, blurBackgroundView);
+
+    if (IsIOSSoftLockEnabled()) {
+      _exitIncognitoButton = [[UIButton alloc] init];
+      _exitIncognitoButton.translatesAutoresizingMaskIntoConstraints = NO;
+      [_exitIncognitoButton setTitleColor:[UIColor whiteColor]
+                                 forState:UIControlStateNormal];
+      [_exitIncognitoButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.4]
+                                 forState:UIControlStateHighlighted];
+      // TODO: Check the capitalization of "Incognito Tabs". Match the current
+      // implementation of the 2 other buttons.
+      [_exitIncognitoButton
+          setTitle:l10n_util::GetNSString(
+                       IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS)
+          forState:UIControlStateNormal];
+      _exitIncognitoButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+      _exitIncognitoButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+      _exitIncognitoButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      _exitIncognitoButton.pointerInteractionEnabled = YES;
+
+      [blurBackgroundView.contentView addSubview:_exitIncognitoButton];
+      AddSameCenterXConstraint(_exitIncognitoButton, blurBackgroundView);
+
+      [NSLayoutConstraint activateConstraints:@[
+        [_exitIncognitoButton.topAnchor
+            constraintEqualToAnchor:authButtonContainer.bottomAnchor
+                           constant:kButtonPaddingV],
+        [_exitIncognitoButton.widthAnchor
+            constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                     constant:-2 * kButtonPaddingH],
+      ]];
+    }
 
     [NSLayoutConstraint activateConstraints:@[
       [_tabSwitcherButton.topAnchor

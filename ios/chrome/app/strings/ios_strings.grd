@@ -2294,11 +2294,14 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_URL_READ_MORE_BUTTON" desc="Button to unfold a URL which is being truncated, so as to let the user read more of the URL. [iOS only]">
         more
       </message>
+      <message name="IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS" desc="Button to close all Incognito tabs on a screen that blocks Incognito tabs until unlocked. [iOS only]">
+        Close Incognito tabs
+      </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS" desc="Button to go to non-Incognito tabs on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
-       See other tabs
+        See other tabs
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_PASSCODE" desc="The passcode (pin code or password) used instead of biometric authentication, e.g. Face ID or Touch ID, for device authentication. [iOS only]">
-       Passcode
+        Passcode
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT" desc="Explanatory text for the setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. Appears when the user has no Face ID, Touch ID, or passcode set up, and therefore the feature cannot be enabled. [iOS only]">
         To lock your Incognito tabs, set up Touch ID, Face ID, or a Passcode.
