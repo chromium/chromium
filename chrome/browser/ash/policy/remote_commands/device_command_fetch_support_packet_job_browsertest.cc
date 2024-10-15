@@ -396,10 +396,10 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -435,10 +435,10 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -473,10 +473,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -513,10 +513,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -555,10 +555,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -599,10 +599,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(

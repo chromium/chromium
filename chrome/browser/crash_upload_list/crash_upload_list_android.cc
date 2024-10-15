@@ -111,8 +111,8 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
       continue;
     }
 
-    int64_t file_size = 0;
-    if (!base::GetFileSize(file, &file_size)) {
+    std::optional<int64_t> file_size = base::GetFileSize(file);
+    if (!file_size.has_value()) {
       RecordUnsuccessfulUploadListState(
           UnsuccessfulUploadListState::FAILED_TO_LOAD_FILE_SIZE);
       continue;
@@ -138,6 +138,6 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
         UnsuccessfulUploadListState::ADDING_AN_UPLOAD_ENTRY);
     id = id.substr(pos + 1);
     uploads->push_back(std::make_unique<UploadList::UploadInfo>(
-        id, info.creation_time, upload_state, file_size));
+        id, info.creation_time, upload_state, file_size.value()));
   }
 }

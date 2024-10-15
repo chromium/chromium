@@ -122,9 +122,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, WriteEmptyCache) {
                                         blocklisted_modules, &md5_digest));
 
   // Check the file's stat.
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(module_blocklist_cache_path(), &file_size));
-  EXPECT_EQ(file_size, internal::CalculateExpectedFileSize(metadata));
+  std::optional<int64_t> file_size =
+      base::GetFileSize(module_blocklist_cache_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(file_size.value(), internal::CalculateExpectedFileSize(metadata));
 
   base::MD5Digest expected = {
       0x33, 0xCD, 0xEC, 0xCC, 0xCE, 0xBE, 0x80, 0x32,
@@ -146,9 +147,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, WrittenFileSize) {
                                         blocklisted_modules, &md5_digest));
 
   // Check the file's stat.
-  int64_t file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(module_blocklist_cache_path(), &file_size));
-  EXPECT_EQ(file_size, internal::CalculateExpectedFileSize(metadata));
+  std::optional<int64_t> file_size =
+      base::GetFileSize(module_blocklist_cache_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(file_size.value(), internal::CalculateExpectedFileSize(metadata));
 }
 
 TEST_F(ModuleBlocklistCacheUtilTest, WriteAndRead) {

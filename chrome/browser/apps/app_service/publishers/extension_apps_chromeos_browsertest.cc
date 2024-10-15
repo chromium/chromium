@@ -117,8 +117,7 @@ class ExtensionAppsChromeOsBrowserTest
         WriteFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
 
     // Add file(s) to intent.
-    int64_t file_size = 0;
-    base::GetFileSize(file_path, &file_size);
+    int64_t file_size = base::GetFileSize(file_path).value_or(0);
 
     // Create a virtual file in the file system, as required for AppService.
     scoped_refptr<storage::FileSystemContext> file_system_context =

@@ -46,9 +46,9 @@ void WriteEmptyFile(const base::FilePath& path, const std::string& file_name) {
   base::FilePath file_path = path.AppendASCII(file_name);
   base::WriteFile(file_path, std::string_view());
 
-  int64_t file_size;
-  EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
-  ASSERT_EQ(file_size, 0);
+  std::optional<int64_t> file_size = base::GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
+  ASSERT_EQ(file_size.value(), 0);
 }
 
 class ExtensionTelemetryFileProcessorTest : public ::testing::Test {

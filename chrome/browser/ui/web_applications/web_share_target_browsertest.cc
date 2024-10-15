@@ -253,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareUsingFileURL) {
 
     intent->mime_type = "text/csv";
     for (const base::FilePath& file_path : file_paths) {
-      int64_t file_size = 0;
-      base::GetFileSize(file_path, &file_size);
+      int64_t file_size = base::GetFileSize(file_path).value_or(0);
       auto file =
           std::make_unique<apps::IntentFile>(net::FilePathToFileURL(file_path));
       file->file_name = base::SafeBaseName::Create(file_path);

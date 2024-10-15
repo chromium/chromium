@@ -1344,9 +1344,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   base::FilePath origin(OriginFile(base::FilePath(FILE_PATH_LITERAL(
       "downloads/a_zip_file.zip"))));
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(base::PathExists(origin));
-  int64_t origin_file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(origin, &origin_file_size));
+  std::optional<int64_t> origin_file_size = base::GetFileSize(origin);
+  ASSERT_TRUE(origin_file_size.has_value());
   std::string original_contents;
   EXPECT_TRUE(base::ReadFileToString(origin, &original_contents));
 
@@ -1365,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
             download_items[0]->GetTargetFilePath().BaseName());
   ASSERT_TRUE(base::PathExists(download_items[0]->GetTargetFilePath()));
   EXPECT_TRUE(VerifyFile(download_items[0]->GetTargetFilePath(),
-                         original_contents, origin_file_size));
+                         original_contents, origin_file_size.value()));
   uint32_t download_id = download_items[0]->GetId();
   // Verify that manager will increment the download ID when a new download is
   // requested.
@@ -1393,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
             download_items[0]->GetTargetFilePath().BaseName());
   ASSERT_TRUE(base::PathExists(download_items[0]->GetTargetFilePath()));
   EXPECT_TRUE(VerifyFile(download_items[0]->GetTargetFilePath(),
-                         original_contents, origin_file_size));
+                         original_contents, origin_file_size.value()));
   // The incognito download should increment the download ID again.
   ASSERT_EQ(download_id + 2, download_items[0]->GetId());
 }
@@ -3614,12 +3613,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   // later.
   base::FilePath origin(OriginFile(base::FilePath(FILE_PATH_LITERAL(
       "downloads/cross-origin-resource-policy-resource.txt"))));
-  int64_t origin_file_size = 0;
+
+  std::optional<int64_t> origin_file_size;
   std::string original_contents;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::PathExists(origin));
-    EXPECT_TRUE(base::GetFileSize(origin, &origin_file_size));
+    origin_file_size = base::GetFileSize(origin);
+    ASSERT_TRUE(origin_file_size.has_value());
     EXPECT_TRUE(base::ReadFileToString(origin, &original_contents));
   }
 
@@ -3668,7 +3668,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
       "cross-origin-resource-policy-resource.txt");
   EXPECT_EQ(expected_original_url, download_items[0]->GetOriginalUrl());
   EXPECT_TRUE(VerifyFile(download_items[0]->GetTargetFilePath(),
-                         original_contents, origin_file_size));
+                         original_contents, origin_file_size.value()));
 }
 
 // This test ensures that the Referer header is properly sanitized when
@@ -4617,8 +4617,8 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::PathExists(origin));
   // Gets the file size.
-  int64_t origin_file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(origin, &origin_file_size));
+  std::optional<int64_t> origin_file_size = base::GetFileSize(origin);
+  ASSERT_TRUE(origin_file_size.has_value());
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Wait for in-progress download manager to initialize.
@@ -4645,8 +4645,9 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
           GURL() /* tab_referrer_url */, url::Origin() /* request_initiator */,
           "" /* mime_type */, "" /* original_mime_type */, current_time,
           current_time, "" /* etag */, "" /* last_modified */,
-          0 /* received_bytes */, origin_file_size, 0 /* auto_resume_count */,
-          "" /* hash */, download::DownloadItem::INTERRUPTED,
+          0 /* received_bytes */, origin_file_size.value(),
+          0 /* auto_resume_count */, "" /* hash */,
+          download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED,
           download::DOWNLOAD_INTERRUPT_REASON_CRASH, false /* paused */,
           false /* allow_metered */, false /* opened */, current_time,
@@ -4666,9 +4667,9 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   // Resume the download first, before download history loads.
   download->Resume(true);
   // Now simulate that history DB is loaded.
-  manager->OnHistoryQueryComplete(
-      base::BindOnce(CreateCompletedDownload, base::Unretained(manager), guid,
-                     target_path, std::move(url_chain), origin_file_size));
+  manager->OnHistoryQueryComplete(base::BindOnce(
+      CreateCompletedDownload, base::Unretained(manager), guid, target_path,
+      std::move(url_chain), origin_file_size.value()));
   // Download should continue and complete.
   ASSERT_TRUE(waiter.WaitForFinished());
   download::DownloadItem* history_download = manager->GetDownloadByGuid(guid);

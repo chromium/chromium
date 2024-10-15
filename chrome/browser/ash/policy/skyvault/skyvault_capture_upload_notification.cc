@@ -19,14 +19,6 @@ namespace policy::skyvault {
 
 namespace {
 
-std::optional<int64_t> GetFileSize(const base::FilePath& filename) {
-  int64_t size;
-  if (!base::GetFileSize(filename, &size)) {
-    return std::nullopt;
-  }
-  return size;
-}
-
 constexpr char kUploadNotificationId[] = "skyvault_capture_upload_notification";
 
 }  // namespace
@@ -60,7 +52,11 @@ SkyvaultCaptureUploadNotification::SkyvaultCaptureUploadNotification(
   SystemNotificationHelper::GetInstance()->Display(*notification_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetFileSize, filename),
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          static_cast<std::optional<int64_t> (*)(const base::FilePath&)>(
+              base::GetFileSize),
+          filename),
       base::BindOnce(&SkyvaultCaptureUploadNotification::OnFileSizeRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 }

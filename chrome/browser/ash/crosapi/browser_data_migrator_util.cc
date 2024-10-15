@@ -321,11 +321,11 @@ int64_t EstimatedExtraBytesCreated(const base::FilePath& original_profile_dir) {
   const base::FilePath preferences_path =
       original_profile_dir.Append(chrome::kPreferencesFilename);
   if (base::PathExists(preferences_path)) {
-    int64_t size;
-    if (base::GetFileSize(preferences_path, &size)) {
+    std::optional<int64_t> size = base::GetFileSize(preferences_path);
+    if (size.has_value()) {
       // For 'Preferences', add size * 2 because we create copies for Lacros and
       // Ash of the same size.
-      total_size += size * 2;
+      total_size += size.value() * 2;
     } else {
       PLOG(ERROR) << "Failed to get file size for " << preferences_path.value();
     }

@@ -298,9 +298,10 @@ void DIPSDatabase::LogDatabaseMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  int64_t db_size;
-  if (base::GetFileSize(db_path_, &db_size)) {
-    base::UmaHistogramMemoryKB("Privacy.DIPS.DatabaseSize", db_size / 1024);
+  std::optional<int64_t> db_size = base::GetFileSize(db_path_);
+  if (db_size.has_value()) {
+    base::UmaHistogramMemoryKB("Privacy.DIPS.DatabaseSize",
+                               db_size.value() / 1024);
   }
 
   base::UmaHistogramCounts10000("Privacy.DIPS.DatabaseEntryCount",

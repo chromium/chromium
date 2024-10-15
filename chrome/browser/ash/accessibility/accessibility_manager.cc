@@ -293,17 +293,17 @@ ReadDlcFileResponse ReadDlcFile(base::FilePath path) {
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }
 
-  int64_t file_size = 0;
-  if (!base::GetFileSize(path, &file_size) || (file_size <= 0)) {
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  if (!file_size.has_value() || (file_size.value() <= 0)) {
     error = "Error: failed to read size of file: " + path.AsUTF8Unsafe();
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }
 
-  std::vector<uint8_t> contents(file_size);
+  std::vector<uint8_t> contents(file_size.value());
   int bytes_read =
       base::ReadFile(path, reinterpret_cast<char*>(contents.data()),
-                     base::checked_cast<int>(file_size));
-  if (bytes_read != file_size) {
+                     base::checked_cast<int>(file_size.value()));
+  if (bytes_read != file_size.value()) {
     error = "Error: could not read file: " + path.AsUTF8Unsafe();
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }

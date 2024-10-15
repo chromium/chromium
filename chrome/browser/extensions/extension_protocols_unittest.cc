@@ -938,9 +938,9 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
 
   // Sanity check empty.js.
   base::FilePath file_path = unzipped_path.AppendASCII(kEmptyJs);
-  int64_t foo_file_size = -1;
-  ASSERT_TRUE(base::GetFileSize(file_path, &foo_file_size));
-  ASSERT_EQ(0, foo_file_size);
+  std::optional<int64_t> foo_file_size = base::GetFileSize(file_path);
+  ASSERT_TRUE(foo_file_size.has_value());
+  ASSERT_EQ(0, foo_file_size.value());
 
   // Request empty.js.
   {

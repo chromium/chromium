@@ -71,9 +71,8 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
     // Re-check the filesize since the file may be modified after downloaded.
-    int64_t filesize;
-    if (!GetFileSize(file_path_, &filesize) ||
-        filesize > kMaxImageClipboardSize) {
+    std::optional<int64_t> filesize = base::GetFileSize(file_path_);
+    if (!filesize.has_value() || filesize.value() > kMaxImageClipboardSize) {
       OnFailedBeforeDecoding();
       return;
     }

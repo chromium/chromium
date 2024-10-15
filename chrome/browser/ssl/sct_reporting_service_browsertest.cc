@@ -1088,14 +1088,13 @@ class ReportPersistenceWaiter {
     {
       // Check if either file was already written and if so return early.
       base::ScopedAllowBlockingForTesting allow_blocking;
-      int64_t file_size;
-      // GetFileSize() will return `false` if the file does not yet exist.
-      if (base::GetFileSize(watched_file_path1_, &file_size) &&
-          file_size > filesize_threshold_) {
+      std::optional<int64_t> file_size = base::GetFileSize(watched_file_path1_);
+      if (file_size.has_value() && file_size.value() > filesize_threshold_) {
         return;
       }
-      if (base::GetFileSize(watched_file_path2_, &file_size) &&
-          file_size > filesize_threshold_) {
+
+      file_size = base::GetFileSize(watched_file_path2_);
+      if (file_size.has_value() && file_size.value() > filesize_threshold_) {
         return;
       }
     }
@@ -1172,14 +1171,14 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
     ReportPersistenceWaiter waiter(persistence_path1, persistence_path2,
                                    kEmptyPersistenceFileSize);
     waiter.WaitUntilPersisted();
-    int64_t file_size1;
-    int64_t file_size2;
-    bool one_file_is_written =
-        base::GetFileSize(persistence_path1, &file_size1) ||
-        base::GetFileSize(persistence_path2, &file_size2);
+    std::optional<int64_t> file_size1 = base::GetFileSize(persistence_path1);
+    std::optional<int64_t> file_size2 = base::GetFileSize(persistence_path2);
+
+    bool one_file_is_written = file_size1.has_value() || file_size2.has_value();
     EXPECT_TRUE(one_file_is_written);
-    EXPECT_TRUE(file_size1 > kEmptyPersistenceFileSize ||
-                file_size2 > kEmptyPersistenceFileSize);
+
+    EXPECT_TRUE(file_size1.value_or(0) > kEmptyPersistenceFileSize ||
+                file_size2.value_or(0) > kEmptyPersistenceFileSize);
   }
 
   // Trigger removal and wait for completion.
@@ -1197,13 +1196,16 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // Check that the persistence file is cleared.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    int64_t file_size;
-    if (base::GetFileSize(persistence_path1, &file_size)) {
-      EXPECT_EQ(file_size, kEmptyPersistenceFileSize);
-    } else if (base::GetFileSize(persistence_path2, &file_size)) {
-      EXPECT_EQ(file_size, kEmptyPersistenceFileSize);
+    std::optional<int64_t> file_size = base::GetFileSize(persistence_path1);
+    if (file_size.has_value()) {
+      EXPECT_EQ(file_size.value(), kEmptyPersistenceFileSize);
     } else {
-      FAIL() << "Neither persistence file was ever written";
+      file_size = base::GetFileSize(persistence_path2);
+      if (file_size.has_value()) {
+        EXPECT_EQ(file_size.value(), kEmptyPersistenceFileSize);
+      } else {
+        FAIL() << "Neither persistence file was ever written";
+      }
     }
   }
 }

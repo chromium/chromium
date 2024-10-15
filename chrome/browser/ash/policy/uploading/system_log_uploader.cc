@@ -172,9 +172,10 @@ void ReportLogSizes() {
 
     base::FilePath baseFileNameWithoutExtension =
         fullFilePath.RemoveExtension();
-    int64_t log_size;
-    if (GetFileSize(fullFilePath, &log_size)) {
-      log_name_to_size[baseFileNameWithoutExtension.value()] += log_size / 1024;
+    std::optional<int64_t> log_size = GetFileSize(fullFilePath);
+    if (log_size.has_value()) {
+      log_name_to_size[baseFileNameWithoutExtension.value()] +=
+          log_size.value() / 1024;
     }
   }
 

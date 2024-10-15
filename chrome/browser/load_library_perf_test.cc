@@ -52,10 +52,11 @@ void MeasureSizeAndTimeToLoadNativeLibrary(
   base::FilePath library_path = output_dir.Append(library_name);
   ASSERT_TRUE(base::PathExists(library_path)) << library_path.value();
 
-  int64_t size = 0;
-  ASSERT_TRUE(base::GetFileSize(library_path, &size));
+  std::optional<int64_t> size = base::GetFileSize(library_path);
+  ASSERT_TRUE(size.has_value());
   auto reporter = SetUpReporter(library_name.AsUTF8Unsafe());
-  reporter.AddResult(kMetricLibrarySizeBytes, static_cast<size_t>(size));
+  reporter.AddResult(kMetricLibrarySizeBytes,
+                     static_cast<size_t>(size.value()));
 
   base::NativeLibraryLoadError error;
   base::TimeTicks start = base::TimeTicks::Now();
