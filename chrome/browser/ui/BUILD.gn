@@ -3720,9 +3720,6 @@ static_library("ui") {
       "plus_addresses/plus_address_creation_controller_desktop.h",
       "plus_addresses/plus_address_error_dialog.cc",
       "plus_addresses/plus_address_error_dialog.h",
-      "qrcode_generator/qrcode_generator_bubble_controller.cc",
-      "qrcode_generator/qrcode_generator_bubble_controller.h",
-      "qrcode_generator/qrcode_generator_bubble_view.h",
       "send_tab_to_self/send_tab_to_self_bubble.h",
       "send_tab_to_self/send_tab_to_self_toolbar_icon_controller.cc",
       "send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h",
@@ -5017,6 +5014,8 @@ static_library("ui") {
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
+      "//chrome/browser/ui/qrcode_generator",
+      "//chrome/browser/ui/qrcode_generator:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
@@ -5072,6 +5071,7 @@ static_library("ui") {
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
+      "//chrome/browser/ui/qrcode_generator:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/commerce:impl",
