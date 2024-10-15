@@ -48,6 +48,9 @@ mojom("interfaces") {
 
   enabled_features = []
   if (use_browser_spellchecker) {
+    if (enable_spelling_service) {
+      enabled_features += [ "USE_BROWSER_SPELLCHECKER_AND_SPELLING_SERVICE" ]
+    }
     enabled_features += [ "USE_BROWSER_SPELLCHECKER" ]
   }
 

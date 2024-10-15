@@ -35,6 +35,9 @@ class SpellingEngine {
 
   // Synchronously check spelling. `host` is only valid for the duration of the
   // method call and should not be stored.
+  // TODO(https://crbug.com/367216585): Replace this method with an asynchronous
+  // API, since not all platforms (e.g. Android) supports synchronous
+  // spellchecking.
   virtual bool CheckSpelling(const std::u16string& word_to_check,
                              spellcheck::mojom::SpellCheckHost& host) = 0;
 

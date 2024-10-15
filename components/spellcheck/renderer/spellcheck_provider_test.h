@@ -139,11 +139,13 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   void RequestTextCheck(const std::u16string&,
                         RequestTextCheckCallback) override;
+#if BUILDFLAG(ENABLE_SPELLING_SERVICE)
   using SpellCheckProvider::CheckSpelling;
   void CheckSpelling(const std::u16string&,
                      CheckSpellingCallback) override;
   void FillSuggestionList(const std::u16string&,
                           FillSuggestionListCallback) override;
+#endif  // BUILDFLAG(ENABLE_SPELLING_SERVICE)
 #if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)

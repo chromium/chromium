@@ -66,12 +66,12 @@ interface SpellCheckHost {
 
   // Checks the correctness of a word with a platform-specific spell checker.
   // TODO(groby): This needs to originate from SpellcheckProvider.
-  [EnableIf=USE_BROWSER_SPELLCHECKER, Sync]
+  [EnableIf=USE_BROWSER_SPELLCHECKER_AND_SPELLING_SERVICE, Sync]
   CheckSpelling(mojo_base.mojom.String16 word) => (bool correct);
 
   // Returns a list of suggestions for a given word with a platform-specific
   // spell checker.
-  [EnableIf=USE_BROWSER_SPELLCHECKER, Sync]
+  [EnableIf=USE_BROWSER_SPELLCHECKER_AND_SPELLING_SERVICE, Sync]
   FillSuggestionList(mojo_base.mojom.String16 word)
       => (array<mojo_base.mojom.String16> suggestions);
 

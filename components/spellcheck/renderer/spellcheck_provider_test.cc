@@ -173,6 +173,7 @@ void TestingSpellCheckProvider::RequestTextCheck(
   text_check_requests_.push_back(std::make_pair(text, std::move(callback)));
 }
 
+#if BUILDFLAG(ENABLE_SPELLING_SERVICE)
 void TestingSpellCheckProvider::CheckSpelling(const std::u16string&,
                                               CheckSpellingCallback) {
   NOTREACHED_IN_MIGRATION();
@@ -182,6 +183,7 @@ void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
                                                    FillSuggestionListCallback) {
   NOTREACHED_IN_MIGRATION();
 }
+#endif  // BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
 void TestingSpellCheckProvider::InitializeDictionaries(
