@@ -5,7 +5,6 @@
 #include "ash/system/input_device_settings/modifier_split_bypass_checker.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/picker/picker_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ui/events/ash/keyboard_capability.h"

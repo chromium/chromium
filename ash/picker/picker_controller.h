@@ -83,10 +83,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // published.
   static constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 
-  // Whether the feature is currently enabled or not based on the secret key and
-  // other factors.
-  bool IsFeatureEnabled();
-
   // Sets the `client` used by this class and the widget to communicate with the
   // browser. `client` may be set to null, which will close the Widget if it's
   // open, and may call "stop search" methods on the PREVIOUS client.

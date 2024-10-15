@@ -938,8 +938,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kScaleUiReset:
     case AcceleratorAction::kScaleUiUp:
       return true;
-    case AcceleratorAction::kTogglePicker:
-      return accelerators::CanTogglePicker();
     case AcceleratorAction::kToggleStylusTools:
       return accelerators::CanShowStylusTools();
     case AcceleratorAction::kStartAssistant:
@@ -1075,6 +1073,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kRotateWindow:
     case AcceleratorAction::kShowEmojiPicker:
     case AcceleratorAction::kToggleImeMenuBubble:
+    case AcceleratorAction::kTogglePicker:
     case AcceleratorAction::kShowShortcutViewer:
     case AcceleratorAction::kShowTaskManager:
     case AcceleratorAction::kSuspend:

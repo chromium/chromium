@@ -2498,9 +2498,6 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              "PhoneHubShortQuickActionPodsTitles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new picker feature.
-BASE_FEATURE(kPicker, "Picker", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Always show the feature tour for Picker for debugging purposes.
 BASE_FEATURE(kPickerAlwaysShowFeatureTour,
              "PickerAlwaysShowFeatureTour",
@@ -4549,10 +4546,6 @@ bool IsPhoneHubCallNotificationEnabled() {
 
 bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubShortQuickActionPodsTitles);
-}
-
-bool IsPickerUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kPicker);
 }
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {

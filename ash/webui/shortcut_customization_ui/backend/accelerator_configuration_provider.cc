@@ -467,8 +467,7 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
     case kTogglePicker:
-      return !(ash::features::IsPickerUpdateEnabled() &&
-               Shell::Get()->picker_controller());
+      return !Shell::Get()->picker_controller();
   }
 
   return false;

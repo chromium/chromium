@@ -1830,9 +1830,7 @@ void Shell::Init(
     coral_delegate_ = shell_delegate_->CreateCoralDelegate();
   }
 
-  if (features::IsPickerUpdateEnabled()) {
-    picker_controller_ = std::make_unique<PickerController>();
-  }
+  picker_controller_ = std::make_unique<PickerController>();
 
   if (features::IsLobsterEnabled() && LobsterController::IsEnabled()) {
     lobster_controller_ = std::make_unique<LobsterController>();

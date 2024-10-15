@@ -266,10 +266,6 @@ PickerController::~PickerController() {
   }
 }
 
-bool PickerController::IsFeatureEnabled() {
-  return features::IsPickerUpdateEnabled();
-}
-
 void PickerController::DisableFeatureTourForTesting() {
   CHECK_IS_TEST();
   g_feature_tour_enabled = false;
@@ -293,10 +289,6 @@ void PickerController::OnClientPrefsSet(PrefService* prefs) {
 
 void PickerController::ToggleWidget(
     const base::TimeTicks trigger_event_timestamp) {
-  if (!IsFeatureEnabled()) {
-    return;
-  }
-
   // Show the feature tour if it's the first time this feature is used.
   if (PrefService* prefs = GetPrefs();
       g_feature_tour_enabled && prefs &&

@@ -10935,10 +10935,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMahiFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kMahiFeatureKey, "")},
 
-    {"ash-picker", flag_descriptions::kAshPickerName,
-     flag_descriptions::kAshPickerDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPicker)},
-
     {"ash-picker-always-show-feature-tour",
      flag_descriptions::kAshPickerAlwaysShowFeatureTourName,
      flag_descriptions::kAshPickerAlwaysShowFeatureTourDescription, kOsCrOS,

@@ -114,8 +114,7 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
 
   PickerInteractiveUiTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kPicker,
-                              ash::features::kPickerGrid},
+        /*enabled_features=*/{ash::features::kPickerGrid},
         /*disabled_features=*/{});
     ash::PickerController::DisableFeatureTourForTesting();
   }

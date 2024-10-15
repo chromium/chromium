@@ -99,8 +99,6 @@ ASH_EXPORT bool CanToggleMultitaskMenu();
 
 ASH_EXPORT bool CanToggleOverview();
 
-ASH_EXPORT bool CanTogglePicker();
-
 ASH_EXPORT bool CanTogglePrivacyScreen();
 
 ASH_EXPORT bool CanToggleProjectorMarker();
