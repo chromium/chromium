@@ -115,20 +115,17 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
         base::to_underlying(type_));
   }
 
-  // Type query functions
-
-  // Any time we are using one of these functions it's best to refactor
-  // to add a virtual function to allow the input type object to do the
-  // work instead, or at least make a query function that asks a higher
-  // level question. These functions make the HTMLInputElement class
-  // inflexible because it's harder to add new input types if there is
-  // scattered code with special cases for various types.
-
   virtual bool IsInteractiveContent() const;
-  virtual bool IsButton() const;
-  virtual bool IsTextButton() const;
   virtual bool IsAutoDirectionalityFormAssociated() const;
 
+  bool IsButton() const {
+    return type_ == Type::kButton || type_ == Type::kImage ||
+           type_ == Type::kReset || type_ == Type::kSubmit;
+  }
+  bool IsTextButton() const {
+    return type_ == Type::kButton || type_ == Type::kReset ||
+           type_ == Type::kSubmit;
+  }
   bool IsButtonInputType() const { return type_ == Type::kButton; }
   bool IsColorInputType() const { return type_ == Type::kColor; }
   bool IsFileInputType() const { return type_ == Type::kFile; }
