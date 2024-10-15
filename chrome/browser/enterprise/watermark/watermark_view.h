@@ -35,7 +35,6 @@ class WatermarkView : public views::View {
 
   // views::View
   void OnPaint(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   bool has_text_for_testing() const {
     return text_fill_.get() || text_outline_.get();

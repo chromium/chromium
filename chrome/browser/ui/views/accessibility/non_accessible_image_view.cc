@@ -4,17 +4,15 @@
 
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
-NonAccessibleImageView::NonAccessibleImageView() {}
+NonAccessibleImageView::NonAccessibleImageView() {
+  GetViewAccessibility().SetIsInvisible(true);
+}
 
 NonAccessibleImageView::~NonAccessibleImageView() {}
 
-void NonAccessibleImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
-}
 
 BEGIN_METADATA(NonAccessibleImageView)
 END_METADATA

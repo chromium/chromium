@@ -80,6 +80,7 @@ WatermarkView::WatermarkView(std::string text)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetString(text);
+  GetViewAccessibility().SetIsInvisible(true);
 }
 
 WatermarkView::~WatermarkView() = default;
@@ -121,10 +122,6 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
 void WatermarkView::SetBackgroundColor(SkColor background_color) {
   background_color_ = background_color;
   SchedulePaint();
-}
-
-void WatermarkView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
 }
 
 BEGIN_METADATA(WatermarkView)
