@@ -420,6 +420,10 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
     }
   }
 
+  getLoadSucceededForTesting(): boolean {
+    return this.loadState_ === LoadState.SUCCESS;
+  }
+
   /**
    * Load a dictionary of translated strings into the UI. Used as a callback for
    * chrome.resourcesPrivate.

@@ -372,8 +372,12 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
     static constexpr char kEnsurePdfHasLoadedScript[] = R"(
-       document.body.querySelector('#viewer').loadState_ == 'success'
-     )";
+       const viewer = document.body.querySelector('#viewer');
+
+       viewer !== null &&
+       typeof viewer.getLoadSucceededForTesting === 'function' &&
+       viewer.getLoadSucceededForTesting()
+    )";
 
     while (true) {
       // content::EvalJs uses a run loop internally.
