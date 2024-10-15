@@ -15,8 +15,6 @@
 
 virtual void DissociateMailbox(GLuint texture_id,
                                GLuint texture_generation) = 0;
-virtual void DissociateMailboxForBuffer(GLuint buffer_id,
-                                        GLuint buffer_generation) = 0;
 virtual void DissociateMailboxForPresent(GLuint device_id,
                                          GLuint device_generation,
                                          GLuint texture_id,
