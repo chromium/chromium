@@ -1041,8 +1041,8 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
           /*has_arguments=*/false, parent ? &parent->GetDocument() : nullptr);
 
       PseudoId pseudo_id = CSSSelector::GetPseudoId(pseudo_type);
-      if (pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter ||
-          pseudo_id == kPseudoIdFirstLetter ||
+      if (pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdBefore ||
+          pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdFirstLetter ||
           pseudo_id == kPseudoIdFirstLine) {
         return pseudo_id;
       }
@@ -1214,6 +1214,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
       return true;
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoCheck:
       if (simple_selector.GetPseudoType() == CSSSelector::kPseudoMarker &&
           RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled()) {
         return true;
@@ -1603,6 +1604,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
 
   if (selector.Match() == CSSSelector::kPseudoElement) {
     switch (selector.GetPseudoType()) {
+      case CSSSelector::kPseudoCheck:
       case CSSSelector::kPseudoBefore:
       case CSSSelector::kPseudoAfter:
         context_->Count(WebFeature::kHasBeforeOrAfterPseudoElement);

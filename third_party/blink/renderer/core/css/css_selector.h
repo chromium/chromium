@@ -247,6 +247,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoAutofillSelected,
     kPseudoBackdrop,
     kPseudoBefore,
+    kPseudoCheck,
     kPseudoChecked,
     kPseudoCornerPresent,
     kPseudoCurrent,

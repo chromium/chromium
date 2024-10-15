@@ -195,6 +195,9 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::FirstLine;
     case kPseudoIdFirstLetter:
       return protocol::DOM::PseudoTypeEnum::FirstLetter;
+    case kPseudoIdCheck:
+      // To be added in a followup CL
+      NOTREACHED_NORETURN();
     case kPseudoIdBefore:
       return protocol::DOM::PseudoTypeEnum::Before;
     case kPseudoIdAfter:

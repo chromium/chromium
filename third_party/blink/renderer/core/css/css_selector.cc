@@ -335,6 +335,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdFirstLetter;
     case kPseudoSelection:
       return kPseudoIdSelection;
+    case kPseudoCheck:
+      return kPseudoIdCheck;
     case kPseudoBefore:
       return kPseudoIdBefore;
     case kPseudoAfter:
@@ -578,6 +580,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"autofill", CSSSelector::kPseudoAutofill},
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
+    {"check", CSSSelector::kPseudoCheck},
     {"checked", CSSSelector::kPseudoChecked},
     {"closed", CSSSelector::kPseudoClosed},
     {"column", CSSSelector::kPseudoColumn},
@@ -865,6 +868,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
 
   switch (GetPseudoType()) {
     case kPseudoAfter:
+    case kPseudoCheck:
     case kPseudoBefore:
     case kPseudoFirstLetter:
     case kPseudoFirstLine:
@@ -1601,8 +1605,8 @@ bool CSSSelector::IsAllowedInParentPseudo() const {
 
 bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
-         (GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
-          GetPseudoType() == kPseudoMarker ||
+         (GetPseudoType() == kPseudoCheck || GetPseudoType() == kPseudoBefore ||
+          GetPseudoType() == kPseudoAfter || GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
           GetPseudoType() == kPseudoBackdrop ||
@@ -1634,6 +1638,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     //
     // All pseudo-elements other than ::part() should be allowed after
     // ::part().
+    case kPseudoCheck:
     case kPseudoBefore:
     case kPseudoAfter:
     case kPseudoPlaceholder:
