@@ -229,6 +229,19 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   return resource_provider;
 }
 
+void Canvas2DLayerBridge::InitiateHibernationIfNecessary() {
+  if (hibernation_scheduled_) {
+    return;
+  }
+
+  resource_host_->ClearLayerTexture();
+  ReportHibernationEvent(kHibernationScheduled);
+  hibernation_scheduled_ = true;
+  ThreadScheduler::Current()->PostIdleTask(
+      FROM_HERE, WTF::BindOnce(&Canvas2DLayerBridge::HibernateOrLogFailure,
+                               weak_ptr_factory_.GetWeakPtr()));
+}
+
 void Canvas2DLayerBridge::PageVisibilityChanged() {
   bool page_is_visible = resource_host_->IsPageVisible();
   if (resource_host_->ResourceProvider()) {
@@ -245,14 +258,8 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
 
   if (features::IsCanvas2DHibernationEnabled() &&
       resource_host_->ResourceProvider() &&
-      resource_host_->GetRasterMode() == RasterMode::kGPU && !page_is_visible &&
-      !hibernation_scheduled_) {
-    resource_host_->ClearLayerTexture();
-    ReportHibernationEvent(kHibernationScheduled);
-    hibernation_scheduled_ = true;
-    ThreadScheduler::Current()->PostIdleTask(
-        FROM_HERE, WTF::BindOnce(&Canvas2DLayerBridge::HibernateOrLogFailure,
-                                 weak_ptr_factory_.GetWeakPtr()));
+      resource_host_->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
+    InitiateHibernationIfNecessary();
   }
 
   // The impl tree may have dropped the transferable resource for this canvas

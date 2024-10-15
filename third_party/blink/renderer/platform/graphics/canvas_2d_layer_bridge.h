@@ -76,6 +76,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
  private:
   static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
                                     base::TimeTicks /*idleDeadline*/);
+  void InitiateHibernationIfNecessary();
   void Hibernate();
 
   CanvasHibernationHandler hibernation_handler_;
