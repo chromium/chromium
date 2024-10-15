@@ -3322,6 +3322,10 @@ static_library("browser") {
       "//chrome/browser/ui/digital_credentials",
       "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:impl",
+
+      # TODO(crbug.com/372647115): When c/b/android/oom_intervention gets modularized, consider
+      # moving the whole directory to it, since it is its only user.
+      "//chrome/browser/ui/interventions",
       "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/wallet/android:jni_headers",
       "//chrome/common:non_code_constants",
