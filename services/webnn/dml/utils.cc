@@ -23,27 +23,6 @@ namespace {
 
 const char kBackendName[] = "DirectML: ";
 
-// Note that the element count is considered as 1 when the given dimensions is
-// empty.
-uint64_t CalculateElementCount(const std::vector<uint32_t>& dimensions,
-                               const std::vector<uint32_t>& strides = {}) {
-  base::CheckedNumeric<uint64_t> checked_element_count = 1;
-  if (strides.empty()) {
-    for (const auto& d : dimensions) {
-      checked_element_count *= d;
-    }
-  } else {
-    CHECK_EQ(dimensions.size(), strides.size());
-    base::CheckedNumeric<uint32_t> index_of_last_element = 0;
-    for (size_t i = 0; i < dimensions.size(); ++i) {
-      index_of_last_element += (dimensions[i] - 1) * strides[i];
-    }
-    checked_element_count = index_of_last_element + 1;
-  }
-
-  return checked_element_count.ValueOrDie();
-}
-
 D3D12_HEAP_PROPERTIES CreateHeapProperties(D3D12_HEAP_TYPE type) {
   return {.Type = type,
           .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
@@ -68,6 +47,25 @@ D3D12_RESOURCE_DESC CreateResourceDesc(
 }
 
 }  // namespace
+
+uint64_t CalculateElementCount(base::span<const uint32_t> dimensions,
+                               base::span<const uint32_t> strides) {
+  base::CheckedNumeric<uint64_t> checked_element_count = 1;
+  if (strides.empty()) {
+    for (uint32_t dimension : dimensions) {
+      checked_element_count *= dimension;
+    }
+  } else {
+    CHECK_EQ(dimensions.size(), strides.size());
+    base::CheckedNumeric<uint64_t> index_of_last_element = 0;
+    for (size_t i = 0; i < dimensions.size(); ++i) {
+      index_of_last_element += (dimensions[i] - 1) * strides[i];
+    }
+    checked_element_count = index_of_last_element + 1;
+  }
+
+  return checked_element_count.ValueOrDie();
+}
 
 uint64_t CalculateDMLBufferTensorSize(
     DML_TENSOR_DATA_TYPE data_type,

@@ -401,11 +401,12 @@ uint32_t CreateInputNode(const IdToOperandMap& id_to_operand_map,
 }
 
 // Create a graph node for constant operand.
-// When DML_FEATURE_LEVEL >= 6.2 and the operand is a scalar, create a constant
-// node and transfer the ownership of the operand to `graph_builder` which will
-// be consumed directly during graph compilation, the corresponding element will
-// be erased from `constant_operands`. Otherwise, create an input node, the
-// constant buffer should be later uploaded during graph initialization.
+// When DML_FEATURE_LEVEL >= 6.2 and the operand tensor only has one element,
+// create a constant node and transfer the ownership of the operand to
+// `graph_builder` which will be consumed directly during graph compilation, the
+// corresponding element will be erased from `constant_operands`. Otherwise,
+// create an input node, the constant buffer should be later uploaded during
+// graph initialization.
 void CreateConstantNode(
     Adapter* adapter,
     uint64_t operand_id,
@@ -419,8 +420,8 @@ void CreateConstantNode(
 
   // DML_GRAPH_NODE_TYPE_CONSTANT is introduced in DML_FEATURE_LEVEL_6_2.
   bool should_create_dml_constant_node =
-      operand_descriptor.Rank() == 0 &&
-      adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_6_2);
+      adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_6_2) &&
+      CalculateElementCount(operand_descriptor.shape()) == 1;
 
   const Node* node = nullptr;
   if (should_create_dml_constant_node) {
