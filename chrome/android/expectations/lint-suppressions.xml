@@ -77,7 +77,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="Field requires API level .*`android.app.TaskInfo"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
-  <!-- This warning just adds a lot of false positives. -->
+  <!-- This check doesn't tend to catch new violations except when we increase
+  our minSdkVersion. We prefer to clean up these obsolete checks
+  incrementally after increasing minSdkVersion. -->
   <issue id="ObsoleteSdkInt" severity="ignore"/>
   <issue id="OldTargetApi" severity="ignore"/>
   <issue id="OnClick">
