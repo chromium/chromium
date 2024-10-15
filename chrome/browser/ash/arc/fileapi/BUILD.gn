@@ -66,6 +66,7 @@ static_library("fileapi") {
     "//ash/components/arc",
     "//ash/constants",
     "//base",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",

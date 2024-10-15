@@ -42,6 +42,7 @@ static_library("help_app") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/child_accounts/on_device_controls",

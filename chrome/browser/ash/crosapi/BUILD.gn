@@ -541,7 +541,10 @@ static_library("crosapi") {
   # //chromeos/components/print_management/mojom a public_deps entry, and this
   # target can depend on //chrome/browser/ash. However, that creates a circular
   # dependency, so add this indirect dependency to make it work as intended.
-  deps += [ "//chromeos/components/print_management/mojom" ]
+  deps += [
+    "//chrome/browser/ash/arc:arc_util",
+    "//chromeos/components/print_management/mojom",
+  ]
 
   public_deps = [
     ":browser_util",

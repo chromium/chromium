@@ -47,6 +47,7 @@ static_library("device") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/note_taking",

@@ -144,6 +144,7 @@ static_library("file_manager") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",

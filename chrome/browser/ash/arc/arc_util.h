@@ -10,7 +10,6 @@
 
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 // Most utility should be put in components/arc/arc_util.{h,cc}, rather than

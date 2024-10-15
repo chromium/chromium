@@ -61,6 +61,7 @@ static_library("reporting") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",

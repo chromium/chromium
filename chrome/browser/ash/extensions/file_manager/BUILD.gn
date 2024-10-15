@@ -85,6 +85,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",

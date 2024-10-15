@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/login/users:test_support",

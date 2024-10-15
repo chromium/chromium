@@ -126,6 +126,7 @@ source_set("feedback_impl") {
       "//ash/webui/os_feedback_ui:url_constants",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/policy",
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/login/demo_mode",

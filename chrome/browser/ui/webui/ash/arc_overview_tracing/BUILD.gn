@@ -22,6 +22,7 @@ static_library("arc_overview_tracing") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",

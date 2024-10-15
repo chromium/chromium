@@ -34,6 +34,7 @@ static_library("usb") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
@@ -57,6 +58,7 @@ source_set("unit_tests") {
   deps = [
     ":usb",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",

@@ -46,6 +46,7 @@ static_library("app_service") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/pip",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/borealis",

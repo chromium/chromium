@@ -35,6 +35,7 @@ static_library("instance_throttle") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/session",

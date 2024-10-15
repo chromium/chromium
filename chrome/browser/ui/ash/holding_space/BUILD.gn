@@ -42,6 +42,7 @@ static_library("holding_space") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/extensions/autotest_private",

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/aura/window.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"

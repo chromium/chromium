@@ -1201,6 +1201,7 @@ source_set("extensions") {
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/accessibility",
       "//chrome/browser/ash/arc/extensions",
       "//chrome/browser/ash/arc/optin",
