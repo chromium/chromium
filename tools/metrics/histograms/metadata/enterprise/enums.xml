@@ -2170,6 +2170,7 @@ chromium-metrics-reviews@google.com.
   <int value="1303" label="DefaultDirectSocketsPrivateNetworkAccessSetting"/>
   <int value="1304" label="DirectSocketsPrivateNetworkAccessAllowedForUrls"/>
   <int value="1305" label="DirectSocketsPrivateNetworkAccessBlockedForUrls"/>
+  <int value="1306" label="SelectParserRelaxationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

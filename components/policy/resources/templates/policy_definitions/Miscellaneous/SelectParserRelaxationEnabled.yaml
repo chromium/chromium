@@ -1,0 +1,32 @@
+caption: Controls whether the new HTML parser behavior for the &lt;select&gt; element is enabled
+desc: |2-
+  The HTML parser is being changed to allow additional HTML tags inside the &lt;select&gt; element. This policy allows the old HTML parser behavior to be used until M136.
+
+  If this policy is enabled or not set, then the HTML parser will allow additional tags inside the &lt;select&gt; element.
+
+  If this policy is disabled, then the HTML parser will restrict which tags can be put inside the &lt;select&gt; element.
+default: true
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: New HTML parser behavior which allows more tags will be enabled.
+  value: true
+- caption: New HTML parser behavior which allows more tags will be disabled.
+  value: false
+owners:
+- jarhar@chromium.org
+- masonf@chromium.org
+- dom-dev@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:131-
+- chrome_os:131-
+- android:131-
+- webview_android:131-
+tags: []
+type: main
+deprecated: false
+device_only: false

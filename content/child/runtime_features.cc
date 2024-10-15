@@ -484,6 +484,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        blink::switches::kDisableStandardizedBrowserZoom, false},
       {wrf::EnableCSSCustomStateDeprecatedSyntax,
        blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled, true},
+      {wrf::EnableSelectParserRelaxation,
+       blink::switches::kDisableSelectParserRelaxation, false},
       {wrf::EnableTextFragmentIdentifiers,
        switches::kDisableScrollToTextFragment, false},
       {wrf::EnableWebAuthenticationRemoteDesktopSupport,

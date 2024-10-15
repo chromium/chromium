@@ -206,6 +206,7 @@ source_set("policy_specific_browser_tests") {
     "test/policy_statistics_collector_browsertest.cc",
     "test/proxy_policies_browsertest.cc",
     "test/safe_browsing_policy_browsertest.cc",
+    "test/select_parser_relaxation_policy_browsertest.cc",
     "test/shared_clipboard_enabled_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
     "test/standardized_browser_zoom_browsertest.cc",

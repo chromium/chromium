@@ -159,6 +159,12 @@ const char kMutationEventsEnabled[] =
 const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
     "policy.css_custom_state_deprecated_syntax_enabled";
 
+// A boolean pref indicating whether the new HTML parser for the <select>
+// element is enabled. When enabled, the HTML parser allows more tags to be used
+// inside <select> instead of removing them.
+const char kSelectParserRelaxationEnabled[] =
+    "policy.select_parser_relaxation_enabled";
+
 // A boolean pref indicating whether to allow deprecation of the "unload"
 // event.
 // If false, the deprecation rollout will be ignored.

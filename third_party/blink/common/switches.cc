@@ -135,11 +135,17 @@ const char kMinHeightForGpuRasterTile[] = "min-height-for-gpu-raster-tile";
 extern const char kMutationEventsEnabled[] =
     "deprecated-mutation-events-enabled";
 
-// Used to communicate managed policy for CSSCustomStateDeprecatedSynatx. This
+// Used to communicate managed policy for CSSCustomStateDeprecatedSyntax. This
 // feature is typically controlled by a RuntimeEnabledFeature, but requires an
 // enterprise policy override.
 extern const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
     "css-custom-state-deprecated-syntax-enabled";
+
+// Used to communicate managed policy for SelectParserRelaxation. This feature
+// is typically controlled by a RuntimeEnabledFeature, but requires an
+// enterprise policy override.
+extern const char kDisableSelectParserRelaxation[] =
+    "disable-select-parser-relaxation";
 
 // Sets the timeout seconds of the network-quiet timers in IdlenessDetector.
 // Used by embedders who want to change the timeout time in order to run web

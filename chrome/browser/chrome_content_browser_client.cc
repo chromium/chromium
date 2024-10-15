@@ -1639,6 +1639,10 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       /*default_value=*/false);
 
   registry->RegisterBooleanPref(
+      policy::policy_prefs::kSelectParserRelaxationEnabled,
+      /*default_value=*/true);
+
+  registry->RegisterBooleanPref(
       policy::policy_prefs::kKeyboardFocusableScrollersEnabled, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kStandardizedBrowserZoomEnabled, true);
@@ -2831,6 +2835,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
               policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled)) {
         command_line->AppendSwitch(
             blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled);
+      }
+      if (!prefs->GetBoolean(
+              policy::policy_prefs::kSelectParserRelaxationEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kDisableSelectParserRelaxation);
       }
 
       if (prefs->GetBoolean(policy::policy_prefs::
