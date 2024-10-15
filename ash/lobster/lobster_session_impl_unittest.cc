@@ -308,9 +308,21 @@ TEST_F(LobsterSessionImplTest, RecordMetricsForRightClickEntryPoint) {
       "Ash.Lobster.State", LobsterMetricState::kRightClickTriggerFired, 1);
 }
 
-TEST_F(LobsterSessionImplTest, RecordMetricsWhenDownloadingCandidate) {
+TEST_F(LobsterSessionImplTest,
+       RecordMetricsWhenDownloadingCandidateSuccessfully) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/31,
+                                  /*query=*/"a nice strawberry")};
+        std::move(done_callback).Run(std::move(inflated_candidates));
+      });
 
   LobsterSessionImpl session(std::move(lobster_client), store,
                              LobsterEntryPoint::kPicker);
@@ -319,9 +331,46 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenDownloadingCandidate) {
 
   session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
                             future.GetCallback());
+  RunUntilIdle();
+
+  EXPECT_TRUE(future.Get());
 
   histogram_tester().ExpectBucketCount(
       "Ash.Lobster.State", LobsterMetricState::kCandidateDownload, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCandidateDownloadSuccess, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCandidateDownloadError, 0);
+}
+
+TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToDownloadCandidate) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::move(done_callback).Run({});
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kPicker);
+
+  base::test::TestFuture<bool> future;
+
+  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
+                            future.GetCallback());
+  RunUntilIdle();
+
+  EXPECT_FALSE(future.Get());
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCandidateDownload, 1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCandidateDownloadSuccess, 0);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Lobster.State", LobsterMetricState::kCandidateDownloadError, 1);
 }
 
 }  // namespace

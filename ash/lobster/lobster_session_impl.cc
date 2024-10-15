@@ -64,15 +64,14 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                                            const base::FilePath& file_path,
                                            StatusCallback status_callback) {
   RecordLobsterState(LobsterMetricState::kCandidateDownload);
-  InflateCandidateAndPerformAction(candidate_id,
-                                   base::BindOnce(&WriteImageToPath, file_path),
-                                   base::BindOnce([](bool success) {
-                                     // TODO: b:348514719 - Adds any logic to
-                                     // execute before returning the status back
-                                     // to WebUI, e.g. recording candidate
-                                     // download metric.
-                                     return success;
-                                   }).Then(std::move(status_callback)));
+  InflateCandidateAndPerformAction(
+      candidate_id, base::BindOnce(&WriteImageToPath, file_path),
+      base::BindOnce([](bool success) {
+        RecordLobsterState(success
+                               ? LobsterMetricState::kCandidateDownloadSuccess
+                               : LobsterMetricState::kCandidateDownloadError);
+        return success;
+      }).Then(std::move(status_callback)));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
