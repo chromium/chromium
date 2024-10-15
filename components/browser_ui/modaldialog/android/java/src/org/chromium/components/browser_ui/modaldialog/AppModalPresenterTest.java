@@ -53,6 +53,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.ui.InsetObserver;
@@ -69,6 +70,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link AppModalPresenter}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
 public class AppModalPresenterTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
@@ -279,7 +281,6 @@ public class AppModalPresenterTest {
 
     private void doTestDialogDimensions(
             int leftInset, int topInset, int rightInset, int bottomInset) {
-        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(true);
         PropertyModel dialog =
                 createDialog(
                         sActivity,
@@ -328,7 +329,6 @@ public class AppModalPresenterTest {
 
         // Exit edge-to-edge state.
         ThreadUtils.runOnUiThreadBlocking(() -> sEdgeToEdgeStateSupplier.set(false));
-        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(false);
     }
 
     private static Matcher<View> hasCurrentTextColor(int expected) {

@@ -93,9 +93,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             // TODO (crbug/369842880): Remove the check when this attr is added for phones.
             widthMeasureSpec = MeasureSpec.makeMeasureSpec(widthMeasureSpec, MeasureSpec.EXACTLY);
         }
-        if (!ModalDialogFeatureMap.isEnabled(
-                        ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
-                || (mHorizontalMargin <= 0 && mVerticalMargin <= 0)) {
+        if (mHorizontalMargin <= 0 && mVerticalMargin <= 0) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }

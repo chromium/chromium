@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogFeatureMap;
 import org.chromium.components.cached_flags.CachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.CachedFlagUtils;
@@ -88,7 +89,9 @@ public class ChromeCachedFlags {
         FirstRunUtils.cacheFirstRunPrefs();
 
         CachedFlagUtils.cacheNativeFlags(
-                ChromeFeatureList.sFlagsCachedFullBrowser, OmniboxFeatures.getFieldTrialsToCache());
+                ChromeFeatureList.sFlagsCachedFullBrowser,
+                OmniboxFeatures.getFieldTrialsToCache(),
+                ModalDialogFeatureMap.sCachedFlags);
         cacheAdditionalNativeFlags();
 
         List<CachedFieldTrialParameter<?>> fieldTrialsToCache =

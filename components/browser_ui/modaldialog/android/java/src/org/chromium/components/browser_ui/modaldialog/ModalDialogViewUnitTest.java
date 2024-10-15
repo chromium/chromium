@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Unit tests for {@link ModalDialogView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
 public class ModalDialogViewUnitTest {
     private static final int MIN_DIALOG_WIDTH = 280;
     private static final int MIN_DIALOG_HEIGHT = 500;
@@ -46,7 +48,6 @@ public class ModalDialogViewUnitTest {
 
     @Before
     public void setup() {
-        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(true);
         mActivity = buildActivity(Activity.class).setup().get();
         mDialogView =
                 (ModalDialogView)

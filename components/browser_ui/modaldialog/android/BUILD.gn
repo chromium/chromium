@@ -33,6 +33,7 @@ android_library("java") {
     "//build/android:build_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/cached_flags:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -135,6 +136,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:callback_java",
     "//base:supplier_java",

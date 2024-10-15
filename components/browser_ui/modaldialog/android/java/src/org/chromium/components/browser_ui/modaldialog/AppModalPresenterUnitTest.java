@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.DialogStyles;
@@ -37,6 +38,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
 public class AppModalPresenterUnitTest {
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 800;
