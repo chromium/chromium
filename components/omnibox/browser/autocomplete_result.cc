@@ -20,6 +20,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -478,7 +479,8 @@ void AutocompleteResult::SortAndCull(
                   suggestion_groups_map_));
               break;
             default:
-              NOTREACHED_IN_MIGRATION();
+              // kLensOverlayNotFatalUntil update after launch.
+              NOTREACHED(base::NotFatalUntil::M200);
           }
         } else if (omnibox::IsNTPPage(page_classification)) {
           sections.push_back(
