@@ -14,13 +14,21 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "url/gurl.h"
 
+namespace {
+
+bool IsHttpLocalhost(const GURL& url) {
+  return url.SchemeIs(url::kHttpScheme) && net::IsLocalhost(url);
+}
+
+}  // namespace
+
 namespace blink {
 
 bool IsValidFencedFrameURL(const GURL& url) {
   if (!url.is_valid())
     return false;
   return (url.SchemeIs(url::kHttpsScheme) || url.IsAboutBlank() ||
-          net::IsLocalhost(url)) &&
+          IsHttpLocalhost(url)) &&
          !url.parsed_for_possibly_invalid_spec().potentially_dangling_markup;
 }
 

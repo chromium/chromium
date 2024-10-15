@@ -188,27 +188,24 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestInsecureContext) {
 }
 
 TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
+  std::vector<String> test_cases = {
+      "http://example.com",
+      "blob:https://example.com",
+      "file://path/to/file",
+      "file://localhost/path/to/file",
+  };
+
   Document& doc = GetDocument();
 
-  auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setConfig(
-      FencedFrameConfig::Create(String("http://example.com/")));
-  doc.body()->AppendChild(fenced_frame);
+  for (const String& url : test_cases) {
+    auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
+    fenced_frame->setConfig(FencedFrameConfig::Create(url));
+    doc.body()->AppendChild(fenced_frame);
+  }
+
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
-}
-
-TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
-  Document& doc = GetDocument();
-
-  auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setConfig(
-      FencedFrameConfig::Create(String("http://example.com")));
-  doc.body()->AppendChild(fenced_frame);
-  histogram_tester_.ExpectUniqueSample(
-      kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
+      FencedFrameCreationOutcome::kIncompatibleURLDefault, test_cases.size());
 }
 
 TEST_F(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {
