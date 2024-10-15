@@ -519,7 +519,15 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_"
     "TargetBlank",
     "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_"
-    "TargetBlank"
+    "TargetBlank",
+    "kNavigateNew_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_"
+    "WithoutOpener_TargetBlank",
+    "kNavigateNew_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaButton_LeftClick_"
+    "WithoutOpener_TargetBlank",
+    "kNavigateNew_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_"
+    "WithoutOpener_TargetBlank",
+    "kNavigateNew_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaButton_LeftClick_"
+    "WithoutOpener_TargetBlank"
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -790,9 +798,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
         action_histogram_tester_->GetAllSamples("WebApp.LaunchSource");
     base::Value::List bucket_list;
     for (const base::Bucket& bucket : buckets) {
-      EXPECT_EQ(1, bucket.count);
-      bucket_list.Append(
-          base::ToString(static_cast<apps::LaunchSource>(bucket.min)));
+      for (int count = 0; count < bucket.count; count++) {
+        bucket_list.Append(
+            base::ToString(static_cast<apps::LaunchSource>(bucket.min)));
+      }
     }
 
     return base::Value::Dict()
@@ -1505,6 +1514,26 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(test::ClickMethod::kMiddleClick,
                         test::ClickMethod::kShiftClick),
         testing::Values(OpenerMode::kOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Use-case where redirection happens via a capturable navigation where a new
+// app window was opened intermittently, triggered via a left click.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_Capturable_Reparenting,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
+        testing::Values(RedirectType::kServerSideViaA,
+                        RedirectType::kServerSideViaB),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
