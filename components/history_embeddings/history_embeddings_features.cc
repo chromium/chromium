@@ -202,6 +202,11 @@ const base::FeatureParam<bool> kScrollTagsEnabled(&kHistoryEmbeddings,
                                                   "ScrollTagsEnabled",
                                                   false);
 
+const base::FeatureParam<double> kWordMatchRequiredTermRatio(
+    &kHistoryEmbeddings,
+    "WordMatchRequiredTermRatio",
+    1.0);
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&
