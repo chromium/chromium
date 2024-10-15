@@ -874,6 +874,12 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
   }
 }
 
+void BluetoothDeviceFloss::OnDeviceConnectionFailed(
+    FlossDBusClient::BtifStatus status) {
+  UpdateConnectingState(ConnectingState::kIdle,
+                        FlossDBusClient::BtifStatusToConnectErrorCode(status));
+}
+
 void BluetoothDeviceFloss::UpdateConnectingState(
     ConnectingState state,
     std::optional<BluetoothDevice::ConnectErrorCode> error) {

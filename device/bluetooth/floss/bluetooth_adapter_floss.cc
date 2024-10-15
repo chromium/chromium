@@ -1167,6 +1167,27 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
   }
 }
 
+void BluetoothAdapterFloss::AdapterDeviceConnectionFailed(
+    const FlossDeviceId& device_id,
+    uint32_t status) {
+  DCHECK(FlossDBusManager::Get());
+  DCHECK(IsPresent());
+
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_id
+                       << ", status: " << status;
+
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
+  if (!device) {
+    LOG(WARNING) << "Connect failed for an unknown device "
+                 << device_id.address;
+    return;
+  }
+
+  device->OnDeviceConnectionFailed(
+      static_cast<FlossDBusClient::BtifStatus>(status));
+}
+
 std::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
     const std::string& variant) {
   std::unordered_map<std::string, device::BluetoothDevice::BatteryType>

@@ -337,6 +337,12 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&HandleExported, adapter::kOnDeviceDisconnected));
 
+  callbacks->ExportMethod(
+      adapter::kConnectionCallbackInterface, adapter::kOnDeviceConnectionFailed,
+      base::BindRepeating(&FlossAdapterClient::OnDeviceConnectionFailed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HandleExported, adapter::kOnDeviceConnectionFailed));
+
   property_address_.Init(
       this, bus_, service_name_, adapter_path_,
       dbus::ObjectPath(exported_callback_path_),
@@ -726,6 +732,28 @@ void FlossAdapterClient::OnDeviceDisconnected(
 
   for (auto& observer : observers_) {
     observer.AdapterDeviceDisconnected(device);
+  }
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossAdapterClient::OnDeviceConnectionFailed(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  FlossDeviceId device;
+  uint32_t status;
+
+  if (!ReadAllDBusParams(&reader, &device, &status)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorInvalidParameters,
+            /*error_message=*/std::string()));
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.AdapterDeviceConnectionFailed(device, status);
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));

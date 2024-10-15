@@ -146,6 +146,7 @@ inline constexpr char kOnSdpSearchComplete[] = "OnSdpSearchComplete";
 inline constexpr char kOnSdpRecordCreated[] = "OnSdpRecordCreated";
 inline constexpr char kOnDeviceConnected[] = "OnDeviceConnected";
 inline constexpr char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
+inline constexpr char kOnDeviceConnectionFailed[] = "OnDeviceConnectionFailed";
 
 inline constexpr char kOnScannerRegistered[] = "OnScannerRegistered";
 inline constexpr char kOnScanResult[] = "OnScanResult";
