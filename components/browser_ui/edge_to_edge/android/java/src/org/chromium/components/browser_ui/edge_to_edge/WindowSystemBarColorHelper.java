@@ -39,7 +39,7 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     protected void applyStatusBarColor() {
         mWindow.setStatusBarColor(mStatusBarColor);
         UiUtils.setStatusBarIconColor(
-                mWindow,
+                mWindow.getDecorView(),
                 ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mStatusBarColor)));
     }
 
