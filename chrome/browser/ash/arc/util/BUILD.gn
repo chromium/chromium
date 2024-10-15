@@ -12,21 +12,11 @@ static_library("util") {
     "arc_window_watcher.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash/arc/idle_manager",
-    "//chrome/browser/ash/arc/instance_throttle",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chromeos/ui/base",
     "//ui/aura",
     "//ui/views",
-  ]
-
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/arc/instance_throttle",
-    "//chrome/browser/ash/arc/idle_manager",
   ]
 }

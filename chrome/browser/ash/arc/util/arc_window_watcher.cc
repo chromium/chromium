@@ -9,7 +9,6 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"

@@ -38,6 +38,7 @@ static_library("instance_throttle") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/arc/vmm",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/audio",

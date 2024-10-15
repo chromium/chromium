@@ -26,6 +26,7 @@ static_library("idle_manager") {
     "//ash",
     "//ash/components/arc",
     "//base",
+    "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/arc/vmm",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/patchpanel",
