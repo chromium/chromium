@@ -1032,7 +1032,8 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   constexpr span<T> subspan(size_t offset,
                             size_t count = dynamic_extent) const noexcept {
     CHECK_LE(offset, size());
-    CHECK(count == dynamic_extent || count <= size() - offset);
+    CHECK(count == dynamic_extent || count <= size() - offset)
+        << " count: " << count << " offset: " << offset << " size: " << size();
     const size_t new_extent = count != dynamic_extent ? count : size() - offset;
     // SAFETY: span provides that data() points to at least `size()` many
     // elements.
