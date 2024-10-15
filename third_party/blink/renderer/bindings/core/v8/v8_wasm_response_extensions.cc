@@ -343,18 +343,19 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                                     WasmCodeCaching::kMiss);
       return CodeCacheState::kNoCodeCache;
     }
+    base::span<const uint8_t> metadata_with_digest = cached_module->Data();
 
     TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
                          "url", url_.Utf8(), "consumedCacheSize",
-                         cached_module->size());
+                         metadata_with_digest.size());
 
-    bool is_valid =
-        cached_module->size() >= kWireBytesDigestSize &&
-        streaming_->SetCompiledModuleBytes(
-            reinterpret_cast<const uint8_t*>(cached_module->Data()) +
-                kWireBytesDigestSize,
-            cached_module->size() - kWireBytesDigestSize);
+    bool is_valid = false;
+    if (metadata_with_digest.size() >= kWireBytesDigestSize) {
+      auto metadata = metadata_with_digest.subspan(kWireBytesDigestSize);
+      is_valid =
+          streaming_->SetCompiledModuleBytes(metadata.data(), metadata.size());
+    }
 
     if (!is_valid) {
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
@@ -392,14 +393,15 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         cache_handler_->GetCachedMetadata(kWasmModuleTag);
     if (!cached_module)
       return false;
-    if (cached_module->size() < kWireBytesDigestSize)
+    base::span<const uint8_t> metadata_with_digest = cached_module->Data();
+    if (metadata_with_digest.size() < kWireBytesDigestSize) {
       return false;
+    }
 
     DigestValue wire_bytes_digest;
     digestor_.Finish(wire_bytes_digest);
     if (digestor_.has_failed() ||
-        memcmp(wire_bytes_digest.data(), cached_module->Data(),
-               kWireBytesDigestSize) != 0) {
+        wire_bytes_digest != metadata_with_digest.first(kWireBytesDigestSize)) {
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                            "v8.wasm.moduleCacheInvalidDigest",
                            TRACE_EVENT_SCOPE_THREAD);

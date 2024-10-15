@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span_reader.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
@@ -67,10 +68,9 @@ uint32_t CacheTag(CacheTagKind kind, const String& encoding) {
 
 bool TimestampIsRecent(const CachedMetadata* cached_metadata) {
   const base::TimeDelta kHotHours = base::Hours(GetV8CodeCacheHotHours());
+  base::SpanReader reader(cached_metadata->Data());
   uint64_t time_stamp_ms;
-  const uint32_t size = sizeof(time_stamp_ms);
-  CHECK_GE(cached_metadata->size(), size);
-  memcpy(&time_stamp_ms, cached_metadata->Data(), size);
+  CHECK(reader.ReadU64NativeEndian(time_stamp_ms));
   base::TimeTicks time_stamp =
       base::TimeTicks() + base::Milliseconds(time_stamp_ms);
   return (base::TimeTicks::Now() - time_stamp) < kHotHours;
@@ -234,10 +234,10 @@ std::unique_ptr<v8::ScriptCompiler::CachedData> V8CodeCache::CreateCachedData(
 std::unique_ptr<v8::ScriptCompiler::CachedData> V8CodeCache::CreateCachedData(
     scoped_refptr<CachedMetadata> cached_metadata) {
   DCHECK(cached_metadata);
-  const uint8_t* data = cached_metadata->Data();
-  int length = cached_metadata->size();
+  base::span<const uint8_t> metadata = cached_metadata->Data();
   return std::make_unique<v8::ScriptCompiler::CachedData>(
-      data, length, v8::ScriptCompiler::CachedData::BufferNotOwned);
+      metadata.data(), base::checked_cast<int>(metadata.size()),
+      v8::ScriptCompiler::CachedData::BufferNotOwned);
 }
 
 scoped_refptr<CachedMetadata> V8CodeCache::GetCachedMetadata(

@@ -96,21 +96,12 @@ CachedMetadata::CachedMetadata(mojo_base::BigBuffer data,
                                base::PassKey<CachedMetadata>)
     : buffer_(std::move(data)) {}
 
-const uint8_t* CachedMetadata::RawData() const {
+base::span<const uint8_t> CachedMetadata::SerializedData() const {
   if (absl::holds_alternative<Vector<uint8_t>>(buffer_)) {
-    return absl::get<Vector<uint8_t>>(buffer_).data();
+    return absl::get<Vector<uint8_t>>(buffer_);
   }
   CHECK(absl::holds_alternative<mojo_base::BigBuffer>(buffer_));
-  return absl::get<mojo_base::BigBuffer>(buffer_).data();
-}
-
-uint32_t CachedMetadata::RawSize() const {
-  if (absl::holds_alternative<Vector<uint8_t>>(buffer_)) {
-    return absl::get<Vector<uint8_t>>(buffer_).size();
-  }
-  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(buffer_));
-  return base::checked_cast<uint32_t>(
-      absl::get<mojo_base::BigBuffer>(buffer_).size());
+  return absl::get<mojo_base::BigBuffer>(buffer_);
 }
 
 absl::variant<Vector<uint8_t>, mojo_base::BigBuffer>

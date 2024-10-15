@@ -257,8 +257,9 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
   scoped_refptr<CachedMetadata> cached_metadata =
       resource_->CacheHandler()->GetCachedMetadata(0);
   EXPECT_TRUE(cached_metadata.get());
-  EXPECT_EQ(cached_metadata->size(), cache_data.size());
-  EXPECT_EQ(*(cached_metadata->Data() + 2), cache_data[2]);
+  base::span<const uint8_t> metadata = cached_metadata->Data();
+  EXPECT_EQ(metadata.size(), cache_data.size());
+  EXPECT_EQ(metadata[2], cache_data[2]);
 
   // But trying to load the metadata with the wrong data_type_id fails.
   EXPECT_FALSE(resource_->CacheHandler()->GetCachedMetadata(4));
