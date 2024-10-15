@@ -35,12 +35,6 @@ BASE_FEATURE(kPlusAddressAndroidErrorStatesEnabled,
              "PlusAddressAndroidErrorStatesEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, mobile manual fallbacks for addresses and passwords show plus
-// address filling information.
-BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
-             "PlusAddressAndroidManualFallbackEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the user is shown the GMS core plus address management activity
 // instead of the web page in a Chrome custom tab.
 BASE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage,

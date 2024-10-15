@@ -199,10 +199,6 @@ const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
 
 bool AllPasswordsBottomSheetController::IsPlusAddress(
     const std::string& potential_plus_address) const {
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    return false;
-  }
   return plus_address_service_ &&
          plus_address_service_->IsPlusAddress(potential_plus_address);
 }

@@ -127,13 +127,6 @@ class MockAutofillDriver : public TestContentAutofillDriver {
 
 class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  AddressAccessoryControllerTest() {
-    features_.InitWithFeatures(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
-        {});
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -184,7 +177,8 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
             web_contents()->GetBrowserContext()));
   }
 
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressesEnabled};
   test::AutofillUnitTestEnvironment test_environment_;
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>

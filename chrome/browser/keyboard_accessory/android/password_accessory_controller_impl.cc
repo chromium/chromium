@@ -655,50 +655,39 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
   footer_commands_to_add.emplace_back(
       manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    // Both `ContentAutofillClient and this controller are instances of the
-    // `WebContentsUserData`. There's no well-defined destruction order between
-    // two different `WebContentsUserData` objects. That's why
-    // `ContentAutofillClient` cannot be stored in a `raw_ptr` member variable
-    // like `PlusAddressService`.
-    auto* autofill_client =
-        autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
-    if (autofill_client && plus_address_service_) {
-      // Offer plus address creation if it's supported for the current user
-      // session and if the user doesn't have any plus addresses created for the
-      // current domain.
-      if (plus_address_service_->IsPlusAddressCreationEnabled(
-              autofill_client->GetLastCommittedPrimaryMainFrameOrigin(),
-              autofill_client->IsOffTheRecord()) &&
-          plus_profiles_provider_ &&
-          plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
-        footer_commands_to_add.emplace_back(
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-            autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-      }
-      // Offer the user to select the plus address manually if plus address
-      // filling is supported for the last committed origin and the user has at
-      // least 1 plus address.
-      if (plus_address_service_->IsPlusAddressFillingEnabled(
-              autofill_client->GetLastCommittedPrimaryMainFrameOrigin()) &&
-          !plus_address_service_->GetPlusProfiles().empty()) {
-        footer_commands_to_add.emplace_back(
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
-            autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-      }
-      // Show "Manage plus addresses" action only if the user has at least 1
-      // affiliated plus addresses already saved for the current domain.
-      if (plus_profiles_provider_ &&
-          !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
-        footer_commands_to_add.emplace_back(FooterCommand(
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
-            autofill::AccessoryAction::
-                MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET));
-      }
+  if (plus_address_service_) {
+    // Offer plus address creation if it's supported for the current user
+    // session and if the user doesn't have any plus addresses created for the
+    // current domain.
+    if (plus_address_service_->IsPlusAddressCreationEnabled(
+            password_client_->GetLastCommittedOrigin(),
+            password_client_->IsOffTheRecord()) &&
+        plus_profiles_provider_ &&
+        plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
+      footer_commands_to_add.emplace_back(
+          l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+          autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+    }
+    // Offer the user to select the plus address manually if plus address
+    // filling is supported for the last committed origin and the user has at
+    // least 1 plus address.
+    if (plus_address_service_->IsPlusAddressFillingEnabled(
+            password_client_->GetLastCommittedOrigin()) &&
+        !plus_address_service_->GetPlusProfiles().empty()) {
+      footer_commands_to_add.emplace_back(
+          l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+          autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+    }
+    // Show "Manage plus addresses" action only if the user has at least 1
+    // affiliated plus addresses already saved for the current domain.
+    if (plus_profiles_provider_ &&
+        !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
+      footer_commands_to_add.emplace_back(FooterCommand(
+          l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
+          autofill::AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET));
     }
   }
 

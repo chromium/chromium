@@ -273,10 +273,6 @@ AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
   std::vector<FooterCommand> commands = {FooterCommand(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK),
       AccessoryAction::MANAGE_ADDRESSES)};
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    return commands;
-  }
   // Both `ContentAutofillClient and this controller are instances of the
   // `WebContentsUserData`. There's no no well-defined destruction order between
   // two different `WebContentsUserData` objects. That's why

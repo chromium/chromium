@@ -17266,7 +17266,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PlusAddressAndroidManualFallbackEnabled",
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressGlobalToggle",

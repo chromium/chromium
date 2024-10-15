@@ -555,34 +555,15 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
       kUsername1, kPassword, RequestsToFillPassword(false));
 }
 
-TEST_F(AllPasswordsBottomSheetControllerTest,
-       IsPlusAddress_ManualFallbackDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {password_manager::features::kBiometricTouchToFill,
-       plus_addresses::features::kPlusAddressesEnabled},
-      {plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled});
-
-  // Not a plus address according to the `FakePlusAddressService`.
-  EXPECT_FALSE(all_passwords_controller()->IsPlusAddress("exampe@gmail.com"));
-  // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
-  // should return `false` even for existing plus addresses.
-  EXPECT_FALSE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::test::kFakePlusAddress));
-}
-
 TEST_F(AllPasswordsBottomSheetControllerTest, IsPlusAddress) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {password_manager::features::kBiometricTouchToFill,
-       plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+       plus_addresses::features::kPlusAddressesEnabled},
       {});
 
   // Not a plus address according to the `FakePlusAddressService`.
   EXPECT_FALSE(all_passwords_controller()->IsPlusAddress("exampe@gmail.com"));
-  // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
-  // should return `false` even for existing plus addresses.
   EXPECT_TRUE(all_passwords_controller()->IsPlusAddress(
       plus_addresses::test::kFakePlusAddress));
 }

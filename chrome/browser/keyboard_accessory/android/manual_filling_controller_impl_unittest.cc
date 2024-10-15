@@ -80,12 +80,6 @@ constexpr autofill::FieldRendererId kFocusedFieldId(123);
 // of the keyboard accessory and all its fallback sheets.
 class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  ManualFillingControllerTest() {
-    features_.InitWithFeatures(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
-        {});
-  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -137,7 +131,8 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressesEnabled};
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>

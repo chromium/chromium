@@ -331,10 +331,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   PasswordAccessoryControllerTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    features_.InitWithFeatures(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
-        {});
   }
 
   void SetUp() override {
@@ -454,7 +450,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return mock_profile_password_store_.get();
   }
 
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressesEnabled};
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
@@ -1364,7 +1361,6 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
   features_.Reset();
   features_.InitWithFeatures(
       {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
        password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
@@ -1405,7 +1401,6 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
   features_.Reset();
   features_.InitWithFeatures(
       {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
        password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
@@ -1447,7 +1442,6 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   features_.Reset();
   features_.InitWithFeatures(
       {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
        password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
@@ -1724,7 +1718,6 @@ TEST_F(PasswordAccessoryControllerTest,
   features_.Reset();
   features_.InitWithFeatures(
       {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
        password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
       {});
@@ -1764,8 +1757,7 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
 
   features_.Reset();
   features_.InitWithFeatures(
-      {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+      {plus_addresses::features::kPlusAddressesEnabled},
       {password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsMigrationWarning});
   // Set up credentials for filling.
@@ -1803,7 +1795,6 @@ TEST_F(PasswordAccessoryControllerTest,
   features_.Reset();
   features_.InitWithFeatures(
       {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
        password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning},
       {});
@@ -1850,8 +1841,7 @@ TEST_F(PasswordAccessoryControllerTest,
 
   features_.Reset();
   features_.InitWithFeatures(
-      {plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+      {plus_addresses::features::kPlusAddressesEnabled},
       {password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
   // Set up credentials for filling.

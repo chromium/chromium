@@ -289,10 +289,6 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
 }
 
 void ManualFillingControllerImpl::InitializePlusProfilesCache() {
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    return;
-  }
   auto* client =
       autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
   auto* service = PlusAddressServiceFactory::GetForBrowserContext(
