@@ -45,7 +45,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/strings",
       "//components/user_annotations",
-      "//components/user_annotations:user_annotations",
       "//ui/native_theme:native_theme",
     ]
   }
