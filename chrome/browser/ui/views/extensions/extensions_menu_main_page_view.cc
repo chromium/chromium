@@ -394,26 +394,16 @@ void ExtensionsMenuMainPageView::UpdateSiteSettings(
   site_settings_toggle_->SetTooltipText(GetSiteSettingToggleText(is_toggle_on));
 }
 
-void ExtensionsMenuMainPageView::UpdateMessageSection(
-    MessageSectionState state,
-    bool has_enterprise_extensions) {
-  switch (state) {
-    case MessageSectionState::kRestrictedAccess:
-    case MessageSectionState::kPolicyBlockedAccess:
-    case MessageSectionState::kUserBlockedAccess:
-      reload_section_->SetVisible(false);
-      requests_section_->SetVisible(false);
-      break;
-    case MessageSectionState::kUserCustomizedAccessReload:
-    case MessageSectionState::kUserBlockedAccessReload:
-      reload_section_->SetVisible(true);
-      requests_section_->SetVisible(false);
-      break;
-    case MessageSectionState::kUserCustomizedAccess:
-      reload_section_->SetVisible(false);
-      requests_section_->SetVisible(!requests_entries_.empty());
-      break;
-  }
+void ExtensionsMenuMainPageView::ShowReloadSection() {
+  reload_section_->SetVisible(true);
+  requests_section_->SetVisible(false);
+  SizeToPreferredSize();
+}
+
+void ExtensionsMenuMainPageView::MaybeShowRequestsSection() {
+  reload_section_->SetVisible(false);
+  requests_section_->SetVisible(!requests_entries_.empty());
+  SizeToPreferredSize();
 }
 
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
@@ -485,10 +475,6 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
 
   requests_entries_.insert({id, item.get()});
   requests_entries_view_->AddChildViewAt(std::move(item), index);
-
-  bool is_requests_section_visible =
-      !requests_entries_.empty() && !reload_section_->GetVisible();
-  requests_section_->SetVisible(is_requests_section_visible);
 }
 
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
@@ -500,11 +486,6 @@ void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
 
   requests_entries_view_->RemoveChildViewT(request_entry);
   requests_entries_.erase(id);
-
-  bool is_requests_section_visible =
-      !requests_entries_.empty() && !reload_section_->GetVisible();
-  requests_section_->SetVisible(is_requests_section_visible);
-  SizeToPreferredSize();
 }
 
 void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {

@@ -29,30 +29,12 @@ class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
-class MessageSection;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View {
   METADATA_HEADER(ExtensionsMenuMainPageView, views::View)
 
  public:
-  enum class MessageSectionState {
-    // Site is restricted to all extensions.
-    kRestrictedAccess,
-    // Site is restricted all non-enterprise extensions by policy.
-    kPolicyBlockedAccess,
-    // User can customize each extension's access to the site.
-    kUserCustomizedAccess,
-    // User can customize each extension's access to the site, but a page
-    // reload is required to reflect changes.
-    kUserCustomizedAccessReload,
-    // User blocked all extensions access to the site.
-    kUserBlockedAccess,
-    // User blocked all extensions access to the site, but a page
-    // reload is required to reflect changes.
-    kUserBlockedAccessReload,
-  };
-
   explicit ExtensionsMenuMainPageView(Browser* browser,
                                       ExtensionsMenuHandler* menu_handler);
   ~ExtensionsMenuMainPageView() override;
@@ -85,24 +67,28 @@ class ExtensionsMenuMainPageView : public views::View {
                           bool is_site_settings_toggle_visible,
                           bool is_site_settings_toggle_on);
 
-  // Updates the message section given `state` and `has_enterprise_extensions`.
-  // TODO(crbug.com/40879945): Remove method, since MessageSection was removed,
-  // and update sections directly.
-  void UpdateMessageSection(MessageSectionState state,
-                            bool has_enterprise_extensions);
+  // Shows the reload section in the menu. Takes precedence over the requests
+  // section.
+  void ShowReloadSection();
+
+  // Show the requests section in the menu if there are any items in
+  // `requests_entries_` and reload section is not visible.
+  void MaybeShowRequestsSection();
 
   // Adds or updates the extension entry in the `requests_access_section_` with
-  // the given information.
+  // the given information. Doesn't update the requests section view
+  // visibility.
   void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
                                             const std::u16string& name,
                                             const ui::ImageModel& icon,
                                             int index);
 
   // Remove the entry in the `requests_access_section_` corresponding to `id`,
-  // if existent.
+  // if existent. Doesn't update the requests section view visibility.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
 
-  // Clears the entries in the `request_access_section_`, if existent.
+  // Clears the entries in the `request_access_section_`, if existent. Doesn't
+  // update the requests section view visibility.
   void ClearExtensionsRequestingAccess();
 
   // Accessors used by tests:
