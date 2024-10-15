@@ -23,7 +23,7 @@ namespace ash::boca {
 
 //=================RemoveStudentRequest================
 
-using UploadTokenCallback = base::OnceCallback<void(
+using RemoveStudentCallback = base::OnceCallback<void(
     base::expected<bool, google_apis::ApiErrorCode> result)>;
 
 class RemoveStudentRequest : public google_apis::UrlFetchRequestBase {
@@ -31,7 +31,7 @@ class RemoveStudentRequest : public google_apis::UrlFetchRequestBase {
   RemoveStudentRequest(google_apis::RequestSender* sender,
                        std::string gaia_id,
                        std::string session_id,
-                       UploadTokenCallback callback);
+                       RemoveStudentCallback callback);
   RemoveStudentRequest(const RemoveStudentRequest&) = delete;
   RemoveStudentRequest& operator=(const RemoveStudentRequest&) = delete;
   ~RemoveStudentRequest() override;
@@ -39,10 +39,11 @@ class RemoveStudentRequest : public google_apis::UrlFetchRequestBase {
   // For testing.
   void OverrideURLForTesting(std::string url);
 
-  UploadTokenCallback callback() { return std::move(callback_); }
+  RemoveStudentCallback callback() { return std::move(callback_); }
 
   std::string gaia_id() { return gaia_id_; }
   std::string session_id() { return session_id_; }
+  std::vector<std::string>& student_ids() { return student_ids_; }
   void set_student_ids(std::vector<std::string> student_ids) {
     student_ids_ = std::move(student_ids);
   }
@@ -71,7 +72,7 @@ class RemoveStudentRequest : public google_apis::UrlFetchRequestBase {
   std::vector<std::string> student_ids_;
   std::string url_base_;
 
-  UploadTokenCallback callback_;
+  RemoveStudentCallback callback_;
 
   base::WeakPtrFactory<RemoveStudentRequest> weak_ptr_factory_{this};
 };

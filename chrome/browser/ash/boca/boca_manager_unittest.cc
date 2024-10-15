@@ -84,10 +84,6 @@ class MockSessionClientImpl : public boca::SessionClientImpl {
   explicit MockSessionClientImpl(
       std::unique_ptr<google_apis::RequestSender> sender)
       : SessionClientImpl(std::move(sender)) {}
-  MOCK_METHOD(void,
-              GetSession,
-              (std::unique_ptr<boca::GetSessionRequest>),
-              (override));
 };
 
 class BocaManagerTest : public testing::Test {

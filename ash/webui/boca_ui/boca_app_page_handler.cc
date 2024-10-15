@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
+#include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "content/public/browser/web_ui.h"

@@ -21,7 +21,7 @@ namespace ash::boca {
 RemoveStudentRequest::RemoveStudentRequest(google_apis::RequestSender* sender,
                                            std::string gaia_id,
                                            std::string session_id,
-                                           UploadTokenCallback callback)
+                                           RemoveStudentCallback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),

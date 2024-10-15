@@ -13,10 +13,12 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -25,6 +27,10 @@ class UserIdentity;
 class Bundle;
 class CaptionsConfig;
 }  // namespace boca
+
+namespace google_apis {
+enum ApiErrorCode;
+}
 
 namespace ash::boca {
 

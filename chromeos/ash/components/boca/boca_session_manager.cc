@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
