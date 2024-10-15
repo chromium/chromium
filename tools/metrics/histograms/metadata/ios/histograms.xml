@@ -3656,7 +3656,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.Provisional.EnabledPermissisons"
     enum="PushNotificationPermissionProvisionalStatus"
-    expires_after="2024-11-24">
+    expires_after="2025-11-24">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
