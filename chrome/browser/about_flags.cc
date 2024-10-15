@@ -3093,11 +3093,17 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kContextualSearchboxWithPageContent[] = {
     {"use-pdfs-as-context", "true"},
+    {"use-inner-html-as-context", "true"},
+};
+const FeatureEntry::FeatureParam kContextualSearchboxWithPdfPageContent[] = {
+    {"use-pdfs-as-context", "true"},
 };
 
 const FeatureEntry::FeatureVariation kContextualSearchboxVariations[] = {
     {"with page content", kContextualSearchboxWithPageContent,
      std::size(kContextualSearchboxWithPageContent), nullptr},
+    {"with pdf page content", kContextualSearchboxWithPdfPageContent,
+     std::size(kContextualSearchboxWithPdfPageContent), nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
