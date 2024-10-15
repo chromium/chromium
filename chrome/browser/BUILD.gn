@@ -1769,6 +1769,7 @@ static_library("browser") {
     # be removed.
     "//chrome/browser/ui/cookie_controls:impl",
     "//chrome/browser/ui/omnibox:impl",
+    "//chrome/browser/ui/javascript_dialogs:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/safe_browsing",
@@ -1970,6 +1971,8 @@ static_library("browser") {
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/hats:impl",
+    "//chrome/browser/ui/javascript_dialogs",
+    "//chrome/browser/ui/javascript_dialogs:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/prefs",

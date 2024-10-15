@@ -1957,6 +1957,7 @@ if (!is_android) {
       "//chrome/browser/ui/find_bar:browser_tests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:browser_tests",
+      "//chrome/browser/ui/javascript_dialogs:browser_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/pdf",
@@ -3038,7 +3039,6 @@ if (!is_android) {
       "../browser/ui/extensions/hosted_app_browsertest.cc",
       "../browser/ui/extensions/notifications_custom_bindings_browsertest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_browsertest.cc",
-      "../browser/ui/javascript_dialogs/javascript_dialog_browsertest.cc",
       "../browser/ui/login/login_handler_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
@@ -4290,6 +4290,7 @@ if (!is_android) {
         "//chrome/browser/hid",
         "//chrome/browser/ui/global_error:test_support",
         "//chrome/browser/ui/hid",
+        "//chrome/browser/ui/javascript_dialogs",
 
         # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
         # when tests that include chrome_zoom_level_prefs.h get modularized, eg
