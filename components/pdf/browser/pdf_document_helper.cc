@@ -17,8 +17,8 @@
 #include "content/public/common/referrer_type_converters.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/pointer/touch_editing_controller.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -296,7 +296,7 @@ void PDFDocumentHelper::RunContextMenu() {
       widget->GetView()->TransformPointToRootCoordSpaceF(gfx::PointF());
   anchor_point.Offset(-origin.x(), -origin.y());
   widget->ShowContextMenuAtPoint(gfx::ToRoundedPoint(anchor_point),
-                                 ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+                                 ui::mojom::MenuSourceType::kTouchEditMenu);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above

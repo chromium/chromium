@@ -81,6 +81,7 @@ component("input") {
     "web_touch_event_traits.cc",
     "web_touch_event_traits.h",
   ]
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
   deps = [
     ":mojom",
     "//base",

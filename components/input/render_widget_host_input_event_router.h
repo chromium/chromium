@@ -25,6 +25,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
@@ -217,10 +218,9 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
       const blink::WebTouchEvent& event,
       RenderWidgetHostViewInput* target) override;
   void SetCursor(const ui::Cursor& cursor) override;
-  void ShowContextMenuAtPoint(
-      const gfx::Point& point,
-      const ui::MenuSourceType source_type,
-      RenderWidgetHostViewInput* target) override;
+  void ShowContextMenuAtPoint(const gfx::Point& point,
+                              const ui::mojom::MenuSourceType source_type,
+                              RenderWidgetHostViewInput* target) override;
 
   // HitTestRegionObserver
   void OnAggregatedHitTestRegionListUpdated(

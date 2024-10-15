@@ -21,6 +21,7 @@ source_set("browser") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//pdf/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/touch_selection",
   ]
 

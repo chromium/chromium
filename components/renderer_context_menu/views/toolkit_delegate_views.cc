@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -20,12 +21,12 @@ ToolkitDelegateViews::~ToolkitDelegateViews() = default;
 
 void ToolkitDelegateViews::RunMenuAt(views::Widget* parent,
                                      const gfx::Point& point,
-                                     ui::MenuSourceType type) {
+                                     ui::mojom::MenuSourceType type) {
   using Position = views::MenuAnchorPosition;
-  Position anchor_position =
-      (type == ui::MENU_SOURCE_TOUCH || type == ui::MENU_SOURCE_TOUCH_EDIT_MENU)
-          ? Position::kBottomCenter
-          : Position::kTopLeft;
+  Position anchor_position = (type == ui::mojom::MenuSourceType::kTouch ||
+                              type == ui::mojom::MenuSourceType::kTouchEditMenu)
+                                 ? Position::kBottomCenter
+                                 : Position::kTopLeft;
   menu_runner_->RunMenuAt(parent, nullptr, gfx::Rect(point, gfx::Size()),
                           anchor_position, type);
 }

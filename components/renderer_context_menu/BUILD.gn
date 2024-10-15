@@ -35,6 +35,7 @@ static_library("renderer_context_menu") {
       "views/toolkit_delegate_views.cc",
       "views/toolkit_delegate_views.h",
     ]
+    public_deps = [ "//ui/base/mojom:ui_base_types" ]
     deps += [ "//ui/views" ]
   }
 }

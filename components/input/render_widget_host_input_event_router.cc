@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/dip_util.h"
 
 namespace {
@@ -2061,7 +2062,7 @@ void RenderWidgetHostInputEventRouter::SetCursor(const ui::Cursor& cursor) {
 
 void RenderWidgetHostInputEventRouter::ShowContextMenuAtPoint(
     const gfx::Point& point,
-    const ui::MenuSourceType source_type,
+    const ui::mojom::MenuSourceType source_type,
     RenderWidgetHostViewInput* target) {
   DCHECK(IsViewInMap(target));
   auto* rir = target->GetViewRenderInputRouter();
