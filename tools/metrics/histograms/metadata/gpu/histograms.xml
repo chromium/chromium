@@ -1421,7 +1421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.TransferCache.ReusedTimes" units="Reuses"
-    expires_after="2025-02-09">
+    expires_after="2025-04-13">
   <owner>boliu@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
