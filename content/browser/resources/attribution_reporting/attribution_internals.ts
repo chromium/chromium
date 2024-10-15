@@ -265,8 +265,8 @@ function initSourceTable(panel: HTMLElement):
         valueColumn('Priority', 'priority', asNumber),
         valueColumn('Filter Data', 'filterData', asCode),
         valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
-        'Event-Level Fields',
         valueColumn('Attribution Scopes Data', 'attributionScopesData', asCode),
+        'Event-Level Fields',
         valueColumn(
             'Epsilon', 'eventLevelEpsilon',
             asCustomNumber((v: number) => v.toFixed(3))),
