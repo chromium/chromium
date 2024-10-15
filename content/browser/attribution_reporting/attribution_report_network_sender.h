@@ -71,7 +71,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
 
   void SendReport(GURL url,
                   url::Origin origin,
-                  const std::string& body,
+                  std::string body,
                   UrlLoaderCallback callback);
 
   // Called when headers are available for a sent report.
