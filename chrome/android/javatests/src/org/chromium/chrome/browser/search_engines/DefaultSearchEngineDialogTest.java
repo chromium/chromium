@@ -38,7 +38,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -49,7 +48,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.FakeTemplateUrl;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Arrays;
@@ -165,7 +163,6 @@ public class DefaultSearchEngineDialogTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testButtonClickRunsCallback() {
         showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
@@ -180,7 +177,6 @@ public class DefaultSearchEngineDialogTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testButtonClickDismissesDialog() {
         showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
