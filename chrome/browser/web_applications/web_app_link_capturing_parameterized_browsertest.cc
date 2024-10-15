@@ -621,8 +621,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
   base::FilePath GetExpectationsFile() const {
     std::string filename =
         (UseOutputFileForCaptureOn()
-             ? GetExpectationsFileBaseName() + ""
-             : "navigation_capture_test_expectation_capture_off") +
+             ? GetExpectationsFileBaseName() + "_capture_on"
+             : GetExpectationsFileBaseName() + "_capture_off") +
         ".json";
     return base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
         .AppendASCII(kLinkCaptureTestInputPathPrefix)
@@ -1253,7 +1253,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
     std::string json_data;
     bool success = ReadFileToString(GetExpectationsFile(), &json_data);
     if (!ShouldRebaseline()) {
-      ASSERT_TRUE(success) << "Failed to read test baselines";
+      ASSERT_TRUE(success) << "Failed to read test baselines from "
+                           << GetExpectationsFile().value();
     }
     if (!success) {
       json_data = R"(
