@@ -104,6 +104,23 @@ std::string StateToString(State state) {
       return "failure";
   }
 }
+
+// Records histograms related to SkyVault local storage settings.
+void LocalStorageHistograms(Profile* profile, bool local_user_files_allowed) {
+  SkyVaultLocalStorageEnabledHistogram(local_user_files_allowed);
+
+  if (local_user_files_allowed) {
+    return;  // No further checks needed.
+  }
+
+  // If local files are disallowed, check if Downloads are misconfigured.
+  FileSaveDestination downloads_destination = GetDownloadsDestination(profile);
+  if (downloads_destination == FileSaveDestination::kDownloads ||
+      downloads_destination == FileSaveDestination::kNotSpecified) {
+    SkyVaultLocalStorageMisconfiguredHistogram(true);
+  }
+}
+
 }  // namespace
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
@@ -133,7 +150,8 @@ void LocalFilesMigrationManager::Initialize() {
   local_user_files_allowed_ = LocalUserFilesAllowed();
   cloud_provider_ = GetMigrationDestination();
 
-  SkyVaultLocalStorageEnabledHistogram(local_user_files_allowed_);
+  LocalStorageHistograms(Profile::FromBrowserContext(context_),
+                         local_user_files_allowed_);
 
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     // Migration is now disabled, reset the state.
@@ -210,7 +228,8 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     return;
   }
 
-  SkyVaultLocalStorageEnabledHistogram(local_user_files_allowed_);
+  LocalStorageHistograms(Profile::FromBrowserContext(context_),
+                         local_user_files_allowed_);
 
   // If local files are allowed or migration is turned off, just stop ongoing
   // migration or timers if any.

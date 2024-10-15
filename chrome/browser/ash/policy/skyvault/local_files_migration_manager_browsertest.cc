@@ -306,6 +306,9 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.LocalStorage.Enabled", false, 1);
+  // DownloadDirectory isn't set, so local storage is also miconfigured.
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.LocalStorage.Misconfigured", true, 1);
   histogram_tester_.ExpectBucketCount(
       GetUMAName(destination, kMigrationEnabledUMASuffix), true, 1);
   histogram_tester_.ExpectBucketCount(

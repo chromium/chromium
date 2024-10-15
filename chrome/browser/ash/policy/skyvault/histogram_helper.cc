@@ -14,15 +14,48 @@
 
 namespace policy::local_user_files {
 namespace {
+
+constexpr char kSkyVaultUMAPrefix[] = "Enterprise.SkyVault.";
+
+// Suffixes for upload flow histograms.
+constexpr char kDeleteErrorSuffix[] = "DeleteError";
+constexpr char kOneDriveSignInErrorSuffix[] = "SignInError";
+
+// Suffixes for local storage histograms.
+constexpr char kLocalStorageEnabledSuffix[] = "LocalStorage.Enabled";
+constexpr char kLocalStorageMisconfiguredSuffix[] =
+    "LocalStorage.Misconfigured";
+
+// Suffixes for migration flow histograms.
+constexpr char kMigrationEnabledSuffix[] = "Enabled";
+constexpr char kMigrationMisconfiguredSuffix[] = "Misconfigured";
+constexpr char kMigrationResetSuffix[] = "Reset";
+constexpr char kMigrationStoppedSuffix[] = "Stopped";
+constexpr char kMigrationStateErrorContextSuffix[] = "StateErrorContext";
+constexpr char kMigrationWrongStateSuffix[] = "WrongState";
+constexpr char kMigrationFailedSuffix[] = "Failed";
+constexpr char kMigrationWriteAccessErrorSuffix[] = "WriteAccessError";
+constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
+constexpr char kMigrationDialogShownSuffix[] = "DialogShown";
+
+// Constants for cloud providers used in histogram names.
+constexpr char kGoogleDriveProvider[] = "GoogleDrive";
+constexpr char kOneDriveProvider[] = "OneDrive";
+
+// Constants for upload triggers used in histogram names.
+constexpr char kDownloadTrigger[] = "Download";
+constexpr char kScreenCaptureTrigger[] = "ScreenCapture";
+constexpr char kMigrationTrigger[] = "Migration";
+
 // Converts `provider` to a string representation used to form a metric name.
 std::string GetUMACloudProvider(CloudProvider provider) {
   switch (provider) {
     case CloudProvider::kNotSpecified:
       NOTREACHED_NORETURN();
     case CloudProvider::kGoogleDrive:
-      return "GoogleDrive";
+      return kGoogleDriveProvider;
     case CloudProvider::kOneDrive:
-      return "OneDrive";
+      return kOneDriveProvider;
   }
 }
 
@@ -31,58 +64,81 @@ std::string GetUMAAction(UploadTrigger trigger) {
   std::string action;
   switch (trigger) {
     case UploadTrigger::kDownload:
-      return "Download";
+      return kDownloadTrigger;
     case UploadTrigger::kScreenCapture:
-      return "ScreenCapture";
+      return kScreenCaptureTrigger;
     case UploadTrigger::kMigration:
-      return "Migration";
+      return kMigrationTrigger;
   }
 }
+
+std::string GetHistogramName(
+    const std::string& suffix,
+    std::optional<UploadTrigger> trigger = std::nullopt,
+    std::optional<CloudProvider> provider = std::nullopt) {
+  std::vector<std::string> parts = {kSkyVaultUMAPrefix};
+  if (trigger.has_value()) {
+    parts.push_back(GetUMAAction(trigger.value()));
+    parts.push_back(".");
+  }
+  if (provider.has_value()) {
+    parts.push_back(GetUMACloudProvider(provider.value()));
+    parts.push_back(".");
+  }
+  parts.push_back(suffix);
+  return base::StrCat(parts);
+}
+
 }  // namespace
 
 void SkyVaultDeleteErrorHistogram(UploadTrigger trigger,
                                   CloudProvider provider,
                                   bool value) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.", GetUMAAction(trigger), ".",
-                    GetUMACloudProvider(provider), ".DeleteError"}),
-      value);
+      GetHistogramName(kDeleteErrorSuffix, trigger, provider), value);
 }
 
 void SkyVaultOneDriveSignInErrorHistogram(UploadTrigger trigger, bool value) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.", GetUMAAction(trigger),
-                    ".OneDrive.SignInError"}),
-      value);
+  base::UmaHistogramBoolean(GetHistogramName(kOneDriveSignInErrorSuffix,
+                                             trigger, CloudProvider::kOneDrive),
+                            value);
 }
 
 void SkyVaultLocalStorageEnabledHistogram(bool value) {
-  base::UmaHistogramBoolean("Enterprise.SkyVault.LocalStorage.Enabled", value);
+  base::UmaHistogramBoolean(GetHistogramName(kLocalStorageEnabledSuffix),
+                            value);
+}
+
+void SkyVaultLocalStorageMisconfiguredHistogram(bool value) {
+  base::UmaHistogramBoolean(GetHistogramName(kLocalStorageMisconfiguredSuffix),
+                            value);
 }
 
 void SkyVaultMigrationEnabledHistogram(CloudProvider provider, bool value) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".Enabled"}),
+      GetHistogramName(kMigrationEnabledSuffix, UploadTrigger::kMigration,
+                       provider),
       value);
 }
 
 void SkyVaultMigrationMisconfiguredHistogram(CloudProvider provider,
                                              bool value) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".Misconfigured"}),
+      GetHistogramName(kMigrationMisconfiguredSuffix, UploadTrigger::kMigration,
+                       provider),
       value);
 }
 
 void SkyVaultMigrationResetHistogram(bool value) {
-  base::UmaHistogramBoolean("Enterprise.SkyVault.Migration.Reset", value);
+  base::UmaHistogramBoolean(
+      GetHistogramName(kMigrationResetSuffix, UploadTrigger::kMigration),
+      value);
 }
 
 void SkyVaultMigrationStoppedHistogram(CloudProvider provider, bool value) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".Stopped"}),
+      GetHistogramName(kMigrationStoppedSuffix, UploadTrigger::kMigration,
+                       provider),
       value);
 }
 
@@ -90,39 +146,40 @@ void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
                                           StateErrorContext context,
                                           State state) {
   base::UmaHistogramEnumeration(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".StateErrorContext"}),
+      GetHistogramName(kMigrationStateErrorContextSuffix,
+                       UploadTrigger::kMigration, provider),
       context);
   base::UmaHistogramEnumeration(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".WrongState"}),
+      GetHistogramName(kMigrationWrongStateSuffix, UploadTrigger::kMigration,
+                       provider),
       state);
 }
 
 void SkyVaultMigrationFailedHistogram(CloudProvider provider, bool value) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".Failed"}),
+      GetHistogramName(kMigrationFailedSuffix, UploadTrigger::kMigration,
+                       provider),
       value);
 }
 
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
-  base::UmaHistogramBoolean("Enterprise.SkyVault.Migration.WriteAccessError",
+  base::UmaHistogramBoolean(GetHistogramName(kMigrationWriteAccessErrorSuffix,
+                                             UploadTrigger::kMigration),
                             value);
 }
 
 void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,
                                             DialogAction action) {
   base::UmaHistogramEnumeration(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".DialogAction"}),
+      GetHistogramName(kMigrationDialogActionSuffix, UploadTrigger::kMigration,
+                       provider),
       action);
 }
 
 void SkyVaultMigrationDialogShownHistogram(CloudProvider provider, bool value) {
   base::UmaHistogramBoolean(
-      base::StrCat({"Enterprise.SkyVault.Migration.",
-                    GetUMACloudProvider(provider), ".DialogShown"}),
+      GetHistogramName(kMigrationDialogShownSuffix, UploadTrigger::kMigration,
+                       provider),
       value);
 }
 

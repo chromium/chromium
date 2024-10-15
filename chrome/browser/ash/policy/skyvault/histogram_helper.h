@@ -15,8 +15,11 @@ void SkyVaultDeleteErrorHistogram(UploadTrigger trigger,
                                   bool value);
 void SkyVaultOneDriveSignInErrorHistogram(UploadTrigger trigger, bool value);
 
-// Helper functions to log UMA stats specific for the migration flow.
+// Helper functions to log UMA stats related to local storage settings.
 void SkyVaultLocalStorageEnabledHistogram(bool value);
+void SkyVaultLocalStorageMisconfiguredHistogram(bool value);
+
+// Helper functions to log UMA stats specific for the migration flow.
 void SkyVaultMigrationEnabledHistogram(CloudProvider provider, bool value);
 void SkyVaultMigrationMisconfiguredHistogram(CloudProvider provider,
                                              bool value);
