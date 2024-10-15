@@ -139,6 +139,10 @@ export class Dictation {
     }
   }
 
+  isActive(): boolean {
+    return this.active_;
+  }
+
   /**
    * Called when Dictation is toggled.
    * @param activated Whether Dictation was just activated.

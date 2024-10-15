@@ -141,7 +141,13 @@ export class AccessibilityCommon {
   private onFaceGazeUpdated_(details: chrome.settingsPrivate.PrefObject): void {
     if (details.value && !this.faceGaze_) {
       // Initialize the FaceGaze extension.
-      this.faceGaze_ = new FaceGaze();
+      this.faceGaze_ = new FaceGaze(() => {
+        if (!this.dictation_) {
+          return false;
+        }
+
+        return this.dictation_.isActive();
+      });
       if (this.facegazeLoadCallbackForTest_) {
         this.facegazeLoadCallbackForTest_();
         this.facegazeLoadCallbackForTest_ = null;

@@ -47,9 +47,12 @@ export class GestureHandler {
   private previousGestures_: FacialGesture[] = [];
   private macrosToCompleteLater_: Map<FacialGesture, Macro> = new Map();
   private paused_ = false;
+  private isDictationActive_: () => boolean;
 
-  constructor(mouseController: MouseController) {
+  constructor(
+      mouseController: MouseController, isDictationActive: () => boolean) {
     this.mouseController_ = mouseController;
+    this.isDictationActive_ = isDictationActive;
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.toggleInfoListener_ = enabled =>
         GestureDetector.toggleSendGestureDetectionInfo(enabled);
@@ -242,12 +245,7 @@ export class GestureHandler {
 
   private macroFromName_(name: MacroName, gesture: FacialGesture): Macro
       |undefined {
-    if (this.mouseController_.isScrollModeActive() &&
-        name !== MacroName.TOGGLE_SCROLL_MODE) {
-      return;
-    }
-
-    if (this.paused_ && name !== MacroName.TOGGLE_FACEGAZE) {
+    if (!this.isMacroAllowed_(name)) {
       return;
     }
 
@@ -337,6 +335,23 @@ export class GestureHandler {
       default:
         return;
     }
+  }
+
+  private isMacroAllowed_(name: MacroName): boolean {
+    if (this.isDictationActive_() && name !== MacroName.TOGGLE_DICTATION) {
+      return false;
+    }
+
+    if (this.mouseController_.isScrollModeActive() &&
+        name !== MacroName.TOGGLE_SCROLL_MODE) {
+      return false;
+    }
+
+    if (this.paused_ && name !== MacroName.TOGGLE_FACEGAZE) {
+      return false;
+    }
+
+    return true;
   }
 }
 

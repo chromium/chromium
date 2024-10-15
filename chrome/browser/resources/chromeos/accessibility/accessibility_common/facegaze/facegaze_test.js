@@ -1960,3 +1960,44 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
     lastText = currentText;
   }
 });
+
+AX_TEST_F('FaceGazeTest', 'GesturesDisabledDuringDictation', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_LEFT)
+          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_DICTATION);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.BROW_INNER_UP, 0.3)
+                                  .set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(false)
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(0);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  const gestureHandler = this.getFaceGaze().gestureHandler_;
+
+  // Make FaceGaze think that Dictation is active.
+  gestureHandler.isDictationActive_ = () => true;
+
+  // Ensure the only action allowed is TOGGLE_DICTATION.
+  let result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
+  assertEquals(result.macros.length, 1);
+  assertEquals(result.macros[0].getName(), MacroName.TOGGLE_DICTATION);
+
+  // Make FaceGaze think that Dictation is inactive.
+  gestureHandler.isDictationActive_ = () => false;
+
+  // Ensure no restrictions are applied.
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
+  assertEquals(result.macros.length, 2);
+});

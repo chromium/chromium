@@ -26,7 +26,7 @@ export class FaceGaze {
   private webCamFaceLandmarker_: WebCamFaceLandmarker;
   private bubbleController_: BubbleController;
 
-  constructor() {
+  constructor(isDictationActive: () => boolean) {
     this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
         (resultWithLatency: FaceLandmarkerResultWithLatency) => {
           const {result, latency} = resultWithLatency;
@@ -41,7 +41,8 @@ export class FaceGaze {
     });
 
     this.mouseController_ = new MouseController(this.bubbleController_);
-    this.gestureHandler_ = new GestureHandler(this.mouseController_);
+    this.gestureHandler_ =
+        new GestureHandler(this.mouseController_, isDictationActive);
     this.metricsUtils_ = new MetricsUtils();
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
