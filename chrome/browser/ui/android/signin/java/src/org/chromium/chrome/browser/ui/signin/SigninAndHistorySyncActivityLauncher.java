@@ -59,9 +59,10 @@ public interface SigninAndHistorySyncActivityLauncher {
             Context context,
             Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
-            @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
+            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                    int withAccountSigninMode,
+            @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId);
 
@@ -82,8 +83,9 @@ public interface SigninAndHistorySyncActivityLauncher {
             @NonNull Context context,
             @NonNull Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                    int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint);
 
     /**

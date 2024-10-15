@@ -144,7 +144,8 @@ public class SyncPromoController {
     private final boolean mShouldSuppressSecondaryButton;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-    private final @SigninAndHistorySyncCoordinator.HistoryOptInMode int mHistoryOptInMode;
+    private final @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int
+            mHistoryOptInMode;
     private final Delegate mDelegate;
 
     private @Nullable DisplayableProfileData mProfileData;
@@ -261,7 +262,8 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_bookmarks;
                 }
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode =
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -278,7 +280,8 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                 }
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode =
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -295,7 +298,8 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
                     mShouldSuppressSecondaryButton = false;
                 }
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED;
+                mHistoryOptInMode =
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
@@ -315,7 +319,8 @@ public class SyncPromoController {
                 mTitleStringId = R.string.sync_promo_title_settings;
                 mDescriptionStringId = R.string.sync_promo_description_settings_without_passwords;
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode =
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
@@ -669,8 +674,8 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
             } else {
@@ -678,8 +683,8 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
                         mAccessPoint,
@@ -699,8 +704,8 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
             } else {
@@ -708,8 +713,8 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
                         mAccessPoint,
@@ -729,8 +734,8 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
             } else {
@@ -738,8 +743,8 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
                         mAccessPoint,
