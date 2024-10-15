@@ -222,15 +222,11 @@ bool EnumRelocsCallback(const base::win::PEImage& mem_peimage,
         // other than the rebase, extend the verification range to include those
         // bytes since they are considered part of a modification.
         uint32_t relocated = *reinterpret_cast<uint32_t*>(ptr);
-        intptr_t original = relocated + state->image_base_delta;
+        uint32_t original = relocated + state->image_base_delta;
+        base::span<const uint8_t> original_reloc_bytes =
+            base::byte_span_from_ref(original);
 
         // Cast to intprt_t to allow arithmetic on the pointers
-        ptrdiff_t mem_reloc_offset =
-            original - reinterpret_cast<intptr_t>(
-                           base::to_address(state->mem_code_data.begin()));
-        base::span<const uint8_t>::iterator original_reloc_bytes =
-            state->mem_code_data.begin() + mem_reloc_offset;
-
         ptrdiff_t disk_reloc_offset =
             state->code_section_delta + reinterpret_cast<intptr_t>(address) -
             reinterpret_cast<intptr_t>(
