@@ -410,8 +410,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       const int ram_percentage = kVmMemorySizePercentage.Get();
       int vm_ram_mib =
           std::min(max_mib, ram_percentage * ram_mib / 100 + shift_mib);
-      constexpr int kVmRamMinMib = 2048;
-
       if (delegate->IsCrosvm32bit()) {
         // This is a workaround for ARM Chromebooks where userland including
         // crosvm is compiled in 32 bit.
@@ -423,15 +421,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
         }
       }
 
-      if (vm_ram_mib > kVmRamMinMib) {
-        request.set_memory_mib(vm_ram_mib);
-        VLOG(2) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
-      } else {
-        VLOG(2) << "VmMemorySize is enabled, but computed size is "
-                << "min(" << ram_mib << " + " << shift_mib << "," << max_mib
-                << ") == " << vm_ram_mib << "MiB, less than " << kVmRamMinMib
-                << " MiB safe minium.";
-      }
+      request.set_memory_mib(vm_ram_mib);
+      VLOG(2) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
     } else {
       VLOG(2) << "VmMemorySize is enabled, but GetSystemMemoryInfo failed.";
     }
@@ -556,6 +547,11 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       break;
     default:
       NOTREACHED();
+  }
+
+  if (request.memory_mib() < kMinVmMemorySizeMiB) {
+    request.set_memory_mib(kMinVmMemorySizeMiB);
+    VLOG(2) << "Overriding VM memory size to 3243 MiB for app compatibility";
   }
 
   request.set_use_gki(base::FeatureList::IsEnabled(kArcVmGki));

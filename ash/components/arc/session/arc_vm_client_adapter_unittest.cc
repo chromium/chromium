@@ -2187,7 +2187,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeDisabled) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), 0u);
+  EXPECT_EQ(request.memory_mib(), kMinVmMemorySizeMiB);
 }
 
 // Test that StartArcVmRequest has `memory_mib == system memory` when
@@ -2224,7 +2224,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledSmall) {
 
 // Test that StartArcVmRequest has memory_mib unset when kVmMemorySize is
 // enabled, but the requested size is too low (due to max_mib being lower than
-// the 2048 safety minimum).
+// the safety minimum).
 TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledLow) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
@@ -2234,24 +2234,24 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledLow) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  // The 1024 max_mib is below the 2048 MiB safety cut-off, so we expect
-  // memory_mib to be unset.
-  EXPECT_EQ(request.memory_mib(), 0u);
+  // The 1024 max_mib is below the safety cut-off, so we expect
+  // memory_mib to be set to the minimum.
+  EXPECT_EQ(request.memory_mib(), kMinVmMemorySizeMiB);
 }
 
-// Test that StartArcVmRequest has `memory_mib == 2049` when kVmMemorySize is
-// enabled with max_mib := 2049.
-// NOTE: requires that the test running system has more than 2049 MiB of RAM.
+// Test that StartArcVmRequest has `memory_mib == 3333` when kVmMemorySize is
+// enabled with max_mib := 3333.
+// NOTE: requires that the test running system has more than 3333 MiB of RAM.
 TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledMax) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["shift_mib"] = "0";
-  params["max_mib"] = "2049";  // Above the 2048 minimum cut-off.
+  params["max_mib"] = "3333";  // Above the minimum cut-off.
   feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), 2049u);
+  EXPECT_EQ(request.memory_mib(), 3333u);
 }
 
 // Test that ARCMVM size is set by ram_percentage.
@@ -2305,7 +2305,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledNoSystemMemoryInfo) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), 0u);
+  EXPECT_EQ(request.memory_mib(), kMinVmMemorySizeMiB);
 }
 
 // Test that StartArcVmRequest::memory_mib is limited to k32bitVmRamMaxMib when
