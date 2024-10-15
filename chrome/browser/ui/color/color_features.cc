@@ -10,6 +10,6 @@ namespace features {
 // adjusts the text color to be less subtle.
 BASE_FEATURE(kInfoBarIconMonochrome,
              "InfoBarIconMonochrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
