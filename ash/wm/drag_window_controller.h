@@ -6,7 +6,6 @@
 #define ASH_WM_DRAG_WINDOW_CONTROLLER_H_
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -28,10 +27,7 @@ namespace ash {
 // Phantom windows called "drag windows" represent the window on other displays.
 class ASH_EXPORT DragWindowController {
  public:
-  DragWindowController(
-      aura::Window* window,
-      bool is_touch_dragging,
-      const std::optional<gfx::Rect>& shadow_bounds = std::nullopt);
+  DragWindowController(aura::Window* window, bool is_touch_dragging);
   DragWindowController(const DragWindowController&) = delete;
   DragWindowController& operator=(const DragWindowController&) = delete;
   virtual ~DragWindowController();
@@ -48,8 +44,6 @@ class ASH_EXPORT DragWindowController {
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest, DragWindowController);
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest,
                            DragWindowControllerAcrossThreeDisplays);
-  FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest,
-                           DragWindowControllerWithCustomShadowBounds);
 
   // Returns the currently active drag windows.
   int GetDragWindowsCountForTest() const;
@@ -67,9 +61,6 @@ class ASH_EXPORT DragWindowController {
 
   // Indicates touch dragging, as opposed to mouse dragging.
   const bool is_touch_dragging_;
-
-  // Used if the drag windows may need their shadows adjusted.
-  const std::optional<gfx::Rect> shadow_bounds_;
 
   // |window_|'s opacity before the drag. Used to revert opacity after the drag.
   const float old_opacity_;

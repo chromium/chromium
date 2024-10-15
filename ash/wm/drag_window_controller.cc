@@ -78,9 +78,7 @@ class DragWindowController::DragWindowDetails {
   DragWindowDetails& operator=(const DragWindowDetails&) = delete;
   ~DragWindowDetails() = default;
 
-  void Update(aura::Window* original_window,
-              bool is_touch_dragging,
-              const std::optional<gfx::Rect>& shadow_bounds) {
+  void Update(aura::Window* original_window, bool is_touch_dragging) {
     const float opacity =
         GetDragWindowOpacity(root_window_, original_window, is_touch_dragging);
     if (opacity == 0.f) {
@@ -90,7 +88,7 @@ class DragWindowController::DragWindowDetails {
     }
 
     if (!widget_)
-      CreateDragWindow(original_window, shadow_bounds);
+      CreateDragWindow(original_window);
 
     gfx::Rect bounds = original_window->bounds();
     aura::Window* window = widget_->GetNativeWindow();
@@ -104,8 +102,7 @@ class DragWindowController::DragWindowDetails {
  private:
   friend class DragWindowController;
 
-  void CreateDragWindow(aura::Window* original_window,
-                        const std::optional<gfx::Rect>& shadow_bounds) {
+  void CreateDragWindow(aura::Window* original_window) {
     DCHECK(!widget_);
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -137,15 +134,7 @@ class DragWindowController::DragWindowDetails {
     gfx::Rect bounds = original_window->bounds();
     ::wm::ConvertRectToScreen(original_window->parent(), &bounds);
     window->SetBounds(bounds);
-
-    if (shadow_bounds) {
-      shadow_ = std::make_unique<ui::Shadow>();
-      shadow_->Init(::wm::kShadowElevationActiveWindow);
-      shadow_->SetContentBounds(*shadow_bounds);
-      widget_->GetLayer()->Add(shadow_->layer());
-    } else {
-      ::wm::SetShadowElevation(window, ::wm::kShadowElevationActiveWindow);
-    }
+    wm::SetShadowElevation(window, wm::kShadowElevationActiveWindow);
 
     // Show the widget the setup is done.
     widget_->Show();
@@ -161,13 +150,10 @@ class DragWindowController::DragWindowDetails {
   std::unique_ptr<ui::Shadow> shadow_;
 };
 
-DragWindowController::DragWindowController(
-    aura::Window* window,
-    bool is_touch_dragging,
-    const std::optional<gfx::Rect>& shadow_bounds)
+DragWindowController::DragWindowController(aura::Window* window,
+                                           bool is_touch_dragging)
     : window_(window),
       is_touch_dragging_(is_touch_dragging),
-      shadow_bounds_(shadow_bounds),
       old_opacity_(window->layer()->GetTargetOpacity()) {
   window->layer()->SetOpacity(1.f);
 
@@ -197,7 +183,7 @@ void DragWindowController::Update() {
   }
 
   for (std::unique_ptr<DragWindowDetails>& details : drag_windows_)
-    details->Update(window_, is_touch_dragging_, shadow_bounds_);
+    details->Update(window_, is_touch_dragging_);
 }
 
 int DragWindowController::GetDragWindowsCountForTest() const {
