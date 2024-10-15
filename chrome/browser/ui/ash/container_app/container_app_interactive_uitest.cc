@@ -468,9 +468,9 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromAppList) {
       AssignView(kAppsGridViewElementName, std::ref(apps_grid_view)),
 
       // Find container app.
-      NameDescendantView(kAppsGridViewElementName, kContainerAppElementName,
-                         base::BindRepeating(&IsAppListItemViewForWebApp,
-                                             ash::kContainerAppId)),
+      NameDescendantView(
+          kAppsGridViewElementName, kContainerAppElementName,
+          base::BindRepeating(&IsAppListItemViewForWebApp, ash::kGeminiAppId)),
 
       // Cache container app.
       AssignView(kContainerAppElementName, std::ref(container_app)),
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromAppList) {
               .Then(
                   base::BindOnce(&WebContentsInteractionTestUtil::web_contents))
               .Then(base::BindOnce(&chrome::FindBrowserWithTab))
-              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kContainerAppId))),
+              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kGeminiAppId))),
 
       // Check container app launch URL.
       WaitForWebContentsReady(kContainerAppWebContentsElementId,
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromShelf) {
       NameDescendantView(
           ash::kShelfViewElementId, kContainerAppElementName,
           base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
-                              ash::kContainerAppId)),
+                              ash::kGeminiAppId)),
 
       // Cache container app.
       AssignView(kContainerAppElementName, std::ref(container_app)),
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromShelf) {
               .Then(
                   base::BindOnce(&WebContentsInteractionTestUtil::web_contents))
               .Then(base::BindOnce(&chrome::FindBrowserWithTab))
-              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kContainerAppId))),
+              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kGeminiAppId))),
 
       // Check container app launch URL.
       WaitForWebContentsReady(kContainerAppWebContentsElementId,
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest,
               .Then(
                   base::BindOnce(&WebContentsInteractionTestUtil::web_contents))
               .Then(base::BindOnce(&chrome::FindBrowserWithTab))
-              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kContainerAppId))),
+              .Then(base::BindOnce(&IsBrowserForWebApp, ash::kGeminiAppId))),
 
       // Check container app launch URL.
       WaitForWebContentsReady(kContainerAppWebContentsElementId,
@@ -688,9 +688,9 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromAppList) {
           kAppListBubbleAppsPageElementName, kAppsGridViewElementName),
 
       // Find container app.
-      NameDescendantView(kAppsGridViewElementName, kContainerAppElementName,
-                         base::BindRepeating(&IsAppListItemViewForWebApp,
-                                             ash::kContainerAppId)),
+      NameDescendantView(
+          kAppsGridViewElementName, kContainerAppElementName,
+          base::BindRepeating(&IsAppListItemViewForWebApp, ash::kGeminiAppId)),
 
       // Open menu.
       MoveMouseTo(kContainerAppElementName), ClickMouse(ui_controls::RIGHT),
@@ -743,7 +743,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromSettings) {
       NameDescendantView(
           ash::kShelfViewElementId, kContainerAppElementName,
           base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
-                              ash::kContainerAppId)),
+                              ash::kGeminiAppId)),
 
       // Open menu.
       MoveMouseTo(kContainerAppElementName), ClickMouse(ui_controls::RIGHT),
@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromSettings) {
           kSettingsAppWebContentsElementId,
           chrome::GetOSSettingsUrl(
               base::StrCat({chromeos::settings::mojom::kAppDetailsSubpagePath,
-                            "?id=", ash::kContainerAppId}))),
+                            "?id=", ash::kGeminiAppId}))),
 
       // Check container app title.
       CheckJsResultAt(
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromShelf) {
       NameDescendantView(
           ash::kShelfViewElementId, kContainerAppElementName,
           base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
-                              ash::kContainerAppId)),
+                              ash::kGeminiAppId)),
 
       // Open menu.
       MoveMouseTo(kContainerAppElementName), ClickMouse(ui_controls::RIGHT),
@@ -946,8 +946,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiIneligibilityTest,
             FindDescendantsOfClass(apps_grid_view, apps);
             return apps.size() &&
                    base::ranges::none_of(apps, [&](ash::AppListItemView* app) {
-                     return IsAppListItemViewForWebApp(ash::kContainerAppId,
-                                                       app);
+                     return IsAppListItemViewForWebApp(ash::kGeminiAppId, app);
                    });
           }));
 }
@@ -963,8 +962,8 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiIneligibilityTest,
         return apps.size() &&
                base::ranges::none_of(
                    apps, [&, shelf = raw_ptr(shelf)](ash::ShelfAppButton* app) {
-                     return IsShelfAppButtonForWebApp(
-                         std::cref(shelf), ash::kContainerAppId, app);
+                     return IsShelfAppButtonForWebApp(std::cref(shelf),
+                                                      ash::kGeminiAppId, app);
                    });
       }));
 }

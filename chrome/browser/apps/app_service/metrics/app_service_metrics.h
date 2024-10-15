@@ -73,7 +73,7 @@ enum class DefaultAppName {
   kGoogleMeet = 55,
   kGoogleMaps = 56,
   kGoogleMessages = 57,
-  kContainer = 58,
+  kGemini = 58,
   kMall = 59,
   kSanitizeApp = 60,
   // Add any new values above this one, and update kMaxValue to the highest

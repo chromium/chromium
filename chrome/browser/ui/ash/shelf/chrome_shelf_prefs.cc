@@ -376,14 +376,12 @@ void AddContainerAppPinIfNeeded(
     return;
   }
 
-  const std::string app_id = ash::kContainerAppId;
-
-  if (!helper->IsAppDefaultInstalled(profile, app_id)) {
+  if (!helper->IsAppDefaultInstalled(profile, ash::kGeminiAppId)) {
     return;
   }
 
   const app_list::AppListSyncableService::SyncItem* sync_item =
-      syncable_service->GetSyncItem(app_id);
+      syncable_service->GetSyncItem(ash::kGeminiAppId);
   if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
     if (sync_item->is_user_pinned.value_or(true)) {
       ScopedListPrefUpdate update(profile->GetPrefs(),
@@ -393,8 +391,8 @@ void AddContainerAppPinIfNeeded(
     return;
   }
 
-  // Pin the container app before chrome.
-  syncable_service->SetPinPosition(app_id,
+  // Pin the Gemini app before Chrome.
+  syncable_service->SetPinPosition(ash::kGeminiAppId,
                                    CreateFirstPinPosition(syncable_service),
                                    /*is_policy_initiated=*/false);
   {

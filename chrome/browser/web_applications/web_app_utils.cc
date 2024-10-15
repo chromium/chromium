@@ -680,8 +680,7 @@ bool IsValidScopeForLinkCapturing(const GURL& scope) {
 bool WillBeSystemWebApp(const webapps::AppId& app_id,
                         WebAppManagementTypes sources) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  return app_id == ash::kContainerAppId &&
-         sources.Has(WebAppManagement::kDefault);
+  return app_id == ash::kGeminiAppId && sources.Has(WebAppManagement::kDefault);
 #else  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   return false;
 #endif

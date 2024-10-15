@@ -311,12 +311,12 @@ const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     return apps::DefaultAppName::kCalculator;
   } else if (app_id == ash::kCanvasAppId) {
     return apps::DefaultAppName::kChromeCanvas;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  } else if (app_id == ash::kContainerAppId) {
-    return apps::DefaultAppName::kContainer;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == ash::kCursiveAppId) {
     return apps::DefaultAppName::kCursive;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  } else if (app_id == ash::kGeminiAppId) {
+    return apps::DefaultAppName::kGemini;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   } else if (app_id == ash::kGmailAppId) {
     return apps::DefaultAppName::kGmail;
   } else if (app_id == ash::kGoogleMoviesAppId) {

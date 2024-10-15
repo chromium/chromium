@@ -110,7 +110,7 @@ ExternalInstallOptions GetConfigForContainer(
         return info;
       },
       device_info);
-  options.expected_app_id = ash::kContainerAppId;
+  options.expected_app_id = ash::kGeminiAppId;
   options.gate_on_feature = chromeos::features::kGeminiAppPreinstall.name;
   options.is_preferred_app_for_supported_links = true;
   options.only_use_app_info_factory = true;

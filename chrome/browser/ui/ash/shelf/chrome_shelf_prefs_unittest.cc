@@ -216,7 +216,7 @@ class ChromeShelfPrefsTest : public testing::Test {
     static const base::NoDestructor<std::map<std::string, std::string>> kAppMap(
         {
             {app_constants::kChromeAppId, "chrome"},
-            {ash::kContainerAppId, "container"},
+            {ash::kGeminiAppId, "gemini"},
             {ash::kGmailAppId, "gmail"},
             {ash::kGoogleCalendarAppId, "cal"},
             {file_manager::kFileManagerSwaAppId, "files"},
@@ -464,7 +464,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
 
   EXPECT_EQ(GetPinned(),
             base::StrCat(
-                {"chrome, ", IsGoogleChromeBranded() ? "container, " : "",
+                {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
                  "gmail, cal, files, messages, meet, play, youtube, photos"}));
 
   // Simulate installation finishing in unpredictable order.
@@ -479,7 +479,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "container, " : "",
+          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "gemini, " : "",
            "gmail, cal, files, messages, meet, play, youtube, photos"}));
 
   // Install app3, comes after gmail.
@@ -487,7 +487,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "container, " : "",
+          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "gemini, " : "",
            "gmail, app3, cal, files, messages, meet, play, youtube, photos"}));
 
   // Install app5, which should not get pinned since it is not in first list.
@@ -495,7 +495,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "container, " : "",
+          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "gemini, " : "",
            "gmail, app3, cal, files, messages, meet, play, youtube, photos"}));
 
   // Install app1, comes after chrome.
@@ -504,7 +504,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
       GetPinned(),
       base::StrCat(
           {"app4, chrome, app1, app2, ",
-           IsGoogleChromeBranded() ? "container, " : "",
+           IsGoogleChromeBranded() ? "gemini, " : "",
            "gmail, app3, cal, files, messages, meet, play, youtube, photos"}));
 }
 
@@ -518,7 +518,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadRepeats) {
 
   std::vector<apps::PackageId> pin_order({app1, app2, app3, chrome});
   std::string default_apps = base::StrCat(
-      {"chrome, ", IsGoogleChromeBranded() ? "container, " : "",
+      {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
        "gmail, cal, files, messages, meet, play, youtube, photos"});
 
   // Request to pin app1, and app2, but only install app1.
@@ -544,7 +544,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
   InstallApp(chrome);
   EXPECT_EQ(GetPinned(),
             base::StrCat(
-                {"chrome, ", IsGoogleChromeBranded() ? "container, " : "",
+                {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
                  "gmail, cal, files, messages, meet, play, youtube, photos"}));
   auto get_prefs = [&]() {
     return profile_->GetPrefs()
@@ -564,7 +564,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
   InstallApp(app1);
   EXPECT_EQ(GetPinned(),
             base::StrCat(
-                {"chrome, ", IsGoogleChromeBranded() ? "container, " : "",
+                {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
                  "gmail, cal, files, messages, meet, play, youtube, photos"}));
 
   // Further calls to OnGetPinPreloadApps() should not write additional values
