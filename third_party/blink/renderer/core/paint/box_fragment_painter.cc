@@ -1633,18 +1633,14 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
           PaintBoxItem(*item, *cursor, paint_info, paint_offset, parent_offset);
         cursor->MoveToNextSkippingChildren();
         break;
-      case FragmentItem::kLine:
+      case FragmentItem::kLine: {
         // Nested kLine items are used for ruby annotations.
-        if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-          InlineCursor line_box_cursor = cursor->CursorForDescendants();
-          PaintInlineItems(paint_info, paint_offset, parent_offset,
-                           &line_box_cursor);
-          cursor->MoveToNextSkippingChildren();
-        } else {
-          NOTREACHED_IN_MIGRATION();
-          cursor->MoveToNext();
-        }
+        InlineCursor line_box_cursor = cursor->CursorForDescendants();
+        PaintInlineItems(paint_info, paint_offset, parent_offset,
+                         &line_box_cursor);
+        cursor->MoveToNextSkippingChildren();
         break;
+      }
       case FragmentItem::kInvalid:
         NOTREACHED();
     }
@@ -2560,7 +2556,6 @@ bool BoxFragmentPainter::HitTestItemsChildren(
           return true;
         }
       } else {  // Nested kLine items for ruby annotations.
-        DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
         if (HitTestItemsChildren(hit_test, container,
                                  cursor.CursorForDescendants())) {
           return true;

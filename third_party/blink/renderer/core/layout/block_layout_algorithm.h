@@ -482,14 +482,6 @@ class CORE_EXPORT BlockLayoutAlgorithm
     return false;
   }
 
-  // Returns true if |this| is a ruby segment (LayoutRubyColumn) and the
-  // specified |child| is a ruby annotation box (LayoutRubyText).
-  bool IsRubyText(const LayoutInputNode& child) const;
-
-  // Layout |ruby_text_child| content, and decide the location of
-  // |ruby_text_child|. This is called only if IsRubyText() returns true.
-  void HandleRubyText(BlockNode ruby_text_child);
-
   // Layout |placeholder| content, and decide the location of |placeholder|.
   // This is called only if |this| is a text control.
   // This function returns a new value for `PreviousInflowPosition::

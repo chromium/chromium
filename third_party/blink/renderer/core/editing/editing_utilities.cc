@@ -822,8 +822,7 @@ PositionInFlatTree NextPositionOf(const PositionInFlatTree& position,
 
 bool IsEnclosingBlock(const Node* node) {
   return node && node->GetLayoutObject() &&
-         !node->GetLayoutObject()->IsInline() &&
-         !node->GetLayoutObject()->IsRubyText();
+         !node->GetLayoutObject()->IsInline();
 }
 
 // TODO(yosin) Deploy this in all of the places where |enclosingBlockFlow()| and

@@ -248,16 +248,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   bool IsListMarker() const {
     return IsCSSBox() && layout_object_->IsLayoutOutsideListMarker();
   }
-  bool IsRubyBase() const { return layout_object_->IsRubyBase(); }
-  bool IsRubyColumn() const { return layout_object_->IsRubyColumn(); }
-
-  // Return true if this fragment is for LayoutRubyColumn, LayoutRubyText, or
-  // LayoutRubyBase. They are handled specially in scrollable overflow
-  // computation.
-  bool IsRubyBox() const {
-    return layout_object_->IsRubyColumn() || layout_object_->IsRubyText() ||
-           layout_object_->IsRubyBase();
-  }
 
   bool IsSvg() const { return layout_object_->IsSVG(); }
   bool IsSvgText() const { return layout_object_->IsSVGText(); }

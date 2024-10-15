@@ -884,7 +884,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   if (Node().ChildLayoutBlockedByDisplayLock())
     child_iterator = BlockChildIterator(BlockNode(nullptr), nullptr);
 
-  BlockNode ruby_text_child(nullptr);
   BlockNode placeholder_child(nullptr);
   BlockChildIterator::Entry entry;
   for (entry = child_iterator.NextChild(); LayoutInputNode child = entry.node;
@@ -965,8 +964,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
         break;
       }
       break;
-    } else if (IsRubyText(child)) {
-      ruby_text_child = To<BlockNode>(child);
     } else if (child.IsTextControlPlaceholder()) {
       placeholder_child = To<BlockNode>(child);
     } else {
@@ -1034,8 +1031,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   }
 #endif
 
-  if (ruby_text_child)
-    HandleRubyText(ruby_text_child);
   if (placeholder_child) {
     previous_inflow_position.logical_block_offset =
         HandleTextControlPlaceholder(placeholder_child,
@@ -3647,106 +3642,6 @@ bool BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
   container_builder_.ClearUnpositionedListMarker();
 
   return true;
-}
-
-bool BlockLayoutAlgorithm::IsRubyText(const LayoutInputNode& child) const {
-  return Node().IsRubyColumn() && child.IsRubyText();
-}
-
-void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
-  DCHECK(Node().IsRubyColumn());
-
-  const BlockBreakToken* break_token = nullptr;
-  if (const auto* token = GetBreakToken()) {
-    for (const auto& child_token : token->ChildBreakTokens()) {
-      if (child_token->InputNode() == ruby_text_child) {
-        break_token = To<BlockBreakToken>(child_token.Get());
-        break;
-      }
-    }
-  }
-
-  const ComputedStyle& rt_style = ruby_text_child.Style();
-  ConstraintSpaceBuilder builder(GetConstraintSpace(),
-                                 rt_style.GetWritingDirection(), true);
-  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), ruby_text_child, &builder);
-  builder.SetAvailableSize(ChildAvailableSize());
-  if (IsParallelWritingMode(GetConstraintSpace().GetWritingMode(),
-                            rt_style.GetWritingMode())) {
-    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
-  }
-
-  if (line_clamp_data_.ShouldHideForPaint()) [[unlikely]] {
-    builder.SetIsHiddenForPaint(true);
-  }
-
-  const LayoutResult* result =
-      ruby_text_child.Layout(builder.ToConstraintSpace(), break_token);
-
-  const auto& ruby_text_fragment =
-      To<PhysicalBoxFragment>(result->GetPhysicalFragment());
-  const LogicalRect ruby_text_box = ruby_text_fragment.ConvertChildToLogical(
-      ComputeRubyEmHeightBox(ruby_text_fragment));
-
-  // Find the ruby-base fragment.
-  const PhysicalBoxFragment* ruby_base_fragment = nullptr;
-  LayoutUnit ruby_base_block_offset;
-  for (const auto& child : container_builder_.Children()) {
-    if (child->IsRubyBase()) {
-      ruby_base_fragment = &To<PhysicalBoxFragment>(*child.fragment);
-      ruby_base_block_offset = child.offset.block_offset;
-      break;
-    }
-  }
-
-  LayoutUnit ruby_text_box_top;
-  const RubyPosition block_start_position = Style().IsFlippedLinesWritingMode()
-                                                ? RubyPosition::kUnder
-                                                : RubyPosition::kOver;
-  if (Style().GetRubyPosition() == block_start_position) {
-    LayoutUnit last_line_ruby_text_bottom = ruby_text_box.BlockEndOffset();
-
-    // Get the top of the text in the ruby-base.
-    LayoutUnit first_line_top;
-    if (ruby_base_fragment) {
-      first_line_top = ruby_base_block_offset +
-                       ruby_base_fragment
-                           ->ConvertChildToLogical(
-                               ComputeRubyEmHeightBox(*ruby_base_fragment))
-                           .offset.block_offset;
-    }
-    ruby_text_box_top = first_line_top - last_line_ruby_text_bottom;
-    const LayoutUnit ruby_text_top =
-        ruby_text_box_top + ruby_text_box.offset.block_offset;
-    if (ruby_text_top < LayoutUnit())
-      container_builder_.SetAnnotationOverflow(ruby_text_top);
-  } else {
-    LayoutUnit first_line_ruby_text_top = ruby_text_box.offset.block_offset;
-
-    // Get the bottom of the text in the ruby-base.
-    LayoutUnit last_line_bottom;
-    LayoutUnit base_logical_bottom;
-    if (ruby_base_fragment) {
-      LayoutUnit base_block_size =
-          ruby_base_fragment->Size()
-              .ConvertToLogical(Style().GetWritingMode())
-              .block_size;
-      last_line_bottom = ruby_base_block_offset +
-                         ruby_base_fragment
-                             ->ConvertChildToLogical(
-                                 ComputeRubyEmHeightBox(*ruby_base_fragment))
-                             .BlockEndOffset();
-      base_logical_bottom = ruby_base_block_offset + base_block_size;
-    }
-    ruby_text_box_top = last_line_bottom - first_line_ruby_text_top;
-    const LayoutUnit logical_bottom_overflow = ruby_text_box_top +
-                                               ruby_text_box.BlockEndOffset() -
-                                               base_logical_bottom;
-    if (logical_bottom_overflow > LayoutUnit())
-      container_builder_.SetAnnotationOverflow(logical_bottom_overflow);
-  }
-  container_builder_.AddResult(*result,
-                               LogicalOffset(LayoutUnit(), ruby_text_box_top));
 }
 
 LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(

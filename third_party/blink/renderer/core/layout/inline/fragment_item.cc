@@ -137,7 +137,6 @@ FragmentItem::FragmentItem(const PhysicalSize& size,
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
 }
 
 FragmentItem::FragmentItem(const PhysicalBoxFragment& box,

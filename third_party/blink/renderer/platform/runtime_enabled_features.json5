@@ -3650,11 +3650,6 @@
     },
     {
       // crbug.com/324111880
-      name: "RubyLineBreakable",
-      status: "stable",
-    },
-    {
-      // crbug.com/324111880
       name: "RubyShortHeuristics",
       status: "stable",
     },

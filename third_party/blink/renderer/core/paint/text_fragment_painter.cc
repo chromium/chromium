@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -113,31 +111,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
 
-  if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
-      return !text_item.HasOverAnnotation();
-    }
-    return !text_item.HasUnderAnnotation();
+  if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
+    return !text_item.HasOverAnnotation();
   }
-
-  const LayoutObject* containing_block = layout_object.ContainingBlock();
-  if (!containing_block || !containing_block->IsRubyBase())
-    return true;
-  const LayoutObject* parent = containing_block->Parent();
-  if (!parent || !parent->IsRubyColumn()) {
-    return true;
-  }
-  const auto* ruby_text = To<LayoutRubyColumn>(parent)->RubyText();
-  if (!ruby_text)
-    return true;
-  if (!InlineCursor(*ruby_text)) {
-    return true;
-  }
-  const LineLogicalSide ruby_logical_side =
-      parent->StyleRef().GetRubyPosition() == RubyPosition::kOver
-          ? LineLogicalSide::kOver
-          : LineLogicalSide::kUnder;
-  return ruby_logical_side != style.GetTextEmphasisLineLogicalSide();
+  return !text_item.HasUnderAnnotation();
 }
 
 PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,

@@ -638,7 +638,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline bool IsEligibleForPaintOrLayoutContainment() const {
     NOT_DESTROYED();
-    return (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+    return (!IsInline() || IsAtomicInlineLevel()) &&
            (!IsTablePart() || IsLayoutBlockFlow());
   }
 
@@ -664,7 +664,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline bool IsEligibleForSizeContainment() const {
     NOT_DESTROYED();
-    return (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+    return (!IsInline() || IsAtomicInlineLevel()) &&
            (!IsTablePart() || IsTableCaption()) && !IsTable();
   }
   inline bool ShouldApplySizeContainment() const {
@@ -721,7 +721,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // common logic, which is extracted here to avoid repeated computation.
     return style.IsStackingContextWithoutContainment() ||
            ((style.ContainsLayout() || style.ContainsPaint()) &&
-            (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+            (!IsInline() || IsAtomicInlineLevel()) &&
             (!IsTablePart() || IsLayoutBlockFlow()));
   }
 
@@ -978,23 +978,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
-  virtual bool IsRubyBase() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual bool IsRubyColumn() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual bool IsRubyText() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  // For line-breakable ruby. This returns true only if RubyLineBreakable
-  // flag is enabled.
   bool IsInlineRuby() const;
-  // For line-breakable ruby. This returns true only if RubyLineBreakable
-  // flag is enabled.
   bool IsInlineRubyText() const;
   virtual bool IsTable() const {
     NOT_DESTROYED();

@@ -449,10 +449,7 @@ bool LayoutBoxModelObject::ShouldBeHandledAsInline(
   // type creates a domain-specific LayoutObject such as LayoutImage, such
   // anonymous <table> is not created, and the LayoutObject should adjust
   // IsInline flag for inlinifying.
-  //
-  // LayoutRubyBase and LayoutRubyText should be blocks even in a ruby.
-  return style.IsInInlinifyingDisplay() && !IsTablePart() && !IsRubyBase() &&
-         !IsRubyText();
+  return style.IsInInlinifyingDisplay() && !IsTablePart();
 }
 
 void LayoutBoxModelObject::UpdateFromStyle() {

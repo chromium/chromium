@@ -684,8 +684,7 @@ static bool ShouldEmitNewlinesBeforeAndAfterNode(const Node& node) {
   }
 
   return !r->IsInline() && r->IsLayoutBlock() &&
-         !r->IsFloatingOrOutOfFlowPositioned() && !r->IsBody() &&
-         !r->IsRubyText();
+         !r->IsFloatingOrOutOfFlowPositioned() && !r->IsBody();
 }
 
 template <typename Strategy>

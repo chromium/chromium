@@ -98,10 +98,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_as_block.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -416,17 +413,11 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kBlockMath:
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
-      if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-        return MakeGarbageCollected<LayoutInline>(element);
-      }
-      return MakeGarbageCollected<LayoutRuby>(element);
+      return MakeGarbageCollected<LayoutInline>(element);
     case EDisplay::kBlockRuby:
       return MakeGarbageCollected<LayoutRubyAsBlock>(element);
     case EDisplay::kRubyText:
-      if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-        return MakeGarbageCollected<LayoutInline>(element);
-      }
-      return MakeGarbageCollected<LayoutRubyText>(element);
+      return MakeGarbageCollected<LayoutInline>(element);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
       return MakeGarbageCollected<LayoutCustom>(element);
@@ -502,14 +493,12 @@ bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {
 
 bool LayoutObject::IsInlineRuby() const {
   NOT_DESTROYED();
-  return RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
-         IsLayoutInline() && StyleRef().Display() == EDisplay::kRuby;
+  return IsLayoutInline() && StyleRef().Display() == EDisplay::kRuby;
 }
 
 bool LayoutObject::IsInlineRubyText() const {
   NOT_DESTROYED();
-  return RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
-         IsLayoutInline() && StyleRef().Display() == EDisplay::kRubyText;
+  return IsLayoutInline() && StyleRef().Display() == EDisplay::kRubyText;
 }
 
 bool LayoutObject::IsHR() const {
@@ -4081,13 +4070,6 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     if (destroy_root_parent->Parent() &&
         destroy_root_parent->Parent()->IsFieldset()) {
       break;
-    }
-    // RubyBase should be kept if RubyText exists
-    if (destroy_root_parent->IsRubyBase()) {
-      auto* ruby_run =
-          DynamicTo<LayoutRubyColumn>(destroy_root_parent->Parent());
-      if (ruby_run && ruby_run->HasRubyText())
-        break;
     }
 
     // We need to keep the anonymous parent, if it won't become empty by the

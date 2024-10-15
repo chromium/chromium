@@ -189,60 +189,34 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithPRE) {
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBY) {
   const char* whole_text_selected = "^<ruby>abc<rt>123|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>123</rt></ruby>",
-            GetRange("<ruby>|abc<rt>123</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^123|</rt></ruby>",
-            GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>|abc<rt>123</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
 }
 
 // http://crbug.com/1124584
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
-  // We should not make <ruby> as |InlineContent| container because "XYZ" comes
-  // before "abc" but in DOM tree, order is "abc" then "XYZ".
-  // Layout tree:
-  //  LayoutBlockFlow {BODY} at (8,8) size 784x27
-  //   LayoutRubyAsBlock {RUBY} at (0,0) size 784x27
-  //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
-  //       LayoutRubyText {RT} at (0,-10) size 22x12
-  //         LayoutText {#text} at (2,0) size 18x12
-  //           text run at (2,0) width 18: "XYZ"
-  //       LayoutRubyBase (anonymous) at (0,0) size 22x20
-  //         LayoutText {#text} at (0,0) size 22x19
-  //           text run at (0,0) width 22: "abc"
   const char* whole_text_selected = "<ruby>^abc<rt>XYZ|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: block; }");
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
-            GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
   const char* whole_text_selected = "^<ruby>abc<rt>XYZ|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: inline-block; }");
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
-            GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
   const char* whole_text_selected =
       "^<ruby>abc<br>def<rt>123<br>456|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected
-                       : "<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
+  EXPECT_EQ(whole_text_selected,
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
       << "RT(LayoutRubyColumn) is a block";
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected
-                       : "<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
+  EXPECT_EQ(whole_text_selected,
             GetRange("<ruby>abc<br>def<rt>123|<br>456</rt></ruby>"))
       << "RUBY introduce LayoutRuleBase for 'abc'";
 }

@@ -1094,10 +1094,6 @@ bool LineBreaker::CanBreakAfterAtomicInline(const InlineItem& item) const {
   if (item.IsImage())
     return !sticky_images_quirk_;
 
-  if (item.IsRubyColumn()) {
-    return break_iterator_.IsBreakable(item.EndOffset());
-  }
-
   // Handles text combine
   // See "fast/writing-mode/text-combine-line-break.html".
   auto* const text_combine = MayBeTextCombine(&item);
@@ -1149,10 +1145,6 @@ bool LineBreaker::CanBreakAfter(const InlineItem& item) const {
   auto* const atomic_inline_item = TryGetAtomicInlineItemAfter(item);
   if (!atomic_inline_item)
     return can_break_after;
-
-  if (atomic_inline_item->IsRubyColumn()) {
-    return can_break_after;
-  }
 
   // We can not break before sticky images quirk was applied.
   if (Text()[atomic_inline_item->StartOffset()] == kNoBreakSpaceCharacter)
@@ -2980,22 +2972,6 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
 
   position_ += item_result->inline_size;
 
-  if (item.IsRubyColumn()) {
-    AnnotationOverhang overhang = GetOverhang(*item_result);
-    if (overhang.end > LayoutUnit()) {
-      item_result->pending_end_overhang = overhang.end;
-      maybe_have_end_overhang_ = true;
-    }
-
-    if (CanApplyStartOverhang(*line_info, line_info->Results().size() - 1,
-                              *item_result->item->Style(), overhang.start)) {
-      DCHECK_EQ(item_result->margins.inline_start, LayoutUnit());
-      item_result->margins.inline_start = -overhang.start;
-      item_result->inline_size -= overhang.start;
-      position_ -= overhang.start;
-    }
-  }
-
   trailing_whitespace_ = WhitespaceState::kNone;
   MoveToNextOf(item);
 }
@@ -4463,7 +4439,6 @@ void LineBreaker::SetInputRange(InlineItemTextIndex start,
                                 wtf_size_t end_item_index,
                                 WhitespaceState initial_whitespace_state,
                                 const LineBreaker* parent) {
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   current_ = start;
   end_item_index_ = end_item_index;
   initial_whitespace_ = initial_whitespace_state;

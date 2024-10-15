@@ -174,11 +174,6 @@ bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
   // we should check at first.
   if (layout_object->IsAtomicInlineLevel())
     return false;
-  if (layout_object->IsRubyText()) {
-    // RT isn't consider as block-level.
-    // e.g. <ruby>abc<rt>def</rt>.innerText == "abcdef"
-    return false;
-  }
   // Note: CAPTION is associated to |LayoutTableCaption| in LayoutNG or
   // |LayoutBlockFlow| in legacy layout.
   return true;

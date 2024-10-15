@@ -20,7 +20,6 @@ class InlineItem;
 class LineInfo;
 class LogicalLineContainer;
 class LogicalLineItems;
-class PhysicalBoxFragment;
 class ShapeResultView;
 struct InlineItemResult;
 struct LogicalRubyColumn;
@@ -49,15 +48,13 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
                                        const ShapeResultView* shape_view,
                                        WritingMode writing_mode);
 
-PhysicalRect ComputeRubyEmHeightBox(const PhysicalBoxFragment& box_fragment);
-
 struct AnnotationOverhang {
   LayoutUnit start;
   LayoutUnit end;
 };
 
 // Returns overhang values of the specified InlineItemResult representing
-// LayoutRubyColumn.
+// a ruby column.
 //
 // This is used by LineBreaker.
 AnnotationOverhang GetOverhang(const InlineItemResult& item);

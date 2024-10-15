@@ -1008,7 +1008,6 @@ ShapeResult* ShapeResult::ApplySpacingToCopy(
 }
 
 void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   if (expansion <= LayoutUnit()) {
     return;
   }
@@ -1046,7 +1045,6 @@ void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {
 }
 
 void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   if (expansion <= LayoutUnit()) {
     return;
   }

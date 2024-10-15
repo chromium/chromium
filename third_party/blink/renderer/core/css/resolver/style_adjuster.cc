@@ -672,8 +672,7 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
   if (layout_parent_style.InlinifiesChildren() &&
       !builder.HasOutOfFlowPosition() &&
       !(element && IsA<HTMLFieldSetElement>(element->parentNode()))) {
-    if (RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
-        builder.IsFloating()) {
+    if (builder.IsFloating()) {
       builder.SetFloating(EFloat::kNone);
       if (document) {
         document->AddConsoleMessage(

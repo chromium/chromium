@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
@@ -373,11 +372,6 @@ void TextAutosizer::BeginLayout(LayoutBlock* block) {
   if (PrepareForLayout(block) == kStopLayout)
     return;
 
-  // Skip ruby's inner blocks, because these blocks already are inflated.
-  if (block->IsRubyColumn() || block->IsRubyBase() || block->IsRubyText()) {
-    return;
-  }
-
   DCHECK(!cluster_stack_.empty() || IsA<LayoutView>(block));
   if (cluster_stack_.empty())
     did_check_cross_site_use_count_ = false;
@@ -450,15 +444,8 @@ float TextAutosizer::Inflate(LayoutObject* parent,
   bool has_text_child = false;
 
   LayoutObject* child = nullptr;
-  if (parent->IsRuby()) {
-    // Skip LayoutRubyColumn which is inline-block.
-    // Inflate its inner blocks.
-    if (auto* column = DynamicTo<LayoutRubyColumn>(parent->SlowFirstChild())) {
-      child = column->FirstChild();
-      behavior = kDescendToInnerBlocks;
-    }
-  } else if (parent->IsLayoutBlock() &&
-             (parent->ChildrenInline() || behavior == kDescendToInnerBlocks)) {
+  if (parent->IsLayoutBlock() &&
+      (parent->ChildrenInline() || behavior == kDescendToInnerBlocks)) {
     child = To<LayoutBlock>(parent)->FirstChild();
   } else if (parent->IsLayoutInline()) {
     child = To<LayoutInline>(parent)->FirstChild();
