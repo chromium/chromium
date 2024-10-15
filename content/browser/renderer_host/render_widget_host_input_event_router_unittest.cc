@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/test/aura_test_helper.h"
@@ -1094,8 +1095,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 // devtools connect to a browser instance running on a mobile.  It should not
 // crash.
 TEST_F(RenderWidgetHostInputEventRouterTest, CanCallShowContextMenuAtPoint) {
-  rwhier()->ShowContextMenuAtPoint(gfx::Point(0, 0), ui::MENU_SOURCE_MOUSE,
-                                   view_root_.get());
+  rwhier()->ShowContextMenuAtPoint(
+      gfx::Point(0, 0), ui::mojom::MenuSourceType::kMouse, view_root_.get());
 }
 
 // Input events get latched to a target when middle click autoscroll is in

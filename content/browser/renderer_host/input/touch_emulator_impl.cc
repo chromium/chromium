@@ -21,7 +21,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
@@ -194,7 +194,7 @@ bool TouchEmulatorImpl::HandleMouseEvent(
     client_->ShowContextMenuAtPoint(
         gfx::Point(mouse_event.PositionInWidget().x(),
                    mouse_event.PositionInWidget().y()),
-        ui::MENU_SOURCE_MOUSE, target_view);
+        ui::mojom::MenuSourceType::kMouse, target_view);
   }
 
   if (mouse_event.button != WebMouseEvent::Button::kLeft)

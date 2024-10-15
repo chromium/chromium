@@ -530,6 +530,7 @@ static_library("test_support") {
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/strings:strings_grit",
     "//ui/accessibility:ax_base",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gl:test_support",
     "//ui/strings:auto_image_annotation_strings",
   ]
@@ -1913,6 +1914,7 @@ test("content_browsertests") {
     "//ui/base/ime",
     "//ui/base/ime/init",
     "//ui/base/ime/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/color:mixers",
     "//ui/compositor",
     "//ui/display",

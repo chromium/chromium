@@ -447,6 +447,7 @@ static_library("content_shell_lib") {
         "browser/shell_platform_delegate_views.cc",
         "browser/shell_web_contents_view_delegate_views.cc",
       ]
+      public_deps += [ "//ui/base/mojom:ui_base_types" ]
       deps += [
         "//ui/color:color_headers",
         "//ui/native_theme",

@@ -62,6 +62,7 @@ target(link_target_type, "child") {
     "//gpu/ipc/client:client",
     "//ipc",
     "//services/service_manager/public/mojom:mojom_blink",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [

@@ -567,6 +567,7 @@ source_set("browser_sources") {
     "//storage/browser",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base/dragdrop/mojom:mojom_headers",
+    "//ui/base/mojom:ui_base_types",
   ]
   deps = [
     "//build:chromeos_buildflags",

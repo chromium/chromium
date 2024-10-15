@@ -26,7 +26,7 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/display/screen_infos.h"
 #include "ui/surface/transport_dib.h"
 
@@ -333,8 +333,9 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void SetCursor(const ui::Cursor& cursor) {}
 
   // Shows the context menu using the specified point as anchor point.
-  virtual void ShowContextMenuAtPoint(const gfx::Point& point,
-                                      const ui::MenuSourceType source_type) {}
+  virtual void ShowContextMenuAtPoint(
+      const gfx::Point& point,
+      const ui::mojom::MenuSourceType source_type) {}
 
   // Roundtrips through the renderer and compositor pipeline to ensure that any
   // changes to the contents resulting from operations executed prior to this

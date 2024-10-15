@@ -124,6 +124,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -1982,7 +1983,7 @@ void RenderWidgetHostImpl::SetCursor(const ui::Cursor& cursor) {
 
 void RenderWidgetHostImpl::ShowContextMenuAtPoint(
     const gfx::Point& point,
-    const ui::MenuSourceType source_type) {
+    const ui::mojom::MenuSourceType source_type) {
   if (GetRenderInputRouter()) {
     GetRenderInputRouter()->ShowContextMenuAtPoint(point, source_type);
   }

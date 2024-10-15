@@ -71,7 +71,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/latency/latency_info.h"
 #include "url/origin.h"
@@ -321,8 +321,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DragSourceSystemDragEnded() override;
   void FilterDropData(DropData* drop_data) override;
   void SetCursor(const ui::Cursor& cursor) override;
-  void ShowContextMenuAtPoint(const gfx::Point& point,
-                              const ui::MenuSourceType source_type) override;
+  void ShowContextMenuAtPoint(
+      const gfx::Point& point,
+      const ui::mojom::MenuSourceType source_type) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
 
   // RenderProcessHostPriorityClient implementation.

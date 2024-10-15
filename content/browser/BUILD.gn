@@ -333,6 +333,7 @@ source_set("browser") {
     "//third_party/leveldatabase",
     "//ui/base/cursor",
     "//ui/base/dragdrop/mojom:mojom_headers",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   sources = [

@@ -37,6 +37,7 @@
 #include "ui/accessibility/mojom/ax_tree_data.mojom-shared-internal.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
@@ -744,7 +745,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
   EXPECT_EQ(u"2", context_menu_params.link_text);
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, context_menu_params.source_type);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            context_menu_params.source_type);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
@@ -775,7 +777,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   std::string link_text = base::UTF16ToUTF8(context_menu_params.link_text);
   base::ReplaceChars(link_text, "\n", "\\n", &link_text);
   EXPECT_EQ("This is a\\n\\n\\n\\nmultiline link.", link_text);
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, context_menu_params.source_type);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            context_menu_params.source_type);
   // Expect the context menu to open on the same line as the first line of link
   // text. Check that the y coordinate of the context menu is near the line
   // height.
@@ -809,7 +812,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
   EXPECT_EQ(u"Offscreen", context_menu_params.link_text);
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, context_menu_params.source_type);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            context_menu_params.source_type);
   // Expect the context menu point to be 0, 0.
   EXPECT_EQ(0, context_menu_params.x);
   EXPECT_EQ(0, context_menu_params.y);
@@ -842,7 +846,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
   EXPECT_EQ(u"Obscured", context_menu_params.link_text);
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, context_menu_params.source_type);
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            context_menu_params.source_type);
   // Expect the context menu to open on the same line as the link text. Check
   // that the y coordinate of the context menu is near the line height.
   EXPECT_NEAR(16, context_menu_params.y, 15);

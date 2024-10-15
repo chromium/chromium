@@ -13,9 +13,9 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -95,7 +95,8 @@ void TouchSelectionControllerClientChildFrame::ShowTouchSelectionContextMenu(
     const gfx::Point& location) {
   // |location| should be in root-view coordinates, and RenderWidgetHostImpl
   // will do the conversion to renderer coordinates.
-  rwhv_->host()->ShowContextMenuAtPoint(location, ui::MENU_SOURCE_TOUCH_HANDLE);
+  rwhv_->host()->ShowContextMenuAtPoint(
+      location, ui::mojom::MenuSourceType::kTouchHandle);
 }
 
 // Since an active touch selection in a child frame can have its screen position
@@ -250,7 +251,8 @@ void TouchSelectionControllerClientChildFrame::RunContextMenu() {
   anchor_point.Offset(-origin.x(), -origin.y());
   RenderWidgetHostImpl* host = rwhv_->host();
   host->GetRenderInputRouter()->ShowContextMenuAtPoint(
-      gfx::ToRoundedPoint(anchor_point), ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+      gfx::ToRoundedPoint(anchor_point),
+      ui::mojom::MenuSourceType::kTouchEditMenu);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above
