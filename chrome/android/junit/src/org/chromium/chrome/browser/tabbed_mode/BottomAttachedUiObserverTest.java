@@ -257,8 +257,7 @@ public class BottomAttachedUiObserverTest {
     @Test
     @Features.DisableFeatures({
         ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_EDGE_TO_EDGE
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
     })
     public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth() {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
@@ -322,8 +321,7 @@ public class BottomAttachedUiObserverTest {
     @Test
     @Features.DisableFeatures({
         ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_EDGE_TO_EDGE
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
     })
     public void testAdaptsColorToBottomSheet_doesNotCoverFullWidth() {
         when(mBottomSheetController.isFullWidth()).thenReturn(false, false);

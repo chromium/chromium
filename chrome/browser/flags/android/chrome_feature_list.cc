@@ -245,7 +245,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDragDropIntoOmnibox,
     &kDragDropTabTearing,
     &kDragDropTabTearingEnableOEM,
-    &kDrawEdgeToEdge,
     &kDrawKeyNativeEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
@@ -715,10 +714,6 @@ BASE_FEATURE(kDragDropTabTearing,
 BASE_FEATURE(kDragDropTabTearingEnableOEM,
              "DragDropTabTearingEnableOEM",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDrawEdgeToEdge,
-             "DrawEdgeToEdge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawKeyNativeEdgeToEdge,
              "DrawKeyNativeEdgeToEdge",

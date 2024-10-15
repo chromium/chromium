@@ -4470,13 +4470,7 @@ const char kDragDropTabTearingEnableOEMDescription[] =
 const char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
 const char kDrawCutoutEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge Feature to coordinate with the "
-    "Display Cutout for the notch when drawing below the Nav Bar.  Requires "
-    "DrawEdgeToEdge to also be enabled.";
-
-const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
-const char kDrawEdgeToEdgeDescription[] =
-    "Enables the Android feature Edge-to-Edge to draw below the Nav Bar. "
-    "Requires DrawCutoutEdgeToEdge to also be enabled.";
+    "Display Cutout for the notch when drawing below the Nav Bar.";
 
 const char kDrawKeyNativeEdgeToEdgeName[] = "DrawKeyNativeEdgeToEdge";
 const char kDrawKeyNativeEdgeToEdgeDescription[] =

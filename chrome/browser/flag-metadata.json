@@ -2296,12 +2296,7 @@
   },
   {
     "name": "draw-cutout-edge-to-edge",
-    "owners": ["twellington@chromium.org", "edge-to-edge@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "draw-edge-to-edge",
-    "owners": ["twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org" ],
     "expiry_milestone": 135
   },
   {
@@ -2311,7 +2306,7 @@
   },
   {
     "name": "draw-key-native-edge-to-edge",
-    "owners": ["katzz@google.com", "twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "owners": ["wenyufu@chromium.com", "clhager@google.com", "edge-to-edge@chromium.org"],
     "expiry_milestone": 142
   },
   {

@@ -2593,9 +2593,6 @@ extern const char kDragDropTabTearingEnableOEMDescription[];
 extern const char kDrawCutoutEdgeToEdgeName[];
 extern const char kDrawCutoutEdgeToEdgeDescription[];
 
-extern const char kDrawEdgeToEdgeName[];
-extern const char kDrawEdgeToEdgeDescription[];
-
 extern const char kDrawKeyNativeEdgeToEdgeName[];
 extern const char kDrawKeyNativeEdgeToEdgeDescription[];
 

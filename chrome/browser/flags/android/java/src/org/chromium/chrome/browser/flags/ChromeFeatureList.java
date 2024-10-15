@@ -316,7 +316,6 @@ public abstract class ChromeFeatureList {
     public static final String DRAG_DROP_TAB_TEARING = "DragDropTabTearing";
     public static final String DRAG_DROP_TAB_TEARING_ENABLE_OEM = "DragDropTabTearingEnableOEM";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
-    public static final String DRAW_EDGE_TO_EDGE = "DrawEdgeToEdge";
     public static final String DRAW_KEY_NATIVE_EDGE_TO_EDGE = "DrawKeyNativeEdgeToEdge";
     public static final String DRAW_NATIVE_EDGE_TO_EDGE = "DrawNativeEdgeToEdge";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
@@ -652,7 +651,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
             newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, false);
-    public static final CachedFlag sDrawEdgeToEdge = newCachedFlag(DRAW_EDGE_TO_EDGE, false);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
             newCachedFlag(DRAW_KEY_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sDrawNativeEdgeToEdge =
@@ -807,7 +805,6 @@ public abstract class ChromeFeatureList {
                     sDisableInstanceLimit,
                     sDragDropIntoOmnibox,
                     sDownloadsMigrateToJobsAPI,
-                    sDrawEdgeToEdge,
                     sDrawKeyNativeEdgeToEdge,
                     sDrawNativeEdgeToEdge,
                     sEdgeToEdgeBottomChin,

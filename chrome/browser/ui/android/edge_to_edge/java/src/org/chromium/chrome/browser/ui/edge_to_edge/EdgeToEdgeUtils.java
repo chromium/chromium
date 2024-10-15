@@ -118,23 +118,9 @@ public class EdgeToEdgeUtils {
      * drawing edge to edge on start up.
      */
     public static boolean isEnabled() {
-        return isLegacyWebsiteOptInEnabled()
-                || isEdgeToEdgeBottomChinEnabled()
+        return isEdgeToEdgeBottomChinEnabled()
                 || isEdgeToEdgeWebOptInEnabled()
                 || isEdgeToEdgeEverywhereEnabled();
-    }
-
-    /**
-     * Whether drawing website opt-in is enabled.
-     *
-     * <p>When enabled, Chrome will add bottom padding to the root view if the current tab / UI is
-     * not a tab with `viewport-fit=cover`. Additionally, bottom attached UI will be padded to avoid
-     * drawing into the bottom navigation bar region.
-     *
-     * @deprecated This method will be removed. External references should use {@link #isEnabled()}.
-     */
-    public static boolean isLegacyWebsiteOptInEnabled() {
-        return ChromeFeatureList.sDrawEdgeToEdge.isEnabled();
     }
 
     /**
