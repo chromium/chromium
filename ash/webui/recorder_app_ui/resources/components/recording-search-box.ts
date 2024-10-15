@@ -25,6 +25,7 @@ import {assertExists} from '../core/utils/assert.js';
 import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 
 import {CraIconButton} from './cra/cra-icon-button.js';
+import {withTooltip} from './directives/with-tooltip.js';
 
 export class RecordingSearchBox extends ReactiveLitElement {
   static override styles = css`
@@ -164,6 +165,7 @@ export class RecordingSearchBox extends ReactiveLitElement {
       aria-hidden=${this.opened.value}
       aria-label=${i18n.recordingListSearchButtonTooltip}
       ${ref(this.searchButtonRef)}
+      ${withTooltip()}
     >
       <cra-icon slot="icon" name="search"></cra-icon>
     </cra-icon-button>`;

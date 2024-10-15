@@ -90,7 +90,7 @@
     Press to record
   </message>
   <message desc="Tooltip of the combobox to choose microphone to use in recording session." meaning="Microphone device to use in recordding session." name="IDS_RECORDER_MIC_SELECTION_MENU_BUTTON_TOOLTIP">
-    Mic
+    Mic options
   </message>
   <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
     Chromebook audio
@@ -209,6 +209,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Accessibility label of the button to pause the recording." meaning="Pause the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PAUSE_BUTTON_ARIA_LABEL">
     Pause <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
+  </message>
+  <message desc="Tooltip of the button to pause the recording." name="IDS_RECORDER_RECORDING_ITEM_PAUSE_BUTTON_TOOLTIP">
+    Pause
   </message>
   <message desc="Accessibility label of the button to play the recording." meaning="Play the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_ARIA_LABEL">
     Play <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>

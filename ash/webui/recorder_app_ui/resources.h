@@ -172,6 +172,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_TOOLTIP},
     {"recordingItemPauseButtonAriaLabel",
      IDS_RECORDER_RECORDING_ITEM_PAUSE_BUTTON_ARIA_LABEL},
+    {"recordingItemPauseButtonTooltip",
+     IDS_RECORDER_RECORDING_ITEM_PAUSE_BUTTON_TOOLTIP},
     {"recordingItemPlayButtonAriaLabel",
      IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_ARIA_LABEL},
     {"recordingItemPlayButtonTooltip",

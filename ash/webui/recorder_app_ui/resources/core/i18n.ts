@@ -111,6 +111,7 @@ const noArgStringNames = [
   'recordTranscriptionOffDescription',
   'recordTranscriptionOffHeader',
   'recordingItemOptionsButtonTooltip',
+  'recordingItemPauseButtonTooltip',
   'recordingItemPlayButtonTooltip',
   'recordingListHeader',
   'recordingListNoMatchText',

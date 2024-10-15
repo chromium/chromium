@@ -49,6 +49,7 @@ import {
 import {isObjectEmpty} from '../core/utils/utils.js';
 
 import {CraMenu} from './cra/cra-menu.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {RecordingFileListItem} from './recording-file-list-item.js';
 
 interface RecordingSearchResult {
@@ -270,6 +271,7 @@ export class RecordingFileList extends ReactiveLitElement {
           class="with-toggle-style ${classMap(classes)}"
           @click=${this.toggleSortMenu}
           aria-label=${i18n.recordingListSortButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
         </cra-icon-button>

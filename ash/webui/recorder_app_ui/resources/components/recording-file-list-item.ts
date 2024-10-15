@@ -37,6 +37,7 @@ import {stopPropagation} from '../core/utils/event_handler.js';
 import {clamp} from '../core/utils/utils.js';
 
 import {CraIconButton} from './cra/cra-icon-button.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {
   getNumSpeakerClass,
   SPEAKER_LABEL_COLORS,
@@ -417,6 +418,8 @@ export class RecordingFileListItem extends ReactiveLitElement {
     const ariaLabel = this.playing ?
       i18n.recordingItemPauseButtonAriaLabel(title) :
       i18n.recordingItemPlayButtonAriaLabel(title);
+    const tooltip = this.playing ? i18n.recordingItemPauseButtonTooltip :
+                                   i18n.recordingItemPlayButtonTooltip;
 
     return html`
       <cra-icon-button
@@ -426,6 +429,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
         @click=${this.onPlayClick}
         @pointerdown=${/* To prevent ripple on card. */ stopPropagation}
         aria-label=${ariaLabel}
+        ${withTooltip(tooltip)}
       >
         <cra-icon slot="icon" .name=${playIcon}></cra-icon>
       </cra-icon-button>
@@ -470,6 +474,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             aria-label=${i18n.recordingItemOptionsButtonAriaLabel(title)}
             aria-expanded=${this.menuShown.value}
             ${ref(this.optionsButtonRef)}
+            ${withTooltip(i18n.recordingItemOptionsButtonTooltip)}
           >
             <cra-icon slot="icon" name="more_vertical"></cra-icon>
           </cra-icon-button>
@@ -481,6 +486,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             aria-hidden=${!this.menuShown.value}
             @click=${this.onShowRecordingInfoClick}
             aria-label=${i18n.playbackMenuShowDetailOption}
+            ${withTooltip()}
           >
             <cra-icon slot="icon" name="info"></cra-icon>
           </cra-icon-button>
@@ -490,6 +496,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             aria-hidden=${!this.menuShown.value}
             @click=${this.onExportRecordingClick}
             aria-label=${i18n.playbackMenuExportOption}
+            ${withTooltip()}
           >
             <cra-icon slot="icon" name="export"></cra-icon>
           </cra-icon-button>
@@ -499,6 +506,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             aria-hidden=${!this.menuShown.value}
             @click=${this.onDeleteRecordingClick}
             aria-label=${i18n.playbackMenuDeleteOption}
+            ${withTooltip()}
           >
             <cra-icon slot="icon" name="delete"></cra-icon>
           </cra-icon-button>
