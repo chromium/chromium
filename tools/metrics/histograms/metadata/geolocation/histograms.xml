@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.LocationProviderWinrt.Accuracy" enum="Hresult"
+<histogram name="Geolocation.LocationProviderWinrt.Accuracy" units="meter"
     expires_after="2026-09-15">
   <owner>chengweih@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
