@@ -34,7 +34,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
                                    ViewTransitionElement>;
 
   std::string tag_name;
-  gfx::SizeF border_box_size_in_css_space;
+  gfx::RectF border_box_rect_in_enclosing_layer_css_space;
   gfx::Transform viewport_matrix;
   gfx::RectF overflow_rect_in_layout_space;
   viz::ViewTransitionElementResourceId snapshot_id;

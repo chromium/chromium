@@ -4469,7 +4469,7 @@
     },
     {
       name: "ViewTransitionLayeredCapture",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
@@ -4485,6 +4485,10 @@
     {
       name: "ViewTransitionOnNavigationForIframes",
       status: "stable",
+    },
+    {
+      name: "ViewTransitionOverflowRectFromSurface",
+      status: "test",
     },
     {
       name: "ViewTransitionTreeScopedNames",

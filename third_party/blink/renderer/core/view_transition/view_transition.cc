@@ -688,12 +688,14 @@ void ViewTransition::ContextDestroyed() {
 }
 
 void ViewTransition::NotifyCaptureFinished(
-    const std::unordered_map<viz::ViewTransitionElementResourceId,
-                             gfx::RectF>&) {
+    const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
+        capture_rects) {
   if (state_ != State::kCapturing) {
     DCHECK(IsTerminalState(state_));
     return;
   }
+
+  style_tracker_->SetCaptureRectsFromCompositor(capture_rects);
   bool process_next_state = AdvanceTo(State::kCaptured);
   DCHECK(process_next_state);
   ProcessCurrentState();

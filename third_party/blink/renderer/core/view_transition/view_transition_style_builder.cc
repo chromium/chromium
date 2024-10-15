@@ -125,8 +125,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           height: %3fpx;
       )CSS",
       GetTransformString(source_properties, parent_inverse_transform).c_str(),
-      source_properties.border_box_size_in_css_space.width.ToFloat(),
-      source_properties.border_box_size_in_css_space.height.ToFloat());
+      source_properties.border_box_rect_in_css_space.Width().ToFloat(),
+      source_properties.border_box_rect_in_css_space.Height().ToFloat());
 
   for (const auto& [id, value] : animated_css_properties) {
     builder_.AppendFormat(
@@ -150,8 +150,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         height: %.3fpx;
         transform: %s;
       )CSS",
-      properties.border_box_size_in_css_space.width.ToFloat(),
-      properties.border_box_size_in_css_space.height.ToFloat(),
+      properties.border_box_rect_in_css_space.Width().ToFloat(),
+      properties.border_box_rect_in_css_space.Height().ToFloat(),
       GetTransformString(properties, parent_inverse_transform).c_str());
   for (const auto& [id, value] : captured_css_properties) {
     rule_builder.AppendFormat(

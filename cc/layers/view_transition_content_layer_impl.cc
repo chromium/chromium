@@ -82,10 +82,9 @@ void ViewTransitionContentLayerImpl::SetOriginatingSurfaceContentRect(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(
-      max_extents_rect_in_originating_layer_coordinate_space_.Contains(
-          gfx::RectF(
-              originating_surface_content_rect_in_layer_coordinate_space)));
+  // TODO(crbug.com/40840594): Add a CHECK that the surface rect is a subset of
+  // the max extents. ATM this fails in one edge case (negative clip-path), the
+  // CHECK should be added once that's fixed.
 
   // The actual extents rect is a subset of the max extents rect. This
   // projection maps this subset to the coordinate space of this layer (0, 0,

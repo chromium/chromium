@@ -29,7 +29,7 @@ struct ViewTransitionElement {
   string tag_name;
 
   // Geometry information for this shared element.
-  gfx.mojom.SizeF border_box_size_in_css_space;
+  gfx.mojom.RectF border_box_rect_in_enclosing_layer_css_space;
   gfx.mojom.Transform viewport_matrix;
   gfx.mojom.RectF overflow_rect_in_layout_space;
   gfx.mojom.RectF? captured_rect_in_layout_space;

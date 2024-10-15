@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <head>
+    <title>View transitions: browser controls should not affect root layer position</title>
+    <link rel="match" href="browser-controls-root-offset-ref.html">
+    <meta name="viewport" content="width=400">
+    <script src="/common/reftest-wait.js"></script>
+    <style>
+      body {
+        background-color: cornflowerblue;
+        margin: 0;
+      }
+      #wideElement {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        /* Double the width of the initial-containing-block  */
+        width: 800px;
+        height: 100px;
+        background-color: limegreen;
+      }
+      .corner {
+        position: fixed;
+        width: 100px;
+        height: 100px;
+        background-color: coral;
+      }
+      .transitioned .corner {
+        background-color: darkseagreen;
+      }
+      ::view-transition-group(*),
+      ::view-transition-new(*),
+      ::view-transition-old(*) {
+        animation-play-state: paused;
+      }
+      ::view-transition-old(*) {
+        display: none;
+      }
+      ::view-transition-new(*) {
+        animation-name: none;
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="corner" style="top: 0; right: 0; view-transition-name:topright;"></div>
+    <div id="wideElement"></div>
+    <script>
+        internals.setBrowserControlsState(20, 0, true);
+        requestAnimationFrame(() => {
+            document.startViewTransition().ready.then(() => takeScreenshot());
+        });
+    </script>
+  </body>
+</html>
