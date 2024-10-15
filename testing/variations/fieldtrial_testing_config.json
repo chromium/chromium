@@ -12987,7 +12987,7 @@
             ]
         }
     ],
-    "KidsProfilePhase1": [
+    "KidsProfilePhase2": [
         {
             "platforms": [
                 "linux",
@@ -12996,12 +12996,14 @@
             ],
             "experiments": [
                 {
-                    "name": "AllFeatures",
+                    "name": "Enabled",
                     "enable_features": [
+                        "CustomWebSignInInterceptForSupervisedUsersUi",
                         "ForceSafeSearchForUnauthenticatedSupervisedUsers",
                         "ForceSupervisedUserReauthenticationForBlockedSites",
                         "ForceSupervisedUserReauthenticationForYouTube",
                         "HideGuestModeForSupervisedUsers",
+                        "ShowKiteForSupervisedUsers",
                         "UncredentialedFilteringFallbackForSupervisedUsers"
                     ]
                 }
