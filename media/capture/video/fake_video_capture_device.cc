@@ -548,9 +548,10 @@ void FakePhotoDevice::TakePhoto(VideoCaptureDevice::TakePhotoCallback callback,
   // Create a PNG-encoded frame and send it back to |callback|.
   auto required_sk_n32_buffer_size = VideoFrame::AllocationSize(
       PIXEL_FORMAT_ARGB, fake_device_state_->format.frame_size);
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[required_sk_n32_buffer_size]);
-  memset(buffer.get(), 0, required_sk_n32_buffer_size);
-  sk_n32_painter_->PaintFrame(elapsed_time, buffer.get());
+  // Memory is already zero-initialized:
+  base::HeapArray<uint8_t> buffer =
+      base::HeapArray<uint8_t>::WithSize(required_sk_n32_buffer_size);
+  sk_n32_painter_->PaintFrame(elapsed_time, buffer.data());
   mojom::BlobPtr blob = mojom::Blob::New();
   const gfx::PNGCodec::ColorFormat encoding_source_format =
 #if SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
@@ -559,7 +560,7 @@ void FakePhotoDevice::TakePhoto(VideoCaptureDevice::TakePhotoCallback callback,
       gfx::PNGCodec::FORMAT_BGRA;
 #endif
   const bool result = gfx::PNGCodec::Encode(
-      buffer.get(), encoding_source_format,
+      buffer.data(), encoding_source_format,
       fake_device_state_->format.frame_size,
       VideoFrame::RowBytes(0 /* plane */, PIXEL_FORMAT_ARGB,
                            fake_device_state_->format.frame_size.width()),
