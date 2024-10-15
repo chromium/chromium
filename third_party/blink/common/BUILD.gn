@@ -326,6 +326,7 @@ source_set("common") {
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [

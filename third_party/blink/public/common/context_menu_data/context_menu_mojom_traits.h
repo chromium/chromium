@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -161,7 +162,7 @@ struct BLINK_COMMON_EXPORT
     return r.custom_items;
   }
 
-  static ui::MenuSourceType source_type(
+  static ui::mojom::MenuSourceType source_type(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.source_type;
   }

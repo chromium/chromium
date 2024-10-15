@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 
 namespace blink {
 
@@ -26,7 +27,7 @@ UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
           blink::ContextMenuData::kCheckableMenuItemEnabled),
       edit_flags(0),
       referrer_policy(network::mojom::ReferrerPolicy::kDefault),
-      source_type(ui::MENU_SOURCE_NONE),
+      source_type(ui::mojom::MenuSourceType::kNone),
       selection_start_offset(0) {}
 
 UntrustworthyContextMenuParams::UntrustworthyContextMenuParams(

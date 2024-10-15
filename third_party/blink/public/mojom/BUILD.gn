@@ -560,6 +560,7 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/context_menu_data/context_menu_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/base/mojom:ui_base_types" ]
     },
     {
       types = [
