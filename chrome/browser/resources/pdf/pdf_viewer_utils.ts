@@ -5,6 +5,9 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
+// <if expr="enable_pdf_ink2">
+import type {Color} from './constants.js';
+// </if>
 import type {LayoutOptions, ViewportRect} from './viewport.js';
 
 export interface DocumentDimensionsMessageData {
@@ -67,3 +70,19 @@ export function shouldIgnoreKeyEvents(): boolean {
        (activeElement as HTMLInputElement).type !== 'radio') ||
       activeElement.tagName === 'TEXTAREA';
 }
+
+// <if expr="enable_pdf_ink2">
+/**
+ * @param hex A hex-coded color string, formatted as '#ffffff'.
+ * @returns The `Color` in RGB values.
+ */
+export function hexToColor(hex: string): Color {
+  assert(/^#[0-9a-f]{6}$/.test(hex));
+
+  return {
+    r: Number.parseInt(hex.substring(1, 3), 16),
+    g: Number.parseInt(hex.substring(3, 5), 16),
+    b: Number.parseInt(hex.substring(5, 7), 16),
+  };
+}
+// </if>

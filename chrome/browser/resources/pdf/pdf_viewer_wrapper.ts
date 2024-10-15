@@ -20,6 +20,7 @@ export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
 export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
+export {InkColorSelectorElement} from './elements/ink_color_selector.js';
 export {InkSizeSelectorElement} from './elements/ink_size_selector.js';
 // </if>
 export {ViewerAttachmentElement} from './elements/viewer_attachment.js';

@@ -113,6 +113,8 @@ build_webui("build") {
       "elements/viewer_side_panel.ts",
       "elements/ink_brush_selector.html.ts",
       "elements/ink_brush_selector.ts",
+      "elements/ink_color_selector.html.ts",
+      "elements/ink_color_selector.ts",
       "elements/ink_size_selector.html.ts",
       "elements/ink_size_selector.ts",
     ]
@@ -147,6 +149,7 @@ build_webui("build") {
     css_files += [
       "elements/viewer_side_panel.css",
       "elements/ink_brush_selector.css",
+      "elements/ink_color_selector.css",
       "elements/ink_size_selector.css",
     ]
   }

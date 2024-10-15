@@ -155,12 +155,13 @@ function getSizeButtons(): NodeListOf<HTMLElement> {
 }
 
 /**
- * Helper to get a non-null list of brush color buttons. Can be empty.
+ * Helper to get a non-empty list of brush color buttons.
  * @returns A list of color buttons.
  */
 function getColorButtons(): NodeListOf<HTMLElement> {
-  const colorButtons =
-      sidePanel.shadowRoot!.querySelectorAll<HTMLElement>('#colors input');
+  const colorSelector =
+      getRequiredElement<HTMLElement>(sidePanel, 'ink-color-selector');
+  const colorButtons = colorSelector.shadowRoot!.querySelectorAll('input');
   assert(colorButtons);
   return colorButtons;
 }
@@ -265,9 +266,9 @@ chrome.test.runTests([
     });
     assertSelectedSize(/*buttonIndex=*/ 1);
 
-    // There shouldn't be any color buttons.
-    const colorButtons = getColorButtons();
-    chrome.test.assertTrue(!colorButtons.length);
+    // There shouldn't be color options.
+    chrome.test.assertTrue(!sidePanel.shadowRoot!.querySelector<HTMLElement>(
+        'ink-color-selector'));
     chrome.test.succeed();
   },
 
