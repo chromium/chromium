@@ -224,6 +224,25 @@ public class FeatureList {
      * @return The test value set for the feature, or null if no test value has been set.
      * @throws IllegalArgumentException if no test value was set and default values aren't allowed.
      */
+    public static Boolean getTestValueForFeatureStrict(String featureName) {
+        Boolean testValue = getTestValueForFeature(featureName);
+        if (testValue == null && sDisableNativeForTesting) {
+            throw new IllegalArgumentException(
+                    "No test value configured for "
+                            + featureName
+                            + " and native is not available to provide a default value. Use"
+                            + " @EnableFeatures or @DisableFeatures to provide test values for"
+                            + " the flag.");
+        }
+        return testValue;
+    }
+
+    /**
+     * Returns the test value of the feature with the given name.
+     *
+     * @param featureName The name of the feature to query.
+     * @return The test value set for the feature, or null if no test value has been set.
+     */
     public static Boolean getTestValueForFeature(String featureName) {
         // TODO(crbug.com/40264751)): Copy into a local reference to avoid race conditions
         // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
@@ -234,14 +253,6 @@ public class FeatureList {
             if (override != null) {
                 return override;
             }
-        }
-        if (sDisableNativeForTesting) {
-            throw new IllegalArgumentException(
-                    "No test value configured for "
-                            + featureName
-                            + " and native is not available to provide a default value. Use"
-                            + " @EnableFeatures or @DisableFeatures to provide test values for"
-                            + " the flag.");
         }
         return null;
     }
