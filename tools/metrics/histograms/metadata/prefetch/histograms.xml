@@ -92,18 +92,20 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Cross-Origin prefetches requested via the Speculation Rules API are made in
-    an isolated network context. When the prefetched link is navigated to, the
-    cookies are copied from this isolated network context to the user's default
-    network context.
+    Cross-Origin prefetches are made in an isolated network context. When the
+    prefetched link is navigated to, the cookies are copied from this isolated
+    network context to the user's default network context.
 
     This histogram records the time from the start of the cookie copy to when
     the URL interceptor trying to serve the prefetch checks the status of the
     cookie copy.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -112,10 +114,9 @@ chromium-metrics-reviews@google.com.
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Cross-Origin prefetches requested via the Speculation Rules API are made in
-    an isolated network context. When the prefetched link is navigated to, the
-    cookies are copied from this isolated network context to the user's default
-    network context.
+    Cross-Origin prefetches are made in an isolated network context. When the
+    prefetched link is navigated to, the cookies are copied from this isolated
+    network context to the user's default network context.
 
     This histogram records the time required to copy cookies from the isolated
     network context used for a prefetch to the user's default network context
@@ -124,14 +125,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieReadTime" units="ms"
-    expires_after="2024-09-22">
+    expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Cross-Origin prefetches requested via the Speculation Rules API are made in
-    an isolated network context. When the prefetched link is na vigated to, the
-    cookies are copied from this isolated network context to the user's default
-    network context.
+    Cross-Origin prefetches are made in an isolated network context. When the
+    prefetched link is navigated to, the cookies are copied from this isolated
+    network context to the user's default network context.
 
     This histogram records the time required to read the cookies from the
     isolated network context used for a prefetch before being copied to the
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWaitTime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -155,23 +155,28 @@ chromium-metrics-reviews@google.com.
     process is recorded to the
     &quot;PrefetchProxy.AfterClick.Mainframe.Cookie(Copy|Read|Write)Time&quot;
     histograms.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWriteTime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Cross-Origin prefetches requested via the Speculation Rules API are made in
-    an isolated network context. When the prefetched link is na vigated to, the
-    cookies are copied from this isolated network context to the user's default
-    network context.
+    Cross-Origin prefetches are made in an isolated network context. When the
+    prefetched link is navigated to, the cookies are copied from this isolated
+    network context to the user's default network context.
 
     This histogram records the time required to write cookies from the isolated
     network context used for a prefetch to the user's default network context
     after a prefetched link is navigated to. Note this does not include the time
     it takes to read the cookies from the isolated network context.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -260,7 +265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
-    enum="CanaryCheckLookupResult" expires_after="2024-09-01">
+    enum="CanaryCheckLookupResult" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -268,6 +273,9 @@ chromium-metrics-reviews@google.com.
     time Chrome attempts to use a resource prefetched using the prefetch proxy.
     Cache misses or cached failures result in filter probing the origin before
     the prefetched response can be used.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
@@ -275,13 +283,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
-    enum="BooleanSuccess" expires_after="2024-09-01">
+    enum="BooleanSuccess" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the end state of a probe just before it goes inactive. This happens
     when the prober succeeds, fails and has no more retries, or the delegate
     stops probing.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
@@ -289,13 +300,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
-    enum="NetErrorCodes" expires_after="2024-09-01">
+    enum="NetErrorCodes" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the net error of a completed or timed out probe. Note that if a HTTP
     response does not occur within the probe's TTL, when a sample will also be
     added to the ERR_TIMED_OUT bucket.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
@@ -303,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="count" expires_after="2024-09-01">
+    units="count" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -313,6 +327,9 @@ chromium-metrics-reviews@google.com.
     already cached or when the check attempt fails after exhausting its retries.
     This metric is 1-based so if a probe succeeds the first time, a sample of 1
     will be recorded.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
@@ -320,12 +337,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the amount of time spent working on a single probe attempt to get to
     a failed state. Recorded every time a probe fails.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
@@ -333,12 +353,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the amount of time spent working on a single probe attempt to get to
     a successful state. Recorded every time a probe succeeds.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
@@ -362,20 +385,22 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the response body length as cached in memory encountered when
-    isolated prefetching a mainframe HTML resource from the Google Search Result
-    Page. Recorded for non-network error prefetches only.
+    prefetching a mainframe HTML resource. Recorded for non-network error
+    prefetches only.
   </summary>
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2025-03-01">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <summary>
-    Records the time taken to establish a socket connection when isolated
-    prefetching a mainframe HTML resource from the Google Search Result Page.
-    Recorded for non-network error prefetches only.
+    Records the time taken to establish a socket connection when prefetching a
+    mainframe HTML resource. Recorded for non-network error prefetches only.
+
+    Warning: this histogram was expired from 2024-07-21 to 2024-10-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -390,13 +415,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
-    enum="NetErrorCodes" expires_after="2024-09-01">
+    enum="NetErrorCodes" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Records the Net Error encountered when isolated prefetching a mainframe HTML
-    resource from the Google Search Result Page. Recorded for every completed
-    prefetch.
+    Records the Net Error encountered when prefetching a mainframe HTML
+    resource. Recorded for every completed prefetch.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -405,9 +432,9 @@ chromium-metrics-reviews@google.com.
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Records the HTTP response code encountered isolated prefetching a mainframe
-    HTML resource from the Google Search Result Page. Recorded for non-network
-    error prefetches only. Redirects are not included here.
+    Records the HTTP response code encountered when prefetching a mainframe HTML
+    resource. Recorded for non-network error prefetches only. Redirects are not
+    included here.
   </summary>
 </histogram>
 
@@ -426,9 +453,8 @@ chromium-metrics-reviews@google.com.
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
-    Records the total time taken when isolated prefetching a mainframe HTML
-    resource from the Google Search Result Page. Recorded for successful
-    non-network error prefetches only.
+    Records the total time taken when prefetching a mainframe HTML resource.
+    Recorded for successful non-network error prefetches only.
   </summary>
 </histogram>
 
@@ -525,12 +551,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.Fallback.NetError" enum="NetErrorCodes"
-    expires_after="2024-04-25">
+    expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the Net Error encountered when Chrome did a fallback from the
     prefetch proxy. Recorded only on fallbacks.
+
+    Warning: this histogram was expired from 2024-04-25 to 2024-10-11; data may
+    be missing.
   </summary>
 </histogram>
 
