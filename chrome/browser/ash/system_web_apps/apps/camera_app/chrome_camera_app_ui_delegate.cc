@@ -514,10 +514,10 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   launch_params.app_id = *app_id;
   launch_params.target_url = GURL(ash::kChromeUICameraAppMainURL);
   launch_params.dir = my_files_folder_path;
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents);
-  web_app::WebAppTabHelper::FromWebContents(web_contents)
-      ->EnsureLaunchQueue()
-      .Enqueue(std::move(launch_params));
+  auto* helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (helper) {
+    helper->EnsureLaunchQueue().Enqueue(std::move(launch_params));
+  }
 }
 
 void ChromeCameraAppUIDelegate::PopulateLoadTimeData(

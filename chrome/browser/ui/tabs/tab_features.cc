@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_metrics.h"
+#include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -118,12 +120,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetContents());
   }
 
-  if (web_app::AreWebAppsEnabled(profile)) {
-    auto* web_app_tab_helper =
-        web_app::WebAppTabHelper::FromWebContents(tab.GetContents());
-    web_app_tab_helper->InitForTabFeatures(&tab);
-  }
-
   // FedCM is supported in general web content, but not in chrome UI. Of the
   // BrowserWindow types, devtools show Chrome UI and the rest show general web
   // content.
@@ -154,6 +150,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         tab.GetContents(), profile->GetPrefs(),
         TrackingProtectionSettingsFactory::GetForProfile(profile),
         profile->IsIncognitoProfile());
+  }
+
+  if (web_app::AreWebAppsEnabled(profile)) {
+    web_app::WebAppTabHelper::Create(&tab, tab.GetContents());
+  }
+
+  // Note WebAppMetricsTabHelper must be created after AppBannerManager.
+  if (web_app::WebAppMetricsTabHelper::IsEnabled(tab.GetContents())) {
+    web_app::WebAppMetricsTabHelper::CreateForWebContents(tab.GetContents());
   }
 }
 
@@ -225,6 +230,16 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab->GetContents());
+  }
+
+  if (web_app::AreWebAppsEnabled(
+          tab->GetBrowserWindowInterface()->GetProfile())) {
+    web_app::WebAppTabHelper::Create(tab, new_contents);
+  }
+
+  // Note WebAppMetricsTabHelper must be created after AppBannerManager.
+  if (web_app::WebAppMetricsTabHelper::IsEnabled(new_contents)) {
+    web_app::WebAppMetricsTabHelper::CreateForWebContents(new_contents);
   }
 }
 

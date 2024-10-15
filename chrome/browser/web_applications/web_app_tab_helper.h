@@ -34,7 +34,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
                         public content::WebContentsObserver,
                         public WebAppInstallManagerObserver {
  public:
-  using content::WebContentsUserData<WebAppTabHelper>::CreateForWebContents;
+  // `contents` can be different from `tab->GetContents()` during tab discard.
+  // TODO(https://crbug.com/347770670): This method can be simplified to not
+  // take `contents`.
+  static void Create(tabs::TabInterface* tab, content::WebContents* contents);
 
   // Retrieves the WebAppTabHelper's app ID off |web_contents|, returns
   // nullptr if there is no tab helper or app ID.
@@ -49,6 +52,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
       content::WebContents* web_contents);
 #endif
 
+  WebAppTabHelper(tabs::TabInterface* tab, content::WebContents* contents);
   WebAppTabHelper(const WebAppTabHelper&) = delete;
   WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;
   ~WebAppTabHelper() override;
@@ -84,21 +88,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void DidCloneToNewWebContents(
-      content::WebContents* old_web_contents,
-      content::WebContents* new_web_contents) override;
-
-  // This is done separately from the ctor since WebAppTabHelper is created
-  // before the TabFeatures infrastructure.
-  // TODO(crbug.com/367362321): Migrate WebAppTabHelper to TabFeatures
-  // infrastructure.
-  void InitForTabFeatures(tabs::TabInterface* tab);
 
  private:
   friend class WebAppAudioFocusBrowserTest;
   friend class content::WebContentsUserData<WebAppTabHelper>;
-
-  explicit WebAppTabHelper(content::WebContents* web_contents);
 
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const webapps::AppId& installed_app_id) override;
@@ -112,7 +105,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
-  void ResetAppId();
+  void ResetTabSubscriptions(tabs::TabInterface* tab);
 
   // Sets the state of this tab helper. This will call
   // `WebAppUiManager::OnAssociatedAppChanged` if the id has changed, and

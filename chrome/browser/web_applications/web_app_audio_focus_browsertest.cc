@@ -145,15 +145,6 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
     EXPECT_EQ(group_id, GetAudioFocusGroupId(new_contents));
   }
 
-  // Clone the web contents and make sure it has a different group id since it
-  // is not in an app window.
-  {
-    std::unique_ptr<content::WebContents> new_contents = web_contents->Clone();
-    EXPECT_TRUE(content::WaitForLoadStop(new_contents.get()));
-    EXPECT_EQ(base::UnguessableToken::Null(),
-              GetAudioFocusGroupId(new_contents.get()));
-  }
-
   // Navigate away and check that the group id is still the same because we are
   // part of the same window.
   // TODO(crbug.com/40180004): Understand why this returns false.

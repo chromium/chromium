@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -29,6 +30,30 @@
 
 namespace web_app {
 
+// static
+void WebAppTabHelper::Create(tabs::TabInterface* tab,
+                             content::WebContents* contents) {
+  // In the event when a tab is moved from a normal browser window to an app
+  // window, or vise versa, we want to keep the state on WebAppTabHelper but
+  // reset tab subscriptions.
+  auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
+  if (tab->GetContents() == contents && tab_helper) {
+    tab_helper->ResetTabSubscriptions(tab);
+    return;
+  }
+
+  // If on the other hand this is a tab-discard, we let the old tab's
+  // WebAppTabHelper be destroyed at its normal timing. This is because the
+  // current implementation of WebAppMetrics relies on the assumption that
+  // discarded WebContents are still usable.
+  // This will become a moot point once https://crbug.com/347770670 is fixed, as
+  // discarding will no longer change the WebContents.
+
+  auto helper = std::make_unique<WebAppTabHelper>(tab, contents);
+  contents->SetUserData(UserDataKey(), std::move(helper));
+}
+
+// static
 const webapps::AppId* WebAppTabHelper::GetAppId(
     const content::WebContents* web_contents) {
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
@@ -158,28 +183,16 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
       page.GetMainDocument().GetLastCommittedURL());
 }
 
-void WebAppTabHelper::DidCloneToNewWebContents(
-    content::WebContents* old_web_contents,
-    content::WebContents* new_web_contents) {
-  // When the WebContents that this is attached to is cloned, give the new clone
-  // a WebAppTabHelper.
-  CreateForWebContents(new_web_contents);
-  auto* new_tab_helper = FromWebContents(new_web_contents);
-
-  // Clone common state:
-  new_tab_helper->SetState(app_id_, /*is_in_app_window=*/false);
-  // Note: We don't clone is_in_app_window, as that need to only be set when
-  // the new web contents is added to an app window.
-}
-
-WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
-    : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
-      content::WebContentsObserver(web_contents),
+WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
+                                 content::WebContents* contents)
+    : content::WebContentsUserData<WebAppTabHelper>(*contents),
+      content::WebContentsObserver(contents),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+          tab->GetBrowserWindowInterface()->GetProfile())) {
   observation_.Observe(&provider_->install_manager());
-  SetState(FindAppWithUrlInScope(web_contents->GetLastCommittedURL()),
+  SetState(FindAppWithUrlInScope(contents->GetLastCommittedURL()),
            /*is_in_app_window=*/false);
+  ResetTabSubscriptions(tab);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
@@ -202,17 +215,6 @@ void WebAppTabHelper::OnWebAppWillBeUninstalled(
 void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
   SetAppId(std::nullopt);
-}
-
-void WebAppTabHelper::InitForTabFeatures(tabs::TabInterface* tab) {
-  tab_subscriptions_.push_back(tab->RegisterDidEnterForeground(
-      base::BindRepeating(&WebAppTabHelper::TabDidEnterForeground,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab->RegisterWillEnterBackground(
-      base::BindRepeating(&WebAppTabHelper::TabWillEnterBackground,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
-      &WebAppTabHelper::WillDetach, weak_factory_.GetWeakPtr())));
 }
 
 void WebAppTabHelper::TabDidEnterForeground(tabs::TabInterface* tab) {
@@ -238,6 +240,18 @@ void WebAppTabHelper::WillDetach(tabs::TabInterface* tab,
     case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
       break;
   }
+}
+
+void WebAppTabHelper::ResetTabSubscriptions(tabs::TabInterface* tab) {
+  tab_subscriptions_.clear();
+  tab_subscriptions_.push_back(tab->RegisterDidEnterForeground(
+      base::BindRepeating(&WebAppTabHelper::TabDidEnterForeground,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab->RegisterWillEnterBackground(
+      base::BindRepeating(&WebAppTabHelper::TabWillEnterBackground,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
+      &WebAppTabHelper::WillDetach, weak_factory_.GetWeakPtr())));
 }
 
 void WebAppTabHelper::OnAssociatedAppChanged(

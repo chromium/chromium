@@ -688,7 +688,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
                                                    profile()->GetPath());
 
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents());
   web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
 
   // Installed app, but it hasn't interacted with notifications yet.
@@ -745,7 +744,6 @@ TEST_F(ContentSettingImageModelTest,
   AppShimRegistry::Get()->OnAppInstalledForProfile(
       app_id, browser()->profile()->GetPath());
 
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents());
   web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
 
   // If the app requests notification permission while the system permission was
