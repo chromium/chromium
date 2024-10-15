@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
@@ -84,42 +85,23 @@ PostProcessDoneInfo::~PostProcessDoneInfo() = default;
 VideoCaptureEffectsProcessor::VideoCaptureEffectsProcessor(
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         video_effects_processor)
-    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      effects_processor_(std::move(video_effects_processor)) {}
+    : effects_processor_(std::move(video_effects_processor)) {}
 
 VideoCaptureEffectsProcessor::~VideoCaptureEffectsProcessor() {
-  // Make sure that the remote is destroyed from the same sequence that it was
-  // created on.
-  task_runner_->PostTask(
-      FROM_HERE, base::DoNothingWithBoundArgs(std::move(effects_processor_)));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void VideoCaptureEffectsProcessor::PostProcessData(
-    base::span<const uint8_t> data,
+    base::ReadOnlySharedMemoryRegion data,
     mojom::VideoFrameInfoPtr frame_info,
     VideoCaptureDevice::Client::Buffer out_buffer,
     const VideoCaptureFormat& out_buffer_format,
     VideoCaptureBufferType out_buffer_type,
     VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb) {
-  CHECK(!data.empty());
-
-  auto in_buffer_mapped_region =
-      base::ReadOnlySharedMemoryRegion::Create(data.size());
-  if (!in_buffer_mapped_region.IsValid()) {
-    // TODO(bialpio): this was not a post-processing error but we have to claim
-    // that it was, we have painted ourselves into a corner here. It may be OK
-    // to leave as-is if we think shmem creation failure is extremely unlikely.
-    std::move(post_process_cb)
-        .Run(
-            base::unexpected(video_effects::mojom::PostProcessError::kUnknown));
-    return;
-  }
-
-  in_buffer_mapped_region.mapping.GetMemoryAsSpan<uint8_t>().copy_from(data);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojom::VideoBufferHandlePtr in_buffer_handle =
-      mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
-          std::move(in_buffer_mapped_region.region));
+      mojom::VideoBufferHandle::NewReadOnlyShmemRegion(std::move(data));
 
   auto out_frame_info = frame_info->Clone();
   out_frame_info->pixel_format = out_buffer_format.pixel_format;
@@ -132,33 +114,6 @@ void VideoCaptureEffectsProcessor::PostProcessData(
                              std::move(out_shared_image),
                              std::move(post_process_cb));
 
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
-    // VideoCaptureDeviceClient can call us from any thread (the only guarantee
-    // we get is that one thread at a time will call us, which is enforced by
-    // `DFAKE_SCOPED_RECURSIVE_LOCK`), so a thread-hop to the correct sequence
-    // may be needed.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &VideoCaptureEffectsProcessor::PostProcessDataOnValidSequence,
-            weak_ptr_factory_.GetWeakPtr(), std::move(context),
-            std::move(in_buffer_handle), std::move(frame_info),
-            std::move(out_buffer_handle), out_buffer_format));
-    return;
-  }
-
-  PostProcessDataOnValidSequence(
-      std::move(context), std::move(in_buffer_handle), std::move(frame_info),
-      std::move(out_buffer_handle), out_buffer_format);
-}
-
-void VideoCaptureEffectsProcessor::PostProcessDataOnValidSequence(
-    PostProcessContext context,
-    mojom::VideoBufferHandlePtr in_buffer_handle,
-    mojom::VideoFrameInfoPtr frame_info,
-    mojom::VideoBufferHandlePtr out_buffer_handle,
-    const VideoCaptureFormat& out_buffer_format) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
       "PostProcessContext::PostProcessContext()", context.trace_id);
@@ -204,6 +159,11 @@ void VideoCaptureEffectsProcessor::PostProcessBuffer(
       std::move(out_buffer_handle), out_buffer_format.pixel_format,
       base::BindOnce(&VideoCaptureEffectsProcessor::OnPostProcess,
                      weak_ptr_factory_.GetWeakPtr(), std::move(context)));
+}
+
+base::WeakPtr<VideoCaptureEffectsProcessor>
+VideoCaptureEffectsProcessor::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void VideoCaptureEffectsProcessor::OnPostProcess(

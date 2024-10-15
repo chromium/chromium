@@ -10,7 +10,10 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -141,6 +144,17 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
     Init(std::move(buffer_pool));
   }
 
+  void Cleanup() {
+    receiver_ = nullptr;
+    device_client_.reset();
+
+    // VideoCaptureDeviceClient's dtor submits a task to destroy its effects
+    // processor. In order to avoid LSAN warnings, we need to wait for that task
+    // to run - let's just post a task to the same sequence and run the loop
+    // until our task fires.
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
@@ -236,9 +250,7 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
       std::move(shared_image), kFrameFormatNV12, 0 /*clockwise rotation*/,
       base::TimeTicks(), base::TimeDelta(), std::nullopt);
 
-  // Releasing |device_client_| will also release |receiver_|.
-  receiver_ = nullptr;  // Avoid dangling reference.
-  device_client_.reset();
+  Cleanup();
 }
 
 TEST_F(VideoCaptureDeviceClientTest,
@@ -259,6 +271,8 @@ TEST_F(VideoCaptureDeviceClientTest,
       VideoCaptureFormat(gfx::Size(10, 10), 30.0f, PIXEL_FORMAT_I420),
       gfx::ColorSpace::CreateREC601(), 0, false, base::TimeTicks(),
       base::TimeDelta(), expected_timestamp);
+
+  Cleanup();
 }
 
 TEST_F(VideoCaptureDeviceClientTest,
@@ -285,6 +299,8 @@ TEST_F(VideoCaptureDeviceClientTest,
       std::move(shared_image),
       VideoCaptureFormat(resolution, 30.0f, PIXEL_FORMAT_NV12), 0,
       base::TimeTicks(), base::TimeDelta(), expected_timestamp);
+
+  Cleanup();
 }
 
 TEST_F(VideoCaptureDeviceClientTest,
@@ -306,6 +322,8 @@ TEST_F(VideoCaptureDeviceClientTest,
           gfx::ColorSpace::CreateREC601()),
       base::TimeTicks(), base::TimeDelta(), expected_timestamp,
       gfx::Rect(resolution));
+
+  Cleanup();
 }
 
 // Tests that we fail silently if no available buffers to use.
@@ -343,6 +361,8 @@ TEST_F(VideoCaptureDeviceClientTest, DropsFrameIfNoBuffer) {
       0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
       base::TimeDelta(), std::nullopt);
   Mock::VerifyAndClearExpectations(receiver_);
+
+  Cleanup();
 }
 
 // Tests that buffer-based capture API accepts some memory-backed pixel formats.
@@ -392,6 +412,8 @@ TEST_F(VideoCaptureDeviceClientTest, DataCaptureGoodPixelFormats) {
         false /* flip_y */, base::TimeTicks(), base::TimeDelta(), std::nullopt);
     Mock::VerifyAndClearExpectations(receiver_);
   }
+
+  Cleanup();
 }
 
 // Test that we receive the expected resolution for a given captured frame
@@ -478,6 +500,8 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
 
     Mock::VerifyAndClearExpectations(receiver_);
   }
+
+  Cleanup();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -91,6 +91,20 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
         media::PowerLineFrequency::kDefault;
   }
 
+  void TearDown() override {
+    service_device_factory_.reset();
+
+    // Some parts of video capture stack submit tasks to the current sequence
+    // in their destructors. Make sure those tasks run before we start tearing
+    // down the rest of the test harness - otherwise, we may end up with LSAN
+    // warnings.
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
+
+    ::testing::Test::TearDown();
+  }
+
   void LetClient1ConnectWithRequestableSettingsAndExpectToGetThem() {
     base::RunLoop run_loop;
     source_remote_1_->CreatePushSubscription(

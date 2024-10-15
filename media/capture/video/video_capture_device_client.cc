@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -287,16 +288,26 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
       buffer_pool_(std::move(buffer_pool)),
       last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN) {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  effects_processor_.emplace(video_effects_context.TakeVideoEffectsProcessor());
+  effects_processor_task_runner_ =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  effects_processor_ = std::make_unique<VideoCaptureEffectsProcessor>(
+      video_effects_context.TakeVideoEffectsProcessor());
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 VideoCaptureDeviceClient::~VideoCaptureDeviceClient() {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   for (int buffer_id : buffer_ids_known_by_receiver_) {
     receiver_->OnBufferRetired(buffer_id);
   }
   receiver_->OnStopped();
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  effects_processor_task_runner_->DeleteSoon(FROM_HERE,
+                                             std::move(effects_processor_));
+#endif
 }
 
 // static
@@ -312,6 +323,8 @@ VideoCaptureDevice::Client::Buffer VideoCaptureDeviceClient::MakeBufferStruct(
 }
 
 void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   receiver_->OnCaptureConfigurationChanged();
 }
 
@@ -419,6 +432,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+    auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
+
     VideoFrameMetadata metadata;
     // Note: we are not setting `metadata.is_webgpu_compatible` here since we
     // have not verified whether the buffer pool returns frames that are
@@ -436,17 +451,38 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
     const VideoCaptureBufferType buffer_type =
         buffer_pool_->GetBufferType(buffer.id);
 
+    auto in_buffer_mapped_region =
+        base::ReadOnlySharedMemoryRegion::Create(data_span.size());
+    if (!in_buffer_mapped_region.IsValid()) {
+      receiver_->OnFrameDropped(
+          VideoCaptureFrameDropReason::kPostProcessingFailed);
+      return;
+    }
+
+    in_buffer_mapped_region.mapping.GetMemoryAsSpan<uint8_t>().copy_from(
+        data_span);
+
     // The `buffer` was already reserved above but has not yet been reported as
     // ready to the `receiver_`. Once the post-processor has completed, we will
     // call `OnPostProcessDone()` & thus notify the receiver from there.
-    effects_processor_->PostProcessData(
-        base::make_span(data, base::checked_cast<size_t>(length)),
-        std::move(info), std::move(buffer),
+    auto post_process_data = base::BindOnce(
+        &VideoCaptureEffectsProcessor::PostProcessData,
+        effects_processor_->GetWeakPtr(),
+        std::move(in_buffer_mapped_region.region), std::move(info),
+        std::move(buffer),
         VideoCaptureFormat(format.frame_size, format.frame_rate,
                            VideoPixelFormat::PIXEL_FORMAT_I420),
         buffer_type,
         base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    if (!effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
+      effects_processor_task_runner_->PostTask(FROM_HERE,
+                                               std::move(post_process_data));
+      return;
+    }
+
+    std::move(post_process_data).Run();
     return;
   }
 #endif
@@ -511,6 +547,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     int frame_feedback_id) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer");
 
@@ -598,6 +635,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
           std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
@@ -697,6 +736,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
                                               int* require_new_buffer_id,
                                               int* retire_old_buffer_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   CHECK_GT(frame_size.width(), 0);
   CHECK_GT(frame_size.height(), 0);
   CHECK(IsFormatSupported(pixel_format));
@@ -768,6 +808,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   OnIncomingCapturedBufferExt(
       std::move(buffer), format, gfx::ColorSpace(), reference_time, timestamp,
       capture_begin_timestamp, gfx::Rect(format.frame_size),
@@ -783,9 +824,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     std::optional<base::TimeTicks> capture_begin_timestamp,
     gfx::Rect visible_rect,
     const VideoFrameMetadata& additional_metadata) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedBufferExt");
-  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
 
   VideoFrameMetadata metadata = additional_metadata;
   // Note: we are not setting `metadata.is_webgpu_compatible` here since we
@@ -872,6 +913,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
 void VideoCaptureDeviceClient::OnError(VideoCaptureError error,
                                        const base::Location& from_here,
                                        const std::string& reason) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   const std::string log_message = base::StringPrintf(
       "error@ %s, %s, OS message: %s", from_here.ToString().c_str(),
       reason.c_str(),
@@ -884,19 +927,27 @@ void VideoCaptureDeviceClient::OnError(VideoCaptureError error,
 
 void VideoCaptureDeviceClient::OnFrameDropped(
     VideoCaptureFrameDropReason reason) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   receiver_->OnFrameDropped(reason);
 }
 
 void VideoCaptureDeviceClient::OnLog(const std::string& message) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   receiver_->OnLog(message);
 }
 
-void VideoCaptureDeviceClient::OnStarted() {
-  receiver_->OnStarted();
+double VideoCaptureDeviceClient::GetBufferPoolUtilization() const {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
+  return buffer_pool_->GetBufferPoolUtilization();
 }
 
-double VideoCaptureDeviceClient::GetBufferPoolUtilization() const {
-  return buffer_pool_->GetBufferPoolUtilization();
+void VideoCaptureDeviceClient::OnStarted() {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
+  receiver_->OnStarted();
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
