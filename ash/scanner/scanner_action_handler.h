@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/scanner/scanner_command.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
@@ -20,7 +21,11 @@ class ScannerCommandDelegate;
 // boolean is provided to signify whether the command succeeded or not.
 using ScannerCommandCallback = base::OnceCallback<void(bool success)>;
 
-// Given a ScannerAction this method will apply the contained command to the
+// Converts a `ScannerAction` to a `ScannerCommand` for use in
+// `HandleScannerCommand`.
+ASH_EXPORT ScannerCommand ScannerActionToCommand(ScannerAction action);
+
+// Given a ScannerCommand this method will apply the contained command to the
 // system. The callback passed will be invoked after the action has completed,
 // with a bool specifying if the command was completed successfully.
 //
@@ -33,9 +38,9 @@ using ScannerCommandCallback = base::OnceCallback<void(bool success)>;
 // not occur. If at any point `delegate` is null when this function attempts to
 // call methods on `delegate`, `callback` will be called with a success value of
 // false.
-ASH_EXPORT void HandleScannerAction(
+ASH_EXPORT void HandleScannerCommand(
     base::WeakPtr<ScannerCommandDelegate> delegate,
-    ScannerAction action,
+    ScannerCommand command,
     ScannerCommandCallback callback);
 
 }  // namespace ash

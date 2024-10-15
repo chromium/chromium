@@ -1243,6 +1243,8 @@ component("ash") {
     "scanner/scanner_action_handler.h",
     "scanner/scanner_action_view_model.cc",
     "scanner/scanner_action_view_model.h",
+    "scanner/scanner_command.cc",
+    "scanner/scanner_command.h",
     "scanner/scanner_command_delegate.cc",
     "scanner/scanner_command_delegate.h",
     "scanner/scanner_controller.cc",

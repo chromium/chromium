@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/scanner/scanner_command.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
@@ -27,9 +28,11 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::FieldsAre;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::VariantWith;
 
 class TestScannerCommandDelegate : public ScannerCommandDelegate {
  public:
@@ -50,124 +53,131 @@ constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 constexpr std::string_view kGoogleContactsHost = "contacts.google.com";
 constexpr std::string_view kGoogleContactsNewPath = "/new";
 
-TEST(ScannerActionHandlerTest, NewCalendarEventWithoutDelegateReturnsFalse) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+TEST(ScannerActionToCommandTest, NewCalendarEventWithNoFields) {
+  ScannerCommand command =
+      ScannerActionToCommand(NewCalendarEventAction(/*title=*/""));
 
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(nullptr, NewCalendarEventAction(/*title=*/""),
-                      done_future.GetCallback());
-
-  EXPECT_FALSE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest, NewCalendarEventWithNoFieldsOpensUrl) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      OpenUrl(AllOf(
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
           Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
           Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
-          Property("query_piece", &GURL::query_piece, "action=TEMPLATE"))))
-      .Times(1);
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(delegate.GetWeakPtr(),
-                      NewCalendarEventAction(/*title=*/""),
-                      done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
+          Property("query_piece", &GURL::query_piece, "action=TEMPLATE")))));
 }
 
-TEST(ScannerActionHandlerTest, NewCalendarEventWithTitleOpensUrl) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      OpenUrl(AllOf(
+TEST(ScannerActionToCommandTest, NewCalendarEventWithTitle) {
+  ScannerCommand command =
+      ScannerActionToCommand(NewCalendarEventAction("Test title?"));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
           Property("host_piece", &GURL::host_piece, kGoogleCalendarHost),
           Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
           Property("query_piece", &GURL::query_piece,
-                   "action=TEMPLATE&text=Test+title%3F"))))
-      .Times(1);
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(delegate.GetWeakPtr(),
-                      NewCalendarEventAction("Test title?"),
-                      done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
+                   "action=TEMPLATE&text=Test+title%3F")))));
 }
 
-TEST(ScannerActionHandlerTest, NewContactWithoutDelegateReturnsFalse) {
+TEST(ScannerActionToCommandTest, NewContactWithNoFields) {
+  ScannerCommand command =
+      ScannerActionToCommand(NewContactAction(/*given_name=*/""));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece, "")))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
+  ScannerCommand command = ScannerActionToCommand(NewContactAction("Léa"));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece,
+                   "given_name=L%C3%A9a")))));
+}
+
+TEST(ScannerActionToCommandTest, NewGoogleDoc) {
+  ScannerCommand command = ScannerActionToCommand(
+      NewGoogleDocAction("Doc Title", "<span>Contents</span>"));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<DriveUploadCommand>(FieldsAre(
+          "Doc Title", "<span>Contents</span>",
+          /*contents_mime_type=*/"text/html",
+          /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType)));
+}
+
+TEST(ScannerActionToCommandTest, NewGoogleSheet) {
+  ScannerCommand command =
+      ScannerActionToCommand(NewGoogleSheetAction("Sheet Title", "a,b\n1,2"));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<DriveUploadCommand>(FieldsAre(
+          "Sheet Title", "a,b\n1,2",
+          /*contents_mime_type=*/"text/csv",
+          /*converted_mime_type=*/drive::util::kGoogleSpreadsheetMimeType)));
+}
+
+TEST(ScannerActionHandlerTest, HandlesOpenUrlCommandWithoutDelegate) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerAction(nullptr, NewContactAction(/*given_name=*/""),
-                      done_future.GetCallback());
+  HandleScannerCommand(nullptr, OpenUrlCommand(GURL("https://example.com")),
+                       done_future.GetCallback());
 
   EXPECT_FALSE(done_future.Get());
 }
 
-TEST(ScannerActionHandlerTest, NewContactWithNoFieldsOpensUrl) {
+TEST(ScannerActionHandlerTest, OpenUrlCommandOpensUrl) {
   base::test::SingleThreadTaskEnvironment task_environment;
   TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      OpenUrl(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece, ""))))
-      .Times(1);
+  EXPECT_CALL(delegate, OpenUrl(GURL("https://example.com"))).Times(1);
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerAction(delegate.GetWeakPtr(),
-                      NewContactAction(/*given_name=*/""),
-                      done_future.GetCallback());
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       OpenUrlCommand(GURL("https://example.com")),
+                       done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Get());
 }
 
-TEST(ScannerActionHandlerTest, NewContactWithGivenNameOpensUrl) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  TestScannerCommandDelegate delegate;
-  EXPECT_CALL(
-      delegate,
-      OpenUrl(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece, "given_name=L%C3%A9a"))))
-      .Times(1);
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(delegate.GetWeakPtr(), NewContactAction("Léa"),
-                      done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest, NewGoogleDocActionWithoutDelegateReturnsFalse) {
+TEST(ScannerActionHandlerTest, HandlesDriveUploadCommandWithoutDelegate) {
   base::test::TaskEnvironment task_environment;
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerAction(nullptr,
-                      NewGoogleDocAction("Doc Title", "<span>Contents</span>"),
-                      done_future.GetCallback());
+  HandleScannerCommand(
+      nullptr,
+      DriveUploadCommand(
+          "Doc Title", "<span>Contents</span>",
+          /*contents_mime_type=*/"text/html",
+          /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType),
+      done_future.GetCallback());
 
   EXPECT_FALSE(done_future.Get());
 }
 
 TEST(ScannerActionHandlerTest,
-     NewGoogleDocActionHandlesDelayedDelegateDeletion) {
+     HandlesDriveUploadCommandWithDelayedDelegateDeletion) {
   base::test::TaskEnvironment task_environment;
 
   base::test::TestFuture<bool> done_future;
   {
     TestScannerCommandDelegate delegate;
     EXPECT_CALL(delegate, GetDriveService).Times(0);
-    HandleScannerAction(
+    HandleScannerCommand(
         delegate.GetWeakPtr(),
-        NewGoogleDocAction("Doc Title", "<span>Contents</span>"),
+        DriveUploadCommand(
+            "Doc Title", "<span>Contents</span>",
+            /*contents_mime_type=*/"text/html",
+            /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType),
         done_future.GetCallback());
     // `delegate` is deleted here, invalidating weak pointers.
   }
@@ -176,7 +186,7 @@ TEST(ScannerActionHandlerTest,
   EXPECT_FALSE(done_future.Get());
 }
 
-TEST(ScannerActionHandlerTest, NewGoogleDocActionOpensAlternateLink) {
+TEST(ScannerActionHandlerTest, DriveUploadCommandOpensAlternateLink) {
   base::test::TaskEnvironment task_environment;
   drive::FakeDriveService drive_service;
 
@@ -187,15 +197,19 @@ TEST(ScannerActionHandlerTest, NewGoogleDocActionOpensAlternateLink) {
       .Times(1);
 
   base::test::TestFuture<bool> done_future;
-  HandleScannerAction(delegate.GetWeakPtr(),
-                      NewGoogleDocAction("Doc Title", "<span>Contents</span>"),
-                      done_future.GetCallback());
+  HandleScannerCommand(
+      delegate.GetWeakPtr(),
+      DriveUploadCommand(
+          "Doc Title", "<span>Contents</span>",
+          /*contents_mime_type=*/"text/html",
+          /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType),
+      done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Get());
 }
 
 TEST(ScannerActionHandlerTest,
-     NewGoogleDocActionCreatesFileWithTitleAndMimeTypeInRoot) {
+     DriveUploadCommandCreatesFileWithTitleAndMimeTypeInRoot) {
   base::test::TaskEnvironment task_environment;
   drive::FakeDriveService drive_service;
 
@@ -206,9 +220,12 @@ TEST(ScannerActionHandlerTest,
     EXPECT_CALL(delegate, OpenUrl).Times(1);
 
     base::test::TestFuture<bool> done_future;
-    HandleScannerAction(
+    HandleScannerCommand(
         delegate.GetWeakPtr(),
-        NewGoogleDocAction("Doc Title", "<span>Contents</span>"),
+        DriveUploadCommand(
+            "Doc Title", "<span>Contents</span>",
+            /*contents_mime_type=*/"text/html",
+            /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType),
         done_future.GetCallback());
 
     ASSERT_TRUE(done_future.Get());
@@ -229,96 +246,6 @@ TEST(ScannerActionHandlerTest,
               Property("title", &google_apis::FileResource::title, "Doc Title"),
               Property("mime_type", &google_apis::FileResource::mime_type,
                        drive::util::kGoogleDocumentMimeType),
-              Property("parents", &google_apis::FileResource::parents,
-                       ElementsAre(Property(
-                           "file_id", &google_apis::ParentReference::file_id,
-                           drive_service.GetRootResourceId())))))))));
-}
-
-TEST(ScannerActionHandlerTest,
-     NewGoogleSheetActionWithoutDelegateReturnsFalse) {
-  base::test::TaskEnvironment task_environment;
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(nullptr, NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
-                      done_future.GetCallback());
-
-  EXPECT_FALSE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest,
-     NewGoogleSheetActionHandlesDelayedDelegateDeletion) {
-  base::test::TaskEnvironment task_environment;
-
-  base::test::TestFuture<bool> done_future;
-  {
-    TestScannerCommandDelegate delegate;
-    EXPECT_CALL(delegate, GetDriveService).Times(0);
-    HandleScannerAction(delegate.GetWeakPtr(),
-                        NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
-                        done_future.GetCallback());
-    // `delegate` is deleted here, invalidating weak pointers.
-  }
-  ASSERT_FALSE(done_future.IsReady());
-
-  EXPECT_FALSE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest, NewGoogleSheetActionOpensAlternateLink) {
-  base::test::TaskEnvironment task_environment;
-  drive::FakeDriveService drive_service;
-
-  TestScannerCommandDelegate delegate;
-  EXPECT_CALL(delegate, GetDriveService).WillRepeatedly(Return(&drive_service));
-  // `drive::FakeDriveService` doesn't have a special alternate link for Sheets
-  // files.
-  EXPECT_CALL(delegate,
-              OpenUrl(GURL("https://file_alternate_link/Sheet%20Title")))
-      .Times(1);
-
-  base::test::TestFuture<bool> done_future;
-  HandleScannerAction(delegate.GetWeakPtr(),
-                      NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
-                      done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Get());
-}
-
-TEST(ScannerActionHandlerTest,
-     NewGoogleSheetActionCreatesFileWithTitleAndMimeTypeInRoot) {
-  base::test::TaskEnvironment task_environment;
-  drive::FakeDriveService drive_service;
-
-  {
-    TestScannerCommandDelegate delegate;
-    EXPECT_CALL(delegate, GetDriveService)
-        .WillRepeatedly(Return(&drive_service));
-    EXPECT_CALL(delegate, OpenUrl).Times(1);
-
-    base::test::TestFuture<bool> done_future;
-    HandleScannerAction(delegate.GetWeakPtr(),
-                        NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
-                        done_future.GetCallback());
-
-    ASSERT_TRUE(done_future.Get());
-  }
-
-  base::test::TestFuture<google_apis::ApiErrorCode,
-                         std::unique_ptr<google_apis::FileList>>
-      file_list_future;
-  drive_service.SearchByTitle("Sheet Title", drive_service.GetRootResourceId(),
-                              file_list_future.GetCallback());
-  auto [error, file_list] = file_list_future.Take();
-  EXPECT_EQ(error, google_apis::ApiErrorCode::HTTP_SUCCESS);
-  EXPECT_THAT(
-      file_list,
-      Pointee(Property(
-          "items", &google_apis::FileList::items,
-          ElementsAre(Pointee(AllOf(
-              Property("title", &google_apis::FileResource::title,
-                       "Sheet Title"),
-              Property("mime_type", &google_apis::FileResource::mime_type,
-                       drive::util::kGoogleSpreadsheetMimeType),
               Property("parents", &google_apis::FileResource::parents,
                        ElementsAre(Property(
                            "file_id", &google_apis::ParentReference::file_id,

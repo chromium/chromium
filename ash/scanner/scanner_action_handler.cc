@@ -14,6 +14,7 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/scanner/scanner_command.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -197,63 +198,63 @@ void UploadTempFileToDrive(base::WeakPtr<ScannerCommandDelegate> delegate,
       /*progress_callback=*/base::NullCallback());
 }
 
-void HandleNewGoogleDocAction(base::WeakPtr<ScannerCommandDelegate> delegate,
-                              NewGoogleDocAction action,
+void HandleDriveUploadCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
+                              DriveUploadCommand command,
                               ScannerCommandCallback callback) {
-  size_t contents_size = action.html_contents.size();
+  size_t contents_size = command.contents.size();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&CreateTempFileWithContents,
-                     std::move(action.html_contents)),
+      base::BindOnce(&CreateTempFileWithContents, std::move(command.contents)),
       base::BindOnce(&UploadTempFileToDrive, std::move(delegate),
-                     /*contents_mime_type=*/"text/html",
-                     /*converted_mime_type=*/
-                     drive::util::kGoogleDocumentMimeType, contents_size,
-                     std::move(action.title), std::move(callback)));
-}
-
-void HandleNewGoogleSheetAction(base::WeakPtr<ScannerCommandDelegate> delegate,
-                                const NewGoogleSheetAction& action,
-                                ScannerCommandCallback callback) {
-  size_t contents_size = action.csv_contents.size();
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&CreateTempFileWithContents,
-                     std::move(action.csv_contents)),
-      base::BindOnce(&UploadTempFileToDrive, std::move(delegate),
-                     /*contents_mime_type=*/"text/csv",
-                     /*converted_mime_type=*/
-                     drive::util::kGoogleSpreadsheetMimeType, contents_size,
-                     std::move(action.title), std::move(callback)));
+                     std::move(command.contents_mime_type),
+                     std::move(command.converted_mime_type), contents_size,
+                     std::move(command.title), std::move(callback)));
 }
 
 }  // namespace
 
-void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
-                         ScannerAction action,
-                         ScannerCommandCallback callback) {
-  std::visit(
+ScannerCommand ScannerActionToCommand(ScannerAction action) {
+  return std::visit(
       base::Overloaded{
-          [&](NewCalendarEventAction& action) {
-            OpenInBrowserTab(std::move(delegate), GetCalendarEventUrl(action),
-                             std::move(callback));
+          [&](NewCalendarEventAction& action) -> ScannerCommand {
+            return OpenUrlCommand(GetCalendarEventUrl(action));
           },
-          [&](NewContactAction& action) {
-            OpenInBrowserTab(std::move(delegate), GetContactUrl(action),
-                             std::move(callback));
+          [&](NewContactAction& action) -> ScannerCommand {
+            return OpenUrlCommand(GetContactUrl(action));
           },
-          [&](NewGoogleDocAction& action) {
-            HandleNewGoogleDocAction(std::move(delegate), std::move(action),
-                                     std::move(callback));
+          [&](NewGoogleDocAction& action) -> ScannerCommand {
+            return DriveUploadCommand(
+                std::move(action.title), std::move(action.html_contents),
+                /*contents_mime_type=*/"text/html",
+                /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType);
           },
-          [&](NewGoogleSheetAction& action) {
-            HandleNewGoogleSheetAction(std::move(delegate), std::move(action),
-                                       std::move(callback));
+          [&](NewGoogleSheetAction& action) -> ScannerCommand {
+            return DriveUploadCommand(std::move(action.title),
+                                      std::move(action.csv_contents),
+                                      /*contents_mime_type=*/"text/csv",
+                                      /*converted_mime_type=*/
+                                      drive::util::kGoogleSpreadsheetMimeType);
           },
       },
       action);
+}
+
+void HandleScannerCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
+                          ScannerCommand command,
+                          ScannerCommandCallback callback) {
+  std::visit(base::Overloaded{
+                 [&](OpenUrlCommand& command) {
+                   OpenInBrowserTab(std::move(delegate), command.url,
+                                    std::move(callback));
+                 },
+                 [&](DriveUploadCommand& command) {
+                   HandleDriveUploadCommand(std::move(delegate),
+                                            std::move(command),
+                                            std::move(callback));
+                 },
+             },
+             command);
 }
 
 }  // namespace ash
