@@ -1092,6 +1092,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         ASSERT_TRUE(ui_test_utils::NavigateToURL(
             browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
         contents_a = browser()->tab_strip_model()->GetActiveWebContents();
+        content::WaitForLoadStop(contents_a);
       }
 
       std::string message;
@@ -1153,6 +1154,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
       content::WebContents* handled_contents =
           monitor.GetLastSeenWebContentsAndStopMonitoring();
+      content::WaitForLoadStop(handled_contents);
       ASSERT_NE(nullptr, handled_contents);
       ASSERT_TRUE(handled_contents->GetURL().is_valid());
 
@@ -1565,12 +1567,15 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithAppBLaunched,
   PerformTestCleanupIfNeeded();
 }
 
+// TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
+// them in navigation_capture_test_launch_app_b.json when fixed.
 INSTANTIATE_TEST_SUITE_P(
     RightClickFocusAndNavigateExisting,
     NavigationCapturingTestWithAppBLaunched,
     testing::Combine(
         testing::Values(
-            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
