@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -133,5 +134,32 @@ public class SensitiveContentTest {
                         mTabContentView.getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
         assertFalse(observer.getContentSensitivity());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    public void testTabHasSensitiveContentAttributeIsUpdated() throws Exception {
+        assertEquals(
+                "Initially, the tab does not have sensitive content",
+                mTabContentView.getContentSensitivity(),
+                View.CONTENT_SENSITIVITY_AUTO);
+
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        assertFalse(tab.getTabHasSensitiveContent());
+
+        sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThread(
+                () ->
+                        mTabContentView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+        assertTrue(tab.getTabHasSensitiveContent());
+
+        sActivityTestRule.loadUrl(mTestServer.getURL(NOT_SENSITIVE_FILE));
+        pollUiThread(
+                () ->
+                        mTabContentView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        assertFalse(tab.getTabHasSensitiveContent());
     }
 }

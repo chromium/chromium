@@ -26,8 +26,7 @@ import java.lang.ref.WeakReference;
  * set its content sensitivity.
  */
 @JNINamespace("sensitive_content")
-@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserver {
+public class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserver {
     /** Used to update the content sensitivity of the current container view. */
     @VisibleForTesting
     static interface ContentSensitivitySetter {
@@ -72,12 +71,14 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
      * client owns the java client, and the native client has its lifetime tied to the {@link
      * WebContents}.
      */
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static SensitiveContentClient fromWebContents(WebContents webContents) {
         return SensitiveContentClientJni.get()
                 .getJavaSensitiveContentClientFromWebContents(webContents);
     }
 
     @CalledByNative
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private SensitiveContentClient(WebContents webContents) {
         this(
                 webContents,
@@ -90,6 +91,7 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
     }
 
     @VisibleForTesting
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     SensitiveContentClient(
             WebContents webContents, ContentSensitivitySetter contentSensitivitySetter) {
         mWebContents = webContents;

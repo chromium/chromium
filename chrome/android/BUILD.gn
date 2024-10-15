@@ -637,6 +637,7 @@ if (current_toolchain == default_toolchain) {
       "//components/segmentation_platform/public:public_java",
       "//components/send_tab_to_self:send_tab_to_self_java",
       "//components/sensitive_content:java",
+      "//components/sensitive_content:sensitive_content_features_java",
       "//components/signin/core/browser:signin_enums_java",
       "//components/signin/public/android:java",
       "//components/site_engagement/content/android:java",
