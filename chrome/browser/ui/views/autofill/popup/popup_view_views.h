@@ -109,7 +109,6 @@ class PopupViewViews : public PopupBaseView,
                        PopupCellSelectionSource source) override;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -166,7 +165,7 @@ class PopupViewViews : public PopupBaseView,
     return *absl::get<PopupRowView*>(rows_[index]);
   }
 
-  void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateAccessibleStates() const;
 
   // Returns whether the row at `index` exists, is a `PopupRowView` and is
   // selectable.

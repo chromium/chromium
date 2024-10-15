@@ -226,12 +226,6 @@ PopupViewViews::PopupViewViews(
 
 PopupViewViews::~PopupViewViews() = default;
 
-void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!controller_) {
-    node_data->AddState(ax::mojom::State::kInvisible);
-  }
-}
-
 void PopupViewViews::OnMouseEntered(const ui::MouseEvent& event) {
   OnMouseEnteredInChildren();
 }
@@ -251,7 +245,7 @@ bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   base::AutoReset show_in_progress_reset(&show_in_progress_, !!search_bar_);
 
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
   if (!DoShow()) {
     return false;
   }
@@ -336,7 +330,7 @@ void PopupViewViews::Hide() {
 
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
   DoHide();
 }
 
@@ -905,11 +899,13 @@ void PopupViewViews::SetSelectedCell(
   }
 }
 
-void PopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
+void PopupViewViews::UpdateAccessibleStates() const {
   if (controller_) {
     GetViewAccessibility().SetIsExpanded();
+    GetViewAccessibility().SetIsInvisible(false);
   } else {
     GetViewAccessibility().SetIsCollapsed();
+    GetViewAccessibility().SetIsInvisible(true);
   }
 }
 
@@ -950,7 +946,7 @@ void PopupViewViews::InitViews() {
   }
 
   CreateSuggestionViews();
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
 }
 
 void PopupViewViews::CreateSuggestionViews() {

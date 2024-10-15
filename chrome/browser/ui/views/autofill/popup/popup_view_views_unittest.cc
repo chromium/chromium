@@ -381,27 +381,30 @@ TEST_F(PopupViewViewsTest, ShowHideTest) {
   view().Hide();
 }
 
-TEST_F(PopupViewViewsTest, ExpandedCollapsedAccessiblityStateTest) {
+TEST_F(PopupViewViewsTest, AccessibleStates) {
   CreateAndShowView({SuggestionType::kAutocompleteEntry});
   ui::AXNodeData node_data;
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kInvisible));
 
   view().Hide();
   node_data = ui::AXNodeData();
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
 
   CreateAndShowView({SuggestionType::kAutocompleteEntry});
   node_data = ui::AXNodeData();
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kInvisible));
 }
 
-TEST_F(PopupViewViewsTest, AccessibleProperties) {
+TEST_F(PopupViewViewsTest, AccessibleNameAndRole) {
   CreateAndShowView({SuggestionType::kAutocompleteEntry});
   ui::AXNodeData node_data;
 
