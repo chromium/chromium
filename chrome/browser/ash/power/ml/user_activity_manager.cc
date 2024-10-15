@@ -99,31 +99,6 @@ void LogMetricsToUMA(const UserActivityEvent& event) {
   LogPowerMLModelNoDimResult(result);
 }
 
-// True if the first browser window in mru windows list is from Lacros.
-bool ShouldUseLacrosFeatures() {
-  if (ash::Shell::HasInstance()) {
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_windows =
-        ash::Shell::Get()->mru_window_tracker()->BuildMruWindowList(
-            ash::kActiveDesk);
-    for (aura::Window* window : mru_windows) {
-      if (!window->IsVisible()) {
-        continue;
-      }
-
-      chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
-
-      if (app_type == chromeos::AppType::BROWSER) {
-        return false;
-      }
-      if (app_type == chromeos::AppType::LACROS) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 int GetRoundedOrInvalidEngagementScore(content::WebContents* contents) {
   if (!site_engagement::SiteEngagementService::IsEnabled()) {
     return -1;
@@ -317,7 +292,7 @@ void UserActivityManager::UpdateAndGetSmartDimDecision(
   screen_off_occurred_ = false;
   screen_lock_occurred_ = false;
 
-  if (!lacros_remote_id_.has_value() || !ShouldUseLacrosFeatures()) {
+  if (!lacros_remote_id_.has_value()) {
     // Extracts `features_` synchronously (without asking lacros for web page
     // info) and request ml-service for decision.
     UpdateFeaturesWithLacrosIfApplicableAndDoRequest(

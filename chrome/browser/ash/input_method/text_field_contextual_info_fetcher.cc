@@ -52,12 +52,6 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
   TextFieldContextualInfo info;
   GetTextFieldAppTypeAndKey(info);
 
-  if (info.app_type == chromeos::AppType::LACROS) {
-    GetUrlForTextFieldOnLacros(base::BindOnce(
-        TextFieldContextualInfoWithUrl, std::move(cb), base::OwnedRef(info)));
-    return;
-  }
-
   TextFieldContextualInfoWithUrl(std::move(cb), info,
                                  info.app_type == chromeos::AppType::BROWSER
                                      ? GetUrlForTextFieldOnAshChrome()

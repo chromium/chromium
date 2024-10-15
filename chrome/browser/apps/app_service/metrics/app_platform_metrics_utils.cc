@@ -240,27 +240,6 @@ bool IsAshBrowserWindow(aura::Window* window) {
   return true;
 }
 
-bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
-  if (!crosapi::browser_util::IsLacrosEnabled()) {
-    return false;
-  }
-
-  bool ret = false;
-  AppServiceProxyFactory::GetForProfile(profile)
-      ->InstanceRegistry()
-      .ForInstancesWithWindow(window, [&](const apps::InstanceUpdate& update) {
-        if (update.AppId() == app_constants::kLacrosAppId) {
-          ret = true;
-        }
-      });
-  return ret;
-}
-
-bool IsLacrosWindow(aura::Window* window) {
-  return window->GetProperty(chromeos::kAppTypeKey) ==
-         chromeos::AppType::LACROS;
-}
-
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
   return (app_type_name == apps::AppTypeName::kChromeBrowser &&
           app_id != app_constants::kChromeAppId) ||
@@ -306,9 +285,7 @@ AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
     return AppTypeName::kSystemWeb;
   }
 
-  return IsLacrosBrowserWindow(profile, window)
-             ? AppTypeName::kStandaloneBrowser
-             : GetWebAppTypeName();
+  return GetWebAppTypeName();
 }
 
 AppTypeName GetAppTypeNameForWindow(Profile* profile,
@@ -340,9 +317,7 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
     case AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
     case AppType::kStandaloneBrowserChromeApp:
-      return IsLacrosBrowserWindow(profile, window)
-                 ? AppTypeName::kStandaloneBrowser
-                 : AppTypeName::kStandaloneBrowserChromeApp;
+      return AppTypeName::kStandaloneBrowserChromeApp;
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
     case AppType::kStandaloneBrowserExtension:
