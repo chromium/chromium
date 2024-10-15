@@ -459,8 +459,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // DevTools clients/QuotaOverrideHandle with an active override.
   void WithdrawOverridesForHandle(int handle_id);
 
-  static constexpr int kEvictionIntervalInMilliSeconds =
-      30 * kMinutesInMilliSeconds;
+  // The interval between periodic eviction rounds. Eviction rounds will delete
+  // both explicitly expired buckets (for non-default buckets with an expiry
+  // date) and LRU buckets when the system is under storage pressure.
+  static constexpr base::TimeDelta kEvictionInterval = base::Minutes(30);
+
+  // The amount of time to wait after loading or bootstrapping the database,
+  // which tends to happen on browser startup, before beginning the first
+  // eviction round.
+  static constexpr base::TimeDelta kMinutesAfterStartupToBeginEviction =
+      base::Minutes(5);
+
   static constexpr int kThresholdOfErrorsToBeDenylisted = 3;
   static constexpr int kThresholdRandomizationPercent = 5;
 
@@ -528,6 +537,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   friend class UsageTrackerTest;
   FRIEND_TEST_ALL_PREFIXES(QuotaManagerImplTest,
                            UpdateOrCreateBucket_Expiration);
+  FRIEND_TEST_ALL_PREFIXES(QuotaManagerImplTest, QuotaDatabaseBootstrap);
 
   class EvictionRoundInfoHelper;
   class UsageAndQuotaInfoGatherer;

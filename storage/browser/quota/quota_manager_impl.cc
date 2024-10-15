@@ -1853,7 +1853,11 @@ void QuotaManagerImpl::DidGetBootstrapFlag(bool is_database_bootstrapped) {
   }
   is_bootstrapping_database_ = false;
   RunDatabaseCallbacks();
-  StartEviction();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&QuotaManagerImpl::StartEviction,
+                     weak_factory_.GetWeakPtr()),
+      kMinutesAfterStartupToBeginEviction);
 }
 
 void QuotaManagerImpl::BootstrapDatabase() {
@@ -1921,7 +1925,11 @@ void QuotaManagerImpl::DidSetDatabaseBootstrapped(QuotaError error) {
   }
 
   RunDatabaseCallbacks();
-  StartEviction();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&QuotaManagerImpl::StartEviction,
+                     weak_factory_.GetWeakPtr()),
+      kMinutesAfterStartupToBeginEviction);
 }
 
 void QuotaManagerImpl::RunDatabaseCallbacks() {
@@ -2201,8 +2209,8 @@ void QuotaManagerImpl::StartEviction() {
     return;
   }
   if (!temporary_storage_evictor_) {
-    temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
-        this, kEvictionIntervalInMilliSeconds);
+    temporary_storage_evictor_ =
+        std::make_unique<QuotaTemporaryStorageEvictor>(this, kEvictionInterval);
   }
   temporary_storage_evictor_->Start();
 }

@@ -75,10 +75,8 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
   void TriggerStoragePressureCheck(const GURL& test_url) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &QuotaManager::GetUsageAndQuotaForWebApps, quota_manager(),
-            blink::StorageKey::CreateFromStringForTesting(test_url.spec()),
-            blink::mojom::StorageType::kTemporary, base::DoNothing()));
+        base::BindOnce(&QuotaManager::GetDiskAvailabilityAndTempPoolSize,
+                       quota_manager(), base::DoNothing()));
   }
 
   Shell* browser() {

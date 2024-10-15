@@ -247,7 +247,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void SetDisabledForTesting(bool disable);
 
   static base::Time GetNow();
-  static void SetClockForTesting(base::Clock* clock);
+  static void SetClockForTesting(const base::Clock* clock);
 
   void SetAlreadyEvictedStaleStorageForTesting(
       bool already_evicted_stale_storage);

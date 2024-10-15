@@ -69,7 +69,7 @@ const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 
 const int kCommitIntervalMs = 30000;
 
-base::Clock* g_clock_for_testing = nullptr;
+const base::Clock* g_clock_for_testing = nullptr;
 
 void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
   base::UmaHistogramEnumeration("Quota.QuotaDatabaseReset", reason);
@@ -974,7 +974,7 @@ base::Time QuotaDatabase::GetNow() {
 }
 
 // static
-void QuotaDatabase::SetClockForTesting(base::Clock* clock) {
+void QuotaDatabase::SetClockForTesting(const base::Clock* clock) {
   g_clock_for_testing = clock;
 }
 
