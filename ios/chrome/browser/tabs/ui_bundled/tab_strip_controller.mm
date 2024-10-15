@@ -521,9 +521,9 @@ const CGFloat kSymbolSize = 18;
 
     SetA11yLabelAndUiAutomationName(
         _buttonNewTab,
-        _isIncognito ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
-                     : IDS_IOS_TOOLS_MENU_NEW_TAB,
-        _isIncognito ? @"New Incognito Tab" : @"New Tab");
+        _isIncognito ? IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO
+                     : IDS_IOS_TOOLBAR_OPEN_NEW_TAB,
+        _isIncognito ? @"New Incognito tab" : @"New tab");
     [_buttonNewTab addTarget:self
                       action:@selector(sendNewTabCommand)
             forControlEvents:UIControlEventTouchUpInside];
