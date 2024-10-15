@@ -377,8 +377,7 @@ void PepperInternalFileRefBackend::ReadDirectoryComplete(
       ppapi::FileRefCreateInfo info;
       info.file_system_type = fs_type_;
       info.file_system_plugin_resource = fs_host_->pp_resource();
-      std::string path =
-          dir_path + storage::FilePathToString(base::FilePath(it.name));
+      std::string path = dir_path + storage::FilePathToString(it.name.path());
       info.internal_path = path;
       info.display_name = ppapi::GetNameForInternalFilePath(path);
       infos.push_back(info);

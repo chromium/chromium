@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -462,9 +463,11 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
 
       base::FilePath relative_path;
       read_path.AppendRelativePath(file_paths_[i], &relative_path);
+      auto name = base::SafeBaseName::Create(relative_path);
+      CHECK(name) << relative_path;
       base::File::Info info = file_info_[file_paths_[i].value()];
       entry_list.emplace_back(
-          std::move(relative_path), base::FilePath(),
+          *name, std::string(),
           info.is_directory ? filesystem::mojom::FsFileType::DIRECTORY
                             : filesystem::mojom::FsFileType::REGULAR_FILE);
     }

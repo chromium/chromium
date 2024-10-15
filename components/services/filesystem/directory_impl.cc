@@ -42,8 +42,10 @@ void DirectoryImpl::Read(ReadCallback callback) {
     mojom::DirectoryEntryPtr entry = mojom::DirectoryEntry::New();
     entry->type = info.IsDirectory() ? mojom::FsFileType::DIRECTORY
                                      : mojom::FsFileType::REGULAR_FILE;
-    entry->name = path.BaseName();
-    entry->display_name = info.GetName();
+    auto name = base::SafeBaseName::Create(path);
+    CHECK(name) << path;
+    entry->name = *name;
+    entry->display_name = info.GetName().AsUTF8Unsafe();
 
     entries.push_back(std::move(entry));
   }

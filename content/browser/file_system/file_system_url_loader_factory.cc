@@ -343,8 +343,7 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
     const DirectoryEntry& entry = entries_[index];
     const FileSystemURL entry_url =
         params_.file_system_context->CreateCrackedFileSystemURL(
-            url_.storage_key(), url_.type(),
-            url_.path().Append(base::FilePath(entry.name)));
+            url_.storage_key(), url_.type(), url_.path().Append(entry.name));
     DCHECK(entry_url.is_valid());
     params_.file_system_context->operation_runner()->GetMetadata(
         entry_url,
@@ -363,7 +362,7 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
     }
 
     const DirectoryEntry& entry = entries_[index];
-    const std::u16string& name = base::FilePath(entry.name).LossyDisplayName();
+    const std::u16string& name = entry.name.path().LossyDisplayName();
     data_.append(net::GetDirectoryListingEntry(
         name, std::string(),
         entry.type == filesystem::mojom::FsFileType::DIRECTORY, file_info.size,

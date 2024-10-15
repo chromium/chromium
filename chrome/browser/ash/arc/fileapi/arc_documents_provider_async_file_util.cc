@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
@@ -50,7 +51,9 @@ void OnReadDirectoryOnUIThread(
   storage::AsyncFileUtil::EntryList entries;
   entries.reserve(files.size());
   for (const auto& file : files) {
-    entries.emplace_back(base::FilePath(file.name), base::FilePath(),
+    auto name = base::SafeBaseName::Create(file.name);
+    CHECK(name) << file.name;
+    entries.emplace_back(*name, std::string(),
                          file.is_directory
                              ? filesystem::mojom::FsFileType::DIRECTORY
                              : filesystem::mojom::FsFileType::REGULAR_FILE);

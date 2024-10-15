@@ -388,7 +388,9 @@ TEST_F(DraggedFileUtilTest, ReadDirectoryTest) {
                        ? filesystem::mojom::FsFileType::DIRECTORY
                        : filesystem::mojom::FsFileType::REGULAR_FILE;
 
-      entry.name = current.BaseName();
+      auto name = base::SafeBaseName::Create(current);
+      CHECK(name) << current;
+      entry.name = *name;
       expected_entry_map[entry.name.value()] = entry;
 
 #if BUILDFLAG(IS_POSIX)

@@ -271,7 +271,7 @@ DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::FilterMediaEntries(
   for (size_t i = 0; i < file_list.size(); ++i) {
     const filesystem::mojom::DirectoryEntry& entry = file_list[i];
     if (entry.type == filesystem::mojom::FsFileType::DIRECTORY ||
-        CheckFilePath(entry.name)) {
+        CheckFilePath(entry.name.path())) {
       results.push_back(entry);
     }
   }

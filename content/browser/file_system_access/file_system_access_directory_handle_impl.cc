@@ -544,7 +544,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
             weak_factory_.GetWeakPtr(), std::move(final_callback)));
 
     for (const auto& entry : file_list) {
-      std::string basename = storage::FilePathToString(entry.name);
+      std::string basename = storage::FilePathToString(entry.name.path());
       storage::FileSystemURL child_url;
       blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
           GetChildURL(basename, &child_url);
@@ -583,7 +583,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 
   std::vector<FileSystemAccessEntryPtr> entries;
   for (const auto& entry : file_list) {
-    std::string basename = storage::FilePathToString(entry.name);
+    std::string basename = storage::FilePathToString(entry.name.path());
 
     storage::FileSystemURL child_url;
     blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
@@ -605,8 +605,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 }
 
 void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
-    base::FilePath basename,
-    base::FilePath display_name,
+    base::SafeBaseName basename,
+    std::string display_name,
     storage::FileSystemURL child_url,
     base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
     FileSystemAccessPermissionContext::SensitiveEntryResult
@@ -699,14 +699,14 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
 }
 
 FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
-    const base::FilePath& basename,
-    const base::FilePath& display_name,
+    const base::SafeBaseName& basename,
+    const std::string& display_name,
     const storage::FileSystemURL& url,
     HandleType handle_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string name =
-      storage::FilePathToString(display_name.empty() ? basename : display_name);
+      !display_name.empty() ? display_name : basename.AsUTF8Unsafe();
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(

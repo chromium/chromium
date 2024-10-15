@@ -60,7 +60,7 @@ class FileSystemDispatcher::ReadDirectoryListener
       bool has_more) override {
     for (const auto& entry : entries) {
       callbacks_->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name),
+          FilePathToWebString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks_->DidReadDirectoryEntries(has_more);
@@ -531,7 +531,7 @@ void FileSystemDispatcher::DidReadDirectory(
   if (error_code == base::File::Error::FILE_OK) {
     for (const auto& entry : entries) {
       callbacks->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name),
+          FilePathToWebString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks->DidReadDirectoryEntries(false);

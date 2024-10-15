@@ -32,6 +32,11 @@ class BASE_EXPORT SafeBaseName {
   static std::optional<SafeBaseName> Create(FilePath::StringPieceType);
   const FilePath& path() const { return path_; }
 
+  // Convenience functions.
+  const std::string AsUTF8Unsafe() const { return path_.AsUTF8Unsafe(); }
+  const FilePath::StringType& value() const { return path_.value(); }
+  [[nodiscard]] bool empty() const { return path_.empty(); }
+
   bool operator==(const SafeBaseName& that) const;
 
  private:
