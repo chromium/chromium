@@ -1156,7 +1156,7 @@ void OnListFamilyMembersResponse(
     [self.sceneState.window makeKeyAndVisible];
   }
 
-  if (!self.sceneState.appState.startupInformation.isFirstRun) {
+  if (!self.sceneState.profileState.startupInformation.isFirstRun) {
     [self reconcileEulaAsAccepted];
   }
 
@@ -3921,7 +3921,7 @@ using UserFeedbackDataCallback =
             applicationActive:active
                     tabOpener:self
         connectionInformation:self
-           startupInformation:self.sceneState.appState.startupInformation
+           startupInformation:self.sceneState.profileState.startupInformation
                   prefService:self.currentInterface.profile->GetPrefs()
                     initStage:self.sceneState.profileState.initStage];
   }

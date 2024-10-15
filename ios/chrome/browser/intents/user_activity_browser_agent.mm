@@ -111,7 +111,7 @@ UserActivityBrowserAgent::UserActivityBrowserAgent(Browser* browser)
   SceneState* scene_state = browser_->GetSceneState();
   connection_information_ = scene_state.controller;
   tab_opener_ = scene_state.controller;
-  startup_information_ = scene_state.appState.startupInformation;
+  startup_information_ = scene_state.profileState.startupInformation;
 }
 
 UserActivityBrowserAgent::~UserActivityBrowserAgent() {}

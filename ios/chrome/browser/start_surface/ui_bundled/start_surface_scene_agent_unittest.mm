@@ -92,6 +92,8 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     profile_state_ = OCMClassMock([ProfileState class]);
     OCMStub([profile_state_ initStage]).andReturn(init_stage);
     OCMStub([profile_state_ appState]).andReturn(app_state_);
+    OCMStub([profile_state_ startupInformation])
+        .andReturn(startup_information_);
     scene_state_.profileState = profile_state_;
   }
 

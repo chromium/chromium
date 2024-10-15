@@ -298,7 +298,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState);
   const BOOL isColdStart =
       (level > SceneActivationLevelBackground &&
-       self.sceneState.profileState.appState.startupInformation.isColdStart);
+       self.sceneState.profileState.startupInformation.isColdStart);
   if (isColdStart) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeColdStart",
                                 timeSinceBackground.InMinutes(), 1,
