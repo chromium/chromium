@@ -55,7 +55,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   explicit ExtensionsMenuMainPageView(Browser* browser,
                                       ExtensionsMenuHandler* menu_handler);
-  ~ExtensionsMenuMainPageView() override = default;
+  ~ExtensionsMenuMainPageView() override;
   ExtensionsMenuMainPageView(const ExtensionsMenuMainPageView&) = delete;
   const ExtensionsMenuMainPageView& operator=(
       const ExtensionsMenuMainPageView&) = delete;
@@ -86,11 +86,10 @@ class ExtensionsMenuMainPageView : public views::View {
                           bool is_site_settings_toggle_on);
 
   // Updates the message section given `state` and `has_enterprise_extensions`.
+  // TODO(crbug.com/40879945): Remove method, since MessageSection was removed,
+  // and update sections directly.
   void UpdateMessageSection(MessageSectionState state,
                             bool has_enterprise_extensions);
-
-  // Returns the `message_section_` current state.
-  MessageSectionState GetMessageSectionState();
 
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information.
@@ -112,9 +111,8 @@ class ExtensionsMenuMainPageView : public views::View {
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
-  views::View* GetTextContainerForTesting();
-  views::View* GetReloadContainerForTesting();
-  views::View* GetRequestsAccessContainerForTesting();
+  const views::View* reload_section() const;
+  const views::View* requests_section() const;
   std::vector<extensions::ExtensionId>
   GetExtensionsRequestingAccessForTesting();
   views::View* GetExtensionRequestingAccessEntryForTesting(
@@ -123,17 +121,30 @@ class ExtensionsMenuMainPageView : public views::View {
  private:
   content::WebContents* GetActiveWebContents() const;
 
+  // Returns the request entry for `extension_id` if existent.
+  views::View* GetExtensionRequestEntry(
+      const extensions::ExtensionId& extension_id) const;
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
-  // Site settings views.
+  // Site settings section.
   raw_ptr<views::Label> site_settings_label_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
-  // Contents views.
-  raw_ptr<MessageSection> message_section_;
-  // The view containing the menu items. This is separated for easy insertion
-  // and iteration of menu items. The children are guaranteed to only be
+  // Reload section.
+  raw_ptr<views::View> reload_section_;
+
+  // Site access requests section.
+  raw_ptr<views::View> requests_section_;
+  // View that holds the requests entries in `requests_section_`.
+  raw_ptr<views::View> requests_entries_view_;
+  // A collection of all the requests entries in `requests_section_`. This is
+  // separated for easy insertion and removal of requests entries.
+  std::map<extensions::ExtensionId, raw_ptr<views::View, CtnExperimental>>
+      requests_entries_;
+
+  // Menu items section. The children are guaranteed to only be
   // ExtensionMenuItemViews.
   raw_ptr<views::View> menu_items_ = nullptr;
 };

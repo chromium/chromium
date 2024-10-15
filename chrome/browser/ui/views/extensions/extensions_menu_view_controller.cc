@@ -892,12 +892,9 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
     return;
   }
 
-  // Site access requests only affect the 'user customized access' section in
-  // the main page.
+  // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
@@ -925,12 +922,9 @@ void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
     return;
   }
 
-  // Site access requests only affect the 'user customized access' section in
-  // the main page.
+  // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
@@ -962,12 +956,9 @@ void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
     return;
   }
 
-  // Site access requests only affect the 'user customized access' section in
-  // the main page.
+  // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
@@ -987,9 +978,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestsCleared(int tab_id) {
   // Site access requests only affect the 'user customized access' section in
   // the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 

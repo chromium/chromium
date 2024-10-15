@@ -100,9 +100,9 @@ std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageViewInteractiveUITest::
     GetExtensionsInRequestAccessSection() {
   ExtensionsMenuMainPageView* page = main_page();
-  // No extensions are shown in the main page is not visible or if requests
-  // access container is hidden.
-  if (!page || !page->GetRequestsAccessContainerForTesting()->GetVisible()) {
+  // No extensions are shown in the main page if main page is not visible or if
+  // requests section is hidden.
+  if (!page || !page->requests_section()->GetVisible()) {
     return std::vector<std::string>();
   }
   return page->GetExtensionsRequestingAccessForTesting();
@@ -180,42 +180,34 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   }
 
   ShowUi("");
-  views::View* text_container = main_page()->GetTextContainerForTesting();
-  views::View* reload_container = main_page()->GetReloadContainerForTesting();
-  views::View* requests_access_container =
-      main_page()->GetRequestsAccessContainerForTesting();
 
   // When the toggle button is ON and the extension has granted access (by
   // default):
   //   - user site setting is "customize by extension".
   //   - extension is injected.
-  //   - message section is hidden, meaning all containers are hidden.
+  //   - reload section is hidden
+  //   - requests section is hidden
   auto* permissions_manager = PermissionsManager::Get(browser()->profile());
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(DidInjectScript(web_contents));
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_FALSE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
 
   // Toggling the button OFF blocks all extensions on this site:
   //   - user site setting is set to "block all extensions".
   //   - since extension was already injected in the site, it remains injected.
-  //   - only reload container is visible with blocked access text, since a
-  //   reload needs to happen to remove the extension injection.
+  //   - reload section is visible, since a page refresh is needed to apply
+  //     changes
+  //   - requests section is hidden
   ClickSiteSettingToggle();
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(DidInjectScript(web_contents));
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_TRUE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(views::AsViewClass<views::Label>(reload_container->children()[0])
-                ->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+  EXPECT_TRUE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
 
   // Refresh the page, and reopen the menu.
   {
@@ -224,48 +216,35 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
     observer.Wait();
   }
   ShowMenu();
-  text_container = main_page()->GetTextContainerForTesting();
-  reload_container = main_page()->GetReloadContainerForTesting();
-  requests_access_container =
-      main_page()->GetRequestsAccessContainerForTesting();
 
   // When a refresh happens after blocking all extensions, the user site setting
   // takes effect:
   //   - user site setting is "block all extensions".
   //   - extension is not injected.
-  //   - text container is visible with user blocked access message.
+  //   - reload section is hidden
+  //   - requests section is hidden
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_FALSE(
       DidInjectScript(browser()->tab_strip_model()->GetActiveWebContents()));
-  EXPECT_TRUE(text_container->GetVisible());
-  EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[0])
-                ->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+  EXPECT_FALSE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
 
   // Toggling the button ON allows the extensions to request site access:
   //   - user site setting is "customize by extension".
   //   - extension is still not injected because there was no page
   //     refresh.
-  //   - only reload container is visible with blocked access text, since a
-  //   reload needs to happen to inject the extension.
+  //   - reload section is visible, since a page refresh is needed to apply
+  //     changes
+  //   - requests section is hidden
   ClickSiteSettingToggle();
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_FALSE(DidInjectScript(web_contents));
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_TRUE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(
-      views::AsViewClass<views::Label>(reload_container->children()[0])
-          ->GetText(),
-      l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_CUSTOMIZED_ACCESS_TEXT));
+  EXPECT_TRUE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
 
   // Refresh the page, and reopen the menu.
   {
@@ -274,25 +253,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
     observer.Wait();
   }
   ShowMenu();
-  text_container = main_page()->GetTextContainerForTesting();
-  reload_container = main_page()->GetReloadContainerForTesting();
-  requests_access_container =
-      main_page()->GetRequestsAccessContainerForTesting();
 
   // Refreshing the page causes the site setting to take effect:
   //   - user site setting is "customize by extension".
   //   - extension is injected.
-  //   - message section is hidden, meaning all containers are hidden. Note
-  //   requests access container is not visible because there is no extension
-  //   requesting site access.
+  //   - reload section is hidden
+  //   - requests section is hidden
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(
       DidInjectScript(browser()->tab_strip_model()->GetActiveWebContents()));
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_FALSE(main_page()->reload_section()->GetVisible());
+  EXPECT_FALSE(main_page()->requests_section()->GetVisible());
 }
 
 // Test that running an extension's action, when site permission were withheld,
@@ -316,10 +289,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   AddSiteAccessRequest(*extension, web_contents);
 
   ShowUi("");
-  views::View* text_container = main_page()->GetTextContainerForTesting();
-  views::View* reload_container = main_page()->GetReloadContainerForTesting();
-  views::View* requests_access_container =
-      main_page()->GetRequestsAccessContainerForTesting();
+  const views::View* reload_section = main_page()->reload_section();
+  const views::View* requests_section = main_page()->requests_section();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
   // Verify user site setting is "customize by extension" (default) and
@@ -332,14 +303,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When extension has added a site access request:
   //   - site access toggle is visible and off.
-  //   - message section only shows request access container and includes
-  //   extension.
+  //   - reload section is hidden.
+  //   - requests section is visible and has extension.
   //   - request access button, in the toolbar, includes extension.
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_FALSE(reload_section->GetVisible());
+  EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_id));
   EXPECT_THAT(GetExtensionsInRequestAccessButton(),
@@ -347,14 +317,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When extension has granted site access, after running the extension action:
   //   - site access toggle is visible and on.
-  //   - message section is hidden, meaning all containers are not visible.
+  //   - reload section is hidden.
+  //   - requests section is hidden
   //   - request access button, in the toolbar, does not include extension.
   ClickButton(menu_item->primary_action_button_for_testing());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_FALSE(reload_section->GetVisible());
+  EXPECT_FALSE(requests_section->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 
@@ -367,21 +337,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   NavigateTo(urlA);
   ShowMenu();
 
-  text_container = main_page()->GetTextContainerForTesting();
-  reload_container = main_page()->GetReloadContainerForTesting();
-  requests_access_container =
-      main_page()->GetRequestsAccessContainerForTesting();
+  reload_section = main_page()->reload_section();
+  requests_section = main_page()->requests_section();
   menu_item = GetOnlyMenuItem();
 
   // When navigating back to the original site, after a cross-origin navigation:
   //   - site access toggle is visible and off.
-  //   - message section is hidden, meaning all containers are not visible.
+  //   - reload section is hidden.
+  //   - requests section is hidden.
   //   - request access button, in the toolbar, does not include extension.
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_FALSE(text_container->GetVisible());
-  EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_FALSE(reload_section->GetVisible());
+  EXPECT_FALSE(requests_section->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 }
@@ -464,16 +432,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   // requests on the menu.
   browser()->tab_strip_model()->ActivateTabAt(tab1_index);
   ShowUi("");
-  views::View* requests_access_container =
-      main_page()->GetRequestsAccessContainerForTesting();
-  EXPECT_FALSE(requests_access_container->GetVisible());
+  const views::View* requests_section = main_page()->requests_section();
+  EXPECT_FALSE(requests_section->GetVisible());
 
   // Add a site access request for extension A on the (active) first tab.
-  // Verify  extension A site access request is visible on the menu.
+  // Verify extension A site access request is visible on the menu.
   auto* permissions_manager = PermissionsManager::Get(browser()->profile());
   permissions_manager->AddSiteAccessRequest(tab1_web_contents, tab1_id,
                                             *extensionA);
-  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extensionA->id()));
 
@@ -481,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   // Verify only extension A site access request is visible on the menu.
   permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
                                             *extensionB);
-  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extensionA->id()));
 
@@ -489,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   // Verify only extension A site access request is visible on the menu.
   permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
                                             *extensionA);
-  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extensionA->id()));
 
@@ -497,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   // tab. Verify extension A site access request is still visible on the menu,
   // since request is still active for the first tab.
   permissions_manager->RemoveSiteAccessRequest(tab2_id, extensionA->id());
-  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extensionA->id()));
 }
