@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -115,8 +116,8 @@ bool ToolbarActionView::IsTriggerableEvent(const ui::Event& event) {
 
 bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_DOWN) {
-    context_menu_controller()->ShowContextMenuForView(this, gfx::Point(),
-                                                      ui::MENU_SOURCE_KEYBOARD);
+    context_menu_controller()->ShowContextMenuForView(
+        this, gfx::Point(), ui::mojom::MenuSourceType::kKeyboard);
     return true;
   }
   return MenuButton::OnKeyPressed(event);
@@ -266,7 +267,7 @@ views::Button* ToolbarActionView::GetReferenceButtonForPopup() {
 
 void ToolbarActionView::ShowContextMenuAsFallback() {
   context_menu_controller()->ShowContextMenuForView(
-      this, GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_NONE);
+      this, GetKeyboardContextMenuLocation(), ui::mojom::MenuSourceType::kNone);
 }
 
 void ToolbarActionView::OnPopupShown(bool by_user) {
@@ -294,8 +295,8 @@ void ToolbarActionView::ButtonPressed() {
         ToolbarActionViewController::InvocationSource::kToolbarButton);
   } else {
     // If the action isn't enabled, show the context menu as a fallback.
-    context_menu_controller()->ShowContextMenuForView(this, GetMenuPosition(),
-                                                      ui::MENU_SOURCE_NONE);
+    context_menu_controller()->ShowContextMenuForView(
+        this, GetMenuPosition(), ui::mojom::MenuSourceType::kNone);
   }
 }
 

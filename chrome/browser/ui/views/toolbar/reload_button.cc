@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -138,7 +139,7 @@ bool ReloadButton::ShouldShowMenu() {
   return menu_enabled_ && (visible_mode_ == Mode::kReload);
 }
 
-void ReloadButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
+void ReloadButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   ToolbarButton::ShowDropDownMenu(source_type);  // Blocks.
   ChangeMode(intended_mode_, true);
 }

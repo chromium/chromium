@@ -80,6 +80,7 @@ source_set("toolbar") {
     "//ui/base",
     "//ui/base:features",
     "//ui/base:types",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
     "//ui/gfx",
     "//ui/gfx/animation",

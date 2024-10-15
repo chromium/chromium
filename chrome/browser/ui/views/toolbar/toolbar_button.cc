@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -497,9 +498,10 @@ std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
                                     : views::LabelButton::GetTooltipText(p);
 }
 
-void ToolbarButton::ShowContextMenuForViewImpl(View* source,
-                                               const gfx::Point& point,
-                                               ui::MenuSourceType source_type) {
+void ToolbarButton::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   if (!GetEnabled())
     return;
 
@@ -524,7 +526,7 @@ bool ToolbarButton::ShouldShowInkdropAfterIphInteraction() {
   return true;
 }
 
-void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
+void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   if (!ShouldShowMenu())
     return;
 

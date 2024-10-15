@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -130,9 +131,10 @@ class ToolbarButton : public views::LabelButton,
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
@@ -164,7 +166,7 @@ class ToolbarButton : public views::LabelButton,
   virtual bool ShouldShowInkdropAfterIphInteraction();
 
   // Function to show the dropdown menu.
-  virtual void ShowDropDownMenu(ui::MenuSourceType source_type);
+  virtual void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);
 
   // Sets |layout_inset_delta_|, see comment there.
   void SetLayoutInsetDelta(const gfx::Insets& insets);

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
@@ -56,7 +57,7 @@ class ReloadButton : public ToolbarButton,
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldShowMenu() override;
-  void ShowDropDownMenu(ui::MenuSourceType source_type) override;
+  void ShowDropDownMenu(ui::mojom::MenuSourceType source_type) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
