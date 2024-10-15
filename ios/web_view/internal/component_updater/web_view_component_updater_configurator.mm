@@ -64,7 +64,6 @@ class WebViewConfigurator : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -193,10 +192,6 @@ WebViewConfigurator::GetPatcherFactory() {
         base::BindRepeating(&patch::LaunchInProcessFilePatcher));
   }
   return patch_factory_;
-}
-
-bool WebViewConfigurator::EnabledDeltas() const {
-  return configurator_impl_.EnabledDeltas();
 }
 
 bool WebViewConfigurator::EnabledBackgroundDownloader() const {

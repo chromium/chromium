@@ -198,11 +198,6 @@ scoped_refptr<update_client::PatcherFactory> Configurator::GetPatcherFactory() {
   return patch_factory_;
 }
 
-bool Configurator::EnabledDeltas() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return external_constants_->EnableDiffUpdates();
-}
-
 bool Configurator::EnabledBackgroundDownloader() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;

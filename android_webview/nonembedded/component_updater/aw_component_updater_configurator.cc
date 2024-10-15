@@ -154,10 +154,6 @@ AwComponentUpdaterConfigurator::GetPatcherFactory() {
   return patch_factory_;
 }
 
-bool AwComponentUpdaterConfigurator::EnabledDeltas() const {
-  return configurator_impl_.EnabledDeltas();
-}
-
 bool AwComponentUpdaterConfigurator::EnabledBackgroundDownloader() const {
   return configurator_impl_.EnabledBackgroundDownloader();
 }

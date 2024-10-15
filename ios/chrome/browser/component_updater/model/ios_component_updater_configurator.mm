@@ -62,7 +62,6 @@ class IOSConfigurator : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -189,10 +188,6 @@ IOSConfigurator::GetPatcherFactory() {
         base::BindRepeating(&patch::LaunchInProcessFilePatcher));
   }
   return patch_factory_;
-}
-
-bool IOSConfigurator::EnabledDeltas() const {
-  return configurator_impl_.EnabledDeltas();
 }
 
 bool IOSConfigurator::EnabledBackgroundDownloader() const {

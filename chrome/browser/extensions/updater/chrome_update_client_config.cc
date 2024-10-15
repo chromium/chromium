@@ -292,10 +292,6 @@ ChromeUpdateClientConfig::GetPatcherFactory() {
   return patch_factory_;
 }
 
-bool ChromeUpdateClientConfig::EnabledDeltas() const {
-  return impl_.EnabledDeltas();
-}
-
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
   // Historically, Chrome hasn't used background downloaders like BITS for
   // extension updates. In theory, they should work in most cases. When they

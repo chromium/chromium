@@ -168,11 +168,6 @@ scoped_refptr<PatcherFactory> TestConfigurator::GetPatcherFactory() {
   return patch_factory_;
 }
 
-bool TestConfigurator::EnabledDeltas() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return true;
-}
-
 bool TestConfigurator::EnabledBackgroundDownloader() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;
