@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/view.h"
 
@@ -121,7 +122,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   bool ShowContextMenu(views::MenuItemView* source,
                        int id,
                        const gfx::Point& p,
-                       ui::MenuSourceType source_type);
+                       ui::mojom::MenuSourceType source_type);
   bool CanDrag(views::MenuItemView* menu);
   void WriteDragData(views::MenuItemView* sender, ui::OSExchangeData* data);
   int GetDragOperations(views::MenuItemView* sender);

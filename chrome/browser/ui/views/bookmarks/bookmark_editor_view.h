@@ -20,6 +20,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -110,9 +111,10 @@ class BookmarkEditorView : public BookmarkEditor,
   void Show(gfx::NativeWindow parent);
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
  private:
   friend class BookmarkEditorViewTest;

@@ -43,6 +43,7 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
@@ -150,7 +151,8 @@ std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
 
 bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
-    ShowContextMenu(GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_KEYBOARD);
+    ShowContextMenu(GetKeyboardContextMenuLocation(),
+                    ui::mojom::MenuSourceType::kKeyboard);
     return true;
   } else if (event.key_code() == ui::KeyboardCode::VKEY_SPACE) {
     NotifyClick(event);

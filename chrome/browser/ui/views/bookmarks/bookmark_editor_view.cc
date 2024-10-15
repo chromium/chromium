@@ -35,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -203,7 +204,7 @@ void BookmarkEditorView::Show(gfx::NativeWindow parent) {
 void BookmarkEditorView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   DCHECK_EQ(tree_view_, source);
   if (!tree_view_->GetActiveNode())
     return;

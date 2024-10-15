@@ -15,6 +15,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -59,7 +60,7 @@ void BookmarkMenuController::RunMenuAt(BookmarkBarView* bookmark_bar) {
   // the return value.
   menu_runner_->RunMenuAt(menu_delegate_->parent(),
                           menu_button->button_controller(), bounds, anchor,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 void BookmarkMenuController::Cancel() {
@@ -127,10 +128,11 @@ views::View::DropCallback BookmarkMenuController::GetDropCallback(
   return drop_cb;
 }
 
-bool BookmarkMenuController::ShowContextMenu(MenuItemView* source,
-                                             int id,
-                                             const gfx::Point& p,
-                                             ui::MenuSourceType source_type) {
+bool BookmarkMenuController::ShowContextMenu(
+    MenuItemView* source,
+    int id,
+    const gfx::Point& p,
+    ui::mojom::MenuSourceType source_type) {
   return menu_delegate_->ShowContextMenu(source, id, p, source_type);
 }
 

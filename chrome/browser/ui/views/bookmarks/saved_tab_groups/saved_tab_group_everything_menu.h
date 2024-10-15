@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -87,7 +88,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   bool ShowContextMenu(views::MenuItemView* source,
                        int command_id,
                        const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
 
  private:
   friend class STGEverythingMenuUnitTest;

@@ -21,6 +21,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/widget/widget.h"
@@ -330,7 +331,7 @@ void STGEverythingMenu::RunMenu() {
   menu_runner_->RunMenuAt(
       widget_, menu_button_controller_,
       menu_button_controller_->button()->GetAnchorBoundsInScreen(),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE);
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
 }
 
 void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
@@ -388,7 +389,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
 bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
                                         int command_id,
                                         const gfx::Point& p,
-                                        ui::MenuSourceType source_type) {
+                                        ui::mojom::MenuSourceType source_type) {
   if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
     return false;
   }

@@ -106,6 +106,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model_utils.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1405,7 +1406,7 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
 void BookmarkBarView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   if (!bookmark_model_->loaded()) {
     // Don't do anything if the model isn't loaded.
     return;

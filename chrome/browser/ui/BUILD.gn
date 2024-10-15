@@ -5001,6 +5001,8 @@ static_library("ui") {
           [ "views/user_education/browser_help_bubble_event_relay_mac.mm" ]
     }
 
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
+
     deps += [
       "side_search:side_search_tab_data_proto",
       "//base",

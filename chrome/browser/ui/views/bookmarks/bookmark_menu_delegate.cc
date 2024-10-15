@@ -46,6 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -452,10 +453,11 @@ views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
       base::Owned(std::move(drop_observer)));
 }
 
-bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
-                                           int id,
-                                           const gfx::Point& p,
-                                           ui::MenuSourceType source_type) {
+bool BookmarkMenuDelegate::ShowContextMenu(
+    MenuItemView* source,
+    int id,
+    const gfx::Point& p,
+    ui::mojom::MenuSourceType source_type) {
   // The IDC_SHOW_BOOKMARK_SIDE_PANEL menu item does not map to a bookmark node
   // and therefore no context menu for it should be shown.
   if (menu_id_to_node_map_.find(id) == menu_id_to_node_map_.end()) {
