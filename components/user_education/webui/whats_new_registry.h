@@ -12,6 +12,14 @@ namespace whats_new {
 
 using BrowserCommand = browser_command::mojom::Command;
 
+// Features in the What's New system may provide additional
+// customization to the rendered page by assigning a string to a Feature
+// using this parameter.
+//
+// This should be used sparingly. Typically, this is only used when the
+// server-side team is performing an experiment.
+const char kCustomizationParam[] = "whats_new_customization";
+
 // What's New modules represent sections of content on the What's New
 // page. These are meant to contain the Feature they describe, the ownership
 // of the module, and the browser command that it triggers, if any.
@@ -95,6 +103,9 @@ class WhatsNewModule {
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
 
+  // Get the customization of the feature for this module, if any.
+  const std::string GetCustomization() const;
+
  private:
   raw_ptr<const base::Feature> feature_ = nullptr;
   std::string metric_name_;
@@ -129,6 +140,9 @@ class WhatsNewEdition {
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
 
+  // Get the customization of the feature for this module, if any.
+  const std::string GetCustomization() const;
+
  private:
   raw_ref<const base::Feature> feature_;
   std::string owner_;
@@ -157,6 +171,9 @@ class WhatsNewRegistry {
 
   // Used to send enabled-by-default flags to server-side router.
   const std::vector<std::string_view> GetRolledFeatureNames() const;
+
+  // Used to send customization parameters to server-side router.
+  const std::vector<std::string> GetCustomizations() const;
 
   // Set a "used version" for an edition.
   void SetEditionUsed(std::string_view edition);

@@ -40,6 +40,7 @@ source_set("unit_tests") {
 
   sources = [
     "help_bubble_handler_unittest.cc",
+    "whats_new_registry_feature_param_unittest.cc",
     "whats_new_registry_unittest.cc",
   ]
 
