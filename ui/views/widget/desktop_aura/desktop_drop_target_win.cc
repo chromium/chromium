@@ -123,22 +123,21 @@ void DesktopDropTargetWin::Translate(
   root_window_->GetHost()->ConvertScreenInPixelsToDIP(&root_location);
   aura::Window* target_window =
       root_window_->GetEventHandlerForPoint(root_location);
-  bool target_window_changed = false;
-  if (!target_window_observation_.IsObservingSource(target_window)) {
+  const bool should_change_target_window =
+      !target_window ||
+      !target_window_observation_.IsObservingSource(target_window);
+  if (should_change_target_window) {
     NotifyDragLeave();
     if (target_window) {
       target_window_observation_.Observe(target_window);
     }
-    target_window_changed = true;
   }
-  *delegate = nullptr;
-  if (!target_window_observation_.IsObserving()) {
+
+  *delegate = target_window ? aura::client::GetDragDropDelegate(target_window)
+                            : nullptr;
+  if (!*delegate) {
     return;
   }
-  CHECK(target_window_observation_.IsObservingSource(target_window));
-  *delegate = aura::client::GetDragDropDelegate(target_window);
-  if (!*delegate)
-    return;
 
   *data = std::make_unique<OSExchangeData>(
       std::make_unique<OSExchangeDataProviderWin>(data_object));
@@ -148,8 +147,9 @@ void DesktopDropTargetWin::Translate(
       *(data->get()), gfx::PointF(location), gfx::PointF(root_location),
       ui::DragDropTypes::DropEffectToDragOperation(effect));
   (*event)->SetFlags(ConvertKeyStateToAuraEventFlags(key_state));
-  if (target_window_changed)
+  if (should_change_target_window) {
     (*delegate)->OnDragEntered(*event->get());
+  }
 }
 
 void DesktopDropTargetWin::NotifyDragLeave() {
