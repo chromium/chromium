@@ -1073,8 +1073,6 @@ static_library("ui") {
       # When crosapi code gets deleted during the lacros sunset, move this file to the
       # appropriated build target.
       "global_media_controls/media_notification_service.cc",
-      "hung_renderer/hung_renderer_core.cc",
-      "hung_renderer/hung_renderer_core.h",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
       "javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.cc",
@@ -1753,6 +1751,7 @@ static_library("ui") {
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/global_media_controls:impl",
       "//chrome/browser/ui/hid",
+      "//chrome/browser/ui/hung_renderer",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/permission_bubble",
