@@ -24,7 +24,7 @@ void PinnedTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   CHECK(tab_model);
 
   TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->set_pinned(/*pinned=*/true);
+  inserted_tab_model->SetPinned(/*pinned=*/true);
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
@@ -80,7 +80,7 @@ std::unique_ptr<TabModel> PinnedTabCollection::MaybeRemoveTab(
   CHECK(tab_model);
 
   std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
-  removed_tab_model->set_pinned(/*pinned=*/false);
+  removed_tab_model->SetPinned(/*pinned=*/false);
   removed_tab_model->OnReparented(nullptr, GetPassKey());
   return removed_tab_model;
 }

@@ -115,6 +115,24 @@ void TabModel::OnReparented(TabCollection* parent,
   parent_collection_ = parent;
 }
 
+void TabModel::SetPinned(bool pinned) {
+  if (pinned_ == pinned) {
+    return;
+  }
+
+  pinned_ = pinned;
+  pinned_state_changed_callback_list_.Notify(this, pinned_);
+}
+
+void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
+  if (group_ == group) {
+    return;
+  }
+
+  group_ = group;
+  group_changed_callback_list_.Notify(this, group_);
+}
+
 void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
   will_enter_background_callback_list_.Notify(this);
 }
@@ -150,6 +168,18 @@ base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
 base::CallbackListSubscription TabModel::RegisterWillDetach(
     TabInterface::WillDetach callback) {
   return will_detach_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(
+    base::RepeatingCallback<void(TabModel*, bool new_pinned_state)> callback) {
+  return pinned_state_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterGroupChanged(
+    base::RepeatingCallback<
+        void(TabModel*, std::optional<tab_groups::TabGroupId> new_group)>
+        callback) {
+  return group_changed_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::CanShowModalUI() const {

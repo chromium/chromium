@@ -171,6 +171,8 @@ class TabSearchPageHandler
     disable_last_active_time_for_testing_ = true;
   }
 
+  std::vector<tabs::TabModel*> stale_tabs_for_testing() { return stale_tabs_; }
+
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
@@ -195,7 +197,7 @@ class TabSearchPageHandler
   void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
-  std::vector<tab_search::mojom::TabPtr> FindStaleTabs();
+  void UpdateStaleTabs();
 
   tabs::TabDeclutterController* GetTabDeclutterController();
 
@@ -245,6 +247,19 @@ class TabSearchPageHandler
 
   void NotifyShowFREPrefChanged(const Profile* profile);
 
+  std::vector<mojo::StructPtr<tab_search::mojom::Tab>> GetMojoStaleTabs();
+
+  void UnregisterTabCallbacks();
+  void RegisterTabDeclutterCallbacks(tabs::TabModel* tab_model);
+  void OnStaleTabDidEnterForeground(tabs::TabInterface* tab_interface);
+  void OnStaleTabWillDetach(tabs::TabInterface* tab_interface,
+                            tabs::TabInterface::DetachReason reason);
+  void OnStaleTabPinnedStateChanged(tabs::TabModel* tab_model,
+                                    bool new_pinned_state);
+  void OnStaleTabGroupChanged(tabs::TabModel* tab_model,
+                              std::optional<tab_groups::TabGroupId> new_group);
+  void RemoveStaleTab(tabs::TabModel* tab_model);
+
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
@@ -281,6 +296,10 @@ class TabSearchPageHandler
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>
       listened_sessions_;
+
+  std::vector<tabs::TabModel*> stale_tabs_;
+  std::map<tabs::TabModel*, std::vector<base::CallbackListSubscription>>
+      tab_declutter_subscriptions_map_;
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
       tab_organization_observation_{this};

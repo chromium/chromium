@@ -1030,4 +1030,49 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
       tab_declutter_controller()->declutter_timer_interval());
 }
 
+TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterStaleTabChanges) {
+  std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
+
+  // Create 10 stale tabs.
+  for (int i = 0; i < 10; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    stale_tabs_raw_ptr.push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
+  EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
+      .WillRepeatedly(testing::Return(stale_tabs_raw_ptr));
+
+  tab_search::mojom::PageHandler::GetStaleTabsCallback callback =
+      base::BindLambdaForTesting(
+          [&](std::vector<tab_search::mojom::TabPtr> stale_tabs) {
+            EXPECT_EQ(10u, stale_tabs.size());
+          });
+
+  handler()->GetStaleTabs(std::move(callback));
+
+  // Make a stale tab a part of a group. It should remove it from the internal
+  // stale tab list.
+  fake_tab_strip_model()->AddToNewGroup({1});
+  EXPECT_EQ(handler()->stale_tabs_for_testing().size(), 9u);
+
+  // Make a stale tab pinned. It should remove it from the internal stale tab
+  // list.
+  fake_tab_strip_model()->SetTabPinned(2, true);
+  EXPECT_EQ(handler()->stale_tabs_for_testing().size(), 8u);
+
+  // Activate a stale tab. It should remove it from the internal stale tab list.
+  fake_tab_strip_model()->ActivateTabAt(3);
+  EXPECT_EQ(handler()->stale_tabs_for_testing().size(), 7u);
+
+  // Detach a stale tab. It should remove it from the internal stale tab list.
+  fake_tab_strip_model()->CloseWebContentsAt(4, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(handler()->stale_tabs_for_testing().size(), 6u);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(::testing::AtLeast(1));
+}
+
 }  // namespace

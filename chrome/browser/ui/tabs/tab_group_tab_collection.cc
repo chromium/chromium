@@ -24,7 +24,7 @@ void TabGroupTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   CHECK(tab_model);
 
   TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->set_group(/*group=*/group_id_);
+  inserted_tab_model->SetGroup(/*group=*/group_id_);
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
@@ -81,7 +81,7 @@ std::unique_ptr<TabModel> TabGroupTabCollection::MaybeRemoveTab(
   CHECK(tab_model);
 
   std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
-  removed_tab_model->set_group(/*group=*/std::nullopt);
+  removed_tab_model->SetGroup(/*group=*/std::nullopt);
   removed_tab_model->OnReparented(nullptr, GetPassKey());
   return removed_tab_model;
 }
