@@ -55,14 +55,19 @@ BackForwardCacheTask::BackForwardCacheTask(
           GetTaskTitle(render_frame_host, parent_task),
           nullptr,  // TODO(crbug.com/40775860): Set Favicon for main frames.
           render_frame_host),
-      parent_task_(parent_task),
-      task_provider_(task_provider) {}
+      task_provider_(task_provider) {
+  if (parent_task) {
+    parent_task_ = parent_task->AsWeakPtr();
+  }
+}
+
+BackForwardCacheTask::~BackForwardCacheTask() {}
 
 // For the top level BackForwardCacheTask |parent_task_| is nullptr.
 Task* BackForwardCacheTask::GetParentTask() const {
-  return parent_task_ ? parent_task_
-                      : task_provider_->GetTaskOfFrame(
-                            web_contents()->GetPrimaryMainFrame());
+  return parent_task_.get() ? parent_task_.get()
+                            : task_provider_->GetTaskOfFrame(
+                                  web_contents()->GetPrimaryMainFrame());
 }
 
 // The top page calls the default Activate().
