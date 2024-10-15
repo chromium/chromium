@@ -229,7 +229,8 @@ const cc::ExactPixelComparator pixel_comparator;
 
 // TODO(crbug.com/40817482): Fix flaky test on Lacros.
 // TODO(crbug.com/40924319): Fix flaky test on Mac.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/373535999): Fix flaky test on Windows.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance
