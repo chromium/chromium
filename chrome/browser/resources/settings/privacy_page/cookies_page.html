@@ -1,8 +1,4 @@
     <style include="settings-shared">
-      img {
-        width: 100%;
-      }
-
       #explanationText,
       #generalControls {
         padding: 0 var(--cr-section-padding);
@@ -30,10 +26,6 @@
 
       #blockThirdPartyToggle {
         padding: 0 var(--cr-section-padding);
-      }
-
-      #picture {
-        display: flex;
       }
 
       .radio-group-sub-heading {
@@ -89,21 +81,6 @@
         min-height: var(--cr-section-two-line-min-height);
       }
     </style>
-    <picture id="picture" hidden="[[isTrackingProtectionUxEnabled_]]">
-      <source
-          srcset="chrome://settings/images/cookies_banner_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img id="banner" alt=""
-          src="chrome://settings/images/cookies_banner.svg">
-    </picture>
-    <picture hidden="[[!isTrackingProtectionUxEnabled_]]">
-      <source
-            srcset="chrome://settings/images/tracking_protection_banner_dark.svg"
-            media="(prefers-color-scheme: dark)">
-        <img id="banner" alt=""
-            src="chrome://settings/images/tracking_protection_banner.svg">
-      </template>
-    </picture>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <div id="explanationText" class="secondary">
         $i18n{thirdPartyCookiesAlignedPageDescription}

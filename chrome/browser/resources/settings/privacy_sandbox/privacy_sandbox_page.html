@@ -1,16 +1,4 @@
-<style include="cr-shared-style">
-  img {
-    width: 100%;
-  }
-</style>
-
-<picture>
-  <source
-      srcset="chrome://settings/images/ad_privacy_banner_dark.svg"
-      media="(prefers-color-scheme: dark)">
-  <img id="banner" alt=""
-      src="chrome://settings/images/ad_privacy_banner.svg">
-</picture>
+<style include="cr-shared-style"></style>
 <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
   <cr-link-row
       id="privacySandboxTopicsLinkRow"

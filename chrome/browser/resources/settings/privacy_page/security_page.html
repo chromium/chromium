@@ -1,7 +1,4 @@
     <style include="cr-shared-style settings-shared settings-columned-section">
-      img {
-        width: 100%;
-      }
 
       #safeBrowsingSection {
         padding: 0 var(--cr-section-padding);
@@ -77,13 +74,6 @@
         pointer-events: auto;
       }
     </style>
-    <picture>
-      <source
-          srcset="chrome://settings/images/safe_browsing_banner_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img id="banner" alt=""
-          src="chrome://settings/images/safe_browsing_banner.svg">
-    </picture>
     <div id="safeBrowsingSection">
       <h2 class="cr-title-text">$i18n{safeBrowsingSectionLabel}</h2>
       <settings-radio-group id="safeBrowsingRadioGroup" no-set-pref
