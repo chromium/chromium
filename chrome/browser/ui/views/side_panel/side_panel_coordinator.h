@@ -125,11 +125,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
 
   void Close(bool suppress_animations);
 
-  // TODO(https://crbug.com/363743081): This method should be removed and the
-  // logic moved to ExtensionSidePanelCoordinator.
-  void OnEntryWillDeregister(SidePanelRegistry* registry,
-                             SidePanelEntry* entry);
-
   // The side panel entry to be shown is uniquely specified via a tuple:
   //  (tab or window-scoped registry, SidePanelEntry::Key). `tab_handle` is
   //  necessary since it's possible for a Key to be present in both the
@@ -203,14 +198,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   SidePanelRegistry* GetActiveContextualRegistry() const;
 
   std::unique_ptr<views::View> CreateHeader();
-
-  // Returns the new entry to be shown after the active entry is deregistered,
-  // or nullopt if no suitable entry is found. Called from
-  // `OnEntryWillDeregister()` when there's an active entry being shown in the
-  // side panel.
-  std::optional<UniqueKey> GetNewActiveKeyOnDeregister(
-      SidePanelRegistry* deregistering_registry,
-      const SidePanelEntry::Key& key);
 
   // Returns the new entry key to be shown after the active tab has changed, or
   // nullopt if no suitable entry is found. Called from

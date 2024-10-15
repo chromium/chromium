@@ -58,11 +58,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver {
   // successful and false if there is no entry registered for the `key`.
   bool Deregister(const SidePanelEntry::Key& key);
 
-  // Deregisters the entry for the given SidePanelEntry::Key and returns the
-  // entry or nullptr if one does not exist.
-  std::unique_ptr<SidePanelEntry> DeregisterAndReturnEntry(
-      const SidePanelEntry::Key& key);
-
   // Set the active entry in the side panel to be |entry|.
   void SetActiveEntry(SidePanelEntry* entry);
 
@@ -75,10 +70,12 @@ class SidePanelRegistry final : public SidePanelEntryObserver {
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* id) override;
 
+  const std::variant<tabs::TabInterface*, BrowserWindowInterface*>* owner() {
+    return &owner_;
+  }
+
  private:
   SidePanelCoordinator* GetCoordinator();
-
-  std::unique_ptr<SidePanelEntry> RemoveEntry(SidePanelEntry* entry);
 
   // The active entry hosted in the side panel used to determine what entry
   // should be visible. This is reset by the coordinator when the panel is

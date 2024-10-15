@@ -70,14 +70,6 @@ SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
   return content_view->GetProperty(kSidePanelContentProxyKey);
 }
 
-std::unique_ptr<views::View> SidePanelUtil::DeregisterAndReturnView(
-    SidePanelRegistry* registry,
-    SidePanelEntry::Key key) {
-  std::unique_ptr<SidePanelEntry> entry =
-      registry->DeregisterAndReturnEntry(key);
-  return entry->CachedView() ? entry->GetContent() : nullptr;
-}
-
 void SidePanelUtil::RecordSidePanelOpen(
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Show"));

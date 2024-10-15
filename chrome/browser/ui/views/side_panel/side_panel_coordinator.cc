@@ -781,28 +781,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 }
 
 std::optional<SidePanelCoordinator::UniqueKey>
-SidePanelCoordinator::GetNewActiveKeyOnDeregister(
-    SidePanelRegistry* deregistering_registry,
-    const SidePanelEntry::Key& key) {
-  // This function should only be called when the side panel view is shown.
-  DCHECK(IsSidePanelShowing());
-
-  // Attempt to return an entry in the following fallback order: global entry
-  // for `key` if a contextual entry is deregistered > active global entry >
-  // null.
-  if (deregistering_registry == GetActiveContextualRegistry() &&
-      window_registry_->GetEntryForKey(key)) {
-    return UniqueKey{/*tab_handle=*/std::nullopt, key};
-  }
-
-  if (window_registry_->active_entry()) {
-    return UniqueKey{/*tab_handle=*/std::nullopt,
-                     (*window_registry_->active_entry())->key()};
-  }
-  return std::nullopt;
-}
-
-std::optional<SidePanelCoordinator::UniqueKey>
 SidePanelCoordinator::GetNewActiveKeyOnTabChanged() {
   // This function should only be called when the side panel view is shown.
   DCHECK(IsSidePanelShowing());
@@ -921,57 +899,6 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
 
   pin_promo_timer_.Stop();
   pending_pin_promo_ = nullptr;
-}
-
-void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
-                                                 SidePanelEntry* entry) {
-  // Save the entry's view: if it has a cached view, retrieve it. Otherwise if
-  // the entry is shown, get it from the side panel view. This is necessary so
-  // the view can be preserved so it won't be destroyed by Close().
-  std::unique_ptr<views::View> entry_view =
-      entry->CachedView() ? entry->GetContent() : nullptr;
-
-  // Update the current entry to make sure we don't show an entry that is being
-  // removed or close the panel if the entry being deregistered is the only one
-  // that has been visible.
-  if (!browser_view_->unified_side_panel()->IsClosing() && current_key_ &&
-      (current_key_->key == entry->key())) {
-    // If a global entry is deregistered but we are currently showing a
-    // tab-scoped key, then do nothing.
-    if (registry == window_registry_.get() && current_key_->tab_handle) {
-      entry->CacheView(std::move(entry_view));
-      return;
-    }
-
-    // Fetch the entry's view from the side panel container if it is shown.
-    auto* content_wrapper =
-        browser_view_->unified_side_panel()->GetContentParentView();
-    if (content_wrapper->children().size() == 1) {
-      entry_view = content_wrapper->RemoveChildViewT(
-          content_wrapper->children().front());
-      // TODO(crbug.com/40897366): Log the time elapsed between when this view
-      // is removed, to when the new active entry's view is shown. This can
-      // determine if the user will notice a flash in the side panel in between
-      // different entries being shown.
-    }
-
-    // If there is going to be any change to UI, it must be done synchronously
-    // to avoid state referring to a deregistered SidePanelEntry. Both of these
-    // control flows will result in a synchronous re-entrancy into
-    // OnViewVisibilityChanged.
-    if (std::optional<UniqueKey> active_entry =
-            GetNewActiveKeyOnDeregister(registry, entry->key())) {
-      Show(active_entry.value(),
-           SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered,
-           /*suppress_animations=*/true);
-    } else {
-      Close(/*suppress_animations=*/true);
-    }
-  }
-
-  // Cache the deregistering entry's view. This needs to be done after Close()
-  // might be called because Close() clears all cached views.
-  entry->CacheView(std::move(entry_view));
 }
 
 void SidePanelCoordinator::OnTabStripModelChanged(

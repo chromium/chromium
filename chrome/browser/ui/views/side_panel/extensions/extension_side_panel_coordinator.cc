@@ -39,21 +39,9 @@ namespace extensions {
 
 namespace {
 
-int GetCurrentTabId(Browser* browser) {
-  return ExtensionTabUtil::GetTabId(
-      browser->tab_strip_model()->GetActiveWebContents());
-}
-
 bool IsSidePanelEnabled(const api::side_panel::PanelOptions& options) {
   return options.enabled.has_value() && *options.enabled &&
          options.path.has_value();
-}
-
-bool HasGlobalSidePanel(content::BrowserContext* context,
-                        const Extension& extension) {
-  auto options = SidePanelService::Get(context)->GetOptions(
-      extension, /*tab_id=*/std::nullopt);
-  return IsSidePanelEnabled(options);
 }
 
 }  // namespace
@@ -85,7 +73,6 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     LoadExtensionIcon();
     if (IsGlobalCoordinator()) {
       UpdateActionItemIcon();
-      browser_->tab_strip_model()->AddObserver(this);
     }
 
     auto options =
@@ -120,25 +107,10 @@ bool ExtensionSidePanelCoordinator::IsGlobalCoordinator() const {
   return browser_ != nullptr;
 }
 
-bool ExtensionSidePanelCoordinator::IsDisabledForTab(int tab_id) const {
-  auto options =
-      SidePanelService::Get(profile_)->GetOptions(*extension_, tab_id);
-  return options.enabled.has_value() && !(*options.enabled);
-}
-
 void ExtensionSidePanelCoordinator::DeregisterEntry() {
   registry_->Deregister(GetEntryKey());
-
-  global_entry_view_.reset();
 }
 
-void ExtensionSidePanelCoordinator::DeregisterGlobalEntryAndCacheView() {
-  CHECK(IsGlobalCoordinator());
-  if (GetEntry()) {
-    global_entry_view_ =
-        SidePanelUtil::DeregisterAndReturnView(registry_, GetEntryKey());
-  }
-}
 
 void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     const ExtensionId& extension_id,
@@ -154,27 +126,6 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
       updated_options.enabled.has_value() && !(*updated_options.enabled);
   SidePanelEntry* entry = GetEntry();
 
-  // PanelOptions changes for the current tab can also affect the global
-  // SidePanelEntry. Handle such cases here.
-  if (IsGlobalCoordinator() &&
-      GetCurrentTabId(browser_) == updated_options.tab_id) {
-    if (!entry && should_enable_entry &&
-        HasGlobalSidePanel(profile_, *extension_)) {
-      // We create an entry if:
-      //  - The side panel is being enabled/no longer being disabled for this
-      //    tab
-      //  - The extension has a global side panel specified
-      //  - There is currently no global entry registered
-      CreateAndRegisterEntry();
-    } else if (should_disable_entry) {
-      // if the side panel is being disabled for this tab and there exists an
-      // entry, deregister it and keep its view.
-      DeregisterGlobalEntryAndCacheView();
-    }
-
-    return;
-  }
-
   // Ignore changes that don't pertain to this tab id.
   std::optional<int> tab_id =
       IsGlobalCoordinator()
@@ -188,9 +139,6 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
   GURL previous_url = side_panel_url_;
   if (updated_options.path.has_value()) {
     side_panel_url_ = extension_->GetResourceURL(*updated_options.path);
-    if (previous_url != side_panel_url_) {
-      global_entry_view_.reset();
-    }
   }
 
   // Deregister the SidePanelEntry if `enabled` is false.
@@ -199,10 +147,7 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     return;
   }
 
-  bool enabled_for_current_tab =
-      !IsGlobalCoordinator() || !IsDisabledForTab(GetCurrentTabId(browser_));
   bool should_create_entry = !entry && should_enable_entry &&
-                             enabled_for_current_tab &&
                              !side_panel_url_.is_empty();
   if (should_create_entry) {
     // Create a global entry if the extension has not disabled its side panel
@@ -235,35 +180,6 @@ void ExtensionSidePanelCoordinator::OnViewDestroying() {
   scoped_view_observation_.Reset();
 }
 
-void ExtensionSidePanelCoordinator::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  CHECK(IsGlobalCoordinator());
-  // Registering/deregistering an entry should only happen if the active tab
-  // changes and the extension has specified a global side panel.
-  if (!selection.active_tab_changed() ||
-      !HasGlobalSidePanel(profile_, *extension_)) {
-    return;
-  }
-
-  bool disabled_for_old_tab =
-      IsDisabledForTab(ExtensionTabUtil::GetTabId(selection.old_contents));
-  bool disabled_for_new_tab =
-      IsDisabledForTab(ExtensionTabUtil::GetTabId(selection.new_contents));
-
-  if (!disabled_for_old_tab && disabled_for_new_tab) {
-    // If we switch to a tab where the extension's global side panel is
-    // disabled, deregister the entry but keep its view.
-    DeregisterGlobalEntryAndCacheView();
-  } else if (disabled_for_old_tab && !disabled_for_new_tab) {
-    // If we switch to a tab where the extension's global side panel is enabled,
-    // re-register the entry.
-    DCHECK(!GetEntry());
-    CreateAndRegisterEntry();
-  }
-}
-
 void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // The extension icon should be initialized in the constructor, so this should
   // not be null.
@@ -277,29 +193,9 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
       GetEntryKey(),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
                           base::Unretained(this))));
-
-  auto* coordinator = GetBrowser()->GetFeatures().side_panel_coordinator();
-  std::optional<SidePanelCoordinator::UniqueKey> current_key =
-      coordinator->current_key();
-  bool is_global_entry_showing = current_key && !current_key->tab_handle &&
-                                 current_key->key == GetEntryKey();
-  // If `entry` is a contextual entry and the global entry with the same key is
-  // currently being shown, show the tab-scoped `entry`.
-  if (!IsGlobalCoordinator() && is_global_entry_showing) {
-    coordinator->Show(
-        {tabs::TabInterface::GetFromContents(web_contents_)->GetTabHandle(),
-         GetEntryKey()},
-        SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered,
-        /*suppress_animations=*/true);
-  }
 }
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
-  if (global_entry_view_) {
-    DCHECK(host_);
-    return std::move(global_entry_view_);
-  }
-
   host_ = ExtensionViewHostFactory::CreateSidePanelHost(
       side_panel_url_, browser_, web_contents_);
 

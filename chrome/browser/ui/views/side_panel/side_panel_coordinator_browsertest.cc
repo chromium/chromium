@@ -186,6 +186,13 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         ->extensions_container();
   }
 
+  SidePanelRegistry* GetActiveTabRegistry() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->side_panel_registry();
+  }
+
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
   // `enabled` and returns when the API call is complete.
   void RunSetOptions(const extensions::Extension& extension,
@@ -679,14 +686,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                                SidePanelEntry::Id::kShoppingInsights);
 
   // Deregister kShoppingInsights from the first tab.
-  global_registry()->Deregister(key);
   tab_registry->Deregister(key);
 
-  // Verify the panel defaults back to the last visible global entry or the
-  // reading list.
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
+  // Verify the panel is no longer showing.
+  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  EXPECT_FALSE(global_registry()->active_entry().has_value());
   EXPECT_FALSE(tab_registry->active_entry().has_value());
 }
 
@@ -1437,8 +1441,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
             coordinator()->GetCurrentSidePanelEntryForTesting());
 }
 
-// Test that a new contextual extension entry gets shown if it's registered for
-// the active tab and the global extension entry is showing.
+// Test that a new contextual extension entry is not shown if it's registered
+// for the active tab and the global extension entry is showing.
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   Init();
 
@@ -1458,7 +1462,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   EXPECT_FALSE(coordinator()->current_key()->tab_handle.has_value());
 
   // Give extension access to tab side panel.
-  // Tab entry should immediately be shown.
+  // Tab entry is not shown.
   RunSetOptions(*extension,
                 /*tab_id=*/
                 sessions::SessionTabHelper::IdForTab(
@@ -1466,12 +1470,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
                     .id(),
                 /*path=*/"panel.html",
                 /*enabled=*/true);
-  EXPECT_TRUE(coordinator()->current_key()->tab_handle.has_value());
+  EXPECT_FALSE(coordinator()->current_key()->tab_handle.has_value());
 }
 
 // Test that if global or contextual entries are deregistered, and if it exists,
-// the global extension entry is shown if the active tab's extension entry is
-// deregistered.
+// the global extension entry is not shown if the active tab's extension entry
+// is deregistered.
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
   Init();
   coordinator()->DisableAnimationsForTesting();
@@ -1486,38 +1490,18 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
                                     extension->id());
 
   // Registers an entry in the global and active contextual registry.
-  auto register_entries = [this, &extension_key]() {
-    contextual_registries_[1]->Register(CreateEntry(extension_key));
-    global_registry()->Register(CreateEntry(extension_key));
-  };
-
-  register_entries();
+  GetActiveTabRegistry()->Register(CreateEntry(extension_key));
+  global_registry()->Register(CreateEntry(extension_key));
 
   // The contextual entry should be shown.
   coordinator()->Show(extension_key);
-  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_key),
+  EXPECT_EQ(GetActiveTabRegistry()->GetEntryForKey(extension_key),
             coordinator()->GetCurrentSidePanelEntryForTesting());
 
   // If the contextual entry is deregistered while there exists a global entry,
-  // the global entry should be shown.
-  contextual_registries_[1]->Deregister(extension_key);
-  EXPECT_EQ(global_registry()->GetEntryForKey(extension_key),
-            coordinator()->GetCurrentSidePanelEntryForTesting());
-
-  // The side panel should be closed after the global entry is deregistered.
-  global_registry()->Deregister(extension_key);
-  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  register_entries();
-  coordinator()->Show(extension_key);
-
-  // The contextual entry should still be shown after the global entry is
-  // deregistered.
-  global_registry()->Deregister(extension_key);
-  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_key),
-            coordinator()->GetCurrentSidePanelEntryForTesting());
-
-  contextual_registries_[1]->Deregister(extension_key);
+  // the global entry is not shown.
+  GetActiveTabRegistry()->Deregister(extension_key);
+  EXPECT_FALSE(global_registry()->active_entry().has_value());
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
 }
 
@@ -1633,74 +1617,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Show the extension's global entry on the second tab.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator()->Show(extension_key);
-}
-
-// Tests that DeregisterAndReturnView returns the deregistered entry's view if
-// it exists, whether or not the entry is showing.
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
-  Init();
-  // A view with a counter as an internal state, used to check that the correct
-  // view is returned by DeregisterAndReturnView.
-  class ViewWithCounter : public views::View {
-   public:
-    explicit ViewWithCounter(int counter) : views::View(), counter_(counter) {}
-    ~ViewWithCounter() override = default;
-
-    int counter() { return counter_; }
-
-   private:
-    int counter_ = 0;
-  };
-
-  SidePanelEntry::Key shopping_key(SidePanelEntry::Id::kShoppingInsights);
-  // Add extension.
-  scoped_refptr<const extensions::Extension> extension =
-      LoadSidePanelExtension("extension");
-  SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
-                                    extension->id());
-
-  auto create_entry_with_counter = [](const SidePanelEntry::Key& key,
-                                      int counter) {
-    return std::make_unique<SidePanelEntry>(
-        key, base::BindRepeating(
-                 [](int counter) -> std::unique_ptr<views::View> {
-                   return std::make_unique<ViewWithCounter>(counter);
-                 },
-                 counter));
-  };
-
-  // Register the entry but don't show it.
-  global_registry()->Register(create_entry_with_counter(extension_key, 11));
-
-  // Since the entry was never shown, its view was never created and
-  // `returned_view` should be null.
-  std::unique_ptr<views::View> returned_view =
-      SidePanelUtil::DeregisterAndReturnView(global_registry(), extension_key);
-  EXPECT_FALSE(returned_view);
-
-  // Register the entry and show it.
-  global_registry()->Register(create_entry_with_counter(extension_key, 22));
-  coordinator()->Show(extension_key);
-
-  // Since the entry was shown, its view was created. Check that the correct
-  // view is returned by checking its state that was set at creation time.
-  returned_view =
-      SidePanelUtil::DeregisterAndReturnView(global_registry(), extension_key);
-  ASSERT_TRUE(returned_view);
-  EXPECT_EQ(22, static_cast<ViewWithCounter*>(returned_view.get())->counter());
-
-  // Register the entry, show it, then show another entry so the entry for
-  // `extension_key` has its view cached.
-  global_registry()->Register(create_entry_with_counter(extension_key, 33));
-  coordinator()->Show(extension_key);
-  coordinator()->Show(shopping_key);
-
-  // Since the entry was shown, its view was created. Check that the correct
-  // view is returned by checking its state that was set at creation time.
-  returned_view =
-      SidePanelUtil::DeregisterAndReturnView(global_registry(), extension_key);
-  ASSERT_TRUE(returned_view);
-  EXPECT_EQ(33, static_cast<ViewWithCounter*>(returned_view.get())->counter());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelTitleUpdates) {
