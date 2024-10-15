@@ -368,9 +368,12 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     }
   }
 
-  // No theme specifics are found. Create one according to current theme.
+  // No theme specifics found. Commit one according to current theme if
+  // kSeparateLocalAndAccountThemes feature flag is not enabled.
   std::optional<syncer::ModelError> error =
-      ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
+      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)
+          ? std::nullopt
+          : ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
   NotifyOnSyncStarted(ThemeSyncState::kApplied);
   return error;
 }

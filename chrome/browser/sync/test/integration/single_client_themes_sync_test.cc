@@ -171,17 +171,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
   EXPECT_TRUE(ServerThemeMatchChecker(HasDefaultTheme()).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsPreexistingTheme) {
-  ASSERT_TRUE(SetupClients());
-
-  UseCustomTheme(GetProfile(0), 0);
-
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  EXPECT_TRUE(
-      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
-}
-
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsCustomTheme) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -525,6 +514,60 @@ IN_PROC_BROWSER_TEST_F(
                   HasBrowserColorScheme(
                       sync_pb::ThemeSpecifics_BrowserColorScheme_LIGHT))
                   .Wait());
+}
+
+class SingleClientThemesSyncTestWithoutAccountThemesSeparation
+    : public SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest {
+ public:
+  SingleClientThemesSyncTestWithoutAccountThemesSeparation() {
+    feature_list_.InitAndDisableFeature(syncer::kSeparateLocalAndAccountThemes);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
+                       UploadsPreexistingTheme) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  EXPECT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+}
+
+class SingleClientThemesSyncTestWithAccountThemesSeparation
+    : public SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest {
+ public:
+  SingleClientThemesSyncTestWithAccountThemesSeparation()
+      : feature_list_(syncer::kSeparateLocalAndAccountThemes) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldNotUploadPreexistingTheme) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Use custom theme locally.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Default theme on the server.
+  ASSERT_FALSE(UsingDefaultTheme(GetProfile(0)));
+  GetFakeServer()->InjectEntity(CreateDefaultThemeEntity());
+
+  // Enable sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  // Local custom theme is not uploaded to the account.
+  EXPECT_TRUE(ServerThemeMatchChecker(HasDefaultTheme()).Wait());
+  EXPECT_TRUE(UsingCustomTheme(GetProfile(0)));
 }
 
 }  // namespace
