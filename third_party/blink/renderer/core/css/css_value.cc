@@ -945,10 +945,17 @@ String CSSValue::ClassTypeToString() const {
       return "RepeatClass";
     case kAxisClass:
       return "AxisClass";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown ClassType";
+    case kRelativeColorClass:
+      return "kRelativeColorClass";
+    case kDynamicRangeLimitMixClass:
+      return "kDynamicRangeLimitMixClass";
+    case kPaletteMixClass:
+      return "kPaletteMixClass";
+    case kRepeatStyleClass:
+      return "kRepeatStyleClass";
   }
+  NOTREACHED_IN_MIGRATION();
+  return "Unknown ClassType";
 }
 #endif
 
