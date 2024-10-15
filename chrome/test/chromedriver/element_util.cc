@@ -665,13 +665,14 @@ Status GetElementTagName(Session* session,
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   Status status = web_view->CallFunction(
-      session->GetCurrentFrameId(),
-      "function(elem) { return elem.tagName.toLowerCase(); }", args, &result);
+      session->GetCurrentFrameId(), "function(elem) { return elem.tagName; }",
+      args, &result);
   if (status.IsError())
     return status;
+
   if (!result->is_string())
-    return Status(kUnknownError, "failed to get element tag name");
-  *name = result->GetString();
+    return Status(kNoSuchElement, "failed to get element tag name");
+  *name = base::ToLowerASCII(result->GetString());
   return Status(kOk);
 }
 
