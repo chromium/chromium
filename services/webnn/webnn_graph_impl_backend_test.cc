@@ -59,9 +59,11 @@ namespace webnn::test {
 
 namespace {
 
-// Since there is no float16 data type in C++, use uint16_t to represent the
-// binary data.
-using float16 = uint16_t;
+// TODO(crbug.com/373443096): Consolidate with the other Float16 types declared
+// elsewhere.
+struct Float16 {
+  uint16_t data;
+};
 
 template <typename T>
 std::vector<T> BigBufferToVector(const mojo_base::BigBuffer& big_buffer) {
@@ -184,12 +186,13 @@ void VerifyFloatDataIsEqual(base::span<const float> data,
 
 // Convert a vector of 32-bit floating-point data to a vector of 16-bit
 // floating-point data, both in IEEE precision format.
-std::vector<float16> Float16FromFloat32(const std::vector<float>& fp32_data) {
-  std::vector<float16> fp16_data;
+std::vector<Float16> Float16FromFloat32(const std::vector<float>& fp32_data) {
+  std::vector<Float16> fp16_data;
   fp16_data.reserve(fp32_data.size());
 
   for (size_t i = 0; i < fp32_data.size(); i++) {
-    fp16_data.push_back(fp16_ieee_from_fp32_value(fp32_data[i]));
+    fp16_data.push_back(
+        Float16{.data = fp16_ieee_from_fp32_value(fp32_data[i])});
   }
 
   return fp16_data;
@@ -197,12 +200,12 @@ std::vector<float16> Float16FromFloat32(const std::vector<float>& fp32_data) {
 
 // Convert a vector of 16-bit floating-point data to a vector of 32-bit
 // floating-point data, both in IEEE precision format.
-std::vector<float> Float16ToFloat32(const std::vector<float16>& fp16_data) {
+std::vector<float> Float16ToFloat32(const std::vector<Float16>& fp16_data) {
   std::vector<float> fp32_data;
   fp32_data.reserve(fp16_data.size());
 
   for (size_t i = 0; i < fp16_data.size(); i++) {
-    fp32_data.push_back(fp16_ieee_to_fp32_value(fp16_data[i]));
+    fp32_data.push_back(fp16_ieee_to_fp32_value(fp16_data[i].data));
   }
 
   return fp32_data;
@@ -3193,21 +3196,21 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
       builder.BuildOutput("output", {1, 3, 2, 3}, OperandDataType::kFloat16);
   builder.BuildClamp(concat_operand_id, output_operand_id, 1.25, 8.75);
 
-  base::flat_map<std::string, base::span<const float16>> named_inputs;
+  base::flat_map<std::string, base::span<const Float16>> named_inputs;
   // [[ 1  2  3]
   //  [ 4  5  6]
   //  [ 7  8  9]
   //  [10 11 12]] with shape (4, 3)
-  std::vector<float16> input_data1 =
+  std::vector<Float16> input_data1 =
       Float16FromFloat32({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
   // [[[[-6 -5 -4]
   //    [-3 -2 -1]]]] with shape (1, 1, 2, 3)
-  std::vector<float16> input_data2 =
+  std::vector<Float16> input_data2 =
       Float16FromFloat32({-6, -5, -4, -3, -2, -1});
 
   named_inputs.insert({"input_a", input_data1});
   named_inputs.insert({"input_b", input_data2});
-  base::flat_map<std::string, std::vector<float16>> named_outputs =
+  base::flat_map<std::string, std::vector<Float16>> named_outputs =
       BuildAndCompute(builder.TakeGraphInfo(), std::move(named_inputs));
 
   // [[[[1.25 2.   3.  ]
