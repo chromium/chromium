@@ -165,6 +165,8 @@ chromium-metrics-reviews@google.com.
       summary="post-auction sendReportTo() report (from either the winning
                bidder or the seller)"/>
   <variant name="TrustedBidding" summary="trusted bidding signals"/>
+  <variant name="TrustedKVv2Bidding" summary="trusted KVv2 bidding signals"/>
+  <variant name="TrustedKVv2Scoring" summary="trusted KVv2 scoring signals"/>
   <variant name="TrustedScoring" summary="trusted scoring signals"/>
   <variant name="Update" summary="interest group update"/>
 </variants>
@@ -1371,6 +1373,21 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="InterestGroupRequestType"/>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Net.RequestSizeBytes.{Type}" units="bytes"
+    expires_after="2025-03-02">
+  <owner>xtlsheep@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of bytes sent for {Type} POST request body, reported upon each
+    request.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="InterestGroupRequestType"/>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Net.RequestUrlSizeBytes.{Type}"
     units="bytes" expires_after="2025-03-02">
   <owner>caraitto@chromium.org</owner>
@@ -1380,6 +1397,22 @@ chromium-metrics-reviews@google.com.
     The number of bytes sent for {Type} requests, reported upon each request.
     This is just the size of the request URL; it doesn't include the size of the
     HTTP headers or the word &quot;GET&quot;.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="InterestGroupRequestType"/>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Net.ResponseParsed.{Type}" enum="Boolean"
+    expires_after="2025-03-02">
+  <owner>xtlsheep@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the trusted KVv2 bidding or scoring signals successfully parsed the
+    received response without any CBOR parsing error. Recorded whenever there is
+    a response received for Kvv2 signals.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
