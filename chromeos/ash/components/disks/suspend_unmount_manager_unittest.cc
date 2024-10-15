@@ -13,8 +13,7 @@
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace disks {
+namespace ash::disks {
 namespace {
 
 const char kDeviceId[] = "device_id";
@@ -134,5 +133,4 @@ TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
 }
 
 }  // namespace
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks

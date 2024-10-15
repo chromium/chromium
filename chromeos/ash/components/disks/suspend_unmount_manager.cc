@@ -5,14 +5,18 @@
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
-namespace ash {
-namespace disks {
+namespace ash::disks {
 namespace {
+
+using base::TimeDelta;
+using chromeos::PowerManagerClient;
 
 // Threshold for logging the blocking of suspend.
 constexpr base::TimeDelta kBlockSuspendThreshold = base::Seconds(5);
@@ -24,20 +28,23 @@ void OnRefreshCompleted(bool success) {}
 SuspendUnmountManager::SuspendUnmountManager(
     DiskMountManager* disk_mount_manager)
     : disk_mount_manager_(disk_mount_manager) {
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  PowerManagerClient::Get()->AddObserver(this);
 }
 
 SuspendUnmountManager::~SuspendUnmountManager() {
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  if (block_suspend_token_)
-    chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  PowerManagerClient::Get()->RemoveObserver(this);
+  if (block_suspend_token_) {
+    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  }
 }
 
 void SuspendUnmountManager::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   DCHECK(unmounting_paths_.empty());
-  if (!unmounting_paths_.empty())
+  if (!unmounting_paths_.empty()) {
     return;
+  }
+
   std::set<std::string> mount_paths;
   for (const auto& disk : disk_mount_manager_->disks()) {
     if ((disk->device_type() == DeviceType::kUSB ||
@@ -46,13 +53,15 @@ void SuspendUnmountManager::SuspendImminent(
       mount_paths.insert(disk->mount_path());
     }
   }
-  for (const auto& mount_path : mount_paths) {
+
+  for (const std::string& mount_path : mount_paths) {
     if (block_suspend_token_.is_empty()) {
       block_suspend_token_ = base::UnguessableToken::Create();
       block_suspend_time_ = base::TimeTicks::Now();
-      chromeos::PowerManagerClient::Get()->BlockSuspend(
-          block_suspend_token_, "SuspendUnmountManager");
+      PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
+                                              "SuspendUnmountManager");
     }
+
     disk_mount_manager_->UnmountPath(
         mount_path, base::BindOnce(&SuspendUnmountManager::OnUnmountComplete,
                                    weak_ptr_factory_.GetWeakPtr(), mount_path));
@@ -72,8 +81,10 @@ void SuspendUnmountManager::SuspendDone(base::TimeDelta sleep_duration) {
 void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
                                               MountError error_code) {
   // This can happen when unmount completes after suspend done is called.
-  if (unmounting_paths_.erase(mount_path) != 1)
+  if (!unmounting_paths_.erase(mount_path)) {
     return;
+  }
+
   if (unmounting_paths_.empty() && block_suspend_token_) {
     chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
     block_suspend_token_ = {};
@@ -84,5 +95,4 @@ void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
   }
 }
 
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks

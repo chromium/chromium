@@ -18,8 +18,7 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 
-namespace ash {
-namespace disks {
+namespace ash::disks {
 
 // Possible filesystem types that can be passed to FormatMountedDevice.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -91,8 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   struct SortByMountPath {
     using is_transparent = void;
 
-    template <typename A, typename B>
-    bool operator()(const A& a, const B& b) const {
+    bool operator()(const auto& a, const auto& b) const {
       return GetKey(a) < GetKey(b);
     }
 
@@ -280,7 +278,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   static DiskMountManager* GetInstance();
 };
 
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_

@@ -85,6 +85,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   ~DiskMountManagerImpl() override { cros_disks_client_->RemoveObserver(this); }
 
+ private:
   using DiskMountManager::Observer;
 
   // DiskMountManager override.
@@ -399,7 +400,6 @@ class DiskMountManagerImpl : public DiskMountManager,
     return ok;
   }
 
- private:
   // A struct to represent information about a format changes.
   struct FormatChange {
     // new file system type
