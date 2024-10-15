@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/input_method/editor_text_query_from_manta.h"
 #include "chrome/browser/ash/input_method/editor_text_query_from_memory.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
+#include "chrome/browser/ash/input_method/editor_transition_enums.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
@@ -36,7 +37,18 @@ namespace {
 
 constexpr std::u16string_view kAnnouncementViewName = u"Orca";
 
+crosapi::mojom::MagicBoostController::TransitionAction
+ConvertToMagicBoostTransitionAction(EditorNoticeTransitionAction action) {
+  switch (action) {
+    case EditorNoticeTransitionAction::kDoNothing:
+      return crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing;
+    case EditorNoticeTransitionAction::kShowEditorPanel:
+      return crosapi::mojom::MagicBoostController::TransitionAction::
+          kShowEditorPanel;
+  }
 }
+
+}  // namespace
 
 EditorMediator::EditorMediator(
     Profile* profile,
@@ -237,7 +249,7 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
-      ShowNotice();
+      ShowNotice(EditorNoticeTransitionAction::kShowEditorPanel);
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
     case EditorMode::kHardBlocked:
@@ -246,7 +258,8 @@ void EditorMediator::HandleTrigger(
   }
 }
 
-void EditorMediator::ShowNotice() {
+void EditorMediator::ShowNotice(
+    EditorNoticeTransitionAction transition_action) {
   if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
@@ -256,12 +269,17 @@ void EditorMediator::ShowNotice() {
                 ->GetPrimaryDisplay()
                 .id(),
             /*action=*/
-            crosapi::mojom::MagicBoostController::TransitionAction::
-                kShowEditorPanel,
+            ConvertToMagicBoostTransitionAction(transition_action),
             /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
-  } else {
-    mako_bubble_coordinator_.LoadConsentUI(profile_);
+    return;
   }
+
+  if (IsServiceConnected()) {
+    service_connection_->system_actuator()->SetNoticeTransitionAction(
+        transition_action);
+  }
+
+  mako_bubble_coordinator_.LoadConsentUI(profile_);
 }
 
 void EditorMediator::CacheContext() {
