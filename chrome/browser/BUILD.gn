@@ -4212,6 +4212,7 @@ static_library("browser") {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
+      "//chrome/browser/autofill_prediction_improvements:util",
       "//chrome/browser/companion/core",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/feedback:feedback_enum",
@@ -4377,6 +4378,9 @@ static_library("browser") {
     allow_circular_includes_from += [
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
+
+      # TODO(crbug.com/366172297): Remove circular dependencies.
+      "//chrome/browser/autofill_prediction_improvements:util",
 
       # TODO(crbug.com/366172297): Remove circular dependencies.
       "//chrome/browser/user_annotations",
