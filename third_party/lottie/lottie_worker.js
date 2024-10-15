@@ -1,3 +1,5 @@
+// TODO(crbug.com/372866269): Fix ESlint violations and remove exception below.
+/* eslint-disable eqeqeq */
 const lottiejs = (function(window) {
   'use strict';
   const svgNS = 'http://www.w3.org/2000/svg';

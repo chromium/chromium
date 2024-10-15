@@ -186,6 +186,14 @@ export default [
         }
       ],
 
+      // https://google.github.io/styleguide/tsguide.html#equality-checks
+      // https://google.github.io/styleguide/jsguide.html#features-equality-checks
+      eqeqeq: [
+        'error', 'always', {
+          null: 'ignore',
+        }
+      ],
+
       // TODO(dpapad): Add more checks according to our styleguide.
     },
   },
@@ -393,26 +401,6 @@ export default [
       '@typescript-eslint/ban-ts-comment': [
         'error', {
           'ts-ignore': true,
-        }
-      ],
-    },
-  },
-  {
-    // We do not allow per-directory custom eslint rules. This section exists
-    // for rules that are in the process of being applied to the whole code
-    // base.
-    files: [
-      'chrome/browser/resources/**/*.[jt]s',
-      'chrome/test/data/pdf/**/*.ts',
-      'chrome/test/data/webui/**/*.[jt]s',
-      'content/browser/resources/**/*.[jt]s',
-      'ui/webui/resources/**/*.[jt]s',
-    ],
-
-    rules: {
-      eqeqeq: [
-        'error', 'always', {
-          null: 'ignore',
         }
       ],
     },
