@@ -30,6 +30,7 @@
 namespace blink {
 
 class Page;
+class V8PermissionState;
 
 class CORE_EXPORT HTMLPermissionElement final
     : public HTMLElement,
@@ -47,8 +48,8 @@ class CORE_EXPORT HTMLPermissionElement final
   const AtomicString& GetType() const;
   String invalidReason() const;
   bool isValid() const;
-  String initialPermissionStatus() const;
-  String permissionStatus() const;
+  V8PermissionState initialPermissionStatus() const;
+  V8PermissionState permissionStatus() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)

@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/373648906): Figure out where this definition should be.
+enum PermissionState {
+    "granted",
+    "denied",
+    "prompt"
+};
+
 [RuntimeEnabled=PermissionElement, Exposed=Window]
 interface HTMLPermissionElement : HTMLElement {
   [HTMLConstructor] constructor();

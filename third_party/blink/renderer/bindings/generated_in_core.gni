@@ -561,6 +561,8 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_opaque_property.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_operation_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_operation_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_permission_state.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_permission_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_playback_direction.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_playback_direction.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_popin_context_type.cc",

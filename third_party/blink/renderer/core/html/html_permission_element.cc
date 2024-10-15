@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
@@ -204,15 +205,16 @@ String PermissionNameToString(PermissionName permission_name) {
 }
 
 // Helper to translated permission statuses to strings.
-String PermissionStatusToString(MojoPermissionStatus status) {
+V8PermissionState::Enum PermissionStatusToV8Enum(MojoPermissionStatus status) {
   switch (status) {
     case MojoPermissionStatus::GRANTED:
-      return "granted";
+      return V8PermissionState::Enum::kGranted;
     case MojoPermissionStatus::ASK:
-      return "prompt";
+      return V8PermissionState::Enum::kPrompt;
     case MojoPermissionStatus::DENIED:
-      return "denied";
+      return V8PermissionState::Enum::kDenied;
   }
+  NOTREACHED();
 }
 
 float ContrastBetweenColorAndBackgroundColor(const ComputedStyle* style) {
@@ -388,15 +390,15 @@ bool HTMLPermissionElement::isValid() const {
   return clicking_enabled_state_.is_valid;
 }
 
-String HTMLPermissionElement::initialPermissionStatus() const {
-  return PermissionStatusToString(
-      initial_aggregated_permission_status_.value_or(
-          MojoPermissionStatus::ASK));
+V8PermissionState HTMLPermissionElement::initialPermissionStatus() const {
+  return V8PermissionState(
+      PermissionStatusToV8Enum(initial_aggregated_permission_status_.value_or(
+          MojoPermissionStatus::ASK)));
 }
 
-String HTMLPermissionElement::permissionStatus() const {
-  return PermissionStatusToString(
-      aggregated_permission_status_.value_or(MojoPermissionStatus::ASK));
+V8PermissionState HTMLPermissionElement::permissionStatus() const {
+  return V8PermissionState(PermissionStatusToV8Enum(
+      aggregated_permission_status_.value_or(MojoPermissionStatus::ASK)));
 }
 
 void HTMLPermissionElement::Trace(Visitor* visitor) const {

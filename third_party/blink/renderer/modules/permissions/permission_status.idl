@@ -5,12 +5,6 @@
 // Specification at:
 // https://w3c.github.io/permissions/
 
-enum PermissionState {
-    "granted",
-    "denied",
-    "prompt"
-};
-
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker),
