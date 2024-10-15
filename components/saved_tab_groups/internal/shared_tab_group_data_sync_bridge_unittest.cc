@@ -240,11 +240,16 @@ std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
   return result;
 }
 
-sync_pb::EntityMetadata CreateMetadata(std::string collaboration_id) {
+sync_pb::EntityMetadata CreateMetadata(
+    std::string collaboration_id,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   sync_pb::EntityMetadata metadata;
   // Other metadata fields are not used in these tests.
   metadata.mutable_collaboration()->set_collaboration_id(
       std::move(collaboration_id));
+  if (unique_position) {
+    *metadata.mutable_unique_position() = std::move(unique_position.value());
+  }
   return metadata;
 }
 
@@ -406,11 +411,15 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     for (const SavedTabGroup* group : model()->GetSharedTabGroupsOnly()) {
       metadata_change_list->UpdateMetadata(
           group->saved_guid().AsLowercaseString(),
-          CreateMetadata(collaboration_id));
+          CreateMetadata(collaboration_id, /*unique_position=*/std::nullopt));
+      syncer::UniquePosition next_unique_position =
+          GenerateRandomUniquePosition();
       for (const SavedTabGroupTab& tab : group->saved_tabs()) {
         metadata_change_list->UpdateMetadata(
             tab.saved_tab_guid().AsLowercaseString(),
-            CreateMetadata(collaboration_id));
+            CreateMetadata(collaboration_id, next_unique_position.ToProto()));
+        next_unique_position = syncer::UniquePosition::After(
+            next_unique_position, syncer::UniquePosition::RandomSuffix());
       }
     }
     store().CommitWriteBatch(std::move(write_batch), base::DoNothing());
@@ -1043,11 +1052,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   ASSERT_TRUE(InitializeBridgeAndModel());
 
-  const std::string collaboration_id = "collaboration";
+  const std::string kCollaborationId = "collaboration";
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(collaboration_id);
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -1055,12 +1064,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
+
   model()->Add(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
   // Verify that the model is destroyed to simulate browser restart.
-  StoreMetadataAndReset(collaboration_id);
+  StoreMetadataAndReset(kCollaborationId);
   ASSERT_EQ(model(), nullptr);
 
   // Note that sync metadata is not checked explicitly because the collaboration
@@ -1070,10 +1080,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
       model()->saved_tab_groups(),
       UnorderedElementsAre(HasSharedGroupMetadata(
           "title", tab_groups::TabGroupColorId::kGrey, "collaboration")));
-  EXPECT_THAT(
-      model()->saved_tab_groups().front().saved_tabs(),
-      UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
-                           HasTabMetadata("tab 2", "http://google.com/2")));
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
+                          HasTabMetadata("tab 2", "http://google.com/2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
