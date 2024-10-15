@@ -120,7 +120,6 @@ mojom("mojom") {
     "telemetry_extension_exception.mojom",
     "telemetry_keyboard_event.mojom",
     "telemetry_management_service.mojom",
-    "test_controller.mojom",
     "timezone.mojom",
     "trusted_vault.mojom",
     "ui_constants.mojom",

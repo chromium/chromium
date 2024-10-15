@@ -12,21 +12,9 @@
 
 namespace crosapi {
 
-namespace mojom {
-class TestController;
-}  // namespace mojom
-
 namespace internal {
-
 int GetInterfaceVersionImpl(base::Token interface_uuid);
-
 }  // namespace internal
-
-// Provides access to the test setup's TestController in browsertests only.
-// Can be used in both the Lacros and Ash processes.
-// Must only be used for browser -> Ash-system communication; test code that
-// uses this must also be run in Lacros.
-mojom::TestController* GetTestController();
 
 // Abstraction over testing crosapi::browser_util::GetAshCapabilities() that
 // works in both the Lacros and Ash processes.

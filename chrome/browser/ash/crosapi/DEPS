@@ -162,8 +162,4 @@ specific_include_rules = {
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   ],
-  "test_controller_ash\.cc": [
-    # For Chrome OS-specific tab scrubbing tests.
-    "+chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h",
-  ],
 }

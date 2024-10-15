@@ -208,8 +208,6 @@ Profile* GetAshProfile() {
 
 }  // namespace
 
-CrosapiAsh::TestControllerReceiver::~TestControllerReceiver() = default;
-
 CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
@@ -1040,13 +1038,6 @@ void CrosapiAsh::BindTelemetryProbeService(
   probe_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindTestController(
-    mojo::PendingReceiver<mojom::TestController> receiver) {
-  if (test_controller_) {
-    test_controller_->BindReceiver(std::move(receiver));
-  }
-}
-
 void CrosapiAsh::BindTimeZoneService(
     mojo::PendingReceiver<mojom::TimeZoneService> receiver) {
   time_zone_service_ash_->BindReceiver(std::move(receiver));
@@ -1154,11 +1145,6 @@ void CrosapiAsh::REMOVED_105(
 void CrosapiAsh::REMOVED_62(
     mojo::PendingReceiver<crosapi::mojom::AuthenticationDeprecated> receiver) {
   NOTIMPLEMENTED();
-}
-
-void CrosapiAsh::SetTestControllerForTesting(
-    std::unique_ptr<TestControllerReceiver> test_controller) {
-  test_controller_ = std::move(test_controller);
 }
 
 void CrosapiAsh::OnDisconnected() {

@@ -156,14 +156,6 @@ class VpnExtensionObserverAsh;
 // crosapi clients, such as lacros-chrome, can call into.
 class CrosapiAsh : public mojom::Crosapi {
  public:
-  // Abstract base class to support dependency injection for tests.
-  class TestControllerReceiver {
-   public:
-    virtual ~TestControllerReceiver();
-    virtual void BindReceiver(
-        mojo::PendingReceiver<mojom::TestController> receiver) = 0;
-  };
-
   explicit CrosapiAsh(CrosapiDependencyRegistry* registry);
   ~CrosapiAsh() override;
 
@@ -421,8 +413,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindTelemetryProbeService(
       mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
-  void BindTestController(
-      mojo::PendingReceiver<mojom::TestController> receiver) override;
   void BindTimeZoneService(
       mojo::PendingReceiver<mojom::TimeZoneService> receiver) override;
   void BindTrustedVaultBackend(
@@ -671,10 +661,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return network_settings_service_ash_.get();
   }
 
-  // Caller is responsible for ensuring that the pointer stays valid.
-  void SetTestControllerForTesting(
-      std::unique_ptr<TestControllerReceiver> test_controller);
-
  private:
   // Called when a connection is lost.
   void OnDisconnected();
@@ -792,10 +778,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
-
-  // Only set in the test ash chrome binary. In production ash this is always
-  // unset.
-  std::unique_ptr<TestControllerReceiver> test_controller_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
   std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;

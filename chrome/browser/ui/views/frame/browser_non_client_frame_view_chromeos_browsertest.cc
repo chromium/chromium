@@ -64,9 +64,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -288,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(expect_y, frame_view->GetBoundsForClientView().y());
 
   EnterTabletMode();
-  SnapWindow(window, crosapi::mojom::SnapPosition::kPrimary);
+  SnapWindow(window, ash::SnapPosition::kPrimary);
 
   // Touch on the top of the window is interpreted as client hit.
   gfx::Point top_point(widget->GetWindowBoundsInScreen().width() / 2, 0);
@@ -311,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(
   views::Widget* widget = browser_view->GetWidget();
 
   EnterTabletMode();
-  SnapWindow(widget->GetNativeWindow(), crosapi::mojom::SnapPosition::kPrimary);
+  SnapWindow(widget->GetNativeWindow(), ash::SnapPosition::kPrimary);
 
   // A point at the top of the window, but not in the center horizontally, as a
   // swipe down from the top center will show the chromeos tablet mode multitask
@@ -1037,7 +1034,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
   ExitOverviewMode();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  SnapWindow(widget->GetNativeWindow(), crosapi::mojom::SnapPosition::kPrimary);
+  SnapWindow(widget->GetNativeWindow(), ash::SnapPosition::kPrimary);
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 }
 
@@ -1332,7 +1329,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       views::Widget::GetWidgetForNativeView(window));
 
   // Snap the window. No immersive mode from regular browsers.
-  SnapWindow(window, crosapi::mojom::SnapPosition::kSecondary);
+  SnapWindow(window, ash::SnapPosition::kSecondary);
   ASSERT_TRUE(WaitForVisible(false, frame_view->caption_button_container()));
   EXPECT_FALSE(immersive_controller->IsEnabled());
 
@@ -1386,8 +1383,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   EXPECT_TRUE(immersive_controller->IsEnabled());
 
   // Snap a window. Immersive mode is enabled so its title bar is not visible.
-  SnapWindow(widget2->GetNativeWindow(),
-             crosapi::mojom::SnapPosition::kSecondary);
+  SnapWindow(widget2->GetNativeWindow(), ash::SnapPosition::kSecondary);
   EXPECT_TRUE(frame_view2->caption_button_container()->GetVisible());
   EXPECT_TRUE(immersive_controller->IsEnabled());
 

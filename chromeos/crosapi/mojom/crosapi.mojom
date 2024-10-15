@@ -110,7 +110,6 @@ import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
-import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/trusted_vault.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
@@ -816,10 +815,7 @@ interface Crosapi {
   [MinVersion=93] BindTelemetryProbeService@97(
       pending_receiver<crosapi.mojom.TelemetryProbeService> receiver);
 
-  // Binds the test controller service, which tests can use to mutate ash. This
-  // is not available on production devices.
-  [MinVersion=9] BindTestController@14(
-      pending_receiver<TestController> receiver);
+  // BindTestController@14 was removed.
 
   // Binds the TimeZoneService which notifies system timezone change.
   // Added in M99.

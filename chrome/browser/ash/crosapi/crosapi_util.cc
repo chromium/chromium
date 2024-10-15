@@ -161,7 +161,6 @@
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
@@ -499,7 +498,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::IdleService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::InputMethods>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ImageWriter>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::InputMethodTestInterface>(),
     MakeInterfaceVersionEntry<chromeos::auth::mojom::InSessionAuth>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KerberosInBrowser>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KeystoreService>(),
@@ -553,7 +551,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::SyncService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SystemDisplayDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TaskManager>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::TestController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TimeZoneService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TrustedVaultBackend>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TrustedVaultBackendService>(),
