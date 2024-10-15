@@ -575,7 +575,7 @@ source_set("web_applications") {
 
   if (is_win) {
     deps += [
-      "//chrome/browser/profiles:profile_attributes",
+      "//chrome/browser/profiles:profile_util",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//components/custom_handlers",
     ]

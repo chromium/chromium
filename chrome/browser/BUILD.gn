@@ -1916,7 +1916,6 @@ static_library("browser") {
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_attributes",
     "//chrome/browser/profiles:profile_attributes_impl",
     "//chrome/browser/profiles:profile_statistics",
     "//chrome/browser/profiles:profile_statistics_impl",

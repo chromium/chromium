@@ -50,7 +50,7 @@ static_library("users") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/extensions",
     "//chrome/browser/policy:onc",
-    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
