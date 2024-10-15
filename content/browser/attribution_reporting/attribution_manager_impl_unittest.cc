@@ -24,7 +24,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -143,7 +142,6 @@ using AggregatableDebugReportSentCallback =
     ::content::AttributionReportSender::AggregatableDebugReportSentCallback;
 
 constexpr size_t kMaxPendingEvents = 5;
-constexpr size_t kMaxPendingReportsTimings = 50;
 
 const GlobalRenderFrameHostId kFrameId = {0, 1};
 constexpr attribution_reporting::Registrar kRegistrar =
@@ -156,13 +154,6 @@ constexpr AttributionResolverDelegate::OfflineReportDelayConfig
     };
 
 const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
-
-constexpr char kPendingAndBrowserWentOfflineTimeSinceCreation[] =
-    "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-    "TimeSinceCreation";
-constexpr char kPendingAndBrowserWentOfflineTimeUntilReportTime[] =
-    "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-    "TimeUntilReportTime";
 
 constexpr char kSentVerboseDebugReportTypeMetric[] =
     "Conversions.SentVerboseDebugReportType4";
@@ -373,22 +364,6 @@ class AttributionManagerImplTest : public testing::Test {
         browser_context_->GetDefaultStoragePartition());
     aggregation_service_ = nullptr;
     partition->OverrideAggregationServiceForTesting(nullptr);
-  }
-
-  void RegisterAggregatableSourceAndMatchingTrigger(
-      std::string_view origin_prefix) {
-    const auto origin = *SuitableOrigin::Deserialize(
-        base::StrCat({"https://", origin_prefix, ".example"}));
-
-    attribution_manager_->HandleSource(TestAggregatableSourceProvider()
-                                           .GetBuilder()
-                                           .SetExpiry(kImpressionExpiry)
-                                           .SetReportingOrigin(origin)
-                                           .Build(),
-                                       kFrameId);
-    attribution_manager_->HandleTrigger(
-        DefaultAggregatableTriggerBuilder().SetReportingOrigin(origin).Build(),
-        kFrameId);
   }
 
   std::vector<StoredSource> StoredSources() {
@@ -2947,107 +2922,6 @@ TEST_F(AttributionManagerImplTest,
                                           .Build(),
                                       kFrameId);
   task_environment_.RunUntilIdle();
-}
-
-TEST_F(AttributionManagerImplTest, PendingReportsMetrics) {
-  base::HistogramTester histograms;
-
-  RegisterAggregatableSourceAndMatchingTrigger("a");
-  task_environment_.FastForwardBy(base::Seconds(10));
-
-  RegisterAggregatableSourceAndMatchingTrigger("b");
-  task_environment_.FastForwardBy(base::Seconds(20));
-
-  RegisterAggregatableSourceAndMatchingTrigger("c");
-  task_environment_.FastForwardBy(base::Seconds(40));
-
-  ShutdownManager();
-
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
-                              3);
-  EXPECT_EQ(
-      histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeSinceCreation),
-      base::Seconds(70 + 60 + 40).InMilliseconds());
-
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
-                              3);
-  EXPECT_EQ(
-      histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeUntilReportTime),
-      ((kFirstReportingWindow - base::Seconds(70)) +
-       (kFirstReportingWindow - base::Seconds(60)) +
-       (kFirstReportingWindow - base::Seconds(40)))
-          .InMilliseconds());
-}
-
-TEST_F(AttributionManagerImplTest,
-       PendingReportsMetrics_WithoutPendingReports) {
-  base::HistogramTester histograms;
-
-  RegisterAggregatableSourceAndMatchingTrigger("a");
-  task_environment_.FastForwardBy(base::Seconds(10));
-
-  // Advancing time enough for reports to send
-  task_environment_.FastForwardBy(kFirstReportingWindow);
-
-  ShutdownManager();
-
-  // Expect no histograms on shutdown as the reports have already been sent.
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
-                              0);
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
-                              0);
-}
-
-TEST_F(AttributionManagerImplTest, PendingReportsMetrics_Offline) {
-  base::HistogramTester histograms;
-
-  RegisterAggregatableSourceAndMatchingTrigger("a");
-  task_environment_.FastForwardBy(base::Seconds(10));
-
-  SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_NONE);
-  SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
-
-  RegisterAggregatableSourceAndMatchingTrigger("b");
-  task_environment_.FastForwardBy(base::Seconds(20));
-
-  RegisterAggregatableSourceAndMatchingTrigger("c");
-  task_environment_.FastForwardBy(base::Seconds(40));
-
-  task_environment_.FastForwardBy(kFirstReportingWindow);
-
-  ShutdownManager();
-
-  // Expect only one histogram as there was only one pending report when it
-  // first went offline.
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
-                              1);
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
-                              1);
-}
-
-TEST_F(AttributionManagerImplTest, PendingReportsMetrics_OverLimits) {
-  base::HistogramTester histograms;
-
-  for (size_t i = 0; i < (kMaxPendingReportsTimings + 5); i++) {
-    RegisterAggregatableSourceAndMatchingTrigger(base::NumberToString(i));
-  }
-
-  task_environment_.FastForwardBy(base::Seconds(10));
-  RegisterAggregatableSourceAndMatchingTrigger("a");
-
-  ShutdownManager();
-
-  // Expect that events registered past the limit should be dropped.
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
-                              kMaxPendingReportsTimings);
-  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
-                              kMaxPendingReportsTimings);
-
-  EXPECT_EQ(
-      histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeSinceCreation),
-      (base::Seconds(10) * kMaxPendingReportsTimings).InMilliseconds());
 }
 
 TEST_F(AttributionManagerImplTest,

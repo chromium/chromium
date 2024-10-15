@@ -216,12 +216,6 @@ class AttributionManagerImpl::ReportScheduler
         .Then(std::move(maybe_set_timer_cb));
   }
 
-  void OnReportingPaused() override {
-    if (manager_) {
-      manager_->RecordPendingAggregatableReportsTimings();
-    }
-  }
-
   base::WeakPtr<AttributionManagerImpl> manager_;
 };
 
@@ -557,11 +551,6 @@ bool g_run_in_memory = false;
 
 }  // namespace
 
-struct AttributionManagerImpl::PendingReportTimings {
-  base::Time creation_time;
-  base::Time report_time;
-};
-
 struct AttributionManagerImpl::SourceOrTriggerRFH {
   absl::variant<StorableSource, AttributionTrigger> source_or_trigger;
   GlobalRenderFrameHostId rfh_id;
@@ -694,8 +683,6 @@ AttributionManagerImpl::AttributionManagerImpl(
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
-  RecordPendingAggregatableReportsTimings();
-
   GetContentClient()->browser()->RemovePrivacySandboxAttestationsObserver(this);
 
   // Browser contexts are not required to have a special storage policy.
@@ -734,22 +721,6 @@ void AttributionManagerImpl::HandleSource(
     GlobalRenderFrameHostId render_frame_id) {
   MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(source),
                                        .rfh_id = render_frame_id});
-}
-
-void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
-  const base::Time now = base::Time::Now();
-
-  for (const auto& [key, timing] : pending_aggregatable_reports_) {
-    UMA_HISTOGRAM_LONG_TIMES(
-        "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-        "TimeSinceCreation",
-        now - timing.creation_time);
-    UMA_HISTOGRAM_LONG_TIMES(
-        "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-        "TimeUntilReportTime",
-        timing.report_time - now);
-  }
-  pending_aggregatable_reports_.clear();
 }
 
 void AttributionManagerImpl::OnSourceStored(
@@ -955,26 +926,6 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
                            weak_factory_.GetWeakPtr(), cleared_debug_key));
 }
 
-void AttributionManagerImpl::AddPendingAggregatableReportTiming(
-    const AttributionReport& report) {
-  // The maximum number of pending reports that should be considered. Past this
-  // value, events will be ignored.
-  constexpr size_t kMaxPendingReportsTimings = 50;
-  if (pending_aggregatable_reports_.size() >= kMaxPendingReportsTimings) {
-    return;
-  }
-
-  DCHECK_EQ(report.GetReportType(),
-            AttributionReport::Type::kAggregatableAttribution);
-
-  auto [it, inserted] = pending_aggregatable_reports_.try_emplace(
-      report.id(), PendingReportTimings{
-                       .creation_time = base::Time::Now(),
-                       .report_time = report.report_time(),
-                   });
-  DCHECK(inserted);
-}
-
 void AttributionManagerImpl::OnReportStored(
     std::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
@@ -993,8 +944,6 @@ void AttributionManagerImpl::OnReportStored(
   if (auto* report = result.new_aggregatable_report()) {
     min_new_report_time = AttributionReport::MinReportTime(
         min_new_report_time, report->report_time());
-
-    AddPendingAggregatableReportTiming(*report);
 
     MaybeSendDebugReport(std::move(*report));
   }
@@ -1234,11 +1183,6 @@ void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
       std::move(web_ui_callback).Run();
     }
     return;
-  }
-
-  if (report.GetReportType() ==
-      AttributionReport::Type::kAggregatableAttribution) {
-    pending_aggregatable_reports_.erase(report.id());
   }
 
   if (!IsReportAllowed(report)) {

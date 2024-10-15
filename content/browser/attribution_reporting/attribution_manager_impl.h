@@ -12,7 +12,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -171,8 +170,6 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   struct SourceOrTriggerRFH;
 
-  struct PendingReportTimings;
-
   enum class BrowserPolicy;
 
   AttributionManagerImpl(
@@ -268,9 +265,6 @@ class CONTENT_EXPORT AttributionManagerImpl
       attribution_reporting::mojom::ProcessAggregatableDebugReportResult,
       SendAggregatableDebugReportResult);
 
-  void AddPendingAggregatableReportTiming(const AttributionReport&);
-  void RecordPendingAggregatableReportsTimings();
-
   void OnUserVisibleTaskStarted();
   void OnUserVisibleTaskComplete();
 
@@ -323,12 +317,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   // updated. The number of concurrent conversion reports being sent at any time
   // is expected to be small, so a `flat_set` is used.
   base::flat_set<AttributionReport::Id> reports_being_sent_;
-
-  // We keep track of pending reports timings in memory to record metrics
-  // when the browser becomes unavailable to send reports due to becoming
-  // offline or being shutdown.
-  base::flat_map<AttributionReport::Id, PendingReportTimings>
-      pending_aggregatable_reports_;
 
   base::ObserverList<AttributionObserver> observers_;
 
