@@ -195,7 +195,10 @@ TEST_F(FeaturedSearchProviderTest, NonAtPrefix) {
 
 TEST_F(FeaturedSearchProviderTest, DoesNotSupportMatchesOnFocus) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kStarterPackIPH);
+  features.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "false"}}}},
+      {omnibox::kStarterPackIPH});
 
   AutocompleteInput input(u"@tabs", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -385,7 +388,11 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestStarterPackIPHSuggestion_DeleteMatch) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kStarterPackIPH);
+  features.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "false"}}},
+       {omnibox::kStarterPackIPH, {}}},
+      {});
   PrefService* prefs = client_->GetPrefs();
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
@@ -457,10 +464,13 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestFeaturedSearchIPHSuggestion_DeleteMatch) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kShowFeaturedEnterpriseSiteSearch,
-                             omnibox::kShowFeaturedEnterpriseSiteSearchIPH,
-                             omnibox::kStarterPackExpansion},
-                            {omnibox::kStarterPackIPH});
+  features.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "false"}}},
+       {omnibox::kShowFeaturedEnterpriseSiteSearch, {}},
+       {omnibox::kShowFeaturedEnterpriseSiteSearchIPH, {}},
+       {omnibox::kStarterPackExpansion, {}}},
+      {omnibox::kStarterPackIPH});
 
   AddStarterPackEntriesToTemplateUrlService();
 
@@ -500,13 +510,13 @@ TEST_F(FeaturedSearchProviderTest,
 TEST_F(FeaturedSearchProviderTest,
        ZeroSuggestStarerPackIPHAfterFeaturedSearchIPHDeleted) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {
-          omnibox::kShowFeaturedEnterpriseSiteSearch,
-          omnibox::kShowFeaturedEnterpriseSiteSearchIPH,
-          omnibox::kStarterPackExpansion,
-          omnibox::kStarterPackIPH,
-      },
+  features.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "false"}}},
+       {omnibox::kShowFeaturedEnterpriseSiteSearch, {}},
+       {omnibox::kShowFeaturedEnterpriseSiteSearchIPH, {}},
+       {omnibox::kStarterPackExpansion, {}},
+       {omnibox::kStarterPackIPH, {}}},
       {});
 
   AddStarterPackEntriesToTemplateUrlService();
@@ -585,6 +595,10 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   };
 
   // No IPH is shown when the feature is disabled.
+  base::test::ScopedFeatureList disabled_features;
+  disabled_features.InitAndEnableFeatureWithParameters(
+      history_embeddings::kHistoryEmbeddings,
+      {{history_embeddings::kOmniboxScoped.name, "false"}});
   {
     SCOPED_TRACE("");
     RunAndVerifyIph(zero_input, {});
@@ -601,10 +615,9 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   // '@history' promo is shown when embeddings is not opted-in (even if the
   // feature is enabled).
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "true"}}},
-       {optimization_guide::features::kAiSettingsPageRefresh, {}}},
+  features.InitWithFeatures(
+      {{history_embeddings::kHistoryEmbeddings},
+       {optimization_guide::features::kAiSettingsPageRefresh}},
       {});
   mock_setting(false, false);
   {
@@ -703,9 +716,8 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   //   History Embeddings Promo points to chrome://settings/historySearch when
   //   AI refresh flag is disabled.
   base::test::ScopedFeatureList features_without_ai_refresh;
-  features_without_ai_refresh.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "true"}}}},
+  features_without_ai_refresh.InitWithFeatures(
+      {history_embeddings::kHistoryEmbeddings},
       {optimization_guide::features::kAiSettingsPageRefresh});
   mock_setting(true, false);
   {
@@ -737,10 +749,8 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
 
 TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{omnibox::kStarterPackIPH, {}},
-       {history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "true"}}}},
+  features.InitWithFeatures(
+      {{omnibox::kStarterPackIPH}, {history_embeddings::kHistoryEmbeddings}},
       {});
   AddStarterPackEntriesToTemplateUrlService();
   AutocompleteInput input;
@@ -796,10 +806,8 @@ TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
 
 TEST_F(FeaturedSearchProviderTest, OffTheRecord) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kOmniboxScoped.name, "true"}}}},
-      {omnibox::kStarterPackIPH});
+  features.InitWithFeatures({history_embeddings::kHistoryEmbeddings},
+                            {omnibox::kStarterPackIPH});
   AddStarterPackEntriesToTemplateUrlService();
   AutocompleteInput input;
   input.set_focus_type(metrics::INTERACTION_FOCUS);
