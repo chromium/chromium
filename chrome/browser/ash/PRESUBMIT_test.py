@@ -20,12 +20,6 @@ _CHROME_BROWSER_ASH = os.path.join('chrome', 'browser', 'ash')
 class DepsFileProhibitingChromeExistsFileTest(unittest.TestCase):
   def assertDepsFilesWithErrors(self, input_api, expected_missing_deps_files,
       expected_deps_files_missing_chrome):
-    # Restore path that was changed to import test mocks above.
-    input_api.presubmit_local_path = _CHROME_BROWSER_ASH
-
-    # Create mock files for all affected files so that os_path.exists() works.
-    input_api.CreateMockFileInPath(
-        [x.LocalPath() for x in input_api.AffectedFiles(include_deletes=True)])
 
     results = PRESUBMIT._CheckDepsFileProhibitingChromeExists(
         input_api, MockOutputApi())
@@ -55,22 +49,23 @@ class DepsFileProhibitingChromeExistsFileTest(unittest.TestCase):
   # No files created; no errors expected.
   def testNoFiles(self):
     input_api = MockInputApi()
+    input_api.InitFiles([])
     self.assertDepsFilesWithErrors(input_api, [], [])
 
   # Create files in new subdirectories without DEPS files.
   def testFileInDirectoryWithNoDeps(self):
     input_api = MockInputApi()
-    input_api.files = [
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'bar.h'), ''),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'baz.h'), ''),
-    ]
+    input_api.InitFiles([
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'foo', 'bar.h'), ''),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'bar', 'baz.h'), ''),
+    ])
     self.assertDepsFilesWithErrors(
         input_api,
         [
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
+          os.path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
+          os.path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
         ], [])
 
   # Create files in a new subdirectories with DEPS files not prohibiting
@@ -79,23 +74,23 @@ class DepsFileProhibitingChromeExistsFileTest(unittest.TestCase):
     DEPS_FILE_NOT_PROHIBITING_CHROME = ['include_rules = []']
 
     input_api = MockInputApi()
-    input_api.files = [
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'bar.h'), ''),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
-          DEPS_FILE_NOT_PROHIBITING_CHROME),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'baz.h'), ''),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
-          DEPS_FILE_NOT_PROHIBITING_CHROME),
-    ]
+    input_api.InitFiles([
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'foo', 'bar.h'), ''),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
+            DEPS_FILE_NOT_PROHIBITING_CHROME),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'bar', 'baz.h'), ''),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
+            DEPS_FILE_NOT_PROHIBITING_CHROME),
+    ])
     self.assertDepsFilesWithErrors(
         input_api, [],
         [
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
+          os.path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
+          os.path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
         ])
 
   # Create files in a new subdirectories with DEPS files prohibiting //chrome.
@@ -103,18 +98,18 @@ class DepsFileProhibitingChromeExistsFileTest(unittest.TestCase):
     DEPS_FILE_PROHIBITING_CHROME = ['include_rules = [ "-chrome", ]']
 
     input_api = MockInputApi()
-    input_api.files = [
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'bar.h'), ''),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
-          DEPS_FILE_PROHIBITING_CHROME),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'baz.h'), ''),
-      MockAffectedFile(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
-          DEPS_FILE_PROHIBITING_CHROME),
-    ]
+    input_api.InitFiles([
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'foo', 'bar.h'), ''),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'foo', 'DEPS'),
+            DEPS_FILE_PROHIBITING_CHROME),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'bar', 'baz.h'), ''),
+        MockAffectedFile(
+            os.path.join(_CHROME_BROWSER_ASH, 'bar', 'DEPS'),
+            DEPS_FILE_PROHIBITING_CHROME),
+    ])
     self.assertDepsFilesWithErrors(input_api, [], [])
 
 if __name__ == '__main__':

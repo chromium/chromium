@@ -174,12 +174,12 @@ def _TestsCorrespondingToAffectedBaselines(input_api,
         test_prefix = baseline_match['test_prefix']
         # Getting the test name from the baseline path is not as easy as the
         # other direction. Try all extensions as a heuristic instead.
+        abs_prefix = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                            test_prefix)
         for extension in [
                 'html', 'xml', 'xhtml', 'xht', 'pl', 'htm', 'php', 'svg',
                 'mht', 'pdf', 'js'
         ]:
-            abs_prefix = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                                test_prefix)
             test_paths.update(input_api.glob(f'{abs_prefix}*.{extension}'))
     return [
         input_api.os_path.relpath(test_path, input_api.PresubmitLocalPath())
