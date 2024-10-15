@@ -57,7 +57,7 @@ enum class InstallErrors {
 int InstallFromArchive(const base::FilePath& file_path,
                        const base::FilePath& existence_checker_path,
                        const std::string& ap,
-                       const UpdaterScope& scope,
+                       UpdaterScope scope,
                        const base::Version& pv,
                        const std::string& arguments,
                        const std::optional<base::FilePath>& installer_data_file,
