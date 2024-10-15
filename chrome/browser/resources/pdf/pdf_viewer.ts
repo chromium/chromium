@@ -118,6 +118,13 @@ function eventToPromise(event: string, target: HTMLElement): Promise<void> {
       resolve => listenOnce(target, event, (_e: Event) => resolve()));
 }
 
+// Unlike hasCtrlModifierOnly(), this always checks `e.ctrlKey` and not
+// `e.metaKey`. Whereas hasCtrlModifierOnly() will flip the two modifiers on
+// macOS.
+function hasFixedCtrlModifierOnly(e: KeyboardEvent): boolean {
+  return e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+}
+
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
 
 /**
@@ -381,16 +388,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         }
         return;
       case '[':
-        // Do not use hasCtrlModifier() here, since Command + [ is already
+        // Do not use hasCtrlModifierOnly() here, since Command + [ is already
         // taken by the "go back to the previous webpage" action.
-        if (e.ctrlKey) {
+        if (hasFixedCtrlModifierOnly(e)) {
           this.rotateCounterclockwise();
         }
         return;
       case ']':
-        // Do not use hasCtrlModifier() here, since Command + ] is already
+        // Do not use hasCtrlModifierOnly() here, since Command + ] is already
         // taken by the "go forward to the next webpage" action.
-        if (e.ctrlKey) {
+        if (hasFixedCtrlModifierOnly(e)) {
           this.rotateClockwise();
         }
         return;
