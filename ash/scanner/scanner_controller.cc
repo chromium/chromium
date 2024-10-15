@@ -86,6 +86,17 @@ void ScannerController::OpenUrl(const GURL& url) {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+drive::DriveServiceInterface* ScannerController::GetDriveService() {
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
+    return nullptr;
+  }
+
+  return profile_scoped_delegate->GetDriveService();
+}
+
 bool ScannerController::HasActiveSessionForTesting() const {
   return !!scanner_session_;
 }

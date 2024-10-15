@@ -41,9 +41,28 @@ struct ASH_PUBLIC_EXPORT NewContactAction {
   ~NewContactAction();
 };
 
+// Creates a new Google Doc with the given title and contents, then opens the
+// browser to that new Google Doc.
+struct ASH_PUBLIC_EXPORT NewGoogleDocAction {
+  std::string title;
+  // The contents of the doc as a string representing HTML. This will be
+  // converted to a Google Doc upon upload.
+  // TODO: b/367870452 - Consider using the protobuf type directly to avoid a
+  // large string copy.
+  std::string html_contents;
+
+  NewGoogleDocAction(std::string title, std::string html_contents);
+
+  NewGoogleDocAction(const NewGoogleDocAction&);
+  NewGoogleDocAction& operator=(const NewGoogleDocAction&);
+
+  ~NewGoogleDocAction();
+};
+
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
-using ScannerAction = std::variant<NewCalendarEventAction, NewContactAction>;
+using ScannerAction =
+    std::variant<NewCalendarEventAction, NewContactAction, NewGoogleDocAction>;
 
 // Holds the response returned from the Scanner service. This may be a list of
 // 0 or more actions, or an error state.

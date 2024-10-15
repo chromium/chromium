@@ -26,4 +26,13 @@ NewContactAction& NewContactAction::operator=(const NewContactAction&) =
     default;
 NewContactAction::~NewContactAction() = default;
 
+NewGoogleDocAction::NewGoogleDocAction(std::string title,
+                                       std::string html_contents)
+    : title(std::move(title)), html_contents(std::move(html_contents)) {}
+
+NewGoogleDocAction::NewGoogleDocAction(const NewGoogleDocAction&) = default;
+NewGoogleDocAction& NewGoogleDocAction::operator=(const NewGoogleDocAction&) =
+    default;
+NewGoogleDocAction::~NewGoogleDocAction() = default;
+
 }  // namespace ash

@@ -4,6 +4,9 @@
 
 #include "ash/scanner/scanner_action_handler.h"
 
+#include <cstddef>
+#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -13,10 +16,25 @@
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_file.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "components/drive/drive_api_util.h"
+#include "components/drive/service/drive_api_service.h"
+#include "components/drive/service/drive_service_interface.h"
+#include "google_apis/common/api_error_codes.h"
+#include "google_apis/drive/drive_api_parser.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -77,6 +95,126 @@ void OpenInBrowserTab(base::WeakPtr<ScannerCommandDelegate> delegate,
   std::move(callback).Run(true);
 }
 
+// Writes the given data into a temporary file, then returns the temporary file.
+// If any I/O fails, this function returns nullopt and cleans up the temporary
+// file.
+// Must be run on a thread which can perform I/O.
+// The returned `ScopedTempFile` must be destructed on a thread which can
+// perform I/O.
+//
+// Care should be taken to ensure that binding this function should take
+// ownership of the data to prevent UAFs. To be specific, `data` should be bound
+// with a `std::string` instead of a `std::string_view` so the bound callback
+// takes ownership of the data given.
+//
+// This is because `base::BindOnce`'s internal storage type,
+// `base::internal::BindState::BoundArgsTuple`, depends on the arguments to
+// `base::BindOnce`, not the parameters of the function.
+std::optional<base::ScopedTempFile> CreateTempFileWithContents(
+    std::string_view data) {
+  base::ScopedTempFile temp_file;
+  if (!temp_file.Create()) {
+    return std::nullopt;
+  }
+
+  base::File file(temp_file.path(),
+                  base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    return std::nullopt;
+  }
+  if (!file.WriteAndCheck(0, base::as_byte_span(data))) {
+    return std::nullopt;
+  }
+
+  return temp_file;
+}
+
+// Runs after a temporary file has been uploaded to Google Drive. Cleans up the
+// temporary file and opens the file's alternate link in a browser tab.
+// Must be called on the same sequence that called `HandleScannerAction`.
+void OnTempFileUploaded(base::WeakPtr<ScannerCommandDelegate> delegate,
+                        ScannerCommandCallback callback,
+                        base::ScopedTempFile temp_file,
+                        google_apis::ApiErrorCode error,
+                        std::unique_ptr<google_apis::FileResource> entry) {
+  // Ensure that `temp_file` is cleaned up in a thread that can perform I/O.
+  absl::Cleanup temp_file_cleanup = [temp_file =
+                                         std::move(temp_file)]() mutable {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::DoNothingWithBoundArgs(std::move(temp_file)));
+  };
+
+  if (error != google_apis::ApiErrorCode::HTTP_CREATED) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (entry == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  OpenInBrowserTab(std::move(delegate), entry->alternate_link(),
+                   std::move(callback));
+}
+
+// Uploads a specified temporary file to Drive with the provided MIME types.
+// `converted_mime_type` must have static lifetime, i.e. must be a compile-time
+// constant.
+// Must be called on the same sequence that called `HandleScannerAction`.
+void UploadTempFileToDrive(base::WeakPtr<ScannerCommandDelegate> delegate,
+                           std::string contents_mime_type,
+                           std::string_view converted_mime_type,
+                           size_t contents_size,
+                           std::string title,
+                           ScannerCommandCallback callback,
+                           std::optional<base::ScopedTempFile> temp_file) {
+  if (!temp_file.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (delegate == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+  drive::DriveServiceInterface* drive_service = delegate->GetDriveService();
+  if (drive_service == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // We need to create a copy of the temp file path, as `MultipartUploadNewFile`
+  // takes in a const ref. Without the copy, the const ref would point to a
+  // *moved* `base::FilePath` as we move `temp_file` into `OnTempFileUploaded`.
+  base::FilePath temp_path = temp_file->path();
+  drive_service->MultipartUploadNewFile(
+      contents_mime_type, converted_mime_type, contents_size,
+      drive_service->GetRootResourceId(), title, temp_path,
+      drive::UploadNewFileOptions(),
+      base::BindOnce(&OnTempFileUploaded, std::move(delegate),
+                     std::move(callback), std::move(*temp_file)),
+      /*progress_callback=*/base::NullCallback());
+}
+
+void HandleNewGoogleDocAction(base::WeakPtr<ScannerCommandDelegate> delegate,
+                              const NewGoogleDocAction& action,
+                              ScannerCommandCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      // This causes an expensive copy of the file contents because
+      // `action` is a const ref (and could dangle before the callback
+      // is called).
+      // TODO: b/367870452 - Determine whether we can avoid this copy.
+      base::BindOnce(&CreateTempFileWithContents, action.html_contents),
+      base::BindOnce(&UploadTempFileToDrive, std::move(delegate),
+                     /*contents_mime_type=*/"text/html",
+                     /*converted_mime_type=*/
+                     drive::util::kGoogleDocumentMimeType,
+                     action.html_contents.size(), action.title,
+                     std::move(callback)));
+}
+
 }  // namespace
 
 void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
@@ -91,6 +229,10 @@ void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
                  [&](const NewContactAction& action) {
                    OpenInBrowserTab(std::move(delegate), GetContactUrl(action),
                                     std::move(callback));
+                 },
+                 [&](const NewGoogleDocAction& action) {
+                   HandleNewGoogleDocAction(std::move(delegate), action,
+                                            std::move(callback));
                  },
              },
              action);

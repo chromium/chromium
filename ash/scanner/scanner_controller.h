@@ -16,6 +16,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
+namespace drive {
+class DriveServiceInterface;
+}
+
 namespace ash {
 
 class ScannerActionViewModel;
@@ -56,6 +60,7 @@ class ASH_EXPORT ScannerController : public ScannerCommandDelegate {
 
   // ScannerCommandDelegate:
   void OpenUrl(const GURL& url) override;
+  drive::DriveServiceInterface* GetDriveService() override;
 
   bool HasActiveSessionForTesting() const;
 

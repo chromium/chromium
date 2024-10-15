@@ -9,6 +9,10 @@
 
 class GURL;
 
+namespace drive {
+class DriveServiceInterface;
+}
+
 namespace ash {
 
 // Delegate for `HandleScannerAction` to access its dependencies for performing
@@ -19,6 +23,9 @@ class ASH_EXPORT ScannerCommandDelegate {
 
   // Opens the provided URL in the browser.
   virtual void OpenUrl(const GURL& url) = 0;
+
+  // Gets the `DriveServiceInterface` used to upload files.
+  virtual drive::DriveServiceInterface* GetDriveService() = 0;
 };
 
 }  // namespace ash
