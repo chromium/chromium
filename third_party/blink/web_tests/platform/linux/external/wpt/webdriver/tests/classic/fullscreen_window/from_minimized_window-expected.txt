@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_fullscreen_from_minimized_window
+  assert (1600, 1200) == (800, 600)
+Harness: the test ran to completion.

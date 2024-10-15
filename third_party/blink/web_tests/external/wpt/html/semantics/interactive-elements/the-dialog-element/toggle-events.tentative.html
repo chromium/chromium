@@ -257,5 +257,36 @@
       mydialog.close();
       await waitForTick();
     }, `dialog.${methodName}() should coalesce asynchronous toggle events.`);
+
+    promise_test(async (t) => {
+      let attributeChanges = 0;
+      const mo = new MutationObserver((records) => {
+        attributeChanges += records.length;
+      });
+      mo.observe(mydialog, { attributeFilter: ['open'] });
+      t.add_cleanup(() => {
+        mo.disconnect();
+      });
+      mydialog.addEventListener("beforetoggle", () => {
+        mydialog[methodName]();
+      }, { once: true });
+
+      mydialog[methodName]();
+      assert_true(mydialog.open, "Dialog is open");
+      await waitForTick();
+      mo.takeRecords();
+      assert_equals(attributeChanges, 1, "Should have set open once");
+
+      attributeChanges = 0;
+      mydialog.addEventListener("beforetoggle", () => {
+        mydialog.close();
+      }, { once: true });
+
+      mydialog.close();
+      assert_false(mydialog.open, "Dialog is closed");
+      await waitForTick();
+      mo.takeRecords();
+      assert_equals(attributeChanges, 1, "Should have removed open once");
+    }, `dialog.${methodName}() should not double-set open/close if beforetoggle re-opens`);
   });
 </script>

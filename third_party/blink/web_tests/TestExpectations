@@ -2547,6 +2547,9 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/cors-check.https.html [ Crash ]
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Crash ]
 
+# Flaky; random ID dumped into text output
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]
+
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/css/css-ui/outline-auto-width-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-001.html [ Failure ]
@@ -2665,6 +2668,7 @@ crbug.com/369668292 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transit
 crbug.com/369668292 [ Mac15 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369236541 external/wpt/css/css-text-decor/text-underline-position-auto-001.html [ Failure ]
 crbug.com/369236542 [ Mac13-arm64 ] virtual/fsa-incognito/external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html [ Timeout ]
+crbug.com/369270133 [ Mac11 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369270133 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369270133 [ Mac13 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369270133 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
@@ -8198,4 +8202,4 @@ crbug.com/372293920 [ Mac15 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.h
 crbug.com/372293920 [ Mac15-arm64 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass Timeout ]
 
 # Timeout on headless shell, failing on Linux
-crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout Failure Pass ]
+crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Failure Pass Timeout ]

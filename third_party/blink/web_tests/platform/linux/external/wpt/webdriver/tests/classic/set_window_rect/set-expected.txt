@@ -1,6 +1,18 @@
 This is a wdspec test.
 [FAIL] test_restore_from_maximized
   assert not True
+[FAIL] test_x_y_floats
+  AttributeError: module 'mozinfo' has no attribute 'display'
+[FAIL] test_set_to_available_size
+  AttributeError: module 'mozinfo' has no attribute 'display'
 [FAIL] test_set_smaller_than_minimum_browser_size
   assert 10 > 10
+[FAIL] test_x_y
+  AttributeError: module 'mozinfo' has no attribute 'display'
+[FAIL] test_x_as_current
+  AttributeError: module 'mozinfo' has no attribute 'display'
+[FAIL] test_y_as_current
+  AttributeError: module 'mozinfo' has no attribute 'display'
+[FAIL] test_negative_x_y
+  AttributeError: module 'mozinfo' has no attribute 'display'
 Harness: the test ran to completion.

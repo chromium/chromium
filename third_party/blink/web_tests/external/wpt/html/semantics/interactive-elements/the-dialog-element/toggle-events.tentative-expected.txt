@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] dialog.show() should not double-set open/close if beforetoggle re-opens
+  assert_equals: Should have set open once expected 1 but got 2
+[FAIL] dialog.showModal() should fire beforetoggle and toggle events.
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'showModal' on 'HTMLDialogElement': The dialog is already open as a non-modal dialog, and therefore cannot be opened as a modal dialog."
+[FAIL] dialog.showModal() should fire cancelable beforetoggle which does not open dialog if canceled
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'showModal' on 'HTMLDialogElement': The dialog is already open as a non-modal dialog, and therefore cannot be opened as a modal dialog."
+[FAIL] dialog.showModal() should coalesce asynchronous toggle events.
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'showModal' on 'HTMLDialogElement': The dialog is already open as a non-modal dialog, and therefore cannot be opened as a modal dialog."
+[FAIL] dialog.showModal() should not double-set open/close if beforetoggle re-opens
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'showModal' on 'HTMLDialogElement': The dialog is already open as a non-modal dialog, and therefore cannot be opened as a modal dialog."
+Harness: the test ran to completion.
+

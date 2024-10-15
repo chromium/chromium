@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] .test 58
+  assert_equals: \n<div class="test min-height stretch indefinite" data-expected-height="30">X X</div>\nheight expected 30 but got 10
+[FAIL] .test 59
+  assert_equals: \n<div class="test min-height stretch indefinite" data-expected-height="50">XXX XXX</div>\nheight expected 50 but got 10
+[FAIL] .test 60
+  assert_equals: \n<div class="test min-height stretch indefinite" data-expected-height="50">XXXXX XXXXX</div>\nheight expected 50 but got 10
+[FAIL] .test 61
+  assert_equals: \n<div class="test max-height stretch indefinite" data-expected-height="30">X X</div>\nheight expected 30 but got 510
+[FAIL] .test 62
+  assert_equals: \n<div class="test max-height stretch indefinite" data-expected-height="50">XXX XXX</div>\nheight expected 50 but got 510
+[FAIL] .test 63
+  assert_equals: \n<div class="test max-height stretch indefinite" data-expected-height="50">XXXXX XXXXX</div>\nheight expected 50 but got 510
+Harness: the test ran to completion.
+
