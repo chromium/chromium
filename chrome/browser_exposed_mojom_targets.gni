@@ -270,7 +270,6 @@ browser_exposed_mojom_targets = [
   "//skia/public/mojom:mojom",
   "//storage/browser/quota:mojo_bindings",
   "//third_party/blink/public/mojom:android_mojo_bindings",
-  "//third_party/blink/public/mojom:authenticator_test_mojo_bindings",
   "//third_party/blink/public/mojom:color_scheme_mojo_bindings",
   "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings",
   "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",

@@ -184,7 +184,6 @@
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
@@ -938,10 +937,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
       &RenderFrameHostImpl::CreatePaymentCredential, base::Unretained(host)));
-
-  map->Add<blink::test::mojom::VirtualAuthenticatorManager>(
-      base::BindRepeating(&RenderFrameHostImpl::GetVirtualAuthenticatorManager,
-                          base::Unretained(host)));
 
   // BrowserMainLoop::GetInstance() may be null on unit tests.
   if (BrowserMainLoop::GetInstance()) {

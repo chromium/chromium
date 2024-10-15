@@ -125,7 +125,6 @@ CONTENT_EXPORT extern const char kEnableTracingFraction[];
 CONTENT_EXPORT extern const char kEnableUserMediaScreenCapturing[];
 CONTENT_EXPORT extern const char kEnableViewport[];
 CONTENT_EXPORT extern const char kEnableVtune[];
-CONTENT_EXPORT extern const char kEnableWebAuthDeprecatedMojoTestingApi[];
 CONTENT_EXPORT extern const char kEnableWebGLDeveloperExtensions[];
 CONTENT_EXPORT extern const char kEnableWebGLDraftExtensions[];
 CONTENT_EXPORT extern const char kEnableWebGLImageChromium[];

@@ -422,13 +422,6 @@ const char kEnableViewport[]                = "enable-viewport";
 // Enable the Vtune profiler support.
 const char kEnableVtune[]                   = "enable-vtune-support";
 
-// Enable the WebAuthn Mojo Testing API. This is a way to interact with the
-// virtual authenticator environment through a mojo interface and is supported
-// only to run web-platform-tests on content shell.
-// Removal of this deprecated API is blocked on crbug.com/937369.
-const char kEnableWebAuthDeprecatedMojoTestingApi[] =
-    "enable-web-auth-deprecated-mojo-testing-api";
-
 // Enables WebGL developer extensions which are not generally exposed
 // to the web platform.
 const char kEnableWebGLDeveloperExtensions[] =

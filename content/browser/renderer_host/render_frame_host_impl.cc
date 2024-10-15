@@ -13575,25 +13575,6 @@ void RenderFrameHostImpl::GetPushMessaging(
   push_messaging_manager_->AddPushMessagingReceiver(std::move(receiver));
 }
 
-void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-        receiver) {
-#if !BUILDFLAG(IS_ANDROID)
-  // VirtualAuthenticatorManagerImpl is enabled at the frame level. Inactive
-  // document are detached. They don't have a frame anymore, so they can't be
-  // used to enable this test-only feature.
-  if (!IsActive()) {
-    return;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableWebAuthDeprecatedMojoTestingApi)) {
-    CHECK(owner_);
-    owner_->GetVirtualAuthenticatorManager(std::move(receiver));
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
 bool IsInitialSynchronousAboutBlankCommit(const GURL& url,
                                           bool is_initial_empty_document) {
   return url.SchemeIs(url::kAboutScheme) && url != GURL(url::kAboutSrcdocURL) &&

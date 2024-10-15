@@ -300,9 +300,6 @@ void WebTestBrowserMainRunner::Initialize() {
   // Always run with fake digital identity credential UI.
   command_line.AppendSwitch(switches::kUseFakeUIForDigitalIdentity);
 
-  // Enable the deprecated WebAuthn Mojo Testing API.
-  command_line.AppendSwitch(switches::kEnableWebAuthDeprecatedMojoTestingApi);
-
   // Always disable the unsandbox GPU process for DX12 Info collection to avoid
   // interference. This GPU process is launched 120 seconds after chrome starts.
   command_line.AppendSwitch(switches::kDisableGpuProcessForDX12InfoCollection);

@@ -288,7 +288,6 @@ mojom("mojom_platform") {
 
   public_deps = [
     ":android_mojo_bindings",
-    ":authenticator_test_mojo_bindings",
     ":color_scheme_mojo_bindings",
     ":mojom_mhtml_load_result",
     ":script_type_mojo_bindings",
@@ -1914,48 +1913,6 @@ mojom("embedded_frame_sink_mojo_bindings") {
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
-}
-
-# This is a separate target because it needs unscrambled message IDs.
-mojom("authenticator_test_mojo_bindings") {
-  generate_java = true
-  sources = [ "webauthn/virtual_authenticator.mojom" ]
-
-  public_deps = [
-    ":android_mojo_bindings",
-    "//url/mojom:url_mojom_gurl",
-  ]
-
-  export_class_attribute = "BLINK_COMMON_EXPORT"
-  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
-  export_header = "third_party/blink/public/common/common_export.h"
-
-  export_class_attribute_blink = "PLATFORM_EXPORT"
-  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
-
-  # Don't scramble message IDs so they are redistributable to external tests.
-  scramble_message_ids = false
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "blink.test.mojom.ClientToAuthenticatorProtocol"
-          cpp = "::device::ProtocolVersion"
-        },
-        {
-          mojom = "blink.test.mojom.Ctap2Version"
-          cpp = "::device::Ctap2Version"
-        },
-      ]
-      traits_headers =
-          [ "//content/browser/webauth/virtual_authenticator_mojom_traits.h" ]
-      traits_sources =
-          [ "//content/browser/webauth/virtual_authenticator_mojom_traits.cc" ]
-      traits_public_deps = [ "//device/fido" ]
-    },
-  ]
 }
 
 mojom("memory_usage_monitor_linux_mojo_bindings") {

@@ -5041,14 +5041,13 @@ class VirtualAuthenticatorSignalTest : public AuthenticatorImplTest {
     VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
         authenticator_environment->MaybeGetVirtualAuthenticatorManager(
             frame_tree_node);
-    auto virt_auth_options =
-        blink::test::mojom::VirtualAuthenticatorOptions::New();
-    virt_auth_options->protocol = device::ProtocolVersion::kCtap2;
-    virt_auth_options->transport = device::FidoTransportProtocol::kInternal;
-    virt_auth_options->has_resident_key = true;
+    VirtualAuthenticator::Options virt_auth_options;
+    virt_auth_options.protocol = device::ProtocolVersion::kCtap2;
+    virt_auth_options.transport = device::FidoTransportProtocol::kInternal;
+    virt_auth_options.has_resident_key = true;
     authenticator_ =
         virtual_authenticator_manager
-            ->AddAuthenticatorAndReturnNonOwningPointer(*virt_auth_options);
+            ->AddAuthenticatorAndReturnNonOwningPointer(virt_auth_options);
 
     // Make a credential.
     PublicKeyCredentialCreationOptionsPtr options =

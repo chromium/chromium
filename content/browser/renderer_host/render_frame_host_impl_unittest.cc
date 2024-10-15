@@ -43,12 +43,6 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "content/browser/webauth/authenticator_environment.h"
-#include "content/public/common/content_switches.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -1374,59 +1368,6 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
         child_frame->GetStorageKey());
   }
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(RenderFrameHostImplTest, GetVirtualAuthenticatorManagerWhenInactiveRFH) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableWebAuthDeprecatedMojoTestingApi);
-
-  // Enable a back forward cache.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      GetBasicBackForwardCacheFeatureForTesting(),
-      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
-
-  // Create a page with an iframe:
-  contents()->NavigateAndCommit(GURL("https://initial.example.test/"));
-
-  RenderFrameHostImpl* parent_rfh = main_test_rfh();
-  RenderFrameHostImpl* child_rfh = static_cast<RenderFrameHostImpl*>(
-      NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL("https://childframe.com"),
-          RenderFrameHostTester::For(parent_rfh)->AppendChild("child")));
-  EXPECT_TRUE(child_rfh->IsActive());
-
-  // The active child document should enable VirtualAuthenticator.
-  {
-    mojo::Remote<blink::test::mojom::VirtualAuthenticatorManager> remote;
-    child_rfh->GetVirtualAuthenticatorManager(
-        remote.BindNewPipeAndPassReceiver());
-    EXPECT_TRUE(AuthenticatorEnvironment::GetInstance()
-                    ->IsVirtualAuthenticatorEnabledFor(
-                        contents()->GetPrimaryFrameTree().root()->child_at(0)));
-  }
-
-  // Navigate to another page, causing the two RenderFrameHost to become
-  // inactive.
-  RenderFrameDeletedObserver parent_rfh_deleted(parent_rfh);
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL("https://final.example.test/"), contents());
-  navigation->set_drop_unload_ack(true);
-  navigation->Commit();
-  ASSERT_FALSE(parent_rfh_deleted.deleted());
-  EXPECT_FALSE(parent_rfh->IsActive());
-
-  // The inactive document should not enable VirtualAuthenticator.
-  {
-    mojo::Remote<blink::test::mojom::VirtualAuthenticatorManager> remote;
-    child_rfh->GetVirtualAuthenticatorManager(
-        remote.BindNewPipeAndPassReceiver());
-    EXPECT_FALSE(AuthenticatorEnvironment::GetInstance()
-                     ->IsVirtualAuthenticatorEnabledFor(
-                         contents()->GetPrimaryFrameTree().root()));
-  }
-}
-#endif
 
 namespace {
 

@@ -10,15 +10,10 @@
 
 #include "build/build_config.h"
 #include "content/public/browser/frame_type.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
-#endif
 
 class GURL;
 
@@ -131,12 +126,6 @@ class RenderFrameHostOwner {
 
   // Return the iframe.credentialless attribute value.
   virtual bool Credentialless() const = 0;
-
-#if !BUILDFLAG(IS_ANDROID)
-  virtual void GetVirtualAuthenticatorManager(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver) = 0;
-#endif
 
   virtual FrameType GetCurrentFrameType() const = 0;
 };

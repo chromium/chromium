@@ -95,15 +95,6 @@ AuthenticatorEnvironment::MaybeGetVirtualAuthenticatorManager(
   return nullptr;
 }
 
-void AuthenticatorEnvironment::AddVirtualAuthenticatorReceiver(
-    FrameTreeNode* node,
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-        receiver) {
-  auto it = virtual_authenticator_managers_.find(node);
-  CHECK(it != virtual_authenticator_managers_.end(), base::NotFatalUntil::M130);
-  it->second->AddReceiver(std::move(receiver));
-}
-
 bool AuthenticatorEnvironment::HasVirtualUserVerifyingPlatformAuthenticator(
     FrameTreeNode* node) {
   VirtualAuthenticatorManagerImpl* authenticator_manager =

@@ -3351,7 +3351,6 @@ source_set("browser") {
       "webauth/virtual_authenticator.h",
       "webauth/virtual_authenticator_manager_impl.cc",
       "webauth/virtual_authenticator_manager_impl.h",
-      "webauth/virtual_authenticator_mojom_traits.h",
       "webauth/virtual_discovery.cc",
       "webauth/virtual_discovery.h",
       "webauth/virtual_fido_discovery_factory.cc",

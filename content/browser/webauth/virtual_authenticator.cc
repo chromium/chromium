@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/uuid.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -19,8 +20,10 @@
 
 namespace content {
 
-VirtualAuthenticator::VirtualAuthenticator(
-    const blink::test::mojom::VirtualAuthenticatorOptions& options)
+VirtualAuthenticator::Options::Options() = default;
+VirtualAuthenticator::Options::~Options() = default;
+
+VirtualAuthenticator::VirtualAuthenticator(const Options& options)
     : protocol_(options.protocol),
       ctap2_version_(options.ctap2_version),
       attachment_(options.attachment),
@@ -46,11 +49,6 @@ VirtualAuthenticator::~VirtualAuthenticator() {
   for (Observer& observer : observers_) {
     observer.OnAuthenticatorWillBeDestroyed(this);
   }
-}
-
-void VirtualAuthenticator::AddReceiver(
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticator> receiver) {
-  receiver_set_.Add(this, std::move(receiver));
 }
 
 bool VirtualAuthenticator::AddRegistration(
@@ -243,51 +241,6 @@ void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,
       blob, base::BindOnce(&VirtualAuthenticator::OnLargeBlobCompressed,
                            weak_factory_.GetWeakPtr(), key_handle, blob.size(),
                            std::move(callback)));
-}
-
-void VirtualAuthenticator::GetUniqueId(GetUniqueIdCallback callback) {
-  std::move(callback).Run(unique_id_);
-}
-
-void VirtualAuthenticator::GetRegistrations(GetRegistrationsCallback callback) {
-  std::vector<blink::test::mojom::RegisteredKeyPtr> mojo_registered_keys;
-  for (const auto& registration : state_->registrations) {
-    auto mojo_registered_key = blink::test::mojom::RegisteredKey::New();
-    mojo_registered_key->key_handle = registration.first;
-    mojo_registered_key->counter = registration.second.counter;
-    mojo_registered_key->rp_id =
-        registration.second.rp ? registration.second.rp->id : "";
-    mojo_registered_key->private_key =
-        registration.second.private_key->GetPKCS8PrivateKey();
-    mojo_registered_keys.push_back(std::move(mojo_registered_key));
-  }
-  std::move(callback).Run(std::move(mojo_registered_keys));
-}
-
-void VirtualAuthenticator::AddRegistration(
-    blink::test::mojom::RegisteredKeyPtr registration,
-    AddRegistrationCallback callback) {
-  std::move(callback).Run(AddRegistration(
-      std::move(registration->key_handle), std::move(registration->rp_id),
-      registration->private_key, registration->counter));
-}
-
-void VirtualAuthenticator::ClearRegistrations(
-    ClearRegistrationsCallback callback) {
-  ClearRegistrations();
-  std::move(callback).Run();
-}
-
-void VirtualAuthenticator::RemoveRegistration(
-    const std::vector<uint8_t>& key_handle,
-    RemoveRegistrationCallback callback) {
-  std::move(callback).Run(RemoveRegistration(std::move(key_handle)));
-}
-
-void VirtualAuthenticator::SetUserVerified(bool verified,
-                                           SetUserVerifiedCallback callback) {
-  is_user_verified_ = verified;
-  std::move(callback).Run();
 }
 
 void VirtualAuthenticator::OnCredentialCreated(
