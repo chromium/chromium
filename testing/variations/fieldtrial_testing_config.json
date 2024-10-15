@@ -16724,21 +16724,6 @@
             ]
         }
     ],
-    "PasswordMigrationWarningDeprecationStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Deprecation",
-                    "disable_features": [
-                        "UnifiedPasswordManagerLocalPasswordsMigrationWarning"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [

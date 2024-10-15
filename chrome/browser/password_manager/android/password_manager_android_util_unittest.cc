@@ -426,6 +426,10 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SignedOutWithPasswords) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
