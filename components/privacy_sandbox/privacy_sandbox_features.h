@@ -135,10 +135,6 @@ extern const char kPrivacySandboxEnrollmentOverrides[];
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadPreInstalledComponent);
 
-// Enables Privacy Sandbox Proactive Topics Blocking.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
-
 // Enables attribution reporting transitional debug reporting for the cookie
 // deprecation experiment.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
