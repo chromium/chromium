@@ -145,8 +145,6 @@ select::-internal-select-autofill-preview-text {
   white-space: nowrap;
 }
 
-/* TODO(crbug.com/1511354): select::select-fallback-button::after can't be
- * targeted with author styles but it should be and I don't know why. */
 select:not(-internal-list-box):not(:-internal-select-has-child-button)::after {
   /* We don't have to use -internal-appearance-auto-base-select() here because
    * the pseudo-element won't get generated unless the content property is set. */

@@ -251,10 +251,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::FileSelectorButton;
     case kPseudoIdDetailsContent:
       return protocol::DOM::PseudoTypeEnum::DetailsContent;
-    case kPseudoIdSelectFallbackButton:
-      return protocol::DOM::PseudoTypeEnum::SelectFallbackButton;
-    case kPseudoIdSelectFallbackButtonText:
-      return protocol::DOM::PseudoTypeEnum::SelectFallbackButtonText;
     case kPseudoIdPickerSelect:
       return protocol::DOM::PseudoTypeEnum::Picker;
     case kPseudoIdViewTransition:

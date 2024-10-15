@@ -2709,8 +2709,6 @@ domain DOM
       placeholder
       file-selector-button
       details-content
-      select-fallback-button
-      select-fallback-button-text
       picker
 
   # Shadow root type.

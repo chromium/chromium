@@ -104,8 +104,6 @@ enum PseudoId : uint8_t {
   kPseudoIdPlaceholder,
   kPseudoIdFileSelectorButton,
   kPseudoIdDetailsContent,
-  kPseudoIdSelectFallbackButton,
-  kPseudoIdSelectFallbackButtonText,
   kPseudoIdPickerSelect,
   // Special values follow:
   kAfterLastInternalPseudoId,
