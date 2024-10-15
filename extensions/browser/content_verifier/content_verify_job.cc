@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
-#include "build/buildflag.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -26,10 +25,6 @@
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/common/constants.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "extensions/common/extension_features.h"
-#endif
 
 namespace extensions {
 
@@ -138,19 +133,6 @@ void ContentVerifyJob::StartWithContentHash(
       return;
     }
     case ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE: {
-#if BUILDFLAG(IS_MAC)
-      // Skip verification for file paths ending with a separator. Unlike other
-      // platforms, macOS strips the trailing separator when `realpath` is used,
-      // which causes inconsistencies. See https://crbug.com/356878412.
-      // TODO(crbug.com/357636604): Remove after the flag is removed in M132.
-      if (!base::FeatureList::IsEnabled(
-              extensions_features::kMacRejectFilePathsEndingWithSeparator) &&
-          relative_path_.EndsWithSeparator()) {
-        ReportJobFinished(NONE);
-        return;
-      }
-#endif
-
       // Proceed and dispatch failure only if the file exists.
       break;
     }
