@@ -35,9 +35,6 @@ class PLATFORM_EXPORT EnumerationBase {
     return String::Format("IDL enum value \"%s\"", string_literal_);
   }
 
-  // Migration adapter
-  explicit operator String() const { return string_literal_; }
-
   // Returns true if the value is invalid.  The instance in this state must be
   // created only when an exception is thrown.
   bool IsEmpty() const { return !string_literal_; }
