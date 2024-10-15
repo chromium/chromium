@@ -175,6 +175,9 @@ message PageContext {
 
   // The offset of the focused element into the |inner_text|.
   uint64 inner_text_offset = 5;
+
+  // A base64 encoded PNG of the tab screenshot.
+  string tab_screenshot = 6;
 }
 
 message FormData {
@@ -275,6 +278,43 @@ message Tab {
 
   // The page context of the tab.
   PageContext page_context = 4;
+}
+
+// All the information collected from the browser along with the user input
+// (for features like Compose).
+message BrowserCollectedInformation {
+  // The page context of the page the model is acting on.
+  PageContext page_context = 1;
+
+  // The inner text of the page the model is acting on (excluding x-origin
+  // frames)
+  string inner_text = 2;
+
+  // The offset of the focused element into the |inner_text|.
+  uint64 inner_text_offset = 3;
+
+  // Custom text that a prototyper can inject into prompts. If the browser
+  // collected information is not sufficient, an early stage prototype can
+  // build a string in Chrome/colab to be used in the prompt. This allows
+  // separation of prompt definition and call specific data.
+  repeated string custom_data = 4;
+
+  // The form to predict values for. It is expected for the values for each
+  // field to be empty.
+  FormData form_data = 5;
+
+  // The current entries in the user annotations database helpful for filling
+  // out this form.
+  repeated UserAnnotationsEntry entries = 6;
+
+  // The ungrouped tabs that are requested to be organized.
+  repeated Tab tabs = 7;
+
+  // The tab that was active at the time the user requested tab organization.
+  int64 active_tab_id = 8;
+
+  // All pre-existing tab groups.
+  repeated TabGroup pre_existing_tab_groups = 9;
 }
 
 // Selection text affinity, part of the a11y snapshot.

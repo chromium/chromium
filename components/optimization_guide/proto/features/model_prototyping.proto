@@ -25,7 +25,6 @@ message ModelPrototypingLoggingData {
   ModelPrototypingResponse response = 2;
 }
 
-// Next ID: 4
 message ModelPrototypingRequest {
   ModelingInputs modeling_inputs = 1;
 
@@ -39,7 +38,6 @@ message ModelPrototypingRequest {
   // e.g., something like {{index .GetModelResponses 0}}.
   repeated string model_responses = 3;
 
-  // Next ID: 6
   // Defines a single prompt to be sent to the model.
   message PrototypingPrompt {
     // Prompt variables that can be used in the rest of the prompt. These are in
@@ -68,6 +66,9 @@ message ModelPrototypingRequest {
     // Information about the model to use.
     ModelInformation model_information = 5;
 
+    // The image to use in the prompt.
+    string image_template = 6;
+
     message ModelInformation {
       ModelEnum model_enum = 1;
 
@@ -83,46 +84,6 @@ message ModelPrototypingRequest {
     }
   }
 
-  // All the information collected from the browser along with the user input
-  // (for features like Compose).
-  message BrowserCollectedInformation {
-    // The page context of the page the model is acting on.
-    PageContext page_context = 1;
-
-    // TODO(b/361790650): Deprecate these fields in favor of the content in
-    // PageContext.
-    // The inner text of the page the model is acting on (excluding x-origin
-    // frames)
-    string inner_text = 2;
-
-    // The offset of the focused element into the |inner_text|.
-    uint64 inner_text_offset = 3;
-
-    // Custom text that a prototyper can inject into prompts. If the browser
-    // collected information is not sufficient, an early stage prototype can
-    // build a string in Chrome/colab to be used in the prompt. This allows
-    // separation of prompt definition and call specific data.
-    repeated string custom_data = 4;
-
-    // The form to predict values for. It is expected for the values for each
-    // field to be empty.
-    FormData form_data = 5;
-
-    // The current entries in the user annotations database helpful for filling
-    // out this form.
-    repeated UserAnnotationsEntry entries = 6;
-
-    // The ungrouped tabs that are requested to be organized.
-    repeated Tab tabs = 7;
-
-    // The tab that was active at the time the user requested tab organization.
-    int64 active_tab_id = 8;
-
-    // All pre-existing tab groups.
-    repeated TabGroup pre_existing_tab_groups = 9;
-  }
-
-  // Next ID: 3
   // Data specific to the feature.
   message ModelingInputs {
     BrowserCollectedInformation browser_collected_information = 1;
