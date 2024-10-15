@@ -189,7 +189,8 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   auto mapping = fast_ink_host_->client_si_for_test()->Map();
   ASSERT_TRUE(mapping);
   // Pending bitmaps should be correctly copied to the MappableSI's buffer.
-  EXPECT_EQ(*static_cast<SkColor*>(mapping->Memory(0)), SK_ColorGREEN);
+  EXPECT_EQ(*reinterpret_cast<SkColor*>(mapping->GetMemoryForPlane(0).data()),
+            SK_ColorGREEN);
 }
 
 INSTANTIATE_TEST_SUITE_P(
