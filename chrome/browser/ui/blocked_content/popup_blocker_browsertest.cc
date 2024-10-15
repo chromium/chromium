@@ -818,9 +818,15 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
 // triggered from a different WebContents. Regression test for
 // https://crbug.com/1128495
 // Flaky on windows and mac: b/40896665.
-// Flaky on linux Wayland: crbug.com/368578515
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_PopupTriggeredFromDifferentWebContents \
+  DISABLED_PopupTriggeredFromDifferentWebContents
+#else
+#define MAYBE_PopupTriggeredFromDifferentWebContents \
+  PopupTriggeredFromDifferentWebContents
+#endif
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       DISABLED_PopupTriggeredFromDifferentWebContents) {
+                       MAYBE_PopupTriggeredFromDifferentWebContents) {
   const GURL url(
       embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -842,8 +848,19 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   // before we perform the checks further down. Since we have no control over
   // that script we just run some more (that we do control) and wait for it to
   // finish.
-  EXPECT_TRUE(
-      content::ExecJs(tab_2, "", content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  //
+  // crbug.com/368578515: The ExecJs script here runs out of the renderer's
+  // default task queue, which has a different task deferral policy with
+  // DeferRendererTasksAfterInput than the queue that runs the loading script
+  // task we're waiting for. This means the ExecJs task might run before the
+  // loading script task, depending on rendering timing. To get around this, use
+  // a lower priority task queue that has the same task deferral policy.
+  EXPECT_TRUE(content::ExecJs(tab_2, R"(
+    (() => {
+      return scheduler.postTask(() => {}, {priority: 'background'});
+    })();
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
                    tab_1->GetPrimaryMainFrame())
