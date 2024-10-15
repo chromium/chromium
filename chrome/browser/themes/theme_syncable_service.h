@@ -92,6 +92,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
+  void OnBrowserShutdown(syncer::DataType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
@@ -114,10 +115,10 @@ class ThemeSyncableService final : public syncer::SyncableService,
   static bool HasNonDefaultTheme(
       const sync_pb::ThemeSpecifics& theme_specifics);
 
-  // Set theme from theme specifics in |sync_data| if it's different from
-  // |current_specs|. Returns the state of themes after the operation.
+  // Set theme from `new_specs` if it's different from `current_specs`. Returns
+  // the state of themes after the operation.
   ThemeSyncState MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
-                               const syncer::SyncData& sync_data);
+                               const sync_pb::ThemeSpecifics& new_specs);
 
   // Returns a ThemeSpecifics based on the currently applied theme.
   sync_pb::ThemeSpecifics GetThemeSpecificsFromCurrentTheme() const;
