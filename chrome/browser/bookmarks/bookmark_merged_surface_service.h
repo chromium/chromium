@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_
 #define CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
