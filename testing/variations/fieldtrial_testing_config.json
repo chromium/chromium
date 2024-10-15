@@ -3287,15 +3287,6 @@
                     "enable_features": [
                         "BirchWeather"
                     ]
-                },
-                {
-                    "name": "EnabledWithWeatherAlphaEndpoint",
-                    "params": {
-                        "prod_weather_endpoint": "false"
-                    },
-                    "enable_features": [
-                        "BirchWeather"
-                    ]
                 }
             ]
         }
