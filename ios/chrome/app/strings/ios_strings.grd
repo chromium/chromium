@@ -2801,8 +2801,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_ADDRESSES" desc="Label for the addresses icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
         Addresses
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_CREDIT_CARDS" desc="Label for the credit cards icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
-        Credit cards
+      <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_PAYMENT_METHODS" desc="Label for the payment methods icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
+        Payment methods
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_KEYBOARD" desc="Label for the keyboard icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'button' when this button is focused.">
         Keyboard

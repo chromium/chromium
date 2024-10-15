@@ -246,15 +246,15 @@ std::u16string GetCounterTextFromResult(
     const AutofillCounter::AutofillResult* autofill_result =
         static_cast<const AutofillCounter::AutofillResult*>(result);
     AutofillCounter::ResultInt num_suggestions = autofill_result->Value();
-    AutofillCounter::ResultInt num_credit_cards =
+    AutofillCounter::ResultInt num_payment_methods =
         autofill_result->num_credit_cards();
     AutofillCounter::ResultInt num_addresses = autofill_result->num_addresses();
 
     std::vector<std::u16string> displayed_strings;
 
-    if (num_credit_cards) {
+    if (num_payment_methods) {
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-          IDS_DEL_AUTOFILL_COUNTER_CREDIT_CARDS, num_credit_cards));
+          IDS_DEL_AUTOFILL_COUNTER_PAYMENT_METHODS, num_payment_methods));
     }
     if (num_addresses) {
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
@@ -283,30 +283,31 @@ std::u16string GetCounterTextFromResult(
 
     bool synced = autofill_result->is_sync_enabled();
 
-    // TODO(crbug.com/371539581): Exclude credit cards from this part, because
-    // it can be attributed as "synced", while credit cards are always local.
-    std::u16string credit_cards_addresses_autocomplete_entries_part;
+    // TODO(crbug.com/371539581): Exclude payment methods from this part,
+    // because it can be attributed as "synced", while payment methods are
+    // always local.
+    std::u16string payment_methods_addresses_autocomplete_entries_part;
     switch (displayed_strings.size()) {
       case 0:
-        credit_cards_addresses_autocomplete_entries_part =
+        payment_methods_addresses_autocomplete_entries_part =
             l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
         break;
       case 1:
-        credit_cards_addresses_autocomplete_entries_part =
+        payment_methods_addresses_autocomplete_entries_part =
             synced ? l10n_util::GetStringFUTF16(
                          IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
                          displayed_strings[0])
                    : displayed_strings[0];
         break;
       case 2:
-        credit_cards_addresses_autocomplete_entries_part =
+        payment_methods_addresses_autocomplete_entries_part =
             l10n_util::GetStringFUTF16(
                 synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
                        : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
                 displayed_strings[0], displayed_strings[1]);
         break;
       case 3:
-        credit_cards_addresses_autocomplete_entries_part =
+        payment_methods_addresses_autocomplete_entries_part =
             l10n_util::GetStringFUTF16(
                 synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
                        : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
@@ -322,12 +323,12 @@ std::u16string GetCounterTextFromResult(
     if (num_user_annotations) {
       return l10n_util::GetStringFUTF16(
           IDS_DEL_AUTOFILL_SYNCABLE_NON_SYNCABLE_COMBINATION,
-          credit_cards_addresses_autocomplete_entries_part,
+          payment_methods_addresses_autocomplete_entries_part,
           l10n_util::GetPluralStringFUTF16(
               IDS_DEL_AUTOFILL_COUNTER_USER_ANNOTATION_ENTRIES,
               num_user_annotations));
     } else {
-      return credit_cards_addresses_autocomplete_entries_part;
+      return payment_methods_addresses_autocomplete_entries_part;
     }
   }
 

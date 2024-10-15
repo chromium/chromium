@@ -17,8 +17,8 @@
     </message>
   </if>
 
-  <message name="IDS_AUTOFILL_WARNING_INSECURE_CONNECTION" desc="Warning text to show when credit card autofill is disabled because the website is not using a secure connection.">
-    Automatic credit card filling is disabled because this form does not use a secure connection.
+  <message name="IDS_AUTOFILL_WARNING_INSECURE_CONNECTION" desc="Warning text to show when payments autofill is disabled because the website is not using a secure connection.">
+    Automatic payment methods filling is disabled because this form does not use a secure connection.
   </message>
   <message name="IDS_AUTOFILL_WARNING_MIXED_FORM" desc="Warning text shown when autofill is disabled due to a form on a secure site being submitted over an insecure connection.">
     This form is not secure. Autofill has been turned off.

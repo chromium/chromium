@@ -79,21 +79,21 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
   } kTestCases[] = {
       {0, 0, 0, 0, false, "None"},
       {0, 0, 0, 0, true, "None"},
-      {1, 0, 0, 0, false, "1 credit card"},
+      {1, 0, 0, 0, false, "1 payment method"},
       {0, 5, 0, 0, false, "5 addresses"},
       {0, 0, 1, 0, false, "1 suggestion"},
       {0, 0, 2, 0, false, "2 suggestions"},
       {0, 0, 2, 0, true, "2 suggestions (synced)"},
-      {4, 7, 0, 0, false, "4 credit cards, 7 addresses"},
-      {4, 7, 0, 0, true, "4 credit cards, 7 addresses (synced)"},
-      {3, 0, 9, 0, false, "3 credit cards, 9 other suggestions"},
+      {4, 7, 0, 0, false, "4 payment methods, 7 addresses"},
+      {4, 7, 0, 0, true, "4 payment methods, 7 addresses (synced)"},
+      {3, 0, 9, 0, false, "3 payment methods, 9 other suggestions"},
       {0, 1, 1, 0, false, "1 address, 1 other suggestion"},
-      {9, 6, 3, 0, false, "9 credit cards, 6 addresses, 3 others"},
-      {4, 2, 1, 0, false, "4 credit cards, 2 addresses, 1 other"},
-      {4, 2, 1, 0, true, "4 credit cards, 2 addresses, 1 other (synced)"},
-      {1, 0, 0, 1, false, "1 credit card; 1 suggestion (device only)"},
+      {9, 6, 3, 0, false, "9 payment methods, 6 addresses, 3 others"},
+      {4, 2, 1, 0, false, "4 payment methods, 2 addresses, 1 other"},
+      {4, 2, 1, 0, true, "4 payment methods, 2 addresses, 1 other (synced)"},
+      {1, 0, 0, 1, false, "1 payment method; 1 suggestion (device only)"},
       {1, 1, 0, 2, true,
-       "1 credit card, 1 address (synced); 2 suggestions (device only)"},
+       "1 payment method, 1 address (synced); 2 suggestions (device only)"},
   };
 
   for (const TestCase& test_case : kTestCases) {
@@ -103,7 +103,7 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
         test_case.sync_enabled);
 
     SCOPED_TRACE(
-        base::StringPrintf("Test params: %d credit card(s), "
+        base::StringPrintf("Test params: %d payment method(s), "
                            "%d address(es), %d suggestion(s).",
                            test_case.num_credit_cards, test_case.num_addresses,
                            test_case.num_suggestions));
