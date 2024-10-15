@@ -6,36 +6,25 @@
 #define ASH_SCANNER_SCANNER_CONTROLLER_H_
 
 #include <memory>
-#include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_session.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
-namespace drive {
-class DriveServiceInterface;
-}
-
 namespace ash {
 
-class ScannerActionViewModel;
 class ScannerDelegate;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
-class ASH_EXPORT ScannerController : public ScannerCommandDelegate {
+class ASH_EXPORT ScannerController {
  public:
-  using FetchActionsCallback =
-      base::OnceCallback<void(std::vector<ScannerActionViewModel> actions)>;
-
   explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
-  ~ScannerController() override;
+  ~ScannerController();
 
   static bool IsEnabled();
 
@@ -51,17 +40,12 @@ class ASH_EXPORT ScannerController : public ScannerCommandDelegate {
   // returned via `callback`. If no session is active, then `callback` will be
   // run with an empty list of actions.
   void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-                            FetchActionsCallback callback);
+                            ScannerSession::FetchActionsCallback callback);
 
   // Should be called when the user has finished interacting with a Scanner
   // session. This will trigger relevant cleanup and eventually destroy the
   // scanner session.
   void OnSessionUIClosed();
-
-  // ScannerCommandDelegate:
-  void OpenUrl(const GURL& url) override;
-  drive::DriveServiceInterface* GetDriveService() override;
-  void SetClipboard(std::unique_ptr<ui::ClipboardData> data) override;
 
   bool HasActiveSessionForTesting() const;
 

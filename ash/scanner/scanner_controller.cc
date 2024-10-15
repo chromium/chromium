@@ -9,39 +9,16 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
-#include "ash/scanner/scanner_action_view_model.h"
-#include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_session.h"
-#include "base/check_deref.h"
-#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_non_backed.h"
-#include "url/gurl.h"
 
 namespace ash {
 
 namespace {
-
-void OnActionsFetched(base::WeakPtr<ScannerCommandDelegate> delegate,
-                      ScannerController::FetchActionsCallback callback,
-                      std::vector<ScannerAction> actions) {
-  std::vector<ScannerActionViewModel> action_view_models;
-
-  action_view_models.reserve(actions.size());
-  for (ScannerAction& action : actions) {
-    action_view_models.emplace_back(std::move(action), delegate);
-  }
-
-  std::move(callback).Run(std::move(action_view_models));
-}
 
 }  // namespace
 
@@ -68,43 +45,16 @@ ScannerSession* ScannerController::StartNewSession() {
 
 void ScannerController::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-    ScannerController::FetchActionsCallback callback) {
+    ScannerSession::FetchActionsCallback callback) {
   if (!scanner_session_) {
     std::move(callback).Run({});
     return;
   }
-  scanner_session_->FetchActionsForImage(
-      jpeg_bytes,
-      base::BindOnce(&OnActionsFetched, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+  scanner_session_->FetchActionsForImage(jpeg_bytes, std::move(callback));
 }
 
 void ScannerController::OnSessionUIClosed() {
   scanner_session_ = nullptr;
-}
-
-void ScannerController::OpenUrl(const GURL& url) {
-  NewWindowDelegate::GetInstance()->OpenUrl(
-      url, NewWindowDelegate::OpenUrlFrom::kUnspecified,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
-drive::DriveServiceInterface* ScannerController::GetDriveService() {
-  ScannerProfileScopedDelegate* profile_scoped_delegate =
-      delegate_->GetProfileScopedDelegate();
-
-  if (profile_scoped_delegate == nullptr) {
-    return nullptr;
-  }
-
-  return profile_scoped_delegate->GetDriveService();
-}
-
-void ScannerController::SetClipboard(std::unique_ptr<ui::ClipboardData> data) {
-  CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
-      .WriteClipboardData(std::move(data));
-
-  // TODO: b/367871707 - Display a toast / notification if necessary.
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {
