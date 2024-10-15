@@ -103,13 +103,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Header) {
   RunTest("commerce/product_specifications/header_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/370252258): Flaky on win11-arm64-rel-tests.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HorizontalCarousel DISABLED_HorizontalCarousel
-#else
-#define MAYBE_HorizontalCarousel HorizontalCarousel
-#endif
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, MAYBE_HorizontalCarousel) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, HorizontalCarousel) {
   RunTest("commerce/product_specifications/horizontal_carousel_test.js",
           "mocha.run()");
 }

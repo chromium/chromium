@@ -6,11 +6,14 @@ import 'chrome://compare/horizontal_carousel.js';
 import 'chrome://compare/table.js';
 
 import type {TableColumn} from 'chrome://compare/app.js';
+import type {HorizontalCarouselElement} from 'chrome://compare/horizontal_carousel.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('HorizontalCarouselTest', () => {
+  let carouselElement: HorizontalCarouselElement;
+
   async function setupColumns({numColumns}: {numColumns: number}) {
     const tableElement =
         document.body.querySelector('product-specifications-table');
@@ -28,8 +31,7 @@ suite('HorizontalCarouselTest', () => {
         productDetails: [],
       });
     }
-    const carouselElement = document.body.querySelector('horizontal-carousel')!;
-    carouselElement.style.maxWidth = '1140px';
+    carouselElement = document.body.querySelector('horizontal-carousel')!;
     const eventPromise =
         eventToPromise('intersection-observed', carouselElement);
     tableElement.columns = columns;
@@ -55,21 +57,31 @@ suite('HorizontalCarouselTest', () => {
             'px', ''));
   }
 
+  async function resizeCarousel(heightPx: number): Promise<void> {
+    // A ResizeObserver is used to ensure the ResizeObserver callback that
+    // adjusts the buttons' positions has completed.
+    return new Promise<void>(resolve => {
+      const observer = new ResizeObserver(() => {
+        resolve();
+        observer.unobserve(carouselElement.$.carouselContainer);
+      });
+      observer.observe(carouselElement.$.carouselContainer);
+      carouselElement.style.height = `${heightPx}px`;
+    });
+  }
+
   setup(() => {
     document.body.innerHTML = getTrustedHTML`
             <horizontal-carousel>
               <product-specifications-table slot="table">
               </product-specifications-table>
             </horizontal-carousel>`;
+    document.body.style.width = '1140px';
   });
 
   [1, 4, 5, 10].forEach(numColumns => {
     test(
         `buttons render correctly for ${numColumns} columns`, async () => {
-          // Arrange.
-          const carouselElement =
-              document.body.querySelector('horizontal-carousel')!;
-
           // Act.
           await setupColumns({numColumns: numColumns});
 
@@ -86,7 +98,6 @@ suite('HorizontalCarouselTest', () => {
   test('clicking forward button surfaces back button', async () => {
     // Arrange.
     await setupColumns({numColumns: 6});
-    const carouselElement = document.body.querySelector('horizontal-carousel')!;
     assertTrue(isVisible(carouselElement.$.forwardButton));
     assertFalse(isVisible(carouselElement.$.backButton));
 
@@ -104,7 +115,6 @@ suite('HorizontalCarouselTest', () => {
   test('clicking back button resurfaces forward button', async () => {
     // Arrange.
     await setupColumns({numColumns: 6});
-    const carouselElement = document.body.querySelector('horizontal-carousel')!;
     assertTrue(isVisible(carouselElement.$.forwardButton));
 
     // Scroll to the end of the carousel, to ensure the back button has
@@ -132,7 +142,6 @@ suite('HorizontalCarouselTest', () => {
   test('focusing on carousel item scrolls item into view', async () => {
     // Arrange.
     await setupColumns({numColumns: 6});
-    const carouselElement = document.body.querySelector('horizontal-carousel')!;
     assertTrue(isVisible(carouselElement.$.forwardButton));
     const tableElement =
         document.body.querySelector('product-specifications-table')!;
@@ -190,13 +199,11 @@ suite('HorizontalCarouselTest', () => {
           ' is smaller than the viewport height',
       async () => {
         await setupColumns({numColumns: 6});
-        const carouselElement =
-            document.body.querySelector('horizontal-carousel')!;
         const carouselContainer = carouselElement.$.carouselContainer;
 
         // Force the carousel container to be smaller than the viewport.
         document.body.style.height = '500px';
-        carouselElement.style.height = '200px';
+        await resizeCarousel(200);
 
         // Back and forward buttons should lie within carousel container.
         const backButtonTopPx =
@@ -219,13 +226,11 @@ suite('HorizontalCarouselTest', () => {
           ' is larger than the viewport height',
       async () => {
         await setupColumns({numColumns: 6});
-        const carouselElement =
-            document.body.querySelector('horizontal-carousel')!;
         const carouselContainer = carouselElement.$.carouselContainer;
 
         // Force the carousel container to be much larger than the viewport.
         document.body.style.height = '200px';
-        carouselElement.style.height = '1000px';
+        await resizeCarousel(1000);
 
         // Back and forward buttons should lie within carousel container and
         // the viewport.
