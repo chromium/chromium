@@ -59,10 +59,30 @@ struct ASH_PUBLIC_EXPORT NewGoogleDocAction {
   ~NewGoogleDocAction();
 };
 
+// Creates a new Google Sheet with the given title and contents, then opens the
+// browser to that new Google Sheet.
+struct ASH_PUBLIC_EXPORT NewGoogleSheetAction {
+  std::string title;
+  // The contents of the spreadsheet as a string representing CSV. This will be
+  // converted to a Google Sheet upon upload.
+  // TODO: b/367872031 - Consider using the protobuf type directly to avoid a
+  // large string copy.
+  std::string csv_contents;
+
+  NewGoogleSheetAction(std::string title, std::string csv_contents);
+
+  NewGoogleSheetAction(const NewGoogleSheetAction&);
+  NewGoogleSheetAction& operator=(const NewGoogleSheetAction&);
+
+  ~NewGoogleSheetAction();
+};
+
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
-using ScannerAction =
-    std::variant<NewCalendarEventAction, NewContactAction, NewGoogleDocAction>;
+using ScannerAction = std::variant<NewCalendarEventAction,
+                                   NewContactAction,
+                                   NewGoogleDocAction,
+                                   NewGoogleSheetAction>;
 
 // Holds the response returned from the Scanner service. This may be a list of
 // 0 or more actions, or an error state.

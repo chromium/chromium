@@ -35,4 +35,14 @@ NewGoogleDocAction& NewGoogleDocAction::operator=(const NewGoogleDocAction&) =
     default;
 NewGoogleDocAction::~NewGoogleDocAction() = default;
 
+NewGoogleSheetAction::NewGoogleSheetAction(std::string title,
+                                           std::string csv_contents)
+    : title(std::move(title)), csv_contents(std::move(csv_contents)) {}
+
+NewGoogleSheetAction::NewGoogleSheetAction(const NewGoogleSheetAction&) =
+    default;
+NewGoogleSheetAction& NewGoogleSheetAction::operator=(
+    const NewGoogleSheetAction&) = default;
+NewGoogleSheetAction::~NewGoogleSheetAction() = default;
+
 }  // namespace ash

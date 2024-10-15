@@ -235,5 +235,95 @@ TEST(ScannerActionHandlerTest,
                            drive_service.GetRootResourceId())))))))));
 }
 
+TEST(ScannerActionHandlerTest,
+     NewGoogleSheetActionWithoutDelegateReturnsFalse) {
+  base::test::TaskEnvironment task_environment;
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(nullptr, NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
+                      done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest,
+     NewGoogleSheetActionHandlesDelayedDelegateDeletion) {
+  base::test::TaskEnvironment task_environment;
+
+  base::test::TestFuture<bool> done_future;
+  {
+    TestScannerCommandDelegate delegate;
+    EXPECT_CALL(delegate, GetDriveService).Times(0);
+    HandleScannerAction(delegate.GetWeakPtr(),
+                        NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
+                        done_future.GetCallback());
+    // `delegate` is deleted here, invalidating weak pointers.
+  }
+  ASSERT_FALSE(done_future.IsReady());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest, NewGoogleSheetActionOpensAlternateLink) {
+  base::test::TaskEnvironment task_environment;
+  drive::FakeDriveService drive_service;
+
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(delegate, GetDriveService).WillRepeatedly(Return(&drive_service));
+  // `drive::FakeDriveService` doesn't have a special alternate link for Sheets
+  // files.
+  EXPECT_CALL(delegate,
+              OpenUrl(GURL("https://file_alternate_link/Sheet%20Title")))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(delegate.GetWeakPtr(),
+                      NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
+                      done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest,
+     NewGoogleSheetActionCreatesFileWithTitleAndMimeTypeInRoot) {
+  base::test::TaskEnvironment task_environment;
+  drive::FakeDriveService drive_service;
+
+  {
+    TestScannerCommandDelegate delegate;
+    EXPECT_CALL(delegate, GetDriveService)
+        .WillRepeatedly(Return(&drive_service));
+    EXPECT_CALL(delegate, OpenUrl).Times(1);
+
+    base::test::TestFuture<bool> done_future;
+    HandleScannerAction(delegate.GetWeakPtr(),
+                        NewGoogleSheetAction("Sheet Title", "a,b\n1,2"),
+                        done_future.GetCallback());
+
+    ASSERT_TRUE(done_future.Get());
+  }
+
+  base::test::TestFuture<google_apis::ApiErrorCode,
+                         std::unique_ptr<google_apis::FileList>>
+      file_list_future;
+  drive_service.SearchByTitle("Sheet Title", drive_service.GetRootResourceId(),
+                              file_list_future.GetCallback());
+  auto [error, file_list] = file_list_future.Take();
+  EXPECT_EQ(error, google_apis::ApiErrorCode::HTTP_SUCCESS);
+  EXPECT_THAT(
+      file_list,
+      Pointee(Property(
+          "items", &google_apis::FileList::items,
+          ElementsAre(Pointee(AllOf(
+              Property("title", &google_apis::FileResource::title,
+                       "Sheet Title"),
+              Property("mime_type", &google_apis::FileResource::mime_type,
+                       drive::util::kGoogleSpreadsheetMimeType),
+              Property("parents", &google_apis::FileResource::parents,
+                       ElementsAre(Property(
+                           "file_id", &google_apis::ParentReference::file_id,
+                           drive_service.GetRootResourceId())))))))));
+}
+
 }  // namespace
 }  // namespace ash

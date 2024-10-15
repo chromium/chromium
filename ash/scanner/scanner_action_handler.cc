@@ -215,6 +215,24 @@ void HandleNewGoogleDocAction(base::WeakPtr<ScannerCommandDelegate> delegate,
                      std::move(callback)));
 }
 
+void HandleNewGoogleSheetAction(base::WeakPtr<ScannerCommandDelegate> delegate,
+                                const NewGoogleSheetAction& action,
+                                ScannerCommandCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      // This causes an expensive copy of the file contents because
+      // `action` is a const ref (and could dangle before the callback
+      // is called).
+      // TODO: b/367872031 - Determine whether we can avoid this copy.
+      base::BindOnce(&CreateTempFileWithContents, action.csv_contents),
+      base::BindOnce(&UploadTempFileToDrive, std::move(delegate),
+                     /*contents_mime_type=*/"text/csv",
+                     /*converted_mime_type=*/
+                     drive::util::kGoogleSpreadsheetMimeType,
+                     action.csv_contents.size(), action.title,
+                     std::move(callback)));
+}
+
 }  // namespace
 
 void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
@@ -233,6 +251,10 @@ void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
                  [&](const NewGoogleDocAction& action) {
                    HandleNewGoogleDocAction(std::move(delegate), action,
                                             std::move(callback));
+                 },
+                 [&](const NewGoogleSheetAction& action) {
+                   HandleNewGoogleSheetAction(std::move(delegate), action,
+                                              std::move(callback));
                  },
              },
              action);
