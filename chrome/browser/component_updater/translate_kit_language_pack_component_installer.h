@@ -74,6 +74,7 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
     PrefService* pref_service);
 
 void UninstallTranslateKitLanguagePackComponent(
+    ComponentUpdateService* cus,
     PrefService* pref_service,
     on_device_translation::LanguagePackKey language_pack_key);
 

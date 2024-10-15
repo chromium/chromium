@@ -180,6 +180,7 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
 }
 
 void UninstallTranslateKitLanguagePackComponent(
+    ComponentUpdateService* cus,
     PrefService* pref_service,
     LanguagePackKey language_pack_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -191,10 +192,9 @@ void UninstallTranslateKitLanguagePackComponent(
   pref_service->SetFilePath(
       on_device_translation::GetComponentPathPrefName(*config),
       base::FilePath());
-  base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<TranslateKitLanguagePackComponentInstallerPolicy>(
-          pref_service, language_pack_key))
-      ->Uninstall();
+  cus->UnregisterComponent(crx_file::id_util::GenerateIdFromHash(
+      on_device_translation::GetLanguagePackComponentConfig(language_pack_key)
+          .public_key_sha));
 }
 
 }  // namespace component_updater
