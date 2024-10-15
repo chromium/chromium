@@ -1115,6 +1115,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME},
       {"faceGazeCursorSettingsReset",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET},
+      {"faceGazeCursorSettingsResetNotification",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET_NOTIFICATION},
       {"faceGazeCursorVelocityThresholdSliderPrimaryLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_PRIMARY_LABEL},
       {"faceGazeCursorVelocityThresholdSliderSecondaryLabel",

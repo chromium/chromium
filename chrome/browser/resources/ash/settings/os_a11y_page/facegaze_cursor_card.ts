@@ -84,6 +84,14 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
         type: Object,
         value: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
       },
+
+      shouldAnnounceA11yCursorSettingsReset_: {
+        type: Boolean,
+      },
+
+      resetAlert_: {
+        type: String,
+      },
     };
   }
 
@@ -97,6 +105,8 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
 
   private syntheticCombinedCursorSpeedPref_:
       chrome.settingsPrivate.PrefObject<number>;
+  private shouldAnnounceA11yCursorSettingsReset_ = false;
+  private resetAlert_ = '';
 
   constructor() {
     super();
@@ -145,6 +155,13 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
     this.setPrefValue('settings.a11y.face_gaze.cursor_speed_right', speed);
   }
 
+  private onFaceGazeCursorResetButtonFocus_(): void {
+    // Reset the aria label to handle when the user navigates to the reset
+    // button control after resetting the settings.
+    this.resetAlert_ = '';
+    this.shouldAnnounceA11yCursorSettingsReset_ = false;
+  }
+
   private onFaceGazeCursorResetButtonClick_(): void {
     this.setPrefValue('settings.a11y.face_gaze.adjust_speed_separately', false);
     this.setCombinedCursorSpeed_();
@@ -154,6 +171,8 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
     this.setPrefValue(
         'settings.a11y.face_gaze.velocity_threshold',
         loadTimeData.getInteger('defaultFaceGazeVelocityThreshold'));
+    this.resetAlert_ = this.i18n('faceGazeCursorSettingsResetNotification');
+    this.shouldAnnounceA11yCursorSettingsReset_ = true;
   }
 }
 

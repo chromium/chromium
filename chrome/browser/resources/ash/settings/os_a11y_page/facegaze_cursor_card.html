@@ -11,6 +11,16 @@
     min-height: 44px;
   }
 
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
@@ -140,9 +150,16 @@
       pref="{{prefs.settings.a11y.face_gaze.cursor_use_acceleration}}">
   </settings-toggle-button>
   <div class="settings-box">
+    <template is="dom-if" if="[[shouldAnnounceA11yCursorSettingsReset_]]"
+        restamp>
+      <span id="cursorSettingsResetAlert" role="alert" class="visually-hidden">
+        [[resetAlert_]]
+      </span>
+    </template>
     <cr-button
         id="cursorResetButton"
         class="button"
+        on-focus="onFaceGazeCursorResetButtonFocus_"
         on-click="onFaceGazeCursorResetButtonClick_">
       $i18n{faceGazeCursorSettingsReset}
     </cr-button>

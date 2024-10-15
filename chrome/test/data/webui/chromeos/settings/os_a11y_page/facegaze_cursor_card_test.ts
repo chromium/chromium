@@ -51,6 +51,11 @@ suite('<facegaze-cursor-card>', () => {
     await flushTasks();
   }
 
+  function getResetAlert(): HTMLSpanElement|null {
+    return faceGazeCursorCard.shadowRoot!.querySelector<HTMLSpanElement>(
+        '#cursorSettingsResetAlert');
+  }
+
   setup(() => {
     clearBody();
     Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_SETTINGS);
@@ -334,6 +339,32 @@ suite('<facegaze-cursor-card>', () => {
         assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
         assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
       });
+
+  test('reset alert updates appropriately', async () => {
+    await initPage();
+
+    const button =
+        faceGazeCursorCard.shadowRoot!.querySelector<CrButtonElement>(
+            '#cursorResetButton');
+    assertTrue(!!button);
+    assertFalse(button.disabled);
+
+    let alert = getResetAlert();
+    assertFalse(!!alert);
+
+    button.click();
+    flush();
+
+    alert = getResetAlert();
+    assertTrue(!!alert);
+    assertEquals(alert!.innerText, 'Cursor settings reset');
+
+    button.focus();
+    flush();
+
+    alert = getResetAlert();
+    assertFalse(!!alert);
+  });
 
   test('reset button resets to defaults', async () => {
     await initPage();

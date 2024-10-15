@@ -1550,6 +1550,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET" desc="Label for the 'reset' button in FaceGaze cursor settings, that brings cursor settings back to default.">
     Reset
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET_NOTIFICATION" desc="Spoken feedback to notify the user when the reset button has been clicked in the FaceGaze cursor settings and the cursor settings have been set back to default." is_accessibility_with_no_ui="true">
+    Cursor settings reset
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_PRIMARY_LABEL" desc="Label for the slider on the FaceGaze cursor settings page that adjusts the velocity threshold.">
     Cursor stability
   </message>
