@@ -21,6 +21,7 @@
 #include "google_apis/drive/drive_api_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -38,6 +39,10 @@ class TestScannerCommandDelegate : public ScannerCommandDelegate {
  public:
   MOCK_METHOD(void, OpenUrl, (const GURL& url), (override));
   MOCK_METHOD(drive::DriveServiceInterface*, GetDriveService, (), (override));
+  MOCK_METHOD(void,
+              SetClipboard,
+              (std::unique_ptr<ui::ClipboardData> data),
+              (override));
 
   base::WeakPtr<TestScannerCommandDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -124,6 +129,14 @@ TEST(ScannerActionToCommandTest, NewGoogleSheet) {
           "Sheet Title", "a,b\n1,2",
           /*contents_mime_type=*/"text/csv",
           /*converted_mime_type=*/drive::util::kGoogleSpreadsheetMimeType)));
+}
+
+TEST(ScannerActionToCommandTest, CopyToClipboard) {
+  ScannerCommand command =
+      ScannerActionToCommand(CopyToClipboardAction("Hello", "<b>Hello</b>"));
+
+  EXPECT_THAT(command, VariantWith<CopyToClipboardAction>(
+                           FieldsAre("Hello", "<b>Hello</b>")));
 }
 
 TEST(ScannerActionHandlerTest, HandlesOpenUrlCommandWithoutDelegate) {
@@ -250,6 +263,77 @@ TEST(ScannerActionHandlerTest,
                        ElementsAre(Property(
                            "file_id", &google_apis::ParentReference::file_id,
                            drive_service.GetRootResourceId())))))))));
+}
+
+TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionWithoutDelegate) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(nullptr, CopyToClipboardAction("Hello", "<b>Hello</b>"),
+                       done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionOnlyPlainText) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      SetClipboard(Pointee(
+          AllOf(Property("format", &ui::ClipboardData::format,
+                         static_cast<int>(ui::ClipboardInternalFormat::kText)),
+                Property("text", &ui::ClipboardData::text, "Hello")))))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CopyToClipboardAction("Hello", /*html_text=*/""),
+                       done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionOnlyHtmlText) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      SetClipboard(Pointee(
+          AllOf(Property("format", &ui::ClipboardData::format,
+                         static_cast<int>(ui::ClipboardInternalFormat::kHtml)),
+                Property("markup_data", &ui::ClipboardData::markup_data,
+                         "<img />")))))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CopyToClipboardAction(/*plain_text=*/"", "<img />"),
+                       done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+}
+
+TEST(ScannerActionHandlerTest, HandlesCopyToClipboardActionAllSet) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(
+      delegate,
+      SetClipboard(Pointee(AllOf(
+          Property("format", &ui::ClipboardData::format,
+                   static_cast<int>(ui::ClipboardInternalFormat::kText) |
+                       static_cast<int>(ui::ClipboardInternalFormat::kHtml)),
+          Property("text", &ui::ClipboardData::text, "Hello"),
+          Property("markup_data", &ui::ClipboardData::markup_data,
+                   "<b>Hello</b>")))))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CopyToClipboardAction("Hello", "<b>Hello</b>"),
+                       done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
 }
 
 }  // namespace

@@ -77,12 +77,35 @@ struct ASH_PUBLIC_EXPORT NewGoogleSheetAction {
   ~NewGoogleSheetAction();
 };
 
+struct ASH_PUBLIC_EXPORT CopyToClipboardAction {
+  // The `text/plain` data to put on the clipboard.
+  // The empty string is a SENTINEL VALUE which represents that no plain text
+  // was provided, for example, if it is intended for an image to be put on the
+  // clipboard.
+  // All readers of this must explicitly handle the sentinel value.
+  std::string plain_text;
+
+  // The `text/html` data to put on the clipboard.
+  // The empty string is a SENTINEL VALUE which represents that no rich text
+  // was provided.
+  // All readers of this must explicitly handle the sentinel value.
+  std::string html_text;
+
+  CopyToClipboardAction(std::string plain_text, std::string html_text);
+
+  CopyToClipboardAction(const CopyToClipboardAction&);
+  CopyToClipboardAction& operator=(const CopyToClipboardAction&);
+
+  ~CopyToClipboardAction();
+};
+
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
 using ScannerAction = std::variant<NewCalendarEventAction,
                                    NewContactAction,
                                    NewGoogleDocAction,
-                                   NewGoogleSheetAction>;
+                                   NewGoogleSheetAction,
+                                   CopyToClipboardAction>;
 
 // Holds the response returned from the Scanner service. This may be a list of
 // 0 or more actions, or an error state.

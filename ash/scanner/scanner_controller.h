@@ -61,6 +61,7 @@ class ASH_EXPORT ScannerController : public ScannerCommandDelegate {
   // ScannerCommandDelegate:
   void OpenUrl(const GURL& url) override;
   drive::DriveServiceInterface* GetDriveService() override;
+  void SetClipboard(std::unique_ptr<ui::ClipboardData> data) override;
 
   bool HasActiveSessionForTesting() const;
 

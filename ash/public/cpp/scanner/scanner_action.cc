@@ -45,4 +45,14 @@ NewGoogleSheetAction& NewGoogleSheetAction::operator=(
     const NewGoogleSheetAction&) = default;
 NewGoogleSheetAction::~NewGoogleSheetAction() = default;
 
+CopyToClipboardAction::CopyToClipboardAction(std::string plain_text,
+                                             std::string html_text)
+    : plain_text(std::move(plain_text)), html_text(std::move(html_text)) {}
+
+CopyToClipboardAction::CopyToClipboardAction(const CopyToClipboardAction&) =
+    default;
+CopyToClipboardAction& CopyToClipboardAction::operator=(
+    const CopyToClipboardAction&) = default;
+CopyToClipboardAction::~CopyToClipboardAction() = default;
+
 }  // namespace ash

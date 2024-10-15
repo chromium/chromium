@@ -17,10 +17,13 @@
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_session.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -95,6 +98,13 @@ drive::DriveServiceInterface* ScannerController::GetDriveService() {
   }
 
   return profile_scoped_delegate->GetDriveService();
+}
+
+void ScannerController::SetClipboard(std::unique_ptr<ui::ClipboardData> data) {
+  CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
+      .WriteClipboardData(std::move(data));
+
+  // TODO: b/367871707 - Display a toast / notification if necessary.
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {

@@ -36,6 +36,7 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -212,6 +213,22 @@ void HandleDriveUploadCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
                      std::move(command.title), std::move(callback)));
 }
 
+std::unique_ptr<ui::ClipboardData> ClipboardDataFromAction(
+    CopyToClipboardAction action) {
+  auto data = std::make_unique<ui::ClipboardData>();
+  // The below setters cause copies as they take in `std::string_view`s, not
+  // `std::string`s.
+  // TODO: b/367871707 - Make `ui::ClipboardData` setters support copy elision:
+  // https://abseil.io/tips/117
+  if (!action.plain_text.empty()) {
+    data->set_text(std::move(action.plain_text));
+  }
+  if (!action.html_text.empty()) {
+    data->set_markup_data(std::move(action.html_text));
+  }
+  return data;
+}
+
 }  // namespace
 
 ScannerCommand ScannerActionToCommand(ScannerAction action) {
@@ -236,6 +253,9 @@ ScannerCommand ScannerActionToCommand(ScannerAction action) {
                                       /*converted_mime_type=*/
                                       drive::util::kGoogleSpreadsheetMimeType);
           },
+          [&](CopyToClipboardAction& action) -> ScannerCommand {
+            return std::move(action);
+          },
       },
       action);
 }
@@ -252,6 +272,15 @@ void HandleScannerCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
                    HandleDriveUploadCommand(std::move(delegate),
                                             std::move(command),
                                             std::move(callback));
+                 },
+                 [&](CopyToClipboardAction& action) {
+                   if (delegate == nullptr) {
+                     std::move(callback).Run(false);
+                     return;
+                   }
+                   delegate->SetClipboard(
+                       ClipboardDataFromAction(std::move(action)));
+                   std::move(callback).Run(true);
                  },
              },
              command);

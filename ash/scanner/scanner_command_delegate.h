@@ -5,12 +5,18 @@
 #ifndef ASH_SCANNER_SCANNER_COMMAND_DELEGATE_H_
 #define ASH_SCANNER_SCANNER_COMMAND_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 
 class GURL;
 
 namespace drive {
 class DriveServiceInterface;
+}
+
+namespace ui {
+class ClipboardData;
 }
 
 namespace ash {
@@ -26,6 +32,9 @@ class ASH_EXPORT ScannerCommandDelegate {
 
   // Gets the `DriveServiceInterface` used to upload files.
   virtual drive::DriveServiceInterface* GetDriveService() = 0;
+
+  // Sets the clipboard to the given `ui::ClipboardData`.
+  virtual void SetClipboard(std::unique_ptr<ui::ClipboardData> data) = 0;
 };
 
 }  // namespace ash

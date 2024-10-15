@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/scanner/scanner_action.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -48,7 +49,10 @@ struct ASH_EXPORT DriveUploadCommand {
 
 // Holds a single command that can be applied to the system. Used as an
 // intermediate step between an `ash::ScannerAction` and performing the command.
-using ScannerCommand = std::variant<OpenUrlCommand, DriveUploadCommand>;
+// In some cases where `ash::ScannerAction` defines a very specific action,
+// the command type may be the same as the action type.
+using ScannerCommand =
+    std::variant<OpenUrlCommand, DriveUploadCommand, CopyToClipboardAction>;
 
 }  // namespace ash
 
