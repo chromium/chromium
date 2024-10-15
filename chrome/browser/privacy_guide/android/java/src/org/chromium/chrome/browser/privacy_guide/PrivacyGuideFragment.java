@@ -55,7 +55,6 @@ public class PrivacyGuideFragment extends Fragment
         FragmentType.HISTORY_SYNC,
         FragmentType.SAFE_BROWSING,
         FragmentType.COOKIES,
-        FragmentType.SEARCH_SUGGESTIONS,
         FragmentType.PRELOAD,
         FragmentType.AD_TOPICS,
         FragmentType.DONE,
@@ -66,10 +65,9 @@ public class PrivacyGuideFragment extends Fragment
         int HISTORY_SYNC = 2;
         int SAFE_BROWSING = 3;
         int COOKIES = 4;
-        int SEARCH_SUGGESTIONS = 5;
-        int PRELOAD = 6;
-        int AD_TOPICS = 7;
-        int DONE = 8;
+        int PRELOAD = 5;
+        int AD_TOPICS = 6;
+        int DONE = 7;
         int MAX_VALUE = DONE;
     }
 
@@ -91,7 +89,6 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.HISTORY_SYNC,
                             FragmentType.COOKIES,
                             FragmentType.SAFE_BROWSING,
-                            FragmentType.SEARCH_SUGGESTIONS,
                             FragmentType.PRELOAD,
                             FragmentType.AD_TOPICS,
                             FragmentType.DONE));

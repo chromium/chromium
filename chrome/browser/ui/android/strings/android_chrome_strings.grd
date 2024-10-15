@@ -1617,18 +1617,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_GUIDE_EXPLANATION_CLOSED_DESCRIPTION" desc="The accessibility string read when the privacy guide explanation bottom sheet is closed.">
         Privacy guide explanation closed
       </message>
-      <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_ONE" desc="First bullet point that describes the details of the search suggestions toggle.">
-        When you tap or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.
-      </message>
-      <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_TWO" desc="Second bullet point that describes the details of the search suggestions toggle.">
-        As you type, Chrome sends the content of the address bar or search box to your default search engine
-      </message>
-      <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_THREE" desc="Third bullet point that describes the details of the search suggestions toggle.">
-        Depending on your settings, Chrome may also send cookies, your current URL, and your location
-      </message>
-      <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_FOUR" desc="Fourth bullet point that describes the details of the search suggestions toggle.">
-        When off, you’ll still see suggestions that Chrome provides locally
-      </message>
 
       <!-- Tracking protection -->
       <message name="IDS_TRACKING_PROTECTION_TITLE" desc="Tracking Protection preference item title.">

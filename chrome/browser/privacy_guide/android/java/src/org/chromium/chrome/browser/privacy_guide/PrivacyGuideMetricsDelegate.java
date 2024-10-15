@@ -24,8 +24,6 @@ class PrivacyGuideMetricsDelegate {
     private static final String INITIAL_HISTORY_SYNC_STATE = "INITIAL_HISTORY_SYNC_STATE";
     private static final String INITIAL_SAFE_BROWSING_STATE = "INITIAL_SAFE_BROWSING_STATE";
     private static final String INITIAL_COOKIES_CONTROL_MODE = "INITIAL_COOKIES_CONTROL_MODE";
-    private static final String INITIAL_SEARCH_SUGGESTIONS_STATE =
-            "INITIAL_SEARCH_SUGGESTIONS_STATE";
     private static final String INITIAL_AD_TOPICS_STATE = "INITIAL_AD_TOPICS_STATE";
 
     private final Profile mProfile;
@@ -41,11 +39,6 @@ class PrivacyGuideMetricsDelegate {
 
     /** Initial mode of the Cookies Control when {@link CookiesFragment} is created. */
     private @Nullable @CookieControlsMode Integer mInitialCookiesControlMode;
-
-    /**
-     * Initial state of the Search Suggestions when {@link SearchSuggestionsFragment} is created.
-     */
-    private @Nullable Boolean mInitialSearchSuggestionsState;
 
     /** Initial state of Ad topics when {@link AdTopicsFragment} is created. */
     private @Nullable Boolean mInitialAdTopicsState;
@@ -68,9 +61,6 @@ class PrivacyGuideMetricsDelegate {
         if (mInitialCookiesControlMode != null) {
             bundle.putInt(INITIAL_COOKIES_CONTROL_MODE, mInitialCookiesControlMode);
         }
-        if (mInitialSearchSuggestionsState != null) {
-            bundle.putBoolean(INITIAL_SEARCH_SUGGESTIONS_STATE, mInitialSearchSuggestionsState);
-        }
         if (mInitialAdTopicsState != null) {
             bundle.putBoolean(INITIAL_AD_TOPICS_STATE, mInitialAdTopicsState);
         }
@@ -89,9 +79,6 @@ class PrivacyGuideMetricsDelegate {
         }
         if (bundle.containsKey(INITIAL_COOKIES_CONTROL_MODE)) {
             mInitialCookiesControlMode = bundle.getInt(INITIAL_COOKIES_CONTROL_MODE);
-        }
-        if (bundle.containsKey(INITIAL_SEARCH_SUGGESTIONS_STATE)) {
-            mInitialSearchSuggestionsState = bundle.getBoolean(INITIAL_SEARCH_SUGGESTIONS_STATE);
         }
         if (bundle.containsKey(INITIAL_AD_TOPICS_STATE)) {
             mInitialAdTopicsState = bundle.getBoolean(INITIAL_AD_TOPICS_STATE);
@@ -232,38 +219,6 @@ class PrivacyGuideMetricsDelegate {
                 PrivacyGuideInteractions.MAX_VALUE);
     }
 
-    /** A method to record metrics on the next click of {@link SearchSuggestionsFragment} */
-    private void recordMetricsOnNextForSearchSuggestionsCard() {
-        assert mInitialSearchSuggestionsState != null
-                : "Initial state of search suggestions not set.";
-
-        boolean currentValue = PrivacyGuideUtils.isSearchSuggestionsEnabled(mProfile);
-        @PrivacyGuideSettingsStates int stateChange;
-
-        if (mInitialSearchSuggestionsState && currentValue) {
-            stateChange = PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_ON;
-        } else if (mInitialSearchSuggestionsState && !currentValue) {
-            stateChange = PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_OFF;
-        } else if (!mInitialSearchSuggestionsState && currentValue) {
-            stateChange = PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON;
-        } else {
-            stateChange = PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_OFF;
-        }
-
-        // Record histogram comparing |mInitialSearchSuggestionsState| and |currentValue|
-        RecordHistogram.recordEnumeratedHistogram(
-                "Settings.PrivacyGuide.SettingsStates",
-                stateChange,
-                PrivacyGuideSettingsStates.MAX_VALUE);
-        // Record user action for clicking the next button on the search suggestions card
-        RecordUserAction.record("Settings.PrivacyGuide.NextClickSearchSuggestions");
-        // Record histogram for clicking the next button on the search suggestions card
-        RecordHistogram.recordEnumeratedHistogram(
-                "Settings.PrivacyGuide.NextNavigation",
-                PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
-    }
-
     /** A method to record metrics on the next click of {@link AdTopicsFragment} */
     private void recordMetricsOnNextForAdTopicsCard() {
         assert mInitialAdTopicsState != null : "Initial state of Ad Topics not set.";
@@ -323,12 +278,6 @@ class PrivacyGuideMetricsDelegate {
                     mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode(mProfile);
                     break;
                 }
-            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
-                {
-                    mInitialSearchSuggestionsState =
-                            PrivacyGuideUtils.isSearchSuggestionsEnabled(mProfile);
-                    break;
-                }
             case PrivacyGuideFragment.FragmentType.PRELOAD:
                 {
                     // TODO(crbug.com/40281867): Initial state for the preload card should be added
@@ -378,11 +327,6 @@ class PrivacyGuideMetricsDelegate {
             case PrivacyGuideFragment.FragmentType.COOKIES:
                 {
                     recordMetricsOnNextForCookiesCard();
-                    break;
-                }
-            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
-                {
-                    recordMetricsOnNextForSearchSuggestionsCard();
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.PRELOAD:
@@ -498,18 +442,6 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
-     * A method to record metrics on Search Suggestions toggle change of the Privacy Guide's {@link
-     * SearchSuggestionsFragment}.
-     */
-    static void recordMetricsOnSearchSuggestionsChange(boolean isSearchSuggestionsOn) {
-        if (isSearchSuggestionsOn) {
-            RecordUserAction.record("Settings.PrivacyGuide.ChangeSearchSuggestionsOn");
-        } else {
-            RecordUserAction.record("Settings.PrivacyGuide.ChangeSearchSuggestionsOff");
-        }
-    }
-
-    /**
      * A method to record metrics on Ad Topics toggle change of the Privacy Guide's {@link
      * AdTopicsFragment}.
      */
@@ -547,11 +479,6 @@ class PrivacyGuideMetricsDelegate {
             case PrivacyGuideFragment.FragmentType.MSBB:
                 {
                     RecordUserAction.record("Settings.PrivacyGuide.BackClickMSBB");
-                    break;
-                }
-            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
-                {
-                    RecordUserAction.record("Settings.PrivacyGuide.BackClickSearchSuggestions");
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.PRELOAD:

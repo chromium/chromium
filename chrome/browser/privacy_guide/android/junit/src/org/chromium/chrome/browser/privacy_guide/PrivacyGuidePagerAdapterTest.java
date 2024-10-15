@@ -159,7 +159,6 @@ public class PrivacyGuidePagerAdapterTest {
                 "Safe Browsing step displayed incorrectly",
                 mShouldDisplaySafeBrowsing,
                 fragmentClassSet.contains(SafeBrowsingFragment.class));
-        Assert.assertTrue(fragmentClassSet.contains(SearchSuggestionsFragment.class));
         Assert.assertEquals(
                 "Preload step displayed incorrectly",
                 mShouldDisplayPreload,

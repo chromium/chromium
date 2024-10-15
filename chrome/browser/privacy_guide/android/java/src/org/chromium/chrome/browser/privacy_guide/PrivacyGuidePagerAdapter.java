@@ -53,11 +53,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                         PrivacyGuideFragment.FragmentType.MSBB,
                         PrivacyGuideFragment.FragmentType.DONE));
 
-        if (ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()) {
-            // TODO(crbug.com/40184479): This fragment is always displayed and need to be added to
-            // the above list once the privacy guide android 3 is removed.
-            fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        }
         if (displayHandler.shouldDisplayHistorySync()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         }
@@ -92,8 +87,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new SafeBrowsingFragment();
             case PrivacyGuideFragment.FragmentType.COOKIES:
                 return new CookiesFragment();
-            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
-                return new SearchSuggestionsFragment();
             case PrivacyGuideFragment.FragmentType.PRELOAD:
                 return new PreloadFragment();
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
