@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
 class TestToastController : public ToastController {
@@ -72,6 +73,31 @@ TEST_F(ToastControllerUnitTest, ShowEphemeralToast) {
   // We can show the toast again because it is an ephemeral toast.
   EXPECT_CALL(*controller, CreateToast);
   EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  ::testing::Mock::VerifyAndClear(controller.get());
+  EXPECT_TRUE(controller->IsShowingToast());
+  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
+}
+
+TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
+  ToastRegistry* const registry = toast_registry();
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  // We should be able to show the toast because there is no toast showing.
+  EXPECT_FALSE(controller->IsShowingToast());
+  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
+
+  // We can show the toast again because it is an ephemeral toast.
+  EXPECT_CALL(*controller, CreateToast);
+
+  ToastParams params = ToastParams(ToastId::kLinkCopied);
+  params.image_override_ =
+      ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16, 0xff0000));
+
+  EXPECT_TRUE(controller->MaybeShowToast(std::move(params)));
   ::testing::Mock::VerifyAndClear(controller.get());
   EXPECT_TRUE(controller->IsShowingToast());
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));

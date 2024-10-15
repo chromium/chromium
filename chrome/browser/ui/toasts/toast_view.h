@@ -49,6 +49,7 @@ class ToastView : public views::BubbleDialogDelegateView,
       views::View* anchor_view,
       const std::u16string& toast_text,
       const gfx::VectorIcon& icon,
+      const ui::ImageModel* image_override,
       bool should_hide_ui_for_fullscreen,
       base::RepeatingCallback<void(ToastCloseReason)> on_toast_close_callback);
   ~ToastView() override;
@@ -82,6 +83,9 @@ class ToastView : public views::BubbleDialogDelegateView,
   views::MdTextButton* action_button_for_testing() { return action_button_; }
   views::ImageButton* close_button_for_testing() { return close_button_; }
 
+  // Gets the icon/image size from the layout provider.
+  static int GetIconSize();
+
  protected:
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
@@ -97,6 +101,7 @@ class ToastView : public views::BubbleDialogDelegateView,
 
   const std::u16string toast_text_;
   const raw_ref<const gfx::VectorIcon> icon_;
+  raw_ptr<const ui::ImageModel> image_override_;
   bool render_toast_over_web_contents_;
   bool has_close_button_ = false;
   bool has_action_button_ = false;

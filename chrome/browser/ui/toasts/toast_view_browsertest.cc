@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -28,9 +29,16 @@ class ToastViewTest : public DialogBrowserTest {
     const std::u16string& toast_text =
         l10n_util::GetStringUTF16(IDS_LINK_COPIED);
     const gfx::VectorIcon& icon = vector_icons::kLinkIcon;
+    if (name == "Image") {
+      int size = toasts::ToastView::GetIconSize();
+      image_override_ =
+          std::make_unique<ui::ImageModel>(ui::ImageModel::FromImage(
+              gfx::test::CreateImage(size, size, 0xff0000)));
+    }
     std::unique_ptr<toasts::ToastView> toast =
         std::make_unique<toasts::ToastView>(anchor_view, toast_text, icon,
-                                            false, base::DoNothing());
+                                            image_override_.get(), false,
+                                            base::DoNothing());
     if (name == "CloseButton") {
       toast->AddCloseButton(base::DoNothing());
     }
@@ -63,6 +71,7 @@ class ToastViewTest : public DialogBrowserTest {
   toasts::ToastView* toast() { return toast_; }
 
  private:
+  std::unique_ptr<ui::ImageModel> image_override_;
   raw_ptr<toasts::ToastView> toast_;
   raw_ptr<views::Widget> widget_;
 };
@@ -95,4 +104,8 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_CloseButton) {
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON),
       toast()->GetDialogClientView()->width() - toast()->bounds().right());
   DismissUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Image) {
+  ShowAndVerifyUi();
 }

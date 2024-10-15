@@ -42,6 +42,14 @@ gfx::Transform GetScaleTransformation(gfx::Rect bounds) {
   transform.Scale(1, kAnimationHeightScale);
   return transform;
 }
+
+bool IsCompatibleImageSize(const ui::ImageModel* image) {
+  const auto intended_size = toasts::ToastView::GetIconSize();
+  const auto image_size = image->Size();
+  return image_size.width() == intended_size &&
+         image_size.height() == intended_size;
+}
+
 }  // namespace
 
 namespace toasts {
@@ -53,12 +61,14 @@ ToastView::ToastView(
     views::View* anchor_view,
     const std::u16string& toast_text,
     const gfx::VectorIcon& icon,
+    const ui::ImageModel* image_override,
     bool render_toast_over_web_contents,
     base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
       AnimationDelegateViews(this),
       toast_text_(toast_text),
       icon_(icon),
+      image_override_(image_override),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
   SetShowCloseButton(false);
@@ -86,6 +96,11 @@ void ToastView::AddCloseButton(base::RepeatingClosure close_callback) {
   CHECK(!has_close_button_);
   has_close_button_ = true;
   close_button_callback_ = std::move(close_callback);
+}
+
+int ToastView::GetIconSize() {
+  const ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
+  return lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE);
 }
 
 void ToastView::Init() {
@@ -281,10 +296,13 @@ void ToastView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
   set_color(color_provider->GetColor(ui::kColorToastBackgroundProminent));
-  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      *icon_, color_provider->GetColor(ui::kColorToastForeground),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
+  if (image_override_ != nullptr && IsCompatibleImageSize(image_override_)) {
+    icon_view_->SetImage(*image_override_);
+  } else {
+    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        *icon_, color_provider->GetColor(ui::kColorToastForeground),
+        GetIconSize()));
+  }
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,

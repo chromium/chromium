@@ -300,11 +300,14 @@ void ToastController::CreateToast(const ToastParams& params,
 
   views::View* const anchor_view = browser_window_interface_->TopContainer();
   CHECK(anchor_view);
+  const ui::ImageModel* image_override = params.image_override_.has_value()
+                                             ? &params.image_override_.value()
+                                             : nullptr;
   auto toast_view = std::make_unique<toasts::ToastView>(
       anchor_view,
       FormatString(spec->body_string_id(),
                    params.body_string_replacement_params_),
-      spec->icon(), ShouldRenderToastOverWebContents(),
+      spec->icon(), image_override, ShouldRenderToastOverWebContents(),
       base::BindRepeating(&RecordToastDismissReason, params.toast_id_));
 
   if (spec->has_close_button()) {
