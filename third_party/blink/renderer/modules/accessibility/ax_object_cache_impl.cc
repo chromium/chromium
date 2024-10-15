@@ -37,6 +37,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -5386,6 +5388,36 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
   }
 }
 
+void AXObjectCacheImpl::MaybeSendCanvasHasNonTrivialFallbackUKM(
+    const AXObject* ax_canvas) {
+  if (!ax_canvas->ChildCountIncludingIgnored()) {
+    // Canvas does not have fallback.
+    return;
+  }
+
+  if (ax_canvas->ChildCountIncludingIgnored() == 1 &&
+      ui::IsText(ax_canvas->FirstChildIncludingIgnored()->RoleValue())) {
+    // Ignore a fallback if it's just a single piece of text, as we are
+    // looking for advanced uses of canvas fallbacks.
+    return;
+  }
+
+  HTMLCanvasElement* canvas = To<HTMLCanvasElement>(ax_canvas->GetNode());
+  if (!canvas->HasPlacedElements()) {
+    // If it has placed elements, then the descendents are not a fallback.
+    return;
+  }
+
+  has_emitted_canvas_fallback_ukm_ = true;  // Stop checking.
+
+  ukm::UkmRecorder* ukm_recorder = GetDocument().UkmRecorder();
+  DCHECK(ukm_recorder);
+  ukm::builders::Accessibility_CanvasHasNonTrivialFallback(
+      GetDocument().UkmSourceID())
+      .SetSeen(true)
+      .Record(ukm_recorder);
+}
+
 void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
@@ -5463,6 +5495,12 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       // node from changed_bounds_ids_ to avoid sending it in
       // SerializeLocationChanges() later.
       changed_bounds_ids_.erase(id);
+
+      // Record advanced uses of canvas fallbacks.
+      if (!has_emitted_canvas_fallback_ukm_ &&
+          node_data.role == ax::mojom::blink::Role::kCanvas) {
+        MaybeSendCanvasHasNonTrivialFallbackUKM(ObjectFromAXID(node_data.id));
+      }
     }
 
     DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))

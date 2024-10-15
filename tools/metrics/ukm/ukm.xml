@@ -260,6 +260,21 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.CanvasHasNonTrivialFallback">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>aleventhal@google.com</owner>
+  <summary>
+    Recorded once for any page that had a canvas element with non-trivial
+    fallback content beyond plain text. Only recorded if a11y is turned on (~10%
+    of users).
+  </summary>
+  <metric name="Seen" enum="Boolean">
+    <summary>
+      Only ever set to true, thus serving as a counter.
+    </summary>
+  </metric>
+</event>
+
 <event name="Accessibility.ImageDescriptions">
   <owner>dtseng@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
