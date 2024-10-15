@@ -64,7 +64,6 @@ build_webui("build") {
     "service.ts",
     "shortcut_util.ts",
     "site_permissions/site_settings_mixin.ts",
-    "site_permissions/site_settings_mixin_lit.ts",
     "url_util.ts",
   ]
 
@@ -76,6 +75,7 @@ build_webui("build") {
     "code_section.css",
     "drop_overlay.css",
     "error_page.css",
+    "host_permissions_toggle_list.css",
     "install_warnings_dialog.css",
     "item.css",
     "keyboard_shortcuts.css",
@@ -96,6 +96,7 @@ build_webui("build") {
     "site_permissions/site_permissions_edit_permissions_dialog.css",
     "site_permissions/site_permissions_list.css",
     "site_permissions/site_permissions_site_group.css",
+    "toggle_row.css",
     "toolbar.css",
   ]
 

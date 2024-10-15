@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,11 @@
  * multiple pages.
  */
 
+import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
-import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ItemDelegate} from '../item.js';
 import {DummyItemDelegate, FakeChromeEvent} from '../item.js';
-
-type Constructor<T> = new (...args: any[]) => T;
 
 export interface SiteSettingsDelegate {
   getUserSiteSettings(): Promise<chrome.developerPrivate.UserSiteSettings>;
@@ -93,34 +90,31 @@ export class DummySiteSettingsMixinDelegate extends DummyItemDelegate {
   }
 }
 
-export const SiteSettingsMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
+type Constructor<T> = new (...args: any[]) => T;
+
+export const SiteSettingsMixin =
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<SiteSettingsMixinInterface> => {
-      class SiteSettingsMixin extends superClass {
+      class SiteSettingsMixin extends superClass implements
+          SiteSettingsMixinInterface {
         static get properties() {
           return {
-            delegate: Object,
-            enableEnhancedSiteControls: Boolean,
-
-            restrictedSites: {
-              type: Array,
-              value: [],
-            },
-
-            permittedSites: {
-              type: Array,
-              value: [],
-            },
+            delegate: {type: Object},
+            enableEnhancedSiteControls: {type: Boolean},
+            restrictedSites: {type: Array},
+            permittedSites: {type: Array},
           };
         }
 
-        delegate: ItemDelegate&SiteSettingsDelegate;
-        enableEnhancedSiteControls: boolean;
-        restrictedSites: string[];
-        protected permittedSites: string[];
+        delegate: ItemDelegate&SiteSettingsDelegate =
+            new DummySiteSettingsMixinDelegate();
+        enableEnhancedSiteControls: boolean = false;
+        restrictedSites: string[] = [];
+        permittedSites: string[] = [];
 
-        override ready() {
-          super.ready();
+        override firstUpdated(changedProperties: PropertyValues<this>) {
+          super.firstUpdated(changedProperties);
+
           if (this.enableEnhancedSiteControls) {
             this.delegate.getUserSiteSettings().then(
                 this.onUserSiteSettingsChanged_.bind(this));
@@ -139,10 +133,11 @@ export const SiteSettingsMixin = dedupingMixin(
       }
 
       return SiteSettingsMixin;
-    });
+    };
 
 export interface SiteSettingsMixinInterface {
   delegate: ItemDelegate&SiteSettingsDelegate;
   enableEnhancedSiteControls: boolean;
+  permittedSites: string[];
   restrictedSites: string[];
 }

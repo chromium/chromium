@@ -20,7 +20,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getHtml} from './runtime_hosts_dialog.html.js';
 import {getCss as getSharedStyleCss} from './shared_style_lit.css.js';
 import {sitePermissionsPatternRegExp} from './site_permissions/site_permissions_edit_url_dialog.js';
-import {SiteSettingsMixinLit} from './site_permissions/site_settings_mixin_lit.js';
+import {SiteSettingsMixin} from './site_permissions/site_settings_mixin.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:
@@ -106,7 +106,7 @@ export interface ExtensionsRuntimeHostsDialogElement {
 }
 
 const ExtensionsRuntimeHostsDialogElementBase =
-    I18nMixinLit(SiteSettingsMixinLit(CrLitElement));
+    I18nMixinLit(SiteSettingsMixin(CrLitElement));
 
 export class ExtensionsRuntimeHostsDialogElement extends
     ExtensionsRuntimeHostsDialogElementBase {

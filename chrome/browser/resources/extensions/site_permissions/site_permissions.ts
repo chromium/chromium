@@ -14,7 +14,7 @@ import {navigation, Page} from '../navigation_helper.js';
 
 import {getCss} from './site_permissions.css.js';
 import {getHtml} from './site_permissions.html.js';
-import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 export interface ExtensionsSitePermissionsElement {
   $: {
@@ -22,7 +22,7 @@ export interface ExtensionsSitePermissionsElement {
   };
 }
 
-const ExtensionsSitePermissionsElementBase = SiteSettingsMixinLit(CrLitElement);
+const ExtensionsSitePermissionsElementBase = SiteSettingsMixin(CrLitElement);
 
 export class ExtensionsSitePermissionsElement extends
     ExtensionsSitePermissionsElementBase {
