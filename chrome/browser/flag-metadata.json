@@ -2973,6 +2973,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-desktop-pwas-sync-changes",
+    "owners": [ "mek@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-desktop-pwas-tab-strip",
     "owners": [ "pwa-team@google.com" ],
     "expiry_milestone": 132
