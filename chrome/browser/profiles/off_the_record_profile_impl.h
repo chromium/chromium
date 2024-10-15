@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "components/domain_reliability/clear_mode.h"
@@ -23,6 +22,8 @@
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
+
+class ScopedProfileKeepAlive;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

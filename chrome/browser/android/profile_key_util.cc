@@ -7,6 +7,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

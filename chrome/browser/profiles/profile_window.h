@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_WINDOW_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_WINDOW_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/startup/startup_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error "Not used on Android"
@@ -23,6 +22,11 @@ class Profile;
 namespace base {
 class FilePath;
 }
+
+namespace chrome::startup {
+enum class IsProcessStartup : bool;
+enum class IsFirstRun : bool;
+}  // namespace chrome::startup
 
 namespace profiles {
 

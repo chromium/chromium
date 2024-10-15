@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 
 namespace base {
@@ -19,6 +18,7 @@ class FilePath;
 class Profile;
 class ProfileManager;
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 // This class offers a few helper functions for profile deletion. Note that the
 // `DeleteProfileHelper` does not delete actual C++ Profile objects, as this is
