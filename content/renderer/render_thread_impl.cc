@@ -593,7 +593,7 @@ void RenderThreadImpl::Init() {
   cc::SetClientNameForMetrics("Renderer");
 
   is_threaded_animation_enabled_ =
-      !command_line.HasSwitch(cc::switches::kDisableThreadedAnimation);
+      !command_line.HasSwitch(switches::kDisableThreadedAnimation);
 
   is_elastic_overscroll_enabled_ = switches::IsElasticOverscrollEnabled();
 

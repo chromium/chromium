@@ -333,7 +333,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
                 metrics::EntropyProviderType::kDefault,
             .force_benchmarking_mode =
                 base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    cc::switches::kEnableGpuBenchmarking),
+                    switches::kEnableGpuBenchmarking),
         },
         base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),

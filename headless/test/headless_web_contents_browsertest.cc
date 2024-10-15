@@ -362,8 +362,8 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
     // See bit.ly/headless-rendering for why we use these flags.
     command_line->AppendSwitch(::switches::kRunAllCompositorStagesBeforeDraw);
     command_line->AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
-    command_line->AppendSwitch(cc::switches::kDisableCheckerImaging);
-    command_line->AppendSwitch(cc::switches::kDisableThreadedAnimation);
+    command_line->AppendSwitch(switches::kDisableCheckerImaging);
+    command_line->AppendSwitch(switches::kDisableThreadedAnimation);
   }
 
   void RunTest() {

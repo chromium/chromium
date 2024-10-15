@@ -1,12 +1,11 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
-  # Do not use mojo bindings in viz/client/. This library should be agnostic
-  # about how to communicate with viz.
-  "-mojo/public/cpp/bindings",
-  # Exception is struct_traits.h which is used for defining friends only.
-  "+cc/base",
   "+cc/paint/filter_operations.h",
+  # Do not use mojo bindings in viz/client/. This library should be agnostic
+  # about how to communicate with viz. The exceptions for struct_ and
+  # union_traits.h are for defining friends only.
+  "-mojo/public/cpp/bindings",
   "+mojo/public/cpp/bindings/struct_traits.h",
   "+mojo/public/cpp/bindings/union_traits.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
@@ -15,9 +14,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "skia_helper.(cc|h)": [
-    "+cc/base",
-  ],
   # DEPS for GLHelper and friends which are in the root common/ directory.
   "(yuv_readback|gl_helper|gl_scaler).*\.(cc|h)": [
     "+gpu/GLES2",

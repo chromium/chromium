@@ -19,7 +19,7 @@ class EventCountsBrowserTest : public MetricIntegrationTest {
 
     // content::SimulateTouchEventAt can only be used in Aura, however
     // chrome.gpuBenchmarking.tap can be used on all platforms.
-    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+    command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
   }
 };
 

@@ -1350,8 +1350,9 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
     // If Telemetry is running, allow the URL load to proceed as if it's
     // unhandled, otherwise Telemetry can't tell if Navigation completed.
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            cc::switches::kEnableGpuBenchmarking))
+            switches::kEnableGpuBenchmarking)) {
       return nullptr;
+    }
   }
 
   // Checks based on params.load_type.

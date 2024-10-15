@@ -33,7 +33,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     MetricIntegrationTest::SetUpOnMainThread();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+    command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
     std::vector<base::test::FeatureRef> enabled_feature_list = {
         blink::features::kNavigationId,

@@ -201,7 +201,7 @@ void WebTestBrowserMainRunner::Initialize() {
   CHECK(ppapi::RegisterBlinkTestPlugin(&command_line));
 #endif
 
-  command_line.AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+  command_line.AppendSwitch(switches::kEnableGpuBenchmarking);
   command_line.AppendSwitch(switches::kEnableLogging);
   command_line.AppendSwitch(switches::kAllowFileAccessFromFiles);
 
@@ -238,7 +238,7 @@ void WebTestBrowserMainRunner::Initialize() {
   // TODO(crbug.com/41420287) Add kRunAllCompositorStagesBeforeDraw back here
   // once you figure out why it causes so much web test flakiness.
   // command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
-  command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
+  command_line.AppendSwitch(switches::kDisableCheckerImaging);
 
   command_line.AppendSwitch(switches::kMuteAudio);
 

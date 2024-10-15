@@ -36,7 +36,6 @@ COMPONENT_EXPORT(UI_BASE) extern const char kUiToolkitFlag[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableGtkIme[];
 #endif
 
-COMPONENT_EXPORT(UI_BASE) extern const char kDisableCompositedAntialiasing[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableTouchDragDrop[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDRMVirtualConnectorIsExternal[];
 COMPONENT_EXPORT(UI_BASE) extern const char kEnableTouchDragDrop[];

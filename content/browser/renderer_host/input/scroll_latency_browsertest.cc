@@ -111,7 +111,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
     // we ensure secondary GestureScrollUpdates update the animation
     // instead of starting a new one.
     command_line->AppendSwitchASCII(
-        cc::switches::kCCScrollAnimationDurationForTesting, "10000000");
+        switches::kCCScrollAnimationDurationForTesting, "10000000");
   }
 
   void LoadURL() {

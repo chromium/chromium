@@ -171,7 +171,7 @@ const char* const kBadFlags[] = {
     // This flag enables injecting synthetic input. It is meant to be used only
     // in tests and performance benchmarks. Using it could allow faking user
     // interaction across origins.
-    cc::switches::kEnableGpuBenchmarking,
+    switches::kEnableGpuBenchmarking,
 
     // This flag enables loading a developer-signed certificate for Cast
     // streaming receivers and should only be used for testing purposes.

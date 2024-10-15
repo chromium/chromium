@@ -243,12 +243,12 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.is_for_scalable_page = is_for_scalable_page;
 
   settings.main_frame_before_activation_enabled =
-      cmd.HasSwitch(cc::switches::kEnableMainFrameBeforeActivation);
+      cmd.HasSwitch(::switches::kEnableMainFrameBeforeActivation);
 
   // Checkerimaging is not supported for synchronous single-threaded mode, which
   // is what the renderer uses if its not threaded.
   settings.enable_checker_imaging =
-      !cmd.HasSwitch(cc::switches::kDisableCheckerImaging) && is_threaded;
+      !cmd.HasSwitch(::switches::kDisableCheckerImaging) && is_threaded;
 
 #if BUILDFLAG(IS_ANDROID)
   // WebView should always raster in the default color space.
@@ -371,18 +371,18 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.use_painted_device_scale_factor = true;
 
   // Build LayerTreeSettings from command line args.
-  if (cmd.HasSwitch(cc::switches::kBrowserControlsShowThreshold)) {
+  if (cmd.HasSwitch(::switches::kBrowserControlsShowThreshold)) {
     std::string top_threshold_str =
-        cmd.GetSwitchValueASCII(cc::switches::kBrowserControlsShowThreshold);
+        cmd.GetSwitchValueASCII(::switches::kBrowserControlsShowThreshold);
     double show_threshold;
     if (base::StringToDouble(top_threshold_str, &show_threshold) &&
         show_threshold >= 0.f && show_threshold <= 1.f)
       settings.top_controls_show_threshold = show_threshold;
   }
 
-  if (cmd.HasSwitch(cc::switches::kBrowserControlsHideThreshold)) {
+  if (cmd.HasSwitch(::switches::kBrowserControlsHideThreshold)) {
     std::string top_threshold_str =
-        cmd.GetSwitchValueASCII(cc::switches::kBrowserControlsHideThreshold);
+        cmd.GetSwitchValueASCII(::switches::kBrowserControlsHideThreshold);
     double hide_threshold;
     if (base::StringToDouble(top_threshold_str, &hide_threshold) &&
         hide_threshold >= 0.f && hide_threshold <= 1.f)
@@ -408,33 +408,34 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.single_thread_proxy_scheduler = false;
 
   // These flags should be mirrored by UI versions in ui/compositor/.
-  if (cmd.HasSwitch(cc::switches::kShowCompositedLayerBorders))
+  if (cmd.HasSwitch(::switches::kShowCompositedLayerBorders)) {
     settings.initial_debug_state.show_debug_borders.set();
+  }
   settings.initial_debug_state.show_fps_counter =
-      cmd.HasSwitch(cc::switches::kShowFPSCounter);
+      cmd.HasSwitch(::switches::kShowFPSCounter);
   settings.initial_debug_state.show_layer_animation_bounds_rects =
-      cmd.HasSwitch(cc::switches::kShowLayerAnimationBounds);
+      cmd.HasSwitch(::switches::kShowLayerAnimationBounds);
   settings.initial_debug_state.show_paint_rects =
       cmd.HasSwitch(switches::kShowPaintRects);
   settings.initial_debug_state.show_layout_shift_regions =
       cmd.HasSwitch(switches::kShowLayoutShiftRegions);
   settings.initial_debug_state.show_property_changed_rects =
-      cmd.HasSwitch(cc::switches::kShowPropertyChangedRects);
+      cmd.HasSwitch(::switches::kShowPropertyChangedRects);
   settings.initial_debug_state.show_surface_damage_rects =
-      cmd.HasSwitch(cc::switches::kShowSurfaceDamageRects);
+      cmd.HasSwitch(::switches::kShowSurfaceDamageRects);
   settings.initial_debug_state.show_screen_space_rects =
-      cmd.HasSwitch(cc::switches::kShowScreenSpaceRects);
+      cmd.HasSwitch(::switches::kShowScreenSpaceRects);
   settings.initial_debug_state.highlight_non_lcd_text_layers =
-      cmd.HasSwitch(cc::switches::kHighlightNonLCDTextLayers);
+      cmd.HasSwitch(::switches::kHighlightNonLCDTextLayers);
 
   settings.initial_debug_state.SetRecordRenderingStats(
-      cmd.HasSwitch(cc::switches::kEnableGpuBenchmarking));
+      cmd.HasSwitch(::switches::kEnableGpuBenchmarking));
 
-  if (cmd.HasSwitch(cc::switches::kSlowDownRasterScaleFactor)) {
+  if (cmd.HasSwitch(::switches::kSlowDownRasterScaleFactor)) {
     const int kMinSlowDownScaleFactor = 0;
     const int kMaxSlowDownScaleFactor = INT_MAX;
     switch_value_as_int(
-        cmd, cc::switches::kSlowDownRasterScaleFactor, kMinSlowDownScaleFactor,
+        cmd, ::switches::kSlowDownRasterScaleFactor, kMinSlowDownScaleFactor,
         kMaxSlowDownScaleFactor,
         &settings.initial_debug_state.slow_down_raster_scale_factor);
   }
@@ -443,12 +444,12 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 
   InitializeScrollbarFadeAndDelay(settings);
 
-  if (cmd.HasSwitch(cc::switches::kCCScrollAnimationDurationForTesting)) {
+  if (cmd.HasSwitch(::switches::kCCScrollAnimationDurationForTesting)) {
     const int kMinScrollAnimationDuration = 0;
     const int kMaxScrollAnimationDuration = INT_MAX;
     int duration;
     if (switch_value_as_int(cmd,
-                            cc::switches::kCCScrollAnimationDurationForTesting,
+                            ::switches::kCCScrollAnimationDurationForTesting,
                             kMinScrollAnimationDuration,
                             kMaxScrollAnimationDuration, &duration)) {
       settings.scroll_animation_duration_for_testing = base::Seconds(duration);
@@ -477,7 +478,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 
     // Early damage check works in combination with synchronous compositor.
     settings.enable_early_damage_check =
-        cmd.HasSwitch(cc::switches::kCheckDamageEarly);
+        cmd.HasSwitch(::switches::kCheckDamageEarly);
   }
   if (using_low_memory_policy) {
     // On low-end we want to be very careful about killing other

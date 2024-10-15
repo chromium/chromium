@@ -44,9 +44,6 @@ const char kUiToolkitFlag[] = "ui-toolkit";
 const char kDisableGtkIme[] = "disable-gtk-ime";
 #endif
 
-// Disables layer-edge anti-aliasing in the compositor.
-const char kDisableCompositedAntialiasing[] = "disable-composited-antialiasing";
-
 // Disables touch event based drag and drop.
 const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";
 

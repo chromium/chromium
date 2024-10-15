@@ -133,9 +133,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.gpu_rasterization_disabled =
       !features::IsUiGpuRasterizationEnabled();
 
-  if (command_line->HasSwitch(cc::switches::kUIShowCompositedLayerBorders)) {
+  if (command_line->HasSwitch(switches::kUIShowCompositedLayerBorders)) {
     std::string layer_borders_string = command_line->GetSwitchValueASCII(
-        cc::switches::kUIShowCompositedLayerBorders);
+        switches::kUIShowCompositedLayerBorders);
     std::vector<std::string_view> entries = base::SplitStringPiece(
         layer_borders_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (entries.empty()) {
@@ -145,12 +145,11 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
         const struct {
           const char* name;
           cc::DebugBorderType type;
-        } kBorders[] = {{cc::switches::kCompositedRenderPassBorders,
-                         cc::DebugBorderType::RENDERPASS},
-                        {cc::switches::kCompositedSurfaceBorders,
-                         cc::DebugBorderType::SURFACE},
-                        {cc::switches::kCompositedLayerBorders,
-                         cc::DebugBorderType::LAYER}};
+        } kBorders[] = {
+            {switches::kCompositedRenderPassBorders,
+             cc::DebugBorderType::RENDERPASS},
+            {switches::kCompositedSurfaceBorders, cc::DebugBorderType::SURFACE},
+            {switches::kCompositedLayerBorders, cc::DebugBorderType::LAYER}};
         for (const auto& border : kBorders) {
           if (border.name == entry) {
             settings.initial_debug_state.show_debug_borders.set(border.type);
@@ -161,20 +160,20 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
     }
   }
   settings.initial_debug_state.show_fps_counter =
-      command_line->HasSwitch(cc::switches::kUIShowFPSCounter);
+      command_line->HasSwitch(switches::kUIShowFPSCounter);
   settings.initial_debug_state.show_layer_animation_bounds_rects =
-      command_line->HasSwitch(cc::switches::kUIShowLayerAnimationBounds);
+      command_line->HasSwitch(switches::kUIShowLayerAnimationBounds);
   settings.initial_debug_state.show_paint_rects =
       command_line->HasSwitch(switches::kUIShowPaintRects);
   settings.initial_debug_state.show_property_changed_rects =
-      command_line->HasSwitch(cc::switches::kUIShowPropertyChangedRects);
+      command_line->HasSwitch(switches::kUIShowPropertyChangedRects);
   settings.initial_debug_state.show_surface_damage_rects =
-      command_line->HasSwitch(cc::switches::kUIShowSurfaceDamageRects);
+      command_line->HasSwitch(switches::kUIShowSurfaceDamageRects);
   settings.initial_debug_state.show_screen_space_rects =
-      command_line->HasSwitch(cc::switches::kUIShowScreenSpaceRects);
+      command_line->HasSwitch(switches::kUIShowScreenSpaceRects);
 
   settings.initial_debug_state.SetRecordRenderingStats(
-      command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking));
+      command_line->HasSwitch(switches::kEnableGpuBenchmarking));
 
   settings.use_zero_copy = IsUIZeroCopyEnabled() && !features::IsUsingRawDraw();
 
@@ -230,8 +229,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.is_layer_tree_for_ui = true;
 
 #if DCHECK_IS_ON()
-  if (command_line->HasSwitch(cc::switches::kLogOnUIDoubleBackgroundBlur))
+  if (command_line->HasSwitch(switches::kLogOnUIDoubleBackgroundBlur)) {
     settings.log_on_ui_double_background_blur = true;
+  }
 #endif
 
   settings.enable_shared_image_cache_for_gpu =
