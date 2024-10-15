@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -59,16 +60,6 @@
 #endif
 
 namespace headless {
-
-namespace {
-
-bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size(),
-      bitmap);
-}
-
-}  // namespace
 
 class HeadlessCommandBrowserTest : public HeadlessBrowserTest,
                                    public content::WebContentsObserver {
@@ -410,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTest, Screenshot) {
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
       << screenshot_filename_;
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+  ASSERT_FALSE(bitmap.isNull());
 
   ASSERT_EQ(800, bitmap.width());
   ASSERT_EQ(600, bitmap.height());
@@ -448,8 +439,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotWithBackgroundCommandBrowserTest,
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
       << screenshot_filename_;
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+  ASSERT_FALSE(bitmap.isNull());
 
   ASSERT_EQ(800, bitmap.width());
   ASSERT_EQ(600, bitmap.height());
@@ -488,8 +479,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTestWithWindowSize,
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
       << screenshot_filename_;
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+  ASSERT_FALSE(bitmap.isNull());
 
   EXPECT_EQ(bitmap.width(), kWindowSize.width());
   EXPECT_EQ(bitmap.height(), kWindowSize.height());

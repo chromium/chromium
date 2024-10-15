@@ -158,14 +158,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, HandleSSLError) {
   EXPECT_FALSE(WaitForLoad(web_contents));
 }
 
-namespace {
-bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size(),
-      bitmap);
-}
-}  // namespace
-
 // Parameter specifies whether --disable-gpu should be used.
 class HeadlessWebContentsScreenshotTest
     : public HeadlessDevTooledBrowserTest,
@@ -200,12 +192,12 @@ class HeadlessWebContentsScreenshotTest
     std::string png_data_base64 = DictString(result, "result.data");
     ASSERT_FALSE(png_data_base64.empty());
 
-    std::string png_data;
-    ASSERT_TRUE(base::Base64Decode(png_data_base64, &png_data));
-    EXPECT_GT(png_data.size(), 0U);
+    std::optional<std::vector<uint8_t>> png_data =
+        base::Base64Decode(png_data_base64);
+    EXPECT_GT(png_data.value().size(), 0U);
 
-    SkBitmap result_bitmap;
-    EXPECT_TRUE(DecodePNG(png_data, &result_bitmap));
+    SkBitmap result_bitmap = gfx::PNGCodec::Decode(png_data.value());
+    EXPECT_FALSE(result_bitmap.isNull());
 
     EXPECT_EQ(800, result_bitmap.width());
     EXPECT_EQ(600, result_bitmap.height());
@@ -489,12 +481,12 @@ class HeadlessWebContentsBeginFrameControlBasicTest
       std::string png_data_base64 = DictString(result, "result.screenshotData");
       ASSERT_FALSE(png_data_base64.empty());
 
-      std::string png_data;
-      ASSERT_TRUE(base::Base64Decode(png_data_base64, &png_data));
-      EXPECT_GT(png_data.size(), 0U);
+      std::optional<std::vector<uint8_t>> png_data =
+          base::Base64Decode(png_data_base64);
+      EXPECT_GT(png_data.value().size(), 0U);
 
-      SkBitmap result_bitmap;
-      EXPECT_TRUE(DecodePNG(png_data, &result_bitmap));
+      SkBitmap result_bitmap = gfx::PNGCodec::Decode(png_data.value());
+      EXPECT_FALSE(result_bitmap.isNull());
       EXPECT_EQ(200, result_bitmap.width());
       EXPECT_EQ(200, result_bitmap.height());
       SkColor expected_color = SkColorSetRGB(0x00, 0x00, 0xff);
@@ -575,12 +567,12 @@ class HeadlessWebContentsBeginFrameControlViewportTest
     std::string png_data_base64 = DictString(result, "result.screenshotData");
     ASSERT_FALSE(png_data_base64.empty());
 
-    std::string png_data;
-    ASSERT_TRUE(base::Base64Decode(png_data_base64, &png_data));
-    ASSERT_GT(png_data.size(), 0ul);
+    std::optional<std::vector<uint8_t>> png_data =
+        base::Base64Decode(png_data_base64);
+    ASSERT_GT(png_data.value().size(), 0ul);
 
-    SkBitmap result_bitmap;
-    EXPECT_TRUE(DecodePNG(png_data, &result_bitmap));
+    SkBitmap result_bitmap = gfx::PNGCodec::Decode(png_data.value());
+    EXPECT_FALSE(result_bitmap.isNull());
 
     // Expect a 300x300 bitmap that is all blue.
     SkBitmap expected_bitmap;

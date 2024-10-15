@@ -24,8 +24,7 @@
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/image/image.h"
 
-namespace headless {
-namespace protocol {
+namespace headless::protocol {
 
 using HeadlessExperimental::ScreenshotParams;
 
@@ -34,33 +33,33 @@ namespace {
 constexpr int kDefaultScreenshotQuality = 80;
 
 using BitmapEncoder =
-    base::RepeatingCallback<bool(const SkBitmap& bitmap,
-                                 std::vector<uint8_t>& output)>;
+    base::RepeatingCallback<std::optional<std::vector<uint8_t>>(
+        const SkBitmap& bitmap)>;
 
-bool EncodeBitmapAsPngSlow(const SkBitmap& bitmap,
-                           std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsPngSlow(
+    const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsPngSlow");
-  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false);
 }
 
-bool EncodeBitmapAsPngFast(const SkBitmap& bitmap,
-                           std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsPngFast(
+    const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsPngFast");
-  return gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, false, &output);
+  return gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap,
+                                               /*discard_transparency=*/false);
 }
 
-bool EncodeBitmapAsJpeg(int quality,
-                        const SkBitmap& bitmap,
-                        std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsJpeg(int quality,
+                                                       const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsJpeg");
-  return gfx::JPEGCodec::Encode(bitmap, quality, &output);
+  return gfx::JPEGCodec::Encode(bitmap, quality);
 }
 
-bool EncodeBitmapAsWebp(int quality,
-                        const SkBitmap& bitmap,
-                        std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsWebp(int quality,
+                                                       const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsWebp");
-  return gfx::WebpCodec::Encode(bitmap, quality, &output);
+  return gfx::WebpCodec::Encode(bitmap, quality);
 }
 
 absl::variant<protocol::Response, BitmapEncoder>
@@ -94,10 +93,9 @@ void OnBeginFrameFinished(
     callback->sendSuccess(has_damage, Maybe<protocol::Binary>());
     return;
   }
-  std::vector<uint8_t> bytes;
-  bool success = encoder.Run(*bitmap, bytes);
-  DCHECK(success || bytes.empty());
-  callback->sendSuccess(has_damage, Binary::fromVector(bytes));
+  std::optional<std::vector<uint8_t>> result = encoder.Run(*bitmap);
+  callback->sendSuccess(
+      has_damage, Binary::fromVector(result.value_or(std::vector<uint8_t>())));
 }
 
 }  // namespace
@@ -191,5 +189,4 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
                      std::move(callback)));
 }
 
-}  // namespace protocol
-}  // namespace headless
+}  // namespace headless::protocol
