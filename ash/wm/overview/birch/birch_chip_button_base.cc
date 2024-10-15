@@ -18,6 +18,8 @@ namespace {
 
 constexpr int kRoundedCornerRadius = 20;
 constexpr ui::ColorId kBackgroundColorId = cros_tokens::kCrosSysSystemOnBase;
+constexpr ui::ColorId kCoralSelectionShownBackgroundColorId =
+    cros_tokens::kCrosSysSystemOnBaseOpaque;
 
 }  // namespace
 
@@ -25,29 +27,23 @@ BirchChipButtonBase::BirchChipButtonBase() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  UpdateRoundedCorners();
+  UpdateRoundedCorners(/*selection_widget_visible=*/false);
 }
 
 BirchChipButtonBase::~BirchChipButtonBase() = default;
 
-void BirchChipButtonBase::SetTopHalfRounded(bool rounded) {
-  if (top_half_rounded_ == rounded) {
-    return;
-  }
-
-  top_half_rounded_ = rounded;
-  UpdateRoundedCorners();
-}
-
-void BirchChipButtonBase::UpdateRoundedCorners() {
+void BirchChipButtonBase::UpdateRoundedCorners(bool selection_widget_visible) {
   const gfx::RoundedCornersF rounded_corners =
-      top_half_rounded_ ? gfx::RoundedCornersF(kRoundedCornerRadius)
-                        : gfx::RoundedCornersF(0, 0, kRoundedCornerRadius,
-                                               kRoundedCornerRadius);
+      selection_widget_visible
+          ? gfx::RoundedCornersF(0, 0, kRoundedCornerRadius,
+                                 kRoundedCornerRadius)
+          : gfx::RoundedCornersF(kRoundedCornerRadius);
   SetBorder(std::make_unique<views::HighlightBorder>(
       rounded_corners, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColorId,
-                                                         rounded_corners));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      selection_widget_visible ? kCoralSelectionShownBackgroundColorId
+                               : kBackgroundColorId,
+      rounded_corners));
 
   // Install and stylize the focus ring.
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(this, rounded_corners);

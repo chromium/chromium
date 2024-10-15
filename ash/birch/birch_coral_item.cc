@@ -89,7 +89,6 @@ BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text,
                                int group_id)
     : BirchItem(coral_title, coral_text), group_id_(group_id) {
-  set_addon_label(u"Show");
 }
 
 BirchCoralItem::BirchCoralItem(BirchCoralItem&&) = default;
@@ -179,7 +178,9 @@ BirchAddonType BirchCoralItem::GetAddonType() const {
 }
 
 std::u16string BirchCoralItem::GetAddonAccessibleName() const {
-  return u"Show";
+  // The add on tooltip and a11y name is determined by the presence of the
+  // selection UI. It will be handled in `BirchChipButton`.
+  return u"Placeholder";
 }
 
 void BirchCoralItem::GetFaviconImageCoral(

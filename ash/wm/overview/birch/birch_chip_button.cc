@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "ash/wm/overview/birch/birch_animation_utils.h"
@@ -44,6 +45,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -200,6 +202,18 @@ BirchChipButton::BirchChipButton()
 }
 
 BirchChipButton::~BirchChipButton() = default;
+
+void BirchChipButton::OnSelectionWidgetVisibilityChanged() {
+  CHECK(tab_app_selection_widget_);
+  UpdateRoundedCorners(tab_app_selection_widget_->IsVisible());
+
+  CHECK(addon_view_);
+  views::AsViewClass<IconButton>(addon_view_)
+      ->SetTooltipText(l10n_util::GetStringUTF16(
+          tab_app_selection_widget_->IsVisible()
+              ? IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN
+              : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
+}
 
 void BirchChipButton::Init(BirchItem* item) {
   item_ = item;

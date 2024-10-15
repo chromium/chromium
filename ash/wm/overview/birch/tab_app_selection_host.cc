@@ -111,10 +111,10 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
   views::AsViewClass<IconButton>(owner_->addon_view())
       ->SetVectorIcon(visible ? vector_icons::kCaretDownIcon
                               : vector_icons::kCaretUpIcon);
-  owner_->SetTopHalfRounded(!visible);
-
+  owner_->OnSelectionWidgetVisibilityChanged();
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
       visible ? GetNativeWindow() : nullptr);
+
   if (visible) {
     base::UmaHistogramBoolean("Ash.Birch.Coral.ClusterExpanded", true);
     GetContentsView()->GetViewAccessibility().NotifyEvent(

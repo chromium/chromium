@@ -47,6 +47,8 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
     return tab_app_selection_widget_.get();
   }
 
+  void OnSelectionWidgetVisibilityChanged();
+
   // BirchChipButtonBase:
   void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;
