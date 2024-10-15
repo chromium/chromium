@@ -80,9 +80,6 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
   // Returns the current instance for `browser_context`.
   static DocumentScanAPIHandler* Get(content::BrowserContext* browser_context);
 
-  // Registers the documentScan API preference with the |registry|.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   // ExtensionRegistryObserver implementation:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,

@@ -26,7 +26,6 @@
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -117,12 +116,6 @@ DocumentScanAPIHandler* DocumentScanAPIHandler::Get(
     content::BrowserContext* browser_context) {
   return BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::Get(
       browser_context);
-}
-
-// static
-void DocumentScanAPIHandler::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kDocumentScanAPITrustedExtensions);
 }
 
 void DocumentScanAPIHandler::ExtensionCleanup(const ExtensionId& id) {
