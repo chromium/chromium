@@ -7,11 +7,13 @@
  * dictionary).
  */
 import './os_japanese_dictionary_entry_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {JapaneseDictionary, JpPosType} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
+import type {JapaneseDictionary} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
+import {JpPosType} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
 
 import {getTemplate} from './os_japanese_dictionary_expand.html.js';
 import {UserDataServiceProvider} from './user_data_service_provider.js';

@@ -19,10 +19,10 @@ import '../settings_vars.css.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
-import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {getTemplate} from './os_languages_section.html.js';
 
 const OsSettingsLanguagesSectionElementBase = I18nMixin(PolymerElement);
