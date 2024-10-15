@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -435,24 +436,40 @@ public class UiUtils {
     }
 
     /**
-     * Sets the status bar icons to dark or light. Note that this is only valid for
-     * Android M+.
+     * Sets the status bar icons to dark or light. Note that this is only valid for Android M+.
      *
-     * TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
-     *
-     * @param rootView The root view used to request updates to the system UI theming.
+     * @param window The application window which includes the decor view.
      * @param useDarkIcons Whether the status bar icons should be dark.
      */
-    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
-        int systemUiVisibility = rootView.getSystemUiVisibility();
-        // The status bar should always be black in automotive devices to match the black back
-        // button toolbar, so we should not use dark icons.
-        if (useDarkIcons && !BuildInfo.getInstance().isAutomotive) {
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+    public static void setStatusBarIconColor(Window window, boolean useDarkIcons) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsetsController controller = window.getInsetsController();
+            if (controller == null) return;
+            if (useDarkIcons && !BuildInfo.getInstance().isAutomotive) {
+                controller.setSystemBarsAppearance(
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+            } else {
+                controller.setSystemBarsAppearance(
+                        0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+            }
         } else {
-            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            View rootView = window.getDecorView().getRootView();
+            if (rootView == null) {
+                // The rootView might be null if it's a mocked window in tests. In that case, we use
+                // the decor view instead.
+                rootView = window.getDecorView();
+            }
+            int systemUiVisibility = rootView.getSystemUiVisibility();
+            // The status bar should always be black in automotive devices to match the black back
+            // button toolbar, so we should not use dark icons.
+            if (useDarkIcons && !BuildInfo.getInstance().isAutomotive) {
+                systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            } else {
+                systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            }
+            rootView.setSystemUiVisibility(systemUiVisibility);
         }
-        rootView.setSystemUiVisibility(systemUiVisibility);
     }
 
     /**

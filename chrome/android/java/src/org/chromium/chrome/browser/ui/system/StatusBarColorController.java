@@ -465,15 +465,15 @@ public class StatusBarColorController
     /**
      * Set device status bar to a given color. Also, set the status bar icons to a dark color if
      * needed.
+     *
      * @param window The current window of the UI view.
      * @param color The color that the status bar should be set to.
      */
     public static void setStatusBarColor(Window window, @ColorInt int color) {
         if (UiUtils.isSystemUiThemingDisabled()) return;
 
-        final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
-        UiUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);
+        UiUtils.setStatusBarIconColor(window, needsDarkStatusBarIcons);
         UiUtils.setStatusBarColor(window, color);
     }
 

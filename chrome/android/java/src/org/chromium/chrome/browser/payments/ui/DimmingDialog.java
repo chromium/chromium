@@ -102,7 +102,7 @@ import java.util.Collection;
     /* package */ static void setVisibleStatusBarIconColor(Window window) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         UiUtils.setStatusBarIconColor(
-                window.getDecorView().getRootView(),
+                window,
                 !ColorUtils.shouldUseLightForegroundOnBackground(window.getStatusBarColor()));
     }
 
