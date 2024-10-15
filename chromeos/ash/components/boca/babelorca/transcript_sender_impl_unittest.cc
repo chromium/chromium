@@ -73,7 +73,7 @@ TEST(TranscriptSenderImplTest, SendOneMessageLongerThanMaxAllowed) {
 
   media::SpeechRecognitionResult transcript(kTranscriptText,
                                             /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript, kLanguage));
+  sender.SendTranscriptionUpdate(transcript, kLanguage);
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(TachyonResponse(
       net::OK, net::HttpStatusCode::HTTP_OK,
@@ -137,7 +137,7 @@ TEST(TranscriptSenderImplTest, SendNewTranscript) {
 
   media::SpeechRecognitionResult transcript1(kTranscriptText,
                                              /*is_final=*/true);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
+  sender.SendTranscriptionUpdate(transcript1, kLanguage);
   authed_client.WaitForRequest();
   request_string1 = authed_client.GetRequestString();
   authed_client.ExecuteResponseCallback(TachyonResponse(
@@ -146,7 +146,7 @@ TEST(TranscriptSenderImplTest, SendNewTranscript) {
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
+  sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
   request_string2 = authed_client.GetRequestString();
   authed_client.ExecuteResponseCallback(TachyonResponse(
@@ -182,7 +182,7 @@ TEST(TranscriptSenderImplTest, SendNewTranscript) {
   EXPECT_EQ(message2.init_timestamp_ms(), kInitTimestampMs);
 }
 
-TEST(TranscriptSenderImplTest, RejectSendingAndReplyOnMaxErrorsReached) {
+TEST(TranscriptSenderImplTest, ReplyWithErrrorOnMaxErrorsReached) {
   base::test::TaskEnvironment task_environment;
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
@@ -198,21 +198,17 @@ TEST(TranscriptSenderImplTest, RejectSendingAndReplyOnMaxErrorsReached) {
 
   media::SpeechRecognitionResult transcript1(kTranscriptText,
                                              /*is_final=*/true);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
+  sender.SendTranscriptionUpdate(transcript1, kLanguage);
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
       TachyonResponse(TachyonResponse::Status::kHttpError));
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
+  sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
       TachyonResponse(TachyonResponse::Status::kHttpError));
-
-  media::SpeechRecognitionResult transcript3(kTranscriptText,
-                                             /*is_final=*/false);
-  EXPECT_FALSE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
 
   EXPECT_TRUE(failure_future.IsReady());
 }
@@ -234,7 +230,7 @@ TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
   // Failed request
   media::SpeechRecognitionResult transcript1(kTranscriptText,
                                              /*is_final=*/true);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
+  sender.SendTranscriptionUpdate(transcript1, kLanguage);
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
       TachyonResponse(TachyonResponse::Status::kHttpError));
@@ -242,7 +238,7 @@ TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
   // Successful request, should reset error count.
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
+  sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(TachyonResponse(
       net::OK, net::HttpStatusCode::HTTP_OK,
@@ -252,7 +248,7 @@ TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
   // was reset.
   media::SpeechRecognitionResult transcript3(kTranscriptText,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
+  sender.SendTranscriptionUpdate(transcript3, kLanguage);
   authed_client.WaitForRequest();
   authed_client.ExecuteResponseCallback(
       TachyonResponse(TachyonResponse::Status::kHttpError));
@@ -276,21 +272,21 @@ TEST(TranscriptSenderImplTest, InflightRequestsAreHandledOnFailure) {
 
   media::SpeechRecognitionResult transcript1(kTranscriptText,
                                              /*is_final=*/true);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
+  sender.SendTranscriptionUpdate(transcript1, kLanguage);
   authed_client.WaitForRequest();
   RequestDataWrapper::ResponseCallback response_cb1 =
       authed_client.TakeResponseCallback();
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
+  sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
   RequestDataWrapper::ResponseCallback response_cb2 =
       authed_client.TakeResponseCallback();
 
   media::SpeechRecognitionResult transcript3(kTranscriptText,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
+  sender.SendTranscriptionUpdate(transcript3, kLanguage);
   authed_client.WaitForRequest();
   RequestDataWrapper::ResponseCallback response_cb3 =
       authed_client.TakeResponseCallback();
@@ -304,10 +300,6 @@ TEST(TranscriptSenderImplTest, InflightRequestsAreHandledOnFailure) {
 
   std::move(response_cb3)
       .Run(TachyonResponse(TachyonResponse::Status::kHttpError));
-
-  media::SpeechRecognitionResult transcript4(kTranscriptText,
-                                             /*is_final=*/false);
-  EXPECT_FALSE(sender.SendTranscriptionUpdate(transcript3, kLanguage));
 }
 
 TEST_P(TranscriptSenderImplTest, SendTwoMessages) {
@@ -323,11 +315,11 @@ TEST_P(TranscriptSenderImplTest, SendTwoMessages) {
 
   media::SpeechRecognitionResult transcript1(GetParam().transcript1,
                                              /*is_final=*/false);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript1, kLanguage));
+  sender.SendTranscriptionUpdate(transcript1, kLanguage);
   authed_client.WaitForRequest();
   media::SpeechRecognitionResult transcript2(GetParam().transcript2,
                                              /*is_final=*/true);
-  EXPECT_TRUE(sender.SendTranscriptionUpdate(transcript2, kLanguage));
+  sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
 
   BabelOrcaMessage message2;

@@ -55,9 +55,9 @@ class TranscriptSenderImpl {
 
   ~TranscriptSenderImpl();
 
-  // Returns `true` if will accept sending request, `false` otherwise.
-  // Currently, it only rejects sending if max number of errors is reached.
-  bool SendTranscriptionUpdate(const media::SpeechRecognitionResult& transcript,
+  // Sends the transcript to the group specified by `request_data_provider`.
+  // Only rejects sending if max number of errors is reached.
+  void SendTranscriptionUpdate(const media::SpeechRecognitionResult& transcript,
                                const std::string& language);
 
  private:

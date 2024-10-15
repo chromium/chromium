@@ -104,12 +104,12 @@ TranscriptSenderImpl::~TranscriptSenderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool TranscriptSenderImpl::SendTranscriptionUpdate(
+void TranscriptSenderImpl::SendTranscriptionUpdate(
     const media::SpeechRecognitionResult& transcript,
     const std::string& language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (errors_num_ >= options_.max_errors_num) {
-    return false;
+    return;
   }
   const int part_index =
       GetTranscriptPartIndex(current_transcript_text_, transcript.transcription,
@@ -125,7 +125,7 @@ bool TranscriptSenderImpl::SendTranscriptionUpdate(
                      /*max_retries=*/transcript.is_final ? 1 : 0));
   // Should be called after `GenerateMessage`.
   UpdateTranscripts(transcript, language);
-  return true;
+  return;
 }
 
 BabelOrcaMessage TranscriptSenderImpl::GenerateMessage(
