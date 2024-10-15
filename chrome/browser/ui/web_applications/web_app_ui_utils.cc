@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -40,7 +41,9 @@ std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar_unsafe()
-           .IsInstalled(*app_id)) {
+           .IsInstallState(*app_id,
+                           {proto::INSTALLED_WITH_OS_INTEGRATION,
+                            proto::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return std::nullopt;
   }
 
