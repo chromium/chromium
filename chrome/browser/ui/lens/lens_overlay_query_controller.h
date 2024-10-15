@@ -208,18 +208,20 @@ class LensOverlayQueryController {
   // not need to be set, but should be included if it is set, use std::optional.
   struct LensServerFetchRequest {
    public:
-    LensServerFetchRequest(int sequence_id, base::TimeTicks query_start_time);
+    LensServerFetchRequest(
+        std::unique_ptr<lens::LensOverlayRequestId> request_id,
+        base::TimeTicks query_start_time);
     ~LensServerFetchRequest();
 
-    // The sequence ID of the request this data belongs to. Used for cancelling
-    // any requests that have been superseded by another.
-    const int sequence_id_;
+    // Returns the sequence ID of the request this data belongs to. Used
+    // for cancelling any requests that have been superseded by another.
+    int sequence_id() const { return request_id_->sequence_id(); }
+
+    // The request ID for this request.
+    const std::unique_ptr<lens::LensOverlayRequestId> request_id_;
 
     // The start time of the query.
     const base::TimeTicks query_start_time_;
-
-    // The request ID for this request.
-    std::unique_ptr<lens::LensOverlayRequestId> request_id_;
 
     // The request to be sent to the server. Must be set prior to making the
     // request.
@@ -328,7 +330,6 @@ class LensOverlayQueryController {
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
-      std::unique_ptr<lens::LensOverlayRequestId> request_id,
       std::optional<lens::ImageCrop> image_crop);
 
   // Creates the OAuth headers that get attached to the interaction request to
@@ -399,10 +400,9 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
   CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
 
-  // Adds the visual search interaction log data param to the search query
-  // params.
-  std::map<std::string, std::string> AddVisualSearchInteractionLogData(
-      std::map<std::string, std::string> additional_search_query_params,
+  // Gets the visual search interaction log data param as a base64url
+  // encoded string.
+  std::string GetEncodedVisualSearchInteractionLogData(
       lens::LensOverlaySelectionType selection_type);
 
   // Creates the metadata for an interaction request using the latest
@@ -412,11 +412,17 @@ class LensOverlayQueryController {
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       std::optional<lens::ImageCrop> image_crop,
-      lens::LensOverlayClientLogs client_logs,
-      std::unique_ptr<lens::LensOverlayRequestId> request_id);
+      lens::LensOverlayClientLogs client_logs);
 
   // Resets the request cluster info state.
   void ResetRequestClusterInfoState();
+
+  // Updates the suggest inputs with the request id.
+  void UpdateSuggestInputsWithRequestId(lens::LensOverlayRequestId* request_id);
+
+  // Updates the suggest inputs with the feature params and latest cluster info
+  // response, then runs the callback.
+  void RunSuggestInputsCallback();
 
   // Callback for when the full image endpoint fetcher is created.
   void OnFullImageEndpointFetcherCreated(
@@ -528,6 +534,12 @@ class LensOverlayQueryController {
   // because it is assumed this request will finish, never need to be
   // cancelled, and all other tasks will wait on it if needed.
   std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
+
+  // The current suggest inputs. The fields in this proto are updated
+  // whenever new data is available (i.e. after an objects or interaction
+  // response is received) and the overlay controller notified via the
+  // suggest inputs callback.
+  lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<variations::VariationsClient> variations_client_;

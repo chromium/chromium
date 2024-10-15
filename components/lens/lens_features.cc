@@ -275,6 +275,20 @@ constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
     &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/gsessionid"};
 
+constexpr base::FeatureParam<bool>
+    kLensOverlaySendLensInputsForContextualSuggest{
+        &kLensOverlayContextualSearchbox,
+        "send-lens-inputs-for-contextual-suggest", true};
+
+constexpr base::FeatureParam<bool> kLensOverlaySendLensInputsForLensSuggest{
+    &kLensOverlayContextualSearchbox, "send-lens-inputs-for-lens-suggest",
+    false};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlaySendLensVisualInteractionDataForLensSuggest{
+        &kLensOverlayContextualSearchbox,
+        "send-lens-visual-interaction-data-for-lens-suggest", false};
+
 constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
     &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 2000000};
 
@@ -526,6 +540,18 @@ bool UseOptimizedRequestFlow() {
 
 std::string GetLensOverlayClusterInfoEndpointUrl() {
   return kLensOverlayClusterInfoEndpointUrl.Get();
+}
+
+bool GetLensOverlaySendLensInputsForContextualSuggest() {
+  return kLensOverlaySendLensInputsForContextualSuggest.Get();
+}
+
+bool GetLensOverlaySendLensInputsForLensSuggest() {
+  return kLensOverlaySendLensInputsForLensSuggest.Get();
+}
+
+bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest() {
+  return kLensOverlaySendLensVisualInteractionDataForLensSuggest.Get();
 }
 
 uint32_t GetLensOverlayFileUploadLimitBytes() {

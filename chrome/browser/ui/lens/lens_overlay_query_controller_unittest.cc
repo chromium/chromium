@@ -251,6 +251,16 @@ class LensOverlayQueryControllerTest : public testing::Test {
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
   }
 
+  // We can't use a TestFuture::GetRepeatingCallback() because the callback
+  // may be called multiple times before the test can consume the value.
+  // Instead, this method returns a callback that can be called multiple times
+  // and stores the latest suggest inputs in a member variable.
+  LensOverlaySuggestInputsCallback GetSuggestInputsCallback() {
+    return base::BindRepeating(
+        &LensOverlayQueryControllerTest::HandleSuggestInputsResponse,
+        base::Unretained(this));
+  }
+
   lens::LensOverlayGen204Controller* GetGen204Controller() {
     return gen204_controller_.get();
   }
@@ -311,12 +321,23 @@ class LensOverlayQueryControllerTest : public testing::Test {
               url_gen204_id);
   }
 
+  std::string GetEncodedRequestId(lens::LensOverlayRequestId request_id) {
+    std::string serialized_proto;
+    EXPECT_TRUE(request_id.SerializeToString(&serialized_proto));
+    std::string encoded_proto;
+    base::Base64UrlEncode(serialized_proto,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &encoded_proto);
+    return encoded_proto;
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<lens::FakeLensOverlayGen204Controller> gen204_controller_;
   std::unique_ptr<FakeVariationsClient> fake_variations_client_;
+  lens::proto::LensOverlaySuggestInputs latest_suggest_inputs_;
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -335,13 +356,22 @@ class LensOverlayQueryControllerTest : public testing::Test {
     UErrorCode error_code = U_ZERO_ERROR;
     icu::Locale::setDefault(icu::Locale(kLocale), error_code);
     ASSERT_TRUE(U_SUCCESS(error_code));
+    latest_suggest_inputs_.Clear();
 
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlayContextualSearchbox,
         {{"use-video-context-for-text-only-requests", "true"},
          {"use-optimized-request-flow", "true"},
          {"use-pdf-vit-param", "true"},
-         {"use-webpage-vit-param", "true"}});
+         {"use-webpage-vit-param", "true"},
+         {"send-lens-inputs-for-contextual-suggest", "true"},
+         {"send-lens-inputs-for-lens-suggest", "true"},
+         {"send-lens-visual-interaction-data-for-lens-suggest", "true"}});
+  }
+
+  void HandleSuggestInputsResponse(
+      lens::proto::LensOverlaySuggestInputs suggest_inputs) {
+    latest_suggest_inputs_ = suggest_inputs;
   }
 };
 
@@ -351,7 +381,8 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), base::NullCallback(), fake_variations_client_.get(),
+      GetSuggestInputsCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -402,10 +433,13 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), base::NullCallback(), fake_variations_client_.get(),
+      GetSuggestInputsCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
@@ -423,6 +457,55 @@ TEST_F(LensOverlayQueryControllerTest,
                                          kSessionIdQueryParameterKey,
                                          &session_id_value));
   ASSERT_EQ(session_id_value, kTestServerSessionId);
+
+  ASSERT_FALSE(latest_suggest_inputs_.has_encoded_image_signals());
+  ASSERT_FALSE(
+      latest_suggest_inputs_.has_encoded_visual_search_interaction_log_data());
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
+  ASSERT_TRUE(
+      latest_suggest_inputs_.send_gsession_vsrid_for_contextual_suggest());
+  ASSERT_TRUE(latest_suggest_inputs_.send_gsession_vsrid_for_lens_suggest());
+  ASSERT_TRUE(latest_suggest_inputs_.send_vsint_for_lens_suggest());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInitialQuery_SuggestInputsHaveFlagValues) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayContextualSearchbox,
+      {{"use-optimized-request-flow", "true"},
+       {"send-lens-inputs-for-contextual-suggest", "false"},
+       {"send-lens-inputs-for-lens-suggest", "false"},
+       {"send-lens-visual-interaction-data-for-lens-suggest", "false"}});
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
+
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  ASSERT_FALSE(
+      latest_suggest_inputs_.send_gsession_vsrid_for_contextual_suggest());
+  ASSERT_FALSE(latest_suggest_inputs_.send_gsession_vsrid_for_lens_suggest());
+  ASSERT_FALSE(latest_suggest_inputs_.send_vsint_for_lens_suggest());
 }
 
 // Tests that the query controller attaches the server session id from the
@@ -435,13 +518,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -485,13 +565,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -534,8 +611,13 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::REGION_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().encoded_image_signals(),
+  ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_TRUE(
+      latest_suggest_inputs_.has_encoded_visual_search_interaction_log_data());
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
 
@@ -578,13 +660,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -619,6 +698,11 @@ TEST_F(LensOverlayQueryControllerTest,
   bool has_start_time =
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
                                  kStartTimeQueryParam, &unused_start_time);
+  std::string encoded_vsint;
+  bool has_vsint = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
+  ASSERT_TRUE(has_vsint);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
 
@@ -629,8 +713,13 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::REGION_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().encoded_image_signals(),
+  ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
+            encoded_vsint);
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
 
@@ -681,13 +770,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -720,6 +806,11 @@ TEST_F(LensOverlayQueryControllerTest,
   bool has_start_time =
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
                                  kStartTimeQueryParam, &unused_start_time);
+  std::string encoded_vsint;
+  bool has_vsint = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
+  ASSERT_TRUE(has_vsint);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
 
@@ -730,8 +821,13 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::MULTIMODAL_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().encoded_image_signals(),
+  ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
+            encoded_vsint);
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
 
@@ -777,13 +873,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -816,7 +909,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
-  ASSERT_FALSE(interaction_data_response_future.IsReady());
+  ASSERT_FALSE(latest_suggest_inputs_.has_encoded_image_signals());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::SELECT_TEXT_HIGHLIGHT);
   ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
@@ -831,13 +924,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -882,7 +972,6 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
-  ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
@@ -910,6 +999,11 @@ TEST_F(LensOverlayQueryControllerTest,
   bool has_invocation_source = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
       &invocation_source);
+  std::string encoded_vsint;
+  bool has_vsint = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
+  ASSERT_TRUE(has_vsint);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
@@ -919,6 +1013,13 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   ASSERT_TRUE(url_response_future.Get().has_url());
+  ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
+            kTestSuggestSignals);
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
+            encoded_vsint);
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -928,13 +1029,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -979,7 +1077,6 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
-  ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
@@ -1007,6 +1104,11 @@ TEST_F(LensOverlayQueryControllerTest,
   bool has_invocation_source = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
       &invocation_source);
+  std::string encoded_vsint;
+  bool has_vsint = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
+  ASSERT_TRUE(has_vsint);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
@@ -1016,6 +1118,13 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   ASSERT_TRUE(url_response_future.Get().has_url());
+  ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
+            kTestSuggestSignals);
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
+            encoded_vsint);
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -1025,13 +1134,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1076,7 +1182,6 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
-  ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
@@ -1104,6 +1209,11 @@ TEST_F(LensOverlayQueryControllerTest,
   bool has_invocation_source = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
       &invocation_source);
+  std::string encoded_vsint;
+  bool has_vsint = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()),
+      kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
+  ASSERT_TRUE(has_vsint);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
@@ -1113,6 +1223,13 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   ASSERT_TRUE(url_response_future.Get().has_url());
+  ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
+            kTestSuggestSignals);
+  ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
+  ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
+            encoded_vsint);
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id_),
+            latest_suggest_inputs_.encoded_request_id());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -1122,13 +1239,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1168,7 +1282,6 @@ TEST_F(LensOverlayQueryControllerTest,
   // new query flow due to the timeout occurring.
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
-  ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 2);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
@@ -1181,13 +1294,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1221,7 +1331,7 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 
   ASSERT_TRUE(url_response_future.IsReady());
-  ASSERT_TRUE(interaction_data_response_future.IsReady());
+  ASSERT_TRUE(latest_suggest_inputs_.has_encoded_image_signals());
   std::string second_analytics_id =
       query_controller.sent_request_id_.analytics_id();
 
@@ -1237,13 +1347,10 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
-      interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1282,9 +1389,9 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.SendMultimodalRequest(
       std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
-  ASSERT_TRUE(interaction_data_response_future.Wait());
 
   // Verify the interaction request id sequence was incremented.
+  ASSERT_TRUE(url_response_future.Wait());
   auto initial_sent_interaction_request =
       query_controller.sent_interaction_request_;
   ASSERT_EQ(initial_sent_interaction_request.request_context()

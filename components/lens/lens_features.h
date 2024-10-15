@@ -360,6 +360,23 @@ extern bool UseOptimizedRequestFlow();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayClusterInfoEndpointUrl();
 
+// Returns whether or not to send the search session and visual
+// search request ids in suggest requests from the contextual
+// search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendLensInputsForContextualSuggest();
+
+// Returns whether or not to send the search session and visual
+// search request ids in suggest requests from the Lens
+// search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendLensInputsForLensSuggest();
+
+// Returns whether or not to send the visual search interaction data
+// in suggest requests from the Lens search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest();
+
 // Returns the max number of bytes to allow for content uploads.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern uint32_t GetLensOverlayFileUploadLimitBytes();
