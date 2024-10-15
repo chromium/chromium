@@ -35,7 +35,7 @@ using ScannerCommandCallback = base::OnceCallback<void(bool success)>;
 // false.
 ASH_EXPORT void HandleScannerAction(
     base::WeakPtr<ScannerCommandDelegate> delegate,
-    const ScannerAction& action,
+    ScannerAction action,
     ScannerCommandCallback callback);
 
 }  // namespace ash

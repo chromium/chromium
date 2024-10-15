@@ -198,66 +198,62 @@ void UploadTempFileToDrive(base::WeakPtr<ScannerCommandDelegate> delegate,
 }
 
 void HandleNewGoogleDocAction(base::WeakPtr<ScannerCommandDelegate> delegate,
-                              const NewGoogleDocAction& action,
+                              NewGoogleDocAction action,
                               ScannerCommandCallback callback) {
+  size_t contents_size = action.html_contents.size();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      // This causes an expensive copy of the file contents because
-      // `action` is a const ref (and could dangle before the callback
-      // is called).
-      // TODO: b/367870452 - Determine whether we can avoid this copy.
-      base::BindOnce(&CreateTempFileWithContents, action.html_contents),
+      base::BindOnce(&CreateTempFileWithContents,
+                     std::move(action.html_contents)),
       base::BindOnce(&UploadTempFileToDrive, std::move(delegate),
                      /*contents_mime_type=*/"text/html",
                      /*converted_mime_type=*/
-                     drive::util::kGoogleDocumentMimeType,
-                     action.html_contents.size(), action.title,
-                     std::move(callback)));
+                     drive::util::kGoogleDocumentMimeType, contents_size,
+                     std::move(action.title), std::move(callback)));
 }
 
 void HandleNewGoogleSheetAction(base::WeakPtr<ScannerCommandDelegate> delegate,
                                 const NewGoogleSheetAction& action,
                                 ScannerCommandCallback callback) {
+  size_t contents_size = action.csv_contents.size();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      // This causes an expensive copy of the file contents because
-      // `action` is a const ref (and could dangle before the callback
-      // is called).
-      // TODO: b/367872031 - Determine whether we can avoid this copy.
-      base::BindOnce(&CreateTempFileWithContents, action.csv_contents),
+      base::BindOnce(&CreateTempFileWithContents,
+                     std::move(action.csv_contents)),
       base::BindOnce(&UploadTempFileToDrive, std::move(delegate),
                      /*contents_mime_type=*/"text/csv",
                      /*converted_mime_type=*/
-                     drive::util::kGoogleSpreadsheetMimeType,
-                     action.csv_contents.size(), action.title,
-                     std::move(callback)));
+                     drive::util::kGoogleSpreadsheetMimeType, contents_size,
+                     std::move(action.title), std::move(callback)));
 }
 
 }  // namespace
 
 void HandleScannerAction(base::WeakPtr<ScannerCommandDelegate> delegate,
-                         const ScannerAction& action,
+                         ScannerAction action,
                          ScannerCommandCallback callback) {
-  std::visit(base::Overloaded{
-                 [&](const NewCalendarEventAction& action) {
-                   OpenInBrowserTab(std::move(delegate),
-                                    GetCalendarEventUrl(action),
-                                    std::move(callback));
-                 },
-                 [&](const NewContactAction& action) {
-                   OpenInBrowserTab(std::move(delegate), GetContactUrl(action),
-                                    std::move(callback));
-                 },
-                 [&](const NewGoogleDocAction& action) {
-                   HandleNewGoogleDocAction(std::move(delegate), action,
-                                            std::move(callback));
-                 },
-                 [&](const NewGoogleSheetAction& action) {
-                   HandleNewGoogleSheetAction(std::move(delegate), action,
-                                              std::move(callback));
-                 },
-             },
-             action);
+  std::visit(
+      base::Overloaded{
+          [&](NewCalendarEventAction& action) {
+            OpenInBrowserTab(std::move(delegate), GetCalendarEventUrl(action),
+                             std::move(callback));
+          },
+          [&](NewContactAction& action) {
+            OpenInBrowserTab(std::move(delegate), GetContactUrl(action),
+                             std::move(callback));
+          },
+          [&](NewGoogleDocAction& action) {
+            HandleNewGoogleDocAction(std::move(delegate), std::move(action),
+                                     std::move(callback));
+          },
+          [&](NewGoogleSheetAction& action) {
+            HandleNewGoogleSheetAction(std::move(delegate), std::move(action),
+                                       std::move(callback));
+          },
+      },
+      action);
 }
 
 }  // namespace ash
