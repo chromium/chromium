@@ -146,6 +146,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.InlineTextBoxes.Bundle"
+    enum="AccessibilityModeBundleEnum" expires_after="2025-04-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks the combinations of mode flags that are set when there is a request
+    to load inline text boxes on Android. This occurs when a node first receives
+    accessibility focus.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}"
     enum="KeyboardShortcutsSemanticMeaning" expires_after="2025-08-30">
   <owner>mschillaci@google.com</owner>
@@ -1466,6 +1478,32 @@ even if they fit the naming pattern. -->
     The amount of time accessibility was enabled but not actively used. Reported
     when we switch states from inactive to active. This histogram will not be
     logged if the auto-disable accessibility feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.InlineTextBoxes.Count" units="count"
+    expires_after="2025-04-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks the number of nodes that have inline text boxes loaded per
+    AXTreeUpdate, if any are present. We track this to get a sense of the number
+    of nodes that we are loading text boxes for, since they have such a large
+    performance cost. We track this while computing pending changes of an
+    AXTreeUpdate in AXTree::Unserialize.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.InlineTextBoxes.PresentInUpdate" enum="Boolean"
+    expires_after="2025-04-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks whether or not a given AXTreeUpdate contains any inline text boxes.
+    We track this while computing pending changes of an AXTreeUpdate in
+    AXTree::Unserialize.
   </summary>
 </histogram>
 

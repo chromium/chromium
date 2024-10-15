@@ -160,6 +160,8 @@ class AX_BASE_EXPORT AXMode {
   // IMPORTANT!
   // These values are written to logs. Do not renumber or delete
   // existing items; add new entries to the end of the list.
+  //
+  // LINT.IfChange
   enum class BundleHistogramValue {
     // The unnamed bucket is a catch all for modes that do not match one of the
     // named sets.
@@ -175,6 +177,7 @@ class AX_BASE_EXPORT AXMode {
     // increase, but none of the other enum values may change.
     kMaxValue = 5
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityModeBundleEnum)
 
   // Experimental Flags
   // These are currently defined separately from existing flags to avoid

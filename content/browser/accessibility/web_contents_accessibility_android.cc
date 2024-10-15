@@ -1460,6 +1460,28 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
   // as that will result in loading inline text boxes for the whole tree.
   if (node != node->manager()->GetBrowserAccessibilityRoot()) {
     node->manager()->LoadInlineTextBoxes(*node);
+
+    // Track the current AXMode via UMA. We do this here and not in the
+    // manager so that we can get a signal of whether we are making requests
+    // for modes that don't have kInlineTextBoxes mode flag.
+    BrowserAccessibilityStateImpl* accessibility_state =
+        BrowserAccessibilityStateImpl::GetInstance();
+    ui::AXMode mode = accessibility_state->GetAccessibilityMode();
+
+    ui::AXMode::BundleHistogramValue bundle;
+    if (mode == ui::kAXModeBasic) {
+      bundle = ui::AXMode::BundleHistogramValue::kBasic;
+    } else if (mode == ui::kAXModeWebContentsOnly) {
+      bundle = ui::AXMode::BundleHistogramValue::kWebContentsOnly;
+    } else if (mode == ui::kAXModeComplete) {
+      bundle = ui::AXMode::BundleHistogramValue::kComplete;
+    } else if (mode == ui::kAXModeFormControls) {
+      bundle = ui::AXMode::BundleHistogramValue::kFormControls;
+    } else {
+      bundle = ui::AXMode::BundleHistogramValue::kUnnamed;
+    }
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.InlineTextBoxes.Bundle", bundle);
   }
 }
 

@@ -110,16 +110,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="15" label="StickyKeys"/>
 </enum>
 
-<enum name="AccessibilityModeBundleEnum">
-  <summary>Tracks usage of named sets of mode flags.</summary>
-  <int value="0" label="Unnamed"/>
-  <int value="1" label="Basic"/>
-  <int value="2" label="WebContentsOnly"/>
-  <int value="3" label="Complete"/>
-  <int value="4" label="CompleteNoHTML"/>
-  <int value="5" label="FormControls"/>
-</enum>
-
 <enum name="AccessibilityModeFlagEnum">
   <summary>Track individual accessibility mode flags that are enabled.</summary>
   <int value="0" label="Native APIs"/>
