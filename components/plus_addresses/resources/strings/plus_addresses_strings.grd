@@ -438,18 +438,11 @@ if we want to translate this file.
           Lorem Ipsum
         </message>
         <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION" desc="The description text on the creation dialog for plus addresses." translateable="false">
-        Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+          Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
         </message>
         <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT" desc="The text of the link shown on the Plus Address modal." translateable="false">
           Settings
         </message>
-        <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT" desc="The text of the link shown on the Plus Address error message." translateable="false">
-          error-link
-        </message>
-        <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP" desc="The error message shown on the desktop modal." translateable="false">
-          Lorem ipsum, consectetur adipiscing <ph name="LINK">$1</ph>.
-        </message>
-        <!-- TODO(crbug.com/371923550): Remove? -->
         <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
           Use address
         </message>

@@ -131,11 +131,6 @@ void OpenLink(content::WebContents* web_contents, const GURL& url) {
       /*navigation_handle_callback=*/{});
 }
 
-// Opens a link to report errors with plus addresses.
-void OpenErrorReportingLink(content::WebContents* web_contents) {
-  OpenLink(web_contents, GURL(features::kPlusAddressErrorReportUrl.Get()));
-}
-
 // Opens a link to learn more about plus addresses.
 void OpenLearnMoreLink(content::WebContents* web_contents) {
   OpenLink(web_contents, GURL(features::kPlusAddressLearnMoreUrl.Get()));
@@ -208,36 +203,6 @@ std::unique_ptr<views::Label> CreateErrorMessageLabel() {
       .SetTextStyle(views::style::TextStyle::STYLE_BODY_5)
       .SetVisible(false)
       .Build();
-}
-
-// Creates a (by-default invisible) label for reporting errors.
-std::unique_ptr<views::View> CreateErrorReportLabel(
-    content::WebContents* web_contents) {
-  std::vector<size_t> error_link_offsets;
-  std::u16string error_link_text =
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT);
-  auto label =
-      views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetText(l10n_util::GetStringFUTF16(
-              IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP,
-              {error_link_text}, &error_link_offsets))
-          .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
-          .SetDefaultTextStyle(views::style::STYLE_HINT)
-          .SetVisible(false)
-          .SetProperty(views::kMarginsKey,
-                       gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0))
-          .SetProperty(views::kElementIdentifierKey,
-                       PlusAddressCreationView::kPlusAddressErrorTextElementId)
-          .Build();
-  // Update the style for the error link.
-  gfx::Range error_link_range(error_link_offsets[0],
-                              error_link_offsets[0] + error_link_text.length());
-  const auto error_link_text_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&OpenErrorReportingLink, web_contents));
-  label->AddStyleRange(error_link_range, error_link_text_style);
-  return label;
 }
 
 // Creates the view containing the legal notice and a link to learn more.
@@ -524,8 +489,6 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // The error report label is hidden by default.
   create_error_message_label_ =
       primary_view->AddChildView(CreateErrorMessageLabel());
-  error_report_label_ =
-      primary_view->AddChildView(CreateErrorReportLabel(web_contents));
 
   if (show_notice) {
     primary_view->AddChildView(
@@ -564,14 +527,8 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPlusAddressUpdatedErrorStatesInOnboardingModal)) {
-    // Show error in plus address container.
-    plus_address_container_->ShowError(
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR));
-  } else {
-    ShowErrorStateUI();
-  }
+  plus_address_container_->ShowError(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR));
 }
 
 void PlusAddressCreationDialogDelegate::ShowConfirmResult(
@@ -587,16 +544,11 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
         views::Widget::ClosedReason::kAcceptButtonClicked);
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kPlusAddressUpdatedErrorStatesInOnboardingModal)) {
-    ShowCreateErrorMessage(maybe_plus_profile.error().IsTimeoutError());
-    confirm_button_->SetText(
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON));
-    confirm_button_->SetEnabled(true);
-  } else {
-    ShowErrorStateUI();
-    confirm_button_->SetEnabled(false);
-  }
+
+  ShowCreateErrorMessage(maybe_plus_profile.error().IsTimeoutError());
+  confirm_button_->SetText(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON));
+  confirm_button_->SetEnabled(true);
 }
 
 void PlusAddressCreationDialogDelegate::HandleButtonPress(
@@ -701,19 +653,6 @@ PlusAddressCreationDialogDelegate::CreateButtons() {
 void PlusAddressCreationDialogDelegate::SetProgressBarVisibility(
     bool is_visible) {
   progress_bar_->SetVisible(is_visible);
-}
-
-void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
-  CHECK(GetWidget() && web_contents_);
-  plus_address_container_->SetVisible(false);
-  // Show the error report instructions.
-  error_report_label_->SetVisible(true);
-  // Update the size of modal.
-  constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(),
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
-          ->delegate()
-          ->GetWebContentsModalDialogHost());
 }
 
 void PlusAddressCreationDialogDelegate::ShowCreateErrorMessage(
