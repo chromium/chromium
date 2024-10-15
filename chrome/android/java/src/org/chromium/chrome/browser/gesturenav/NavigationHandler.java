@@ -344,7 +344,7 @@ class NavigationHandler implements TouchEventObserver {
             // Perform back action at the next UI thread execution. The back action can
             // potentially close the tab we're running on, which causes use-after-destroy
             // exception if the closing operation is performed synchronously.
-            mHandler.post(mBackActionDelegate::onBackGesture);
+            mHandler.post(() -> mBackActionDelegate.onBackGesture(mTab));
         }
     }
 

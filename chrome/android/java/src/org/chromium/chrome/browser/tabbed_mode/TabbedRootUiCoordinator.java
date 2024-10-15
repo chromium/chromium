@@ -117,6 +117,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -655,9 +656,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             }
 
                             @Override
-                            public void onBackGesture() {
-                                // Back navigation gesture performs what the back button would do.
-                                mActivity.getOnBackPressedDispatcher().onBackPressed();
+                            public void onBackGesture(Tab tab) {
+                                // Back navigation gesture performs only history navigation or
+                                // closing the current tab/chrome. Other actions back button can do
+                                // is not considered.
+                                switch (getBackActionType(tab)) {
+                                    case ActionType.NAVIGATE_BACK:
+                                        tab.goBack();
+                                        break;
+                                    case ActionType.CLOSE_TAB:
+                                        mTabModelSelectorSupplier
+                                                .get()
+                                                .getCurrentModel()
+                                                .closeTabs(TabClosureParams.closeTab(tab).build());
+                                        break;
+                                    case ActionType.EXIT_APP:
+                                        mActivity.moveTaskToBack(true);
+                                        break;
+                                }
                             }
 
                             @Override
