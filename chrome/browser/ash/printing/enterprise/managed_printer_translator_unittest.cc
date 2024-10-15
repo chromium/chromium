@@ -112,6 +112,21 @@ TEST(ManagedPrinterConfigFromDict, DictWithUserSuppliedPpdUriPpdResource) {
   EXPECT_THAT(*managed_printer, EqualsProto(expected));
 }
 
+TEST(ManagedPrinterConfigFromDict, DictWithPrintJobOptions) {
+  auto printer_dict = base::Value::Dict().Set(
+      "print_job_options",
+      base::Value::Dict().Set("color",
+                              base::Value::Dict().Set("default_value", true)));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ManagedPrinterConfiguration expected;
+  expected.mutable_print_job_options()->mutable_color()->set_default_value(
+      true);
+  ASSERT_TRUE(managed_printer.has_value());
+  EXPECT_THAT(*managed_printer, EqualsProto(expected));
+}
+
 TEST(PrinterFromManagedPrinterConfig, MissingGuid) {
   auto managed_printer = ValidManagedPrinter();
   managed_printer.clear_guid();
