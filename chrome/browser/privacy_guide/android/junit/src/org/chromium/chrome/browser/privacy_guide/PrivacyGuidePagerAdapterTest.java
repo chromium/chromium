@@ -123,7 +123,7 @@ public class PrivacyGuidePagerAdapterTest {
                 new PrivacyGuidePagerAdapter(
                         mFragment,
                         mStepDisplayHandler,
-                        PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER_PG3);
+                        PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER);
     }
 
     private Set<Class> getDisplayedFragmentClasses() {

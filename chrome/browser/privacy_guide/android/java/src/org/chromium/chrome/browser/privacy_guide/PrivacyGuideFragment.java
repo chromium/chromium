@@ -26,7 +26,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -79,16 +78,6 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.COOKIES,
                             FragmentType.AD_TOPICS,
                             FragmentType.DONE));
-    public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            FragmentType.WELCOME,
-                            FragmentType.MSBB,
-                            FragmentType.HISTORY_SYNC,
-                            FragmentType.COOKIES,
-                            FragmentType.SAFE_BROWSING,
-                            FragmentType.AD_TOPICS,
-                            FragmentType.DONE));
 
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
@@ -129,11 +118,7 @@ public class PrivacyGuideFragment extends Fragment
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
         mPagerAdapter =
                 new PrivacyGuidePagerAdapter(
-                        this,
-                        new StepDisplayHandlerImpl(mProfile),
-                        ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
-                                ? ALL_FRAGMENT_TYPE_ORDER_PG3
-                                : ALL_FRAGMENT_TYPE_ORDER);
+                        this, new StepDisplayHandlerImpl(mProfile), ALL_FRAGMENT_TYPE_ORDER);
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
