@@ -602,7 +602,8 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, EmptyFirstFrame) {
   EXPECT_EQ(0U, frames_[0]->header.payload_length);
 }
 
-// An empty frame in the middle of a message is ignored.
+// An empty frame in the middle of a message is processed as part of the
+// message.
 TEST_F(WebSocketBasicStreamSocketTest, EmptyMiddleFrame) {
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, kEmptyFirstFrame, kEmptyFirstFrameSize),
@@ -613,12 +614,15 @@ TEST_F(WebSocketBasicStreamSocketTest, EmptyMiddleFrame) {
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
   EXPECT_EQ(1U, frames_.size());
   frames_.clear();
+  EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
+  EXPECT_EQ(1U, frames_.size());
+  frames_.clear();
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()),
               IsError(ERR_IO_PENDING));
 }
 
-// An empty frame in the middle of a message that arrives separately is still
-// ignored.
+// An empty frame in the middle of a message that arrives separately is
+// processed.
 TEST_F(WebSocketBasicStreamSocketTest, EmptyMiddleFrameAsync) {
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, kEmptyFirstFrame, kEmptyFirstFrameSize),
@@ -630,6 +634,13 @@ TEST_F(WebSocketBasicStreamSocketTest, EmptyMiddleFrameAsync) {
 
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
   EXPECT_EQ(1U, frames_.size());
+  frames_.clear();
+  ASSERT_THAT(stream_->ReadFrames(&frames_, cb_.callback()),
+              IsError(ERR_IO_PENDING));
+  EXPECT_THAT(cb_.WaitForResult(), IsOk());
+  ASSERT_EQ(1U, frames_.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames_[0]->header.opcode);
   frames_.clear();
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb_.callback()),
               IsError(ERR_IO_PENDING));
@@ -649,7 +660,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, EmptyFinalFrame) {
   EXPECT_EQ(0U, frames_[0]->header.payload_length);
 }
 
-// An empty middle frame is ignored with a final frame present.
+// An empty middle frame is processed with a final frame present.
 TEST_F(WebSocketBasicStreamSocketTest, ThreeFrameEmptyMessage) {
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, kEmptyFirstFrame, kEmptyFirstFrameSize),
@@ -664,6 +675,13 @@ TEST_F(WebSocketBasicStreamSocketTest, ThreeFrameEmptyMessage) {
   frames_.clear();
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
   ASSERT_EQ(1U, frames_.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames_[0]->header.opcode);
+  frames_.clear();
+  EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
+  ASSERT_EQ(1U, frames_.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames_[0]->header.opcode);
   EXPECT_TRUE(frames_[0]->header.final);
 }
 
@@ -794,6 +812,34 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
   // The caller should not call ReadFrames() again after receiving an error
   // other than ERR_IO_PENDING.
   EXPECT_TRUE(frames_.empty());
+}
+
+// Test to ensure multiple control frames with different payloads are handled
+// properly.
+TEST_F(WebSocketBasicStreamSocketTest, MultipleControlFramesInOneRead) {
+  const char kMultiplePongFrames[] = {
+      '\x8A', '\x05', 'P', 'o', 'n', 'g', '1',  // "Pong1".
+      '\x8A', '\x05', 'P', 'o', 'n', 'g', '2'   // "Pong2".
+  };
+
+  constexpr size_t kMultiplePongFramesSize = sizeof(kMultiplePongFrames);
+
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, kMultiplePongFrames, kMultiplePongFramesSize)};
+  CreateStream(reads, base::span<MockWrite>());
+
+  EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
+  ASSERT_EQ(2U, frames_.size());
+
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodePong, frames_[0]->header.opcode);
+  EXPECT_EQ(5U, frames_[0]->header.payload_length);
+  EXPECT_EQ(std::string(frames_[0]->payload, frames_[0]->header.payload_length),
+            "Pong1");
+
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodePong, frames_[1]->header.opcode);
+  EXPECT_EQ(5U, frames_[1]->header.payload_length);
+  EXPECT_EQ(std::string(frames_[1]->payload, frames_[1]->header.payload_length),
+            "Pong2");
 }
 
 // In the synchronous case, ReadFrames assembles the whole control frame before

@@ -31,11 +31,19 @@ struct NET_EXPORT WebSocketFrameHeader {
     kOpCodeContinuation = 0x0,
     kOpCodeText = 0x1,
     kOpCodeBinary = 0x2,
-    kOpCodeDataUnused = 0x3,
+    kOpCodeDataUnused3 = 0x3,
+    kOpCodeDataUnused4 = 0x4,
+    kOpCodeDataUnused5 = 0x5,
+    kOpCodeDataUnused6 = 0x6,
+    kOpCodeDataUnused7 = 0x7,
     kOpCodeClose = 0x8,
     kOpCodePing = 0x9,
     kOpCodePong = 0xA,
-    kOpCodeControlUnused = 0xB,
+    kOpCodeControlUnusedB = 0xB,
+    kOpCodeControlUnusedC = 0xC,
+    kOpCodeControlUnusedD = 0xD,
+    kOpCodeControlUnusedE = 0xE,
+    kOpCodeControlUnusedF = 0xF,
   };
 
   // Return true if |opcode| is one of the data opcodes known to this
@@ -50,6 +58,20 @@ struct NET_EXPORT WebSocketFrameHeader {
   static bool IsKnownControlOpCode(OpCode opcode) {
     return opcode == kOpCodeClose || opcode == kOpCodePing ||
            opcode == kOpCodePong;
+  }
+
+  // Return true if |opcode| is one of the reserved data opcodes.
+  static bool IsReservedDataOpCode(OpCode opcode) {
+    return opcode == kOpCodeDataUnused3 || opcode == kOpCodeDataUnused4 ||
+           opcode == kOpCodeDataUnused5 || opcode == kOpCodeDataUnused6 ||
+           opcode == kOpCodeDataUnused7;
+  }
+
+  // Return true if |opcode| is one of the reserved control opcodes.
+  static bool IsReservedControlOpCode(OpCode opcode) {
+    return opcode == kOpCodeControlUnusedB || opcode == kOpCodeControlUnusedC ||
+           opcode == kOpCodeControlUnusedD || opcode == kOpCodeControlUnusedE ||
+           opcode == kOpCodeControlUnusedF;
   }
 
   // These values must be compile-time constants.

@@ -68,10 +68,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         "established may have contained cookies."
       )");
 
-// This uses type uint64_t to match the definition of
-// WebSocketFrameHeader::payload_length in websocket_frame.h.
-constexpr uint64_t kMaxControlFramePayload = 125;
-
 // The number of bytes to attempt to read at a time. It's used only for high
 // throughput connections.
 // TODO(ricea): See if there is a better number or algorithm to fulfill our
@@ -199,7 +195,7 @@ int WebSocketBasicStream::ReadFrames(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames,
     CompletionOnceCallback callback) {
   read_callback_ = std::move(callback);
-  complete_control_frame_body_.clear();
+  control_frame_payloads_.clear();
   if (http_read_buffer_ && is_http_read_buffer_decoded_) {
     http_read_buffer_.reset();
   }
@@ -403,144 +399,44 @@ int WebSocketBasicStream::HandleReadResult(
 int WebSocketBasicStream::ConvertChunksToFrames(
     std::vector<std::unique_ptr<WebSocketFrameChunk>>* frame_chunks,
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
-  for (size_t i = 0; i < frame_chunks->size(); ++i) {
-    auto& chunk = (*frame_chunks)[i];
+  for (auto& chunk : *frame_chunks) {
     DCHECK(chunk == frame_chunks->back() || chunk->final_chunk)
         << "Only last chunk can have |final_chunk| set to be false.";
-    if (const auto& header = chunk->header) {
-      net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_RECV_FRAME_HEADER,
-                        [&] { return NetLogFrameHeaderParam(header.get()); });
+
+    if (chunk->header) {
+      net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_RECV_FRAME_HEADER, [&] {
+        return NetLogFrameHeaderParam(chunk->header.get());
+      });
     }
-    std::unique_ptr<WebSocketFrame> frame;
-    int result = ConvertChunkToFrame(std::move(chunk), &frame);
-    if (result != OK)
-      return result;
-    if (frame)
-      frames->push_back(std::move(frame));
+
+    auto frame_result = chunk_assembler_.HandleChunk(std::move(chunk));
+
+    if (!frame_result.has_value()) {
+      return frame_result.error();
+    }
+
+    auto frame = std::move(frame_result.value());
+    bool is_control_opcode =
+        WebSocketFrameHeader::IsKnownControlOpCode(frame->header.opcode) ||
+        WebSocketFrameHeader::IsReservedControlOpCode(frame->header.opcode);
+    if (is_control_opcode) {
+      const size_t length =
+          base::checked_cast<size_t>(frame->header.payload_length);
+      if (length > 0) {
+        auto copied_payload = base::HeapArray<char>::WithSize(length);
+        base::ranges::copy(base::make_span(frame->payload, length),
+                           copied_payload.begin());
+        frame->payload = copied_payload.data();
+        control_frame_payloads_.emplace_back(std::move(copied_payload));
+      }
+    }
+
+    frames->emplace_back(std::move(frame));
   }
+
   frame_chunks->clear();
-  if (frames->empty())
-    return ERR_IO_PENDING;
-  return OK;
-}
 
-int WebSocketBasicStream::ConvertChunkToFrame(
-    std::unique_ptr<WebSocketFrameChunk> chunk,
-    std::unique_ptr<WebSocketFrame>* frame) {
-  DCHECK(frame->get() == nullptr);
-  bool is_first_chunk = false;
-  if (chunk->header) {
-    DCHECK(current_frame_header_ == nullptr)
-        << "Received the header for a new frame without notification that "
-        << "the previous frame was complete (bug in WebSocketFrameParser?)";
-    is_first_chunk = true;
-    current_frame_header_.swap(chunk->header);
-  }
-  DCHECK(current_frame_header_) << "Unexpected header-less chunk received "
-                                << "(final_chunk = " << chunk->final_chunk
-                                << ", payload size = " << chunk->payload.size()
-                                << ") (bug in WebSocketFrameParser?)";
-  const bool is_final_chunk = chunk->final_chunk;
-  const WebSocketFrameHeader::OpCode opcode = current_frame_header_->opcode;
-  if (WebSocketFrameHeader::IsKnownControlOpCode(opcode)) {
-    bool protocol_error = false;
-    if (!current_frame_header_->final) {
-      DVLOG(1) << "WebSocket protocol error. Control frame, opcode=" << opcode
-               << " received with FIN bit unset.";
-      protocol_error = true;
-    }
-    if (current_frame_header_->payload_length > kMaxControlFramePayload) {
-      DVLOG(1) << "WebSocket protocol error. Control frame, opcode=" << opcode
-               << ", payload_length=" << current_frame_header_->payload_length
-               << " exceeds maximum payload length for a control message.";
-      protocol_error = true;
-    }
-    if (protocol_error) {
-      current_frame_header_.reset();
-      return ERR_WS_PROTOCOL_ERROR;
-    }
-
-    if (!is_final_chunk) {
-      DVLOG(2) << "Encountered a split control frame, opcode " << opcode;
-      AddToIncompleteControlFrameBody(chunk->payload);
-      return OK;
-    }
-
-    if (!incomplete_control_frame_body_.empty()) {
-      DVLOG(2) << "Rejoining a split control frame, opcode " << opcode;
-      AddToIncompleteControlFrameBody(chunk->payload);
-      DCHECK(is_final_chunk);
-      DCHECK(complete_control_frame_body_.empty());
-      complete_control_frame_body_ = std::move(incomplete_control_frame_body_);
-      *frame = CreateFrame(is_final_chunk, complete_control_frame_body_);
-      return OK;
-    }
-  }
-
-  // Apply basic sanity checks to the |payload_length| field from the frame
-  // header. A check for exact equality can only be used when the whole frame
-  // arrives in one chunk.
-  DCHECK_GE(current_frame_header_->payload_length,
-            base::checked_cast<uint64_t>(chunk->payload.size()));
-  DCHECK(!is_first_chunk || !is_final_chunk ||
-         current_frame_header_->payload_length ==
-             base::checked_cast<uint64_t>(chunk->payload.size()));
-
-  // Convert the chunk to a complete frame.
-  *frame = CreateFrame(is_final_chunk, chunk->payload);
-  return OK;
-}
-
-std::unique_ptr<WebSocketFrame> WebSocketBasicStream::CreateFrame(
-    bool is_final_chunk,
-    base::span<const char> data) {
-  std::unique_ptr<WebSocketFrame> result_frame;
-  const bool is_final_chunk_in_message =
-      is_final_chunk && current_frame_header_->final;
-  const WebSocketFrameHeader::OpCode opcode = current_frame_header_->opcode;
-  // Empty frames convey no useful information unless they are the first frame
-  // (containing the type and flags) or have the "final" bit set.
-  if (is_final_chunk_in_message || data.size() > 0 ||
-      current_frame_header_->opcode !=
-          WebSocketFrameHeader::kOpCodeContinuation) {
-    result_frame = std::make_unique<WebSocketFrame>(opcode);
-    result_frame->header.CopyFrom(*current_frame_header_);
-    result_frame->header.final = is_final_chunk_in_message;
-    result_frame->header.payload_length = data.size();
-    result_frame->payload = data.data();
-    // Ensure that opcodes Text and Binary are only used for the first frame in
-    // the message. Also clear the reserved bits.
-    // TODO(ricea): If a future extension requires the reserved bits to be
-    // retained on continuation frames, make this behaviour conditional on a
-    // flag set at construction time.
-    if (!is_final_chunk && WebSocketFrameHeader::IsKnownDataOpCode(opcode)) {
-      current_frame_header_->opcode = WebSocketFrameHeader::kOpCodeContinuation;
-      current_frame_header_->reserved1 = false;
-      current_frame_header_->reserved2 = false;
-      current_frame_header_->reserved3 = false;
-    }
-  }
-  // Make sure that a frame header is not applied to any chunks that do not
-  // belong to it.
-  if (is_final_chunk)
-    current_frame_header_.reset();
-  return result_frame;
-}
-
-void WebSocketBasicStream::AddToIncompleteControlFrameBody(
-    base::span<const char> data) {
-  if (data.empty()) {
-    return;
-  }
-  incomplete_control_frame_body_.insert(incomplete_control_frame_body_.end(),
-                                        data.begin(), data.end());
-  // This method checks for oversize control frames above, so as long as
-  // the frame parser is working correctly, this won't overflow. If a bug
-  // does cause it to overflow, it will CHECK() in
-  // AddToIncompleteControlFrameBody() without writing outside the buffer.
-  CHECK_LE(incomplete_control_frame_body_.size(), kMaxControlFramePayload)
-      << "Control frame body larger than frame header indicates; frame parser "
-         "bug?";
+  return frames->empty() ? ERR_IO_PENDING : OK;
 }
 
 }  // namespace net

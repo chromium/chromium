@@ -1622,6 +1622,8 @@ component("net") {
       "websockets/websocket_basic_stream_adapters.h",
       "websockets/websocket_channel.cc",
       "websockets/websocket_channel.h",
+      "websockets/websocket_chunk_assembler.cc",
+      "websockets/websocket_chunk_assembler.h",
       "websockets/websocket_deflate_parameters.cc",
       "websockets/websocket_deflate_parameters.h",
       "websockets/websocket_deflate_predictor.h",
