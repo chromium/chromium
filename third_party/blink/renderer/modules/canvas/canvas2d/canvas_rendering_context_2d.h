@@ -263,6 +263,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
+  // Handles a page visibility change that occurs when the canvas is paintable.
+  // TODO(crbug.com/40280152): Fold this method into PageVisibilityChanged().
+  void OnPageVisibilityChangeWhenPaintable();
+
   bool Restore();
 
   void PruneLocalFontCache(size_t target_size);

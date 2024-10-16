@@ -43,8 +43,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   virtual ~Canvas2DLayerBridge();
 
-  void PageVisibilityChanged();
-
   // The values of the enum entries must not change because they are used for
   // usage metrics histograms. New values can be added to the end.
   enum HibernationEvent {
@@ -65,6 +63,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   };
 
   CanvasResourceProvider* GetOrCreateResourceProvider();
+  void InitiateHibernationIfNecessary();
 
   // Allow access to the hibernation handler while Canvas2DLayerBridge is being
   // incrementally folded into CanvasRenderingContext2D.
@@ -76,7 +75,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
  private:
   static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
                                     base::TimeTicks /*idleDeadline*/);
-  void InitiateHibernationIfNecessary();
   void Hibernate();
 
   CanvasHibernationHandler hibernation_handler_;

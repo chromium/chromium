@@ -47,7 +47,11 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "cc/layers/texture_layer.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/paint/paint_canvas.h"
+#include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/context_support.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
@@ -142,6 +146,20 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
   }
   return mojom::blink::ColorScheme::kLight;
 }
+
+namespace {
+
+gpu::ContextSupport* GetContextSupport() {
+  if (!SharedGpuContext::ContextProviderWrapper() ||
+      !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
+    return nullptr;
+  }
+  return SharedGpuContext::ContextProviderWrapper()
+      ->ContextProvider()
+      ->ContextSupport();
+}
+
+}  // namespace
 
 CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
     CanvasRenderingContextHost* host,
@@ -813,10 +831,61 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
 void CanvasRenderingContext2D::PageVisibilityChanged() {
   HTMLCanvasElement* const element = canvas();
   if (IsPaintable()) {
-    element->GetCanvas2DLayerBridge()->PageVisibilityChanged();
+    OnPageVisibilityChangeWhenPaintable();
   }
   if (!element->IsPageVisible()) {
     PruneLocalFontCache(0);
+  }
+}
+
+void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
+  CHECK(IsPaintable());
+  HTMLCanvasElement* const element = canvas();
+  Canvas2DLayerBridge* bridge = canvas()->GetCanvas2DLayerBridge();
+
+  bool page_is_visible = element->IsPageVisible();
+  if (element->ResourceProvider()) {
+    element->ResourceProvider()->SetResourceRecyclingEnabled(page_is_visible);
+  }
+
+  // Conserve memory.
+  if (element->GetRasterMode() == RasterMode::kGPU) {
+    if (auto* context_support = GetContextSupport()) {
+      context_support->SetAggressivelyFreeResources(!page_is_visible);
+    }
+  }
+
+  if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&
+      element->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
+    bridge->InitiateHibernationIfNecessary();
+  }
+
+  // The impl tree may have dropped the transferable resource for this canvas
+  // while it wasn't visible. Make sure that it gets pushed there again, now
+  // that we've visible.
+  //
+  // This is done all the time, but it is especially important when canvas
+  // hibernation is disabled. In this case, when the impl-side active tree
+  // releases the TextureLayer's transferable resource, it will not be freed
+  // since the texture has not been cleared above (there is a remaining
+  // reference held from the TextureLayer). Then the next time the page becomes
+  // visible, the TextureLayer will note the resource hasn't changed (in
+  // Update()), and will not add the layer to the list of those that need to
+  // push properties. But since the impl-side tree no longer holds the resource,
+  // we need TreeSynchronizer to always consider this layer.
+  //
+  // This makes sure that we do push properties. It is not needed when canvas
+  // hibernation is enabled (since the resource will have changed, it will be
+  // pushed), but we do it anyway, since these interactions are subtle.
+  bool resource_may_have_been_dropped =
+      cc::TextureLayerImpl::MayEvictResourceInBackground(
+          viz::TransferableResource::ResourceSource::kCanvas);
+  if (page_is_visible && resource_may_have_been_dropped) {
+    element->SetNeedsPushProperties();
+  }
+
+  if (page_is_visible && bridge->GetHibernationHandler().IsHibernating()) {
+    bridge->GetOrCreateResourceProvider();  // Rude awakening
   }
 }
 

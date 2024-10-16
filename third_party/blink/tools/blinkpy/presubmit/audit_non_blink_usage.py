@@ -555,6 +555,7 @@ _CONFIG = [
             'cc::LayerTreeHost',
             'cc::PictureLayer',
             'cc::SurfaceLayer',
+            'cc::TextureLayerImpl',
 
             # cc::Layer helper data structs.
             'cc::AnchorPositionScrollData',
@@ -1445,6 +1446,7 @@ _CONFIG = [
             'display::Display',
             'gl::GpuPreference',
             'gpu::ClientSharedImage',
+            'gpu::ContextSupport',
             'gpu::gles2::GLES2Interface',
             'gpu::Mailbox',
             'gpu::MailboxHolder',

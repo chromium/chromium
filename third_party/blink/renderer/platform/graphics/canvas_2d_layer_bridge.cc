@@ -50,6 +50,7 @@ void ReportHibernationEvent(Canvas2DLayerBridge::HibernationEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
 }
 
+// TODO(crbug.com/40280152): Remove this method when no longer used.
 gpu::ContextSupport* GetContextSupport() {
   if (!SharedGpuContext::ContextProviderWrapper() ||
       !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
@@ -240,55 +241,6 @@ void Canvas2DLayerBridge::InitiateHibernationIfNecessary() {
   ThreadScheduler::Current()->PostIdleTask(
       FROM_HERE, WTF::BindOnce(&Canvas2DLayerBridge::HibernateOrLogFailure,
                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void Canvas2DLayerBridge::PageVisibilityChanged() {
-  bool page_is_visible = resource_host_->IsPageVisible();
-  if (resource_host_->ResourceProvider()) {
-    resource_host_->ResourceProvider()->SetResourceRecyclingEnabled(
-        page_is_visible);
-  }
-
-  // Conserve memory.
-  if (resource_host_->GetRasterMode() == RasterMode::kGPU) {
-    if (auto* context_support = GetContextSupport()) {
-      context_support->SetAggressivelyFreeResources(!page_is_visible);
-    }
-  }
-
-  if (features::IsCanvas2DHibernationEnabled() &&
-      resource_host_->ResourceProvider() &&
-      resource_host_->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
-    InitiateHibernationIfNecessary();
-  }
-
-  // The impl tree may have dropped the transferable resource for this canvas
-  // while it wasn't visible. Make sure that it gets pushed there again, now
-  // that we've visible.
-  //
-  // This is done all the time, but it is especially important when canvas
-  // hibernation is disabled. In this case, when the impl-side active tree
-  // releases the TextureLayer's transferable resource, it will not be freed
-  // since the texture has not been cleared above (there is a remaining
-  // reference held from the TextureLayer). Then the next time the page becomes
-  // visible, the TextureLayer will note the resource hasn't changed (in
-  // Update()), and will not add the layer to the list of those that need to
-  // push properties. But since the impl-side tree no longer holds the resource,
-  // we need TreeSynchronizer to always consider this layer.
-  //
-  // This makes sure that we do push properties. It is a not needed when canvas
-  // hibernation is enabled (since the resource will have changed, it will be
-  // pushed), but we do it anyway, since these interactions are subtle.
-  bool resource_may_have_been_dropped =
-      cc::TextureLayerImpl::MayEvictResourceInBackground(
-          viz::TransferableResource::ResourceSource::kCanvas);
-  if (page_is_visible && resource_may_have_been_dropped) {
-    resource_host_->SetNeedsPushProperties();
-  }
-
-  if (page_is_visible && hibernation_handler_.IsHibernating()) {
-    GetOrCreateResourceProvider();  // Rude awakening
-  }
 }
 
 }  // namespace blink

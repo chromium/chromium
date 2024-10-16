@@ -10,6 +10,9 @@ include_rules = [
 specific_include_rules = {
     "canvas_rendering_context_2d.cc": [
         "+cc/layers/texture_layer.h",
+        "+cc/layers/texture_layer_impl.h",
+        "+components/viz/common/resources/transferable_resource.h",
+        "+gpu/command_buffer/client/context_support.h",
     ],
     "identifiability_study_helper.cc" : [
         "+base/hash",
