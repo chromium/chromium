@@ -1390,13 +1390,6 @@ void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-  // Added 08/2023.
-  [defaults removeObjectForKey:@"userHasInteractedWithPinnedTabsOverflow"];
-
-  // Added 10/2023
-  [defaults removeObjectForKey:@"PathToBrowserStateToKeep"];
-  [defaults removeObjectForKey:@"HasBrowserStateBeenRemoved"];
-
   // TODO(b/322004644): Remove in M124+. Added 02/2024.
   [defaults removeObjectForKey:@"TimestampAppLaunchedOnColdStart"];
 
