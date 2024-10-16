@@ -188,6 +188,8 @@ If modifying InterestGroup fields, make sure to also modify:
 * test_interest_group_builder[.h/.cc]
 * interest_group_mojom_traits[.h/.cc/.test]
 * bidder_worklet.cc (to pass the InterestGroup to generateBid())
+* shared_storage_worklet_global_scope.cc (interestGroups())
+* shared_storage_worklet_unittest.cc (SharedStorageWorkletTest.InterestGroups)
 
 In interest_group_storage.cc, add the new field and any respective indices, add
 a new database version and migration. Run InterestGroupStorageTest and follow

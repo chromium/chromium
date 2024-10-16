@@ -231,6 +231,18 @@ struct BiddingBrowserSignals {
   bool for_debugging_only_in_cooldown_or_lockout;
 };
 
+// Represents an interest group with associated metadata. This struct is
+// returned by the GetInterestGroups() method in the shared storage worklet.
+struct StorageInterestGroup {
+  InterestGroup interest_group;
+  BiddingBrowserSignals bidding_browser_signals;
+  url.mojom.Origin joining_origin;
+  mojo_base.mojom.Time join_time;
+  mojo_base.mojom.Time last_updated;
+  mojo_base.mojom.Time next_update_after;
+  uint64 estimated_size;
+};
+
 // Packages the details necessary for the browser process to retrieve a
 // DirectFromSellerSignals resource of a subresource bundle -- the actual
 // subresource URL is constructed by the browser process from the

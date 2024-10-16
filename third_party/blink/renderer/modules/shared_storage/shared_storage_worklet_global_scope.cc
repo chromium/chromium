@@ -19,8 +19,10 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -30,9 +32,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_protected_audience_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_run_operation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_select_url_operation.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_storage_interest_group.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_auctionad_longlong.h"
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -46,6 +54,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/code_cache_fetcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
@@ -55,6 +64,87 @@
 namespace blink {
 
 namespace {
+
+void ScriptValueToObject(ScriptState* script_state,
+                         ScriptValue value,
+                         v8::Local<v8::Object>* object,
+                         ExceptionState& exception_state) {
+  auto* isolate = script_state->GetIsolate();
+  DCHECK(!value.IsEmpty());
+  auto v8_value = value.V8Value();
+  // All the object parameters in the standard are default-initialised to an
+  // empty object.
+  if (v8_value->IsUndefined()) {
+    *object = v8::Object::New(isolate);
+    return;
+  }
+  TryRethrowScope rethrow_scope(isolate, exception_state);
+  std::ignore = v8_value->ToObject(script_state->GetContext()).ToLocal(object);
+}
+
+ScriptValue JsonStringToScriptValue(ScriptState* script_state,
+                                    const String& json_string) {
+  DCHECK(script_state->ContextIsValid());
+
+  ScriptState::Scope scope(script_state);
+  v8::Local<v8::Value> v8_value;
+  if (!v8::JSON::Parse(script_state->GetContext(),
+                       V8String(script_state->GetIsolate(), json_string))
+           .ToLocal(&v8_value)) {
+    return ScriptValue();
+  }
+  return ScriptValue(script_state->GetIsolate(), v8_value);
+}
+
+Member<AuctionAd> ConvertMojomAdToIDLAd(
+    ScriptState* script_state,
+    const mojom::blink::InterestGroupAdPtr& mojom_ad) {
+  AuctionAd* ad = AuctionAd::Create();
+  ad->setRenderURL(mojom_ad->render_url);
+  ad->setRenderUrlDeprecated(mojom_ad->render_url);
+  if (mojom_ad->size_group) {
+    ad->setSizeGroup(mojom_ad->size_group);
+  }
+  if (mojom_ad->buyer_reporting_id) {
+    ad->setBuyerReportingId(mojom_ad->buyer_reporting_id);
+  }
+  if (mojom_ad->buyer_and_seller_reporting_id) {
+    ad->setBuyerAndSellerReportingId(mojom_ad->buyer_and_seller_reporting_id);
+  }
+  if (mojom_ad->selectable_buyer_and_seller_reporting_ids) {
+    ad->setSelectableBuyerAndSellerReportingIds(
+        *mojom_ad->selectable_buyer_and_seller_reporting_ids);
+  }
+  if (mojom_ad->metadata) {
+    ad->setMetadata(JsonStringToScriptValue(script_state, mojom_ad->metadata));
+  }
+  if (mojom_ad->ad_render_id) {
+    ad->setAdRenderId(mojom_ad->ad_render_id);
+  }
+  if (mojom_ad->allowed_reporting_origins) {
+    Vector<String> allowed_reporting_origins;
+    allowed_reporting_origins.reserve(
+        mojom_ad->allowed_reporting_origins->size());
+    for (const scoped_refptr<const blink::SecurityOrigin>& origin :
+         *mojom_ad->allowed_reporting_origins) {
+      allowed_reporting_origins.push_back(origin->ToString());
+    }
+    ad->setAllowedReportingOrigins(std::move(allowed_reporting_origins));
+  }
+
+  return ad;
+}
+
+HeapVector<Member<AuctionAd>> ConvertMojomAdsToIDLAds(
+    ScriptState* script_state,
+    const Vector<mojom::blink::InterestGroupAdPtr>& mojom_ads) {
+  HeapVector<Member<AuctionAd>> ads;
+  ads.reserve(mojom_ads.size());
+  for (const mojom::blink::InterestGroupAdPtr& mojom_ad : mojom_ads) {
+    ads.push_back(ConvertMojomAdToIDLAd(script_state, mojom_ad));
+  }
+  return ads;
+}
 
 std::optional<ScriptValue> Deserialize(
     v8::Isolate* isolate,
@@ -335,14 +425,13 @@ void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
 void SharedStorageWorkletGlobalScope::Initialize(
     mojo::PendingAssociatedRemote<
         mojom::blink::SharedStorageWorkletServiceClient> client,
-    bool private_aggregation_permissions_policy_allowed,
+    mojom::blink::SharedStorageWorkletPermissionsPolicyStatePtr
+        permissions_policy_state,
     const String& embedder_context) {
   client_.Bind(std::move(client),
                GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
 
-  private_aggregation_permissions_policy_allowed_ =
-      private_aggregation_permissions_policy_allowed;
-
+  permissions_policy_state_ = std::move(permissions_policy_state);
   embedder_context_ = embedder_context;
 }
 
@@ -585,6 +674,382 @@ Crypto* SharedStorageWorkletGlobalScope::crypto(
   }
 
   return crypto_.Get();
+}
+
+ScriptPromise<IDLSequence<StorageInterestGroup>>
+SharedStorageWorkletGlobalScope::interestGroups(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!add_module_finished_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "interestGroups() cannot be called during addModule().");
+    return EmptyPromise();
+  }
+
+  if (!permissions_policy_state_->join_ad_interest_group_allowed) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "The \"join-ad-interest-group\" Permissions Policy denied the "
+        "interestGroups() method.");
+    return EmptyPromise();
+  }
+
+  if (!permissions_policy_state_->run_ad_auction_allowed) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "The \"run-ad-auction\" Permissions Policy denied the interestGroups() "
+        "method.");
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<StorageInterestGroup>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  GetSharedStorageWorkletServiceClient()->GetInterestGroups(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLSequence<StorageInterestGroup>>* resolver,
+             mojom::blink::GetInterestGroupsResultPtr result) {
+            ScriptState* script_state = resolver->GetScriptState();
+            DCHECK(script_state->ContextIsValid());
+
+            if (result->is_error_message()) {
+              ScriptState::Scope scope(script_state);
+              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                  script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+                  result->get_error_message()));
+              return;
+            }
+
+            CHECK(result->is_groups());
+
+            Vector<mojom::blink::StorageInterestGroupPtr>& mojom_groups =
+                result->get_groups();
+
+            base::Time now = base::Time::Now();
+
+            HeapVector<Member<StorageInterestGroup>> groups;
+            groups.reserve(mojom_groups.size());
+
+            for (const auto& mojom_group : mojom_groups) {
+              StorageInterestGroup* group = StorageInterestGroup::Create();
+
+              group->setOwner(mojom_group->interest_group->owner->ToString());
+              group->setName(mojom_group->interest_group->name);
+              group->setPriority(mojom_group->interest_group->priority);
+
+              group->setEnableBiddingSignalsPrioritization(
+                  mojom_group->interest_group
+                      ->enable_bidding_signals_prioritization);
+
+              if (mojom_group->interest_group->priority_vector) {
+                Vector<std::pair<String, double>> priority_vector;
+                priority_vector.reserve(
+                    mojom_group->interest_group->priority_vector->size());
+                for (const auto& entry :
+                     *mojom_group->interest_group->priority_vector) {
+                  priority_vector.emplace_back(entry.key, entry.value);
+                }
+                group->setPriorityVector(std::move(priority_vector));
+              }
+
+              if (mojom_group->interest_group->priority_signals_overrides) {
+                Vector<std::pair<String, double>> priority_signals_overrides;
+                priority_signals_overrides.reserve(
+                    mojom_group->interest_group->priority_signals_overrides
+                        ->size());
+                for (const auto& entry :
+                     *mojom_group->interest_group->priority_signals_overrides) {
+                  priority_signals_overrides.emplace_back(entry.key,
+                                                          entry.value);
+                }
+                group->setPrioritySignalsOverrides(
+                    std::move(priority_signals_overrides));
+              }
+
+              if (mojom_group->interest_group->seller_capabilities) {
+                Vector<std::pair<String, Vector<String>>> seller_capabilities;
+                seller_capabilities.reserve(
+                    mojom_group->interest_group->seller_capabilities->size());
+                for (const auto& entry :
+                     *mojom_group->interest_group->seller_capabilities) {
+                  Vector<String> capabilities;
+                  capabilities.reserve(2);
+                  if (entry.value->allows_interest_group_counts) {
+                    capabilities.push_back("interest-group-counts");
+                  }
+                  if (entry.value->allows_latency_stats) {
+                    capabilities.push_back("latency-stats");
+                  }
+
+                  seller_capabilities.emplace_back(entry.key->ToString(),
+                                                   std::move(capabilities));
+                }
+                group->setSellerCapabilities(std::move(seller_capabilities));
+              }
+
+              String execution_mode_string;
+              switch (mojom_group->interest_group->execution_mode) {
+                case mojom::blink::InterestGroup::ExecutionMode::
+                    kGroupedByOriginMode:
+                  execution_mode_string = "group-by-origin";
+                  break;
+                case mojom::blink::InterestGroup::ExecutionMode::kFrozenContext:
+                  execution_mode_string = "frozen-context";
+                  break;
+                case mojom::blink::InterestGroup::ExecutionMode::
+                    kCompatibilityMode:
+                  execution_mode_string = "compatibility";
+                  break;
+              }
+
+              group->setExecutionMode(execution_mode_string);
+
+              if (mojom_group->interest_group->bidding_url) {
+                group->setBiddingLogicURL(
+                    *mojom_group->interest_group->bidding_url);
+                group->setBiddingLogicUrlDeprecated(
+                    *mojom_group->interest_group->bidding_url);
+              }
+
+              if (mojom_group->interest_group->bidding_wasm_helper_url) {
+                group->setBiddingWasmHelperURL(
+                    *mojom_group->interest_group->bidding_wasm_helper_url);
+                group->setBiddingWasmHelperUrlDeprecated(
+                    *mojom_group->interest_group->bidding_wasm_helper_url);
+              }
+
+              if (mojom_group->interest_group->update_url) {
+                group->setUpdateURL(*mojom_group->interest_group->update_url);
+                group->setUpdateUrlDeprecated(
+                    *mojom_group->interest_group->update_url);
+              }
+
+              if (mojom_group->interest_group->trusted_bidding_signals_url) {
+                group->setTrustedBiddingSignalsURL(
+                    *mojom_group->interest_group->trusted_bidding_signals_url);
+                group->setTrustedBiddingSignalsUrlDeprecated(
+                    *mojom_group->interest_group->trusted_bidding_signals_url);
+              }
+
+              if (mojom_group->interest_group->trusted_bidding_signals_keys) {
+                group->setTrustedBiddingSignalsKeys(
+                    *mojom_group->interest_group->trusted_bidding_signals_keys);
+              }
+
+              String trusted_bidding_signals_slot_size_mode_string;
+              switch (mojom_group->interest_group
+                          ->trusted_bidding_signals_slot_size_mode) {
+                case mojom::blink::InterestGroup::
+                    TrustedBiddingSignalsSlotSizeMode ::kNone:
+                  trusted_bidding_signals_slot_size_mode_string = "none";
+                  break;
+                case mojom::blink::InterestGroup::
+                    TrustedBiddingSignalsSlotSizeMode::kSlotSize:
+                  trusted_bidding_signals_slot_size_mode_string = "slot-size";
+                  break;
+                case mojom::blink::InterestGroup::
+                    TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes:
+                  trusted_bidding_signals_slot_size_mode_string =
+                      "all-slots-requested-sizes";
+                  break;
+              }
+
+              group->setTrustedBiddingSignalsSlotSizeMode(
+                  trusted_bidding_signals_slot_size_mode_string);
+
+              group->setMaxTrustedBiddingSignalsURLLength(
+                  mojom_group->interest_group
+                      ->max_trusted_bidding_signals_url_length);
+
+              if (mojom_group->interest_group
+                      ->trusted_bidding_signals_coordinator) {
+                group->setTrustedBiddingSignalsCoordinator(
+                    mojom_group->interest_group
+                        ->trusted_bidding_signals_coordinator->ToString());
+              }
+
+              if (mojom_group->interest_group->user_bidding_signals) {
+                group->setUserBiddingSignals(JsonStringToScriptValue(
+                    resolver->GetScriptState(),
+                    mojom_group->interest_group->user_bidding_signals));
+              }
+
+              if (mojom_group->interest_group->ads) {
+                group->setAds(
+                    ConvertMojomAdsToIDLAds(resolver->GetScriptState(),
+                                            *mojom_group->interest_group->ads));
+              }
+
+              if (mojom_group->interest_group->ad_components) {
+                group->setAdComponents(ConvertMojomAdsToIDLAds(
+                    resolver->GetScriptState(),
+                    *mojom_group->interest_group->ad_components));
+              }
+
+              if (mojom_group->interest_group->ad_sizes) {
+                HeapVector<
+                    std::pair<String, Member<AuctionAdInterestGroupSize>>>
+                    ad_sizes;
+                ad_sizes.reserve(mojom_group->interest_group->ad_sizes->size());
+
+                for (const auto& entry :
+                     *mojom_group->interest_group->ad_sizes) {
+                  const mojom::blink::AdSizePtr& mojom_ad_size = entry.value;
+                  AuctionAdInterestGroupSize* ad_size =
+                      AuctionAdInterestGroupSize::Create();
+                  ad_size->setWidth(String(ConvertAdDimensionToString(
+                      mojom_ad_size->width, mojom_ad_size->width_units)));
+                  ad_size->setHeight(String(ConvertAdDimensionToString(
+                      mojom_ad_size->height, mojom_ad_size->height_units)));
+
+                  ad_sizes.emplace_back(entry.key, ad_size);
+                }
+
+                group->setAdSizes(std::move(ad_sizes));
+              }
+
+              if (mojom_group->interest_group->size_groups) {
+                Vector<std::pair<String, Vector<String>>> size_groups;
+                size_groups.reserve(
+                    mojom_group->interest_group->size_groups->size());
+                for (const auto& entry :
+                     *mojom_group->interest_group->size_groups) {
+                  size_groups.emplace_back(entry.key, entry.value);
+                }
+                group->setSizeGroups(std::move(size_groups));
+              }
+
+              Vector<String> auction_server_request_flags;
+              auction_server_request_flags.reserve(3);
+              if (mojom_group->interest_group->auction_server_request_flags
+                      ->omit_ads) {
+                auction_server_request_flags.push_back("omit-ads");
+              }
+              if (mojom_group->interest_group->auction_server_request_flags
+                      ->include_full_ads) {
+                auction_server_request_flags.push_back("include-full-ads");
+              }
+              if (mojom_group->interest_group->auction_server_request_flags
+                      ->omit_user_bidding_signals) {
+                auction_server_request_flags.push_back(
+                    "omit-user-bidding-signals");
+              }
+              group->setAuctionServerRequestFlags(
+                  std::move(auction_server_request_flags));
+
+              if (mojom_group->interest_group->additional_bid_key) {
+                Vector<char> original_additional_bid_key;
+                WTF::Base64Encode(
+                    base::make_span(
+                        *mojom_group->interest_group->additional_bid_key),
+                    original_additional_bid_key);
+
+                group->setAdditionalBidKey(
+                    String(original_additional_bid_key.data(),
+                           original_additional_bid_key.size()));
+              }
+
+              ProtectedAudiencePrivateAggregationConfig* pa_config =
+                  ProtectedAudiencePrivateAggregationConfig::Create();
+              if (mojom_group->interest_group->aggregation_coordinator_origin) {
+                pa_config->setAggregationCoordinatorOrigin(
+                    mojom_group->interest_group->aggregation_coordinator_origin
+                        ->ToString());
+              }
+
+              group->setJoinCount(
+                  mojom_group->bidding_browser_signals->join_count);
+              group->setBidCount(
+                  mojom_group->bidding_browser_signals->bid_count);
+
+              HeapVector<HeapVector<Member<V8UnionAuctionAdOrLongLong>>>
+                  previous_wins;
+              previous_wins.reserve(
+                  mojom_group->bidding_browser_signals->prev_wins.size());
+
+              for (const auto& mojom_previous_win :
+                   mojom_group->bidding_browser_signals->prev_wins) {
+                ScriptValue ad_script_value = JsonStringToScriptValue(
+                    resolver->GetScriptState(), mojom_previous_win->ad_json);
+
+                ScriptState::Scope scope(resolver->GetScriptState());
+                auto* isolate = resolver->GetScriptState()->GetIsolate();
+
+                // If the 'metadata' field is set, update it with the parsed
+                // JSON object.
+                {
+                  auto context = resolver->GetScriptState()->GetContext();
+
+                  ExceptionState exception_state(
+                      isolate, v8::ExceptionContext::kUnknown, "", "");
+
+                  v8::Local<v8::Object> ad_dict;
+                  ScriptValueToObject(resolver->GetScriptState(),
+                                      ad_script_value, &ad_dict,
+                                      exception_state);
+                  DCHECK(!exception_state.HadException());
+
+                  v8::Local<v8::Value> v8_metadata_string;
+
+                  TryRethrowScope rethrow_scope(isolate, exception_state);
+                  if (ad_dict->Get(context, V8AtomicString(isolate, "metadata"))
+                          .ToLocal(&v8_metadata_string)) {
+                    ScriptValue metadata_script_value = JsonStringToScriptValue(
+                        resolver->GetScriptState(),
+                        String(gin::V8ToString(isolate, v8_metadata_string)));
+
+                    v8::MicrotasksScope microtasks(
+                        context, v8::MicrotasksScope::kDoNotRunMicrotasks);
+
+                    std::ignore = ad_dict->Set(
+                        context, V8AtomicString(isolate, "metadata"),
+                        metadata_script_value.V8Value());
+                  }
+                }
+
+                ExceptionState exception_state(
+                    isolate, v8::ExceptionContext::kConstructor,
+                    "AuctionAdConstructor");
+                AuctionAd* ad = AuctionAd::Create(
+                    isolate, ad_script_value.V8Value(), exception_state);
+                DCHECK(!exception_state.HadException());
+
+                HeapVector<Member<V8UnionAuctionAdOrLongLong>> previous_win;
+                previous_wins.reserve(2);
+                previous_win.push_back(
+                    MakeGarbageCollected<V8UnionAuctionAdOrLongLong>(
+                        (now - mojom_previous_win->time).InMilliseconds()));
+                previous_win.push_back(
+                    MakeGarbageCollected<V8UnionAuctionAdOrLongLong>(ad));
+
+                previous_wins.push_back(std::move(previous_win));
+              }
+
+              group->setPrevWinsMs(std::move(previous_wins));
+
+              group->setJoiningOrigin(mojom_group->joining_origin->ToString());
+
+              group->setTimeSinceGroupJoinedMs(
+                  (now - mojom_group->join_time).InMilliseconds());
+              group->setLifetimeRemainingMs(
+                  (mojom_group->interest_group->expiry - now).InMilliseconds());
+              group->setTimeSinceLastUpdateMs(
+                  (now - mojom_group->last_updated).InMilliseconds());
+              group->setTimeUntilNextUpdateMs(
+                  (mojom_group->next_update_after - now).InMilliseconds());
+
+              group->setEstimatedSize(mojom_group->estimated_size);
+
+              groups.push_back(group);
+            }
+
+            resolver->Resolve(groups);
+          })));
+
+  return promise;
 }
 
 // Returns the unique ID for the currently running operation.

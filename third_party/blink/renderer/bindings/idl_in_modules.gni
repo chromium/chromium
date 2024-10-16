@@ -16,6 +16,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/ad_auction/auction_ad_interest_group.idl",
   "//third_party/blink/renderer/modules/ad_auction/navigator_auction.idl",
   "//third_party/blink/renderer/modules/ad_auction/protected_audience.idl",
+  "//third_party/blink/renderer/modules/ad_auction/storage_interest_group.idl",
   "//third_party/blink/renderer/modules/ai/ai.idl",
   "//third_party/blink/renderer/modules/ai/ai_assistant.idl",
   "//third_party/blink/renderer/modules/ai/ai_assistant_create_options.idl",

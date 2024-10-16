@@ -127,6 +127,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void SharedStorageRemainingBudget(
       SharedStorageRemainingBudgetCallback callback) override;
+  void GetInterestGroups(GetInterestGroupsCallback callback) override;
   void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                               const std::string& message) override;
   void RecordUseCounters(

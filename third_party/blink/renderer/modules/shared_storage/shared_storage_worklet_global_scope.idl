@@ -27,6 +27,12 @@ interface SharedStorageWorkletGlobalScope : WorkletGlobalScope {
     RaisesException
   ]
   readonly attribute Crypto crypto;
+
+  [
+    RuntimeEnabled=InterestGroupsInSharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<sequence<StorageInterestGroup>> interestGroups();
 };
 
 callback RunFunctionForSharedStorageSelectURLOperation =

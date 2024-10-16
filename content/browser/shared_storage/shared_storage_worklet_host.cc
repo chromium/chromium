@@ -21,6 +21,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -177,6 +178,25 @@ bool IsValidFencedFrameReportingURL(const GURL& url) {
     return false;
   }
   return url.SchemeIs(url::kHttpsScheme);
+}
+
+blink::mojom::SharedStorageWorkletPermissionsPolicyStatePtr
+GetSharedStorageWorkletPermissionsPolicyState(
+    RenderFrameHostImpl& creator_document,
+    const url::Origin& shared_storage_origin) {
+  const blink::PermissionsPolicy* permissions_policy =
+      creator_document.permissions_policy();
+
+  return blink::mojom::SharedStorageWorkletPermissionsPolicyState::New(
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+          shared_storage_origin),
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          shared_storage_origin),
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          shared_storage_origin));
 }
 
 }  // namespace
@@ -1104,6 +1124,47 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
       shared_storage_site_, std::move(operation_completed_callback));
 }
 
+void SharedStorageWorkletHost::GetInterestGroups(
+    GetInterestGroupsCallback callback) {
+  InterestGroupManagerImpl* interest_group_manager =
+      static_cast<InterestGroupManagerImpl*>(
+          storage_partition_->GetInterestGroupManager());
+
+  if (!interest_group_manager) {
+    std::move(callback).Run(
+        blink::mojom::GetInterestGroupsResult::NewErrorMessage(
+            "InterestGroupManager unavailable."));
+    return;
+  }
+
+  interest_group_manager->GetInterestGroupsForOwner(
+      /*devtools_auction_id=*/{},
+      /*owner=*/shared_storage_origin_,
+      base::BindOnce(
+          [](GetInterestGroupsCallback callback,
+             scoped_refptr<StorageInterestGroups> groups) {
+            std::vector<blink::mojom::StorageInterestGroupPtr> mojom_groups;
+
+            for (SingleStorageInterestGroup& group :
+                 groups->GetInterestGroups()) {
+              blink::mojom::StorageInterestGroupPtr mojom_group =
+                  blink::mojom::StorageInterestGroup::New(
+                      group->interest_group,
+                      group->bidding_browser_signals->Clone(),
+                      group->joining_origin, group->join_time,
+                      group->last_updated, group->next_update_after,
+                      group->interest_group.EstimateSize());
+
+              mojom_groups.push_back(std::move(mojom_group));
+            }
+
+            std::move(callback).Run(
+                blink::mojom::GetInterestGroupsResult::NewGroups(
+                    std::move(mojom_groups)));
+          },
+          std::move(callback)));
+}
+
 void SharedStorageWorkletHost::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
@@ -1421,13 +1482,10 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver(),
         std::move(global_scope_creation_params));
 
-    const blink::PermissionsPolicy* permissions_policy =
-        rfh.permissions_policy();
-
-    bool private_aggregation_permissions_policy_allowed =
-        permissions_policy->IsFeatureEnabledForOrigin(
-            blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
-            shared_storage_origin_);
+    blink::mojom::SharedStorageWorkletPermissionsPolicyStatePtr
+        permissions_policy_state =
+            GetSharedStorageWorkletPermissionsPolicyState(
+                rfh, shared_storage_origin_);
 
     auto embedder_context = static_cast<RenderFrameHostImpl&>(
                                 document_service_->render_frame_host())
@@ -1436,7 +1494,7 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
-        private_aggregation_permissions_policy_allowed, embedder_context);
+        std::move(permissions_policy_state), embedder_context);
   }
 
   return shared_storage_worklet_service_.get();

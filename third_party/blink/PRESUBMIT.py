@@ -42,6 +42,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
             path,
             files_to_skip=[
                 r'.*_test.*\.(cc|h)$',
+                r'.*_unittest.*\.(cc|h)$',
                 r'third_party[\\/]blink[\\/]common[\\/]',
                 r'third_party[\\/]blink[\\/]public[\\/]common[\\/]',
                 r'third_party[\\/]blink[\\/]renderer[\\/]platform[\\/]loader[\\/]fetch[\\/]url_loader[\\/]',
