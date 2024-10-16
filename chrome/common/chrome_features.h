@@ -643,6 +643,9 @@ BASE_DECLARE_FEATURE(kSafetyHubAndroidSurvey);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kSafetyHubAndroidTriggerId;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSafetyHubWeakAndReusedPasswords);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

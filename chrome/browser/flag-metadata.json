@@ -7881,6 +7881,15 @@
     "expiry_milestone": 133
   },
   {
+    "name": "safety-hub-weak-reused-passwords",
+    "owners": [
+      "fsenra@google.com",
+      "sideyilmaz@chromium.org",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "sanitizer-api",
     "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
     "expiry_milestone": 130

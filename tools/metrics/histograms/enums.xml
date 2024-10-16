@@ -16576,6 +16576,7 @@ from previous Chrome versions.
   <int value="-1514943439" label="ash-enable-swipe-to-close-in-overview-mode"/>
   <int value="-1514717827" label="ConvertTrackpadEventsToMouse:enabled"/>
   <int value="-1514611301" label="enable-data-reduction-proxy-bypass-warnings"/>
+  <int value="-1514210698" label="SafetyHubWeakAndReusedPasswords:enabled"/>
   <int value="-1513112313" label="AudioSettingsPage:enabled"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
@@ -20787,6 +20788,7 @@ from previous Chrome versions.
   <int value="212245695" label="PowerBookmarksSidePanel:disabled"/>
   <int value="212361556" label="ComposeProactiveNudge:disabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
+  <int value="212959824" label="SafetyHubWeakAndReusedPasswords:disabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="213214333" label="UnifiedPasswordManagerReenrollment:enabled"/>
   <int value="214809280"

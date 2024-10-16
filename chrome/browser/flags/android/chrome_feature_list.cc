@@ -143,6 +143,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kSafetyHubAndroidSurvey,
     &features::kSafetyHubFollowup,
     &features::kSafetyHubMagicStack,
+    &features::kSafetyHubWeakAndReusedPasswords,
     &features::kQuietNotificationPrompts,
     &features::kWebNfc,
     &feature_engagement::kIPHTabSwitcherButtonFeature,

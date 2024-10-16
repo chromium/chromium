@@ -3376,6 +3376,12 @@ const char kSafetyHubAndroidSurveyName[] =
     "HaTS for Safety Check v2 on Android";
 const char kSafetyHubAndroidSurveyDescription[] =
     "Enables control & proactive HaTS surveys for Safety Check v2 on Android.";
+
+const char kSafetyHubWeakAndReusedPasswordsName[] =
+    "Enables Weak and Reused passwords in Safety Hub";
+const char kSafetyHubWeakAndReusedPasswordsDescription[] =
+    "Enables showing weak and reused passwords in the password module of "
+    "Safety Hub.";
 #else
 const char kSafetyHubHaTSOneOffSurveyName[] =
     "HaTS for Safety Check v2 on Desktop";
