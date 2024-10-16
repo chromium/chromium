@@ -48,8 +48,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 
   scoped_refptr<base::RefCountedMemory> image =
       UserImageSource::GetUserImage(user->GetAccountId());
-  response.Set("profilePhotoUrl",
-               webui::GetPngDataUrl(image->front(), image->size()));
+  response.Set("profilePhotoUrl", webui::GetPngDataUrl(*image));
 
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

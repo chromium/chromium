@@ -744,12 +744,12 @@ void WallpaperSearchHandler::OnHistoryDecoded(
             bitmap, skia::ImageOperations::RESIZE_GOOD,
             /* width */ dimensions.first,
             /* height */ dimensions.second);
-        std::vector<unsigned char> encoded;
-        const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-            small_bitmap, /*discard_transparency=*/false, &encoded);
-        if (success) {
+        std::optional<std::vector<uint8_t>> encoded =
+            gfx::PNGCodec::EncodeBGRASkBitmap(small_bitmap,
+                                              /*discard_transparency=*/false);
+        if (encoded) {
           auto thumbnail = WallpaperSearchResult::New();
-          thumbnail->image = base::Base64Encode(encoded);
+          thumbnail->image = base::Base64Encode(encoded.value());
           thumbnail->id = std::move(id);
           if (entry.subject) {
             thumbnail->descriptors =
@@ -1063,17 +1063,17 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
         CalculateResizeDimensions(bitmap.width(), bitmap.height(), 100);
     SkBitmap small_bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_GOOD,
-        /* width */ dimensions.first,
-        /* height */ dimensions.second);
-    std::vector<unsigned char> encoded;
-    const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-        small_bitmap, /*discard_transparency=*/false, &encoded);
-    if (success) {
+        /*dest_width=*/dimensions.first,
+        /*dest_height=*/dimensions.second);
+    std::optional<std::vector<uint8_t>> encoded =
+        gfx::PNGCodec::EncodeBGRASkBitmap(small_bitmap,
+                                          /*discard_transparency=*/false);
+    if (encoded) {
       auto thumbnail = WallpaperSearchResult::New();
       auto id = base::Token::CreateRandom();
       wallpaper_search_results_[id] =
           std::make_tuple(image_quality, std::nullopt, std::move(bitmap));
-      thumbnail->image = base::Base64Encode(encoded);
+      thumbnail->image = base::Base64Encode(encoded.value());
       thumbnail->id = std::move(id);
       thumbnails.push_back(std::move(thumbnail));
     }

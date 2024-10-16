@@ -450,12 +450,12 @@ std::string MakeMobilePromoQRCode() {
   }
 
   SkBitmap bitmap = generated_code.value().GetRepresentation(1.0f).GetBitmap();
-  std::vector<unsigned char> encoded_bitmap;
-  bool result = gfx::WebpCodec::Encode(bitmap, 100, &encoded_bitmap);
-  if (!result) {
+  std::optional<std::vector<uint8_t>> encoded_bitmap =
+      gfx::WebpCodec::Encode(bitmap, /*quality=*/100);
+  if (!encoded_bitmap) {
     return "";
   }
-  return base::Base64Encode(encoded_bitmap);
+  return base::Base64Encode(encoded_bitmap.value());
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
@@ -46,9 +47,14 @@ namespace extensions {
 namespace {
 
 scoped_refptr<base::RefCountedMemory> BitmapToMemory(const SkBitmap* image) {
-  auto image_bytes = base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->as_vector());
-  return image_bytes;
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*image, /*discard_transparency=*/false);
+  if (!encoded) {
+    return base::MakeRefCounted<base::RefCountedBytes>();
+  }
+
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(encoded.value()));
 }
 
 SkBitmap DesaturateImage(const SkBitmap* image) {
@@ -56,11 +62,11 @@ SkBitmap DesaturateImage(const SkBitmap* image) {
   return SkBitmapOperations::CreateHSLShiftedBitmap(*image, shift);
 }
 
-SkBitmap* ToBitmap(const unsigned char* data, size_t size) {
-  SkBitmap* decoded = new SkBitmap();
-  bool success = gfx::PNGCodec::Decode(data, size, decoded);
-  DCHECK(success);
-  return decoded;
+std::unique_ptr<SkBitmap> ToBitmap(base::span<const uint8_t> data) {
+  auto result = std::make_unique<SkBitmap>();
+  *result = gfx::PNGCodec::Decode(data);
+  DCHECK(!result->isNull());
+  return result;
 }
 
 }  // namespace
@@ -97,15 +103,13 @@ GURL ExtensionIconSource::GetIconURL(const std::string& extension_id,
 }
 
 // static
-SkBitmap* ExtensionIconSource::LoadImageByResourceId(int resource_id) {
+std::unique_ptr<SkBitmap> ExtensionIconSource::LoadImageByResourceId(
+    int resource_id) {
   std::string_view contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
           resource_id, ui::k100Percent);
 
-  // Convert and return it.
-  const unsigned char* data =
-      reinterpret_cast<const unsigned char*>(contents.data());
-  return ToBitmap(data, contents.length());
+  return ToBitmap(base::as_byte_span(contents));
 }
 
 std::string ExtensionIconSource::GetSource() {
@@ -152,20 +156,19 @@ bool ExtensionIconSource::AllowCaching() {
   return false;
 }
 
-ExtensionIconSource::~ExtensionIconSource() {
-}
+ExtensionIconSource::~ExtensionIconSource() {}
 
 const SkBitmap* ExtensionIconSource::GetDefaultAppImage() {
-  if (!default_app_data_.get())
-    default_app_data_.reset(LoadImageByResourceId(IDR_APP_DEFAULT_ICON));
+  if (!default_app_data_.get()) {
+    default_app_data_ = LoadImageByResourceId(IDR_APP_DEFAULT_ICON);
+  }
 
   return default_app_data_.get();
 }
 
 const SkBitmap* ExtensionIconSource::GetDefaultExtensionImage() {
   if (!default_extension_data_.get()) {
-    default_extension_data_.reset(
-        LoadImageByResourceId(IDR_EXTENSION_DEFAULT_ICON));
+    default_extension_data_ = LoadImageByResourceId(IDR_EXTENSION_DEFAULT_ICON);
   }
 
   return default_extension_data_.get();
@@ -252,9 +255,7 @@ void ExtensionIconSource::OnFaviconDataAvailable(
     std::move(request->callback).Run(bitmap_result.bitmap_data.get());
     ClearData(request_id);
   } else {
-    FinalizeImage(ToBitmap(bitmap_result.bitmap_data->data(),
-                           bitmap_result.bitmap_data->size()),
-                  request_id);
+    FinalizeImage(ToBitmap(*bitmap_result.bitmap_data).get(), request_id);
   }
 }
 

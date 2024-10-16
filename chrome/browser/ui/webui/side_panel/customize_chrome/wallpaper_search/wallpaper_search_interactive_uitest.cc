@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -290,14 +291,14 @@ class WallpaperSearchOptimizationGuideInteractiveTest
                          done_callback_arg) {
                 SkBitmap bitmap;
                 bitmap.allocN32Pixels(64, 32);
-                std::vector<unsigned char> encoded;
-                gfx::PNGCodec::EncodeBGRASkBitmap(
-                    bitmap, /*discard_transparency=*/false, &encoded);
+                std::optional<std::vector<uint8_t>> encoded =
+                    gfx::PNGCodec::EncodeBGRASkBitmap(
+                        bitmap, /*discard_transparency=*/false);
 
                 optimization_guide::proto::WallpaperSearchResponse response;
                 auto* image = response.add_images();
                 image->set_encoded_image(
-                    std::string(encoded.begin(), encoded.end()));
+                    std::string(base::as_string_view(encoded.value())));
 
                 std::string serialized_metadata;
                 response.SerializeToString(&serialized_metadata);

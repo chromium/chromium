@@ -68,15 +68,6 @@ bool IsNewTabCssPath(const std::string& path) {
   return path == kNewTabThemeCssPath || path == kIncognitoTabThemeCssPath;
 }
 
-void ProcessImageOnUiThread(const gfx::ImageSkia& image,
-                            float scale,
-                            scoped_refptr<base::RefCountedBytes> data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      rep.GetBitmap(), false /* discard transparency */, &data->as_vector());
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -244,17 +235,27 @@ void ThemeSource::SendThemeImage(
     int resource_id,
     float scale) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
+
+  gfx::ImageSkia* image;
   if (BrowserThemePack::IsPersistentImageID(resource_id)) {
     const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
         profile_->GetOriginalProfile());
-    ProcessImageOnUiThread(*tp.GetImageSkiaNamed(resource_id), scale, data);
+    image = tp.GetImageSkiaNamed(resource_id);
   } else {
-    ProcessImageOnUiThread(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id),
-        scale, data);
+    image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   }
-  std::move(callback).Run(data.get());
+
+  const gfx::ImageSkiaRep& rep = image->GetRepresentation(scale);
+  std::optional<std::vector<uint8_t>> result =
+      gfx::PNGCodec::EncodeBGRASkBitmap(rep.GetBitmap(),
+                                        /*discard_transparency=*/false);
+  if (!result) {
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
+  }
+
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
 }
 
 void ThemeSource::SendColorsCss(

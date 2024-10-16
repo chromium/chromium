@@ -65,14 +65,14 @@ std::string GetWebUiCssTextDefaults(const std::string& css_template) {
 std::string GetBitmapDataUrl(const SkBitmap& bitmap) {
   TRACE_EVENT2("ui", "GetBitmapDataUrl", "width", bitmap.width(), "height",
                bitmap.height());
-  std::vector<unsigned char> output;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  return GetPngDataUrl(output.data(), output.size());
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  return GetPngDataUrl(output.value_or(std::vector<uint8_t>()));
 }
 
-std::string GetPngDataUrl(const unsigned char* data, size_t size) {
+std::string GetPngDataUrl(base::span<const uint8_t> data) {
   std::string output = "data:image/png;base64,";
-  base::Base64EncodeAppend(base::make_span(data, size), &output);
+  base::Base64EncodeAppend(data, &output);
   return output;
 }
 
