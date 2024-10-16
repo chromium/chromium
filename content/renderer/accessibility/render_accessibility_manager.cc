@@ -108,7 +108,7 @@ void RenderAccessibilityManager::Reset(uint32_t reset_token) {
   render_accessibility_->Reset(reset_token);
 }
 
-void RenderAccessibilityManager::HandleAccessibilityEvents(
+void RenderAccessibilityManager::HandleAXEvents(
     ui::AXUpdatesAndEvents& updates_and_events,
     ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
     uint32_t reset_token,

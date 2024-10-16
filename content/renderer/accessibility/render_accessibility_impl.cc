@@ -529,7 +529,7 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
 
   CHECK(!weak_factory_for_pending_events_.HasWeakPtrs());
   CHECK(reset_token_);
-  render_accessibility_manager_->HandleAccessibilityEvents(
+  render_accessibility_manager_->HandleAXEvents(
       updates_and_events, location_and_scroll_updates, *reset_token_,
       base::BindOnce(&RenderAccessibilityImpl::OnSerializationReceived,
                      weak_factory_for_pending_events_.GetWeakPtr()));
