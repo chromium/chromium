@@ -252,7 +252,7 @@ ModelExecutionFetcher::ModelExecutionFetcher(
 }
 
 ModelExecutionFetcher::~ModelExecutionFetcher() {
-  if (active_url_loader_) {
+  if (model_execution_callback_) {
     DCHECK(model_execution_feature_);
     RecordRequestStatusHistogram(*model_execution_feature_,
                                  FetcherRequestStatus::kRequestCanceled);

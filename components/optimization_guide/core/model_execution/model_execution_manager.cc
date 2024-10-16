@@ -226,7 +226,6 @@ void ModelExecutionManager::ExecuteModel(
   if (previous_fetcher_it != active_model_execution_fetchers_.end()) {
     // Cancel the existing fetcher and let the new one continue.
     active_model_execution_fetchers_.erase(previous_fetcher_it);
-    RecordModelExecutionResultHistogram(feature, false);
     CHECK(active_model_execution_fetchers_.find(feature) ==
           active_model_execution_fetchers_.end());
   }

@@ -607,11 +607,10 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
                 .execution_id(),
             "test_id");
 
-  // TODO - crbug.com/373466879: This probably should be cancelled, but isn't.
-  // EXPECT_FALSE(response_holder1.GetFinalStatus());
-  // EXPECT_EQ(
-  //     OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled,
-  //     response_holder1.error());
+  EXPECT_FALSE(response_holder1.GetFinalStatus());
+  EXPECT_EQ(
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled,
+      response_holder1.error());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.Result.Compose", 2);
   histogram_tester.ExpectBucketCount(
