@@ -2054,11 +2054,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "devtools-tab-target",
-    "owners": [ "dsv@chromium.org", "caseq@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb@chromium.org" ],
     "expiry_milestone": -1
