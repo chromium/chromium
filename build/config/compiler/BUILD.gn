@@ -555,6 +555,12 @@ config("compiler") {
     }
   }
 
+  # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
+  # (excluding toolchains that use an older version of LLVM).
+  if (is_linux && !is_nacl && !llvm_android_mainline) {
+    cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
+  }
+
   # Enable text section splitting only on linux when using lld for now. Other
   # platforms can be added later if needed.
   if ((is_linux || is_chromeos) && use_lld && use_text_section_splitting) {
