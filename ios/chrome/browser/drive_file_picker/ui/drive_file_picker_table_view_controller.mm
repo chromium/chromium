@@ -563,6 +563,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     return cell;
   }
 
+  // If the item needs its icon to be fetched, ask the mutator to do so now.
+  if (item.shouldFetchIcon) {
+    [self.mutator fetchIconForDriveItem:itemIdentifier];
+  }
+
   DriveFilePickerCellContentConfiguration* driveFilePickerContentConfiguration =
       [DriveFilePickerCellContentConfiguration cellConfiguration];
   UIListContentConfiguration* contentConfiguration =
@@ -727,6 +732,42 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
             showSearchHeader:(BOOL)showSearchHeader
            nextPageAvailable:(BOOL)nextPageAvailable
                     animated:(BOOL)animated {
+  if (!append) {
+    // Initialize `recyclableIcons`. An icon can be recycled if
+    // `shouldFetchIcon` is NO for the associated item.
+    NSMutableDictionary<NSString*, UIImage*>* recyclableIcons =
+        [NSMutableDictionary dictionary];
+    for (DriveFilePickerItem* primaryItem in _primaryItems) {
+      if (!primaryItem.shouldFetchIcon) {
+        [recyclableIcons setObject:primaryItem.icon
+                            forKey:primaryItem.identifier];
+      }
+    }
+    for (DriveFilePickerItem* secondaryItem in _secondaryItems) {
+      if (!secondaryItem.shouldFetchIcon) {
+        [recyclableIcons setObject:secondaryItem.icon
+                            forKey:secondaryItem.identifier];
+      }
+    }
+    // Recycle recyclable icons in `primaryItems` and `secondaryItems`.
+    for (DriveFilePickerItem* primaryItem in primaryItems) {
+      UIImage* recyclableIcon =
+          [recyclableIcons objectForKey:primaryItem.identifier];
+      if (recyclableIcon) {
+        primaryItem.icon = recyclableIcon;
+        primaryItem.shouldFetchIcon = NO;
+      }
+    }
+    for (DriveFilePickerItem* secondaryItem in secondaryItems) {
+      UIImage* recyclableIcon =
+          [recyclableIcons objectForKey:secondaryItem.identifier];
+      if (recyclableIcon) {
+        secondaryItem.icon = recyclableIcon;
+        secondaryItem.shouldFetchIcon = NO;
+      }
+    }
+  }
+
   // Reset scroll if necessary.
   if (!append) {
     [self.view layoutIfNeeded];

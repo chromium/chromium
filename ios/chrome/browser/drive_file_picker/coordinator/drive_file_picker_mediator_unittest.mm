@@ -27,8 +27,17 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+namespace {
+
+// Fake icon URL to test fetching icons.
+constexpr char kFakeIconURL[] = "http://www.example.com/image";
+
+}  // namespace
 
 // Fake delegate for `DriveFilePickerMediator`.
 @interface FakeDriveFilePickerMediatorDelegate
@@ -209,6 +218,12 @@
 
 // Test fixture for testing DriveFilePickerMediator class.
 class DriveFilePickerMediatorTest : public PlatformTest {
+ public:
+  DriveFilePickerMediatorTest()
+      : shared_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {}
+
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
@@ -217,8 +232,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
-    image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
-        profile_.get()->GetSharedURLLoaderFactory());
+    image_fetcher_ =
+        std::make_unique<image_fetcher::ImageDataFetcher>(shared_factory_);
     images_pending_ = [NSMutableSet set];
     image_cache_ = [[NSCache alloc] init];
     web_state_ = std::make_unique<web::FakeWebState>();
@@ -301,6 +316,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<drive::DriveService> drive_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;
   FakeDriveFilePickerConsumer* fake_consumer_;
@@ -443,4 +460,29 @@ TEST_F(DriveFilePickerMediatorTest, SubmitFileSelection) {
   EXPECT_FALSE(fake_delegate_.fileSelectionSubmitted);
   [mediator_ submitFileSelection];
   EXPECT_TRUE(fake_delegate_.fileSelectionSubmitted);
+}
+
+// Tests that using the mutator interface to fetch an icon invokes the image
+// fetcher.
+TEST_F(DriveFilePickerMediatorTest, FetchIcon) {
+  InitializeMediator(DriveFilePickerCollectionType::kFolder);
+  // Set up Drive list to return a folder with an icon link.
+  DriveItem folder;
+  folder.is_folder = true;
+  folder.identifier = [[NSUUID UUID] UUIDString];
+  folder.name = @"Fake Folder";
+  folder.icon_link = @(kFakeIconURL);
+  DriveListResult fake_result;
+  fake_result.items = {folder};
+  drive_list_->SetDriveListResult(fake_result);
+
+  // Fetch items.
+  drive_list_->SetListItemsCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  [mediator_ loadFirstPage];
+  task_environment_.RunUntilQuit();
+
+  // Fetch an icon for the folder, test that the URL loader was invoked.
+  [mediator_ fetchIconForDriveItem:folder.identifier];
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeIconURL, nullptr));
 }
