@@ -8507,14 +8507,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"page-info-about-this-page-persistent-side-panel-entry",
-     flag_descriptions::kPageInfoAboutThisPagePersistentEntryName,
-     flag_descriptions::kPageInfoAboutThisPagePersistentEntryDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
-#endif
-
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,
      kOsDesktop | kOsAndroid,

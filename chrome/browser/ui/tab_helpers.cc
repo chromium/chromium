@@ -353,11 +353,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // --- Section 1: Common tab helpers ---
-  if (page_info::IsAboutThisSiteAsyncFetchingEnabled()
-#if defined(TOOLKIT_VIEWS)
-      || page_info::IsPersistentSidePanelEntryFeatureEnabled()
-#endif
-  ) {
+  if (page_info::IsAboutThisSiteAsyncFetchingEnabled()) {
     if (auto* optimization_guide_decider =
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
       AboutThisSiteTabHelper::CreateForWebContents(web_contents,

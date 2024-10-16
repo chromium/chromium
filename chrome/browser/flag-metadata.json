@@ -6841,11 +6841,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "page-info-about-this-page-persistent-side-panel-entry",
-    "owners": [ "dullweber@chromium.org", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "page-info-hide-site-settings",
     "owners": [
       "zsalata@google.com",

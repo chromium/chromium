@@ -20,16 +20,6 @@ bool IsAboutThisSiteAsyncFetchingEnabled();
 // metadata in a TabHelper.
 BASE_DECLARE_FEATURE(kAboutThisSiteAsyncFetching);
 
-#if !BUILDFLAG(IS_ANDROID)
-// Returns true if kAboutThisSitePersistentSidePanelEntry and dependent
-// features are enabled.
-bool IsPersistentSidePanelEntryFeatureEnabled();
-
-// Enables the persistent "About this site" entry in the side panel.
-BASE_DECLARE_FEATURE(kAboutThisSitePersistentSidePanelEntry);
-
-#endif
-
 }  // namespace page_info
 
 #endif  // CHROME_BROWSER_PAGE_INFO_PAGE_INFO_FEATURES_H_
