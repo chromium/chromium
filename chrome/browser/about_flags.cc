@@ -74,6 +74,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/assist_ranker/predictor_config_definitions.h"
 #include "components/autofill/content/common/content_autofill_features.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -6116,6 +6117,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillVirtualViewStructureAndroid,
          kAutofillVirtualViewStructureVariation,
          "Skip AutofillService Check")},
+
+    {"suppress-autofill-via-accessibility",
+     flag_descriptions::kAutofillDeprecateAccessibilityApiName,
+     flag_descriptions::kAutofillDeprecateAccessibilityApiDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAndroidAutofillDeprecateAccessibilityApi)},
 
     {"enable-pix-detection", flag_descriptions::kEnablePixDetectionName,
      flag_descriptions::kEnablePixDetectionDescription, kOsAndroid,

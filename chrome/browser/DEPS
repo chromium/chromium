@@ -45,6 +45,7 @@ include_rules = [
   "+components/account_manager_core",
   "+components/affiliations",
   "+components/allocation_recorder",
+  "+components/android_autofill/browser",
   "+components/app_constants/constants.h",
   "+components/app_launch_prefetch",
   "+components/app_restore",

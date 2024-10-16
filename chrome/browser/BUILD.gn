@@ -3334,6 +3334,7 @@ static_library("browser") {
       "//chrome/common/wallet:mojo_bindings",
       "//chrome/services/media_gallery_util/public/cpp",
       "//components/android_autofill/browser:android",
+      "//components/android_autofill/browser:features",
       "//components/autofill/android:keyboard_suppressor",
       "//components/background_sync",
       "//components/bookmarks/common/android",

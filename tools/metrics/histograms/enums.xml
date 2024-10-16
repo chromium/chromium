@@ -17153,6 +17153,8 @@ from previous Chrome versions.
   <int value="-1286038936"
       label="AutofillEnableCardNicknameManagement:enabled"/>
   <int value="-1285790931" label="FencedFrames:disabled"/>
+  <int value="-1285688337"
+      label="AndroidAutofillDeprecateAccessibilityApi:disabled"/>
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
   <int value="-1284303269" label="SidePanelWebView:enabled"/>
@@ -24620,6 +24622,8 @@ from previous Chrome versions.
   <int value="1767843685" label="Canvas2DHibernation:enabled"/>
   <int value="1768173143" label="EnableExpKitTextClassifier:disabled"/>
   <int value="1768759000" label="AutofillProfileServerValidation:disabled"/>
+  <int value="1769949756"
+      label="AndroidAutofillDeprecateAccessibilityApi:enabled"/>
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
   <int value="1772248386" label="SeedAccountsRevamp:enabled"/>

@@ -286,6 +286,11 @@ extern const char kImageDescriptionsAlternateRoutingDescription[];
 extern const char kImprovedSigninUIOnDesktopName[];
 extern const char kImprovedSigninUIOnDesktopDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillDeprecateAccessibilityApiName[];
+extern const char kAutofillDeprecateAccessibilityApiDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kAutofillEnableAmountExtractionDesktopName[];

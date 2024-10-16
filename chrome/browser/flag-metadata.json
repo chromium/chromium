@@ -8448,6 +8448,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "suppress-autofill-via-accessibility",
+    "owners": [
+      "friedrichh@chromium.org",
+      "//components/autofill/android/OWNERS"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "suppress-toolbar-captures",
     "owners": [ "pnoland@google.com", "skym@chromium.org" ],
     "expiry_milestone": 140
