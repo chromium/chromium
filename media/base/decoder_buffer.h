@@ -164,6 +164,8 @@ class MEDIA_EXPORT DecoderBuffer
     return data_.data();
   }
 
+  // TODO(crbug.com/373790934): This is unnecessary; this type can be implicitly
+  // converted to a span<const uint8_t>.
   base::span<const uint8_t> AsSpan() const;
 
   // The number of bytes in the buffer.
@@ -190,6 +192,16 @@ class MEDIA_EXPORT DecoderBuffer
 
   bool empty() const {
     return external_memory_ ? external_memory_->Span().empty() : data_.empty();
+  }
+
+  // Read-only iteration as bytes. This allows this type to meet the
+  // requirements of `std::ranges::contiguous_range`, and thus be implicitly
+  // convertible to a span.
+  auto begin() const {
+    return external_memory_ ? external_memory_->Span().begin() : data_.begin();
+  }
+  auto end() const {
+    return external_memory_ ? external_memory_->Span().end() : data_.end();
   }
 
   // TODO(crbug.com/365814210): Change the return type to std::optional.
