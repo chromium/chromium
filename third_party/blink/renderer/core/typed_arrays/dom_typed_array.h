@@ -72,18 +72,6 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return reinterpret_cast<ValueType*>(BaseAddressMaybeShared());
   }
 
-  base::span<ValueType> ByteSpan() const {
-    // SAFETY: Data() and byteLength() guarantee the span is valid
-    return UNSAFE_BUFFERS(
-        base::span(static_cast<ValueType*>(Data()), byteLength()));
-  }
-
-  base::span<ValueType> ByteSpanMaybeShared() const {
-    // SAFETY: DataMaybeShared() and byteLength() guarantee the span is valid
-    return UNSAFE_BUFFERS(
-        base::span(static_cast<ValueType*>(DataMaybeShared()), byteLength()));
-  }
-
   size_t length() const { return !IsDetached() ? raw_length_ : 0; }
 
   size_t byteLength() const final { return length() * sizeof(ValueType); }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_common.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_int32arrayallowshared_longsequence.h"
@@ -53,9 +58,12 @@ base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
   switch (array->GetContentType()) {
     case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::
         kInt32ArrayAllowShared:
-      return array->GetAsInt32ArrayAllowShared()->ByteSpanMaybeShared();
+      return base::span<const int32_t>(
+          array->GetAsInt32ArrayAllowShared()->DataMaybeShared(),
+          array->GetAsInt32ArrayAllowShared()->length());
     case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::kLongSequence:
-      return array->GetAsLongSequence();
+      return base::span<const int32_t>(array->GetAsLongSequence().data(),
+                                       array->GetAsLongSequence().size());
   }
   NOTREACHED_IN_MIGRATION();
   return {};
@@ -68,10 +76,14 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
   switch (array->GetContentType()) {
     case V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence::ContentType::
         kUint32ArrayAllowShared:
-      return array->GetAsUint32ArrayAllowShared()->ByteSpanMaybeShared();
+      return base::span<const uint32_t>(
+          array->GetAsUint32ArrayAllowShared()->DataMaybeShared(),
+          array->GetAsUint32ArrayAllowShared()->length());
     case V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence::ContentType::
         kUnsignedLongSequence:
-      return array->GetAsUnsignedLongSequence();
+      return base::span<const uint32_t>(
+          array->GetAsUnsignedLongSequence().data(),
+          array->GetAsUnsignedLongSequence().size());
   }
   NOTREACHED_IN_MIGRATION();
   return {};

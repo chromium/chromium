@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_COMPRESSED_TEXTURE_ASTC_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_COMPRESSED_TEXTURE_ASTC_H_
 
-#include <array>
-
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 
 namespace WTF {
@@ -33,7 +31,7 @@ class WebGLCompressedTextureASTC final : public WebGLExtension {
   explicit WebGLCompressedTextureASTC(WebGLRenderingContextBase*);
 
   WebGLExtensionName GetName() const override;
-  static const std::array<BlockSizeCompressASTC, 14> kBlockSizeCompressASTC;
+  static const BlockSizeCompressASTC kBlockSizeCompressASTC[];
 
   Vector<WTF::String> getSupportedProfiles();
 };
