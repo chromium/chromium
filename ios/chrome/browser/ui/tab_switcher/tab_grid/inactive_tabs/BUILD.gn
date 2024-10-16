@@ -116,7 +116,6 @@ source_set("inactive_tabs_button_ui") {
     "inactive_tabs_preamble_header.mm",
   ]
   deps = [
-    ":inactive_tabs_button_ui_swift",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
@@ -128,23 +127,6 @@ source_set("inactive_tabs_button_ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-}
-
-swift_source_set("inactive_tabs_button_ui_swift") {
-  bridge_header = "inactive_tabs_button_ui_swift_bridge.h"
-  sources = [
-    "inactive_tabs_button.swift",
-    "inactive_tabs_button_header.swift",
-  ]
-  deps = [
-    ":inactive_tabs_constants",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
-    "//ios/chrome/common/ui/colors:swift",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("eg2_tests") {

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/inactive_tabs_button_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -27,9 +26,6 @@ using base::apple::ObjCCast;
 using base::apple::ObjCCastStrict;
 
 namespace {
-
-constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
-    base::Seconds(0.3);
 
 // Returns the views to animate a tab group closure. If the entire group is to
 // be closed, i.e. all tabs of `group_grid_cell` are in
@@ -85,8 +81,6 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 }  // namespace
 
 @implementation RegularGridViewController {
-  // Tracks if the Inactive Tabs button is being animated out.
-  BOOL _inactiveTabsHeaderHideAnimationInProgress;
   // The number of currently inactive tabs. If there are (inactiveTabsCount > 0)
   // and the grid is in TabGridMode::kNormal, a button is displayed at the top,
   // advertizing them.
@@ -98,10 +92,6 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 
   // The cell registration for inactive tabs button cell.
   UICollectionViewCellRegistration* _inactiveTabsButtonCellRegistration;
-
-  // The supplementary view registration for the Inactive Tabs button header.
-  UICollectionViewSupplementaryRegistration*
-      _inactiveTabsButtonHeaderRegistration;
 
   // The object responsible for animating the tabs closure.
   TabsClosureAnimation* _tabsClosureAnimation;
@@ -176,29 +166,10 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
   return _inactiveTabsCount == 0;
 }
 
-- (UICollectionReusableView*)headerForSectionAtIndexPath:
-    (NSIndexPath*)indexPath {
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    return [super headerForSectionAtIndexPath:indexPath];
-  }
-
-  if (self.mode == TabGridMode::kNormal) {
-    CHECK(IsInactiveTabsAvailable());
-    // The Regular Tabs grid has a button to inform about the hidden inactive
-    // tabs.
-    return [self.collectionView
-        dequeueConfiguredReusableSupplementaryViewWithRegistration:
-            _inactiveTabsButtonHeaderRegistration
-                                                      forIndexPath:indexPath];
-  }
-  return [super headerForSectionAtIndexPath:indexPath];
-}
-
 - (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
                                  itemIdentifier:
                                      (GridItemIdentifier*)itemIdentifier {
   if (itemIdentifier.type == GridItemType::kInactiveTabsButton) {
-    CHECK(IsInactiveTabButtonRefactoringEnabled());
     UICollectionViewCellRegistration* registration =
         _inactiveTabsButtonCellRegistration;
     return [self.collectionView
@@ -212,70 +183,23 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    // Register InactiveTabsButtonCell.
-    auto configureInactiveTabsButtonCell =
-        ^(InactiveTabsButtonCell* cell, NSIndexPath* indexPath, id item) {
-          [weakSelf configureInativeTabsButtonCell:cell];
-        };
-    _inactiveTabsButtonCellRegistration = [UICollectionViewCellRegistration
-        registrationWithCellClass:InactiveTabsButtonCell.class
-             configurationHandler:configureInactiveTabsButtonCell];
-  } else {
-    // Register InactiveTabsButtonHeader.
-    auto configureInactiveTabsButtonHeader =
-        ^(InactiveTabsButtonHeader* header, NSString* elementKind,
-          NSIndexPath* indexPath) {
-          [weakSelf configureInactiveTabsButtonHeader:header];
-        };
-    _inactiveTabsButtonHeaderRegistration =
-        [UICollectionViewSupplementaryRegistration
-            registrationWithSupplementaryClass:[InactiveTabsButtonHeader class]
-                                   elementKind:
-                                       UICollectionElementKindSectionHeader
-                          configurationHandler:
-                              configureInactiveTabsButtonHeader];
-  }
+  // Register InactiveTabsButtonCell.
+  auto configureInactiveTabsButtonCell =
+      ^(InactiveTabsButtonCell* cell, NSIndexPath* indexPath, id item) {
+        [weakSelf configureInativeTabsButtonCell:cell];
+      };
+  _inactiveTabsButtonCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:InactiveTabsButtonCell.class
+           configurationHandler:configureInactiveTabsButtonCell];
 
   [super createRegistrations];
 }
 
-- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    // With the refactoring, the base class does the right thing.
-    return [super tabsSectionHeaderTypeForMode:mode];
-  }
-
-  if (mode == TabGridMode::kNormal) {
-    if (!IsInactiveTabsAvailable()) {
-      return TabsSectionHeaderType::kNone;
-    }
-    if (self.isClosingAllOrUndoRunning) {
-      return TabsSectionHeaderType::kNone;
-    }
-    if (_inactiveTabsHeaderHideAnimationInProgress) {
-      return TabsSectionHeaderType::kAnimatingOut;
-    }
-    if (_inactiveTabsCount == 0) {
-      return TabsSectionHeaderType::kNone;
-    }
-    return TabsSectionHeaderType::kInactiveTabs;
-  }
-
-  return [super tabsSectionHeaderTypeForMode:mode];
-}
-
 - (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot {
-  if (!IsInactiveTabButtonRefactoringEnabled()) {
-    return;
-  }
   [self updateInactiveTabsButtonInSnapshot:snapshot];
 }
 
 - (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot {
-  if (!IsInactiveTabButtonRefactoringEnabled()) {
-    return;
-  }
   [self updateInactiveTabsButtonInSnapshot:snapshot];
 }
 
@@ -285,57 +209,20 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
   if (_inactiveTabsCount == count) {
     return;
   }
-  NSInteger oldCount = _inactiveTabsCount;
   _inactiveTabsCount = count;
 
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    GridSnapshot* snapshot = [self.diffableDataSource snapshot];
-    [self updateInactiveTabsButtonInSnapshot:snapshot];
-  } else {
-    // Update the layout.
-    [self updateTabsSectionHeaderType];
-
-    // Update the header.
-    if (oldCount == 0) {
-      [self showInactiveTabsButtonHeader];
-    } else if (count == 0) {
-      [self hideInactiveTabsButtonHeader];
-    } else {
-      // The header just needs to be updated with the new count.
-      [self updateInactiveTabsButtonHeader];
-    }
-  }
+  GridSnapshot* snapshot = [self.diffableDataSource snapshot];
+  [self updateInactiveTabsButtonInSnapshot:snapshot];
 }
 
 - (void)updateInactiveTabsDaysThreshold:(NSInteger)daysThreshold {
   if (_inactiveTabsDaysThreshold == daysThreshold) {
     return;
   }
-  NSInteger oldDaysThreshold = _inactiveTabsDaysThreshold;
   _inactiveTabsDaysThreshold = daysThreshold;
 
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    GridSnapshot* snapshot = [self.diffableDataSource snapshot];
-    [self updateInactiveTabsButtonInSnapshot:snapshot];
-  } else {
-    // Update the header.
-    if (oldDaysThreshold == kInactiveTabsDisabledByUser ||
-        daysThreshold == kInactiveTabsDisabledByUser) {
-      // The header should appear or disappear. Reload the section.
-      [self reloadInactiveTabsButtonHeader];
-    } else {
-      // The header just needs to be updated with the new days threshold.
-      [self updateInactiveTabsButtonHeader];
-    }
-  }
-}
-
-#pragma mark - Actions
-
-// Called when the Inactive Tabs button is tapped.
-- (void)didTapInactiveTabsButton {
-  CHECK(!IsInactiveTabButtonRefactoringEnabled());
-  [self.delegate didTapInactiveTabsButtonInGridViewController:self];
+  GridSnapshot* snapshot = [self.diffableDataSource snapshot];
+  [self updateInactiveTabsButtonInSnapshot:snapshot];
 }
 
 #pragma mark - Private
@@ -408,98 +295,10 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
   }
 }
 
-- (void)showInactiveTabsButtonHeader {
-  CHECK(!IsInactiveTabButtonRefactoringEnabled());
-  // Contrary to `hideInactiveTabsButtonHeader`, this doesn't need to be
-  // animated.
-  [self reloadInactiveTabsButtonHeader];
-}
-
-- (void)hideInactiveTabsButtonHeader {
-  CHECK(!IsInactiveTabButtonRefactoringEnabled());
-  NSInteger tabSectionIndex = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:tabSectionIndex];
-  InactiveTabsButtonHeader* header =
-      ObjCCast<InactiveTabsButtonHeader>([self.collectionView
-          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                              atIndexPath:indexPath]);
-  if (!header) {
-    return;
-  }
-
-  _inactiveTabsHeaderHideAnimationInProgress = YES;
-  [UIView animateWithDuration:kInactiveTabsHeaderAnimationDuration.InSecondsF()
-      animations:^{
-        header.alpha = 0;
-        [self.collectionView.collectionViewLayout invalidateLayout];
-      }
-      completion:^(BOOL finished) {
-        header.hidden = YES;
-        self->_inactiveTabsHeaderHideAnimationInProgress = NO;
-        // Update the header to make it entirely disappear once the animation is
-        // done. This is done after a delay because the completion can be called
-        // before the animation ended, causing a visual glitch.
-        __weak __typeof(self) weakSelf = self;
-        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE, base::BindOnce(^{
-              [weakSelf reloadInactiveTabsButtonHeader];
-            }),
-            kInactiveTabsHeaderAnimationDuration);
-      }];
-}
-
-// Reloads the section containing the Inactive Tabs button header.
-- (void)reloadInactiveTabsButtonHeader {
-  CHECK(!IsInactiveTabButtonRefactoringEnabled());
-  // Prevent the animation, as it leads to a jarring effect when closing all
-  // inactive tabs: the inactive tabs view controller gets popped, and the
-  // underlying regular Tab Grid moves tabs up.
-  // Note: this could be revisited when supporting iPad, as the user could have
-  // closed all inactive tabs in a different window.
-  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-  [snapshot reloadSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
-  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
-
-  // Make sure to restore the selection. Reloading the section cleared it.
-  // https://developer.apple.com/forums/thread/656529
-  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
-}
-
-// Reconfigures the Inactive Tabs button header.
-- (void)updateInactiveTabsButtonHeader {
-  CHECK(!IsInactiveTabButtonRefactoringEnabled());
-  NSInteger tabSectionIndex = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:tabSectionIndex];
-  InactiveTabsButtonHeader* header =
-      ObjCCast<InactiveTabsButtonHeader>([self.collectionView
-          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                              atIndexPath:indexPath]);
-  // Note: At this point, `header` could be nil if not visible, or if the
-  // supplementary view is not an InactiveTabsButtonHeader.
-  [self configureInactiveTabsButtonHeader:header];
-}
-
 // Configures `cell` according to the current state.
 - (void)configureInativeTabsButtonCell:(InactiveTabsButtonCell*)cell {
   cell.count = _inactiveTabsCount;
   cell.daysThreshold = _inactiveTabsDaysThreshold;
-}
-
-// Configures the Inactive Tabs Button header according to the current state.
-- (void)configureInactiveTabsButtonHeader:(InactiveTabsButtonHeader*)header {
-  CHECK(!IsInactiveTabButtonRefactoringEnabled());
-  header.parent = self;
-  __weak __typeof(self) weakSelf = self;
-  header.buttonAction = ^{
-    [weakSelf didTapInactiveTabsButton];
-  };
-  [header configureWithDaysThreshold:_inactiveTabsDaysThreshold];
-  [header configureWithCount:_inactiveTabsCount];
-  header.hidden = _inactiveTabsCount == 0;
 }
 
 @end

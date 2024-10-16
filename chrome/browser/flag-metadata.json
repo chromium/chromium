@@ -5296,11 +5296,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "inactive-tab-button-refactoring",
-    "owners": [ "gambard@google.com", "lpromero@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "incognito-reauthentication-for-android",
     "owners": [ "roagarwal@chromium.org", "chrome-incognito@google.com" ],
     "expiry_milestone": 120

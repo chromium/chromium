@@ -1504,11 +1504,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewSupplementaryRegistration* registration;
   switch (_mode) {
     case TabGridMode::kNormal:
-      if (IsInactiveTabButtonRefactoringEnabled()) {
-        return nil;
-      } else {
-        NOTREACHED() << "Should be implemented in a subclass.";
-      }
+      return nil;
     case TabGridMode::kSelection:
       NOTREACHED() << "Should not happen.";
     case TabGridMode::kSearch:
@@ -1778,7 +1774,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   switch (itemIdentifier.type) {
     case GridItemType::kInactiveTabsButton: {
-      CHECK(IsInactiveTabButtonRefactoringEnabled());
       [self.delegate didTapInactiveTabsButtonInGridViewController:self];
       break;
     }

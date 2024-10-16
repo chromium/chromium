@@ -506,12 +506,6 @@ const char kIdentityConfirmationSnackbarName[] =
 const char kIdentityConfirmationSnackbarDescription[] =
     "When enabled, the identity confirmation snackbar will show on startup.";
 
-const char kInactiveTabButtonRefactoringName[] =
-    "Inactive tab button refactoring";
-const char kInactiveTabButtonRefactoringDescription[] =
-    "When enabled, the inactive tab button is refactored to be a cell instead "
-    "of a header.";
-
 const char kIndicateIdentityErrorInOverflowMenuName[] =
     "Indicate Identity Error in Overflow Menu";
 const char kIndicateIdentityErrorInOverflowMenuDescription[] =

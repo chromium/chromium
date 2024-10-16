@@ -11862,21 +11862,6 @@
             ]
         }
     ],
-    "IOSInactiveTabButtonRefactoring": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InactiveTabButtonRefactoring"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSInternalAdditionalFeaturesSwitch": [
         {
             "platforms": [

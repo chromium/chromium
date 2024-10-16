@@ -19,19 +19,6 @@
 
 #pragma mark - Parent's functions
 
-// Returns a configured header for the given index path.
-- (UICollectionReusableView*)headerForSectionAtIndexPath:
-    (NSIndexPath*)indexPath {
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    // With the refactoring, the base class does the right thing.
-    return [super headerForSectionAtIndexPath:indexPath];
-  }
-  if (self.mode == TabGridMode::kNormal) {
-    return nil;
-  }
-  return [super headerForSectionAtIndexPath:indexPath];
-}
-
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemsAtIndexPaths:
         (NSArray<NSIndexPath*>*)indexPaths
