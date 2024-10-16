@@ -8,7 +8,7 @@
 // These are needed for the test itself, so keep a reference to the real method.
 EventTarget.prototype.savedAddEventListener =
     EventTarget.prototype.addEventListener;
-document.body.savedAppendChild = document.body.appendChild;
+Node.prototype.savedAppendChild = Node.prototype.appendChild;
 Document.prototype.savedCreateElement = Document.prototype.createElement;
 
 function makeUnreached() {

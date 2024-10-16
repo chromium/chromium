@@ -224,11 +224,7 @@ class ControlledFrameApiTest : public ControlledFrameTestBase {
     if (mangle_js.length() == 0u) {
       return testing::AssertionFailure() << "No mangle.js code found";
     }
-    if (!ExecJs(frame, mangle_js)) {
-      return testing::AssertionFailure()
-             << "Could not include mangle.js in frame";
-    }
-    return testing::AssertionSuccess();
+    return ExecJs(frame, mangle_js);
   }
 
  public:
