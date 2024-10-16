@@ -248,7 +248,7 @@
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK" desc="Learn more text for the Manage Topics Page">
     <ph name="BEGIN_LINK1">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the manage topics page description." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the manage topics page description.">
     Learn more about managing your ad privacy in Chrome.
   </message>
   <message name="IDS_SETTINGS_UNBLOCK_TOPIC_TOAST_BODY" desc="When a user unblocks a topic, a toast appears explaining what they did and and how that can make the topic active. The toast appears for at most 10 seconds." formatter_data="android_java">
