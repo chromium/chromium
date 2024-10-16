@@ -48,6 +48,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
+            Supplier<Integer> bottomToolbarControlsOffsetSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
         mModel =
@@ -76,6 +77,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         tabSupplier,
                         browserControlsStateProvider,
                         topUiThemeColorProvider,
+                        bottomToolbarControlsOffsetSupplier,
                         layoutsToShowOn,
                         isVisibilityManuallyControlled);
     }
@@ -113,6 +115,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+        mMediator.setViewport(viewport);
         return mSceneLayer;
     }
 

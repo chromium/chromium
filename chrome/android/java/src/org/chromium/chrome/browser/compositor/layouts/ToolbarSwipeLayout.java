@@ -120,6 +120,7 @@ public class ToolbarSwipeLayout extends Layout {
         mRightTabSupplier = new ObservableSupplierImpl<>();
 
         if (mMoveToolbar) {
+            // TODO(b/369134407, pnoland): Wire bottom toolbar offset for swipe layouts.
             mLeftToolbarOverlay =
                     new TopToolbarOverlayCoordinator(
                             getContext(),
@@ -129,6 +130,7 @@ public class ToolbarSwipeLayout extends Layout {
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
                             topUiColorProvider,
+                            () -> 0,
                             LayoutType.TOOLBAR_SWIPE,
                             true);
             mLeftToolbarOverlay.setManualVisibility(true);
@@ -143,6 +145,7 @@ public class ToolbarSwipeLayout extends Layout {
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
                             topUiColorProvider,
+                            () -> 0,
                             LayoutType.TOOLBAR_SWIPE,
                             true);
             mRightToolbarOverlay.setManualVisibility(true);

@@ -14,6 +14,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -34,6 +35,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
     private final ControlContainer mControlContainer;
     private final BottomControlsStacker mBottomControlsStacker;
+    private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
     @LayerVisibility private int mLayerVisibility;
     private final BottomControlsLayer mBottomToolbarLayer;
 
@@ -57,13 +59,15 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @NonNull ObservableSupplier<Boolean> isNtpShowingSupplier,
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             @NonNull ControlContainer controlContainer,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            @NonNull BottomControlsStacker bottomControlsStacker,
+            @NonNull ObservableSupplierImpl<Integer> browserControlsOffsetSupplier) {
         mBrowserControlsSizer = browserControlsSizer;
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mControlContainer = controlContainer;
         mBottomControlsStacker = bottomControlsStacker;
+        mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
@@ -96,6 +100,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     @Override
                     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
                         if (mLayerVisibility == LayerVisibility.VISIBLE) {
+                            mBrowserControlsOffsetSupplier.set(layerYOffset);
                             mControlContainer.getView().setTranslationY(layerYOffset);
                         }
                     }

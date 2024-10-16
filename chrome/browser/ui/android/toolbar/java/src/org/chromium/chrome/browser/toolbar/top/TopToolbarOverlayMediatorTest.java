@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.view.View;
 
 import org.junit.Assert;
@@ -22,10 +23,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -62,6 +66,7 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private ObservableSupplier<Tab> mTabSupplier;
 
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
+    private int mBottomControlsOffset;
 
     @Before
     public void beforeTest() {
@@ -94,6 +99,7 @@ public class TopToolbarOverlayMediatorTest {
                         mTabSupplier,
                         mBrowserControlsProvider,
                         mTopUiThemeColorProvider,
+                        () -> mBottomControlsOffset,
                         LayoutType.BROWSING,
                         false);
 
@@ -176,6 +182,7 @@ public class TopToolbarOverlayMediatorTest {
                         mTabSupplier,
                         mBrowserControlsProvider,
                         mTopUiThemeColorProvider,
+                        () -> mBottomControlsOffset,
                         LayoutType.BROWSING,
                         false);
         mMediator.setIsAndroidViewVisible(true);
@@ -270,5 +277,30 @@ public class TopToolbarOverlayMediatorTest {
         mTabObserverCaptor.getValue().onContentChanged(mTab2);
 
         Assert.assertFalse(mModel.get(TopToolbarOverlayProperties.ANONYMIZE));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
+    public void testBottomToolbarOffset() {
+        float height = 700.0f;
+        mMediator.setViewport(new RectF(0.0f, 0.0f, 100.0f, height));
+        mBottomControlsOffset = -40;
+
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, 30, 0, false, false);
+        Assert.assertEquals(
+                0.0f, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
+
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, 30, 0, false, false);
+
+        Assert.assertEquals(
+                height + mBottomControlsOffset,
+                mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
+                MathUtils.EPSILON);
     }
 }

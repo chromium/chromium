@@ -331,6 +331,10 @@ public class ToolbarManager
     private boolean mStartNavDuringOngoingGesture;
     private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
     private ToolbarPositionController mToolbarPositionController;
+    // Supplier of the offset, relative to the bottom of the viewport, of the bottom-anchored
+    // toolbar. This value is only meaningful when the current ControlsPosition is BOTTOM.
+    private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
+            new ObservableSupplierImpl<>(0);
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1338,7 +1342,8 @@ public class ToolbarManager
                         mIsNtpShowingSupplier,
                         mOmniboxFocusStateSupplier,
                         mControlContainer,
-                        mBottomControlsStacker);
+                        mBottomControlsStacker,
+                        mBottomToolbarControlsOffsetSupplier);
     }
 
     // TODO(b/315204103): add tests
@@ -1696,7 +1701,8 @@ public class ToolbarManager
                 layoutManager,
                 mActivityTabProvider,
                 mBrowserControlsSizer,
-                mTopUiThemeColorProvider);
+                mTopUiThemeColorProvider,
+                mBottomToolbarControlsOffsetSupplier);
         mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =

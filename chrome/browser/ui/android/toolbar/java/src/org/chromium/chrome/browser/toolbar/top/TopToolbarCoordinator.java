@@ -241,17 +241,19 @@ public class TopToolbarCoordinator implements Toolbar {
      *
      * <p>Calling this must occur after the native library have completely loaded.
      *
+     * @param tabSwitcherClickHandler The click handler for the tab switcher button.
+     * @param appMenuDelegate Allows interacting with the app menu.
      * @param profile The primary Profile associated with this Toolbar.
      * @param layoutUpdater A {@link Runnable} used to request layout update upon scene change.
-     * @param tabSwitcherClickHandler The click handler for the tab switcher button.
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
-     * @param appMenuDelegate Allows interacting with the app menu.
      * @param layoutManager A {@link LayoutManager} used to watch for scene changes.
      * @param tabSupplier Supplier of the activity tab.
      * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to access
      *     browser controls offsets and visibility.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param bottomToolbarControlsOffsetSupplier Supplier of the offset, relative to the bottom of
+     *     the viewport, of the bottom-anchored toolbar.
      */
     public void initializeWithNative(
             Profile profile,
@@ -261,7 +263,8 @@ public class TopToolbarCoordinator implements Toolbar {
             LayoutManager layoutManager,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            Supplier<Integer> bottomToolbarControlsOffsetSupplier) {
         assert mTabModelSelectorSupplier.get() != null;
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
         mToolbarLayout.setTabCountSupplier(
@@ -285,6 +288,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             browserControlsVisibilityManager,
                             mResourceManagerSupplier,
                             topUiThemeColorProvider,
+                            bottomToolbarControlsOffsetSupplier,
                             LayoutType.BROWSING
                                     | LayoutType.SIMPLE_ANIMATION
                                     | LayoutType.TAB_SWITCHER,

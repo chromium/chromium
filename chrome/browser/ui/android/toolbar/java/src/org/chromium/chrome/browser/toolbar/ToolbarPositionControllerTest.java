@@ -205,6 +205,8 @@ public class ToolbarPositionControllerTest {
     private BottomControlsStacker mBottomControlsStacker;
 
     private ToolbarPositionController mController;
+    private ObservableSupplierImpl<Integer> mBottomToolbarOffsetSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -224,7 +226,8 @@ public class ToolbarPositionControllerTest {
                         mIsNtpShowing,
                         mIsOmniboxFocused,
                         mControlContainer,
-                        mBottomControlsStacker);
+                        mBottomControlsStacker,
+                        mBottomToolbarOffsetSupplier);
     }
 
     @Test
@@ -341,6 +344,7 @@ public class ToolbarPositionControllerTest {
 
         toolbarLayer.onBrowserControlsOffsetUpdate(12);
         verify(mControlContainerView).setTranslationY(12);
+        assertEquals(mBottomToolbarOffsetSupplier.get().intValue(), 12);
 
         mIsOmniboxFocused.set(true);
         assertControlsAtTop();
