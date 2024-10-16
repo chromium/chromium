@@ -582,18 +582,19 @@ The application installer API varies by platform.
 For Windows, for backward compatibility, the following installer results are
 read and written from the registry:
 
+While installing:
 * `InstallerProgress` : The installer writes a percentage value (0-100) while
 installing so that the updater can provide feedback to the user on the progress.
-* `InstallerError` : Installer error, or 0 for success.
-* `InstallerExtraCode1` : Optional extra code.
-* `InstallerResult` : Specifies the result type and how to determine success or
-failure:
+
+After the install completes:
+* `InstallerResult` : NOTE: If this value is not written, all the other
+`InstallerXXX` values documented below will be ignored. `InstallerResult`
+specifies the result type and how to determine success or failure:
   *   0 - SUCCESS
       The installer succeeded, unconditionally.
       - if a launch command was provided via the installer API, the command will
         be launched and the updater UI will exit silently. Otherwise, the
         updater will show an install success dialog.
-
   *   All the error installer results below are treated the same.
       - if an installer error was not provided via the installer API or the exit
         code, generic error `kErrorApplicationInstallerFailed` will be reported.
@@ -604,28 +605,32 @@ failure:
       *   2 - FAILED\_MSI\_ERROR
       *   3 - FAILED\_SYSTEM\_ERROR
       *   4 - FAILED\_EXIT\_CODE (default)
-
-  *   If an installer result is not explicitly reported by the installer, the
-      installer API values are internally set based on whether the exit code
-      from the installer process is a success or an error:
-      - If the exit code is a success, the installer result is set to success.
-        If a launch command was provided via the installer API, the command will
-        be launched and the updater UI will exit silently. Otherwise, the
-        updater will show an install success dialog.
-      - If the exit code is a failure, the installer result is set to
-        `kExitCode`, the installer error is set to
-        `kErrorApplicationInstallerFailed`, and the installer extra code is set
-        to the exit code.
-      - If a text description is reported via the installer API, it will be
-        used.
+* `InstallerError` : Installer error, or 0 for success.
+* `InstallerExtraCode1` : Optional extra code.
 * `InstallerResultUIString` : A string to be displayed to the user, if
-`InstallerResult` is FAILED*.
+`InstallerResult` is a `FAILED_XXX` value.
 * `InstallerSuccessLaunchCmdLine` : On success, the installer writes a command
 line to be launched by the updater. The command line will be launched at medium
 integrity on Vista with UAC on, even if the application being installed is a
 machine application. Since this is a command line, the application path should
 be properly enclosed. For example:
 `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" /foo`
+
+If `InstallerResult` is not explicitly written by the installer to the registry,
+the other installer API values such as `InstallerError`, `InstallerExtraCode1`,
+`InstallerResultUIString`, and `InstallerSuccessLaunchCmdLine` are not read from
+the registry, but are instead internally set based on whether the exit code from
+the installer process is a success or an error:
+  - If the exit code is a success, the installer result is set to success.
+    If a launch command was provided via the installer API, the command will
+    be launched and the updater UI will exit silently. Otherwise, the
+    updater will show an install success dialog.
+  - If the exit code is a failure, the installer result is set to
+    `kExitCode`, the installer error is set to
+    `kErrorApplicationInstallerFailed`, and the installer extra code is set
+    to the exit code.
+  - If a text description is reported via the installer API, it will be
+    used.
 
 On an update or install, the InstallerXXX values are renamed to LastInstallerXXX
 values. The LastInstallerXXX values remain around until the next update or

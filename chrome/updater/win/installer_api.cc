@@ -289,9 +289,17 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
     }
     if (key->ReadValueDW(kRegValueInstallerError, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_error = val;
+      VLOG_IF(1, !installer_outcome.installer_result)
+          << "No `InstallerResult` found in the registry. `InstallerError` "
+             "will be ignored: "
+          << val;
     }
     if (key->ReadValueDW(kRegValueInstallerExtraCode1, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_extracode1 = val;
+      VLOG_IF(1, !installer_outcome.installer_result)
+          << "No `InstallerResult` found in the registry. "
+             "`InstallerExtraCode1` will be ignored: "
+          << val;
     }
   }
   {
@@ -301,6 +309,10 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
       std::string installer_text;
       if (base::WideToUTF8(val.c_str(), val.size(), &installer_text)) {
         installer_outcome.installer_text = installer_text;
+        VLOG_IF(1, !installer_outcome.installer_result)
+            << "No `InstallerResult` found in the registry. "
+               "`InstallerResultUIString` will be ignored: "
+            << installer_text;
       }
     }
     if (key->ReadValue(kRegValueInstallerSuccessLaunchCmdLine, &val) ==
@@ -308,6 +320,10 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
       std::string installer_cmd_line;
       if (base::WideToUTF8(val.c_str(), val.size(), &installer_cmd_line)) {
         installer_outcome.installer_cmd_line = installer_cmd_line;
+        VLOG_IF(1, !installer_outcome.installer_result)
+            << "No `InstallerResult` found in the registry. "
+               "`InstallerSuccessLaunchCmdLine` will be ignored: "
+            << installer_cmd_line;
       }
     }
   }
