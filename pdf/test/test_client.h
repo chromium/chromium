@@ -36,8 +36,8 @@ class TestClient : public PDFiumEngineClient {
   std::string GetURL() override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   v8::Isolate* GetIsolate() override;
-  std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                               const char16_t* term,
+  std::vector<SearchStringResult> SearchString(const std::u16string& needle,
+                                               const std::u16string& haystack,
                                                bool case_sensitive) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;

@@ -50,8 +50,8 @@ v8::Isolate* TestClient::GetIsolate() {
 }
 
 std::vector<PDFiumEngineClient::SearchStringResult> TestClient::SearchString(
-    const char16_t* string,
-    const char16_t* term,
+    const std::u16string& needle,
+    const std::u16string& haystack,
     bool case_sensitive) {
   return std::vector<SearchStringResult>();
 }

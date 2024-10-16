@@ -31,14 +31,12 @@ class FindTextTestClient : public TestClient {
   MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
   MOCK_METHOD(void, NotifySelectedFindResultChanged, (int, bool), (override));
 
-  std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                               const char16_t* term,
+  std::vector<SearchStringResult> SearchString(const std::u16string& needle,
+                                               const std::u16string& haystack,
                                                bool case_sensitive) override {
-    EXPECT_EQ(case_sensitive, expected_case_sensitive_);
-    std::u16string haystack = std::u16string(string);
-    std::u16string needle = std::u16string(term);
-    EXPECT_FALSE(haystack.empty());
     EXPECT_FALSE(needle.empty());
+    EXPECT_FALSE(haystack.empty());
+    EXPECT_EQ(case_sensitive, expected_case_sensitive_);
 
     std::vector<SearchStringResult> results;
 

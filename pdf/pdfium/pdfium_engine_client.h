@@ -141,15 +141,16 @@ class PDFiumEngineClient {
   // Returns the current V8 isolate, if any.
   virtual v8::Isolate* GetIsolate() = 0;
 
-  // Searches the given string for "term" and returns the results.  Unicode-
-  // aware.
+  // Searches for `needle` in `haystack` and returns the results.
+  // Unicode-aware.
   struct SearchStringResult {
     int start_index;
     int length;
   };
-  virtual std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                                       const char16_t* term,
-                                                       bool case_sensitive) = 0;
+  virtual std::vector<SearchStringResult> SearchString(
+      const std::u16string& needle,
+      const std::u16string& haystack,
+      bool case_sensitive) = 0;
 
   // Notifies the client that the document has finished loading.
   virtual void DocumentLoadComplete() {}

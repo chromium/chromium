@@ -2006,8 +2006,7 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
     return;
 
   std::vector<PDFiumEngineClient::SearchStringResult> results =
-      client_->SearchString(adjusted_page_text.c_str(), adjusted_term.c_str(),
-                            case_sensitive);
+      client_->SearchString(adjusted_term, adjusted_page_text, case_sensitive);
   for (const auto& result : results) {
     // Need to convert from adjusted page text start to page text start, by
     // incrementing for all the characters adjusted before it in the string.
