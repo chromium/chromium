@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/hash/hash.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -273,8 +274,7 @@ void MostRelevantTabResumptionPageHandler::DismissURLVisits(
     DCHECK(!url_visit->url_key.empty());
     url_visit_dict->Set(
         url_visit->url_key,
-        static_cast<double>(
-            url_visit->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds()));
+        base::TimeToValue(base::Time::Now() + base::Seconds(30)));
     visited_url_ranking_service->RecordAction(
         visited_url_ranking::ScoredURLUserAction::kDismissed,
         url_visit->url_key,
@@ -481,10 +481,10 @@ bool MostRelevantTabResumptionPageHandler::IsNewURL(
       profile_->GetPrefs()->GetDict(kDismissedVisitsPrefName);
   auto* val = cached_urls.Find(url_key);
   if (val) {
-    base::Time ts = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(val->GetDouble() + 10000));
-    DCHECK(!ts.is_null());
-    return timestamp > ts;
+    auto dismissed_time = base::ValueToTime(val);
+    if (dismissed_time.has_value()) {
+      return timestamp > dismissed_time.value();
+    }
   }
 
   return true;
@@ -496,10 +496,12 @@ void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
                                   kDismissedVisitsPrefName);
   for (auto it = visit_dict->begin(); it != visit_dict->end(); ++it) {
     DCHECK(!it->first.empty());
-    base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(it->second.GetDouble()));
-    if (timestamp < base::Time::Now() - base::Days(dismissal_duration_days_)) {
-      urls_to_remove.insert(it->first);
+    auto timestamp = base::ValueToTime(it->second);
+    if (timestamp.has_value()) {
+      if (timestamp.value() <
+          base::Time::Now() - base::Days(dismissal_duration_days_)) {
+        urls_to_remove.insert(it->first);
+      }
     }
   }
 
