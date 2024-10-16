@@ -358,7 +358,7 @@ bool BirchCoralProvider::HasValidPostLoginResponse() {
 void BirchCoralProvider::HandlePostLoginCoralResponse(
     std::unique_ptr<CoralResponse> response) {
   post_login_response_timestamp_ = base::Time::Now();
-  HandleCoralResponse(std::move(response_));
+  HandleCoralResponse(std::move(response));
 }
 
 void BirchCoralProvider::HandleInSessionCoralResponse(
@@ -366,7 +366,7 @@ void BirchCoralProvider::HandleInSessionCoralResponse(
   // Do not handle in-session responses while the post-login response is still
   // valid.
   CHECK(!HasValidPostLoginResponse());
-  HandleCoralResponse(std::move(response_));
+  HandleCoralResponse(std::move(response));
 }
 
 void BirchCoralProvider::HandleCoralResponse(
