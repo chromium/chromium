@@ -47,26 +47,6 @@ public abstract class ValuesReturned {
         }
     }
 
-    /**
-     * Sets the feature flags to use in JUnit and instrumentation tests.
-     *
-     * <p>Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations instead.
-     *
-     * <p>TODO(crbug.com/40281605): Store these in ValuesOverridden, or better, merge with overrides
-     * of FeatureList.
-     */
-    public static void setFeaturesForTesting(Map<String, Boolean> features) {
-        synchronized (sBoolValues) {
-            for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-                String featureName = entry.getKey();
-                Boolean flagValue = entry.getValue();
-                String sharedPreferencesKey =
-                        CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(featureName);
-                sBoolValues.put(sharedPreferencesKey, flagValue);
-            }
-        }
-    }
-
     /** Get a previously returned value or uses |valueSupplier| to determine it and store it. */
     public static boolean getReturnedOrNewBoolValue(String key, Supplier<Boolean> valueSupplier) {
         synchronized (sBoolValues) {

@@ -58,7 +58,6 @@ public class Features {
         // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
         //     native feature list has been initialized.
         FeatureList.setTestFeaturesNoResetForTesting(flagStates);
-        ValuesReturned.setFeaturesForTesting(flagStates);
         // Apply "--force-fieldtrials" passed by @CommandLineFlags.
         FieldTrials.getInstance().applyFieldTrials(CommandLine.getInstance());
     }
