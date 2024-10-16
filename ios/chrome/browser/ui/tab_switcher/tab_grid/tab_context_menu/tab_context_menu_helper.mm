@@ -369,10 +369,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     return NO;
   }
 
-  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
-
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+  for (Browser* browser : [self currentBrowsers]) {
     WebStateList* webStateList = browser->GetWebStateList();
     web::WebState* webState = GetWebState(
         webStateList, WebStateSearchCriteria{
@@ -386,14 +383,9 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   return NO;
 }
 
-// Returns the TabItem object representing the tab with `identifier.
+// Returns the TabItem object representing the tab with `identifier`.
 - (TabItem*)tabItemForIdentifier:(web::WebStateID)identifier {
-  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
-  const BrowserList::BrowserType browser_types =
-      _incognito ? BrowserList::BrowserType::kIncognito
-                 : BrowserList::BrowserType::kRegularAndInactive;
-  std::set<Browser*> browsers = browserList->BrowsersOfType(browser_types);
-  for (Browser* browser : browsers) {
+  for (Browser* browser : [self currentBrowsersIncludingInactive]) {
     WebStateList* webStateList = browser->GetWebStateList();
     TabItem* item = GetTabItem(
         webStateList, WebStateSearchCriteria{.identifier = identifier});
@@ -417,10 +409,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Handles the result of the remove from group block.
 - (void)handleRemoveWebStateFromGroup:(web::WebStateID)webStateID {
-  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
-
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+  for (Browser* browser : [self currentBrowsers]) {
     WebStateList* webStateList = browser->GetWebStateList();
     int index = GetWebStateIndex(
         webStateList,
@@ -435,10 +424,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns the group of the given `webStateID`.
 - (const TabGroup*)groupForWebState:(web::WebStateID)webStateID {
-  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
-
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+  for (Browser* browser : [self currentBrowsers]) {
     WebStateList* webStateList = browser->GetWebStateList();
     int index = GetWebStateIndex(
         webStateList,
@@ -449,6 +435,26 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     }
   }
   return nil;
+}
+
+// Returns the list of browsers for the current `incognito` state. It only
+// returns Incognito OR Regular browsers. Inactive browsers are ignored.
+- (std::set<Browser*>)currentBrowsers {
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
+  const BrowserList::BrowserType browserType =
+      _incognito ? BrowserList::BrowserType::kIncognito
+                 : BrowserList::BrowserType::kRegular;
+  return browserList->BrowsersOfType(browserType);
+}
+
+// Returns the list of browsers for the current `incognito` state. It returns
+// Incognito OR Regular+Inactive browsers.
+- (std::set<Browser*>)currentBrowsersIncludingInactive {
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
+  const BrowserList::BrowserType browserType =
+      _incognito ? BrowserList::BrowserType::kIncognito
+                 : BrowserList::BrowserType::kRegularAndInactive;
+  return browserList->BrowsersOfType(browserType);
 }
 
 @end
