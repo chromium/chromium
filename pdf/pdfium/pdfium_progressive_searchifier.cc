@@ -12,24 +12,6 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
-namespace {
-
-int GetBlockForJpeg(void* param,
-                    unsigned long pos,
-                    unsigned char* buf,
-                    unsigned long size) {
-  auto data_vector = *static_cast<base::span<const uint8_t>*>(param);
-  if (pos + size < pos || pos + size > data_vector.size()) {
-    return 0;
-  }
-  // TODO(tsepez): spanify arguments to remove the error.
-  base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
-  buf_span.copy_from(data_vector.subspan(pos, size));
-  return 1;
-}
-
-}  // namespace
-
 namespace chrome_pdf {
 
 PdfiumProgressiveSearchifier::ScopedSdkInitializer::ScopedSdkInitializer() {
@@ -65,10 +47,21 @@ void PdfiumProgressiveSearchifier::AddPage(
   CHECK(image);
   std::vector<uint8_t> encoded;
   CHECK(gfx::JPEGCodec::Encode(bitmap, 100, &encoded));
-  FPDF_FILEACCESS file_access{
-      .m_FileLen = static_cast<unsigned long>(encoded.size()),
-      .m_GetBlock = &GetBlockForJpeg,
-      .m_Param = &encoded};
+  base::span<const uint8_t> encoded_span = base::make_span(encoded);
+  FPDF_FILEACCESS file_access = {};
+  file_access.m_FileLen = static_cast<unsigned long>(encoded_span.size());
+  file_access.m_GetBlock = [](void* param, unsigned long pos,
+                              unsigned char* buf, unsigned long size) {
+    const auto& encoded_span = *static_cast<base::span<const uint8_t>*>(param);
+    if (pos + size < pos || pos + size > encoded_span.size()) {
+      return 0;
+    }
+    // TODO(tsepez): spanify arguments to remove the error.
+    base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
+    buf_span.copy_from(encoded_span.subspan(pos, size));
+    return 1;
+  };
+  file_access.m_Param = &encoded_span;
   CHECK(FPDFImageObj_LoadJpegFileInline(nullptr, 0, image.get(), &file_access));
   CHECK(FPDFImageObj_SetMatrix(image.get(), width, 0, 0, height, 0, 0));
   AddTextOnImage(doc_.get(), page.get(), font_.get(), image.get(),
