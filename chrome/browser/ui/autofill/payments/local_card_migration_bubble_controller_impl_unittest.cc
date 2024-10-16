@@ -77,8 +77,8 @@ class LocalCardMigrationBubbleControllerImplTest
     controller()->ShowBubble(base::BindOnce(&LocalCardMigrationCallback));
   }
 
-  void CloseBubble(PaymentsBubbleClosedReason closed_reason =
-                       PaymentsBubbleClosedReason::kNotInteracted) {
+  void CloseBubble(PaymentsUiClosedReason closed_reason =
+                       PaymentsUiClosedReason::kNotInteracted) {
     controller()->OnBubbleClosed(closed_reason);
   }
 
@@ -157,7 +157,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleAccepted) {
   base::HistogramTester histogram_tester;
   ShowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kAccepted);
+  CloseBubble(PaymentsUiClosedReason::kAccepted);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -167,7 +167,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleAccepted) {
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleClosed) {
   base::HistogramTester histogram_tester;
   ShowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kClosed);
+  CloseBubble(PaymentsUiClosedReason::kClosed);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -178,7 +178,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
        FirstShow_BubbleNotInteracted) {
   base::HistogramTester histogram_tester;
   ShowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kNotInteracted);
+  CloseBubble(PaymentsUiClosedReason::kNotInteracted);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -188,7 +188,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleLostFocus) {
   base::HistogramTester histogram_tester;
   ShowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kLostFocus);
+  CloseBubble(PaymentsUiClosedReason::kLostFocus);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -198,7 +198,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleLostFocus) {
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_Unknown) {
   base::HistogramTester histogram_tester;
   ShowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kUnknown);
+  CloseBubble(PaymentsUiClosedReason::kUnknown);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -209,7 +209,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleAccepted) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   CloseAndReshowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kAccepted);
+  CloseBubble(PaymentsUiClosedReason::kAccepted);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -223,7 +223,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleClosed) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   CloseAndReshowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kClosed);
+  CloseBubble(PaymentsUiClosedReason::kClosed);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -238,7 +238,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   ShowBubble();
   CloseAndReshowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kNotInteracted);
+  CloseBubble(PaymentsUiClosedReason::kNotInteracted);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -252,7 +252,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleLostFocus) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   CloseAndReshowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kLostFocus);
+  CloseBubble(PaymentsUiClosedReason::kLostFocus);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
@@ -266,7 +266,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_Unknown) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   CloseAndReshowBubble();
-  CloseBubble(PaymentsBubbleClosedReason::kUnknown);
+  CloseBubble(PaymentsUiClosedReason::kUnknown);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",

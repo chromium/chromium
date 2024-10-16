@@ -38,7 +38,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -411,7 +411,7 @@ const CreditCard& SaveCardBubbleControllerImpl::GetCard() const {
   return card_;
 }
 
-base::OnceCallback<void(PaymentsBubbleClosedReason)>
+base::OnceCallback<void(PaymentsUiClosedReason)>
 SaveCardBubbleControllerImpl::GetOnBubbleClosedCallback() {
   return base::BindOnce(&SaveCardBubbleControllerImpl::OnBubbleClosed,
                         weak_ptr_factory_.GetWeakPtr());
@@ -551,7 +551,7 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
 }
 
 void SaveCardBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
   // If the dialog should be re-shown, do not change the bubble type or log
@@ -562,19 +562,19 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     return;
   }
 
-  auto get_metric = [](PaymentsBubbleClosedReason reason) {
+  auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {
-      case PaymentsBubbleClosedReason::kAccepted:
+      case PaymentsUiClosedReason::kAccepted:
         return autofill_metrics::SaveCardPromptResult::kAccepted;
-      case PaymentsBubbleClosedReason::kCancelled:
+      case PaymentsUiClosedReason::kCancelled:
         return autofill_metrics::SaveCardPromptResult::kCancelled;
-      case PaymentsBubbleClosedReason::kClosed:
+      case PaymentsUiClosedReason::kClosed:
         return autofill_metrics::SaveCardPromptResult::kClosed;
-      case PaymentsBubbleClosedReason::kNotInteracted:
+      case PaymentsUiClosedReason::kNotInteracted:
         return autofill_metrics::SaveCardPromptResult::kNotInteracted;
-      case PaymentsBubbleClosedReason::kLostFocus:
+      case PaymentsUiClosedReason::kLostFocus:
         return autofill_metrics::SaveCardPromptResult::kLostFocus;
-      case PaymentsBubbleClosedReason::kUnknown:
+      case PaymentsUiClosedReason::kUnknown:
         return autofill_metrics::SaveCardPromptResult::kUnknown;
     }
   };
@@ -632,7 +632,7 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
   std::optional<SaveCardOfferUserDecision> user_decision;
   switch (closed_reason) {
-    case PaymentsBubbleClosedReason::kAccepted:
+    case PaymentsUiClosedReason::kAccepted:
       user_decision = SaveCardOfferUserDecision::kAccepted;
       switch (current_bubble_type_) {
         case BubbleType::LOCAL_SAVE:
@@ -650,15 +650,15 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
           NOTREACHED_IN_MIGRATION();
       }
       break;
-    case PaymentsBubbleClosedReason::kCancelled:
+    case PaymentsUiClosedReason::kCancelled:
       user_decision = SaveCardOfferUserDecision::kDeclined;
       break;
-    case PaymentsBubbleClosedReason::kClosed:
+    case PaymentsUiClosedReason::kClosed:
       user_decision = SaveCardOfferUserDecision::kIgnored;
       break;
-    case PaymentsBubbleClosedReason::kUnknown:
-    case PaymentsBubbleClosedReason::kNotInteracted:
-    case PaymentsBubbleClosedReason::kLostFocus:
+    case PaymentsUiClosedReason::kUnknown:
+    case PaymentsUiClosedReason::kNotInteracted:
+    case PaymentsUiClosedReason::kLostFocus:
       break;
   }
 

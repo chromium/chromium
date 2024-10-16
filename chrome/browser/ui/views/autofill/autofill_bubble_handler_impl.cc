@@ -268,7 +268,7 @@ AutofillBubbleHandlerImpl::ShowVirtualCardEnrollConfirmationBubble(
     VirtualCardEnrollBubbleController* controller) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
       PageActionIconType::kVirtualCardEnroll);
-  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
@@ -323,7 +323,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
     SaveCardBubbleController* controller) {
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
-  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
@@ -340,7 +340,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanConfirmationBubble(
     IbanBubbleController* controller) {
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
-  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
@@ -355,8 +355,7 @@ AutofillBubbleBase*
 AutofillBubbleHandlerImpl::ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    base::OnceCallback<void(PaymentsBubbleClosedReason)>
-        controller_hide_callback,
+    base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
     PageActionIconView* icon_view,
     SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params) {
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* bubble =

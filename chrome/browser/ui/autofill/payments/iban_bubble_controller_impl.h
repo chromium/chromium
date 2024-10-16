@@ -79,13 +79,13 @@ class IbanBubbleControllerImpl
   std::u16string GetDeclineButtonText() const override;
   AccountInfo GetAccountInfo() override;
   const Iban& GetIban() const override;
-  base::OnceCallback<void(PaymentsBubbleClosedReason)>
-  GetOnBubbleClosedCallback() override;
+  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback()
+      override;
 
   void OnAcceptButton(const std::u16string& nickname) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageSavedIbanExtraButtonClicked() override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   IbanBubbleType GetBubbleType() const override;
 
   // SavePaymentIconController:

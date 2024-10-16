@@ -118,8 +118,8 @@ class SaveCardBubbleControllerImpl
   AccountInfo GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
-  base::OnceCallback<void(PaymentsBubbleClosedReason)>
-  GetOnBubbleClosedCallback() override;
+  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback()
+      override;
   const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
   bool ShouldRequestNameFromUser() const override;
@@ -131,7 +131,7 @@ class SaveCardBubbleControllerImpl
           user_provided_card_details) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageCardsClicked() override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   const LegalMessageLines& GetLegalMessageLines() const override;
   bool IsUploadSave() const override;
   BubbleType GetBubbleType() const override;

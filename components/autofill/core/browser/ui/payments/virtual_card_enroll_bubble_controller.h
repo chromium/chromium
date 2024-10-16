@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #include "url/gurl.h"
@@ -67,8 +67,8 @@ class VirtualCardEnrollBubbleController {
   virtual void OnDeclineButton() = 0;
   virtual void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                              const GURL& url) = 0;
-  virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
-  virtual base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
+  virtual base::OnceCallback<void(PaymentsUiClosedReason)>
   GetOnBubbleClosedCallback() = 0;
 
   // Returns the UI parameters needed to display the virtual card enroll

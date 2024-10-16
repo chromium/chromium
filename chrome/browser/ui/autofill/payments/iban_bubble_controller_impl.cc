@@ -221,7 +221,7 @@ const Iban& IbanBubbleControllerImpl::GetIban() const {
   return iban_;
 }
 
-base::OnceCallback<void(PaymentsBubbleClosedReason)>
+base::OnceCallback<void(PaymentsUiClosedReason)>
 IbanBubbleControllerImpl::GetOnBubbleClosedCallback() {
   return base::BindOnce(&IbanBubbleControllerImpl::OnBubbleClosed,
                         weak_ptr_factory_.GetWeakPtr());
@@ -272,19 +272,19 @@ void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
   CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban);
   chrome::ShowSettingsSubPage(chrome::FindBrowserWithTab(web_contents()),
                               chrome::kPaymentsSubPage);
-  OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 }
 
 void IbanBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
       current_bubble_type_ == IbanBubbleType::kUploadSave) {
-    if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
+    if (closed_reason == PaymentsUiClosedReason::kCancelled) {
       std::move(save_iban_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
                    kDeclined,
                /*nickname=*/u"");
-    } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
+    } else if (closed_reason == PaymentsUiClosedReason::kClosed) {
       std::move(save_iban_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
                    kIgnored,
@@ -299,22 +299,22 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
       current_bubble_type_ == IbanBubbleType::kUploadSave) {
     autofill_metrics::SaveIbanBubbleResult metric;
     switch (closed_reason) {
-      case PaymentsBubbleClosedReason::kAccepted:
+      case PaymentsUiClosedReason::kAccepted:
         metric = autofill_metrics::SaveIbanBubbleResult::kAccepted;
         break;
-      case PaymentsBubbleClosedReason::kCancelled:
+      case PaymentsUiClosedReason::kCancelled:
         metric = autofill_metrics::SaveIbanBubbleResult::kCancelled;
         break;
-      case PaymentsBubbleClosedReason::kClosed:
+      case PaymentsUiClosedReason::kClosed:
         metric = autofill_metrics::SaveIbanBubbleResult::kClosed;
         break;
-      case PaymentsBubbleClosedReason::kNotInteracted:
+      case PaymentsUiClosedReason::kNotInteracted:
         metric = autofill_metrics::SaveIbanBubbleResult::kNotInteracted;
         break;
-      case PaymentsBubbleClosedReason::kLostFocus:
+      case PaymentsUiClosedReason::kLostFocus:
         metric = autofill_metrics::SaveIbanBubbleResult::kLostFocus;
         break;
-      case PaymentsBubbleClosedReason::kUnknown:
+      case PaymentsUiClosedReason::kUnknown:
         metric = autofill_metrics::SaveIbanBubbleResult::kUnknown;
         NOTREACHED_IN_MIGRATION();
         break;
@@ -334,14 +334,14 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 
   // Handles `current_bubble_type_` change according to its current type and the
   // `closed_reason`.
-  if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
+  if (closed_reason == PaymentsUiClosedReason::kAccepted) {
     if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
         current_bubble_type_ == IbanBubbleType::kUploadSave) {
       current_bubble_type_ = IbanBubbleType::kManageSavedIban;
     } else {
       current_bubble_type_ = IbanBubbleType::kInactive;
     }
-  } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
+  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
     current_bubble_type_ = IbanBubbleType::kInactive;
   }
   UpdatePageActionIcon();

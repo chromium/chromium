@@ -42,7 +42,7 @@ class LocalCardMigrationBubbleControllerImpl
   // LocalCardMigrationBubbleController:
   void OnConfirmButtonClicked() override;
   void OnCancelButtonClicked() override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
 
  protected:
   explicit LocalCardMigrationBubbleControllerImpl(

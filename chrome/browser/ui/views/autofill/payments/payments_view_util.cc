@@ -201,25 +201,25 @@ LegalMessageView::~LegalMessageView() = default;
 BEGIN_METADATA(LegalMessageView)
 END_METADATA
 
-PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
+PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
     const views::Widget* widget) {
   DCHECK(widget);
   if (!widget->IsClosed()) {
-    return PaymentsBubbleClosedReason::kUnknown;
+    return PaymentsUiClosedReason::kUnknown;
   }
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
-      return PaymentsBubbleClosedReason::kNotInteracted;
+      return PaymentsUiClosedReason::kNotInteracted;
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      return PaymentsBubbleClosedReason::kClosed;
+      return PaymentsUiClosedReason::kClosed;
     case views::Widget::ClosedReason::kLostFocus:
-      return PaymentsBubbleClosedReason::kLostFocus;
+      return PaymentsUiClosedReason::kLostFocus;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      return PaymentsBubbleClosedReason::kAccepted;
+      return PaymentsUiClosedReason::kAccepted;
     case views::Widget::ClosedReason::kCancelButtonClicked:
-      return PaymentsBubbleClosedReason::kCancelled;
+      return PaymentsUiClosedReason::kCancelled;
   }
 }
 

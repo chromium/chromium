@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 
 namespace autofill {
@@ -20,8 +20,7 @@ class SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
       views::View* anchor_view,
       content::WebContents* web_contents,
-      base::OnceCallback<void(PaymentsBubbleClosedReason)>
-          controller_hide_callback,
+      base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
@@ -44,8 +43,7 @@ class SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews
   // LocationBarBubbleDelegateView:
   void Init() override;
 
-  base::OnceCallback<void(PaymentsBubbleClosedReason)>
-      controller_hide_callback_;
+  base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback_;
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params_;
 };
 

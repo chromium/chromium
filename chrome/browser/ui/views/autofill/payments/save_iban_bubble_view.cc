@@ -67,7 +67,7 @@ void SaveIbanBubbleView::Hide() {
   // posted in CloseBubble() completes, but we need to fix references sooner.
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -96,7 +96,7 @@ std::u16string SaveIbanBubbleView::GetWindowTitle() const {
 void SaveIbanBubbleView::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }

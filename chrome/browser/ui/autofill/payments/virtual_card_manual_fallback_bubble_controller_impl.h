@@ -58,7 +58,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
       VirtualCardManualFallbackBubbleField field) const override;
   bool ShouldIconBeVisible() const override;
   void OnLinkClicked(const GURL& url) override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   void OnFieldClicked(VirtualCardManualFallbackBubbleField field) override;
 
  protected:

@@ -183,16 +183,16 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnLinkClicked(
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
   // Log bubble result according to the closed reason.
   autofill_metrics::VirtualCardManualFallbackBubbleResult metric;
   switch (closed_reason) {
-    case PaymentsBubbleClosedReason::kClosed:
+    case PaymentsUiClosedReason::kClosed:
       metric = autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed;
       break;
-    case PaymentsBubbleClosedReason::kNotInteracted:
+    case PaymentsUiClosedReason::kNotInteracted:
       metric = autofill_metrics::VirtualCardManualFallbackBubbleResult::
           kNotInteracted;
       break;

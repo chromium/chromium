@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image.h"
 
@@ -97,7 +97,7 @@ class VirtualCardManualFallbackBubbleController {
 
   // Handles the event of bubble closure. |closed_reason| is the detailed reason
   // why the bubble was closed.
-  virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 
   // Handles the event on the learn more link being clicked.
   virtual void OnLinkClicked(const GURL& url) = 0;

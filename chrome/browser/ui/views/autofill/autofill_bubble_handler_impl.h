@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 
 class Browser;
@@ -103,8 +103,7 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
   AutofillBubbleBase* ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
       views::View* anchor_view,
       content::WebContents* web_contents,
-      base::OnceCallback<void(PaymentsBubbleClosedReason)>
-          controller_hide_callback,
+      base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
       PageActionIconView* icon_view,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
 

@@ -35,7 +35,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.components.autofill.PaymentsBubbleClosedReason;
+import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -127,7 +127,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the accept button is clicked, user acceptance is relayed via the
         // delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.ACCEPTED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.ACCEPTED);
     }
 
     @Test
@@ -144,7 +144,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the cancel button is clicked, user cancellation is relayed via the
         // delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.CANCELLED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.CANCELLED);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the bottom sheet is closed without explicit user selection, the close
         // event is relayed via the delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.CLOSED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.CLOSED);
     }
 
     @Test
@@ -170,7 +170,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the bottom sheet is closed without user interaction, the close
         // event is relayed via the delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.NOT_INTERACTED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.NOT_INTERACTED);
     }
 
     private View getView(int viewId) {

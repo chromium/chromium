@@ -86,7 +86,7 @@ class AutofillVirtualCardEnrollmentInfoBarDelegateMobile
 
  private:
   // Logs metrics via the native controller.
-  void OnInfobarClosed(PaymentsBubbleClosedReason closed_reason);
+  void OnInfobarClosed(PaymentsUiClosedReason closed_reason);
 
   // Pointer to the native controller.
   raw_ptr<VirtualCardEnrollBubbleController>

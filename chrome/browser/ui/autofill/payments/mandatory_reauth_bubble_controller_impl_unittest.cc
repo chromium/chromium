@@ -56,23 +56,23 @@ class MandatoryReauthBubbleControllerImplTest
   void ReshowBubble() { controller()->ReshowBubble(); }
 
   void ClickAcceptButton() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
   }
 
   void ClickCancelButton() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kCancelled);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kCancelled);
   }
 
   void CloseBubble() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   }
 
   void LoseFocus() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kLostFocus);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kLostFocus);
   }
 
   void FailToInteract() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kNotInteracted);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kNotInteracted);
   }
 
   base::MockOnceClosure accept_callback;

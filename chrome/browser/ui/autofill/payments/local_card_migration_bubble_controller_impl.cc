@@ -87,7 +87,7 @@ void LocalCardMigrationBubbleControllerImpl::OnCancelButtonClicked() {
 }
 
 void LocalCardMigrationBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
   if (should_add_strikes_on_bubble_close_) {
@@ -98,22 +98,22 @@ void LocalCardMigrationBubbleControllerImpl::OnBubbleClosed(
   // Log local card migration bubble result according to the closed reason.
   autofill_metrics::LocalCardMigrationBubbleResultMetric metric;
   switch (closed_reason) {
-    case PaymentsBubbleClosedReason::kAccepted:
+    case PaymentsUiClosedReason::kAccepted:
       metric = autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED;
       break;
-    case PaymentsBubbleClosedReason::kClosed:
+    case PaymentsUiClosedReason::kClosed:
       metric = autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED;
       break;
-    case PaymentsBubbleClosedReason::kNotInteracted:
+    case PaymentsUiClosedReason::kNotInteracted:
       metric = autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED;
       break;
-    case PaymentsBubbleClosedReason::kLostFocus:
+    case PaymentsUiClosedReason::kLostFocus:
       metric = autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS;
       break;
-    case PaymentsBubbleClosedReason::kUnknown:
+    case PaymentsUiClosedReason::kUnknown:
       metric = autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN;
       break;
-    case PaymentsBubbleClosedReason::kCancelled:
+    case PaymentsUiClosedReason::kCancelled:
       NOTREACHED_IN_MIGRATION();
       return;
   }
