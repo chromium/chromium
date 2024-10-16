@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_FETCHER_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_FETCHER_H_
 
+#include "components/user_education/webui/whats_new_registry.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -41,7 +42,9 @@ GURL GetV2ServerURL(bool is_staging = false);
 // Whats New V2 API
 // Gets the server side URL for the What's New page including all
 // query parameters necessary to render the page.
-GURL GetV2ServerURLForRender(bool is_staging = false);
+GURL GetV2ServerURLForRender(
+    const whats_new::WhatsNewRegistry& whats_new_registry,
+    bool is_staging = false);
 
 // Starts fetching the What's New page and will open the page in |browser| if
 // it exists.

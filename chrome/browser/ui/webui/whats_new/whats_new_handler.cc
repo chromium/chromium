@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -33,10 +32,12 @@ WhatsNewHandler::WhatsNewHandler(
     mojo::PendingRemote<whats_new::mojom::Page> page,
     Profile* profile,
     content::WebContents* web_contents,
-    const base::Time& navigation_start_time)
+    const base::Time& navigation_start_time,
+    const whats_new::WhatsNewRegistry* whats_new_registry)
     : profile_(profile),
       web_contents_(web_contents),
       navigation_start_time_(navigation_start_time),
+      whats_new_registry_(CHECK_DEREF(whats_new_registry)),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {}
 
@@ -60,8 +61,11 @@ void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {
 void WhatsNewHandler::RecordEditionPageLoaded(const std::string& page_uid,
                                               bool is_auto_open) {
   if (user_education::features::IsWhatsNewV2()) {
-    g_browser_process->GetFeatures()->whats_new_registry()->SetEditionUsed(
-        page_uid);
+    // Store that this edition has been used for this milestone.
+    whats_new_registry_->SetEditionUsed(page_uid);
+
+    // Look for a survey override associated with this edition.
+    survey_override_ = whats_new_registry_->GetEditionSurvey(page_uid);
   }
 
   base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
@@ -183,7 +187,8 @@ void WhatsNewHandler::GetServerUrl(bool is_staging,
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
     if (user_education::features::IsWhatsNewV2()) {
-      result = whats_new::GetV2ServerURLForRender(is_staging);
+      result =
+          whats_new::GetV2ServerURLForRender(*whats_new_registry_, is_staging);
     } else {
       result = whats_new::GetServerURL(true, is_staging);
     }
@@ -201,8 +206,11 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
     return;
   }
 
+  auto trigger_id = survey_override_.has_value() ? survey_override_.value()
+                                                 : kHatsSurveyTriggerWhatsNew;
+
   hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerWhatsNew, web_contents_,
+      trigger_id, web_contents_,
       features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
           .InMilliseconds(),
       /*product_specific_bits_data=*/{},

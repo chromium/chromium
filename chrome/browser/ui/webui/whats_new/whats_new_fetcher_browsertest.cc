@@ -104,8 +104,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
       "https://www.google.com/chrome/v2/whats-new/?version=%d&internal=true",
       CHROME_VERSION_MAJOR);
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -115,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
       "?version=%d&internal=true",
       CHROME_VERSION_MAJOR);
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender(true).possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry(), true)
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -135,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -157,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -189,8 +189,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 class WhatsNewFetcherOneCustomizationBrowserTest
@@ -235,8 +235,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherOneCustomizationBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 class WhatsNewFetcherMultipleCustomizationsBrowserTest
@@ -280,6 +280,6 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherMultipleCustomizationsBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
