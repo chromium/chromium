@@ -951,7 +951,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5624637933505983014">Ne pas activer la synchronisation</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5627356199445503927">Fermer l'onglet</translation>
-<translation id="562753339521713441">Exécuter la vérification de sécurité</translation>
+<translation id="562753339521713441">Effectuer une vérification de sécurité</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} page de votre Liste de lecture}one{{count} page de votre Liste de lecture}other{{count} pages de votre Liste de lecture}}</translation>
 <translation id="5632485077360054581">Afficher la marche à suivre</translation>
 <translation id="5633237939819267663">{count,plural, =1{Favori enregistré dans « {title} »}one{{count} favori enregistré dans « {title} »}other{{count} favoris enregistrés dans « {title} »}}</translation>

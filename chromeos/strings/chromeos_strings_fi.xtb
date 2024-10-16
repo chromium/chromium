@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumit</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
+<translation id="1587031308639983732">Aikaan perustuvat muutokset eivät välttämättä ole tarkkoja. Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="1588438908519853928">Normaali</translation>
 <translation id="1591562245178063882">Tässä kuussa</translation>
 <translation id="1593528591614229756">Muista valita mobiilioperaattorin tai järjestelmänvalvojan antamat APN:t. Jos valitset APN:n, kaikki muokatut APN:t poistetaan käytöstä. Virheelliset APN:t voivat häiritä mobiiliyhteyttä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>

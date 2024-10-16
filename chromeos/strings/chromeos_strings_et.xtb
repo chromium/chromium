@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumid</translation>
 <translation id="1572585716423026576">Taustapildiks määramine</translation>
 <translation id="1578784163189013834">Ekraanisäästja tausta valimine</translation>
+<translation id="1587031308639983732">Ajapõhised muudatused ei pruugi olla asjakohased. Seda seadet haldab administraator.</translation>
 <translation id="1588438908519853928">Tavaline</translation>
 <translation id="1591562245178063882">See kuu</translation>
 <translation id="1593528591614229756">Veenduge, et valiksite ainult teie mobiilioperaatori või administraatori pakutavad APN-id. APN-i valimisel keelatakse kõik kohandatud APN-id. Sobimatud APN-id võivad häirida teie mobiilsideühendust. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>

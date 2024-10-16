@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Configurar como fondo de pantalla</translation>
 <translation id="1578784163189013834">Elegir fondo del salvapantallas</translation>
+<translation id="1587031308639983732">Es posible que los cambios basados en el tiempo no sean precisos. Este ajuste lo gestiona tu administrador.</translation>
 <translation id="1588438908519853928">Modo normal</translation>
 <translation id="1591562245178063882">Este mes</translation>
 <translation id="1593528591614229756">Asegúrate de seleccionar los APNs que te haya proporcionado tu operador móvil o administrador. Si seleccionas un APN, se inhabilitarán los APNs personalizados. Los APNs no válidos pueden interrumpir tu conexión móvil. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>

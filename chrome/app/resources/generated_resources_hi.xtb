@@ -987,7 +987,7 @@
 <translation id="1689945336726856614">यूआरएल &amp;की कॉपी करें</translation>
 <translation id="1690068335127678634">स्प्लिट स्क्रीन की सुविधा का सेट अप</translation>
 <translation id="1692115862433274081">किसी दूसरे खाते का इस्तेमाल करें</translation>
-<translation id="1692118695553449118">समन्वयन चालू है</translation>
+<translation id="1692118695553449118">सिंक करने की सेटिंग चालू है</translation>
 <translation id="1692210323591458290">गहरा बैंगनी</translation>
 <translation id="1692713444215319269">रंग बदलने की सुविधा, ज़ूम करने की सुविधा, और डिसप्ले की सेटिंग</translation>
 <translation id="169341880170235617">टैब ग्रुप अपने-आप सेव हो जाते हैं</translation>
@@ -2773,7 +2773,7 @@
 <translation id="2932883381142163287">बुरे बर्ताव की शिकायत करें</translation>
 <translation id="2933632078076743449">पिछला अपडेट</translation>
 <translation id="2934225044529065415">कैमरा ऐक्सेस नहीं किया जा सकता</translation>
-<translation id="2935225303485967257">प्रोफ़ाइलें प्रबंधित करें</translation>
+<translation id="2935225303485967257">प्रोफ़ाइलें मैनेज करें</translation>
 <translation id="2935314715123552088">चालू ई-सिम प्रोफ़ाइल को बंद करें</translation>
 <translation id="2935654492420446828">बाद में स्कूल वाला खाता जोड़ें</translation>
 <translation id="2936851848721175671">बैकअप लेना और इंपोर्ट करना</translation>
@@ -2827,7 +2827,7 @@
 <translation id="2976547701881428815">टूल और कार्रवाइयां</translation>
 <translation id="2976557544729462544">कुछ सहायक डिवाइसों के लिए, डेटा ऐक्सेस का सुरक्षा सिस्टम बंद करना ज़रूरी होता है, ताकि वे बेहतर तरीके से और पूरी तरह काम कर पाएं.</translation>
 <translation id="2976639738101799892">हर बार ब्राउज़ करने पर, Google Search और Google के स्मार्ट तरीकों की मदद पाएं</translation>
-<translation id="2977480621796371840">समूह से हटाएं</translation>
+<translation id="2977480621796371840">ग्रुप से हटाएं</translation>
 <translation id="2979493931538961252">ऐसा तब होगा, जब Chromebook ऑफ़लाइन हो और हॉटस्पॉट उपलब्ध हों</translation>
 <translation id="2979639724566107830">नई विंडो में खोलें</translation>
 <translation id="2979893796619951531">साइट को शामिल न करें</translation>
@@ -3240,7 +3240,7 @@
 <translation id="329324683265785818">ऑडियो को चलाने / रोकने के लिए कीबोर्ड शॉर्टकट K</translation>
 <translation id="3293644607209440645">यह पेज भेजें</translation>
 <translation id="32939749466444286">Linux कंटेनर शुरू नहीं हुआ. कृपया फिर से कोशिश करें.</translation>
-<translation id="3294437725009624529">अतिथि</translation>
+<translation id="3294437725009624529">मेहमान</translation>
 <translation id="3294686910656423119">इस्तेमाल के आंकड़े और खराबी रिपोर्ट</translation>
 <translation id="3295241308788901889">टैब को कास्ट करना</translation>
 <translation id="3297105622164376095">तीसरे पक्ष की सेवा के लिए, साइन इन करने के अनुरोधों को दिखाने की अनुमति है</translation>

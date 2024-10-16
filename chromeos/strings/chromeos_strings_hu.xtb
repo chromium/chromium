@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumok</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
 <translation id="1578784163189013834">A képernyővédő hátterének kiválasztása</translation>
+<translation id="1587031308639983732">Előfordulhat, hogy az időalapú módosítások nem pontosak. Ezt a beállítást a rendszergazdája kezeli.</translation>
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1593528591614229756">Gondoskodjon arról, hogy a mobilszolgáltató vagy a rendszergazda által biztosított APN-ek legyenek kiválasztva. Az APN kiválasztásával letiltja az egyéni APN-eket. Az érvénytelen APN-ek megzavarhatják a mobilkapcsolatot. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>

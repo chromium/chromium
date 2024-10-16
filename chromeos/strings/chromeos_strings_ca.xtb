@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Àlbums</translation>
 <translation id="1572585716423026576">Defineix com a fons de pantalla</translation>
 <translation id="1578784163189013834">Tria el fons de l'estalvi de pantalla</translation>
+<translation id="1587031308639983732">És possible que els canvis basats en l'hora no siguin precisos. El teu administrador gestiona aquesta opció de configuració.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Aquest mes</translation>
 <translation id="1593528591614229756">Assegura't de seleccionar els APN que hagi proporcionat el teu administrador o proveïdor de serveis per a mòbils. Si selecciones un APN, es desactivaran tots els APN personalitzats. Els APN no vàlids poden interrompre la connexió mòbil. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>

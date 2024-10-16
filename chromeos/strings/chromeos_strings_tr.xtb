@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albümler</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
+<translation id="1587031308639983732">Zamana dayalı değişiklikler doğru olmayabilir. Bu ayar, yöneticiniz tarafından yönetilir.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1593528591614229756">Mobil sağlayıcınız veya yöneticiniz tarafından sağlanan APN'leri seçtiğinizden emin olun. Bir APN'yi seçtiğinizde tüm özel APN'ler devre dışı bırakılır. Geçersiz APN'ler, mobil bağlantınızın kesilmesine neden olabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>

@@ -123,7 +123,7 @@
 <translation id="2622559029861875898">Chrome 无法检查是否有更新。请检查您的互联网连接。</translation>
 <translation id="2632707915638608719">使用 Chrome 扩展程序，事半功倍</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2649768380733403658">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何内容需要您审核，我们会通知您。</translation>
+<translation id="2649768380733403658">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新标签页中打开 <ph name="URL" />。</translation>
@@ -484,7 +484,7 @@
 <translation id="7661924425853052955">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="7668816516367091728">直接在地址栏中执行翻译、计算等任务</translation>
 <translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
-<translation id="769538538642757151">如有任何内容需要您审核，Chrome 会通知您</translation>
+<translation id="769538538642757151">如有任何事项需要您审核，Chrome 会通知您</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
 <translation id="7763983146198734674">保存密码即可随时随地取用</translation>

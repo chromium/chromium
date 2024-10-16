@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">अल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर म्हणून सेट करा</translation>
 <translation id="1578784163189013834">स्क्रीन सेव्हर बॅकग्राउंड निवडा</translation>
+<translation id="1587031308639983732">वेळेवर आधारित बदल हे कदाचित अचूक नसू शकतात. हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">या महिन्यात</translation>
 <translation id="1593528591614229756">तुमच्या मोबाइल पुरवठादार किंवा अ‍ॅडमिनिस्ट्रेटरद्वारे दिलेले APNs निवडण्याची खात्री करा. APN निवडल्याने कोणतीही कस्टम APNs बंद होतील. चुकीची APNs तुमच्या मोबाइल कनेक्शनमध्ये व्यत्यय आणू शकतात. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -1443,7 +1444,7 @@
 <translation id="8162776280680283326">कोल्हे</translation>
 <translation id="8167413449582155132">Google AI द्वारे सक्षम केलेली बॅकग्राउंड</translation>
 <translation id="8171020708598805594">आपोआप ट्रान्स्क्रिप्शन तयार करा, Google AI वापरून रेकॉर्डिंगचे सारांश मिळवा आणि ऑडिओ शोधा. तुम्ही इंटरनेटशी कनेक्ट केलेले नसतानादेखील रेकॉर्डिंग तयार करा.</translation>
-<translation id="8179976553408161302">Enter</translation>
+<translation id="8179976553408161302">एंटर</translation>
 <translation id="8183975772394450380">समुद्रकिनारा</translation>
 <translation id="819278132617411009">आणखी उत्पादनक्षम होण्यासाठी Google AI वापरा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>

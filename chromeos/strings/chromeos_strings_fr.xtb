@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Sélectionner l'arrière-plan pour l'économiseur d'écran</translation>
+<translation id="1587031308639983732">Les modifications basées sur l'heure peuvent être inexactes. Ce paramètre est géré par votre administrateur.</translation>
 <translation id="1588438908519853928">Standard</translation>
 <translation id="1591562245178063882">Ce mois</translation>
 <translation id="1593528591614229756">Veillez à sélectionner un APN fourni par votre opérateur mobile ou administrateur. En sélectionnant un APN, vous désactivez les APN personnalisés. Votre connexion mobile peut être interrompue en cas d'APN non valide. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>

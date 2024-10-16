@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Alben</translation>
 <translation id="1572585716423026576">Als Hintergrund festlegen</translation>
 <translation id="1578784163189013834">Hintergrund für den Bildschirmschoner auswählen</translation>
+<translation id="1587031308639983732">Zeitbasierte Änderungen sind möglicherweise nicht korrekt. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Aktueller Monat</translation>
 <translation id="1593528591614229756">Lege nur APNs fest, die von deinem Mobilfunkanbieter oder Administrator bereitgestellt wurden. Wenn du einen APN festlegst, werden alle benutzerdefinierten APNs deaktiviert. Ungültige APNs können dazu führen, dass deine Mobilfunkverbindung unterbrochen wird. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>

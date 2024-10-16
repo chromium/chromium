@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">アルバム</translation>
 <translation id="1572585716423026576">壁紙に設定</translation>
 <translation id="1578784163189013834">スクリーン セーバーの背景を選択する</translation>
+<translation id="1587031308639983732">時刻に基づく変更は正確でない場合があります。この設定は管理者によって管理されています。</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="1591562245178063882">今月</translation>
 <translation id="1593528591614229756">携帯通信会社または管理者から提供された APN を選択してください。APN を選択すると、カスタム APN はすべて無効になります。APN が無効な場合、モバイル接続が中断される可能性があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
