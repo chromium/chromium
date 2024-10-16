@@ -44,7 +44,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 PickerSubmenuView::PickerSubmenuView(
     const gfx::Rect& anchor_rect,
-    std::vector<std::unique_ptr<PickerListItemView>> items) {
+    std::vector<std::unique_ptr<QuickInsertListItemView>> items) {
   SetShowCloseButton(false);
   set_desired_bounds_delegate(
       base::BindRepeating(&PickerSubmenuView::GetDesiredBounds,
@@ -62,7 +62,7 @@ PickerSubmenuView::PickerSubmenuView(
       kSubmenuWidth, /*asset_fetcher=*/nullptr,
       /*submenu_controller=*/nullptr));
 
-  for (std::unique_ptr<PickerListItemView>& item : items) {
+  for (std::unique_ptr<QuickInsertListItemView>& item : items) {
     section_view_->AddListItem(std::move(item));
   }
 }

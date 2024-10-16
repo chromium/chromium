@@ -17,7 +17,7 @@ using QuickInsertPseudoFocusTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertPseudoFocusTest,
        ApplyPseudoFocusToListItemUpdatesItemStateAndBadge) {
-  PickerListItemView item_view(base::DoNothing());
+  QuickInsertListItemView item_view(base::DoNothing());
 
   ApplyPickerPseudoFocusToView(&item_view);
 
@@ -28,7 +28,7 @@ TEST_F(QuickInsertPseudoFocusTest,
 
 TEST_F(QuickInsertPseudoFocusTest,
        RemovePseudoFocusFromListItemUpdatesItemStateAndBadge) {
-  PickerListItemView item_view(base::DoNothing());
+  QuickInsertListItemView item_view(base::DoNothing());
   ApplyPickerPseudoFocusToView(&item_view);
 
   RemovePickerPseudoFocusFromView(&item_view);

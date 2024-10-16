@@ -79,8 +79,8 @@ bool PickerListItemContainerView::ContainsItem(views::View* item) {
   return items_.GetIndexOfView(item).has_value();
 }
 
-PickerListItemView* PickerListItemContainerView::AddListItem(
-    std::unique_ptr<PickerListItemView> list_item) {
+QuickInsertListItemView* PickerListItemContainerView::AddListItem(
+    std::unique_ptr<QuickInsertListItemView> list_item) {
   items_.Add(list_item.get(), items_.view_size());
   return AddChildView(CreateListItemView())->AddChildView(std::move(list_item));
 }

@@ -214,12 +214,12 @@ TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
       /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
-  EXPECT_THAT(
-      view.section_views_for_testing(),
-      ElementsAre(Pointee(MatchesResultSectionWithOneItem(
-          PickerSectionType::kLocalFiles,
-          AsView<PickerListItemView>(Property(
-              &PickerListItemView::GetPrimaryTextForTesting, u"local"))))));
+  EXPECT_THAT(view.section_views_for_testing(),
+              ElementsAre(Pointee(MatchesResultSectionWithOneItem(
+                  PickerSectionType::kLocalFiles,
+                  AsView<QuickInsertListItemView>(Property(
+                      &QuickInsertListItemView::GetPrimaryTextForTesting,
+                      u"local"))))));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
@@ -237,12 +237,12 @@ TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
       /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
-  EXPECT_THAT(
-      view.section_views_for_testing(),
-      ElementsAre(Pointee(MatchesResultSectionWithOneItem(
-          PickerSectionType::kLocalFiles,
-          AsView<PickerListItemView>(Property(
-              &PickerListItemView::GetPrimaryTextForTesting, u"drive"))))));
+  EXPECT_THAT(view.section_views_for_testing(),
+              ElementsAre(Pointee(MatchesResultSectionWithOneItem(
+                  PickerSectionType::kLocalFiles,
+                  AsView<QuickInsertListItemView>(Property(
+                      &QuickInsertListItemView::GetPrimaryTextForTesting,
+                      u"drive"))))));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest, UpdatesResultsSections) {

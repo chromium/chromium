@@ -29,7 +29,8 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
   // separately.
   if (auto* item_view = views::AsViewClass<QuickInsertItemView>(view)) {
     item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
-    if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+    if (auto* list_item_view =
+            views::AsViewClass<QuickInsertListItemView>(view)) {
       list_item_view->SetBadgeVisible(true);
     }
     return;
@@ -60,7 +61,8 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
   // separately.
   if (auto* item_view = views::AsViewClass<QuickInsertItemView>(view)) {
     item_view->SetItemState(QuickInsertItemView::ItemState::kNormal);
-    if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+    if (auto* list_item_view =
+            views::AsViewClass<QuickInsertListItemView>(view)) {
       list_item_view->SetBadgeVisible(false);
     }
     return;

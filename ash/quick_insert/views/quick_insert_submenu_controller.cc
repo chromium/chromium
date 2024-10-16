@@ -57,7 +57,7 @@ void PickerSubmenuController::OnViewIsDeleting(views::View* observed_view) {
 
 void PickerSubmenuController::Show(
     views::View* anchor_view,
-    std::vector<std::unique_ptr<PickerListItemView>> items) {
+    std::vector<std::unique_ptr<QuickInsertListItemView>> items) {
   widget_ = std::make_unique<views::Widget>(CreateInitParams(
       anchor_view, std::make_unique<PickerSubmenuView>(
                        anchor_view->GetBoundsInScreen(), std::move(items))));

@@ -284,7 +284,8 @@ void PickerSearchResultsView::AddResultToSection(
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
 
-  if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+  if (auto* list_item_view =
+          views::AsViewClass<QuickInsertListItemView>(view)) {
     list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
   } else if (auto* image_item_view =
                  views::AsViewClass<PickerImageItemView>(view)) {

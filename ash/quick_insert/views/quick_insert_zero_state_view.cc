@@ -224,7 +224,8 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
       base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 
-  if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+  if (auto* list_item_view =
+          views::AsViewClass<QuickInsertListItemView>(view)) {
     list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
   } else if (auto* image_item_view =
                  views::AsViewClass<PickerImageItemView>(view)) {

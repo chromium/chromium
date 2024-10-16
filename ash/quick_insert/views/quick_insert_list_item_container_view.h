@@ -16,7 +16,7 @@
 namespace ash {
 
 class PickerItemWithSubmenuView;
-class PickerListItemView;
+class QuickInsertListItemView;
 
 // Container view for the list items in a section. The list items are displayed
 // in a vertical list, each spanning the width of the container.
@@ -41,8 +41,8 @@ class ASH_EXPORT PickerListItemContainerView
   views::View* GetItemRightOf(views::View* item) override;
   bool ContainsItem(views::View* item) override;
 
-  PickerListItemView* AddListItem(
-      std::unique_ptr<PickerListItemView> list_item);
+  QuickInsertListItemView* AddListItem(
+      std::unique_ptr<QuickInsertListItemView> list_item);
   PickerItemWithSubmenuView* AddItemWithSubmenu(
       std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu);
 

@@ -41,18 +41,18 @@ class PickerShortcutHintView;
 
 // View for a Picker list item with text or an image as its primary contents.
 // Can optionally have other parts such as a leading icon and secondary text.
-class ASH_EXPORT PickerListItemView : public QuickInsertItemView {
-  METADATA_HEADER(PickerListItemView, QuickInsertItemView)
+class ASH_EXPORT QuickInsertListItemView : public QuickInsertItemView {
+  METADATA_HEADER(QuickInsertListItemView, QuickInsertItemView)
 
  public:
   using AsyncBitmapResolver = HoldingSpaceImage::AsyncBitmapResolver;
   using FileInfoResolver =
       base::OnceCallback<std::optional<base::File::Info>()>;
 
-  explicit PickerListItemView(SelectItemCallback select_item_callback);
-  PickerListItemView(const PickerListItemView&) = delete;
-  PickerListItemView& operator=(const PickerListItemView&) = delete;
-  ~PickerListItemView() override;
+  explicit QuickInsertListItemView(SelectItemCallback select_item_callback);
+  QuickInsertListItemView(const QuickInsertListItemView&) = delete;
+  QuickInsertListItemView& operator=(const QuickInsertListItemView&) = delete;
+  ~QuickInsertListItemView() override;
 
   // QuickInsertItemView:
   void SetItemState(ItemState item_state) override;
@@ -146,7 +146,7 @@ class ASH_EXPORT PickerListItemView : public QuickInsertItemView {
   raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
   base::CallbackListSubscription async_icon_subscription_;
 
-  base::WeakPtrFactory<PickerListItemView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertListItemView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

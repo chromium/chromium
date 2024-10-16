@@ -209,7 +209,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
   return std::visit(
       base::Overloaded{
           [&](const PickerTextResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.primary_text);
             item_view->SetSecondaryText(data.secondary_text);
@@ -217,7 +217,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerSearchRequestResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.primary_text);
             item_view->SetSecondaryText(data.secondary_text);
@@ -226,7 +226,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
           },
           [&](const PickerEmojiResult& data) -> ReturnType { NOTREACHED(); },
           [&](const PickerClipboardResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             switch (data.display_format) {
               case PickerClipboardResult::DisplayFormat::kFile:
@@ -264,7 +264,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
                 std::move(select_result_callback));
           },
           [&](const PickerBrowsingHistoryResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             std::u16string formatted_url = FormatBrowsingHistoryUrl(data.url);
             item_view->SetPrimaryText(data.title.empty() ? formatted_url
@@ -276,7 +276,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
           [&](const PickerLocalFileResult& data) -> ReturnType {
             switch (local_file_result_style) {
               case LocalFileResultStyle::kList: {
-                auto item_view = std::make_unique<PickerListItemView>(
+                auto item_view = std::make_unique<QuickInsertListItemView>(
                     std::move(select_result_callback));
                 item_view->SetPrimaryText(data.title);
                 // `base::Unretained` is safe because `asset_fetcher` outlives
@@ -305,7 +305,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             }
           },
           [&](const PickerDriveFileResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
             // TODO: b/333609460 - Handle dark/light mode.
@@ -323,14 +323,14 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerCategoryResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
             item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
             return item_view;
           },
           [&](const PickerEditorResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             if (data.category.has_value()) {
               // Preset write or rewrite.
@@ -348,7 +348,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerLobsterResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
 
             const PickerCategory category = PickerCategory::kLobster;
@@ -357,7 +357,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerNewWindowResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForNewWindowType(data.type));
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -366,7 +366,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerCapsLockResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(l10n_util::GetStringUTF16(
                 data.enabled ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
@@ -379,7 +379,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerCaseTransformResult& data) -> ReturnType {
-            auto item_view = std::make_unique<PickerListItemView>(
+            auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForCaseTransformType(data.type));
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -427,10 +427,10 @@ void PickerSectionView::AddTitleTrailingLink(
   title_trailing_link_->GetViewAccessibility().SetName(accessible_name);
 }
 
-PickerListItemView* PickerSectionView::AddListItem(
-    std::unique_ptr<PickerListItemView> list_item) {
+QuickInsertListItemView* PickerSectionView::AddListItem(
+    std::unique_ptr<QuickInsertListItemView> list_item) {
   list_item->SetSubmenuController(submenu_controller_);
-  PickerListItemView* list_item_ptr =
+  QuickInsertListItemView* list_item_ptr =
       GetOrCreateListItemContainer()->AddListItem(std::move(list_item));
   item_views_.push_back(list_item_ptr);
   return list_item_ptr;
@@ -471,9 +471,9 @@ QuickInsertItemView* PickerSectionView::AddResult(
   auto item = CreateItemFromResult(result, preview_controller, asset_fetcher_,
                                    section_width_, local_file_result_style,
                                    std::move(select_result_callback));
-  if (views::IsViewClass<PickerListItemView>(item.get())) {
-    return AddListItem(std::unique_ptr<PickerListItemView>(
-        views::AsViewClass<PickerListItemView>(item.release())));
+  if (views::IsViewClass<QuickInsertListItemView>(item.get())) {
+    return AddListItem(std::unique_ptr<QuickInsertListItemView>(
+        views::AsViewClass<QuickInsertListItemView>(item.release())));
   }
   if (views::IsViewClass<PickerImageItemView>(item.get())) {
     std::unique_ptr<PickerImageItemView> image_item(

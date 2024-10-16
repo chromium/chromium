@@ -26,9 +26,9 @@ constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 100, 10);
 using QuickInsertSubmenuViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertSubmenuViewTest, GetsTopItem) {
-  std::vector<std::unique_ptr<PickerListItemView>> items;
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
+  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
   PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
@@ -36,9 +36,9 @@ TEST_F(QuickInsertSubmenuViewTest, GetsTopItem) {
 }
 
 TEST_F(QuickInsertSubmenuViewTest, GetsBottomItem) {
-  std::vector<std::unique_ptr<PickerListItemView>> items;
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
+  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* bottom_item_ptr = items.back().get();
   PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
@@ -46,9 +46,9 @@ TEST_F(QuickInsertSubmenuViewTest, GetsBottomItem) {
 }
 
 TEST_F(QuickInsertSubmenuViewTest, GetsItemAbove) {
-  std::vector<std::unique_ptr<PickerListItemView>> items;
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
+  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
   auto* bottom_item_ptr = items.back().get();
   PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
@@ -58,9 +58,9 @@ TEST_F(QuickInsertSubmenuViewTest, GetsItemAbove) {
 }
 
 TEST_F(QuickInsertSubmenuViewTest, GetItemBelow) {
-  std::vector<std::unique_ptr<PickerListItemView>> items;
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
-  items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
+  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
+  items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
   auto* bottom_item_ptr = items.back().get();
   PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
@@ -70,9 +70,9 @@ TEST_F(QuickInsertSubmenuViewTest, GetItemBelow) {
 }
 
 TEST_F(QuickInsertSubmenuViewTest, TriggersItemCallbackOnPseudoFocusAction) {
-  std::vector<std::unique_ptr<PickerListItemView>> items;
+  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
   base::test::TestFuture<void> select_item_future;
-  items.push_back(std::make_unique<PickerListItemView>(
+  items.push_back(std::make_unique<QuickInsertListItemView>(
       select_item_future.GetRepeatingCallback()));
   PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 

@@ -72,12 +72,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItem) {
 
   PickerSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* top_item = section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   PickerSectionView* section2 = section_list.AddSection();
   section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetTopItem(), top_item);
 }
@@ -90,10 +90,10 @@ TEST_F(QuickInsertSectionListViewTest, AddsSectionAtTheTop) {
 
   PickerSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   PickerSectionView* section2 = section_list.AddSectionAt(0);
   QuickInsertItemView* top_item = section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetTopItem(), top_item);
 }
@@ -106,8 +106,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
 
   PickerSectionView* section = section_list.AddSection();
   QuickInsertItemView* top_item = section->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
-  section->AddListItem(std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
+  section->AddListItem(
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   // Add an empty section at the top.
   section_list.AddSectionAt(0);
 
@@ -131,12 +132,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItem) {
 
   PickerSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   PickerSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* bottom_item = section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetBottomItem(), bottom_item);
 }
@@ -149,8 +150,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
 
   PickerSectionView* section = section_list.AddSection();
   QuickInsertItemView* top_item = section->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
-  section->AddListItem(std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
+  section->AddListItem(
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   // Add an empty section at the bottom.
   section_list.AddSection();
 
@@ -174,12 +176,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemAbove) {
 
   PickerSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 = section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   QuickInsertItemView* item2 = section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   PickerSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetItemAbove(item1), nullptr);
   EXPECT_EQ(section_list.GetItemAbove(item2), item1);
@@ -191,7 +193,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
   PickerSubmenuController submenu_controller;
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
-  PickerListItemView item_not_in_section_list(base::DoNothing());
+  QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemAbove(&item_not_in_section_list), nullptr);
 }
@@ -204,12 +206,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemBelow) {
 
   PickerSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 = section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   QuickInsertItemView* item2 = section1->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   PickerSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetItemBelow(item1), item2);
   EXPECT_EQ(section_list.GetItemBelow(item2), item3);
@@ -221,7 +223,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
   PickerSubmenuController submenu_controller;
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
-  PickerListItemView item_not_in_section_list(base::DoNothing());
+  QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemBelow(&item_not_in_section_list), nullptr);
 }
@@ -239,7 +241,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemLeftOf) {
       section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   PickerSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(section_list.GetItemLeftOf(item2), item1);
@@ -251,7 +253,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
   PickerSubmenuController submenu_controller;
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
-  PickerListItemView item_not_in_section_list(base::DoNothing());
+  QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemLeftOf(&item_not_in_section_list), nullptr);
 }
@@ -269,7 +271,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemRightOf) {
       section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   PickerSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_list.GetItemRightOf(item1), item2);
   EXPECT_EQ(section_list.GetItemRightOf(item2), nullptr);
@@ -281,7 +283,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemRightOf) {
   PickerSubmenuController submenu_controller;
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
-  PickerListItemView item_not_in_section_list(base::DoNothing());
+  QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemRightOf(&item_not_in_section_list), nullptr);
 }

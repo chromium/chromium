@@ -121,7 +121,7 @@ void PickerItemWithSubmenuView::ShowSubmenu() {
     return;
   }
 
-  std::vector<std::unique_ptr<PickerListItemView>> items;
+  std::vector<std::unique_ptr<QuickInsertListItemView>> items;
   items.reserve(entries_.size());
   for (const auto& [result, callback] : entries_) {
     // There are no image item results in submenus, so can pass 0 for
@@ -131,7 +131,7 @@ void PickerItemWithSubmenuView::ShowSubmenu() {
         /*available_width=*/0, PickerSectionView::LocalFileResultStyle::kList,
         callback);
     auto list_item = base::WrapUnique(
-        views::AsViewClass<PickerListItemView>(item.release()));
+        views::AsViewClass<QuickInsertListItemView>(item.release()));
     CHECK(list_item);
     items.push_back(std::move(list_item));
   }

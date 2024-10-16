@@ -101,12 +101,12 @@ TEST_F(QuickInsertSectionViewTest, AddsListItem) {
                                  &submenu_controller);
 
   section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
+  EXPECT_TRUE(views::IsViewClass<QuickInsertListItemView>(items[0]));
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
@@ -116,15 +116,15 @@ TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
                                  &submenu_controller);
 
   section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(2));
-  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
-  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[1]));
+  EXPECT_TRUE(views::IsViewClass<QuickInsertListItemView>(items[0]));
+  EXPECT_TRUE(views::IsViewClass<QuickInsertListItemView>(items[1]));
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsGifItem) {
@@ -159,8 +159,8 @@ TEST_F(QuickInsertSectionViewTest, AddsResults) {
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(2));
-  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
-  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[1]));
+  EXPECT_TRUE(views::IsViewClass<QuickInsertListItemView>(items[0]));
+  EXPECT_TRUE(views::IsViewClass<QuickInsertListItemView>(items[1]));
 }
 
 TEST_F(QuickInsertSectionViewTest,
@@ -180,7 +180,7 @@ TEST_F(QuickInsertSectionViewTest,
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_TRUE(list_item);
   EXPECT_EQ(list_item->GetPrimaryTextForTesting(), u"Example Foo");
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
@@ -203,7 +203,7 @@ TEST_F(QuickInsertSectionViewTest,
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_TRUE(list_item);
   EXPECT_EQ(list_item->GetPrimaryTextForTesting(), u"example.com/foo");
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
@@ -230,7 +230,7 @@ TEST_F(QuickInsertSectionViewTest,
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_NE(list_item, nullptr);
   const gfx::VectorIcon* vector_icon =
       list_item->leading_icon_view_for_testing()
@@ -262,7 +262,7 @@ TEST_F(QuickInsertSectionViewTest,
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_NE(list_item, nullptr);
   const gfx::VectorIcon* vector_icon =
       list_item->leading_icon_view_for_testing()
@@ -294,7 +294,7 @@ TEST_F(QuickInsertSectionViewTest,
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_NE(list_item, nullptr);
   const gfx::VectorIcon* vector_icon =
       list_item->leading_icon_view_for_testing()
@@ -326,7 +326,7 @@ TEST_F(QuickInsertSectionViewTest,
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_NE(list_item, nullptr);
   const gfx::VectorIcon* vector_icon =
       list_item->leading_icon_view_for_testing()
@@ -353,7 +353,7 @@ TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  auto* list_item = views::AsViewClass<QuickInsertListItemView>(items[0]);
   ASSERT_TRUE(list_item);
   EXPECT_NE(list_item->shortcut_hint_view_for_testing(), nullptr);
 }
@@ -364,7 +364,7 @@ TEST_F(QuickInsertSectionViewTest, ClearsItems) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
   section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   section_view.ClearItems();
 
@@ -402,8 +402,8 @@ TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
-  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
-  EXPECT_EQ(views::AsViewClass<PickerListItemView>(items[0])
+  EXPECT_TRUE(views::IsViewClass<QuickInsertListItemView>(items[0]));
+  EXPECT_EQ(views::AsViewClass<QuickInsertListItemView>(items[0])
                 ->GetSecondaryTextForTesting(),
             GetParam().second);
 }
@@ -413,11 +413,11 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromListItems) {
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
   views::View* item1 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item2 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item3 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_view.GetTopItem(), item1);
   EXPECT_EQ(section_view.GetBottomItem(), item3);
@@ -464,9 +464,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageGridItems) {
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
   views::View* item1 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item2 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item4 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item5 = section_view.AddImageGridItem(CreateImageItem());
@@ -503,9 +503,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridAboveListItems) {
   views::View* item2 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item4 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item5 = section_view.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_view.GetTopItem(), item1);
   EXPECT_EQ(section_view.GetBottomItem(), item5);
@@ -539,9 +539,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageRowItems) {
                                           /*asset_fetcher=*/nullptr,
                                           /*submenu_controller=*/nullptr));
   views::View* item1 = section_view->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item2 = section_view->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item3 = section_view->AddImageRowItem(CreateImageItem());
   views::View* item4 = section_view->AddImageRowItem(CreateImageItem());
   views::View* more_items =
@@ -583,9 +583,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromImageRowAboveListItems) {
   views::View* more_items =
       section_view->GetImageRowMoreItemsButtonForTesting();
   views::View* item3 = section_view->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item4 = section_view->AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
+      std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
   EXPECT_EQ(section_view->GetTopItem(), item1);
   EXPECT_EQ(section_view->GetBottomItem(), item4);

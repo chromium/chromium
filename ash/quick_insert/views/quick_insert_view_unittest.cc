@@ -898,14 +898,14 @@ TEST_F(QuickInsertViewTest, CategoryViewFromSeeMoreHasResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
 
   ASSERT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
-  EXPECT_THAT(
-      picker_view->category_results_view_for_testing()
-          .section_views_for_testing(),
-      ElementsAre(Pointee(Property(
-          "item views", &PickerSectionView::item_views_for_testing,
-          ElementsAre(AsView<PickerListItemView>(Property(
-              "primary text", &PickerListItemView::GetPrimaryTextForTesting,
-              u"result")))))));
+  EXPECT_THAT(picker_view->category_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(Property(
+                  "item views", &PickerSectionView::item_views_for_testing,
+                  ElementsAre(AsView<QuickInsertListItemView>(Property(
+                      "primary text",
+                      &QuickInsertListItemView::GetPrimaryTextForTesting,
+                      u"result")))))));
 }
 
 TEST_F(QuickInsertViewTest, SearchingSpacesFromZeroStateDoesNotStartSearch) {
@@ -2885,18 +2885,19 @@ TEST_F(QuickInsertViewTest, EnterOnZeroState) {
       picker_view->zero_state_view_for_testing()
           .primary_section_view_for_testing()
           ->item_views_for_testing();
-  PickerListItemView* suggested_item_view;
+  QuickInsertListItemView* suggested_item_view;
   ASSERT_THAT(
       zero_state_item_views,
       ElementsAre(ResultOf(
           [&](const raw_ptr<QuickInsertItemView> view) {
             ViewDrawnWaiter().Wait(view);
-            suggested_item_view = views::AsViewClass<PickerListItemView>(view);
+            suggested_item_view =
+                views::AsViewClass<QuickInsertListItemView>(view);
             return suggested_item_view;
           },
           Pointee(
               AllOf(Property("primary text",
-                             &PickerListItemView::GetPrimaryTextForTesting,
+                             &QuickInsertListItemView::GetPrimaryTextForTesting,
                              u"zero state"),
                     Property("is visible", &views::View::GetVisible, true))))));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
@@ -2925,18 +2926,19 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnZeroState) {
       picker_view->zero_state_view_for_testing()
           .primary_section_view_for_testing()
           ->item_views_for_testing();
-  PickerListItemView* suggested_item_view;
+  QuickInsertListItemView* suggested_item_view;
   ASSERT_THAT(
       zero_state_item_views,
       ElementsAre(ResultOf(
           [&](const raw_ptr<QuickInsertItemView> view) {
             ViewDrawnWaiter().Wait(view);
-            suggested_item_view = views::AsViewClass<PickerListItemView>(view);
+            suggested_item_view =
+                views::AsViewClass<QuickInsertListItemView>(view);
             return suggested_item_view;
           },
           Pointee(
               AllOf(Property("primary text",
-                             &PickerListItemView::GetPrimaryTextForTesting,
+                             &QuickInsertListItemView::GetPrimaryTextForTesting,
                              u"zero state"),
                     Property("is visible", &views::View::GetVisible, true))))));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -2968,7 +2970,7 @@ TEST_F(QuickInsertViewTest, EnterOnSearchResults) {
   base::span<const raw_ptr<PickerSectionView>> section_views =
       picker_view->search_results_view_for_testing()
           .section_views_for_testing();
-  PickerListItemView* search_item_view;
+  QuickInsertListItemView* search_item_view;
   ASSERT_THAT(
       section_views,
       ElementsAre(Pointee(Property(
@@ -2976,15 +2978,16 @@ TEST_F(QuickInsertViewTest, EnterOnSearchResults) {
           ElementsAre(ResultOf(
               [&](const raw_ptr<QuickInsertItemView> view) {
                 ViewDrawnWaiter().Wait(view);
-                search_item_view = views::AsViewClass<PickerListItemView>(view);
+                search_item_view =
+                    views::AsViewClass<QuickInsertListItemView>(view);
                 return search_item_view;
               },
-              Pointee(
-                  AllOf(Property("primary text",
-                                 &PickerListItemView::GetPrimaryTextForTesting,
-                                 u"first search"),
-                        Property("is visible", &views::View::GetVisible,
-                                 true)))))))));
+              Pointee(AllOf(
+                  Property("primary text",
+                           &QuickInsertListItemView::GetPrimaryTextForTesting,
+                           u"first search"),
+                  Property("is visible", &views::View::GetVisible,
+                           true)))))))));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_THAT(
@@ -3014,7 +3017,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnSearchResults) {
   base::span<const raw_ptr<PickerSectionView>> section_views =
       picker_view->search_results_view_for_testing()
           .section_views_for_testing();
-  PickerListItemView* search_item_view;
+  QuickInsertListItemView* search_item_view;
   ASSERT_THAT(
       section_views,
       ElementsAre(Pointee(Property(
@@ -3022,15 +3025,16 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnSearchResults) {
           ElementsAre(ResultOf(
               [&](const raw_ptr<QuickInsertItemView> view) {
                 ViewDrawnWaiter().Wait(view);
-                search_item_view = views::AsViewClass<PickerListItemView>(view);
+                search_item_view =
+                    views::AsViewClass<QuickInsertListItemView>(view);
                 return search_item_view;
               },
-              Pointee(
-                  AllOf(Property("primary text",
-                                 &PickerListItemView::GetPrimaryTextForTesting,
-                                 u"first search"),
-                        Property("is visible", &views::View::GetVisible,
-                                 true)))))))));
+              Pointee(AllOf(
+                  Property("primary text",
+                           &QuickInsertListItemView::GetPrimaryTextForTesting,
+                           u"first search"),
+                  Property("is visible", &views::View::GetVisible,
+                           true)))))))));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback second_callback = future.Take();
   // The search item should still be visible.

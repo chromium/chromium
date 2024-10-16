@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchBrowsingHistory) {
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kHistoryResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting,
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting,
           u"foo.com/history"),
       PressButton(kHistoryResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kHistoryCategoryResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting,
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting,
           u"Browsing history"),
       PressButton(kHistoryCategoryResultName),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"f"),
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kHistoryResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting,
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting,
           u"foo.com/history"),
       PressButton(kHistoryResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFile) {
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting, u"test.png"),
       PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileCategoryResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting, u"Files"),
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting, u"Files"),
       // Press the file category and check the file grid.
       PressButton(kFileCategoryResultName),
       WaitForShow(ash::kPickerSearchResultsImageItemElementId),
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting, u"test.png"),
       PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
@@ -493,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertDate) {
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kDateResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting, kExpectedDate),
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting,
+          kExpectedDate),
       PressButton(kDateResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedDate)));
 }
@@ -526,7 +527,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kMathResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting, kExpectedResult),
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting,
+          kExpectedResult),
       PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
 }
@@ -595,10 +597,10 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                 }),
       ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
-      NameDescendantViewByType<ash::PickerListItemView>(ash::kPickerElementId,
-                                                        kItem1Name, 0),
-      NameDescendantViewByType<ash::PickerListItemView>(ash::kPickerElementId,
-                                                        kItem2Name, 1),
+      NameDescendantViewByType<ash::QuickInsertListItemView>(
+          ash::kPickerElementId, kItem1Name, 0),
+      NameDescendantViewByType<ash::QuickInsertListItemView>(
+          ash::kPickerElementId, kItem2Name, 1),
       NameDescendantViewByType<ash::PickerEmojiItemView>(ash::kPickerElementId,
                                                          kEmoji1Name, 0),
       NameDescendantViewByType<ash::PickerEmojiItemView>(ash::kPickerElementId,
@@ -662,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, LocalFilePreview) {
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileResultName,
-          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting, u"test.png"),
       MoveMouseTo(kFileResultName),
       WaitForShow(ash::kPickerPreviewBubbleElementId));
 }

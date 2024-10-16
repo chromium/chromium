@@ -500,8 +500,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
-  ash::PickerListItemView* item = section->AddListItem(
-      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  ash::QuickInsertListItemView* item = section->AddListItem(
+      std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item->SetLeadingIcon(ui::ImageModel::FromImage(gfx::test::CreateImage(1)));
   item->SetPrimaryText(u"primary");
   item->SetSecondaryText(u"secondary");
@@ -529,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
-  ash::PickerListItemView* item = section->AddListItem(
-      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  ash::QuickInsertListItemView* item = section->AddListItem(
+      std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item->SetPrimaryText(u"primary");
   base::test::TestFuture<void> file_info_future;
   base::File::Info file_info;
@@ -691,15 +691,15 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
   ash::PickerSectionView* section1 = view->AddSection();
-  ash::PickerListItemView* item1 = section1->AddListItem(
-      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  ash::QuickInsertListItemView* item1 = section1->AddListItem(
+      std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item1->SetPrimaryText(u"item1");
-  ash::PickerListItemView* item2 = section1->AddListItem(
-      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  ash::QuickInsertListItemView* item2 = section1->AddListItem(
+      std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item2->SetPrimaryText(u"item2");
   ash::PickerSectionView* section2 = view->AddSection();
-  ash::PickerListItemView* item3 = section2->AddListItem(
-      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  ash::QuickInsertListItemView* item3 = section2->AddListItem(
+      std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item3->SetPrimaryText(u"item3");
 
   sm_.Call([item1]() { item1->RequestFocus(); });

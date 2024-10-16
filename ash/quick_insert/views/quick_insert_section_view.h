@@ -31,7 +31,7 @@ class PickerImageItemView;
 class PickerItemWithSubmenuView;
 class QuickInsertItemView;
 class PickerListItemContainerView;
-class PickerListItemView;
+class QuickInsertListItemView;
 class PickerPreviewBubbleController;
 class PickerSubmenuController;
 class PickerTraversableItemContainer;
@@ -81,8 +81,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Adds a list item. These are displayed in a vertical list, each item
   // spanning the width of the section.
-  PickerListItemView* AddListItem(
-      std::unique_ptr<PickerListItemView> list_item);
+  QuickInsertListItemView* AddListItem(
+      std::unique_ptr<QuickInsertListItemView> list_item);
 
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.

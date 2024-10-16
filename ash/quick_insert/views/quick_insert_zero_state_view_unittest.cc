@@ -234,11 +234,11 @@ TEST_F(QuickInsertZeroStateViewTest,
       view->primary_section_view_for_testing()->item_views_for_testing(),
       IsSupersetOf({
           AsView<PickerImageItemView>(
-              Property(&PickerListItemView::GetAccessibleName, u"a")),
+              Property(&QuickInsertListItemView::GetAccessibleName, u"a")),
           AsView<PickerImageItemView>(
-              Property(&PickerListItemView::GetAccessibleName, u"b")),
+              Property(&QuickInsertListItemView::GetAccessibleName, u"b")),
           AsView<PickerImageItemView>(
-              Property(&PickerListItemView::GetAccessibleName, u"c")),
+              Property(&QuickInsertListItemView::GetAccessibleName, u"c")),
       }));
   QuickInsertItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[0];
@@ -427,15 +427,15 @@ TEST_F(QuickInsertZeroStateViewTest,
       view.primary_section_view_for_testing(),
       Pointee(AllOf(
           Property("GetVisible", &views::View::GetVisible, true),
-          Property(
-              "item_views_for_testing",
-              &PickerSectionView::item_views_for_testing,
-              ElementsAre(
-                  AsView<PickerListItemView>(Property(
-                      &PickerListItemView::GetPrimaryTextForTesting, u"a")),
-                  AsView<PickerListItemView>(
-                      Property(&PickerListItemView::GetPrimaryTextForTesting,
-                               u"b")))))));
+          Property("item_views_for_testing",
+                   &PickerSectionView::item_views_for_testing,
+                   ElementsAre(
+                       AsView<QuickInsertListItemView>(Property(
+                           &QuickInsertListItemView::GetPrimaryTextForTesting,
+                           u"a")),
+                       AsView<QuickInsertListItemView>(Property(
+                           &QuickInsertListItemView::GetPrimaryTextForTesting,
+                           u"b")))))));
 }
 
 TEST_F(QuickInsertZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
@@ -513,8 +513,8 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
           Property(
               "item_views_for_testing",
               &PickerSectionView::item_views_for_testing,
-              ElementsAre(AsView<PickerListItemView>(Property(
-                  &PickerListItemView::GetPrimaryTextForTesting,
+              ElementsAre(AsView<QuickInsertListItemView>(Property(
+                  &QuickInsertListItemView::GetPrimaryTextForTesting,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                   l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL)
 #else

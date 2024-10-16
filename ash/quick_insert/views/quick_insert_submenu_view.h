@@ -17,7 +17,7 @@
 
 namespace ash {
 
-class PickerListItemView;
+class QuickInsertListItemView;
 class PickerSectionView;
 
 // View for a Picker submenu, which shows a list of results in a bubble outside
@@ -27,8 +27,9 @@ class ASH_EXPORT PickerSubmenuView : public views::WidgetDelegateView,
   METADATA_HEADER(PickerSubmenuView, views::WidgetDelegateView)
 
  public:
-  PickerSubmenuView(const gfx::Rect& anchor_rect,
-                    std::vector<std::unique_ptr<PickerListItemView>> items);
+  PickerSubmenuView(
+      const gfx::Rect& anchor_rect,
+      std::vector<std::unique_ptr<QuickInsertListItemView>> items);
   PickerSubmenuView(const PickerSubmenuView&) = delete;
   PickerSubmenuView& operator=(const PickerSubmenuView&) = delete;
   ~PickerSubmenuView() override;

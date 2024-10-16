@@ -103,7 +103,8 @@ DEFINE_VIEW_BUILDER(/* no export */, ash::LeadingIconImageView)
 
 namespace ash {
 
-PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
+QuickInsertListItemView::QuickInsertListItemView(
+    SelectItemCallback select_item_callback)
     : QuickInsertItemView(std::move(select_item_callback),
                           FocusIndicatorStyle::kFocusBar) {
   // This view only contains one child for the moment, but treat this as a
@@ -157,13 +158,13 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
               kPickerSearchResultsListItemElementId);
 }
 
-PickerListItemView::~PickerListItemView() {
+QuickInsertListItemView::~QuickInsertListItemView() {
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->CloseBubble();
   }
 }
 
-void PickerListItemView::SetItemState(ItemState item_state) {
+void QuickInsertListItemView::SetItemState(ItemState item_state) {
   QuickInsertItemView::SetItemState(item_state);
   if (GetItemState() == ItemState::kPseudoFocused) {
     ShowPreview();
@@ -174,7 +175,8 @@ void PickerListItemView::SetItemState(ItemState item_state) {
   }
 }
 
-void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
+void QuickInsertListItemView::SetPrimaryText(
+    const std::u16string& primary_text) {
   primary_container_->RemoveAllChildViews();
   primary_label_ = primary_container_->AddChildView(
       views::Builder<views::Label>(
@@ -186,8 +188,9 @@ void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image,
-                                         int available_width) {
+void QuickInsertListItemView::SetPrimaryImage(
+    const ui::ImageModel& primary_image,
+    int available_width) {
   primary_label_ = nullptr;
   primary_container_->RemoveAllChildViews();
   auto* image_view =
@@ -209,13 +212,14 @@ void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image,
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon,
-                                        std::optional<gfx::Size> icon_size) {
+void QuickInsertListItemView::SetLeadingIcon(
+    const ui::ImageModel& icon,
+    std::optional<gfx::Size> icon_size) {
   leading_icon_view_->SetImage(icon);
   leading_icon_view_->SetImageSize(icon_size.value_or(kLeadingIconSizeDip));
 }
 
-void PickerListItemView::SetSecondaryText(
+void QuickInsertListItemView::SetSecondaryText(
     const std::u16string& secondary_text) {
   secondary_label_ = nullptr;
   secondary_container_->RemoveAllChildViews();
@@ -234,7 +238,7 @@ void PickerListItemView::SetSecondaryText(
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetShortcutHintView(
+void QuickInsertListItemView::SetShortcutHintView(
     std::unique_ptr<PickerShortcutHintView> shortcut_hint_view) {
   shortcut_hint_view_ = nullptr;
   shortcut_hint_container_->RemoveAllChildViews();
@@ -242,7 +246,7 @@ void PickerListItemView::SetShortcutHintView(
       shortcut_hint_container_->AddChildView(std::move(shortcut_hint_view));
 }
 
-void PickerListItemView::SetBadgeAction(PickerActionType action) {
+void QuickInsertListItemView::SetBadgeAction(PickerActionType action) {
   switch (action) {
     case PickerActionType::kDo:
       trailing_badge_->SetText(u"");
@@ -264,7 +268,7 @@ void PickerListItemView::SetBadgeAction(PickerActionType action) {
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetBadgeVisible(bool visible) {
+void QuickInsertListItemView::SetBadgeVisible(bool visible) {
   if (primary_container_ != nullptr &&
       !primary_container_->children().empty() &&
       views::IsViewClass<views::ImageView>(
@@ -282,7 +286,7 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
   }
 }
 
-void PickerListItemView::SetPreview(
+void QuickInsertListItemView::SetPreview(
     PickerPreviewBubbleController* preview_bubble_controller,
     FileInfoResolver get_file_info,
     const base::FilePath& file_path,
@@ -303,7 +307,7 @@ void PickerListItemView::SetPreview(
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         std::move(get_file_info),
-        base::BindOnce(&PickerListItemView::OnFileInfoResolved,
+        base::BindOnce(&QuickInsertListItemView::OnFileInfoResolved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -314,27 +318,27 @@ void PickerListItemView::SetPreview(
     async_preview_icon_ = std::make_unique<ash::HoldingSpaceImage>(
         kLeadingIconSizeDip, file_path, std::move(async_bitmap_resolver));
     async_icon_subscription_ = async_preview_icon_->AddImageSkiaChangedCallback(
-        base::BindRepeating(&PickerListItemView::UpdateIconWithPreview,
+        base::BindRepeating(&QuickInsertListItemView::UpdateIconWithPreview,
                             base::Unretained(this)));
     UpdateIconWithPreview();
   }
 }
 
-void PickerListItemView::OnMouseEntered(const ui::MouseEvent& event) {
+void QuickInsertListItemView::OnMouseEntered(const ui::MouseEvent& event) {
   QuickInsertItemView::OnMouseEntered(event);
   ShowPreview();
 }
 
-void PickerListItemView::OnMouseExited(const ui::MouseEvent& event) {
+void QuickInsertListItemView::OnMouseExited(const ui::MouseEvent& event) {
   QuickInsertItemView::OnMouseExited(event);
   HidePreview();
 }
 
-std::u16string PickerListItemView::GetPrimaryTextForTesting() const {
+std::u16string QuickInsertListItemView::GetPrimaryTextForTesting() const {
   return primary_label_ == nullptr ? u"" : primary_label_->GetText();
 }
 
-ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
+ui::ImageModel QuickInsertListItemView::GetPrimaryImageForTesting() const {
   if (primary_container_->children().empty()) {
     return ui::ImageModel();
   }
@@ -345,21 +349,22 @@ ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
   return ui::ImageModel();
 }
 
-std::u16string_view PickerListItemView::GetSecondaryTextForTesting() const {
+std::u16string_view QuickInsertListItemView::GetSecondaryTextForTesting()
+    const {
   if (secondary_label_ == nullptr) {
     return base::EmptyString16();
   }
   return secondary_label_->GetText();
 }
 
-void PickerListItemView::UpdateIconWithPreview() {
+void QuickInsertListItemView::UpdateIconWithPreview() {
   views::AsViewClass<LeadingIconImageView>(leading_icon_view_)
       ->SetCircularMaskEnabled(true);
   SetLeadingIcon(
       ui::ImageModel::FromImageSkia(async_preview_icon_->GetImageSkia()));
 }
 
-std::u16string PickerListItemView::GetAccessibilityLabel() const {
+std::u16string QuickInsertListItemView::GetAccessibilityLabel() const {
   // TODO: b/316936418 - Get accessible name for image contents.
   const std::u16string& primary_accessibililty_label =
       primary_label_ == nullptr ? u"image contents" : primary_label_->GetText();
@@ -390,11 +395,11 @@ std::u16string PickerListItemView::GetAccessibilityLabel() const {
   }
 }
 
-void PickerListItemView::UpdateAccessibleName() {
+void QuickInsertListItemView::UpdateAccessibleName() {
   GetViewAccessibility().SetName(GetAccessibilityLabel());
 }
 
-void PickerListItemView::OnFileInfoResolved(
+void QuickInsertListItemView::OnFileInfoResolved(
     std::optional<base::File::Info> info) {
   file_info_ = std::move(info);
 
@@ -408,7 +413,7 @@ void PickerListItemView::OnFileInfoResolved(
   GetViewAccessibility().SetDescription(std::move(description));
 }
 
-void PickerListItemView::ShowPreview() {
+void QuickInsertListItemView::ShowPreview() {
   if (preview_bubble_controller_ == nullptr) {
     return;
   }
@@ -423,13 +428,13 @@ void PickerListItemView::ShowPreview() {
   GetViewAccessibility().SetDescription(std::move(description));
 }
 
-void PickerListItemView::HidePreview() {
+void QuickInsertListItemView::HidePreview() {
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->CloseBubble();
   }
 }
 
-BEGIN_METADATA(PickerListItemView)
+BEGIN_METADATA(QuickInsertListItemView)
 END_METADATA
 
 }  // namespace ash
