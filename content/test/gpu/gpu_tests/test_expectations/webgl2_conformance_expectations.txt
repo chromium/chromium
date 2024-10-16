@@ -627,6 +627,8 @@ crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-
 
 ## Win / Adreno 690 / D3D11
 crbug.com/338008895 [ win11 angle-d3d11 qualcomm-0x41333430 passthrough release ] conformance2/textures/image_bitmap_from_video/tex-3d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
 
 # Graphite
 crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
