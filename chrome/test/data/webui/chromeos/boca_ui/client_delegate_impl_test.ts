@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClientDelegateFactory, getSessionConfigMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
+import {ClientDelegateFactory, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -358,7 +358,7 @@ suite('ClientDelegateTest', function() {
   });
 
   test(
-      'client delegate should properly translate getsession with default value',
+      'client delegate should properly translate getSession with default value',
       async () => {
         const session = {
           sessionDuration: {
@@ -453,5 +453,57 @@ suite('ClientDelegateTest', function() {
     const result = await clientDelegateImpl.getInstance().removeStudent('1');
     assertTrue(result);
   });
+
+  test(
+      'client delegate should translate data for student activity',
+      async () => {
+        const activities = [
+          {
+            id: '1',
+            activity: {
+              isActive: true,
+              activeTab: 'google',
+              isCaptionEnabled: false,
+              isHandRaised: false,
+              joinMethod: 0
+            }
+          },
+          {
+            id: '2',
+            activity: {
+              isActive: false,
+              activeTab: 'youtube',
+              isCaptionEnabled: false,
+              isHandRaised: false,
+              joinMethod: 1
+            }
+          }
+        ];
+        const result = getStudentActivityMojomToUI(activities);
+        assertDeepEquals(
+            [
+              {
+                id: '1',
+                studentActivity: {
+                  isActive: true,
+                  activeTab: 'google',
+                  isCaptionEnabled: false,
+                  isHandRaised: false,
+                  joinMethod: 0
+                }
+              },
+              {
+                id: '2',
+                studentActivity: {
+                  isActive: false,
+                  activeTab: 'youtube',
+                  isCaptionEnabled: false,
+                  isHandRaised: false,
+                  joinMethod: 1
+                }
+              }
+            ],
+            result);
+      });
 
 });

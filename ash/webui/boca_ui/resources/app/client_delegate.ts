@@ -2,12 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Config, ControlledTab as ControlledTabMojom, Course, Identity as IdentityMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import {CaptionConfig, ClientApiDelegate, ControlledTab, Identity, OnTaskConfig, SessionConfig} from './boca_app.js';
+import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, OnTaskConfig, SessionConfig} from './boca_app.js';
+
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
+export function getStudentActivityMojomToUI(activities: Activity[]):
+    IdentifiedActivity[] {
+  return activities.map((item: Activity) => {
+    return {
+      id:
+        item.id, studentActivity: {
+          isActive: item.activity.isActive,
+          activeTab: item.activity.activeTab ? item.activity.activeTab :
+                                               undefined,
+          isCaptionEnabled: item.activity.isCaptionEnabled,
+          isHandRaised: item.activity.isHandRaised,
+          joinMethod: item.activity.joinMethod.valueOf()
+        }
+    }
+  })
+}
 export function getSessionConfigMojomToUI(session: Config|
                                           undefined): SessionConfig|null {
   if (!session) {

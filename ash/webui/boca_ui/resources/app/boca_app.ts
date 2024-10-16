@@ -124,7 +124,7 @@ export declare interface StudentActivity {
  * Declare IdentifiedActivity
  */
 export declare interface IdentifiedActivity {
-  email: string;
+  id: string;
   studentActivity: StudentActivity;
 }
 
