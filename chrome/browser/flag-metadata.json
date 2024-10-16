@@ -3195,11 +3195,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-feed-position-on-ntp",
-    "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-fenced-frames-cross-origin-automatic-beacons",
     "owners": [ "lbrady@google.com", "shivanisha@chromium.org", "chrome-fenced-frames-core@google.com" ],
     "expiry_milestone": 130

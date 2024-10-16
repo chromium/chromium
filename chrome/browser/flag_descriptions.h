@@ -2811,9 +2811,6 @@ extern const char kSmartZoomDescription[];
 extern const char kSmartSuggestionForLargeDownloadsName[];
 extern const char kSmartSuggestionForLargeDownloadsDescription[];
 
-extern const char kFeedPositionAndroidName[];
-extern const char kFeedPositionAndroidDescription[];
-
 extern const char kSearchResumptionModuleAndroidName[];
 extern const char kSearchResumptionModuleAndroidDescription[];
 

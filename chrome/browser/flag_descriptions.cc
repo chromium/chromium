@@ -4823,10 +4823,6 @@ const char kSmartSuggestionForLargeDownloadsName[] =
 const char kSmartSuggestionForLargeDownloadsDescription[] =
     "Smart suggestion that offers download locations for large files.";
 
-const char kFeedPositionAndroidName[] = "Feed Position";
-const char kFeedPositionAndroidDescription[] =
-    "Enable pushing down or pulling up of Feeds on NTP";
-
 const char kSearchResumptionModuleAndroidName[] = "Search Resumption Module";
 const char kSearchResumptionModuleAndroidDescription[] =
     "Enable showing search suggestions on NTP";

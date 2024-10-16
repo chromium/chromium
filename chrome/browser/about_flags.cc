@@ -2311,47 +2311,6 @@ const FeatureEntry::FeatureVariation kLogoPolishVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kFeedPositionAndroid_pull_up_feed[] = {
-    {"pull_up_feed", "true"}};
-
-const FeatureEntry::FeatureParam
-    kFeedPositionAndroid_push_down_feed_target_feed_active[] = {
-        {"feed_active_targeting", "active"}};
-
-const FeatureEntry::FeatureParam
-    kFeedPositionAndroid_push_down_feed_target_non_feed_active[] = {
-        {"feed_active_targeting", "non-active"}};
-
-const FeatureEntry::FeatureParam
-    kFeedPositionAndroid_pull_up_feed_target_feed_active[] = {
-        {"pull_up_feed", "true"},
-        {"feed_active_targeting", "active"}};
-
-const FeatureEntry::FeatureParam
-    kFeedPositionAndroid_pull_up_feed_target_non_feed_active[] = {
-        {"pull_up_feed", "true"},
-        {"feed_active_targeting", "non-active"}};
-
-const FeatureEntry::FeatureVariation kFeedPositionAndroidVariations[] = {
-    {"Pull up Feed", kFeedPositionAndroid_pull_up_feed,
-     std::size(kFeedPositionAndroid_pull_up_feed), nullptr},
-    {"Push down Feed with targeting Feed active users",
-     kFeedPositionAndroid_push_down_feed_target_feed_active,
-     std::size(kFeedPositionAndroid_push_down_feed_target_feed_active),
-     nullptr},
-    {"Push down Feed with targeting non-Feed active users",
-     kFeedPositionAndroid_push_down_feed_target_non_feed_active,
-     std::size(kFeedPositionAndroid_push_down_feed_target_non_feed_active),
-     nullptr},
-    {"Pull up Feed with targeting Feed active users",
-     kFeedPositionAndroid_pull_up_feed_target_feed_active,
-     std::size(kFeedPositionAndroid_pull_up_feed_target_feed_active), nullptr},
-    {"Pull up Feed with targeting non-Feed active users",
-     kFeedPositionAndroid_pull_up_feed_target_non_feed_active,
-     std::size(kFeedPositionAndroid_pull_up_feed_target_non_feed_active),
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kSearchResumption_use_new_service[] = {
     {"use_new_service", "true"}};
 const FeatureEntry::FeatureVariation
@@ -7266,12 +7225,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavBarColorMatchesTabBackgroundName,
      flag_descriptions::kNavBarColorMatchesTabBackgroundDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNavBarColorMatchesTabBackground)},
-
-    {"enable-feed-position-on-ntp", flag_descriptions::kFeedPositionAndroidName,
-     flag_descriptions::kFeedPositionAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFeedPositionAndroid,
-                                    kFeedPositionAndroidVariations,
-                                    "FeedPositionAndroid")},
 
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,

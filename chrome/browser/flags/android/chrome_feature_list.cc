@@ -248,7 +248,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeWebOptIn,
     &kExperimentsForAgsa,
-    &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
     &kForceBrowserControlsUponExitingFullscreen,
     &kForceListTabSwitcher,
@@ -1032,10 +1031,6 @@ BASE_FEATURE(kSearchInCCT, "SearchInCCT", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchInCCTAlternateTapHandling,
              "SearchInCCTAlternateTapHandling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeedPositionAndroid,
-             "FeedPositionAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchResumptionModuleAndroid,

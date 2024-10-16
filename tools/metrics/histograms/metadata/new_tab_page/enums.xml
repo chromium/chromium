@@ -67,12 +67,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The native page is frozen"/>
 </enum>
 
-<enum name="FeedPositionSegmentationResult">
-  <int value="0" label="Uninitialized."/>
-  <int value="1" label="Is a Feed active user."/>
-  <int value="2" label="Is a non-Feed user."/>
-</enum>
-
 <enum name="ItemSuggestRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>
