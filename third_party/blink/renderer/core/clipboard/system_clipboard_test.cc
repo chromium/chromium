@@ -218,9 +218,9 @@ TEST_F(SystemClipboardTest, Png) {
   clipboard_host()->WriteImage(bitmap1);
   clipboard_host()->CommitWrite();
 
-  SkBitmap bitmap;
   png = system_clipboard().ReadPng(buf);
-  ASSERT_TRUE(gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(bitmap.width(), 4);
   EXPECT_EQ(bitmap.height(), 3);
 
@@ -232,14 +232,16 @@ TEST_F(SystemClipboardTest, Png) {
     clipboard_host()->WriteImage(bitmap2);
     clipboard_host()->CommitWrite();
     png = system_clipboard().ReadPng(buf);
-    ASSERT_TRUE(gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap));
+    bitmap = gfx::PNGCodec::Decode(png);
+    ASSERT_FALSE(bitmap.isNull());
     EXPECT_EQ(bitmap.width(), 40);
     EXPECT_EQ(bitmap.height(), 30);
 
     clipboard_host()->WriteImage(bitmap3);
     clipboard_host()->CommitWrite();
     png = system_clipboard().ReadPng(buf);
-    ASSERT_TRUE(gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap));
+    bitmap = gfx::PNGCodec::Decode(png);
+    ASSERT_FALSE(bitmap.isNull());
     EXPECT_EQ(bitmap.width(), 40);
     EXPECT_EQ(bitmap.height(), 30);
   }
@@ -247,7 +249,8 @@ TEST_F(SystemClipboardTest, Png) {
   // Now that the snapshot is out of scope, reads from the system clipboard
   // reflect the state of the clipboard host.
   png = system_clipboard().ReadPng(buf);
-  ASSERT_TRUE(gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap));
+  bitmap = gfx::PNGCodec::Decode(png);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(bitmap.width(), 400);
   EXPECT_EQ(bitmap.height(), 300);
 }
@@ -419,9 +422,9 @@ TEST_F(SystemClipboardTest, ReadPngWithUnboundClipboardHost) {
   clipboard_host()->WriteImage(bitmapIn);
   clipboard_host()->CommitWrite();
 
-  SkBitmap bitmapOut;
   png = system_clipboard().ReadPng(buf);
-  ASSERT_TRUE(gfx::PNGCodec::Decode(png.data(), png.size(), &bitmapOut));
+  SkBitmap bitmapOut = gfx::PNGCodec::Decode(png);
+  ASSERT_FALSE(bitmapOut.isNull());
   EXPECT_EQ(bitmapOut.width(), 4);
   EXPECT_EQ(bitmapOut.height(), 3);
 
