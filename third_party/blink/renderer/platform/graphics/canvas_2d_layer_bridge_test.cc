@@ -199,14 +199,6 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareIfContextLost) {
-  test_context_provider_->TestContextGL()->set_context_lost(true);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-  EXPECT_TRUE(Host()->IsResourceValid());
-}
-
 void DrawSomething(Canvas2DLayerBridge* bridge) {
   CanvasResourceProvider* provider = bridge->GetOrCreateResourceProvider();
   provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());

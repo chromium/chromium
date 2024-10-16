@@ -2132,6 +2132,19 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
                                                            &release_callback));
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       FallbackToSoftwareIfContextLost) {
+  CreateContext(kNonOpaque);
+
+  test_context_provider_->TestContextGL()->set_context_lost(true);
+
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
+      RasterModeHint::kPreferGPU));
+
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   CreateContext(kNonOpaque);
 
