@@ -50,7 +50,7 @@ struct MatchingReusedCredential {
                           const MatchingReusedCredential&) = default;
   friend bool operator==(const MatchingReusedCredential&,
                          const MatchingReusedCredential&) = default;
-  MatchingReusedCredential& operator=(MatchingReusedCredential& other);
+  MatchingReusedCredential& operator=(const MatchingReusedCredential& other);
   MatchingReusedCredential& operator=(MatchingReusedCredential&&);
 
   std::string signon_realm;

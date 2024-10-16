@@ -27,7 +27,7 @@ MatchingReusedCredential::MatchingReusedCredential(
 MatchingReusedCredential::~MatchingReusedCredential() = default;
 
 MatchingReusedCredential& MatchingReusedCredential::operator=(
-    MatchingReusedCredential& other) = default;
+    const MatchingReusedCredential& other) = default;
 MatchingReusedCredential& MatchingReusedCredential::operator=(
     MatchingReusedCredential&&) = default;
 
