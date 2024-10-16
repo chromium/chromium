@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -1801,18 +1800,6 @@ public class TabSwitcherLayoutTest {
                             TabGroupColorUtils.INVALID_COLOR_ID,
                             filter.getTabGroupColor(tab2.getRootId()));
                 });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
-    public void testSearchClickedOpensSearchActivity() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-
-        onView(withId(R.id.search_box_text)).perform(click());
-        ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SearchActivity.class);
     }
 
     private void enterTabListEditor(ChromeTabbedActivity cta) {

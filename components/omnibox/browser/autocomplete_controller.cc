@@ -1511,7 +1511,10 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
 }
 
 void AutocompleteController::AttachActions() {
-  if (!input_.IsZeroSuggest()) {
+  // TabMatcher should run for ZPS for the Hub since open tab suggestions are
+  // shown there.
+  if (!input_.IsZeroSuggest() ||
+      omnibox::IsAndroidHub(input_.current_page_classification())) {
     // Do not look for matching tabs on Android unless we collected all the
     // suggestions. Tab matching is an expensive process with multiple JNI calls
     // involved. Run it only when all the suggestions are collected.
