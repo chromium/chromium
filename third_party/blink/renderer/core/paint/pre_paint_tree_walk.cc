@@ -735,12 +735,13 @@ void PrePaintTreeWalk::WalkMissedChildren(
   // fragmentainer. When generating fragments, layout sets their correct
   // block-offset (obviously), as a physical offset. But since we're just
   // pretending to have a fragment in this case, we have to do it ourselves. For
-  // vertical-rl, the block-start offset is at the right edge of the
-  // fragmentainer, not at the left (vertical-lr) (which is zero), and not at
-  // the top (horizontal-tb) (also zero). So we need to adjust for vertical-rl.
+  // vertical-rl and sideways-rl, the block-start offset is at the right edge of
+  // the fragmentainer, not at the left (vertical-lr) (which is zero), and not
+  // at the top (horizontal-tb) (also zero). So we need to adjust for
+  // vertical-rl and sideways-rl.
   PhysicalOffset offset_to_block_start_edge;
   if (fragment.IsFragmentainerBox() &&
-      fragment.Style().GetWritingMode() == WritingMode::kVerticalRl) {
+      fragment.Style().IsFlippedBlocksWritingMode()) {
     offset_to_block_start_edge.left = fragment.Size().width;
   }
 
