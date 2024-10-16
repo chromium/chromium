@@ -132,6 +132,7 @@ void ExclusiveAccessPermissionPromptView::AddedToWidget() {
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
   label->SetAllowCharacterBreak(true);
+  label->SetTextStyle(views::style::STYLE_HEADLINE_4_BOLD);
   label->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
