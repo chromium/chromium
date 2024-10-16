@@ -350,6 +350,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/highlight/highlight.idl",
   "//third_party/blink/renderer/core/highlight/highlight_pointer_event.idl",
   "//third_party/blink/renderer/core/highlight/highlight_registry.idl",
+  "//third_party/blink/renderer/core/highlight/highlights_from_point_options.idl",
   "//third_party/blink/renderer/core/html/assigned_nodes_options.idl",
   "//third_party/blink/renderer/core/html/canvas/baselines.idl",
   "//third_party/blink/renderer/core/html/canvas/high_dynamic_range_options.idl",

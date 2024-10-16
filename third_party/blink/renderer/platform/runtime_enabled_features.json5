@@ -2263,6 +2263,9 @@
       name: "HighlightPointerEvents",
     },
     {
+      name: "HighlightsFromPoint",
+    },
+    {
       name: "HitTestOpaqueness",
       status: "stable",
     },

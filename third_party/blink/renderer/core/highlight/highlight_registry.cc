@@ -292,4 +292,12 @@ HighlightRegistry::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<IterationSource>(*this);
 }
 
+HeapVector<Member<Highlight>> HighlightRegistry::highlightsFromPoint(
+    float x,
+    float y,
+    const HighlightsFromPointOptions* options) {
+  // TODO(crbug.com/365046212): implement this function.
+  return HeapVector<Member<Highlight>>();
+}
+
 }  // namespace blink
