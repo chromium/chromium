@@ -45,6 +45,7 @@ import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
+import org.chromium.components.tab_group_sync.messaging.TabMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,6 +57,8 @@ import java.lang.ref.WeakReference;
 public class InstantMessageDelegateImplUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
     private static final int TAB_ID = 1;
+    private static final String TAB_TITLE = "Tab Title";
+    private static final String TAB_GROUP_TITLE = "Group Title";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -85,7 +88,10 @@ public class InstantMessageDelegateImplUnitTest {
 
     private InstantMessage newInstantMessage(@UserAction int action) {
         MessageAttribution attribution = new MessageAttribution();
+        attribution.tabMetadata = new TabMessageMetadata();
+        attribution.tabMetadata.lastKnownTitle = TAB_TITLE;
         attribution.tabGroupMetadata = new TabGroupMessageMetadata();
+        attribution.tabGroupMetadata.lastKnownTitle = TAB_GROUP_TITLE;
         attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
         attribution.triggeringUser = SharedGroupTestHelper.GROUP_MEMBER1;
         InstantMessage instantMessage = new InstantMessage();
@@ -127,6 +133,7 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(TAB_TITLE));
     }
 
     @Test
@@ -142,6 +149,7 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(TAB_TITLE));
     }
 
     @Test
@@ -157,6 +165,7 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.COLLABORATION_USER_JOINED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(TAB_GROUP_TITLE));
     }
 
     @Test
@@ -170,5 +179,7 @@ public class InstantMessageDelegateImplUnitTest {
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
+        String title = propertyModel.get(TITLE);
+        assertTrue(title.contains(TAB_GROUP_TITLE));
     }
 }

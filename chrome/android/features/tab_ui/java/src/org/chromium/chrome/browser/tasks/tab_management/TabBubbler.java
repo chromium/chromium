@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.messaging.MessageUtils;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
 
@@ -48,7 +49,7 @@ public class TabBubbler extends TabObjectNotificationUpdater {
         Set<Integer> tabIds = new HashSet<>();
         for (PersistentMessage message : messageList) {
             if (shouldApply(message)) {
-                tabIds.add(TabLabelUtils.extractTabId(message));
+                tabIds.add(MessageUtils.extractTabId(message));
             }
         }
         if (!tabIds.isEmpty()) {
@@ -60,7 +61,7 @@ public class TabBubbler extends TabObjectNotificationUpdater {
     @Override
     protected void incrementalShow(PersistentMessage message) {
         if (shouldApply(message)) {
-            Set<Integer> tabIds = Collections.singleton(TabLabelUtils.extractTabId(message));
+            Set<Integer> tabIds = Collections.singleton(MessageUtils.extractTabId(message));
             mTabListNotificationHandler.updateTabStripNotificationBubble(
                     tabIds, /* hasUpdate= */ true);
         }
@@ -69,7 +70,7 @@ public class TabBubbler extends TabObjectNotificationUpdater {
     @Override
     protected void incrementalHide(PersistentMessage message) {
         if (shouldApply(message)) {
-            Set<Integer> tabIds = Collections.singleton(TabLabelUtils.extractTabId(message));
+            Set<Integer> tabIds = Collections.singleton(MessageUtils.extractTabId(message));
             mTabListNotificationHandler.updateTabStripNotificationBubble(
                     tabIds, /* hasUpdate= */ false);
         }
@@ -78,8 +79,8 @@ public class TabBubbler extends TabObjectNotificationUpdater {
     protected boolean shouldApply(PersistentMessage message) {
         return mTabGroupIdSupplier.get() != null
                 && message.type == PersistentNotificationType.DIRTY_TAB
-                && TabLabelUtils.extractTabId(message) != Tab.INVALID_TAB_ID
+                && MessageUtils.extractTabId(message) != Tab.INVALID_TAB_ID
                 && Objects.equals(
-                        TabLabelUtils.extractTabGroupId(message), mTabGroupIdSupplier.get());
+                        MessageUtils.extractTabGroupId(message), mTabGroupIdSupplier.get());
     }
 }

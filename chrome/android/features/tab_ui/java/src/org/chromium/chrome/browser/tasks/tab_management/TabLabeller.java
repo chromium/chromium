@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.messaging.MessageUtils;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
 import org.chromium.components.tab_group_sync.messaging.UserAction;
@@ -41,7 +42,7 @@ public class TabLabeller extends TabObjectLabeller {
     protected boolean shouldApply(PersistentMessage message) {
         return mTabGroupIdSupplier.get() != null
                 && Objects.equals(
-                        mTabGroupIdSupplier.get(), TabLabelUtils.extractTabGroupId(message))
+                        mTabGroupIdSupplier.get(), MessageUtils.extractTabGroupId(message))
                 && message.type == PersistentNotificationType.CHIP
                 && getTabId(message) != Tab.INVALID_TAB_ID
                 && getTextRes(message) != Resources.ID_NULL;
@@ -70,7 +71,7 @@ public class TabLabeller extends TabObjectLabeller {
 
     @Override
     protected int getTabId(PersistentMessage message) {
-        return TabLabelUtils.extractTabId(message);
+        return MessageUtils.extractTabId(message);
     }
 
     @Override

@@ -26,7 +26,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.tab_group_sync.messaging.InstantMessage;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
-import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
+import org.chromium.components.tab_group_sync.messaging.MessageUtils;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService.InstantMessageDelegate;
 import org.chromium.components.tab_group_sync.messaging.UserAction;
@@ -83,11 +83,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             if (message.level == InstantNotificationLevel.SYSTEM) {
                 // TODO(https://crbug.com/369164214): Implement.
             } else if (message.level == InstantNotificationLevel.BROWSER) {
-                @Nullable
-                Pair<WindowAndroid, TabGroupModelFilter> attach = getAttach(message.attribution);
+                @Nullable Pair<WindowAndroid, TabGroupModelFilter> attach = getAttach(message);
                 if (attach == null) return;
                 @NonNull WindowAndroid windowAndroid = attach.first;
-                @NonNull TabGroupModelFilter tabGroupModelFilter = attach.second;
                 @Nullable
                 MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
                 @Nullable Context context = windowAndroid.getContext().get();
@@ -111,21 +109,17 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         }
     }
 
-    private Pair<WindowAndroid, TabGroupModelFilter> getAttach(
-            MessageAttribution messageAttribution) {
+    private Pair<WindowAndroid, TabGroupModelFilter> getAttach(InstantMessage message) {
         if (mAttachList.size() == 0) {
             return null;
         }
 
-        if (messageAttribution == null
-                || messageAttribution.tabGroupMetadata == null
-                || messageAttribution.tabGroupMetadata.localTabGroupId == null
-                || messageAttribution.tabGroupMetadata.localTabGroupId.tabGroupId == null) {
+        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
+        if (tabGroupId == null) {
             // Message doesn't link to a window, show it arbitrarily.
             return mAttachList.get(0);
         }
 
-        @NonNull Token tabGroupId = messageAttribution.tabGroupMetadata.localTabGroupId.tabGroupId;
         for (Pair<WindowAndroid, TabGroupModelFilter> attach : mAttachList) {
             TabGroupModelFilter tabGroupModelFilter = attach.second;
             int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
@@ -139,20 +133,6 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         return null;
     }
 
-    private String givenNameFromMessage(InstantMessage message) {
-        return message.attribution.triggeringUser.givenName;
-    }
-
-    private String tabTitleFromMessage() {
-        // TODO(https://crbug.com/369163940): Once the message stores this, we can return it.
-        return "ph1";
-    }
-
-    private String tabGroupTitleFromMessage() {
-        // TODO(https://crbug.com/369163940): Once the message stores this, we can return it.
-        return "ph2";
-    }
-
     private Drawable iconFromMessage(Context context) {
         // TODO(https://crbug.com/369163940): Fetch this, potentially async.
         return ContextCompat.getDrawable(context, R.drawable.ic_features_24dp);
@@ -160,8 +140,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void showTabRemoved(
             InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
-        String givenName = givenNameFromMessage(message);
-        String tabTitle = tabTitleFromMessage();
+        String givenName = MessageUtils.extractGivenName(message);
+        String tabTitle = MessageUtils.extractTabTitle(message);
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_removed_tab, givenName, tabTitle);
@@ -179,8 +159,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void showTabChange(
             InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
-        String givenName = givenNameFromMessage(message);
-        String tabTitle = tabTitleFromMessage();
+        String givenName = MessageUtils.extractGivenName(message);
+        String tabTitle = MessageUtils.extractTabTitle(message);
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_changed_tab, givenName, tabTitle);
@@ -198,8 +178,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void showCollaborationUserJoined(
             InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
-        String givenName = givenNameFromMessage(message);
-        String tabGroupTitle = tabGroupTitleFromMessage();
+        String givenName = MessageUtils.extractGivenName(message);
+        // TODO(https://crbug.com/369163940): Fall back to default title if needed.
+        String tabGroupTitle = MessageUtils.extractTabGroupTitle(message);
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_joined_tab_group,
@@ -219,7 +200,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void showCollaborationRemoved(
             InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
-        String tabGroupTitle = tabGroupTitleFromMessage();
+        // TODO(https://crbug.com/369163940): Fall back to default title if needed.
+        String tabGroupTitle = MessageUtils.extractTabGroupTitle(message);
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_not_available, tabGroupTitle);

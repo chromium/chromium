@@ -27,7 +27,7 @@ public class GroupMember {
             String gaiaId,
             String displayName,
             String email,
-            int role,
+            @MemberRole int role,
             GURL avatarUrl,
             String givenName) {
         this.gaiaId = gaiaId;
@@ -43,7 +43,7 @@ public class GroupMember {
             String gaiaId,
             String displayName,
             String email,
-            int role,
+            @MemberRole int role,
             GURL avatarUrl,
             String givenName) {
         return new GroupMember(gaiaId, displayName, email, role, avatarUrl, givenName);

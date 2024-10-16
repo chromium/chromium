@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_group_sync.messaging.MessageUtils;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
 
@@ -51,7 +52,7 @@ public class TabGroupLabeller extends TabObjectLabeller {
 
     @Override
     protected int getTabId(PersistentMessage message) {
-        @Nullable Token tabGroupId = TabLabelUtils.extractTabGroupId(message);
+        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
         if (tabGroupId == null) {
             return Tab.INVALID_TAB_ID;
         } else {
