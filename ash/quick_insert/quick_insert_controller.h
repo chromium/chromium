@@ -56,7 +56,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerClient;
-class PickerModel;
+class QuickInsertModel;
 class PickerPasteRequest;
 class PickerActionOnNextFocusRequest;
 
@@ -165,7 +165,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Active Picker session tied to the lifetime of the QuickInsertWidget.
   struct Session {
-    PickerModel model;
+    QuickInsertModel model;
     PickerEmojiHistoryModel emoji_history_model;
     PickerEmojiSuggester emoji_suggester;
     PickerSessionMetrics session_metrics;
@@ -176,8 +176,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
     Session(PrefService* prefs,
             ui::TextInputClient* focused_client,
             input_method::ImeKeyboard* ime_keyboard,
-            PickerModel::EditorStatus editor_status,
-            PickerModel::LobsterStatus lobster_status,
+            QuickInsertModel::EditorStatus editor_status,
+            QuickInsertModel::LobsterStatus lobster_status,
             PickerEmojiSuggester::GetNameCallback get_name);
     ~Session();
   };

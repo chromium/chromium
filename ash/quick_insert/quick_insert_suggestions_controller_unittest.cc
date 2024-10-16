@@ -47,9 +47,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -70,9 +70,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
-                    &keyboard, PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -92,9 +92,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, &input_field, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &input_field, &keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -112,9 +112,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
-                    &keyboard, PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(Contains(VariantWith<PickerNewWindowResult>(_))))
@@ -130,9 +130,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(false);
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -151,9 +151,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(true);
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -173,9 +173,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, &input_field, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &input_field, &keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -198,9 +198,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, &input_field, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &input_field, &keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -246,9 +246,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           })));
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
@@ -293,9 +293,9 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           })));
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());

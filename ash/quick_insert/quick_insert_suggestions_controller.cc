@@ -38,7 +38,7 @@ std::vector<PickerSearchResult> GetMostRecentResults(
 }
 
 void PickerSuggestionsController::GetSuggestions(PickerClient& client,
-                                                 const PickerModel& model,
+                                                 const QuickInsertModel& model,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
     std::vector<PickerSearchResult> new_window_results;

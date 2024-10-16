@@ -23,9 +23,10 @@ using ::testing::Not;
 
 TEST(QuickInsertModelTest, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
-                    &fake_ime_keyboard, PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               ElementsAre(PickerCategory::kLinks, PickerCategory::kDriveFiles,
                           PickerCategory::kLocalFiles));
@@ -37,9 +38,9 @@ TEST(QuickInsertModelTest,
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(
       model.GetAvailableCategories(),
       ElementsAre(PickerCategory::kEditorWrite, PickerCategory::kLobster,
@@ -55,9 +56,9 @@ TEST(QuickInsertModelTest,
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(
       model.GetAvailableCategories(),
       ElementsAre(PickerCategory::kEditorRewrite, PickerCategory::kLobster));
@@ -67,9 +68,9 @@ TEST(QuickInsertModelTest, AvailableCategoriesContainsEditorWriteWhenEnabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kDisabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kDisabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Contains(PickerCategory::kEditorWrite));
 }
@@ -78,9 +79,9 @@ TEST(QuickInsertModelTest, AvailableCategoriesOmitsEditorWriteWhenDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kDisabled,
-                    PickerModel::LobsterStatus::kDisabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kDisabled,
+                         QuickInsertModel::LobsterStatus::kDisabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Not(Contains(PickerCategory::kEditorWrite)));
 }
@@ -91,9 +92,9 @@ TEST(QuickInsertModelTest,
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kDisabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kDisabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Contains(PickerCategory::kEditorRewrite));
 }
@@ -103,9 +104,9 @@ TEST(QuickInsertModelTest, AvailableCategoriesOmitsEditorRewriteWhenDisabled) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kDisabled,
-                    PickerModel::LobsterStatus::kDisabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kDisabled,
+                         QuickInsertModel::LobsterStatus::kDisabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Not(Contains(PickerCategory::kEditorRewrite)));
 }
@@ -114,9 +115,9 @@ TEST(QuickInsertModelTest, AvailableCategoriesContainsLobsterWhenEnabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kDisabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kDisabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Contains(PickerCategory::kLobster));
 }
@@ -125,9 +126,9 @@ TEST(QuickInsertModelTest, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kDisabled,
-                    PickerModel::LobsterStatus::kDisabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kDisabled,
+                         QuickInsertModel::LobsterStatus::kDisabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Not(Contains(PickerCategory::kLobster)));
 }
@@ -140,9 +141,9 @@ TEST(QuickInsertModelTest,
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/&prefs, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/&prefs, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Contains(PickerCategory::kEmojisGifs));
   EXPECT_THAT(model.GetAvailableCategories(),
@@ -157,9 +158,9 @@ TEST(QuickInsertModelTest,
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/&prefs, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/&prefs, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Contains(PickerCategory::kEmojis));
   EXPECT_THAT(model.GetAvailableCategories(),
@@ -171,9 +172,9 @@ TEST(QuickInsertModelTest,
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_URL});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               Not(Contains(PickerCategory::kEmojis)));
   EXPECT_THAT(model.GetAvailableCategories(),
@@ -185,9 +186,9 @@ TEST(QuickInsertModelTest, GetsEmptySelectedText) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"abcd", gfx::Range(1, 1));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_EQ(model.selected_text(), u"");
 }
 
@@ -196,17 +197,18 @@ TEST(QuickInsertModelTest, GetsNonEmptySelectedText) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"abcd", gfx::Range(1, 3));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_EQ(model.selected_text(), u"bc");
 }
 
 TEST(QuickInsertModelTest, GetModeForUnfocusedState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
-  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
-                    &fake_ime_keyboard, PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
+                         &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
 }
@@ -214,9 +216,9 @@ TEST(QuickInsertModelTest, GetModeForUnfocusedState) {
 TEST(QuickInsertModelTest, GetModeForInputTypeNone) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_NONE});
   input_method::FakeImeKeyboard fake_ime_keyboard;
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
 }
@@ -225,9 +227,9 @@ TEST(QuickInsertModelTest, GetModeForNoSelectionState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
 }
@@ -237,9 +239,9 @@ TEST(QuickInsertModelTest, GetModeForSelectionState) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"abcd efgh", gfx::Range(1, 5));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_EQ(model.GetMode(), PickerModeType::kHasSelection);
 }
@@ -249,9 +251,9 @@ TEST(QuickInsertModelTest, GifsDisabledWhenPrefDoesNotExist) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(&prefs, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(&prefs, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_FALSE(model.IsGifsEnabled());
 }
@@ -264,9 +266,9 @@ TEST(QuickInsertModelTest, GifsEnabledWhenPrefIsTrue) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(&prefs, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(&prefs, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_TRUE(model.IsGifsEnabled());
 }
@@ -279,9 +281,9 @@ TEST(QuickInsertModelTest, GifsDisabledWhenPrefIsFalse) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
-  PickerModel model(&prefs, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(&prefs, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_FALSE(model.IsGifsEnabled());
 }
@@ -291,9 +293,9 @@ TEST(QuickInsertModelTest, GetModeForBlankStringsSelectionState) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"  \n \t\ra", gfx::Range(0, 5));
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
 }
@@ -301,9 +303,9 @@ TEST(QuickInsertModelTest, GetModeForBlankStringsSelectionState) {
 TEST(QuickInsertModelTest, UnfocusedShouldLearn) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
 
-  PickerModel model(/*prefs=*/nullptr, nullptr, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, nullptr, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_TRUE(model.should_do_learning());
 }
@@ -313,9 +315,9 @@ TEST(QuickInsertModelTest, FocusedShouldLearnIfLearningEnabled) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = true});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_TRUE(model.should_do_learning());
 }
@@ -325,9 +327,9 @@ TEST(QuickInsertModelTest, FocusedShouldLearnIfLearningDisabled) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = false});
 
-  PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled,
-                    PickerModel::LobsterStatus::kEnabled);
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kEnabled,
+                         QuickInsertModel::LobsterStatus::kEnabled);
 
   EXPECT_FALSE(model.should_do_learning());
 }

@@ -17,7 +17,7 @@ namespace ash {
 
 enum class PickerCategory;
 class PickerClient;
-class PickerModel;
+class QuickInsertModel;
 
 class ASH_EXPORT PickerSuggestionsController {
  public:
@@ -32,7 +32,7 @@ class ASH_EXPORT PickerSuggestionsController {
 
   // `client` only needs to remain valid until the function ends.
   void GetSuggestions(PickerClient& client,
-                      const PickerModel& model,
+                      const QuickInsertModel& model,
                       SuggestionsCallback callback);
   // `client` only needs to remain valid until the function ends.
   void GetSuggestionsForCategory(PickerClient& client,

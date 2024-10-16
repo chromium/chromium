@@ -26,7 +26,7 @@ class ImeKeyboard;
 
 enum class PickerModeType;
 
-class ASH_EXPORT PickerModel {
+class ASH_EXPORT QuickInsertModel {
  public:
   enum class EditorStatus { kEnabled, kDisabled };
   enum class LobsterStatus { kEnabled, kDisabled };
@@ -34,11 +34,11 @@ class ASH_EXPORT PickerModel {
   // `focused_client` is the input field that was focused when Picker is opened.
   // It can be null. `ime_keyboard` is used to monitor caps lock state. This
   // cannot be null.
-  explicit PickerModel(PrefService* prefs,
-                       ui::TextInputClient* focused_client,
-                       input_method::ImeKeyboard* ime_keyboard,
-                       EditorStatus editor_status,
-                       LobsterStatus lobster_status);
+  explicit QuickInsertModel(PrefService* prefs,
+                            ui::TextInputClient* focused_client,
+                            input_method::ImeKeyboard* ime_keyboard,
+                            EditorStatus editor_status,
+                            LobsterStatus lobster_status);
 
   std::vector<PickerCategory> GetAvailableCategories() const;
 

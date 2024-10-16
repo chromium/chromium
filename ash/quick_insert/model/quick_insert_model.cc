@@ -56,11 +56,11 @@ bool GetIsGifsEnabled(PrefService* prefs) {
 
 }  // namespace
 
-PickerModel::PickerModel(PrefService* prefs,
-                         ui::TextInputClient* focused_client,
-                         input_method::ImeKeyboard* ime_keyboard,
-                         EditorStatus editor_status,
-                         LobsterStatus lobster_status)
+QuickInsertModel::QuickInsertModel(PrefService* prefs,
+                                   ui::TextInputClient* focused_client,
+                                   input_method::ImeKeyboard* ime_keyboard,
+                                   EditorStatus editor_status,
+                                   LobsterStatus lobster_status)
     : has_focus_(focused_client != nullptr &&
                  focused_client->GetTextInputType() !=
                      ui::TextInputType::TEXT_INPUT_TYPE_NONE),
@@ -74,7 +74,7 @@ PickerModel::PickerModel(PrefService* prefs,
       text_input_type_(GetTextInputType(focused_client)),
       is_gifs_enabled_(GetIsGifsEnabled(prefs)) {}
 
-std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
+std::vector<PickerCategory> QuickInsertModel::GetAvailableCategories() const {
   switch (GetMode()) {
     case PickerModeType::kUnfocused:
       return std::vector<PickerCategory>{
@@ -124,7 +124,8 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   }
 }
 
-std::vector<PickerCategory> PickerModel::GetRecentResultsCategories() const {
+std::vector<PickerCategory> QuickInsertModel::GetRecentResultsCategories()
+    const {
   if (GetMode() == PickerModeType::kHasSelection) {
     return std::vector<PickerCategory>{};
   }
@@ -136,19 +137,19 @@ std::vector<PickerCategory> PickerModel::GetRecentResultsCategories() const {
   };
 }
 
-std::u16string_view PickerModel::selected_text() const {
+std::u16string_view QuickInsertModel::selected_text() const {
   return selected_text_;
 }
 
-bool PickerModel::should_do_learning() const {
+bool QuickInsertModel::should_do_learning() const {
   return should_do_learning_;
 }
 
-bool PickerModel::is_caps_lock_enabled() const {
+bool QuickInsertModel::is_caps_lock_enabled() const {
   return is_caps_lock_enabled_;
 }
 
-PickerModeType PickerModel::GetMode() const {
+PickerModeType QuickInsertModel::GetMode() const {
   if (!has_focus_) {
     return PickerModeType::kUnfocused;
   }
@@ -163,7 +164,7 @@ PickerModeType PickerModel::GetMode() const {
              : PickerModeType::kHasSelection;
 }
 
-bool PickerModel::IsGifsEnabled() const {
+bool QuickInsertModel::IsGifsEnabled() const {
   return is_gifs_enabled_;
 }
 

@@ -581,8 +581,8 @@ PickerController::Session::Session(
     PrefService* prefs,
     ui::TextInputClient* focused_client,
     input_method::ImeKeyboard* ime_keyboard,
-    PickerModel::EditorStatus editor_status,
-    PickerModel::LobsterStatus lobster_status,
+    QuickInsertModel::EditorStatus editor_status,
+    QuickInsertModel::LobsterStatus lobster_status,
     PickerEmojiSuggester::GetNameCallback get_name)
     : model(prefs, focused_client, ime_keyboard, editor_status, lobster_status),
       emoji_history_model(prefs),
@@ -613,10 +613,12 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
 
   session_ = std::make_unique<Session>(
       GetPrefs(), focused_client, &keyboard,
-      show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
-                                      : PickerModel::EditorStatus::kEnabled,
-      show_lobster_callback_.is_null() ? PickerModel::LobsterStatus::kDisabled
-                                       : PickerModel::LobsterStatus::kEnabled,
+      show_editor_callback_.is_null()
+          ? QuickInsertModel::EditorStatus::kDisabled
+          : QuickInsertModel::EditorStatus::kEnabled,
+      show_lobster_callback_.is_null()
+          ? QuickInsertModel::LobsterStatus::kDisabled
+          : QuickInsertModel::LobsterStatus::kEnabled,
       base::BindRepeating(
           [](base::WeakPtr<PickerController> weak_controller,
              std::string_view emoji) -> std::string {
