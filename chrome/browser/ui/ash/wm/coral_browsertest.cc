@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/coral/coral_controller.h"
+#include "ash/wm/coral/coral_test_util.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -153,6 +154,11 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_OpenNewDesk) {
   Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
       birch_data_fetch_waiter.QuitClosure());
 
+  // Create a test coral group with no tabs and apps.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(CreateTestGroup({}, "Coral desk"));
+  OverrideTestResponse(std::move(test_groups));
+
   ToggleOverview();
   WaitForOverviewEntered();
 
@@ -172,10 +178,6 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_OpenNewDesk) {
   // has the coral title.
   EXPECT_EQ(2u, desks_controller->desks().size());
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-
-  // TODO(sammiequon): This title is currently hardcoded in ash for
-  // `switches::kForceBirchFakeCoralGroup`. Update to use a test coral provider
-  // instead.
   EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
                                desks_controller->GetActiveDeskIndex()));
 }
@@ -197,13 +199,10 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsToNewDesk) {
 
   // Create a fake coral group which contains two tabs that are selected from
   // each of the two browsers created above.
-  coral::mojom::GroupPtr fake_group = coral::mojom::Group::New();
-  fake_group->title = "Coral desk";
-
-  fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-      coral::mojom::Tab::New("Youtube", GURL("https://youtube.com"))));
-  fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-      coral::mojom::Tab::New("Google Maps", GURL("https://maps.google.com"))));
+  coral::mojom::GroupPtr fake_group =
+      CreateTestGroup({{"Youtube", GURL("https://youtube.com")},
+                       {"Google Maps", GURL("https://maps.google.com")}},
+                      "Coral desk");
 
   DeskSwitchAnimationWaiter waiter;
   Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(fake_group));

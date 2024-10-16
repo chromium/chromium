@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/coral/coral_controller.h"
+#include "ash/wm/coral/coral_test_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -1449,19 +1450,19 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   group0->title = "Group Title 0";
   group0->entities = std::move(entities0);
 
-  coral::mojom::GroupPtr group1 = coral::mojom::Group::New();
-  group1->title = "Group Title 1 (empty)";
+  coral::mojom::GroupPtr group1 = CreateTestGroup({}, "Group Title 1 (empty)");
 
   // Setup fake coral backend response and pass to the coral provider.
   std::vector<coral::mojom::GroupPtr> groups;
   groups.push_back(std::move(group0));
   groups.push_back(std::move(group1));
-  std::unique_ptr<CoralResponse> response = std::make_unique<CoralResponse>();
+  auto response = std::make_unique<CoralResponse>();
   response->set_groups(std::move(groups));
-  BirchModel* model = Shell::Get()->birch_model();
+
   BirchCoralProvider::Get()->OverrideCoralResponseForTest(std::move(response));
   BirchCoralProvider::Get()->RequestBirchDataFetch();
 
+  BirchModel* model = Shell::Get()->birch_model();
   auto* item_remover = model->GetCoralItemRemoverForTest();
 
   // Verify that the model's CoralItemRemover doesn't remove any items yet.

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
@@ -22,6 +21,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
+#include "ash/wm/coral/coral_test_util.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
@@ -298,41 +298,29 @@ class BirchBarTest : public AshTestBase {
   void SetCoralItems(size_t num) {
     // The number of coral items cannot exceed 2.
     ASSERT_GE(2u, num);
-    auto fake_response = std::make_unique<CoralResponse>();
-    std::vector<coral::mojom::GroupPtr> fake_groups;
 
+    std::vector<coral::mojom::GroupPtr> test_groups;
     if (num >= 1u) {
-      auto fake_group = coral::mojom::Group::New();
-      fake_group->title = "Coral Group 1";
-      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New("Reddit", GURL("https://www.reddit.com/"))));
-      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New("Figma", GURL("https://www.figma.com/"))));
-      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New("Notion", GURL("https://www.notion.so/"))));
-      fake_group->entities.push_back(
-          coral::mojom::Entity::NewApp(coral::mojom::App::New(
-              "Settings", "odknhmnlageboeamepcngndbggdpaobj")));
-      fake_groups.push_back(std::move(fake_group));
+      auto test_group =
+          CreateTestGroup({{"Reddit", GURL("https://www.reddit.com/")},
+                           {"Figma", GURL("https://www.figma.com/")},
+                           {"Notion", GURL("https://www.notion.so/")},
+                           {"Settings", "odknhmnlageboeamepcngndbggdpaobj"}},
+                          "Coral Group 1");
+      test_groups.push_back(std::move(test_group));
     }
 
     if (num == 2u) {
-      auto fake_group = coral::mojom::Group::New();
-      fake_group->title = "Coral Group 2";
-      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New("IKEA", GURL("https://www.ikea.com/"))));
-      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New("NHL", GURL("https://www.nhl.com/"))));
-      fake_group->entities.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New("Google", GURL("https://www.google.com/"))));
-      fake_group->entities.push_back(coral::mojom::Entity::NewApp(
-          coral::mojom::App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
-      fake_groups.push_back(std::move(fake_group));
+      auto test_group =
+          CreateTestGroup({{"IKEA", GURL("https://www.ikea.com/")},
+                           {"NHL", GURL("https://www.nhl.com/")},
+                           {"Google", GURL("https://www.google.com/")},
+                           {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+                          "Coral Group 2");
+      test_groups.push_back(std::move(test_group));
     }
 
-    fake_response->set_groups(std::move(fake_groups));
-    BirchCoralProvider::Get()->OverrideCoralResponseForTest(
-        std::move(fake_response));
+    OverrideTestResponse(std::move(test_groups));
   }
 
   std::unique_ptr<TestBirchClient> birch_client_;

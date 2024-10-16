@@ -4909,6 +4909,7 @@ test("ash_pixeltests") {
     "utility/arc_curve_path_util_pixeltest.cc",
     "wm/overview/birch/birch_bar_pixeltest.cc",
     "wm/snap_group/snap_group_pixeltest.cc",
+    "wm/test/coral_pixel_diff_test.cc",
     "wm/test/wm_pixel_diff_test.cc",
   ]
 
@@ -5317,6 +5318,8 @@ static_library("test_support") {
     "wallpaper/test_wallpaper_drivefs_delegate.h",
     "wallpaper/wallpaper_controller_test_api.cc",
     "wallpaper/wallpaper_controller_test_api.h",
+    "wm/coral/coral_test_util.cc",
+    "wm/coral/coral_test_util.h",
     "wm/cursor_manager_test_api.cc",
     "wm/cursor_manager_test_api.h",
     "wm/desks/desks_test_api.cc",

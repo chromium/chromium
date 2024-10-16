@@ -34,6 +34,7 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
 
  private:
   class TabAppSelectionItemView;
+  FRIEND_TEST_ALL_PREFIXES(CoralPixelDiffTest, CoralSelectorView);
   FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, CloseSelectorItems);
 
   // We don't use an enum class to avoid too many explicit casts at callsites.

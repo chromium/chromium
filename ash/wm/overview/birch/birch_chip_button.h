@@ -62,8 +62,6 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);
   class ChipMenuController;
-  friend class TabAppSelectionHost;
-  friend class TabAppSelectionViewTest;
 
   void SetAddon(std::unique_ptr<views::View> addon_view);
 
