@@ -100,6 +100,10 @@ enum ChromeDistanceMetric {
   DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING,
   // Horizontal spacing between icon and label in the rich hover button.
   DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL,
+  // Horizontal spacing between the search bar and end task button.
+  DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING,
+  // Vertical spacing between the header components and the header separator.
+  DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING,
   // Distance between most child elements inside the toast.
   DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING,
   // Distance between the toast label and action button.

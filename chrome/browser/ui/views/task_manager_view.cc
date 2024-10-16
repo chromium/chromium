@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -47,8 +46,13 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -349,6 +353,96 @@ TaskManagerView* TaskManagerView::GetInstanceForTests() {
   return g_task_manager_view;
 }
 
+void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
+  // Header Parent
+  auto header_layout = std::make_unique<views::BoxLayout>();
+  header_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kStart);
+
+  auto container = std::make_unique<views::View>();
+
+  const int vertical_spacing = provider->GetDistanceMetric(
+      DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING);
+  const int horizontal_spacing = provider->GetDistanceMetric(
+      DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
+  const int separator_spacing =
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+
+  // Empty Container, Search Bar, End Task Button, and Separator
+  auto empty_view = std::make_unique<views::View>();
+  std::unique_ptr<views::Textfield> search_bar = CreateSearchBar(
+      gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
+  std::unique_ptr<views::MdTextButton> end_task_btn = CreateEndTaskButton(
+      gfx::Insets::TLBR(0, horizontal_spacing, vertical_spacing, 0));
+  std::unique_ptr<views::Separator> separator =
+      CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
+
+  // Allow empty spacing and the search bar to flex freely.
+  header_layout->SetFlexForView(empty_view.get(), 1);
+  header_layout->SetFlexForView(search_bar.get(), 1);
+
+  // Set the layout manager for the parent container to BoxLayout.
+  container->SetLayoutManager(std::move(header_layout));
+
+  // Compose all parts into header.
+  container->AddChildView(std::move(empty_view));
+  container->AddChildView(std::move(search_bar));
+  container->AddChildView(std::move(end_task_btn));
+
+  // Attach header to the top of the dialog contents.
+  AddChildView(std::move(container));
+
+  // Attach separator below header.
+  AddChildView(std::move(separator));
+}
+
+std::unique_ptr<views::Textfield> TaskManagerView::CreateSearchBar(
+    const gfx::Insets& margins) {
+  auto search_bar = std::make_unique<views::Textfield>();
+  search_bar->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME));
+  search_bar->SetPlaceholderText(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_PLACEHOLDER));
+  search_bar->SetProperty(views::kMarginsKey, margins);
+  return search_bar;
+}
+
+std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndTaskButton(
+    const gfx::Insets& margins) {
+  auto button = std::make_unique<views::MdTextButton>();
+  button->SetText(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
+  button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME));
+  button->SetStyle(ui::ButtonStyle::kProminent);
+  button->SetProperty(views::kMarginsKey, margins);
+  return button;
+}
+
+std::unique_ptr<views::Separator> TaskManagerView::CreateSeparator(
+    const gfx::Insets& margins) {
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetProperty(views::kMarginsKey, margins);
+  return separator;
+}
+
+std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(
+    std::unique_ptr<views::TableView> tab_table,
+    bool table_has_border,
+    bool layout_refresh) {
+  auto scroll_view = views::TableView::CreateScrollViewWithTable(
+      std::move(tab_table), table_has_border);
+
+  if (layout_refresh) {
+    scroll_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+    scroll_view->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+  }
+
+  return scroll_view;
+}
+
 void TaskManagerView::Init() {
   // Create the table columns.
   for (size_t i = 0; i < kColumnsSize; ++i) {
@@ -380,7 +474,8 @@ void TaskManagerView::Init() {
   // have a border.
   bool table_has_border = !tm_refresh_enabled,
        large_header_padding = tm_refresh_enabled,
-       scroll_view_rounded = tm_refresh_enabled;
+       scroll_view_rounded = tm_refresh_enabled,
+       layout_refresh = tm_refresh_enabled;
 
   if (large_header_padding) {
     views::TableHeaderStyle header_style = {/*vertical_padding=*/16,
@@ -388,21 +483,7 @@ void TaskManagerView::Init() {
     tab_table->SetHeaderStyle(header_style);
   }
 
-  tab_table_parent_ = AddChildView(views::TableView::CreateScrollViewWithTable(
-      std::move(tab_table), table_has_border));
-
-  if (scroll_view_rounded) {
-    tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
-    ui::Layer* scroll_view_layer = tab_table_parent_->layer();
-
-    scroll_view_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
-        provider->GetCornerRadiusMetric(views::Emphasis::kHigh)));
-
-    scroll_view_layer->SetIsFastRoundedCorner(true);
-  }
-
-  SetUseDefaultFillLayout(true);
-
+  // Margins around all contents
   const gfx::Insets dialog_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
   // We don't use ChromeLayoutProvider::GetDialogInsetsForContentType because we
@@ -413,6 +494,31 @@ void TaskManagerView::Init() {
           views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
       dialog_insets.right());
   SetBorder(views::CreateEmptyBorder(content_insets));
+
+  // Setup Layout Manager for Dialog
+  if (layout_refresh) {
+    views::FlexLayout* content_layout =
+        SetLayoutManager(std::make_unique<views::FlexLayout>());
+    content_layout->SetOrientation(views::LayoutOrientation::kVertical);
+
+    CreateHeader(provider);
+  } else {
+    SetUseDefaultFillLayout(true);
+  }
+
+  // Add Process List (a.k.a Scroll View)
+  tab_table_parent_ = AddChildView(CreateProcessView(
+      std::move(tab_table), table_has_border, layout_refresh));
+
+  if (scroll_view_rounded) {
+    tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
+    ui::Layer* scroll_view_layer = tab_table_parent_->layer();
+
+    scroll_view_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
+        provider->GetCornerRadiusMetric(views::Emphasis::kHigh)));
+
+    scroll_view_layer->SetIsFastRoundedCorner(true);
+  }
 
   table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
 

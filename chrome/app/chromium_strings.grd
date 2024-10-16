@@ -349,6 +349,15 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Task Manager - Chromium
         </message>
       </if>
+      <message name="IDS_TASK_MANAGER_SEARCH_PLACEHOLDER" desc="The placeholder text for the Search bar in the Task Manager window" translateable="false">
+        Search
+      </message>
+      <message name="IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME" desc="The accessibility description for the Search bar in the Task Manager window" translateable="false">
+        Look up the name of any tab title or extension to highlight it in the process table.
+      </message>
+      <message name="IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME" desc="The accessibility description for the End Process button in the Task Manager window" translateable="false">
+        Ends the highlighted process.
+      </message>
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Chromium better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>

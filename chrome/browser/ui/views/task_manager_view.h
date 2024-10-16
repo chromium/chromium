@@ -9,15 +9,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/table/table_grouper.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -100,7 +104,20 @@ class TaskManagerView : public TableViewDelegate,
 
   TaskManagerView();
 
-  // Creates the child controls.
+  // Creates the header for the view.
+  void CreateHeader(const ChromeLayoutProvider* provider);
+
+  // Creates all corresponding subcomponents for the header.
+  std::unique_ptr<views::Textfield> CreateSearchBar(const gfx::Insets& margins);
+  std::unique_ptr<views::MdTextButton> CreateEndTaskButton(
+      const gfx::Insets& margins);
+  std::unique_ptr<views::Separator> CreateSeparator(const gfx::Insets& margins);
+  std::unique_ptr<views::ScrollView> CreateProcessView(
+      std::unique_ptr<views::TableView> tab_table,
+      bool table_has_border,
+      bool layout_refresh);
+
+  // Creates the child controls (header, table, etc).
   void Init();
 
   // Initializes the state of the always-on-top setting as the window is shown.

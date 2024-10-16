@@ -162,6 +162,10 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
+    case DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING:
+      return 12;
+    case DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING:
+      return 4;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
       return 4;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING:
