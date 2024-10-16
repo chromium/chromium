@@ -1628,11 +1628,20 @@ Example `{command format}`: `c:\path-to\echo.exe %1 %2 %3 StaticParam4`
 As shown above, `{command format}` needs to be the complete path to an
 executable followed by optional parameters.
 
-If "AutoRunOnOSUpgrade" is non-zero, the command is invoked when the updater
-detects an OS upgrade. In this case, `command format` can optionally contain a
-single substitutible parameter, which is filled in with the OS versions in the
-format `{Previous OS Version}-{Current OS Version}`. It is ok to have a static
-command line as well if the OS versions information is not required.
+If "AutoRunOnOSUpgrade" is set to `1`, the corresponding command is invoked when
+the updater detects an OS upgrade. In this case, `command format` can optionally
+contain a single substitutible parameter `%1`, which is filled in with the OS
+versions in the format `{Previous OS Version}-{Current OS Version}`.
+
+For example, if the `{command format}` for an `AutoRunOnOSUpgrade` command is:
+`c:\path-to\echo.exe %1 StaticParam`
+
+then on an OS upgrade from OS version `9.0.22631.0.0` to OS version
+`10.0.22631.0.0`, the `AutoRunOnOSUpgrade` will be run as follows:
+`c:\path-to\echo.exe 9.0.22631.0.0-10.0.22631.0.0 StaticParam`
+
+It is ok to have a static command line with no `%1` for an `AutoRunOnOSUpgrade`
+command if the OS versions information is not required.
 
 #### Usage
 Once registered, commands may be invoked using the `execute` method in the
