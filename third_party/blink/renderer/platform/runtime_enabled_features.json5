@@ -4034,7 +4034,7 @@
     },
     {
       name: "StaticAnimationOptimization",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "StorageAccessHeader",
