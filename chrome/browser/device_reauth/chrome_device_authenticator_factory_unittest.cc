@@ -25,16 +25,6 @@ namespace {
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 }  // namespace
 
-// Exposes protected methods of DeviceAuthenticatorCommon for testing.
-class FakeDeviceAuthenticatorCommon : public DeviceAuthenticatorCommon {
- public:
-  using DeviceAuthenticatorCommon::NeedsToAuthenticate;
-  using DeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful;
-
- private:
-  ~FakeDeviceAuthenticatorCommon() override = default;
-};
-
 class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
  public:
   ChromeDeviceAuthenticatorFactoryTest()
@@ -98,7 +88,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 // authenticate after that time.
 // Also checks that other profiles need to authenticate.
 TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
-  static_cast<FakeDeviceAuthenticatorCommon*>(
+  static_cast<DeviceAuthenticatorCommon*>(
       ChromeDeviceAuthenticatorFactory::GetForProfile(
           profile1(), native_window(), GetDeviceAuthenticatorParams())
           .get())
@@ -107,13 +97,13 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
 
   task_environment().FastForwardBy(kAuthValidityPeriod / 2);
   EXPECT_FALSE(
-      static_cast<FakeDeviceAuthenticatorCommon*>(
+      static_cast<DeviceAuthenticatorCommon*>(
           ChromeDeviceAuthenticatorFactory::GetForProfile(
               profile1(), native_window(), GetDeviceAuthenticatorParams())
               .get())
           ->NeedsToAuthenticate());
   EXPECT_TRUE(
-      static_cast<FakeDeviceAuthenticatorCommon*>(
+      static_cast<DeviceAuthenticatorCommon*>(
           ChromeDeviceAuthenticatorFactory::GetForProfile(
               profile2(), native_window(), GetDeviceAuthenticatorParams())
               .get())
@@ -121,7 +111,7 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
 
   task_environment().FastForwardBy(kAuthValidityPeriod);
   EXPECT_TRUE(
-      static_cast<FakeDeviceAuthenticatorCommon*>(
+      static_cast<DeviceAuthenticatorCommon*>(
           ChromeDeviceAuthenticatorFactory::GetForProfile(
               profile1(), native_window(), GetDeviceAuthenticatorParams())
               .get())
