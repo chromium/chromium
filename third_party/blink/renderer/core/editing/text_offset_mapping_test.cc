@@ -121,10 +121,10 @@ TEST_F(TextOffsetMappingTest, ComputeTextOffsetWithFloat) {
   InsertStyleElement("b { float:right; }");
   EXPECT_EQ("|aBCDe", ComputeTextOffset("<p>|a<b>BCD</b>e</p>"));
   EXPECT_EQ("a|BCDe", ComputeTextOffset("<p>a|<b>BCD</b>e</p>"));
-  EXPECT_EQ("a|BCDe", ComputeTextOffset("<p>a<b>|BCD</b>e</p>"));
-  EXPECT_EQ("aB|CDe", ComputeTextOffset("<p>a<b>B|CD</b>e</p>"));
-  EXPECT_EQ("aBC|De", ComputeTextOffset("<p>a<b>BC|D</b>e</p>"));
-  EXPECT_EQ("aBCD|e", ComputeTextOffset("<p>a<b>BCD|</b>e</p>"));
+  EXPECT_EQ("|BCD", ComputeTextOffset("<p>a<b>|BCD</b>e</p>"));
+  EXPECT_EQ("B|CD", ComputeTextOffset("<p>a<b>B|CD</b>e</p>"));
+  EXPECT_EQ("BC|D", ComputeTextOffset("<p>a<b>BC|D</b>e</p>"));
+  EXPECT_EQ("BCD|", ComputeTextOffset("<p>a<b>BCD|</b>e</p>"));
   EXPECT_EQ("aBCD|e", ComputeTextOffset("<p>a<b>BCD</b>|e</p>"));
   EXPECT_EQ("aBCDe|", ComputeTextOffset("<p>a<b>BCD</b>e|</p>"));
 }
@@ -356,8 +356,64 @@ TEST_F(TextOffsetMappingTest, RangeWithMulticol) {
 TEST_F(TextOffsetMappingTest, RangeWithNestedFloat) {
   InsertStyleElement("b, i { float: right; }");
   // Note: Legacy: BODY is inline, NG: BODY is block.
-  EXPECT_EQ("^<b>abc <i>def</i> ghi</b>xyz|",
+  EXPECT_EQ("<b>abc <i>^def|</i> ghi</b>xyz",
             GetRange("<b>abc <i>d|ef</i> ghi</b>xyz"));
+}
+
+// http://crbug.com/40711666
+TEST_F(TextOffsetMappingTest, RangeWithFloatingListItem) {
+  InsertStyleElement("li { float: left; margin-right: 40px; }");
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>|First</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>F|irst</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Fir|st</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Firs|t</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>First|</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>|Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>S|econd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Se|cond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Sec|ond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Seco|nd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Secon|d</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Second|</li></ul>"));
+}
+
+TEST_F(TextOffsetMappingTest, RangeWithListItem) {
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>|First</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>F|irst</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Fir|st</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Firs|t</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>First|</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>|Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>S|econd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Se|cond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Sec|ond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Seco|nd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Secon|d</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Second|</li></ul>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeWithNestedInlineBlock) {
