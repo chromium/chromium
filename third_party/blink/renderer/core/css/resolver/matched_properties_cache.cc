@@ -58,10 +58,10 @@ CachedMatchedProperties::CachedMatchedProperties(
       parent_computed_style(parent_style),
       last_used(clock) {
   matched_properties.ReserveInitialCapacity(properties.size());
-  matched_properties_types.ReserveInitialCapacity(properties.size());
+  matched_properties_metadata.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_types.push_back(new_matched_properties.data_);
+    matched_properties_metadata.push_back(new_matched_properties.data_);
   }
 }
 
@@ -74,16 +74,16 @@ void CachedMatchedProperties::Set(const ComputedStyle* style,
   last_used = clock;
 
   matched_properties.clear();
-  matched_properties_types.clear();
+  matched_properties_metadata.clear();
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_types.push_back(new_matched_properties.data_);
+    matched_properties_metadata.push_back(new_matched_properties.data_);
   }
 }
 
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
-  matched_properties_types.clear();
+  matched_properties_metadata.clear();
   computed_style = nullptr;
   parent_computed_style = nullptr;
 }
@@ -183,7 +183,7 @@ bool CachedMatchedProperties::operator==(
     if (properties[i].properties != matched_properties[i]) {
       return false;
     }
-    if (properties[i].data_ != matched_properties_types[i]) {
+    if (properties[i].data_ != matched_properties_metadata[i]) {
       return false;
     }
   }
