@@ -77,7 +77,7 @@ using QuickInsertWidgetTest = AshTestBase;
 
 TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectHierarchy) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
   // Widget should contain a NonClientView, which has a NonClientFrameView for
   // borders and shadows, and a ClientView with a sole child of the PickerView.
@@ -91,14 +91,14 @@ TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectHierarchy) {
 
 TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectBorder) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
 }
 
-TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesPickerWidget) {
+TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesQuickInsertWidget) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   gfx::Point point_outside_widget = widget->GetWindowBoundsInScreen().origin();
@@ -109,42 +109,44 @@ TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesPickerWidget) {
   EXPECT_TRUE(widget->IsClosed());
 }
 
-TEST_F(QuickInsertWidgetTest, LosingFocusClosesPickerWidget) {
+TEST_F(QuickInsertWidgetTest, LosingFocusClosesQuickInsertWidget) {
   // Create something other than the picker to focus.
   auto window = CreateTestWindow();
   window->Show();
 
   // Create the fake picker and make sure it has focus.
   FakePickerViewDelegate delegate;
-  auto picker_widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  picker_widget->Show();
-  EXPECT_THAT(picker_widget->GetFocusManager()->GetFocusedView(),
+  auto quick_insert_widget =
+      QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  quick_insert_widget->Show();
+  EXPECT_THAT(quick_insert_widget->GetFocusManager()->GetFocusedView(),
               testing::NotNull());
 
   // Focus the other Widget and expect the picker to have closed.
   window->Focus();
   EXPECT_TRUE(window->HasFocus());
 
-  EXPECT_TRUE(picker_widget->IsClosed());
+  EXPECT_TRUE(quick_insert_widget->IsClosed());
   EXPECT_EQ(delegate.GetSessionMetrics().GetOutcomeForTesting(),
             PickerSessionMetrics::SessionOutcome::kAbandoned);
 }
 
-TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
+TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusQuickInsertWidget) {
   std::unique_ptr<views::Widget> anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
 
-  // Create the PickerWidget and make sure it has focus.
+  // Create the QuickInsertWidget and make sure it has focus.
   FakePickerViewDelegate delegate;
-  auto picker_widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  picker_widget->Show();
+  auto quick_insert_widget =
+      QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  quick_insert_widget->Show();
 
-  // Show bubble widget and expect the PickerWidget to not close.
+  // Show bubble widget and expect the QuickInsertWidget to not close.
   views::View* bubble_view =
       new PickerPreviewBubbleView(anchor_widget->GetContentsView());
   bubble_view->GetWidget()->Show();
 
-  EXPECT_FALSE(picker_widget->IsClosed());
+  EXPECT_FALSE(quick_insert_widget->IsClosed());
 
   bubble_view->GetWidget()->CloseNow();
 }
@@ -152,7 +154,7 @@ TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
 TEST_F(QuickInsertWidgetTest, CreatesCenteredWidget) {
   FakePickerViewDelegate delegate;
   auto widget =
-      PickerWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));
+      QuickInsertWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));
   widget->Show();
 
   EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint(),

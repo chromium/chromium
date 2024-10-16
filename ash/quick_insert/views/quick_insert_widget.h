@@ -20,11 +20,11 @@ namespace ash {
 enum class PickerPositionType;
 class PickerViewDelegate;
 
-class ASH_EXPORT PickerWidget : public views::Widget {
+class ASH_EXPORT QuickInsertWidget : public views::Widget {
  public:
-  PickerWidget(const PickerWidget&) = delete;
-  PickerWidget& operator=(const PickerWidget&) = delete;
-  ~PickerWidget() override;
+  QuickInsertWidget(const QuickInsertWidget&) = delete;
+  QuickInsertWidget& operator=(const QuickInsertWidget&) = delete;
+  ~QuickInsertWidget() override;
 
   // `delegate` must remain valid for the lifetime of the created Widget.
   // `anchor_bounds` is in screen coordinates.
@@ -37,9 +37,9 @@ class ASH_EXPORT PickerWidget : public views::Widget {
       const gfx::Rect& anchor_bounds,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
-  // Same as `Create`, except the created PickerWidget tries to position itself
-  // at the center of the display containing `anchor_bounds`. `anchor_bounds` is
-  // in screen coordinates.
+  // Same as `Create`, except the created QuickInsertWidget tries to position
+  // itself at the center of the display containing `anchor_bounds`.
+  // `anchor_bounds` is in screen coordinates.
   static views::UniqueWidgetPtr CreateCentered(
       PickerViewDelegate* delegate,
       const gfx::Rect& anchor_bounds,
@@ -49,10 +49,10 @@ class ASH_EXPORT PickerWidget : public views::Widget {
   void OnNativeBlur() override;
 
  private:
-  explicit PickerWidget(PickerViewDelegate* delegate,
-                        const gfx::Rect& anchor_bounds,
-                        PickerPositionType position_type,
-                        base::TimeTicks trigger_event_timestamp);
+  explicit QuickInsertWidget(PickerViewDelegate* delegate,
+                             const gfx::Rect& anchor_bounds,
+                             PickerPositionType position_type,
+                             base::TimeTicks trigger_event_timestamp);
 
   // Used to close the Picker widget when the user clicks outside of it.
   PickerBubbleEventFilter bubble_event_filter_;

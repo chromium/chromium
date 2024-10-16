@@ -329,7 +329,7 @@ TEST_P(QuickInsertViewEmojiTest,
   FakePickerViewDelegate delegate({
       .available_categories = {GetParam()},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -341,7 +341,7 @@ TEST_P(QuickInsertViewEmojiTest, SizeIsLessThanMaxWhenNoContentWithEmojiBar) {
   FakePickerViewDelegate delegate({
       .available_categories = {GetParam()},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -355,7 +355,7 @@ TEST_F(QuickInsertViewTest, SizeIsMaxWhenLotsOfContentWithoutEmojiBar) {
       .zero_state_suggested_results =
           std::vector<PickerSearchResult>(10, PickerTextResult(u"abc")),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -368,7 +368,7 @@ TEST_P(QuickInsertViewEmojiTest, SizeIsMaxWhenLotsOfContentWithEmojiBar) {
       .zero_state_suggested_results =
           std::vector<PickerSearchResult>(10, PickerTextResult(u"abc")),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -379,7 +379,7 @@ TEST_F(QuickInsertViewTest, ShowsZeroStateView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -396,7 +396,7 @@ TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesUnfocusedMode) {
   FakePickerViewDelegate delegate({
       .mode = PickerModeType::kUnfocused,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -412,7 +412,7 @@ TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesNoSelectionModeWithEditor) {
       .available_categories = {PickerCategory::kEditorWrite},
       .mode = PickerModeType::kNoSelection,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -429,7 +429,7 @@ TEST_F(QuickInsertViewTest,
   FakePickerViewDelegate delegate({
       .mode = PickerModeType::kNoSelection,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -446,7 +446,7 @@ TEST_F(QuickInsertViewTest,
       .available_categories = {PickerCategory::kEditorRewrite},
       .mode = PickerModeType::kHasSelection,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -463,7 +463,7 @@ TEST_F(QuickInsertViewTest,
   FakePickerViewDelegate delegate({
       .mode = PickerModeType::kHasSelection,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -478,7 +478,7 @@ TEST_F(QuickInsertViewTest,
 TEST_F(QuickInsertViewTest,
        NonEmptySearchFieldContentsSwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -492,7 +492,7 @@ TEST_F(QuickInsertViewTest,
 
 TEST_F(QuickInsertViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -521,7 +521,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultInsertsResult) {
             }),
         .action_type = PickerActionType::kInsert,
     });
-    auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+    auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
     PickerView* view = GetPickerViewFromWidget(*widget);
     PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -566,7 +566,7 @@ TEST_F(QuickInsertViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
             std::vector<PickerSearchResult>(10, PickerTextResult(u"abc")),
         .action_type = PickerActionType::kInsert,
     });
-    auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+    auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
     PickerView* view = GetPickerViewFromWidget(*widget);
     PickerItemView* result_view = view->zero_state_view_for_testing()
@@ -608,7 +608,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultOpensResult) {
           }),
       .action_type = PickerActionType::kOpen,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -637,7 +637,7 @@ TEST_F(QuickInsertViewTest, SwitchesToCategoryView) {
     FakePickerViewDelegate delegate({
         .available_categories = {PickerCategory::kLinks},
     });
-    auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+    auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
 
     PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -679,7 +679,7 @@ TEST_F(QuickInsertViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search_called.Wait());
@@ -702,7 +702,7 @@ TEST_F(QuickInsertViewTest,
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -721,7 +721,7 @@ TEST_F(QuickInsertViewTest,
 
 TEST_F(QuickInsertViewTest, SelectingCategoryShowsBackButton) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetFirstCategoryItemView(picker_view);
@@ -737,7 +737,7 @@ TEST_F(QuickInsertViewTest, SelectingCategoryShowsBackButton) {
 
 TEST_F(QuickInsertViewTest, SearchingWithCategoryKeepsShowingBackButton) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetFirstCategoryItemView(picker_view);
@@ -757,7 +757,7 @@ TEST_P(QuickInsertViewEmojiTest, SelectingCategoryHidesEmojiBar) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks, GetParam()},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetFirstCategoryItemView(picker_view);
@@ -774,7 +774,7 @@ TEST_P(QuickInsertViewEmojiTest,
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks, GetParam()},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetFirstCategoryItemView(picker_view);
@@ -791,7 +791,7 @@ TEST_F(QuickInsertViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   // Switch to category view.
@@ -813,7 +813,7 @@ TEST_F(QuickInsertViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   // Switch to category view.
@@ -844,7 +844,7 @@ TEST_F(QuickInsertViewTest, EmptySearchFieldSwitchesToCategoryViewFromSeeMore) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   // Type something into the search field.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -883,7 +883,7 @@ TEST_F(QuickInsertViewTest, CategoryViewFromSeeMoreHasResults) {
                                             /*has_more_results=*/false),
              });
            })});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   // Type something into the search field.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -925,7 +925,7 @@ TEST_F(QuickInsertViewTest, SearchingSpacesFromZeroStateDoesNotStartSearch) {
             callback.Run({});
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -955,7 +955,7 @@ TEST_F(QuickInsertViewTest, SearchTrimsLeftAndRightSpaces) {
             callback.Run({});
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -995,7 +995,7 @@ TEST_F(QuickInsertViewTest, SearchIsNotRerunIfSpacesAreAddedToEnds) {
             callback.Run({});
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1026,7 +1026,7 @@ TEST_F(QuickInsertViewTest,
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1050,7 +1050,7 @@ TEST_F(QuickInsertViewTest,
             search_called.SetValue();
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1077,7 +1077,7 @@ TEST_F(QuickInsertViewTest,
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1112,7 +1112,7 @@ TEST_F(QuickInsertViewTest,
             search_called.SetValue();
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1150,7 +1150,7 @@ TEST_F(QuickInsertViewTest,
             search_called.SetValue();
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1190,7 +1190,7 @@ TEST_F(QuickInsertViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
             }
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1232,7 +1232,7 @@ TEST_F(QuickInsertViewTest, SearchingReplacesOldResultsWithNewResults) {
             }
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1267,7 +1267,7 @@ TEST_F(QuickInsertViewTest, ShowsNoResultsBeforeTimeout) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1290,7 +1290,7 @@ TEST_F(QuickInsertViewTest, ShowsNoResultsAfterTimeout) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1312,7 +1312,7 @@ TEST_F(QuickInsertViewTest, ShowsNoResultsWithNoIllustration) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1341,7 +1341,7 @@ TEST_F(QuickInsertViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1366,7 +1366,7 @@ TEST_P(QuickInsertViewEmojiTest, NoMainResultsAndSomeEmojisIsAnnounced) {
       .emoji_results = {PickerEmojiResult::Emoji(u"😊"),
                         PickerEmojiResult::Symbol(u"♬")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1388,7 +1388,7 @@ TEST_F(QuickInsertViewTest, DoesNotClearResultsBeforeTimeout) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1421,7 +1421,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsAfterTimeout) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1453,7 +1453,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenQueryClearedNoCategory) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
 
@@ -1482,7 +1482,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenQueryClearedWithCategory) {
             future.SetValue(std::move(callback));
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1523,7 +1523,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenQueryClearedNoCategory) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -1544,7 +1544,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenQueryClearedWithCategory) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1582,7 +1582,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenBackButtonPressed) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1623,7 +1623,7 @@ TEST_F(QuickInsertViewTest,
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1655,7 +1655,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
              search_future.SetValue(std::move(callback));
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -1688,7 +1688,7 @@ TEST_P(QuickInsertViewEmojiTest, SearchingShowsExpressionResultsInEmojiBar) {
       .emoji_results = {PickerEmojiResult::Emoji(u"😊"),
                         PickerEmojiResult::Symbol(u"♬")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1706,7 +1706,7 @@ TEST_P(QuickInsertViewEmojiTest, InitiallyShowsSuggestedEmojis) {
       .available_categories = {GetParam()},
       .suggested_emojis = {"😊", "👍"},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1723,7 +1723,7 @@ TEST_P(QuickInsertViewEmojiTest, InitiallyShowsSuggestedEmojis) {
 TEST_F(QuickInsertViewTest, NoEmojiBarIfExpressionsCategoryNotAvailable) {
   FakePickerViewDelegate delegate(
       {.available_categories = {PickerCategory::kLinks}});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
   EXPECT_EQ(GetPickerViewFromWidget(*widget)->emoji_bar_view_for_testing(),
             nullptr);
@@ -1743,7 +1743,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenGoingBackToZeroState) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -1760,9 +1760,9 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenGoingBackToZeroState) {
               IsEmpty());
 }
 
-TEST_F(QuickInsertViewTest, PressingEscClosesPickerWidget) {
+TEST_F(QuickInsertViewTest, PressingEscClosesQuickInsertWidget) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
@@ -1791,7 +1791,7 @@ TEST_F(QuickInsertViewTest, RecordsSearchLatencyAfterSearchFinished) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -1810,7 +1810,7 @@ TEST_F(QuickInsertViewTest,
             task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -1821,7 +1821,7 @@ TEST_F(QuickInsertViewTest,
 
 TEST_F(QuickInsertViewTest, BoundsDefaultAlignedWithAnchor) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1847,7 +1847,7 @@ TEST_F(QuickInsertViewTest, BoundsAlignedWithAnchorNearTopLeftOfScreen) {
   gfx::Rect anchor_bounds(screen_work_area.origin(), {0, 10});
   anchor_bounds.Offset(80, 120);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1870,7 +1870,7 @@ TEST_F(QuickInsertViewTest, BoundsAlignedWithAnchorNearBottomLeftOfScreen) {
   gfx::Rect anchor_bounds(screen_work_area.bottom_left(), {0, 10});
   anchor_bounds.Offset(80, -80);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1893,7 +1893,7 @@ TEST_F(QuickInsertViewTest, BoundsBelowAnchorForAnchorNearTopRightOfScreen) {
   gfx::Rect anchor_bounds(screen_work_area.top_right(), {0, 10});
   anchor_bounds.Offset(-20, 20);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   const PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1910,7 +1910,7 @@ TEST_F(QuickInsertViewTest, BoundsAboveAnchorForAnchorNearBottomRightOfScreen) {
   gfx::Rect anchor_bounds(screen_work_area.bottom_right(), {0, 10});
   anchor_bounds.Offset(-20, -20);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   const PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1928,7 +1928,7 @@ TEST_F(QuickInsertViewTest, BoundsLeftAlignedBelowSelectionNearTopOfScreen) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   const gfx::Rect anchor_bounds(20, 20, 100, 20);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   const PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1945,7 +1945,7 @@ TEST_F(QuickInsertViewTest, BoundsLeftAlignedAboveSelectionNearBottomOfScreen) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   const gfx::Rect anchor_bounds(20, screen_work_area.bottom() - 30, 100, 20);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   const PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1956,7 +1956,7 @@ TEST_F(QuickInsertViewTest, BoundsLeftAlignedAboveSelectionNearBottomOfScreen) {
 
 TEST_F(QuickInsertViewTest, BoundsOnScreenForEmptyAnchorBounds) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, gfx::Rect());
+  auto widget = QuickInsertWidget::Create(&delegate, gfx::Rect());
   widget->Show();
 
   const PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1972,7 +1972,7 @@ TEST_F(QuickInsertViewTest, MainContentBelowSearchFieldNearTopOfScreen) {
   gfx::Rect anchor_bounds(screen_work_area.top_center(), {0, 10});
   anchor_bounds.Offset(0, 80);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1987,7 +1987,7 @@ TEST_F(QuickInsertViewTest, MainContentAboveSearchFieldNearBottomOfScreen) {
   gfx::Rect anchor_bounds(screen_work_area.bottom_center(), {0, 10});
   anchor_bounds.Offset(0, -80);
 
-  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
@@ -1999,7 +1999,7 @@ TEST_P(QuickInsertViewEmojiTest, ShowsEmojiPickerWhenClickingOnExpressions) {
   FakePickerViewDelegate delegate({
       .available_categories = {GetParam()},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
@@ -2012,7 +2012,7 @@ TEST_F(QuickInsertViewTest, ShowsEditorWhenClickingOnEditor) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kEditorWrite},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
@@ -2034,7 +2034,7 @@ TEST_F(QuickInsertViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -2060,7 +2060,7 @@ TEST_F(QuickInsertViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2076,7 +2076,7 @@ TEST_F(QuickInsertViewTest, ArrowKeysNavigateEmojiBar) {
       .emoji_results = {PickerEmojiResult::Emoji(u"😊"),
                         PickerEmojiResult::Symbol(u"♬")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -2097,7 +2097,7 @@ TEST_F(QuickInsertViewTest, CanTypeQueryWhileEmojiBarIsPseudoFocused) {
       .emoji_results = {PickerEmojiResult::Emoji(u"😊"),
                         PickerEmojiResult::Symbol(u"♬")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -2132,7 +2132,7 @@ TEST_F(QuickInsertViewTest, DownArrowKeyNavigatesSearchResults) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2150,7 +2150,7 @@ TEST_F(QuickInsertViewTest, RightArrowKeyShowsSubmenu) {
           {PickerNewWindowResult(PickerNewWindowResult::Type::kDoc),
            PickerNewWindowResult(PickerNewWindowResult::Type::kSheet)},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
@@ -2167,7 +2167,7 @@ TEST_F(QuickInsertViewTest, EnterKeyShowsSubmenu) {
           {PickerNewWindowResult(PickerNewWindowResult::Type::kDoc),
            PickerNewWindowResult(PickerNewWindowResult::Type::kSheet)},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
@@ -2184,7 +2184,7 @@ TEST_F(QuickInsertViewTest, LeftArrowKeyClosesSubmenu) {
           {PickerNewWindowResult(PickerNewWindowResult::Type::kDoc),
            PickerNewWindowResult(PickerNewWindowResult::Type::kSheet)},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
@@ -2202,7 +2202,7 @@ TEST_F(QuickInsertViewTest, PressingEscClosesSubmenuThenWidget) {
       .zero_state_suggested_results = {PickerNewWindowResult(
           PickerNewWindowResult::Type::kDoc)},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
 
@@ -2235,7 +2235,7 @@ TEST_F(QuickInsertViewTest, PressingEscClosesPreviewThenWidget) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   PickerPreviewBubbleController& preview_controller =
@@ -2272,7 +2272,7 @@ TEST_F(QuickInsertViewTest, TabKeyNavigatesItemWithPreview) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
@@ -2303,7 +2303,7 @@ TEST_F(QuickInsertViewTest, KeyEventsNavigateWithinSubmenu) {
            PickerNewWindowResult(PickerNewWindowResult::Type::kSheet)},
       .action_type = PickerActionType::kOpen,
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   // Open submenu, navigate down to next submenu item, then select the item.
@@ -2323,7 +2323,7 @@ TEST_F(QuickInsertViewTest, LeftArrowKeyNavigatesToBackButton) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   // Select a category so that the back button is visible.
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -2341,7 +2341,7 @@ TEST_F(QuickInsertViewTest, LeftArrowKeyNavigatesToBackButton) {
 
 TEST_F(QuickInsertViewTest, RightArrowKeyNavigatesToClearButton) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   // Type a query so that the clear button is visible.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -2372,7 +2372,7 @@ TEST_F(QuickInsertViewTest, TabKeyNavigatesSearchResults) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2405,7 +2405,7 @@ TEST_F(QuickInsertViewTest, ShiftTabKeyNavigatesSearchResultsWithEmojiBar) {
           }),
       .emoji_results = {PickerEmojiResult::Emoji(u"😊")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2443,7 +2443,7 @@ TEST_F(QuickInsertViewTest, ShiftTabKeyNavigatesSearchResultsWithoutEmojiBar) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2479,7 +2479,7 @@ TEST_F(QuickInsertViewTest, ShiftTabNavigatesToClearButton) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2515,7 +2515,7 @@ TEST_F(QuickInsertViewTest,
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2540,7 +2540,7 @@ TEST_F(QuickInsertViewTest, ShowsSubmenuOnMouseHover) {
           {PickerNewWindowResult(PickerNewWindowResult::Type::kDoc),
            PickerNewWindowResult(PickerNewWindowResult::Type::kSheet)},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
@@ -2571,7 +2571,7 @@ TEST_F(QuickInsertViewTest,
       .emoji_results = {PickerEmojiResult::Emoji(u"😊"),
                         PickerEmojiResult::Symbol(u"♬")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   // Start keyboard navigation.
@@ -2610,7 +2610,7 @@ TEST_F(QuickInsertViewTest, ClearsSearchWhenClickingOnCategoryResult) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2642,7 +2642,7 @@ TEST_F(QuickInsertViewTest,
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2678,7 +2678,7 @@ TEST_F(QuickInsertViewTest, KeyNavigationToSeeMoreResults) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2702,7 +2702,7 @@ TEST_F(QuickInsertViewTest, KeyNavigationToSeeMoreResults) {
 TEST_P(QuickInsertViewEmojiTest,
        ClickingMoreEmojisButtonOpensEmojiPickerWithQuerySearch) {
   FakePickerViewDelegate delegate({.available_categories = {GetParam()}});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
@@ -2722,7 +2722,7 @@ TEST_P(QuickInsertViewEmojiTest,
 TEST_F(QuickInsertViewTest, ClickingGifsButtonOpensGifPickerWithQuerySearch) {
   FakePickerViewDelegate delegate(
       {.available_categories = {PickerCategory::kEmojisGifs}});
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
@@ -2753,7 +2753,7 @@ TEST_F(QuickInsertViewTest,
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -2785,7 +2785,7 @@ TEST_F(QuickInsertViewTest,
             callback.Run({});
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetFirstCategoryItemView(picker_view);
@@ -2812,7 +2812,7 @@ TEST_F(QuickInsertViewTest,
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   views::View* category_item_view = GetFirstCategoryItemView(picker_view);
@@ -2841,7 +2841,7 @@ TEST_F(
       .available_categories = {PickerCategory::kClipboard,
                                PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   views::test::AXEventCounter counter(views::AXEventManager::Get());
 
@@ -2862,7 +2862,7 @@ TEST_F(
       .available_categories = {PickerCategory::kClipboard,
                                PickerCategory::kLinks},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   views::test::AXEventCounter counter(views::AXEventManager::Get());
 
@@ -2878,7 +2878,7 @@ TEST_F(QuickInsertViewTest, EnterOnZeroState) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results = {PickerTextResult(u"zero state")},
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   base::span<const raw_ptr<PickerItemView>> zero_state_item_views =
@@ -2918,7 +2918,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnZeroState) {
             future.SetValue();
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   base::span<const raw_ptr<PickerItemView>> zero_state_item_views =
@@ -2957,7 +2957,7 @@ TEST_F(QuickInsertViewTest, EnterOnSearchResults) {
             future.SetValue(callback);
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -3003,7 +3003,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnSearchResults) {
             future.SetValue(callback);
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -3055,7 +3055,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
@@ -3092,7 +3092,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
             });
           }),
   });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());

@@ -163,7 +163,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
     kFeatureTour,
   };
 
-  // Active Picker session tied to the lifetime of the PickerWidget.
+  // Active Picker session tied to the lifetime of the QuickInsertWidget.
   struct Session {
     PickerModel model;
     PickerEmojiHistoryModel emoji_history_model;

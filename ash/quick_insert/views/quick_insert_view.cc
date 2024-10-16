@@ -275,7 +275,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   SetShowCloseButton(false);
   SetProperty(views::kElementIdentifierKey, kPickerElementId);
   // TODO: b/357991165 - The desired bounds delegate here is *not* used directly
-  // by the widget, because PickerWidget does not use `autosize`. Rather,
+  // by the widget, because QuickInsertWidget does not use `autosize`. Rather,
   // PickerView manually calls GetDesiredWidgetBounds to adjust the Widget
   // bounds to realign the search field with the caret position. Move this logic
   // to a standalone class.

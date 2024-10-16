@@ -70,25 +70,25 @@ views::Widget::InitParams CreateInitParams(
 
 }  // namespace
 
-views::UniqueWidgetPtr PickerWidget::Create(
+views::UniqueWidgetPtr QuickInsertWidget::Create(
     PickerViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
-  return base::WrapUnique(new PickerWidget(delegate, anchor_bounds,
-                                           PickerPositionType::kNearAnchor,
-                                           trigger_event_timestamp));
+  return base::WrapUnique(new QuickInsertWidget(delegate, anchor_bounds,
+                                                PickerPositionType::kNearAnchor,
+                                                trigger_event_timestamp));
 }
 
-views::UniqueWidgetPtr PickerWidget::CreateCentered(
+views::UniqueWidgetPtr QuickInsertWidget::CreateCentered(
     PickerViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
-  return base::WrapUnique(new PickerWidget(delegate, anchor_bounds,
-                                           PickerPositionType::kCentered,
-                                           trigger_event_timestamp));
+  return base::WrapUnique(new QuickInsertWidget(delegate, anchor_bounds,
+                                                PickerPositionType::kCentered,
+                                                trigger_event_timestamp));
 }
 
-void PickerWidget::OnNativeBlur() {
+void QuickInsertWidget::OnNativeBlur() {
   SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_NONE);
   if (delegate_ != nullptr) {
@@ -98,10 +98,10 @@ void PickerWidget::OnNativeBlur() {
   Close();
 }
 
-PickerWidget::PickerWidget(PickerViewDelegate* delegate,
-                           const gfx::Rect& anchor_bounds,
-                           PickerPositionType position_type,
-                           base::TimeTicks trigger_event_timestamp)
+QuickInsertWidget::QuickInsertWidget(PickerViewDelegate* delegate,
+                                     const gfx::Rect& anchor_bounds,
+                                     PickerPositionType position_type,
+                                     base::TimeTicks trigger_event_timestamp)
     : views::Widget(CreateInitParams(delegate,
                                      anchor_bounds,
                                      position_type,
@@ -112,6 +112,6 @@ PickerWidget::PickerWidget(PickerViewDelegate* delegate,
       views::Widget::VisibilityTransition::ANIMATE_HIDE);
 }
 
-PickerWidget::~PickerWidget() = default;
+QuickInsertWidget::~QuickInsertWidget() = default;
 
 }  // namespace ash

@@ -631,11 +631,11 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
       GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
   if (trigger_source == WidgetTriggerSource::kFeatureTour &&
       session_->model.GetMode() == PickerModeType::kUnfocused) {
-    widget_ = PickerWidget::CreateCentered(this, anchor_bounds,
-                                           trigger_event_timestamp);
+    widget_ = QuickInsertWidget::CreateCentered(this, anchor_bounds,
+                                                trigger_event_timestamp);
   } else {
     widget_ =
-        PickerWidget::Create(this, anchor_bounds, trigger_event_timestamp);
+        QuickInsertWidget::Create(this, anchor_bounds, trigger_event_timestamp);
   }
   widget_->Show();
 
