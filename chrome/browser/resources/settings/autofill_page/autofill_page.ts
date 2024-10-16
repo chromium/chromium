@@ -35,6 +35,7 @@ import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
+import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
     PrefsMixin(I18nMixin(BaseMixin(PolymerElement)));
@@ -86,18 +87,53 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      autofillPredictionImprovementsEnabled_: {
+      userEligbleForAutofillPredictionImprovements_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'autofillPredictionImprovementsEnabled');
-        },
+        value: false,
+      },
+
+
+      userHasAutofillPredictionImprovementsEntries_: {
+        type: Boolean,
+        value: false,
+      },
+
+      autofillPredictionImprovementsAvailable_: {
+        type: Boolean,
+        computed: 'computeAutofillPredictionImprovementsAvailable_(' +
+            'userEligbleForAutofillPredictionImprovements_, ' +
+            'userHasAutofillPredictionImprovementsEntries_)',
       },
     };
   }
 
   private passkeyFilter_: string;
+  private userEligbleForAutofillPredictionImprovements_: boolean;
+  private userHasAutofillPredictionImprovementsEntries_: boolean;
+  private autofillPredictionImprovementsAvailable_: boolean;
   private focusConfig_: Map<string, string>;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    // TODO(crbug.com/368565649): Consider updating on sign-in state changes.
+    UserAnnotationsManagerProxyImpl.getInstance().isUserEligible().then(
+        eliglble => {
+          this.userEligbleForAutofillPredictionImprovements_ = eliglble;
+        });
+    UserAnnotationsManagerProxyImpl.getInstance().hasEntries().then(value => {
+      this.userHasAutofillPredictionImprovementsEntries_ = value;
+    });
+  }
+
+  /**
+   * Computes `autofillPredictionImprovementsAvailable_`.
+   */
+  private computeAutofillPredictionImprovementsAvailable_(): boolean {
+    return loadTimeData.getBoolean('autofillPredictionImprovementsEnabled') &&
+        (this.userEligbleForAutofillPredictionImprovements_ ||
+         this.userHasAutofillPredictionImprovementsEntries_);
+  }
+
 
   /**
    * Shows the manage addresses sub page.

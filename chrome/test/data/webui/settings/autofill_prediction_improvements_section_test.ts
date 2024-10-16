@@ -6,10 +6,12 @@
 import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
-import type {UserAnnotationsManagerProxy, SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
+import {assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
 import {UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
+
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -38,48 +40,15 @@ suite('AutofillPredictionImprovementsSectionUiDisabledToggleTest', function() {
     await flushTasks();
 
     assertTrue(
-        !section.shadowRoot!.querySelector('#entriesHeader'),
-        'Entries are visible when ' +
-            '"prefs.autofill_prediction_improvements.enabled is true"');
+        isVisible(section.shadowRoot!.querySelector('#entriesHeader')),
+        'With the toggle disabled, the entries should be visible');
     assertTrue(
-        !section.shadowRoot!.querySelector('#entries'),
-        'Entries are visible when ' +
-            '"prefs.autofill_prediction_improvements.enabled is true"');
+        isVisible(section.shadowRoot!.querySelector('#entries')),
+        'With the toggle disabled, the entries should be visible');
   });
 });
 
 suite('AutofillPredictionImprovementsSectionUiTest', function() {
-  class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy implements
-      UserAnnotationsManagerProxy {
-    constructor() {
-      super(['getEntries', 'deleteEntry', 'deleteAllEntries']);
-    }
-
-    getEntries(): Promise<chrome.autofillPrivate.UserAnnotationsEntry[]> {
-      this.methodCalled('getEntries');
-      return Promise.resolve([
-        {
-          entryId: 1,
-          key: 'Date of birth',
-          value: '15/02/1989',
-        },
-        {
-          entryId: 2,
-          key: 'Frequent flyer program',
-          value: 'Aadvantage',
-        },
-      ]);
-    }
-
-    deleteEntry(entryId: number): void {
-      this.methodCalled('deleteEntry', entryId);
-    }
-
-    deleteAllEntries(): void {
-      this.methodCalled('deleteAllEntries');
-    }
-  }
-
   let section: SettingsAutofillPredictionImprovementsSectionElement;
   let entries: HTMLElement;
   let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
@@ -89,6 +58,20 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
 
     userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
+
+    const testEntries: chrome.autofillPrivate.UserAnnotationsEntry[] = [
+      {
+        entryId: 1,
+        key: 'Date of birth',
+        value: '15/02/1989',
+      },
+      {
+        entryId: 2,
+        key: 'Frequent flyer program',
+        value: 'Aadvantage',
+      },
+    ];
+    userAnnotationManager.setEntries(testEntries);
 
     section = document.createElement(
         'settings-autofill-prediction-improvements-section');
@@ -122,18 +105,18 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
         '2 entries come from TestUserAnnotationsManagerImpl.getEntries().');
   });
 
-  test('testEntriesDisappearAfterToggleDisabling', async function() {
+  test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
     // The toggle is initially enabled (see the setup() method), clicking it
     // disables the 'autofill_prediction_improvements.enabled' pref.
     section.$.prefToggle.click();
     await flushTasks();
 
-    assertFalse(
+    assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entriesHeader')),
-        'With the toggle disabled, the entries should be hidden');
-    assertFalse(
+        'With the toggle disabled, the entries should be visible');
+    assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entries')),
-        'With the toggle disabled, the entries should be hidden');
+        'With the toggle disabled, the entries should be visible');
   });
 
   test('testCancelingEntryDeleteDialog', async function() {
@@ -232,6 +215,6 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
             'up instead (+1).');
     assertTrue(
         isVisible(entries.querySelector('#entriesNone')),
-        'The "no entries" messages shows up when the list is empty');
+        'The "no entries" message shows up when the list is empty');
   });
 });

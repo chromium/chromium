@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/autofill_prediction_improvements/autofill_prediction_improvements_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
@@ -1116,6 +1117,43 @@ AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
 
 void AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted() {
   Respond(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateHasUserAnnotationsEntriesFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateHasUserAnnotationsEntriesFunction::Run() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
+  user_annotations::UserAnnotationsService* user_annotations_service =
+      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
+
+  if (!user_annotations_service) {
+    return RespondNow(WithArguments(false));
+  }
+
+  user_annotations_service->RetrieveAllEntries(base::BindOnce(
+      &AutofillPrivateHasUserAnnotationsEntriesFunction::OnEntriesRetrieved,
+      this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateHasUserAnnotationsEntriesFunction::OnEntriesRetrieved(
+    user_annotations::UserAnnotationsEntries response) {
+  Respond(WithArguments(response.size() > 0));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
+  return RespondNow(
+      WithArguments(autofill_prediction_improvements::IsUserEligible(profile)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

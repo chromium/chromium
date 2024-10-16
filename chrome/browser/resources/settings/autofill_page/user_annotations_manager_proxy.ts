@@ -15,6 +15,11 @@ export interface UserAnnotationsManagerProxy {
   getEntries(): Promise<UserAnnotationsEntry[]>;
 
   /**
+   * Returns true if there are any user annotation entries.
+   */
+  hasEntries(): Promise<boolean>;
+
+  /**
    * Delete the user annotation entry by its id.
    */
   deleteEntry(entryId: number): void;
@@ -23,6 +28,11 @@ export interface UserAnnotationsManagerProxy {
    * Deletes all user annotation entries.
    */
   deleteAllEntries(): void;
+
+  /**
+   * Returns whether the user is eligible for autofill prediction improvements.
+   */
+  isUserEligible(): Promise<boolean>;
 }
 
 export class UserAnnotationsManagerProxyImpl implements
@@ -31,12 +41,20 @@ export class UserAnnotationsManagerProxyImpl implements
     return chrome.autofillPrivate.getUserAnnotationsEntries();
   }
 
+  hasEntries(): Promise<boolean> {
+    return chrome.autofillPrivate.hasUserAnnotationsEntries();
+  }
+
   deleteEntry(entryId: number): void {
     chrome.autofillPrivate.deleteUserAnnotationsEntry(entryId);
   }
 
   deleteAllEntries(): void {
     chrome.autofillPrivate.deleteAllUserAnnotationsEntries();
+  }
+
+  isUserEligible(): Promise<boolean> {
+    return chrome.autofillPrivate.isUserEligibleForAutofillImprovements();
   }
 
   static getInstance(): UserAnnotationsManagerProxy {

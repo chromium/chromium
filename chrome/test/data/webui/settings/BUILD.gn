@@ -133,6 +133,7 @@ build_webui_tests("build") {
     "sync_test_util.ts",
     "tab_discard_exception_dialog_test.ts",
     "test_about_page_browser_proxy.ts",
+    "test_user_annotations_manager_proxy.ts",
     "test_clear_browsing_data_browser_proxy.ts",
     "test_extension_control_browser_proxy.ts",
     "test_hats_browser_proxy.ts",

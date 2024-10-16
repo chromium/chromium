@@ -229,6 +229,8 @@ declare global {
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
+      export function hasUserAnnotationsEntries(): Promise<boolean>;
+      export function isUserEligibleForAutofillImprovements(): Promise<boolean>;
       export function getUserAnnotationsEntries():
           Promise<UserAnnotationsEntry[]>;
       export function deleteUserAnnotationsEntry(entryId: number): void;

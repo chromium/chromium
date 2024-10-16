@@ -311,6 +311,8 @@ namespace autofillPrivate {
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
   callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
+  callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
+  callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -420,6 +422,14 @@ namespace autofillPrivate {
     // Returns the list of user annotations entries.
     static void getUserAnnotationsEntries(
         GetUserAnnotationsEntriesCallback callback);
+
+    // Returns if there are any saved user annotations entries.
+    static void hasUserAnnotationsEntries(
+        hasUserAnnotationsEntriesCallback callback);
+
+    // Returns if the user is eligible for autofill improvements.
+    static void isUserEligibleForAutofillImprovements(
+        isUserEligibleForAutofillImprovementsCallback callback);
 
     // Deletes the user annotations entry by its id.
     static void deleteUserAnnotationsEntry(long entryId);
