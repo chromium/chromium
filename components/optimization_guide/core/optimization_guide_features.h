@@ -392,6 +392,12 @@ int GetOnDeviceModelMaxTokensForOutput();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 int GetOnDeviceModelCrashCountBeforeDisable();
 
+// Feature params for handling exponential backoff after crashes.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime();
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime();
+
 // Returns the number of sessions that timed out before the on-device model
 // won't be used.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

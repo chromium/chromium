@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ACCESS_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 
@@ -54,6 +55,7 @@ class OnDeviceModelAccessController {
 
   raw_ref<PrefService> pref_service_;
   bool is_gpu_blocked_ = false;
+  base::Time next_attempt_time_after_crash_ = base::Time::Now();
 };
 
 }  // namespace optimization_guide

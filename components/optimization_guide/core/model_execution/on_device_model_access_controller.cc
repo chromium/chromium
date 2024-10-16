@@ -67,7 +67,8 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
     return OnDeviceModelEligibilityReason::kGpuBlocked;
   }
   if (pref_service_->GetInteger(kOnDeviceModelCrashCount) >=
-      features::GetOnDeviceModelCrashCountBeforeDisable()) {
+          features::GetOnDeviceModelCrashCountBeforeDisable() &&
+      base::Time::Now() < next_attempt_time_after_crash_) {
     return OnDeviceModelEligibilityReason::kTooManyRecentCrashes;
   }
   if (pref_service_->GetInteger(kOnDeviceModelTimeoutCount) >=
@@ -90,12 +91,24 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
 void OnDeviceModelAccessController::OnResponseCompleted() {
   pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
   pref_service_->SetInteger(kOnDeviceModelTimeoutCount, 0);
+  next_attempt_time_after_crash_ = base::Time::Now();
 }
 
 void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
-  pref_service_->SetInteger(
-      kOnDeviceModelCrashCount,
-      pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1);
+  int crash_count = pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1;
+  pref_service_->SetInteger(kOnDeviceModelCrashCount, crash_count);
+  // If the model will be disabled because of crash count, use exponential
+  // backoff to re-enable.
+  int crash_diff =
+      crash_count - features::GetOnDeviceModelCrashCountBeforeDisable();
+  if (crash_diff >= 0) {
+    int scale_factor = pow(2, crash_diff);
+    next_attempt_time_after_crash_ =
+        base::Time::Now() +
+        std::min(
+            features::GetOnDeviceModelMaxCrashBackoffTime(),
+            scale_factor * features::GetOnDeviceModelCrashBackoffBaseTime());
+  }
 }
 
 void OnDeviceModelAccessController::OnGpuBlocked() {
