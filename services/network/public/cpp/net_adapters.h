@@ -51,10 +51,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   char* buffer() { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 
-  // Equivalent of buffer(), but allows the class to satisfy the requirements
-  // of std::ranges::contiguous_range, and hence allows a span, for example,
-  // to be implicitly constructed from a it.
+  // Satisfy the requirements of `std::ranges::contiguous_range`. This allows
+  // implicit conversion to a `base::span`.
   char* data() { return buffer_.data(); }
+  auto begin() { return buffer_.begin(); }
+  auto end() { return buffer_.end(); }
 
  private:
   friend class base::RefCountedThreadSafe<NetToMojoPendingBuffer>;
@@ -121,8 +122,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   const char* buffer() const { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 
-  // Equivalent of buffer(), allows conversion to span.
-  const char* data() { return buffer_.data(); }
+  // Satisfy the requirements of `std::ranges::contiguous_range`. This allows
+  // implicit conversion to a `base::span`.
+  const char* data() const { return buffer_.data(); }
+  auto begin() const { return buffer_.begin(); }
+  auto end() const { return buffer_.end(); }
 
  private:
   friend class base::RefCountedThreadSafe<MojoToNetPendingBuffer>;
