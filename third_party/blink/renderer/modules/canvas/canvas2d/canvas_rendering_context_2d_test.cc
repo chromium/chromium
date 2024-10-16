@@ -2107,6 +2107,31 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
                          RasterModeHint::kPreferGPU));
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       PrepareTransferableResourceAfterContextLoss) {
+  CreateContext(kNonOpaque);
+
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
+      RasterModeHint::kPreferGPU));
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // is present.
+  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+
+  EXPECT_TRUE(CanvasElement().GetRasterMode() == RasterMode::kGPU);
+
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+                                                          &release_callback));
+
+  // When the context is lost we are not sure if we should still be producing
+  // GL frames for the compositor or not, so fail to generate frames.
+  test_context_provider_->TestContextGL()->set_context_lost(true);
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+                                                           &release_callback));
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   CreateContext(kNonOpaque);
 

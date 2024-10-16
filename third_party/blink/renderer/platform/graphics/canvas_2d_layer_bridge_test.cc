@@ -141,24 +141,6 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-
-  EXPECT_TRUE(GetRasterMode(bridge.get()) == RasterMode::kGPU);
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                  &release_callback));
-
-  // When the context is lost we are not sure if we should still be producing
-  // GL frames for the compositor or not, so fail to generate frames.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                   &release_callback));
-}
-
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
   // Prepare a mailbox, then report the resource as lost.
   // This test passes by not crashing and not triggering assertions.
