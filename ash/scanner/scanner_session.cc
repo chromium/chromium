@@ -48,6 +48,7 @@ void ScannerSession::OnActionsReturned(
   if (!returned.has_value()) {
     // TODO(b/363100868): Handle error case
     std::move(callback).Run({});
+    return;
   }
 
   std::vector<ScannerActionViewModel> action_view_models;
