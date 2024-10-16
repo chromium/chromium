@@ -335,6 +335,7 @@ class CORE_EXPORT LineBreaker {
   // The current position from inline_start. Unlike InlineLayoutAlgorithm
   // that computes position in visual order, this position in logical order.
   LayoutUnit position_;
+  LayoutUnit applied_text_indent_;
   LayoutUnit available_width_;
   LineLayoutOpportunity line_opportunity_;
 
