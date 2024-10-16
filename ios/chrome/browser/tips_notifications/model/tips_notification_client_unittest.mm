@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -59,13 +60,13 @@ class TipsNotificationClientTest : public PlatformTest {
  protected:
   TipsNotificationClientTest() {
     SetupMockNotificationCenter();
-    ProfileIOS* profile =
+    profile_ =
         profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
-    BrowserList* list = BrowserListFactory::GetForProfile(profile);
+    BrowserList* list = BrowserListFactory::GetForProfile(profile_);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_, mock_scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<TipsNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
@@ -241,6 +242,7 @@ class TipsNotificationClientTest : public PlatformTest {
   std::unique_ptr<TipsNotificationClient> client_;
   id mock_notification_center_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
+  raw_ptr<ProfileIOS> profile_;
   PrepareToPresentModalStub* prepare_to_present_modal_stub_;
 };
 
@@ -465,6 +467,87 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionHandle) {
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kOmniboxPosition,
                                        1);
+}
+
+// Tests that the client can register an Enhanced Safe Browsing promo
+// notification.
+TEST_F(TipsNotificationClientTest, EnhancedSafeBrowsingRequest) {
+  WriteFirstRunSentinel();
+  SetSentNotifications({
+      TipsNotificationType::kLens,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kSetUpListContinuation,
+      TipsNotificationType::kOmniboxPosition,
+  });
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kEnhancedSafeBrowsing);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.Notifications.Tips.Sent",
+      TipsNotificationType::kEnhancedSafeBrowsing, 1);
+}
+
+// Tests that the client will not register an Enhanced Safe Browsing promo
+// notification if ESB is disabled by policy.
+TEST_F(TipsNotificationClientTest,
+       EnhancedSafeBrowsingRequestWhenDisabledByPolicy) {
+  // Disable pref that stores the policy setting.
+  profile_->GetPrefs()->SetBoolean(prefs::kAdvancedProtectionAllowed, false);
+
+  SetFalseChromeLikelyDefaultBrowser();
+  ClearDefaultBrowserPromoLastAction();
+  WriteFirstRunSentinel();
+  SetSentNotifications({
+      TipsNotificationType::kLens,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kSetUpListContinuation,
+      TipsNotificationType::kOmniboxPosition,
+  });
+  StubGetPendingRequests(nil);
+  // Expect to skip over ESB and send the next notification.
+  ExpectNotificationRequest(TipsNotificationType::kDefaultBrowser);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that the client handles an Enhanced Safe Browsing promo notification
+// response.
+TEST_F(TipsNotificationClientTest, EnhancedSafeBrowsingHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler showEnhancedSafeBrowsingPromo]);
+
+  id mock_response =
+      MockRequestResponse(TipsNotificationType::kEnhancedSafeBrowsing);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.Notifications.Tips.Interaction",
+      TipsNotificationType::kEnhancedSafeBrowsing, 1);
+}
+
+// Tests that the client handles a Lens promo notification response.
+TEST_F(TipsNotificationClientTest, LensHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler showLensPromo]);
+
+  id mock_response = MockRequestResponse(TipsNotificationType::kLens);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kLens, 1);
 }
 
 // Tests the the user can be classified as an "Active Seeker" of Tips.
