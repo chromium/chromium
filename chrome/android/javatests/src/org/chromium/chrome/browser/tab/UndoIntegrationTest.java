@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -77,6 +78,7 @@ public class UndoIntegrationTest {
     @Test
     @LargeTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/373950522")
     public void testAddNewContentsFromClosingTab() throws TimeoutException {
         // Load in a new tab as Chrome will close if the last tab is closed.
         sActivityTestRule.loadUrlInNewTab(WINDOW_OPEN_BUTTON_URL);
