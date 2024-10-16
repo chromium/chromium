@@ -121,6 +121,12 @@ crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-c
 crbug.com/371247952 [ android ] WebCodecs_EncodingFramerateResolutions_3840x2160_120_* [ Failure ]
 crbug.com/371247952 [ android ] WebCodecs_EncodingFramerateResolutions_3840x2160_240_* [ Failure ]
 
+# Platform API doesn't report correct 8k 30 framerate for vp09 coded on ChromeOS intel devices.
+crbug.com/373648897 [ chromeos intel angle-vulkan graphite-disabled ] WebCodecs_EncodingFramerateResolutions_7680x3840_30_vp09.00.62.08_prefer-hardware_quality [ Failure ]
+
+# Platform API doesn't report correct 2k 240 framerate for hvc1 codec on Windows devices.
+crbug.com/373648897 [ win11 qualcomm angle-d3d11 graphite-enabled ] WebCodecs_EncodingFramerateResolutions_1920x1080_240_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
+
 # Looks like AMD RX 5500 XT can't control HEVC CBR bitrate well.
 crbug.com/1465531 [ win amd-0x7340 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_* [ Failure ]
 
