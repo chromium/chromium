@@ -29,8 +29,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
-class Profile;
-
 namespace tab_groups {
 
 TabGroupSyncServiceProxy::TabGroupSyncServiceProxy(
@@ -67,7 +65,7 @@ void TabGroupSyncServiceProxy::UpdateVisualData(
 
   std::optional<SavedTabGroup> group = GetGroup(local_group_id);
   CHECK(group.has_value());
-  OnTabGroupVisualsChanged(group->saved_guid());
+  service_->OnTabGroupVisualsChanged(group->saved_guid());
 }
 
 void TabGroupSyncServiceProxy::UpdateGroupPosition(
@@ -106,7 +104,7 @@ void TabGroupSyncServiceProxy::AddTab(const LocalTabGroupID& group_id,
   service_->UpdateAttributions(group_id);
   service_->model()->AddTabToGroupLocally(group->saved_guid(), new_tab);
 
-  OnTabAddedToGroupLocally(group->saved_guid());
+  service_->OnTabAddedToGroupLocally(group->saved_guid());
 }
 
 void TabGroupSyncServiceProxy::UpdateTab(
@@ -122,7 +120,7 @@ void TabGroupSyncServiceProxy::UpdateTab(
   service_->model()->UpdateTabInGroup(group->saved_guid(),
                                       tab_builder.Build(*tab));
 
-  OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
+  service_->OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
 }
 
 void TabGroupSyncServiceProxy::SetFaviconForTab(
@@ -153,7 +151,7 @@ void TabGroupSyncServiceProxy::RemoveTab(const LocalTabGroupID& group_id,
   service_->model()->RemoveTabFromGroupLocally(group->saved_guid(),
                                                tab->saved_tab_guid());
 
-  OnTabRemovedFromGroupLocally(sync_id, sync_tab_id);
+  service_->OnTabRemovedFromGroupLocally(sync_id, sync_tab_id);
 }
 
 void TabGroupSyncServiceProxy::MoveTab(const LocalTabGroupID& group_id,
@@ -167,7 +165,7 @@ void TabGroupSyncServiceProxy::MoveTab(const LocalTabGroupID& group_id,
   service_->model()->MoveTabInGroupTo(group->saved_guid(),
                                       tab->saved_tab_guid(), new_group_index);
 
-  OnTabsReorderedLocally(group->saved_guid());
+  service_->OnTabsReorderedLocally(group->saved_guid());
 }
 
 void TabGroupSyncServiceProxy::OnTabSelected(const LocalTabGroupID& group_id,
@@ -292,50 +290,105 @@ void TabGroupSyncServiceProxy::GetURLRestriction(
   std::move(callback).Run(std::nullopt);
 }
 
-void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {}
+void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {
+  if (observers_.empty()) {
+    service_->model()->AddObserver(this);
+  }
 
-void TabGroupSyncServiceProxy::RemoveObserver(Observer* observer) {}
+  observers_.AddObserver(observer);
+}
+
+void TabGroupSyncServiceProxy::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+
+  if (observers_.empty()) {
+    service_->model()->RemoveObserver(this);
+  }
+}
 
 void TabGroupSyncServiceProxy::SetIsInitializedForTesting(bool initialized) {
   service_->model()->LoadStoredEntries({}, {});
 }
 
-void TabGroupSyncServiceProxy::AddSavedTabGroupModelObserver(
-
-    SavedTabGroupModelObserver* saved_tab_group_model_observer) {
-  service_->model()->AddObserver(saved_tab_group_model_observer);
+void TabGroupSyncServiceProxy::SavedTabGroupModelLoaded() {
+  for (auto& observer : observers_) {
+    observer.OnInitialized();
+  }
 }
 
-void TabGroupSyncServiceProxy::RemoveSavedTabGroupModelObserver(
-    SavedTabGroupModelObserver* saved_tab_group_model_observer) {
-  service_->model()->RemoveObserver(saved_tab_group_model_observer);
+void TabGroupSyncServiceProxy::SavedTabGroupAddedLocally(
+    const base::Uuid& guid) {
+  const SavedTabGroup* group = service_->model()->Get(guid);
+  CHECK(group);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupAdded(*group, TriggerSource::LOCAL);
+  }
 }
 
-void TabGroupSyncServiceProxy::OnTabAddedToGroupLocally(
-    const base::Uuid& group_guid) {
-  service_->OnTabAddedToGroupLocally(group_guid);
+void TabGroupSyncServiceProxy::SavedTabGroupAddedFromSync(
+    const base::Uuid& guid) {
+  const SavedTabGroup* group = service_->model()->Get(guid);
+  CHECK(group);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupAdded(*group, TriggerSource::REMOTE);
+  }
 }
 
-void TabGroupSyncServiceProxy::OnTabRemovedFromGroupLocally(
+void TabGroupSyncServiceProxy::SavedTabGroupRemovedLocally(
+    const SavedTabGroup& removed_group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(removed_group.saved_guid(),
+                               TriggerSource::LOCAL);
+  }
+}
+
+void TabGroupSyncServiceProxy::SavedTabGroupRemovedFromSync(
+    const SavedTabGroup& removed_group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(removed_group.saved_guid(),
+                               TriggerSource::REMOTE);
+  }
+}
+
+void TabGroupSyncServiceProxy::SavedTabGroupLocalIdChanged(
+    const base::Uuid& saved_group_id) {
+  const SavedTabGroup* group = service_->model()->Get(saved_group_id);
+  CHECK(group);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupLocalIdChanged(saved_group_id, group->local_group_id());
+  }
+}
+
+void TabGroupSyncServiceProxy::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
-    const base::Uuid& tab_guid) {
-  service_->OnTabRemovedFromGroupLocally(group_guid, tab_guid);
+    const std::optional<base::Uuid>& tab_guid) {
+  const SavedTabGroup* group = service_->model()->Get(group_guid);
+  CHECK(group);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupUpdated(*group, TriggerSource::LOCAL);
+  }
 }
 
-void TabGroupSyncServiceProxy::OnTabNavigatedLocally(
+void TabGroupSyncServiceProxy::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
-    const base::Uuid& tab_guid) {
-  service_->OnTabNavigatedLocally(group_guid, tab_guid);
+    const std::optional<base::Uuid>& tab_guid) {
+  const SavedTabGroup* group = service_->model()->Get(group_guid);
+  CHECK(group);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupUpdated(*group, TriggerSource::REMOTE);
+  }
 }
 
-void TabGroupSyncServiceProxy::OnTabsReorderedLocally(
-    const base::Uuid& group_guid) {
-  service_->OnTabsReorderedLocally(group_guid);
+void TabGroupSyncServiceProxy::SavedTabGroupReorderedLocally() {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupsReordered(TriggerSource::LOCAL);
+  }
 }
 
-void TabGroupSyncServiceProxy::OnTabGroupVisualsChanged(
-    const base::Uuid& group_guid) {
-  service_->OnTabGroupVisualsChanged(group_guid);
+void TabGroupSyncServiceProxy::SavedTabGroupReorderedFromSync() {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupsReordered(TriggerSource::REMOTE);
+  }
 }
 
 }  // namespace tab_groups

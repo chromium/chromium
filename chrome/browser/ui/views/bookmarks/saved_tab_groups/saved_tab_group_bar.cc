@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
@@ -217,14 +216,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   overflow_button_ = AddChildView(CreateOverflowButton());
 
   // Add the observer.
-  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
-  // observer in proxy.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    tab_group_service_->AddObserver(this);
-  } else {
-    static_cast<TabGroupSyncServiceProxy*>(tab_group_service_)
-        ->AddSavedTabGroupModelObserver(this);
-  }
+  tab_group_service_->AddObserver(this);
 
   HideOverflowButton();
   if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
@@ -256,14 +248,7 @@ SavedTabGroupBar::~SavedTabGroupBar() {
   // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
-  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
-  // observer in proxy.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    tab_group_service_->RemoveObserver(this);
-  } else {
-    static_cast<TabGroupSyncServiceProxy*>(tab_group_service_)
-        ->RemoveSavedTabGroupModelObserver(this);
-  }
+  tab_group_service_->RemoveObserver(this);
 }
 
 void SavedTabGroupBar::ShowEverythingMenu() {
@@ -462,57 +447,6 @@ void SavedTabGroupBar::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
   MaybePaintDropIndicatorInBar(canvas);
-}
-
-void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::Uuid& guid) {
-  SavedTabGroupAdded(guid);
-}
-
-void SavedTabGroupBar::SavedTabGroupRemovedLocally(
-    const SavedTabGroup& removed_group) {
-  SavedTabGroupRemoved(removed_group.saved_guid());
-}
-
-void SavedTabGroupBar::SavedTabGroupLocalIdChanged(
-    const base::Uuid& saved_group_id) {
-  UpsertSavedTabGroupButton(saved_group_id);
-
-  MaybeShowClosePromo(saved_group_id);
-}
-
-void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
-    const base::Uuid& group_guid,
-    const std::optional<base::Uuid>& tab_guid) {
-  UpsertSavedTabGroupButton(group_guid);
-}
-
-void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
-  SavedTabGroupReordered();
-}
-
-void SavedTabGroupBar::SavedTabGroupReorderedFromSync() {
-  SavedTabGroupReordered();
-}
-
-void SavedTabGroupBar::SavedTabGroupTabMovedLocally(
-    const base::Uuid& group_guid,
-    const base::Uuid& tab_guid) {
-  UpsertSavedTabGroupButton(group_guid);
-}
-
-void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::Uuid& guid) {
-  UpsertSavedTabGroupButton(guid);
-}
-
-void SavedTabGroupBar::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup& removed_group) {
-  SavedTabGroupRemoved(removed_group.saved_guid());
-}
-
-void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_guid,
-    const std::optional<base::Uuid>& tab_guid) {
-  UpsertSavedTabGroupButton(group_guid);
 }
 
 void SavedTabGroupBar::OnInitialized() {

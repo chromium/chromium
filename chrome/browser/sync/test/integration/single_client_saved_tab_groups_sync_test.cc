@@ -7,7 +7,7 @@
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -53,14 +53,9 @@ class SingleClientSavedTabGroupsSyncTest
  public:
   SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (IsV2UIEnabled()) {
-      features_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveUIUpdate,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
+      features_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
     } else {
-      features_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {tab_groups::kTabGroupsSaveUIUpdate});
+      features_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
     }
   }
   ~SingleClientSavedTabGroupsSyncTest() override = default;
@@ -134,7 +129,7 @@ class SingleClientSavedTabGroupsSyncTest
   }
 
   TabGroupSyncService* GetService() {
-    return TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
+    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(GetProfile(0));
   }
 
  private:

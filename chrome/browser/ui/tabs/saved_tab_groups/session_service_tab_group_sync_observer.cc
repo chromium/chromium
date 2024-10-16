@@ -28,53 +28,17 @@ SessionServiceTabGroupSyncObserver::SessionServiceTabGroupSyncObserver(
     : profile_(profile),
       tab_strip_model_(tab_strip_model),
       session_id_(session_id) {
-  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
-  // observer in proxy.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-    CHECK(tab_group_service);
-    tab_group_service->AddObserver(this);
-  } else {
-    SavedTabGroupKeyedService* saved_tab_group_keyed_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-    if (saved_tab_group_keyed_service) {
-      saved_tab_group_observation_.Observe(
-          saved_tab_group_keyed_service->model());
-    }
-  }
-}
-
-SessionServiceTabGroupSyncObserver::~SessionServiceTabGroupSyncObserver() {
-  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
-  // observer in proxy.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-    CHECK(tab_group_service);
-    tab_group_service->RemoveObserver(this);
-  } else {
-    saved_tab_group_observation_.Reset();
-  }
-}
-
-void SessionServiceTabGroupSyncObserver::SavedTabGroupAddedLocally(
-    const base::Uuid& guid) {
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
   CHECK(tab_group_service);
-
-  const std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(guid);
-  CHECK(saved_group);
-
-  UpdateTabGroupSessionMetadata(saved_group->local_group_id(),
-                                guid.AsLowercaseString());
+  tab_group_service->AddObserver(this);
 }
 
-void SessionServiceTabGroupSyncObserver::SavedTabGroupRemovedLocally(
-    const tab_groups::SavedTabGroup& removed_group) {
-  UpdateTabGroupSessionMetadata(removed_group.local_group_id(), std::nullopt);
+SessionServiceTabGroupSyncObserver::~SessionServiceTabGroupSyncObserver() {
+  TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
+  CHECK(tab_group_service);
+  tab_group_service->RemoveObserver(this);
 }
 
 void SessionServiceTabGroupSyncObserver::OnTabGroupAdded(

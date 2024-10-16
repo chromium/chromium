@@ -9,9 +9,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/saved_tab_groups/internal/saved_tab_group_model.h"
-#include "components/saved_tab_groups/internal/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -29,8 +26,7 @@ namespace tab_groups {
 // Otherwise, we will write the changes to disk using the session service. This
 // is done to preserve the saved state of SavedTabGroups across sessions.
 class SessionServiceTabGroupSyncObserver
-    : public SavedTabGroupModelObserver,
-      public TabGroupSyncService::Observer {
+    : public TabGroupSyncService::Observer {
  public:
   SessionServiceTabGroupSyncObserver(Profile* profile,
                                      TabStripModel* tab_strip_model,
@@ -43,11 +39,6 @@ class SessionServiceTabGroupSyncObserver
       const SessionServiceTabGroupSyncObserver&) = delete;
 
  private:
-  // Overridden from tab_groups::SavedTabGroupModelObserver:
-  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
-  void SavedTabGroupRemovedLocally(
-      const tab_groups::SavedTabGroup& removed_group) override;
-
   // Overridden from tab_groups::TabGroupSyncService::Observer
   void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
                        tab_groups::TriggerSource source) override;
@@ -72,12 +63,6 @@ class SessionServiceTabGroupSyncObserver
   // The SessionID used to determine which browser we should write changes to in
   // the session service.
   SessionID session_id_;
-
-  // Observes the SavedTabGroupModel to update the session restore metadata with
-  // the correct sync id.
-  base::ScopedObservation<tab_groups::SavedTabGroupModel,
-                          tab_groups::SavedTabGroupModelObserver>
-      saved_tab_group_observation_{this};
 };
 
 }  // namespace tab_groups
