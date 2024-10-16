@@ -128,7 +128,7 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
   last_proxy_list_refresh_ = base::Time::Now();
   const base::TimeTicks refresh_start_time_for_metrics = base::TimeTicks::Now();
 
-  config_getter_->GetProxyList(base::BindOnce(
+  config_getter_->GetProxyConfig(base::BindOnce(
       &IpProtectionProxyConfigManagerImpl::OnGotProxyList,
       weak_ptr_factory_.GetWeakPtr(), refresh_start_time_for_metrics));
 }

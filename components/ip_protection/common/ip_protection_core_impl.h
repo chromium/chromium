@@ -64,15 +64,15 @@ class IpProtectionCoreImpl : public IpProtectionCore,
       net::NetworkChangeNotifier::ConnectionType type) override;
 
   // `IpProtectionControl` implementation.
-  void VerifyIpProtectionConfigGetterForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
-  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
+  void VerifyIpProtectionCoreHostForTesting(
+      VerifyIpProtectionCoreHostForTestingCallback callback) override;
+  void AuthTokensMayBeAvailable() override;
   void SetIpProtectionEnabled(bool enabled) override;
   bool IsIpProtectionEnabledForTesting() override;
 
  private:
   void OnIpProtectionConfigAvailableForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback);
+      VerifyIpProtectionCoreHostForTestingCallback callback);
 
   // Source of auth tokens and proxy list, when needed.
   std::unique_ptr<IpProtectionConfigGetter> config_getter_;

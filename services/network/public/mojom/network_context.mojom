@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "components/ip_protection/mojom/core.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
@@ -435,12 +436,12 @@ struct NetworkContextParams {
   // for IP protection. If this is not set, then either this NetworkContext
   // doesn't have its traffic proxied by IP Protection or the feature has been
   // disabled (and can't be re-enabled until the browser is restarted).
-  pending_remote<IpProtectionConfigGetter>? ip_protection_config_getter;
+  pending_remote<ip_protection.mojom.CoreHost>? ip_protection_core_host;
 
   // A receiver for sending notifications from the browser process to the IP
   // Protection business logic in the network service. This is set in the same
-  // cases as `ip_protection_config_getter`.
-  pending_receiver<IpProtectionControl>? ip_protection_control;
+  // cases as `ip_protection_core_host`.
+  pending_receiver<ip_protection.mojom.CoreControl>? ip_protection_control;
 
   // Whether the IP Protection feature is enabled at the time the NetworkContext
   // is created. This setting can change via the
@@ -896,72 +897,6 @@ struct URLLoaderFactoryParams {
   // For context on usage see:
   // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
   bool require_cross_site_request_for_cookies = false;
-};
-
-// A GeoHint represents a course location of a user. Values are based on
-// RFC 8805 geolocation.
-struct GeoHint {
-  // Country code of the geo. Example: "US".
-  string country_code;
-
-  // ISO region of the geo. Example: "US-CA".
-  string iso_region;
-
-  // City name of the geo. Example: "MOUNTAIN VIEW".
-  string city_name;
-};
-
-// A blind-signed auth token, suitable for use with IP protection proxies.
-struct BlindSignedAuthToken {
-  // The token value, for inclusion in a header.
-  string token;
-
-  // The expiration time of this token.
-  mojo_base.mojom.Time expiration;
-
-  // The GeoHint which specifies the coarse geolocation of the token.
-  GeoHint geo_hint;
-};
-
-// The proxy layer to fetch batches of tokens for.
-enum IpProtectionProxyLayer {kProxyA, kProxyB};
-
-// A source for IP protection information from the browser process.
-interface IpProtectionConfigGetter {
-  // Try to get a batch of new tokens.
-  //
-  // This may take some time, if external network requests are required. If no
-  // tokens are available, it will return nullopt for `bsa_tokens` and
-  // `try_again_after` will contain the time after which the getter suggests
-  // trying again, as a form of backoff.
-  TryGetAuthTokens(uint32 batch_size, IpProtectionProxyLayer proxy_layer) =>
-    (array<BlindSignedAuthToken>? bsa_tokens,
-     mojo_base.mojom.Time? try_again_after);
-
-  // Get the list of IP Protection proxy chains. The list contains lists of
-  // proxy chain hostnames, in order of preference. Callers should prefer
-  // the first proxy, falling back to later proxies in the list. All proxies
-  // are implicitly HTTPS.
-  //
-  // This method will return an up-to-date list, possibly fetching that list
-  // remotely before returning it.
-  GetProxyList() => (array<ProxyChain>? proxy_list, GeoHint? geo_hint);
-};
-
-// Access to the IP Protection state in the network service process.
-//
-// For more information on this interface, see
-// `ip_protection::IpProtectionControl`.
-//
-// TODO: https://crbug.com/352005196 - fix the method names, which are using
-// stale terminology.
-interface IpProtectionControl {
-  VerifyIpProtectionConfigGetterForTesting()
-      => (BlindSignedAuthToken? bsa_token,
-          mojo_base.mojom.Time? try_again_after);
-  InvalidateIpProtectionConfigCacheTryAgainAfterTime();
-  SetIpProtectionEnabled(bool value);
-  IsIpProtectionEnabledForTesting() => (bool value);
 };
 
 // Represents a distinct context for making network requests, with its own

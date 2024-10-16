@@ -1446,6 +1446,7 @@ mojom("mojom") {
     ":url_loader_base",
     ":websocket_mojom",
     "//components/content_settings/core/common:mojo_bindings",
+    "//components/ip_protection/mojom",
     "//components/os_crypt/async/common:common_mojom",
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
@@ -1633,22 +1634,6 @@ mojom("mojom") {
       traits_sources =
           [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.GeoHint"
-          cpp = "::ip_protection::GeoHint"
-        },
-        {
-          mojom = "network.mojom.BlindSignedAuthToken"
-          cpp = "::ip_protection::BlindSignedAuthToken"
-        },
-      ]
-      traits_headers = [
-        "//services/network/public/cpp/ip_protection_data_types_mojom_traits.h",
-      ]
-      traits_sources = [ "//services/network/public/cpp/ip_protection_data_types_mojom_traits.cc" ]
     },
   ]
 

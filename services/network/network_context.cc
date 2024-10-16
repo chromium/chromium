@@ -2552,7 +2552,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // custom proxy configs, or IpProtection, using the proxy allowlist.
   // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
   // done, we should only create an IpProtectionProxyDelegate when
-  // `params_->ip_protection_config_getter` is set (to avoid creating
+  // `params_->ip_protection_core_host` is set (to avoid creating
   // proxynetwork_conte delegates for network contexts that don't participate in
   // IP Protection, or for any network context when the IP Protection feature is
   // disabled).
@@ -2562,7 +2562,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
     auto ipp_core = std::make_unique<ip_protection::IpProtectionCoreImpl>(
         std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
-            std::move(params_->ip_protection_config_getter)),
+            std::move(params_->ip_protection_core_host)),
         params_->enable_ip_protection);
     ip_protection_control_mojo =
         std::make_unique<ip_protection::IpProtectionControlMojo>(

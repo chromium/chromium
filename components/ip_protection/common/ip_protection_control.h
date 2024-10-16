@@ -14,7 +14,7 @@ namespace ip_protection {
 // Interface for controlling IP Protection behavior.
 class IpProtectionControl {
  public:
-  using VerifyIpProtectionConfigGetterForTestingCallback =
+  using VerifyIpProtectionCoreHostForTestingCallback =
       base::OnceCallback<void(const std::optional<BlindSignedAuthToken>&,
                               std::optional<base::Time>)>;
 
@@ -25,14 +25,14 @@ class IpProtectionControl {
   //  - Return the current cooldown if one has been set, or,
   //  - Initiate an IP Protection token request to the browser process and
   //    return either a returned token or the returned cooldown time
-  virtual void VerifyIpProtectionConfigGetterForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback) = 0;
+  virtual void VerifyIpProtectionCoreHostForTesting(
+      VerifyIpProtectionCoreHostForTestingCallback callback) = 0;
 
   // Indicates that the IP Protection config cache in the Network Service should
   // no longer wait before requesting tokens from the browser process (called in
   // response to user account status changes that allow IP Protection to start
   // working as expected).
-  virtual void InvalidateIpProtectionConfigCacheTryAgainAfterTime() = 0;
+  virtual void AuthTokensMayBeAvailable() = 0;
 
   // Indicates that the state of the IP Protection feature has changed and the
   // network service should update its state accordingly (including tearing

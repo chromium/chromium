@@ -8,6 +8,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+google_apis",
   "+services/network/test",
+  "+mojo/public/cpp/base",
 ]
 
 # time.h and statusor.h are required for quiche integration

@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = true
+  sources = [
+    "core.mojom",
+    "data_types.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_network_param",
+  ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ip_protection.mojom.BlindSignedAuthToken"
+          cpp = "::ip_protection::BlindSignedAuthToken"
+        },
+        {
+          mojom = "ip_protection.mojom.GeoHint"
+          cpp = "::ip_protection::GeoHint"
+        },
+      ]
+      traits_headers =
+          [ "//components/ip_protection/mojom/data_types_mojom_traits.h" ]
+      traits_sources =
+          [ "//components/ip_protection/mojom/data_types_mojom_traits.cc" ]
+      traits_public_deps = [ "//mojo/public/cpp/base" ]
+    },
+  ]
+}

@@ -9,25 +9,23 @@
 namespace ip_protection {
 
 IpProtectionControlMojo::IpProtectionControlMojo(
-    mojo::PendingReceiver<network::mojom::IpProtectionControl> pending_receiver,
+    mojo::PendingReceiver<ip_protection::mojom::CoreControl> pending_receiver,
     ip_protection::IpProtectionControl* ip_protection_control)
     : receiver_(this, std::move(pending_receiver)),
       ip_protection_control_(ip_protection_control) {}
 
 IpProtectionControlMojo::~IpProtectionControlMojo() = default;
 
-void IpProtectionControlMojo::VerifyIpProtectionConfigGetterForTesting(
-    network::mojom::IpProtectionControl::
-        VerifyIpProtectionConfigGetterForTestingCallback callback) {
+void IpProtectionControlMojo::VerifyIpProtectionCoreHostForTesting(
+    ip_protection::mojom::CoreControl::
+        VerifyIpProtectionCoreHostForTestingCallback callback) {
   return ip_protection_control_
-      ->VerifyIpProtectionConfigGetterForTesting(  // IN-TEST
+      ->VerifyIpProtectionCoreHostForTesting(  // IN-TEST
           std::move(callback));
 }
 
-void IpProtectionControlMojo::
-    InvalidateIpProtectionConfigCacheTryAgainAfterTime() {
-  return ip_protection_control_
-      ->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+void IpProtectionControlMojo::AuthTokensMayBeAvailable() {
+  return ip_protection_control_->AuthTokensMayBeAvailable();
 }
 
 void IpProtectionControlMojo::SetIpProtectionEnabled(bool enabled) {
@@ -35,7 +33,7 @@ void IpProtectionControlMojo::SetIpProtectionEnabled(bool enabled) {
 }
 
 void IpProtectionControlMojo::IsIpProtectionEnabledForTesting(
-    network::mojom::IpProtectionControl::IsIpProtectionEnabledForTestingCallback
+    ip_protection::mojom::CoreControl::IsIpProtectionEnabledForTestingCallback
         callback) {
   std::move(callback).Run(
       ip_protection_control_->IsIpProtectionEnabledForTesting());  // IN-TEST

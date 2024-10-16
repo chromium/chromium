@@ -589,7 +589,7 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   AwIpProtectionCoreHost* aw_ipp_core_host = AwIpProtectionCoreHost::Get(this);
   if (aw_ipp_core_host) {
     aw_ipp_core_host->AddNetworkService(
-        context_params->ip_protection_config_getter
+        context_params->ip_protection_core_host
             .InitWithNewPipeAndPassReceiver(),
         context_params->ip_protection_control.InitWithNewPipeAndPassRemote());
     context_params->enable_ip_protection =

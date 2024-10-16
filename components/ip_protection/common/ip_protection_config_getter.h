@@ -41,7 +41,7 @@ class IpProtectionConfigGetter {
                                 ProxyLayer proxy_layer,
                                 TryGetAuthTokensCallback callback) = 0;
 
-  using GetProxyListCallback =
+  using GetProxyConfigCallback =
       base::OnceCallback<void(std::optional<std::vector<::net::ProxyChain>>,
                               std::optional<GeoHint> geo_hint)>;
 
@@ -58,7 +58,7 @@ class IpProtectionConfigGetter {
   // `callback` is invoked on the default SequencedTaskRunner (i.e.
   // base::SequencedTaskRunnerHandle::Get() at the time of construction of
   // this object).
-  virtual void GetProxyList(GetProxyListCallback callback) = 0;
+  virtual void GetProxyConfig(GetProxyConfigCallback callback) = 0;
 
   // Checks if the getter is available for use after construction.
   virtual bool IsAvailable() = 0;

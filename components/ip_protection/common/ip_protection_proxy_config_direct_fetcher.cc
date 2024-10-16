@@ -190,7 +190,7 @@ IpProtectionProxyConfigDirectFetcher::GetProxyListFromProxyConfigResponse(
     }
   }
 
-  VLOG(2) << "IPATP::GetProxyList got proxy list of length "
+  VLOG(2) << "IPATP::GetProxyConfig got proxy list of length "
           << proxy_list.size();
 
   return proxy_list;

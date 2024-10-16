@@ -81,7 +81,7 @@ class IpProtectionProxyConfigManagerImpl
   // Current geo of the proxy list.
   std::string current_geo_id_ = "";
 
-  // True if an invocation of `config_getter_.GetProxyList()` is
+  // True if an invocation of `config_getter_.GetProxyConfig()` is
   // outstanding.
   bool fetching_proxy_list_ = false;
 

@@ -467,7 +467,7 @@ TEST_F(IpProtectionCoreImplTest,
   ipp_core_->SetIpProtectionProxyConfigManagerForTesting(
       std::move(ipp_proxy_config_manager));
 
-  ipp_core_->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+  ipp_core_->AuthTokensMayBeAvailable();
 
   EXPECT_TRUE(refresh_requested);
 }

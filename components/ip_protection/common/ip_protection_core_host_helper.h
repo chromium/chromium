@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace quiche {
 struct BlindSignToken;

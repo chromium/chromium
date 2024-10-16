@@ -157,8 +157,7 @@ std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
   return result;
 }
 
-void IpProtectionCoreImpl::
-    InvalidateIpProtectionConfigCacheTryAgainAfterTime() {
+void IpProtectionCoreImpl::AuthTokensMayBeAvailable() {
   for (const auto& manager : ipp_token_managers_) {
     manager.second->InvalidateTryAgainAfterTime();
   }
@@ -252,8 +251,8 @@ void IpProtectionCoreImpl::OnNetworkChanged(
   }
 }
 
-void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
-    VerifyIpProtectionConfigGetterForTestingCallback callback) {
+void IpProtectionCoreImpl::VerifyIpProtectionCoreHostForTesting(
+    VerifyIpProtectionCoreHostForTestingCallback callback) {
   auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
       GetIpProtectionTokenManagerForTesting(  // IN-TEST
           ProxyLayer::kProxyA));
@@ -268,10 +267,10 @@ void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
     ipp_token_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
         base::BindOnce(
             [](base::WeakPtr<IpProtectionCoreImpl> ipp_core,
-               VerifyIpProtectionConfigGetterForTestingCallback callback) {
+               VerifyIpProtectionCoreHostForTestingCallback callback) {
               DCHECK(ipp_core);
               // Drain auth tokens.
-              ipp_core->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+              ipp_core->AuthTokensMayBeAvailable();
               while (ipp_core->AreAuthTokensAvailable()) {
                 ipp_core->GetAuthToken(0);  // kProxyA.
               }
@@ -283,7 +282,7 @@ void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
               base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(&IpProtectionCoreImpl::
-                                     VerifyIpProtectionConfigGetterForTesting,
+                                     VerifyIpProtectionCoreHostForTesting,
                                  ipp_core, std::move(callback)));
             },
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -329,7 +328,7 @@ bool IpProtectionCoreImpl::IsIpProtectionEnabledForTesting() {
 }
 
 void IpProtectionCoreImpl::OnIpProtectionConfigAvailableForTesting(
-    VerifyIpProtectionConfigGetterForTestingCallback callback) {
+    VerifyIpProtectionCoreHostForTestingCallback callback) {
   auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
       GetIpProtectionTokenManagerForTesting(  // IN-TEST
           ProxyLayer::kProxyA));

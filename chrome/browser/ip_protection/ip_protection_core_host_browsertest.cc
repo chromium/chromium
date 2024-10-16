@@ -21,6 +21,10 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/mojom/core.mojom-test-utils.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "components/ip_protection/mojom/data_types.mojom-test-utils.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -57,17 +61,17 @@ class ScopedIpProtectionFeatureList {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Helper class to intercept `IpProtectionConfigGetter::TryGetAuthTokens()`
+// Helper class to intercept `IpProtectionCoreHost::TryGetAuthTokens()`
 // requests and return a fake token value and a fake expiration value for
 // testing.
-class IpProtectionConfigGetterInterceptor
-    : public network::mojom::IpProtectionConfigGetterInterceptorForTesting {
+class IpProtectionCoreHostInterceptor
+    : public ip_protection::mojom::CoreHostInterceptorForTesting {
  public:
-  IpProtectionConfigGetterInterceptor(IpProtectionCoreHost* getter,
-                                      std::string token,
-                                      base::Time expiration,
-                                      GeoHint geo_hint,
-                                      bool should_intercept = true)
+  IpProtectionCoreHostInterceptor(IpProtectionCoreHost* getter,
+                                  std::string token,
+                                  base::Time expiration,
+                                  GeoHint geo_hint,
+                                  bool should_intercept = true)
       : getter_(getter),
         receiver_id_(getter_->receiver_id_for_testing()),
         token_(std::move(token)),
@@ -80,17 +84,17 @@ class IpProtectionConfigGetterInterceptor
     CHECK_EQ(getter, old_impl);
   }
 
-  ~IpProtectionConfigGetterInterceptor() override {
+  ~IpProtectionCoreHostInterceptor() override {
     std::ignore = getter_->receivers_for_testing().SwapImplForTesting(
         receiver_id_, getter_);
   }
 
-  network::mojom::IpProtectionConfigGetter* GetForwardingInterface() override {
+  ip_protection::mojom::CoreHost* GetForwardingInterface() override {
     return getter_;
   }
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        network::mojom::IpProtectionProxyLayer proxy_layer,
+                        ip_protection::mojom::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     if (should_intercept_) {
       std::vector<BlindSignedAuthToken> tokens;
@@ -154,7 +158,7 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
     GeoHint geo_hint = {
         .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
     main_profile_auth_token_getter_interceptor_ =
-        std::make_unique<IpProtectionConfigGetterInterceptor>(
+        std::make_unique<IpProtectionCoreHostInterceptor>(
             provider, token, expiration, geo_hint, /*should_intercept=*/false);
 
     network::mojom::NetworkContext* main_profile_network_context =
@@ -171,7 +175,7 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
     ASSERT_NE(main_profile_ipp_control_, incognito_profile_ipp_control_);
 
     incognito_profile_auth_token_getter_interceptor_ =
-        std::make_unique<IpProtectionConfigGetterInterceptor>(
+        std::make_unique<IpProtectionCoreHostInterceptor>(
             provider, token, expiration, geo_hint, /*should_intercept=*/false);
   }
 
@@ -198,15 +202,15 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
  protected:
-  raw_ptr<network::mojom::IpProtectionControl> main_profile_ipp_control_ =
+  raw_ptr<ip_protection::mojom::CoreControl> main_profile_ipp_control_ =
       nullptr;
-  std::unique_ptr<IpProtectionConfigGetterInterceptor>
+  std::unique_ptr<IpProtectionCoreHostInterceptor>
       main_profile_auth_token_getter_interceptor_;
 
   raw_ptr<Profile> incognito_profile_ = nullptr;
-  raw_ptr<network::mojom::IpProtectionControl> incognito_profile_ipp_control_ =
+  raw_ptr<ip_protection::mojom::CoreControl> incognito_profile_ipp_control_ =
       nullptr;
-  std::unique_ptr<IpProtectionConfigGetterInterceptor>
+  std::unique_ptr<IpProtectionCoreHostInterceptor>
       incognito_profile_auth_token_getter_interceptor_;
 
  private:
@@ -229,8 +233,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
       .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
   ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
   auto auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionConfigGetterInterceptor>(
-          getter, token, expiration, geo_hint);
+      std::make_unique<IpProtectionCoreHostInterceptor>(getter, token,
+                                                        expiration, geo_hint);
 
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
@@ -239,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
                          std::optional<base::Time>>
       future;
   auto* ipp_control = getter->last_remote_for_testing();
-  ipp_control->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  ipp_control->VerifyIpProtectionCoreHostForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& result =
       future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(result);
@@ -255,14 +259,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   // incognito mode network context's `mojo::Receiver()`.
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
   auto incognito_auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionConfigGetterInterceptor>(
-          getter, token, expiration, geo_hint);
+      std::make_unique<IpProtectionCoreHostInterceptor>(getter, token,
+                                                        expiration, geo_hint);
 
   // Verify that we can get tokens from the incognito mode profile.
   future.Clear();
   auto* incognito_ipp_control = getter->last_remote_for_testing();
   ASSERT_NE(incognito_ipp_control, ipp_control);
-  incognito_ipp_control->VerifyIpProtectionConfigGetterForTesting(
+  incognito_ipp_control->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& incognito_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -272,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
-  ipp_control->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  ipp_control->VerifyIpProtectionCoreHostForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& second_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(second_attempt_result);
@@ -395,14 +399,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       future;
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& main_profile_first_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_first_attempt_result.value(), kDontRetry);
 
   future.Clear();
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& incognito_profile_first_attempt_result =
       future.Get<std::optional<base::Time>>();
@@ -416,14 +420,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Run the test again and check that the network service is still in a
   // cooldown phase.
   future.Clear();
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& main_profile_second_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_second_attempt_result.value(), kDontRetry);
 
   future.Clear();
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& incognito_profile_second_attempt_result =
       future.Get<std::optional<base::Time>>();
@@ -432,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Simulate the account becoming active again, which should cause `provider`
   // to notify the network contexts. No need to flush the remotes after, since
   // the messages generated will be in order with the
-  // `VerifyIpProtectionConfigGetterForTesting()` messages used below.
+  // `VerifyIpProtectionCoreHostForTesting()` messages used below.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   MakePrimaryAccountAvailable();
 #else
@@ -448,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
   future.Clear();
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& main_profile_third_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -459,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
             main_profile_auth_token_getter_interceptor_->expiration());
 
   future.Clear();
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>&
       incognito_profile_third_attempt_result =
@@ -518,9 +522,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
                          std::optional<base::Time>>
       incognito_profile_verification_future;
 
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       main_profile_verification_future.GetCallback());
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       incognito_profile_verification_future.GetCallback());
 
   const std::optional<base::Time>& main_profile_first_attempt_result =
@@ -556,9 +560,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
 
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       main_profile_verification_future.GetCallback());
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       incognito_profile_verification_future.GetCallback());
 
   const std::optional<BlindSignedAuthToken>&

@@ -120,7 +120,7 @@ IpProtectionCoreHost::~IpProtectionCoreHost() = default;
 
 void IpProtectionCoreHost::TryGetAuthTokens(
     uint32_t batch_size,
-    network::mojom::IpProtectionProxyLayer proxy_layer,
+    ip_protection::mojom::ProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
@@ -158,7 +158,7 @@ void IpProtectionCoreHost::TryGetAuthTokens(
 
   auto oauth_token_fetch_start_time = base::TimeTicks::Now();
   auto quiche_proxy_layer =
-      proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA
+      proxy_layer == ip_protection::mojom::ProxyLayer::kProxyA
           ? quiche::ProxyLayer::kProxyA
           : quiche::ProxyLayer::kProxyB;
   auto request_token_callback = base::BindOnce(
@@ -169,7 +169,7 @@ void IpProtectionCoreHost::TryGetAuthTokens(
   RequestOAuthToken(std::move(request_token_callback));
 }
 
-void IpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
+void IpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
@@ -185,15 +185,15 @@ void IpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
 
   // If IP Protection is disabled via user settings then don't attempt to get a
   // proxy list.
-  // TODO(crbug.com/41494110): We don't currently prevent GetProxyList
+  // TODO(crbug.com/41494110): We don't currently prevent GetProxyConfig
   // calls from being made from the network service once the user has disabled
   // the feature, so for now we will fail all of these requests here (and rely
   // on rate-limiting by the network service to prevent the browser process from
   // being flooded with messages). We are currently planning to move the
-  // GetProxyList calls to be made in the network service directly, so once that
-  // happens it should obviate the need for a long-term solution here. If that
-  // plan changes, though, we should implement a way for these requests to stop
-  // being made.
+  // GetProxyConfig calls to be made in the network service directly, so once
+  // that happens it should obviate the need for a long-term solution here. If
+  // that plan changes, though, we should implement a way for these requests to
+  // stop being made.
   if (!IsIpProtectionEnabled()) {
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
@@ -429,7 +429,7 @@ void IpProtectionCoreHost::InvalidateNetworkContextTryAgainAfterTime() {
   }
 
   for (auto& ipp_control : remotes_) {
-    ipp_control->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+    ipp_control->AuthTokensMayBeAvailable();
   }
 }
 
@@ -539,9 +539,8 @@ IpProtectionCoreHost* IpProtectionCoreHost::Get(Profile* profile) {
 }
 
 void IpProtectionCoreHost::AddNetworkService(
-    mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
-        pending_receiver,
-    mojo::PendingRemote<network::mojom::IpProtectionControl> pending_remote) {
+    mojo::PendingReceiver<ip_protection::mojom::CoreHost> pending_receiver,
+    mojo::PendingRemote<ip_protection::mojom::CoreControl> pending_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;

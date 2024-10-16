@@ -6,32 +6,32 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONTROL_MOJO_H_
 
 #include "components/ip_protection/common/ip_protection_control.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ip_protection {
 
-// Bridges calls from `network::mojom::IpProtectionControl` to
+// Bridges calls from `ip_protection::mojom::CoreControl` to
 // `ip_protection::IpProtectionControl`.
-class IpProtectionControlMojo final
-    : public network::mojom::IpProtectionControl {
+class IpProtectionControlMojo final : public ip_protection::mojom::CoreControl {
  public:
   IpProtectionControlMojo(
-      mojo::PendingReceiver<network::mojom::IpProtectionControl>,
+      mojo::PendingReceiver<ip_protection::mojom::CoreControl>,
       ip_protection::IpProtectionControl* ip_protection_control);
   ~IpProtectionControlMojo() override;
 
-  void VerifyIpProtectionConfigGetterForTesting(
-      network::mojom::IpProtectionControl::
-          VerifyIpProtectionConfigGetterForTestingCallback callback) override;
-  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
+  void VerifyIpProtectionCoreHostForTesting(
+      ip_protection::mojom::CoreControl::
+          VerifyIpProtectionCoreHostForTestingCallback callback) override;
+  void AuthTokensMayBeAvailable() override;
   void SetIpProtectionEnabled(bool enabled) override;
   void IsIpProtectionEnabledForTesting(
-      network::mojom::IpProtectionControl::
-          IsIpProtectionEnabledForTestingCallback callback) override;
+      ip_protection::mojom::CoreControl::IsIpProtectionEnabledForTestingCallback
+          callback) override;
 
  private:
-  const mojo::Receiver<network::mojom::IpProtectionControl> receiver_;
+  const mojo::Receiver<ip_protection::mojom::CoreControl> receiver_;
   const raw_ptr<ip_protection::IpProtectionControl> ip_protection_control_;
 };
 

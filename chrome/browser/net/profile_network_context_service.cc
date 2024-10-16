@@ -1514,7 +1514,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   IpProtectionCoreHost* ipp_core_host = IpProtectionCoreHost::Get(profile_);
   if (ipp_core_host) {
     ipp_core_host->AddNetworkService(
-        network_context_params->ip_protection_config_getter
+        network_context_params->ip_protection_core_host
             .InitWithNewPipeAndPassReceiver(),
         network_context_params->ip_protection_control
             .InitWithNewPipeAndPassRemote());
