@@ -93,7 +93,7 @@ class LensOverlayQueryController {
   // testing.
   virtual void StartQueryFlow(
       const SkBitmap& screenshot,
-      std::optional<GURL> page_url,
+      GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
@@ -114,7 +114,8 @@ class LensOverlayQueryController {
   // Sends a request to the server to update the page content.
   virtual void SendPageContentUpdateRequest(
       base::span<const uint8_t> new_content_bytes,
-      lens::PageContentMimeType new_content_type);
+      lens::PageContentMimeType new_content_type,
+      GURL new_page_url);
 
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
@@ -417,6 +418,8 @@ class LensOverlayQueryController {
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayClientLogs client_logs);
 
+  lens::Payload CreatePageContentPayload();
+
   // Resets the request cluster info state.
   void ResetRequestClusterInfoState();
 
@@ -449,8 +452,8 @@ class LensOverlayQueryController {
   // recaclulated. For example, in the case of translated words.
   gfx::Size resized_bitmap_size_;
 
-  // The page url, if it is allowed to be shared.
-  std::optional<GURL> page_url_;
+  // The page url. Empty if it is not allowed to be shared.
+  GURL page_url_;
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;

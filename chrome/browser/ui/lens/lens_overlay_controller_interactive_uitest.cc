@@ -96,7 +96,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
 
   void StartQueryFlow(
       const SkBitmap& screenshot,
-      std::optional<GURL> page_url,
+      GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,

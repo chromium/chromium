@@ -276,7 +276,7 @@ LensOverlayQueryController::~LensOverlayQueryController() {
 
 void LensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
-    std::optional<GURL> page_url,
+    GURL page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
@@ -308,7 +308,7 @@ void LensOverlayQueryController::EndQuery() {
   cluster_info_access_token_fetcher_.reset();
   full_image_access_token_fetcher_.reset();
   interaction_access_token_fetcher_.reset();
-  page_url_.reset();
+  page_url_ = GURL();
   page_title_.reset();
   translate_options_.reset();
   cluster_info_.reset();
@@ -334,13 +334,15 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
 
 void LensOverlayQueryController::SendPageContentUpdateRequest(
     base::span<const uint8_t> new_content_bytes,
-    lens::PageContentMimeType new_content_type) {
+    lens::PageContentMimeType new_content_type,
+    GURL new_page_url) {
   if (new_content_bytes == underlying_content_bytes_ &&
       new_content_type == underlying_content_type_) {
     return;
   }
   underlying_content_bytes_ = new_content_bytes;
   underlying_content_type_ = new_content_type;
+  page_url_ = new_page_url;
 
   // Since the page content uses the full image request ID, but this is a new
   // request, update the latest_full_image_request_data_ with a new request ID.
@@ -678,11 +680,8 @@ void LensOverlayQueryController::
   // them in this request. So if page content bytes are available, and the
   // cluster info was not retrieved, included them in this request.
   if (!underlying_content_bytes_.empty() && !cluster_info_.has_value()) {
-    lens::Payload payload;
-    payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
-                                           underlying_content_bytes_.end());
-    payload.set_content_type(ContentTypeToString(underlying_content_type_));
-    request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+    request.mutable_objects_request()->mutable_payload()->CopyFrom(
+        CreatePageContentPayload());
   }
 
   FullImageRequestDataReady(sequence_id, request);
@@ -864,11 +863,8 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
 
-  lens::Payload payload;
-  payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
-                                         underlying_content_bytes_.end());
-  payload.set_content_type(ContentTypeToString(underlying_content_type_));
-  request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+  request.mutable_objects_request()->mutable_payload()->CopyFrom(
+      CreatePageContentPayload());
 
   page_content_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
       base::BindOnce(&LensOverlayQueryController::PerformPageContentRequest,
@@ -1357,6 +1353,17 @@ LensOverlayQueryController::CreateInteractionRequest(
       ->mutable_interaction_request_metadata()
       ->CopyFrom(interaction_request_metadata);
   return server_request;
+}
+
+lens::Payload LensOverlayQueryController::CreatePageContentPayload() {
+  lens::Payload payload;
+  payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
+                                         underlying_content_bytes_.end());
+  payload.set_content_type(ContentTypeToString(underlying_content_type_));
+  if (!page_url_.is_empty()) {
+    payload.set_page_url(page_url_.spec());
+  }
+  return payload;
 }
 
 void LensOverlayQueryController::ResetRequestClusterInfoState() {

@@ -548,7 +548,7 @@ class LensOverlayController : public LensSearchboxClient,
     OverlayInitializationData(const SkBitmap& screenshot,
                               SkBitmap rgb_screenshot,
                               lens::PaletteId color_palette,
-                              std::optional<GURL> page_url,
+                              GURL page_url,
                               std::optional<std::string> page_title);
     ~OverlayInitializationData();
 
@@ -568,8 +568,8 @@ class LensOverlayController : public LensSearchboxClient,
     // The dynamic color palette identifier based on the screenshot.
     lens::PaletteId color_palette_;
 
-    // The page url, if it is allowed to be shared.
-    std::optional<GURL> page_url_;
+    // The page url. Empty if it is not allowed to be shared.
+    GURL page_url_;
 
     // The page title, if it is allowed to be shared.
     std::optional<std::string> page_title_;

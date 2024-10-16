@@ -55,7 +55,7 @@ constexpr char kTestSearchSessionId[] = "search_session_id";
 constexpr char kLocale[] = "en-US";
 
 // The fake page information.
-constexpr char kTestPageUrl[] = "https://www.google.com";
+constexpr char kTestPageUrl[] = "https://www.google.com/";
 constexpr char kTestPageTitle[] = "Page Title";
 
 // The url parameter key for the video context.
@@ -388,7 +388,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       /*use_dark_mode=*/false, GetGen204Controller());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -442,7 +442,7 @@ TEST_F(LensOverlayQueryControllerTest,
       ->set_server_session_id(kTestServerSessionId);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -494,7 +494,7 @@ TEST_F(LensOverlayQueryControllerTest,
       ->set_server_session_id(kTestServerSessionId);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -534,7 +534,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -581,7 +581,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -676,7 +676,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap viewport_bitmap = CreateNonEmptyBitmap(1000, 1000);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
-      viewport_bitmap, std::make_optional<GURL>(kTestPageUrl),
+      viewport_bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -786,7 +786,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -885,7 +885,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -941,7 +941,7 @@ TEST_F(LensOverlayQueryControllerTest,
   std::map<std::string, std::string> additional_search_query_params;
   std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kPdf, 0);
@@ -965,6 +965,9 @@ TEST_F(LensOverlayQueryControllerTest,
       query_controller.sent_page_content_objects_request_;
   ASSERT_FALSE(page_content_request.payload().content_data().empty());
   ASSERT_EQ(page_content_request.payload().content_type(), "application/pdf");
+
+  // Verify the page url was included in the request.
+  ASSERT_EQ(page_content_request.payload().page_url(), kTestPageUrl);
 
   // The full image and page content requests should have the same request id.
   ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
@@ -1046,7 +1049,7 @@ TEST_F(LensOverlayQueryControllerTest,
   std::map<std::string, std::string> additional_search_query_params;
   std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kHtml, 0);
@@ -1070,6 +1073,9 @@ TEST_F(LensOverlayQueryControllerTest,
       query_controller.sent_page_content_objects_request_;
   ASSERT_FALSE(page_content_request.payload().content_data().empty());
   ASSERT_EQ(page_content_request.payload().content_type(), "text/html");
+
+  // Verify the page url was included in the request.
+  ASSERT_EQ(page_content_request.payload().page_url(), kTestPageUrl);
 
   // The full image and page content requests should have the same request id.
   ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
@@ -1151,7 +1157,7 @@ TEST_F(LensOverlayQueryControllerTest,
   std::map<std::string, std::string> additional_search_query_params;
   std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kPlainText, 0);
@@ -1175,6 +1181,9 @@ TEST_F(LensOverlayQueryControllerTest,
       query_controller.sent_page_content_objects_request_;
   ASSERT_FALSE(page_content_request.payload().content_data().empty());
   ASSERT_EQ(page_content_request.payload().content_type(), "text/plain");
+
+  // Verify the page url was included in the request.
+  ASSERT_EQ(page_content_request.payload().page_url(), kTestPageUrl);
 
   // The full image and page content requests should have the same request id.
   ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
@@ -1260,7 +1269,7 @@ TEST_F(LensOverlayQueryControllerTest,
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
 
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone,
@@ -1315,7 +1324,7 @@ TEST_F(LensOverlayQueryControllerTest,
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
 
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
@@ -1363,7 +1372,7 @@ TEST_F(LensOverlayQueryControllerTest,
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
