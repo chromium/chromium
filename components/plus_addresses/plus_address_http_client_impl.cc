@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -43,7 +44,6 @@ namespace plus_addresses {
 
 namespace {
 
-constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 constexpr auto kSignoutError =
     PlusAddressRequestError(PlusAddressRequestErrorType::kUserSignedOut);
 
@@ -291,7 +291,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
                                        kReservePlusAddressAnnotation);
   network::SimpleURLLoader* loader_ptr = loader.get();
   loader_ptr->AttachStringForUpload(request_body, "application/json");
-  loader_ptr->SetTimeoutDuration(kRequestTimeout);
+  loader_ptr->SetTimeoutDuration(features::kPlusAddressRequestTimeout.Get());
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
@@ -332,7 +332,7 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
                                        kConfirmPlusAddressAnnotation);
   network::SimpleURLLoader* loader_ptr = loader.get();
   loader_ptr->AttachStringForUpload(request_body, "application/json");
-  loader_ptr->SetTimeoutDuration(kRequestTimeout);
+  loader_ptr->SetTimeoutDuration(features::kPlusAddressRequestTimeout.Get());
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
@@ -362,7 +362,7 @@ void PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kPreallocatePlusAddressesAnnotation);
   network::SimpleURLLoader* loader_ptr = loader.get();
-  loader_ptr->SetTimeoutDuration(kRequestTimeout);
+  loader_ptr->SetTimeoutDuration(features::kPlusAddressRequestTimeout.Get());
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&PlusAddressHttpClientImpl::OnPreallocationComplete,
@@ -379,16 +379,31 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     base::TimeTicks request_start,
     PlusAddressRequestCallback on_completed,
     std::unique_ptr<std::string> response) {
-  // Record relevant metrics.
+  // TODO(crbug.com/322279583): Combine the overlapping code here and in
+  // `OnReserveOrConfirmPlusAddressComplete`.
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
+  loaders_.erase(it);
+
+  const std::optional<int> net_error =
+      loader ? loader->NetError() : std::optional<int>();
+  const std::optional<int> response_code = GetResponseCode(loader.get());
+
   metrics::RecordNetworkRequestLatency(type,
                                        base::TimeTicks::Now() - request_start);
-  std::optional<int> response_code = GetResponseCode(loader.get());
+  if (net_error) {
+    metrics::RecordNetErrorCode(type, *net_error);
+  }
   if (response_code) {
     metrics::RecordNetworkRequestResponseCode(type, *response_code);
   }
-  // Destroy the loader before returning.
-  loaders_.erase(it);
+
+  if (net_error == net::ERR_TIMED_OUT) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kClientTimeout)));
+    return;
+  }
+
   if (!response) {
     std::move(on_completed)
         .Run(base::unexpected(
@@ -419,22 +434,41 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     base::TimeTicks request_start,
     PreallocatePlusAddressesCallback on_completed,
     std::unique_ptr<std::string> response) {
+  // TODO(crbug.com/322279583): Combine the overlapping code here and in
+  // `OnReserveOrConfirmPlusAddressComplete`.
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_.erase(it);
+
+  const std::optional<int> net_error =
+      loader ? loader->NetError() : std::optional<int>();
+  const std::optional<int> response_code = GetResponseCode(loader.get());
+
   metrics::RecordNetworkRequestLatency(
       PlusAddressNetworkRequestType::kPreallocate,
       base::TimeTicks::Now() - request_start);
-  std::optional<int> response_code = GetResponseCode(loader.get());
+  if (net_error) {
+    metrics::RecordNetErrorCode(PlusAddressNetworkRequestType::kPreallocate,
+                                *net_error);
+  }
   if (response_code) {
     metrics::RecordNetworkRequestResponseCode(
         PlusAddressNetworkRequestType::kPreallocate, *response_code);
   }
+
+  if (net_error == net::ERR_TIMED_OUT) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kClientTimeout)));
+    return;
+  }
+
   if (!response) {
     std::move(on_completed)
         .Run(base::unexpected(
             PlusAddressRequestError::AsNetworkError(response_code)));
     return;
   }
+
   metrics::RecordNetworkRequestResponseSize(
       PlusAddressNetworkRequestType::kPreallocate, response->size());
   data_decoder::DataDecoder::ParseJsonIsolated(
