@@ -36,14 +36,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Response timed out"/>
 </enum>
 
-<enum name="UserAnnotationsImportSkipReason">
-  <int value="0" label="None"/>
-  <int value="1" label="Pref disabled"/>
-  <int value="2" label="UserAnnotationsService not available"/>
-  <int value="3" label="URL not eligible"/>
-  <int value="4" label="Form not eligible"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

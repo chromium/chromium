@@ -55,23 +55,6 @@ class AutofillPredictionImprovementsManager
     kDoneError = 3
   };
 
-  // Enum for reasons the import of a form could be skipped.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ImportSkipReason {
-    // The import of the form was attempted.
-    kNone = 0,
-    // The "AutofillPredictionImprovementsEnabled" pref was disabled.
-    kPrefDisabled = 1,
-    // The UserAnnotationsService was not available.
-    kUserAnnotationsServiceNotAvailable = 2,
-    // The import of the form was skipped due to the last committed URL.
-    kUrl = 3,
-    // The form was not eligible.
-    kFormNotEligible = 4,
-    kMaxValue = kFormNotEligible
-  };
-
   AutofillPredictionImprovementsManager(
       AutofillPredictionImprovementsClient* client,
       optimization_guide::OptimizationGuideDecider* decider,
