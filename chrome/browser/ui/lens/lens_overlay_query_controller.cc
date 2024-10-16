@@ -367,7 +367,7 @@ void LensOverlayQueryController::SendContextualTextQuery(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
-  if(underlying_content_bytes_.empty()) {
+  if (underlying_content_bytes_.empty()) {
     SendTextOnlyQuery(query_text, lens_selection_type,
                       additional_search_query_params);
     return;
@@ -483,10 +483,12 @@ LensOverlayQueryController::CreateEndpointFetcher(
 }
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
-    int64_t latency_ms,
+    base::TimeDelta full_image_latency,
     bool is_translate_query) {
-  gen204_controller_->SendLatencyGen204IfEnabled(latency_ms,
-                                                 is_translate_query);
+  gen204_controller_->SendLatencyGen204IfEnabled(
+      full_image_latency, cluster_info_fetch_response_time_,
+      is_translate_query);
+  cluster_info_fetch_response_time_.reset();
 }
 
 LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
@@ -504,10 +506,12 @@ void LensOverlayQueryController::FetchClusterInfoRequest() {
   cluster_info_access_token_fetcher_ =
       CreateOAuthHeadersAndContinue(base::BindOnce(
           &LensOverlayQueryController::PerformClusterInfoFetchRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          /*query_start_time=*/base::TimeTicks::Now()));
 }
 
 void LensOverlayQueryController::PerformClusterInfoFetchRequest(
+    base::TimeTicks query_start_time,
     std::vector<std::string> request_headers) {
   // Add protobuf content type to the request headers.
   request_headers.push_back(kContentTypeKey);
@@ -530,11 +534,12 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   cluster_info_endpoint_fetcher_->PerformRequest(
       base::BindOnce(
           &LensOverlayQueryController::ClusterInfoFetchResponseHandler,
-          weak_ptr_factory_.GetWeakPtr()),
+          weak_ptr_factory_.GetWeakPtr(), query_start_time),
       google_apis::GetAPIKey().c_str());
 }
 
 void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
+    base::TimeTicks query_start_time,
     std::unique_ptr<EndpointResponse> response) {
   cluster_info_endpoint_fetcher_.reset();
   query_controller_state_ = QueryControllerState::kReceivedClusterInfoResponse;
@@ -561,6 +566,9 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
+
+  // Store the fetch response time.
+  cluster_info_fetch_response_time_ = base::TimeTicks::Now() - query_start_time;
 
   // Continue with the full image request which will use the session id from the
   // cluster info we just received.
@@ -786,8 +794,7 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   base::TimeDelta elapsed_time =
       base::TimeTicks::Now() -
       latest_full_image_request_data_->query_start_time_;
-  SendLatencyGen204IfEnabled(elapsed_time.InMilliseconds(),
-                             translate_options_.has_value());
+  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value());
 
   if (!cluster_info_.has_value()) {
     cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();

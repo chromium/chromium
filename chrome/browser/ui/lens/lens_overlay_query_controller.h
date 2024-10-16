@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -167,7 +168,7 @@ class LensOverlayQueryController {
       const std::vector<std::string>& cors_exempt_headers);
 
   // Sends a latency Gen204 ping if enabled.
-  virtual void SendLatencyGen204IfEnabled(int64_t latency_ms,
+  virtual void SendLatencyGen204IfEnabled(base::TimeDelta full_image_latency,
                                           bool is_translate_query);
 
   // The callback for full image requests, including upon query flow start
@@ -240,13 +241,15 @@ class LensOverlayQueryController {
   void FetchClusterInfoRequest();
 
   // Creates the endpoint fetcher and sends the cluster info request.
-  void PerformClusterInfoFetchRequest(std::vector<std::string> request_headers);
+  void PerformClusterInfoFetchRequest(base::TimeTicks query_start_time,
+                                      std::vector<std::string> request_headers);
 
   // Handles the response from the cluster info request. If a successful request
   // was made, kicks off the full image request to use the retrieved server
   // session id. If the request failed, the full image request will still be
   // tried, just without the server session id.
   void ClusterInfoFetchResponseHandler(
+      base::TimeTicks query_start_time,
       std::unique_ptr<EndpointResponse> response);
 
   // Processes the screenshot and fetches a full image request.
@@ -577,6 +580,10 @@ class LensOverlayQueryController {
 
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_ = 0;
+
+  // The time it took from sending the cluster info request to receiving
+  // the response.
+  std::optional<base::TimeDelta> cluster_info_fetch_response_time_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };
