@@ -20,9 +20,14 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/model/sync_change.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -59,6 +64,34 @@ bool ShouldAllowInstall(const Extension* extension,
                         content::BrowserContext* context) {
   return !extension->is_theme() &&
          extensions::util::ShouldSync(extension, context);
+}
+
+// Returns whether the current `profile` is syncing extensions in transport mode
+// (user is signed in but does not have `kSync` consent level).
+bool IsSyncingInTransportMode(Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  bool in_transport_mode =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  return in_transport_mode &&
+         (sync_service &&
+          sync_service->GetUserSettings()->GetSelectedTypes().Has(
+              syncer::UserSelectableType::kExtensions));
+}
+
+// Returns if the given extension with `id` was installed while a user was
+// signed in and is thus part of their account data.
+bool IsAccountExtension(Profile* profile, const extensions::ExtensionId& id) {
+  AccountExtensionTracker::AccountExtensionType type =
+      AccountExtensionTracker::Get(profile)->GetAccountExtensionType(id);
+  return type == AccountExtensionTracker::AccountExtensionType::
+                     kAccountInstalledLocally ||
+         type == AccountExtensionTracker::AccountExtensionType::
+                     kAccountInstalledSignedIn;
 }
 
 std::map<std::string, syncer::SyncData> ToSyncerSyncDataMap(
@@ -126,8 +159,9 @@ ExtensionSyncService* ExtensionSyncService::Get(
 }
 
 // static
-bool ExtensionSyncService::ShouldSync(content::BrowserContext* browser_context,
-                                      const Extension& extension) {
+bool ExtensionSyncService::IsSyncableExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
   // Themes are handled by the ThemeSyncableService.
   return extensions::util::ShouldSync(&extension, browser_context) &&
          !extension.is_theme() &&
@@ -137,7 +171,7 @@ bool ExtensionSyncService::ShouldSync(content::BrowserContext* browser_context,
 
 void ExtensionSyncService::SyncExtensionChangeIfNeeded(
     const Extension& extension) {
-  if (ignore_updates_ || !ShouldSync(profile_, extension)) {
+  if (ignore_updates_ || !ShouldSync(extension)) {
     return;
   }
 
@@ -320,7 +354,7 @@ void ExtensionSyncService::ApplySyncData(
   // (non-default-installed) installation. We can't apply the sync data because
   // it would always override the local state (which would never get sync'd).
   // See crbug.com/731824.
-  if (extension && !ShouldSync(profile_, *extension)) {
+  if (extension && !ShouldSync(*extension)) {
     return;
   }
 
@@ -560,6 +594,16 @@ void ExtensionSyncService::OnExtensionInstalled(
     if (compare_result >= 0)
       pending_updates_.erase(it);
   }
+
+  if (!is_update) {
+    // Ignore updates since
+    // `AccountExtensionTracker::OnExtensionSyncDataApplied` should handle
+    // incoming sync data, and these may not trigger updates based on the
+    // extension's version vs the version in the sync data.
+    AccountExtensionTracker::Get(browser_context)
+        ->SetAccountExtensionTypeOnExtensionInstalled(*extension);
+  }
+
   SyncExtensionChangeIfNeeded(*extension);
 }
 
@@ -570,7 +614,7 @@ void ExtensionSyncService::OnExtensionUninstalled(
   DCHECK_EQ(profile_, browser_context);
   // Don't bother syncing if the extension will be re-installed momentarily.
   if (reason == extensions::UNINSTALL_REASON_REINSTALL ||
-      !ShouldSync(profile_, *extension)) {
+      !ShouldSync(*extension)) {
     return;
   }
 
@@ -619,6 +663,12 @@ void ExtensionSyncService::OnExtensionDisableReasonsChanged(
     SyncExtensionChangeIfNeeded(*extension);
 }
 
+void ExtensionSyncService::OnExtensionPrefsWillBeDestroyed(
+    ExtensionPrefs* prefs) {
+  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  prefs_observation_.Reset();
+}
+
 SyncBundle* ExtensionSyncService::GetSyncBundle(syncer::DataType type) {
   return const_cast<SyncBundle*>(
       const_cast<const ExtensionSyncService&>(*this).GetSyncBundle(type));
@@ -651,11 +701,21 @@ void ExtensionSyncService::FillSyncDataList(
     syncer::DataType type,
     std::vector<ExtensionSyncData>* sync_data_list) const {
   for (const scoped_refptr<const Extension>& extension : extensions) {
-    if (IsCorrectSyncType(*extension, type) &&
-        ShouldSync(profile_, *extension)) {
+    if (IsCorrectSyncType(*extension, type) && ShouldSync(*extension)) {
       // We should never have pending data for an installed extension.
       DCHECK(!GetSyncBundle(type)->HasPendingExtensionData(extension->id()));
       sync_data_list->push_back(CreateSyncData(*extension));
     }
   }
+}
+
+bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
+  // Only extensions associated with the signed in user's account should be
+  // synced for transport mode.
+  if (IsSyncingInTransportMode(profile_) &&
+      !IsAccountExtension(profile_, extension.id())) {
+    return false;
+  }
+
+  return IsSyncableExtension(profile_, extension);
 }

@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -24,6 +25,15 @@ constexpr char kGoodCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 }  // namespace
 
 class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
+ public:
+  void SetUp() override {
+    ExtensionServiceTestWithInstall::SetUp();
+    InitializeEmptyExtensionService();
+
+    service()->Init();
+    ASSERT_TRUE(extension_system()->is_ready());
+  }
+
  protected:
   ExtensionSystem* extension_system() {
     return ExtensionSystem::Get(profile());
@@ -31,19 +41,13 @@ class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
 
   AccountExtensionTracker::AccountExtensionType GetAccountExtensionType(
       const ExtensionId& id) {
-    return AccountExtensionTracker::Get(profile())
-        ->GetAccountExtensionTypeForTesting(id);
+    return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(id);
   }
 };
 
 // Test that an extension's AccountExtensionType is set to the right value based
 // on whether it was installed when there is a signed in user with sync enabled.
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
-  InitializeEmptyExtensionService();
-
-  service()->Init();
-  ASSERT_TRUE(extension_system()->is_ready());
-
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
   InstallCRX(good_crx_path, INSTALL_NEW);
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
@@ -89,11 +93,6 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       syncer::kSyncEnableExtensionsInTransportMode);
-
-  InitializeEmptyExtensionService();
-
-  service()->Init();
-  ASSERT_TRUE(extension_system()->is_ready());
 
   // Use a test identity environment to mimic signing a user in with sync
   // disabled (transport mode).
@@ -144,11 +143,6 @@ TEST_F(AccountExtensionTrackerUnitTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       syncer::kSyncEnableExtensionsInTransportMode);
-
-  InitializeEmptyExtensionService();
-
-  service()->Init();
-  ASSERT_TRUE(extension_system()->is_ready());
 
   // Use a test identity environment to mimic signing a user in with sync
   // disabled (transport mode).

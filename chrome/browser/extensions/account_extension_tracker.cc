@@ -57,7 +57,7 @@ AccountExtensionTrackerFactory::AccountExtensionTrackerFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .WithAshInternals(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(ExtensionRegistryFactory::GetInstance());
@@ -72,7 +72,7 @@ AccountExtensionTracker* AccountExtensionTrackerFactory::GetForBrowserContext(
 
 KeyedService* AccountExtensionTrackerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new AccountExtensionTracker(context);
+  return new AccountExtensionTracker(Profile::FromBrowserContext(context));
 }
 
 bool AccountExtensionTrackerFactory::ServiceIsCreatedWithBrowserContext()
@@ -84,15 +84,10 @@ bool AccountExtensionTrackerFactory::ServiceIsCreatedWithBrowserContext()
 
 AccountExtensionTracker::~AccountExtensionTracker() = default;
 
-AccountExtensionTracker::AccountExtensionTracker(
-    content::BrowserContext* context)
-    : browser_context_(context) {
-  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
-  extension_registry_observation_.Observe(extension_registry);
-
+AccountExtensionTracker::AccountExtensionTracker(Profile* profile)
+    : profile_(profile) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
+      IdentityManagerFactory::GetForProfile(profile);
   identity_manager_observation_.Observe(identity_manager);
 }
 
@@ -109,24 +104,15 @@ BrowserContextKeyedServiceFactory* AccountExtensionTracker::GetFactory() {
   return g_factory.get();
 }
 
-void AccountExtensionTracker::OnExtensionInstalled(
-    content::BrowserContext* context,
-    const Extension* extension,
-    bool is_update) {
-  // Ignore updates since `OnExtensionSyncDataApplied` should handle incoming
-  // sync data, and these may not trigger updates based on the extension's
-  // version vs the version in the sync data.
-  if (is_update) {
-    return;
-  }
-
+void AccountExtensionTracker::SetAccountExtensionTypeOnExtensionInstalled(
+    const Extension& extension) {
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(Profile::FromBrowserContext(context));
+      SyncServiceFactory::GetForProfile(profile_);
   bool extension_sync_enabled =
       sync_service && sync_service->GetUserSettings()->GetSelectedTypes().Has(
                           syncer::UserSelectableType::kExtensions);
   bool is_syncable_extension =
-      ExtensionSyncService::ShouldSync(context, *extension);
+      ExtensionSyncService::IsSyncableExtension(profile_, extension);
 
   // Set to `kAccountInstalledSignedIn` if this is a syncable extension (by
   // ExtensionSyncService) that was installed when a user is signed in and has
@@ -135,7 +121,7 @@ void AccountExtensionTracker::OnExtensionInstalled(
       (is_syncable_extension && extension_sync_enabled)
           ? AccountExtensionType::kAccountInstalledSignedIn
           : AccountExtensionType::kLocal;
-  SetAccountExtensionType(extension->id(), type);
+  SetAccountExtensionType(extension.id(), type);
 }
 
 void AccountExtensionTracker::OnPrimaryAccountChanged(
@@ -145,8 +131,7 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
   // out.
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    ExtensionRegistry* extension_registry =
-        ExtensionRegistry::Get(browser_context_);
+    ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
     const ExtensionSet extensions =
         extension_registry->GenerateInstalledExtensionsSet();
 
@@ -171,15 +156,9 @@ void AccountExtensionTracker::OnExtensionSyncDataApplied(
 }
 
 AccountExtensionTracker::AccountExtensionType
-AccountExtensionTracker::GetAccountExtensionTypeForTesting(
-    const ExtensionId& extension_id) const {
-  return GetAccountExtensionType(extension_id);
-}
-
-AccountExtensionTracker::AccountExtensionType
 AccountExtensionTracker::GetAccountExtensionType(
     const ExtensionId& extension_id) const {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   int type_int = 0;
 
   // If the pref does not exist or is corrupted (not a valid value), return
@@ -199,7 +178,7 @@ AccountExtensionTracker::GetAccountExtensionType(
 void AccountExtensionTracker::SetAccountExtensionType(
     const ExtensionId& extension_id,
     AccountExtensionTracker::AccountExtensionType type) {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   prefs->SetIntegerPref(extension_id, kAccountExtensionTypePref, type);
 }
 

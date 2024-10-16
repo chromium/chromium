@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/extensions/extension_sync_service.h"
+
 #include <stddef.h>
 
 #include <map>
@@ -27,7 +29,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -41,7 +42,9 @@
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -240,8 +243,7 @@ class ExtensionSyncServiceTest
 
   AccountExtensionTracker::AccountExtensionType GetAccountExtensionType(
       const extensions::ExtensionId& id) {
-    return AccountExtensionTracker::Get(profile())
-        ->GetAccountExtensionTypeForTesting(id);
+    return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(id);
   }
 };
 
@@ -1480,7 +1482,6 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
 // by checking an extension's AccountExtensionType.
 TEST_F(ExtensionSyncServiceTest, AccountExtensionTypeChangesWithSync) {
   InitializeEmptyExtensionService();
-
   service()->Init();
 
   auto load_extension = [this](const std::string& extension_path) {
@@ -1983,4 +1984,114 @@ TEST_F(BlocklistedExtensionSyncServiceTest, InstallBlocklistedExtension) {
   EXPECT_TRUE(registry()->blocklisted_extensions().GetByID(extension_id));
   EXPECT_EQ(0, ExtensionPrefs::Get(profile())->GetDisableReasons(extension_id));
   EXPECT_TRUE(processor()->changes().empty());
+}
+
+class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
+ public:
+  ExtensionSyncServiceTransportModeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        syncer::kSyncEnableExtensionsInTransportMode);
+  }
+
+  ExtensionSyncServiceTransportModeTest(
+      const ExtensionSyncServiceTransportModeTest&) = delete;
+  ExtensionSyncServiceTransportModeTest& operator=(
+      const ExtensionSyncServiceTransportModeTest&) = delete;
+
+  void SetUp() override {
+    ExtensionSyncServiceTest::SetUp();
+    InitializeEmptyExtensionService();
+    service()->Init();
+
+    AccountExtensionTracker::Get(profile());
+  }
+
+ protected:
+  scoped_refptr<const Extension> LoadExtension(
+      const std::string& extension_path) {
+    extensions::ChromeTestExtensionLoader extension_loader(profile());
+    extension_loader.set_pack_extension(true);
+    return extension_loader.LoadExtension(
+        data_dir().AppendASCII(extension_path));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that only extensions associated with the signed in user will be synced
+// in transport mode.
+TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
+  // Sync starts up.
+  syncer::FakeSyncChangeProcessor* processor_raw = nullptr;
+  {
+    auto processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+    processor_raw = processor.get();
+    extension_sync_service()->MergeDataAndStartSyncing(
+        syncer::EXTENSIONS, syncer::SyncDataList(), std::move(processor));
+  }
+  processor_raw->changes().clear();
+
+  // Install two extensions: `first_extension` before a user signs in, and
+  // `second_extension` after a user signs in. `second_extension` is associated
+  // with the user's account where as `first_extension` is not.
+  scoped_refptr<const Extension> first_extension =
+      LoadExtension("simple_with_file");
+  ASSERT_TRUE(first_extension);
+  const std::string first_extension_id = first_extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
+
+  // Use a test identity environment to mimic signing a user into transport mode
+  // with syncing for extension enabled via an explicit sign in.
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  identity_test_env_profile_adaptor->identity_test_env()
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSignin);
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  scoped_refptr<const Extension> second_extension =
+      LoadExtension("simple_with_icon");
+  ASSERT_TRUE(second_extension);
+  const std::string second_extension_id = second_extension->id();
+
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(first_extension_id));
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(second_extension_id));
+
+  // In transport mode, only `second_extension` should sync since it's
+  // associated with the user's account.
+  {
+    syncer::SyncDataList list =
+        extension_sync_service()->GetAllSyncDataForTesting(syncer::EXTENSIONS);
+    ASSERT_EQ(list.size(), 1U);
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(list[0]);
+    ASSERT_TRUE(data.get());
+    EXPECT_EQ(second_extension_id, data->id());
+  }
+
+  // Disable both `first_extension` and `second_extension`. Only
+  // `second_extension` should be captured in the sync state to be pushed.
+  processor_raw->changes().clear();
+  service()->DisableExtension(first_extension_id,
+                              extensions::disable_reason::DISABLE_USER_ACTION);
+  EXPECT_TRUE(registry()->disabled_extensions().GetByID(first_extension_id));
+
+  service()->DisableExtension(second_extension_id,
+                              extensions::disable_reason::DISABLE_USER_ACTION);
+  EXPECT_TRUE(registry()->disabled_extensions().GetByID(second_extension_id));
+  {
+    ASSERT_EQ(1u, processor_raw->changes().size());
+    const SyncChange& change = processor_raw->changes()[0];
+    EXPECT_EQ(SyncChange::ACTION_UPDATE, change.change_type());
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(change.sync_data());
+    EXPECT_EQ(second_extension_id, data->id());
+    EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
+              data->disable_reasons());
+    EXPECT_FALSE(data->enabled());
+  }
 }

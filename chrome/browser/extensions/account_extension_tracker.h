@@ -9,17 +9,21 @@
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 class BrowserContextKeyedServiceFactory;
+class Profile;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
 // This service manages each extension's AccountExtensionType, which describes
 // whether the extension is associated with a signed in user's account data.
 class AccountExtensionTracker : public KeyedService,
-                                public ExtensionRegistryObserver,
                                 public signin::IdentityManager::Observer {
  public:
   enum AccountExtensionType {
@@ -39,7 +43,7 @@ class AccountExtensionTracker : public KeyedService,
     kLast = 2,
   };
 
-  explicit AccountExtensionTracker(content::BrowserContext* context);
+  explicit AccountExtensionTracker(Profile* profile);
 
   AccountExtensionTracker(const AccountExtensionTracker&) = delete;
   AccountExtensionTracker& operator=(const AccountExtensionTracker&) = delete;
@@ -47,15 +51,16 @@ class AccountExtensionTracker : public KeyedService,
   ~AccountExtensionTracker() override;
 
   // Convenience method to get the AccountExtensionTracker for a profile.
+  // Creates the tracker for the profile if none exists.
   static AccountExtensionTracker* Get(content::BrowserContext* context);
 
   // Returns the singleton instance of the factory for this KeyedService.
   static BrowserContextKeyedServiceFactory* GetFactory();
 
-  // ExtensionRegistryObserver implementation.
-  void OnExtensionInstalled(content::BrowserContext* browser_context,
-                            const Extension* extension,
-                            bool is_update) override;
+  // Computes and sets the AccountExtensionType for `extension` when it is
+  // installed. Needs to be called by the sync service before it handles the
+  // install.
+  void SetAccountExtensionTypeOnExtensionInstalled(const Extension& extension);
 
   // IdentityManagerObserver implementation.
   void OnPrimaryAccountChanged(
@@ -64,25 +69,17 @@ class AccountExtensionTracker : public KeyedService,
   // Called when sync data is applied for the given `extension_id`.
   void OnExtensionSyncDataApplied(const ExtensionId& extension_id);
 
-  AccountExtensionType GetAccountExtensionTypeForTesting(
-      const ExtensionId& extension_id) const;
-
- private:
   AccountExtensionType GetAccountExtensionType(
       const ExtensionId& extension_id) const;
 
+ private:
   // Sets the extension's AccountExtensionType. Called when the extension is
   // installed (not updated) or when there is incoming sync data for the
   // extension, which implies that it's associated with a user's account data.
   void SetAccountExtensionType(const ExtensionId& extension_id,
                                AccountExtensionType type);
 
-  const raw_ptr<content::BrowserContext> browser_context_;
-
-  // ExtensionRegistry observer.
-  base::ScopedObservation<extensions::ExtensionRegistry,
-                          extensions::ExtensionRegistryObserver>
-      extension_registry_observation_{this};
+  const raw_ptr<Profile> profile_;
 
   // IdentityManager observer.
   base::ScopedObservation<signin::IdentityManager,
