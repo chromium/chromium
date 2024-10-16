@@ -762,7 +762,7 @@ class ASH_EXPORT AccessibilityController
   void UpdateCursorColorFromPrefs(bool notify);
   void UpdateFaceGazeFromPrefs();
   void UpdateFlashNotificationsFromPrefs();
-  void UpdateDisableTrackpadFromPrefs();
+  void UpdateDisableTrackpadFromPrefs(bool notify);
   void UpdateColorCorrectionFromPrefs();
   void UpdateCaretBlinkIntervalFromPrefs() const;
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);

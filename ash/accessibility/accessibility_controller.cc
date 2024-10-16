@@ -2661,7 +2661,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
         prefs::kAccessibilityDisableTrackpadMode,
         base::BindRepeating(
             &AccessibilityController::UpdateDisableTrackpadFromPrefs,
-            base::Unretained(this)));
+            base::Unretained(this), /*notify*/ true));
   }
 
   for (const std::unique_ptr<Feature>& feature : features_) {
@@ -2701,7 +2701,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
     UpdateFlashNotificationsFromPrefs();
   }
   if (::features::IsAccessibilityDisableTrackpadEnabled()) {
-    UpdateDisableTrackpadFromPrefs();
+    UpdateDisableTrackpadFromPrefs(/*notify=*/false);
   }
 }
 
@@ -2928,13 +2928,24 @@ void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
       prefs::kAccessibilityFlashNotificationsColor));
 }
 
-void AccessibilityController::UpdateDisableTrackpadFromPrefs() {
+void AccessibilityController::UpdateDisableTrackpadFromPrefs(bool notify) {
   if (!disable_trackpad_event_rewriter_ ||
       !::features::IsAccessibilityDisableTrackpadEnabled()) {
     return;
   }
 
-  DisableTrackpadWithDialog();
+  if (notify) {
+    DisableTrackpadWithDialog();
+    return;
+  }
+
+  const DisableTrackpadMode trackpad_mode = static_cast<DisableTrackpadMode>(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+
+  if (trackpad_mode == DisableTrackpadMode::kAlways ||
+      trackpad_mode == DisableTrackpadMode::kOnExternalMouseConnected) {
+    disable_trackpad_event_rewriter_->SetEnabled(true);
+  }
 }
 
 void AccessibilityController::DisableTrackpadWithDialog() {
