@@ -141,11 +141,12 @@ net::NetworkTrafficAnnotationTag TrafficAnnotationForFeature(
 std::optional<ash::SeaPenImage> ToSeaPenImage(const uint32_t generation_seed,
                                               const SkBitmap& decoded_bitmap) {
   base::AssertLongCPUWorkAllowed();
-  std::vector<unsigned char> data;
-  if (!gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100, &data)) {
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100);
+  if (!data) {
     return std::nullopt;
   }
-  return ash::SeaPenImage(std::string(data.begin(), data.end()),
+  return ash::SeaPenImage(std::string(base::as_string_view(data.value())),
                           generation_seed);
 }
 

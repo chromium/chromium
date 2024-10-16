@@ -46,40 +46,19 @@ namespace {
 // run.
 constexpr base::TimeDelta kDecodeImageTimeout = base::Seconds(3);
 
-using EncodingFunction =
-    base::RepeatingCallback<bool(const SkBitmap&, std::vector<unsigned char>*)>;
-
-void EncodeImage(const gfx::ImageSkia& image,
-                 std::string* output,
-                 EncodingFunction encoding_fn) {
-  std::vector<unsigned char> encoded_data;
-  ASSERT_TRUE(encoding_fn.Run(*image.bitmap(), &encoded_data));
-  output->assign(reinterpret_cast<const char*>(encoded_data.data()),
-                 encoded_data.size());
-}
-
-std::string EncodeToString(const gfx::ImageSkia& image,
-                           EncodingFunction encoding_fn) {
-  std::string output;
-  EncodeImage(image, &output, encoding_fn);
-  return output;
-}
-
 std::string EncodeAsJpeg(const gfx::ImageSkia& image) {
-  return EncodeToString(
-      image, base::BindRepeating([](const SkBitmap& bitmap,
-                                    std::vector<unsigned char>* encoded_data) {
-        return gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, encoded_data);
-      }));
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(*image.bitmap(), /*quality=*/90);
+  CHECK(data);
+  return std::string(base::as_string_view(data.value()));
 }
 
 std::string EncodeAsPng(const gfx::ImageSkia& image) {
-  return EncodeToString(
-      image, base::BindRepeating([](const SkBitmap& bitmap,
-                                    std::vector<unsigned char>* encoded_data) {
-        return gfx::PNGCodec::EncodeBGRASkBitmap(
-            bitmap, /*discard_transparency=*/false, encoded_data);
-      }));
+  std::optional<std::vector<uint8_t>> data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(),
+                                        /*discard_transparency=*/false);
+  CHECK(data);
+  return std::string(base::as_string_view(data.value()));
 }
 
 // `BorderedImageSource` can be used to generate a test image in conjunction

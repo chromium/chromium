@@ -233,13 +233,14 @@ bool WriteJPEGFile(const base::FilePath& path,
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
-  std::vector<unsigned char> output;
-  if (!gfx::JPEGCodec::Encode(bitmap, 80 /*quality*/, &output)) {
+  std::optional<std::vector<uint8_t>> output =
+      gfx::JPEGCodec::Encode(bitmap, 80 /*quality*/);
+  if (!output) {
     LOG(ERROR) << "Unable to encode " << width << "x" << height << " bitmap";
     return false;
   }
 
-  if (!base::WriteFile(path, output)) {
+  if (!base::WriteFile(path, output.value())) {
     LOG(ERROR) << "Writing to " << path.value() << " failed.";
     return false;
   }

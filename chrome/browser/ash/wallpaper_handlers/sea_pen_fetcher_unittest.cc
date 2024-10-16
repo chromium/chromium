@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -88,9 +89,9 @@ const SkBitmap CreateTestBitmap() {
 const std::string_view GetJpgBytes() {
   static const base::NoDestructor<std::string> jpg_bytes([] {
     SkBitmap bitmap = CreateTestBitmap();
-    std::vector<unsigned char> data;
-    gfx::JPEGCodec::Encode(bitmap, /*quality=*/50, &data);
-    return std::string(data.begin(), data.end());
+    std::optional<std::vector<uint8_t>> data =
+        gfx::JPEGCodec::Encode(bitmap, /*quality=*/50);
+    return std::string(base::as_string_view(data.value()));
   }());
   return *jpg_bytes;
 }
@@ -140,10 +141,9 @@ std::unique_ptr<manta::proto::Response> CreateMantaResponseWithFilteredReason(
 }
 
 MATCHER_P(AreJpgBytesClose, expected_bitmap, "") {
-  std::unique_ptr<SkBitmap> actual_bitmap = gfx::JPEGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(arg.data()), arg.size());
-  return actual_bitmap != nullptr &&
-         gfx::test::AreBitmapsClose(expected_bitmap, *actual_bitmap,
+  SkBitmap actual_bitmap = gfx::JPEGCodec::Decode(base::as_byte_span(arg));
+  return !actual_bitmap.isNull() &&
+         gfx::test::AreBitmapsClose(expected_bitmap, actual_bitmap,
                                     /*max_deviation=*/1);
 }
 

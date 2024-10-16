@@ -43,15 +43,14 @@ std::vector<uint8_t> CreateJpeg(int width = 100, int height = 100) {
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(kRed);
 
-  std::vector<uint8_t> jpg_data;
-
-  bool encoded = gfx::JPEGCodec::Encode(bitmap, kQuality, &jpg_data);
-  if (!encoded) {
+  std::optional<std::vector<uint8_t>> jpg_data =
+      gfx::JPEGCodec::Encode(bitmap, kQuality);
+  if (!jpg_data) {
     LOG(ERROR) << "Failed to encode a sample JPEG wallpaper image";
-    jpg_data.clear();
+    return {};
   }
 
-  return jpg_data;
+  return jpg_data.value();
 }
 
 using crosapi::mojom::SetWallpaperResultPtr;

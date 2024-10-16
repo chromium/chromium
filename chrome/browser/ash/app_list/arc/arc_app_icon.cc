@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -721,14 +722,16 @@ void ArcAppIcon::DecodeImage(
       *this, descriptor, resize_allowed, retain_padding, image_skia,
       incomplete_scale_factors));
   if (disable_safe_decoding_for_testing) {
-    SkBitmap bitmap;
-    if (!unsafe_icon_data.empty() &&
-        gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(&unsafe_icon_data.front()),
-            unsafe_icon_data.length(), &bitmap)) {
-      decode_requests_.back()->OnImageDecoded(bitmap);
-    } else {
+    if (unsafe_icon_data.empty()) {
       decode_requests_.back()->OnDecodeImageFailed();
+    } else {
+      SkBitmap bitmap =
+          gfx::PNGCodec::Decode(base::as_byte_span(unsafe_icon_data));
+      if (bitmap.isNull()) {
+        decode_requests_.back()->OnDecodeImageFailed();
+      } else {
+        decode_requests_.back()->OnImageDecoded(bitmap);
+      }
     }
   } else {
     ImageDecoder::Start(decode_requests_.back().get(),

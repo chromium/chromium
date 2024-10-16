@@ -50,10 +50,9 @@ namespace ash {
 namespace {
 
 scoped_refptr<base::RefCountedBytes> EncodeImage(const gfx::ImageSkia& image) {
-  auto output = base::MakeRefCounted<base::RefCountedBytes>();
-  SkBitmap bitmap = *(image.bitmap());
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &(output)->as_vector());
-  return output;
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(*(image.bitmap()), /*quality=*/90);
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(data).value());
 }
 
 WallpaperDriveFsDelegate* GetWallpaperDriveFsDelegate() {

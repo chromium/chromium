@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -16,6 +17,7 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -52,9 +54,12 @@ SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
 
 std::string CreateJpgBytes(SkColor color = kDefaultImageColor) {
   SkBitmap bitmap = CreateBitmap(color);
-  std::vector<unsigned char> data;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  if (!data) {
+    return std::string();
+  }
+  return std::string(base::as_string_view(data.value()));
 }
 
 base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {

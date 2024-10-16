@@ -109,18 +109,11 @@ bool ImageIsNearColor(gfx::ImageSkia image, SkColor expected_color) {
 
 // Creates compressed JPEG image of solid color. Result bytes are written to
 // |output|. Returns true on success.
-bool CreateJPEGImage(int width,
-                     int height,
-                     SkColor color,
-                     std::vector<unsigned char>* output) {
+std::vector<uint8_t> CreateJPEGImage(int width, int height, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
-  if (!gfx::JPEGCodec::Encode(bitmap, 80 /*quality=*/, output)) {
-    LOG(ERROR) << "Unable to encode " << width << "x" << height << " bitmap";
-    return false;
-  }
-  return true;
+  return gfx::JPEGCodec::Encode(bitmap, 80 /*quality=*/).value();
 }
 
 class TestWallpaperObserver : public WallpaperControllerObserver {
@@ -177,10 +170,8 @@ class CustomizationWallpaperDownloaderBrowserTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    std::vector<unsigned char> oem_wallpaper;
-    ASSERT_TRUE(CreateJPEGImage(kWallpaperSize, kWallpaperSize,
-                                kCustomizedDefaultWallpaperColor,
-                                &oem_wallpaper));
+    std::vector<uint8_t> oem_wallpaper = CreateJPEGImage(
+        kWallpaperSize, kWallpaperSize, kCustomizedDefaultWallpaperColor);
     jpeg_data_.resize(oem_wallpaper.size());
     base::ranges::copy(oem_wallpaper, jpeg_data_.begin());
 

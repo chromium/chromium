@@ -136,17 +136,19 @@ void KioskAppDataBase::DecodeIcon(KioskAppIconLoader::ResultCallback callback) {
 void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
                                 const base::FilePath& cache_dir) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<unsigned char> image_data;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(icon, false, &image_data)) {
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(icon, /*discard_transparency=*/false);
+  if (!image_data) {
     LOG(ERROR) << "Failed to encode kiosk icon";
     return;
   }
 
   const base::FilePath icon_path =
       cache_dir.AppendASCII(app_id_).AddExtension(kIconFileExtension);
-  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                             base::BindOnce(&SaveIconToLocalOnBlockingPool,
-                                            icon_path, std::move(image_data)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SaveIconToLocalOnBlockingPool, icon_path,
+                     std::move(image_data).value()));
 
   icon_path_ = icon_path;
 }

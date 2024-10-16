@@ -98,8 +98,8 @@ class BasicTestCase : public TestCase {
 class LocalImageTestCase : public TestCase {
  public:
   using EncodeCallback =
-      base::RepeatingCallback<bool(const SkBitmap& bitmap,
-                                   std::vector<uint8_t>* output)>;
+      base::RepeatingCallback<std::optional<std::vector<uint8_t>>(
+          const SkBitmap& bitmap)>;
 
   LocalImageTestCase(std::string format, EncodeCallback encode)
       : format_(std::move(format)),
@@ -107,7 +107,9 @@ class LocalImageTestCase : public TestCase {
     CHECK(temp_dir_.CreateUniqueTempDir()) << "Could not create temp dir";
 
     SkBitmap bitmap = gfx::test::CreateBitmap(1);
-    CHECK(encode.Run(bitmap, &image_bytes_)) << "Encoding bitmap failed";
+    std::optional<std::vector<uint8_t>> encode_bytes = encode.Run(bitmap);
+    CHECK(encode_bytes) << "Encoding bitmap failed";
+    image_bytes_ = std::move(encode_bytes).value();
 
     base::FilePath path = temp_dir_.GetPath().Append(
         base::FilePath("test_image").AddExtensionASCII(format_));
@@ -183,23 +185,20 @@ const TestCaseCallback kImageTestCases[] = {
         .ToCallback(),
     MakeLocalImageTestCaseCallback(
         "png",
-        base::BindRepeating(
-            [](const SkBitmap& bitmap, std::vector<uint8_t>* output) {
-              return gfx::PNGCodec::EncodeBGRASkBitmap(
-                  bitmap, /*discard_transparency=*/false, output);
-            })),
+        base::BindRepeating([](const SkBitmap& bitmap) {
+          return gfx::PNGCodec::EncodeBGRASkBitmap(
+              bitmap, /*discard_transparency=*/false);
+        })),
     MakeLocalImageTestCaseCallback(
         "jpeg",
-        base::BindRepeating(
-            [](const SkBitmap& bitmap, std::vector<uint8_t>* output) {
-              return gfx::JPEGCodec::Encode(bitmap, /*quality=*/80, output);
-            })),
+        base::BindRepeating([](const SkBitmap& bitmap) {
+          return gfx::JPEGCodec::Encode(bitmap, /*quality=*/80);
+        })),
     MakeLocalImageTestCaseCallback(
         "webp",
-        base::BindRepeating(
-            [](const SkBitmap& bitmap, std::vector<uint8_t>* output) {
-              return gfx::WebpCodec::Encode(bitmap, /*quality=*/80, output);
-            }))};
+        base::BindRepeating([](const SkBitmap& bitmap) {
+          return gfx::WebpCodec::Encode(bitmap, /*quality=*/80);
+        }))};
 
 INSTANTIATE_TEST_SUITE_P(Text,
                          QuickInsertInsertMediaRequestTest,

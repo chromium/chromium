@@ -21,6 +21,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -63,9 +64,9 @@ namespace {
 std::string CreateJpgBytes() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
-  std::vector<unsigned char> data;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  return std::string(base::as_string_view(data.value()));
 }
 
 bool IsNudgeShown(const std::string& id) {

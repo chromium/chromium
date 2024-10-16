@@ -22,6 +22,7 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -43,9 +44,10 @@ constexpr char kMetadataSuffix[] = ".metadata";
 
 // Helper for converting `bitmap` into string.
 std::string SkBitmapToString(const SkBitmap& bitmap) {
-  std::vector<unsigned char> data;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  CHECK(data);
+  return std::string(base::as_string_view(data.value()));
 }
 
 // Create fake Jpg image bytes.

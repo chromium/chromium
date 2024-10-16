@@ -74,12 +74,13 @@ GURL MakeImageDataURL(const gfx::ImageSkia& image) {
   }
   gfx::ImageSkia resized_image = EnsureMinSize(image);
 
-  std::vector<unsigned char> webp_data;
-  if (!gfx::WebpCodec::Encode(*resized_image.bitmap(), 50, &webp_data)) {
+  std::optional<std::vector<uint8_t>> webp_data =
+      gfx::WebpCodec::Encode(*resized_image.bitmap(), /*quality=*/50);
+  if (!webp_data) {
     return {};
   }
 
-  GURL url("data:image/webp;base64," + base::Base64Encode(webp_data));
+  GURL url("data:image/webp;base64," + base::Base64Encode(webp_data.value()));
   if (url.spec().size() > url::kMaxURLChars) {
     return {};
   }

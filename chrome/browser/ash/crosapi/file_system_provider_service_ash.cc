@@ -237,9 +237,10 @@ std::optional<GURL> ToPNGDataURL(const gfx::ImageSkia& image) {
   if (image.isNull()) {
     return std::nullopt;
   }
-  std::vector<unsigned char> output;
-  gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(), false, &output);
-  GURL url("data:image/png;base64," + base::Base64Encode(output));
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(), false);
+  GURL url("data:image/png;base64," +
+           base::Base64Encode(output.value_or(std::vector<uint8_t>())));
   if (url.spec().size() > url::kMaxURLChars) {
     return std::nullopt;
   }

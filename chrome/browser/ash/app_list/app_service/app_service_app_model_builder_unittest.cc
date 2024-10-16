@@ -296,20 +296,22 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
         apps::CreateStandardIconImage(image_future.Take().AsImageSkia());
   }
 
-  void GenerateExtensionAppCompressedIcon(const std::string app_id,
-                                          std::vector<uint8_t>& result) {
+  std::vector<uint8_t> GenerateExtensionAppCompressedIcon(
+      const std::string app_id) {
     gfx::ImageSkia image_skia;
     GenerateExtensionAppIcon(app_id, image_skia);
 
     const float scale = 1.0;
     const gfx::ImageSkiaRep& image_skia_rep =
         image_skia.GetRepresentation(scale);
-    ASSERT_EQ(image_skia_rep.scale(), scale);
+    CHECK_EQ(image_skia_rep.scale(), scale);
 
     const SkBitmap& bitmap = image_skia_rep.GetBitmap();
     const bool discard_transparency = false;
-    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                  &result));
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency);
+    CHECK(data);
+    return data.value();
   }
 
   std::vector<std::string> preinstalled_apps_;
@@ -584,8 +586,8 @@ TEST_F(ExtensionAppTest, LoadIcon) {
 
 TEST_F(ExtensionAppTest, LoadCompressedIcon) {
   // Generate the source icon for comparing.
-  std::vector<uint8_t> src_data;
-  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, src_data);
+  std::vector<uint8_t> src_data =
+      GenerateExtensionAppCompressedIcon(kPackagedApp1Id);
 
   apps::IconEffects icon_effects = apps::IconEffects::kCrOsStandardIcon;
 

@@ -1706,9 +1706,8 @@ void CaptureModeController::OnImageCapturedForSearch(
   // TODO(b/356878705): This currently shows the results panel immediately for
   // debugging purposes. After the backend interface is implemented, we might
   // want to wait for the backend response before showing the results panel.
-  const std::unique_ptr<SkBitmap> bitmap =
-      gfx::JPEGCodec::Decode(jpeg_bytes->data(), jpeg_bytes->size());
-  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
+  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   capture_mode_session_->ShowSearchResultsPanel(image);
 
   if (on_image_captured_for_search_callback_for_test_) {
