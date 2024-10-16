@@ -287,15 +287,11 @@ bool ShouldIgnoreHistorySyncDeclineLimits() {
       boolForKey:kShouldIgnoreHistorySyncDeclineLimits];
 }
 
-std::optional<int> DisplaySwitchProfile() {
+bool DisplaySwitchProfile() {
   int switchProfileCount = [[NSUserDefaults standardUserDefaults]
       integerForKey:kDisplaySwitchProfile];
 
-  if (switchProfileCount == 0) {
-    return std::nullopt;
-  }
-
-  return switchProfileCount;
+  return switchProfileCount > 0;
 }
 
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {

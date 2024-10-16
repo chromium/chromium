@@ -608,11 +608,11 @@ struct EnhancedSafeBrowsingActivePromoData
     _showMemoryDebugToolsItem = [self showMemoryDebugSwitchItem];
     [model addItem:_showMemoryDebugToolsItem
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+  }
 
-    if (experimental_flags::DisplaySwitchProfile().has_value()) {
-      [model addItem:[self switchProfileItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierDebug];
-    }
+  if (experimental_flags::DisplaySwitchProfile()) {
+    [model addItem:[self switchProfileItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
   }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)

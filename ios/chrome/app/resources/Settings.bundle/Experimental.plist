@@ -569,15 +569,11 @@
 			<array>
 				<integer>0</integer>
 				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
-				<string>Enabled (creates 1 test profile)</string>
-				<string>Enabled (creates 2 test profiles)</string>
-				<string>Enabled (creates 3 test profiles)</string>
+				<string>Enabled</string>
 			</array>
 		</dict>
 		<dict>
