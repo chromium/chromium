@@ -1168,7 +1168,8 @@ void RequestManager::SubmitCapturedJpegBuffer(uint32_t frame_number,
     return;
   }
   const Camera3JpegBlob* header = reinterpret_cast<Camera3JpegBlob*>(
-      reinterpret_cast<const uintptr_t>(scoped_mapping->Memory(0)) +
+      reinterpret_cast<const uintptr_t>(
+          scoped_mapping->GetMemoryForPlane(0).data()) +
       buffer_dimension.width() - sizeof(Camera3JpegBlob));
   if (header->jpeg_blob_id != kCamera3JpegBlobId) {
     device_context_->SetErrorState(
@@ -1179,8 +1180,7 @@ void RequestManager::SubmitCapturedJpegBuffer(uint32_t frame_number,
   // Still capture result from HALv3 already has orientation info in EXIF,
   // so just provide 0 as screen rotation in |blobify_callback_| parameters.
   mojom::BlobPtr blob = blobify_callback_.Run(
-      reinterpret_cast<const uint8_t*>(scoped_mapping->Memory(0)),
-      header->jpeg_size,
+      scoped_mapping->GetMemoryForPlane(0).data(), header->jpeg_size,
       stream_buffer_manager_->GetStreamCaptureFormat(stream_type), 0);
   if (blob) {
     if (stream_type == StreamType::kJpegOutput &&

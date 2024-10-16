@@ -602,9 +602,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
   switch (frame_format.pixel_format) {
     case PIXEL_FORMAT_NV12:
       ret = libyuv::NV12ToI420Rotate(
-          reinterpret_cast<uint8_t*>(scoped_mapping->Memory(0)),
+          scoped_mapping->GetMemoryForPlane(0).data(),
           scoped_mapping->Stride(0),
-          reinterpret_cast<uint8_t*>(scoped_mapping->Memory(1)),
+          scoped_mapping->GetMemoryForPlane(1).data(),
           scoped_mapping->Stride(1), y_plane_data, y_plane_stride, u_plane_data,
           uv_plane_stride, v_plane_data, uv_plane_stride,
           scoped_mapping->Size().width(), scoped_mapping->Size().height(),

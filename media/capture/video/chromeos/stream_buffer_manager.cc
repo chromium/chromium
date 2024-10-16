@@ -139,18 +139,18 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
     // We can reuse the original buffer in this case because the size is same.
     // Note that libyuv can in-place rotate the Y-plane by 180 degrees.
     libyuv::NV12ToI420Rotate(
-        static_cast<uint8_t*>(original_scoped_mapping->Memory(0)),
+        original_scoped_mapping->GetMemoryForPlane(0).data(),
         original_scoped_mapping->Stride(0),
-        static_cast<uint8_t*>(original_scoped_mapping->Memory(1)),
+        original_scoped_mapping->GetMemoryForPlane(1).data(),
         original_scoped_mapping->Stride(1),
-        static_cast<uint8_t*>(original_scoped_mapping->Memory(0)),
+        original_scoped_mapping->GetMemoryForPlane(0).data(),
         original_scoped_mapping->Stride(0), temp_u, temp_uv_width, temp_v,
         temp_uv_width, original_width, original_height,
         translate_rotation(rotation));
-    libyuv::MergeUVPlane(
-        temp_u, temp_uv_width, temp_v, temp_uv_width,
-        static_cast<uint8_t*>(original_scoped_mapping->Memory(1)),
-        original_scoped_mapping->Stride(1), temp_uv_width, temp_uv_height);
+    libyuv::MergeUVPlane(temp_u, temp_uv_width, temp_v, temp_uv_width,
+                         original_scoped_mapping->GetMemoryForPlane(1).data(),
+                         original_scoped_mapping->Stride(1), temp_uv_width,
+                         temp_uv_height);
     return std::move(buffer_pair.vcd_buffer);
   }
 
@@ -180,17 +180,17 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
     return std::move(buffer_pair.vcd_buffer);
   }
 
-  libyuv::NV12ToI420Rotate(
-      static_cast<uint8_t*>(original_scoped_mapping->Memory(0)),
-      original_scoped_mapping->Stride(0),
-      static_cast<uint8_t*>(original_scoped_mapping->Memory(1)),
-      original_scoped_mapping->Stride(1),
-      static_cast<uint8_t*>(rotated_scoped_mapping->Memory(0)),
-      rotated_scoped_mapping->Stride(0), temp_u, temp_uv_height, temp_v,
-      temp_uv_height, original_width, original_height,
-      translate_rotation(rotation));
+  libyuv::NV12ToI420Rotate(original_scoped_mapping->GetMemoryForPlane(0).data(),
+                           original_scoped_mapping->Stride(0),
+                           original_scoped_mapping->GetMemoryForPlane(1).data(),
+                           original_scoped_mapping->Stride(1),
+                           rotated_scoped_mapping->GetMemoryForPlane(0).data(),
+                           rotated_scoped_mapping->Stride(0), temp_u,
+                           temp_uv_height, temp_v, temp_uv_height,
+                           original_width, original_height,
+                           translate_rotation(rotation));
   libyuv::MergeUVPlane(temp_u, temp_uv_height, temp_v, temp_uv_height,
-                       static_cast<uint8_t*>(rotated_scoped_mapping->Memory(1)),
+                       rotated_scoped_mapping->GetMemoryForPlane(1).data(),
                        rotated_scoped_mapping->Stride(1), temp_uv_height,
                        temp_uv_width);
   return std::move(rotated_buffer);

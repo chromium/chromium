@@ -417,12 +417,10 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
   auto* uv_data = y_data + kDetectionWidth * kDetectionHeight;
 
   int status = libyuv::NV12Scale(
-      static_cast<uint8_t*>(scoped_mapping->Memory(0)),
-      scoped_mapping->Stride(0),
-      static_cast<uint8_t*>(scoped_mapping->Memory(1)),
-      scoped_mapping->Stride(1), width, height, y_data, kDetectionWidth,
-      uv_data, kDetectionWidth, kDetectionWidth, kDetectionHeight,
-      libyuv::FilterMode::kFilterNone);
+      scoped_mapping->GetMemoryForPlane(0).data(), scoped_mapping->Stride(0),
+      scoped_mapping->GetMemoryForPlane(1).data(), scoped_mapping->Stride(1),
+      width, height, y_data, kDetectionWidth, uv_data, kDetectionWidth,
+      kDetectionWidth, kDetectionHeight, libyuv::FilterMode::kFilterNone);
   if (status != 0) {
     LOG(ERROR) << "Failed to scale buffer";
     return;
