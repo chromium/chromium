@@ -132,9 +132,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   void SetDomainFromDOM(const String& new_domain);
   bool DomainWasSetInDOM() const { return domain_was_set_in_dom_; }
 
-  String Protocol() const { return protocol_; }
-  String Host() const { return host_; }
-  String Domain() const { return domain_; }
+  const String& Protocol() const { return protocol_; }
+  const String& Host() const { return host_; }
+  const String& Domain() const { return domain_; }
 
   // Returns the registrable domain if available.
   // For non-tuple origin, IP address URL, and public suffixes, this returns a

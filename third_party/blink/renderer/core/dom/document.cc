@@ -6439,20 +6439,31 @@ net::SiteForCookies Document::SiteForCookies() const {
   // enabled, access-controlled media cannot be rendered. We only make this
   // exception in this special case to minimize security/privacy risk.
   url::Origin url_origin = origin->ToUrlOrigin();
-  if (url_origin.opaque() &&
-      !url_origin.GetTupleOrPrecursorTupleIfOpaque().host().empty() &&
-      override_site_for_cookies_for_csp_media_) {
+
+  if (override_site_for_cookies_for_csp_media_ && url_origin.opaque() &&
+      !url_origin.GetTupleOrPrecursorTupleIfOpaque().host().empty()) {
     return net::SiteForCookies::FromOrigin(url::Origin::Create(
         url_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL()));
   }
 
   net::SiteForCookies candidate = net::SiteForCookies::FromOrigin(url_origin);
 
+  // If true, CompareWithFrameTreeOriginAndRevise() is skipped if the
+  // SecurityOrigin of the the frames is the same. If any frame has a different
+  // SecurityOrigin, then this is set to false so that
+  // CompareWithFrameTreeOriginAndRevise() is called for all remaining frames.
+  bool can_avoid_revise_if_security_origins_match = true;
+
   // If this window was opened as a new partitioned popin we need to use the
   // site for cookies of the opener as our initial candidate.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   if (GetPage()->GetPartitionedPopinOpenerSiteForCookies()) {
     candidate = *GetPage()->GetPartitionedPopinOpenerSiteForCookies();
+    // We can only skip comparisons when using the SiteForCookies from the
+    // top frame. Because we reset `candidate`, we need to call
+    // CompareWithFrameTreeOriginAndRevise() regardless of whether a frame
+    // has the same SecurityOrigin as the top frame.
+    can_avoid_revise_if_security_origins_match = false;
   }
 
   if (SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
@@ -6470,10 +6481,17 @@ net::SiteForCookies Document::SiteForCookies() const {
   }
 
   while (current_frame) {
-    const url::Origin cur_security_origin =
-        current_frame->GetSecurityContext()->GetSecurityOrigin()->ToUrlOrigin();
-    if (!candidate.CompareWithFrameTreeOriginAndRevise(cur_security_origin))
-      return candidate;
+    const SecurityOrigin* current_frame_security_origin =
+        current_frame->GetSecurityContext()->GetSecurityOrigin();
+    // If possible, skip revising frames that have the same security origin.
+    if (!can_avoid_revise_if_security_origins_match ||
+        current_frame_security_origin != origin) {
+      if (!candidate.CompareWithFrameTreeOriginAndRevise(
+              current_frame_security_origin->ToUrlOrigin())) {
+        return candidate;
+      }
+      can_avoid_revise_if_security_origins_match = false;
+    }
     current_frame = current_frame->Tree().Parent();
   }
 
