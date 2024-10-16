@@ -424,8 +424,7 @@ DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
       DOMArrayBuffer* buffer = DOMArrayBuffer::CreateUninitializedOrNull(
           binary_response_builder_->size(), 1);
       if (buffer) {
-        bool result = binary_response_builder_->GetBytes(buffer->Data(),
-                                                         buffer->ByteLength());
+        bool result = binary_response_builder_->GetBytes(buffer->ByteSpan());
         DCHECK(result);
         response_array_buffer_ = buffer;
       }

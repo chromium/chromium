@@ -176,15 +176,10 @@ class WTF_EXPORT SegmentedBuffer {
     return GetIteratorAtInternal(position);
   }
 
-  // Copies |byteLength| bytes from the beginning of the content data into
-  // |dest| as a flat buffer. Returns true on success, otherwise the content of
-  // |dest| is not guaranteed.
-  HAS_STRICTLY_TYPED_ARG [[nodiscard]] bool GetBytes(
-      void* dest,
-      STRICTLY_TYPED_ARG(byte_length)) const {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return GetBytesInternal(dest, byte_length);
-  }
+  // Copies `buffer.size()` bytes from the beginning of the content data into
+  // `buffer` as a flat buffer. Returns true on success, otherwise the content
+  // of `buffer` is not guaranteed.
+  [[nodiscard]] bool GetBytes(base::span<uint8_t> buffer) const;
 
   void GetMemoryDumpNameAndSize(String& dump_name, size_t& dump_size) const;
 
@@ -207,7 +202,6 @@ class WTF_EXPORT SegmentedBuffer {
   };
 
  private:
-  bool GetBytesInternal(void* dest, size_t) const;
   Iterator GetIteratorAtInternal(size_t position) const;
 
   size_t size_ = 0;

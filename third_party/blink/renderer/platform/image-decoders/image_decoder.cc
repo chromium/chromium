@@ -353,7 +353,7 @@ bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
     } box;
     static_assert(sizeof(box) == 8, "");
     static_assert(8 <= kLongestSignatureLength, "");
-    bool ok = data.GetBytes(&box, 8u);
+    bool ok = data.GetBytes(base::byte_span_from_ref(box));
     DCHECK(ok);
     if (base::span(box.type) == base::span({'f', 't', 'y', 'p'})) {
       // Returns whether we have received the File Type Box in its entirety.

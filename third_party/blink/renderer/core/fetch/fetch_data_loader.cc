@@ -222,8 +222,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
     if (!result) {
       return result;
     }
-    auto data = result->ByteSpan();
-    CHECK(buffer_->GetBytes(data.data(), data.size()));
+    CHECK(buffer_->GetBytes(result->ByteSpan()));
     buffer_->Clear();
     return result;
   }
