@@ -17,6 +17,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/cbor/writer.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/aead.h"
 #include "crypto/ec_private_key.h"
@@ -24,6 +25,8 @@
 #include "crypto/hkdf.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
+#include "device/fido/attestation_object.h"
+#include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
@@ -246,7 +249,7 @@ std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
       .SerializeToByteArray();
 }
 
-std::vector<uint8_t> MakeAuthenticatorDataForCreation(
+std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
     base::span<const uint8_t> credential_id,
     base::span<const uint8_t> public_key_spki_der) {
@@ -261,13 +264,17 @@ std::vector<uint8_t> MakeAuthenticatorDataForCreation(
           public_key_spki_der);
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
-  return device::AuthenticatorData(
-             crypto::SHA256Hash(base::as_byte_span(rp_id)),
-             {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
-              Flag::kBackupEligible, Flag::kBackupState, Flag::kAttestation},
-             /*sign_counter=*/0u, std::move(attested_credential_data),
-             /*extensions=*/std::nullopt)
-      .SerializeToByteArray();
+  device::AuthenticatorData authenticator_data(
+      crypto::SHA256Hash(base::as_byte_span(rp_id)),
+      {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
+       Flag::kBackupEligible, Flag::kBackupState, Flag::kAttestation},
+      /*sign_counter=*/0u, std::move(attested_credential_data),
+      /*extensions=*/std::nullopt);
+  device::AttestationObject attestationObject(
+      std::move(authenticator_data),
+      std::make_unique<device::NoneAttestationStatement>());
+
+  return cbor::Writer::Write(device::AsCBOR(attestationObject)).value();
 }
 
 std::optional<std::vector<uint8_t>> GenerateEcSignature(

@@ -148,19 +148,20 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 
-  SaveCredential([[ArchivableCredential alloc] initWithFavicon:nil
-                                                          gaia:gaia
-                                                       passkey:passkey]);
-
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
   NSData* credential_id = [NSData dataWithBytes:cred_id.data()
                                          length:cred_id.size()];
-  std::vector<uint8_t> authenticator_data =
-      webauthn::passkey_model_utils::MakeAuthenticatorDataForCreation(
+  std::vector<uint8_t> attestation_object_for_creation =
+      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
           rp_id_str, cred_id, public_key_spki_der);
-  NSData* attestation_object = [NSData dataWithBytes:authenticator_data.data()
-                                              length:authenticator_data.size()];
+  NSData* attestation_object =
+      [NSData dataWithBytes:attestation_object_for_creation.data()
+                     length:attestation_object_for_creation.size()];
+
+  SaveCredential([[ArchivableCredential alloc] initWithFavicon:nil
+                                                          gaia:gaia
+                                                       passkey:passkey]);
 
   return [ASPasskeyRegistrationCredential
       credentialWithRelyingParty:rp_id

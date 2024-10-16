@@ -61,11 +61,11 @@ bool EncryptWebauthnCredentialSpecificsData(
 // https://w3c.github.io/webauthn/#authenticator-data.
 std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id);
 
-// Returns the WebAuthn authenticator data for the GPM authenticator.
+// Returns the WebAuthn attestation object for the GPM authenticator.
 // For attestation signatures, the authenticator MUST set the AT flag and
 // include the attestedCredentialData. See
 // https://w3c.github.io/webauthn/#authenticator-data.
-std::vector<uint8_t> MakeAuthenticatorDataForCreation(
+std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
     base::span<const uint8_t> credential_id,
     base::span<const uint8_t> public_key_spki_der);
