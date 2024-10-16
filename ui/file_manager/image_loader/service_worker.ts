@@ -79,9 +79,9 @@ async function sendToOffscreenDocument(
 //
 // https://groups.google.com/a/google.com/g/chromeos-files-syd/c/dBhXhPGGkg0/m/pw3Gv3TLAAAJ
 //
-// When updating this '0.4' string, keep it synchronized with what's in
+// When updating this '0.5' string, keep it synchronized with what's in
 // manifest.json near the §.
-if (chrome.runtime.getManifest().version !== '0.4') {
+if (chrome.runtime.getManifest().version !== '0.5') {
   chrome.runtime.reload();
 
 } else {

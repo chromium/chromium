@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # image_loader/ files that are also used outside of the generated
-# image_loader/background.rollup.js file (either in tests or in prod code).
+# image_loader/offscreen.rollup.js file (either in tests or in prod code).
 shared_image_loader_ts = [
   "image_loader/image_loader_client.ts",
   "image_loader/image_orientation.ts",
@@ -17,13 +17,14 @@ foreach(_f, shared_image_loader_ts) {
 
 # All image loader files, used for unit test and production.
 image_loader_ts = [
-                    "image_loader/background.ts",
                     "image_loader/cache.ts",
                     "image_loader/image_loader.ts",
                     "image_loader/image_loader_util.ts",
                     "image_loader/image_request_task.ts",
+                    "image_loader/offscreen.ts",
                     "image_loader/piex_loader.ts",
                     "image_loader/scheduler.ts",
+                    "image_loader/service_worker.ts",
                     "image_loader/sw_od_messages.ts",
                   ] + shared_image_loader_ts
 
@@ -521,6 +522,7 @@ other_dts_files = [
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/chrome_test.d.ts",
   "//tools/typescript/definitions/metrics_private.d.ts",
+  "//tools/typescript/definitions/offscreen.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
   "//tools/typescript/definitions/tabs.d.ts",
   "//tools/typescript/definitions/wallpaper.d.ts",
