@@ -14,6 +14,7 @@
   "breakages": [
     {
       "bad_change_id": "I47f011c59d7a238e738c18bf5b5d7e9c15676ee2",
+      "good_change_id": "Iac5a6430580e1d83aeac11bb84766027819d2895",
       "bugs": [
         "b/373373506"
       ],
