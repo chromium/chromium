@@ -1289,7 +1289,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     savedInstanceState,
                     getCurrentTabModel()
                             .getProfile()
-                            .getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                            .getPrimaryOtrProfile(/* createIfNeeded= */ true));
         }
 
         resetSavedInstanceState();

@@ -192,12 +192,12 @@ public class CustomTabActivityEphemeralTest {
 
     @Test
     @MediumTest
-    public void testEphemeralTabLaunchesInOTRProfileWhenEnabled() {
+    public void testEphemeralTabLaunchesInOtrProfileWhenEnabled() {
         CustomTabActivity activity = launchEphemeralCustomTabActivity();
         Profile profile = activity.getActivityTab().getProfile();
         assertTrue(profile.isOffTheRecord());
         assertFalse(profile.isIncognitoBranded());
-        assertFalse(profile.isPrimaryOTRProfile());
+        assertFalse(profile.isPrimaryOtrProfile());
     }
 
     @Test
@@ -208,7 +208,7 @@ public class CustomTabActivityEphemeralTest {
         Profile profile = activity.getActivityTab().getProfile();
         assertFalse(profile.isOffTheRecord());
         assertFalse(profile.isIncognitoBranded());
-        assertFalse(profile.isPrimaryOTRProfile());
+        assertFalse(profile.isPrimaryOtrProfile());
     }
 
     @Test

@@ -61,7 +61,7 @@ public class ProfileTest {
 
         Profile incognitoProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
         Assert.assertTrue(
                 "isOffTheRecord should be true for Incognito profiles",
                 incognitoProfile1.isOffTheRecord());
@@ -69,18 +69,18 @@ public class ProfileTest {
                 "isIncognitoBranded should be true for Incognito profiles",
                 incognitoProfile1.isIncognitoBranded());
         Assert.assertTrue(
-                "isPrimaryOTRProfile should be true for Incognito profiles",
-                incognitoProfile1.isPrimaryOTRProfile());
+                "isPrimaryOtrProfile should be true for Incognito profiles",
+                incognitoProfile1.isPrimaryOtrProfile());
         Assert.assertTrue(
                 "isNativeInitialized should be true for Incognito profiles",
                 incognitoProfile1.isNativeInitialized());
         Assert.assertTrue(
                 "The regular profile should be the Incognito profile",
-                mRegularProfile.hasPrimaryOTRProfile());
+                mRegularProfile.hasPrimaryOtrProfile());
 
         Profile incognitoProfile2 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
         Assert.assertSame(
                 "Two calls to get incognito profile should return the same object.",
                 incognitoProfile1,
@@ -91,7 +91,7 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testNonPrimaryProfileConsistency() throws Exception {
-        OtrProfileId profileId = new OtrProfileId("test::OTRProfile");
+        OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -105,8 +105,8 @@ public class ProfileTest {
                 "isIncognitoBranded should be false for non-primary, non-iCCT OTR profiles",
                 nonPrimaryOtrProfile1.isIncognitoBranded());
         Assert.assertFalse(
-                "isPrimaryOTRProfile should be false for non-primary OTR profiles",
-                nonPrimaryOtrProfile1.isPrimaryOTRProfile());
+                "isPrimaryOtrProfile should be false for non-primary OTR profiles",
+                nonPrimaryOtrProfile1.isPrimaryOtrProfile());
         Assert.assertTrue(
                 "isNativeInitialized should be true for non-primary OTR profiles",
                 nonPrimaryOtrProfile1.isNativeInitialized());
@@ -114,8 +114,8 @@ public class ProfileTest {
                 "The regular profile should return the OTR profile from the OTR profile id",
                 mRegularProfile.hasOffTheRecordProfile(profileId));
         Assert.assertFalse(
-                "hasPrimaryOTRProfile should be false for non-primary, non-incognito profiles",
-                mRegularProfile.hasPrimaryOTRProfile());
+                "hasPrimaryOtrProfile should be false for non-primary, non-incognito profiles",
+                mRegularProfile.hasPrimaryOtrProfile());
 
         Assert.assertEquals(
                 "OTR profile id should be returned as it is set.",
@@ -126,7 +126,7 @@ public class ProfileTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
-                                        new OtrProfileId("test::OTRProfile"),
+                                        new OtrProfileId("test::OtrProfile"),
                                         /* createIfNeeded= */ true));
 
         Assert.assertSame(
@@ -140,14 +140,14 @@ public class ProfileTest {
     @Test
     @LargeTest
     public void testCreatingTwoNonPrimaryProfiles() throws Exception {
-        OtrProfileId profileId1 = new OtrProfileId("test::OTRProfile-1");
+        OtrProfileId profileId1 = new OtrProfileId("test::OtrProfile-1");
         Profile nonPrimaryOtrProfile1 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mRegularProfile.getOffTheRecordProfile(
                                         profileId1, /* createIfNeeded= */ true));
 
-        OtrProfileId profileId2 = new OtrProfileId("test::OTRProfile-2");
+        OtrProfileId profileId2 = new OtrProfileId("test::OtrProfile-2");
         Profile nonPrimaryOtrProfile2 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -161,8 +161,8 @@ public class ProfileTest {
                 "isIncognitoBranded should be false for non-primary, non-iCCT OTR profiles",
                 nonPrimaryOtrProfile1.isIncognitoBranded());
         Assert.assertFalse(
-                "isPrimaryOTRProfile should be false for non-primary OTR profiles",
-                nonPrimaryOtrProfile1.isPrimaryOTRProfile());
+                "isPrimaryOtrProfile should be false for non-primary OTR profiles",
+                nonPrimaryOtrProfile1.isPrimaryOtrProfile());
         Assert.assertTrue(
                 "isNativeInitialized should be true for non-primary OTR profiles",
                 nonPrimaryOtrProfile1.isNativeInitialized());
@@ -177,8 +177,8 @@ public class ProfileTest {
                 "isIncognitoBranded should be false for non-primary, non-iCCT OTR profiles",
                 nonPrimaryOtrProfile2.isIncognitoBranded());
         Assert.assertFalse(
-                "isPrimaryOTRProfile should be false for non-primary OTR profiles",
-                nonPrimaryOtrProfile2.isPrimaryOTRProfile());
+                "isPrimaryOtrProfile should be false for non-primary OTR profiles",
+                nonPrimaryOtrProfile2.isPrimaryOtrProfile());
         Assert.assertTrue(
                 "isNativeInitialized should be true for non-primary OTR profiles",
                 nonPrimaryOtrProfile2.isNativeInitialized());
@@ -199,8 +199,8 @@ public class ProfileTest {
     public void testCreatingUniqueOtrProfileIds() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OtrProfileId profileId1 = OtrProfileId.createUnique("test::OTRProfile");
-                    OtrProfileId profileId2 = OtrProfileId.createUnique("test::OTRProfile");
+                    OtrProfileId profileId1 = OtrProfileId.createUnique("test::OtrProfile");
+                    OtrProfileId profileId2 = OtrProfileId.createUnique("test::OtrProfile");
 
                     Assert.assertNotSame(
                             "Two calls to OtrProfileId.CreateUnique with the same prefix"
@@ -247,8 +247,8 @@ public class ProfileTest {
                 "isIncognitoBranded should be true for Incognito CCT profiles",
                 incognitoCCTProfile.isIncognitoBranded());
         Assert.assertFalse(
-                "isPrimaryOTRProfile should be false for Incognito CCT profiles",
-                incognitoCCTProfile.isPrimaryOTRProfile());
+                "isPrimaryOtrProfile should be false for Incognito CCT profiles",
+                incognitoCCTProfile.isPrimaryOtrProfile());
         Assert.assertTrue(
                 "isNativeInitialized should be true for Incognito CCT profiles",
                 incognitoCCTProfile.isNativeInitialized());
@@ -271,26 +271,26 @@ public class ProfileTest {
 
     @Test
     @LargeTest
-    public void testBrowserProfileTypeFromPrimaryOTRProfile() throws Exception {
+    public void testBrowserProfileTypeFromPrimaryOtrProfile() throws Exception {
         // Open an new Incognito Tab page to create a new primary OTR profile.
         sActivityTestRule.loadUrlInNewTab("about:blank", true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile primaryOTRProfile =
-                            mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                    Profile primaryOtrProfile =
+                            mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true);
                     Assert.assertEquals(
                             BrowserProfileType.INCOGNITO,
-                            Profile.getBrowserProfileTypeFromProfile(primaryOTRProfile));
+                            Profile.getBrowserProfileTypeFromProfile(primaryOtrProfile));
                 });
     }
 
     @Test
     @LargeTest
-    public void testBrowserProfileTypeFromNonPrimaryOTRProfile() throws Exception {
+    public void testBrowserProfileTypeFromNonPrimaryOtrProfile() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OtrProfileId otrProfileId = new OtrProfileId("test::OTRProfile");
+                    OtrProfileId otrProfileId = new OtrProfileId("test::OtrProfile");
                     Profile nonPrimaryOtrProfile =
                             mRegularProfile.getOffTheRecordProfile(
                                     otrProfileId, /* createIfNeeded= */ true);
@@ -306,7 +306,7 @@ public class ProfileTest {
     @RequiresRestart(
             "crbug/1161449 - Other tests create profiles which invalidate the first assertion.")
     public void testGetOffTheRecordProfile() throws Exception {
-        OtrProfileId profileId = new OtrProfileId("test::OTRProfile");
+        OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
 
         // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
         Profile profile1 =
@@ -347,29 +347,29 @@ public class ProfileTest {
         Assert.assertSame(profile2, profile4);
     }
 
-    /** Tests createIfNeeded parameter of getPrimaryOTRProfile. */
+    /** Tests createIfNeeded parameter of getPrimaryOtrProfile. */
     @Test
     @LargeTest
-    public void testGetPrimaryOTRProfile() throws Exception {
+    public void testGetPrimaryOtrProfile() throws Exception {
         // Ask for a non-existing profile with createIfNeeded set to false, and exepct null.
         Profile profile1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ false));
+                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false));
         Assert.assertNull(profile1);
-        Assert.assertFalse(mRegularProfile.hasPrimaryOTRProfile());
+        Assert.assertFalse(mRegularProfile.hasPrimaryOtrProfile());
 
         // Ask for a non-existing profile with createIfNeeded set to true and expect creation.
         Profile profile2 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
         Assert.assertNotNull(profile2);
-        Assert.assertTrue(mRegularProfile.hasPrimaryOTRProfile());
+        Assert.assertTrue(mRegularProfile.hasPrimaryOtrProfile());
 
         // Ask for an existing profile with createIfNeeded set to false and expect getting the
         // existing profile.
         Profile profile3 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ false));
+                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false));
         Assert.assertNotNull(profile3);
         Assert.assertSame(profile2, profile3);
 
@@ -377,7 +377,7 @@ public class ProfileTest {
         // existing profile.
         Profile profile4 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mRegularProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                        () -> mRegularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true));
         Assert.assertNotNull(profile4);
         Assert.assertSame(profile2, profile4);
     }

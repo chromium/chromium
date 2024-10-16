@@ -130,7 +130,7 @@ public class RequestCoordinatorBridgeTest {
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);

@@ -99,7 +99,7 @@ public class CustomTabHistoryIPHControllerUnitTest {
     }
 
     @Test
-    public void testNoIPHInOTR() {
+    public void testNoIPHInOtr() {
         when(mMockProfile.isOffTheRecord()).thenReturn(true);
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.EXAMPLE_URL);

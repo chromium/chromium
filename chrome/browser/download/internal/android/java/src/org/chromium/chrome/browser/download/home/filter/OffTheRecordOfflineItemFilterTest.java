@@ -74,7 +74,7 @@ public class OffTheRecordOfflineItemFilterTest {
     }
 
     @Test
-    public void testFiltersOutItemsForNonPrimaryOTRProfiles() {
+    public void testFiltersOutItemsForNonPrimaryOtrProfiles() {
         OfflineItem item1 = buildItem(OtrProfileId.getPrimaryOtrProfileId());
         OfflineItem item2 = buildItem(null);
         OfflineItem item3 = buildItem(new OtrProfileId("profile::CCT-Test"));

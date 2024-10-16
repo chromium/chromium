@@ -41,13 +41,13 @@ public class ToolbarDataProviderTest {
 
     @Test
     @MediumTest
-    public void testPrimaryOTRProfileUsedForIncognitoTabbedActivity() {
+    public void testPrimaryOtrProfileUsedForIncognitoTabbedActivity() {
         mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
         ToolbarPhone toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = toolbar.getToolbarDataProvider().getProfile();
-                    assertTrue(profile.isPrimaryOTRProfile());
+                    assertTrue(profile.isPrimaryOtrProfile());
                 });
     }
 

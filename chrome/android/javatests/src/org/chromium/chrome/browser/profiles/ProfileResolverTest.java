@@ -71,7 +71,7 @@ public class ProfileResolverTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ProfileManager.getLastUsedRegularProfile()
-                                .getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                                .getPrimaryOtrProfile(/* createIfNeeded= */ true));
     }
 
     private Profile newOtrProfileOnUiThread(String profileIdPrefix) throws ExecutionException {

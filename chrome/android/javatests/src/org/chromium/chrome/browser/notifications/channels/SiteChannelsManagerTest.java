@@ -216,7 +216,7 @@ public class SiteChannelsManagerTest {
                 () -> {
                     info.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true),
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true),
                             ContentSettingValues.BLOCK);
                 });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
@@ -236,13 +236,13 @@ public class SiteChannelsManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
-                    Profile nonPrimaryOTRProfile =
+                    Profile nonPrimaryOtrProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileId, /* createIfNeeded= */ true);
-                    assertNotNull(nonPrimaryOTRProfile);
-                    assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
-                    info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
+                    assertNotNull(nonPrimaryOtrProfile);
+                    assertTrue(nonPrimaryOtrProfile.isOffTheRecord());
+                    info.setContentSetting(nonPrimaryOtrProfile, ContentSettingValues.BLOCK);
                 });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
     }

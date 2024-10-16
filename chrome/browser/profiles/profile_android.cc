@@ -88,7 +88,7 @@ ScopedJavaLocalRef<jobject> JNI_Profile_GetOffTheRecordProfile(
   return otr_profile->GetJavaObject();
 }
 
-ScopedJavaLocalRef<jobject> JNI_Profile_GetPrimaryOTRProfile(
+ScopedJavaLocalRef<jobject> JNI_Profile_GetPrimaryOtrProfile(
     JNIEnv* env,
     jlong ptr,
     const jboolean j_create_if_needed) {
@@ -111,7 +111,7 @@ jboolean JNI_Profile_HasOffTheRecordProfile(
   return self->HasOffTheRecordProfile(otr_profile_id);
 }
 
-jboolean JNI_Profile_HasPrimaryOTRProfile(JNIEnv* env, jlong ptr) {
+jboolean JNI_Profile_HasPrimaryOtrProfile(JNIEnv* env, jlong ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   return self->HasPrimaryOTRProfile();
 }

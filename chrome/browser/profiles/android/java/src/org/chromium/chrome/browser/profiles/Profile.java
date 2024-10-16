@@ -57,7 +57,7 @@ public class Profile implements BrowserContextHandle {
         assert profile != null;
 
         if (!profile.isOffTheRecord()) return BrowserProfileType.REGULAR;
-        if (profile.isPrimaryOTRProfile()) return BrowserProfileType.INCOGNITO;
+        if (profile.isPrimaryOtrProfile()) return BrowserProfileType.INCOGNITO;
         return BrowserProfileType.OTHER_OFF_THE_RECORD_PROFILE;
     }
 
@@ -71,7 +71,7 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns the OffTheRecord profile with given OTRProfileiD. If the profile does not exist and
+     * Returns the OffTheRecord profile with given OtrProfileiD. If the profile does not exist and
      * createIfNeeded is true, a new profile is created, otherwise returns null.
      *
      * @param profileId {@link OtrProfileId} object.
@@ -88,8 +88,8 @@ public class Profile implements BrowserContextHandle {
      *
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
-    public Profile getPrimaryOTRProfile(boolean createIfNeeded) {
-        return ProfileJni.get().getPrimaryOTRProfile(mNativeProfile, createIfNeeded);
+    public Profile getPrimaryOtrProfile(boolean createIfNeeded) {
+        return ProfileJni.get().getPrimaryOtrProfile(mNativeProfile, createIfNeeded);
     }
 
     /**
@@ -110,13 +110,13 @@ public class Profile implements BrowserContextHandle {
     }
 
     /** Returns if primary OffTheRecord profile exists. */
-    public boolean hasPrimaryOTRProfile() {
-        return ProfileJni.get().hasPrimaryOTRProfile(mNativeProfile);
+    public boolean hasPrimaryOtrProfile() {
+        return ProfileJni.get().hasPrimaryOtrProfile(mNativeProfile);
     }
 
     /** Returns if the profile is a primary OTR Profile. */
-    public boolean isPrimaryOTRProfile() {
-        return mOtrProfileId != null && mOtrProfileId.isPrimaryOTRId();
+    public boolean isPrimaryOtrProfile() {
+        return mOtrProfileId != null && mOtrProfileId.isPrimaryOtrId();
     }
 
     /**
@@ -130,7 +130,7 @@ public class Profile implements BrowserContextHandle {
      */
     public boolean isIncognitoBranded() {
         boolean isIncognitoCCT = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
-        return isPrimaryOTRProfile() || isIncognitoCCT;
+        return isPrimaryOtrProfile() || isIncognitoCCT;
     }
 
     /**
@@ -231,11 +231,11 @@ public class Profile implements BrowserContextHandle {
 
         Profile getOffTheRecordProfile(long ptr, OtrProfileId otrProfileId, boolean createIfNeeded);
 
-        Profile getPrimaryOTRProfile(long ptr, boolean createIfNeeded);
+        Profile getPrimaryOtrProfile(long ptr, boolean createIfNeeded);
 
         boolean hasOffTheRecordProfile(long ptr, OtrProfileId otrProfileId);
 
-        boolean hasPrimaryOTRProfile(long ptr);
+        boolean hasPrimaryOtrProfile(long ptr);
 
         boolean isChild(long ptr);
 
