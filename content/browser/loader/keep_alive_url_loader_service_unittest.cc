@@ -447,7 +447,9 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
 
   // Loads a keepalive request with invalid feature config:
-  feature_list().Reset();
+  base::test::ScopedFeatureList overwritten_feature_list;
+  overwritten_feature_list.InitAndDisableFeature(
+      blink::features::kKeepAliveInBrowserMigration);
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote(),
