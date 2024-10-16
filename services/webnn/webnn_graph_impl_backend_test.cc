@@ -95,8 +95,7 @@ BuildAndCompute(
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          device, mojom::CreateContextOptions::PowerPreference::kDefault,
-          /*thread_count_hint=*/0),
+          device, mojom::CreateContextOptions::PowerPreference::kDefault),
       create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();

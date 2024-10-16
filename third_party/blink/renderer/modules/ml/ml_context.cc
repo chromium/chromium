@@ -87,11 +87,9 @@ MLContext::MLContext(
     ExecutionContext* execution_context,
     const V8MLDeviceType device_type,
     const V8MLPowerPreference power_preference,
-    const unsigned int num_threads,
     webnn::mojom::blink::CreateContextSuccessPtr create_context_success)
     : device_type_(device_type),
       power_preference_(power_preference),
-      num_threads_(num_threads),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       context_remote_(execution_context),
       properties_(std::move(create_context_success->context_properties)),
@@ -111,10 +109,6 @@ V8MLDeviceType MLContext::GetDeviceType() const {
 
 V8MLPowerPreference MLContext::GetPowerPreference() const {
   return power_preference_;
-}
-
-unsigned int MLContext::GetNumThreads() const {
-  return num_threads_;
 }
 
 void MLContext::Trace(Visitor* visitor) const {

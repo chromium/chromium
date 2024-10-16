@@ -103,15 +103,9 @@ class GraphImplTflite::ComputeResources {
                             "Unable to build flatbuffer model"));
     }
 
-    int num_threads =
-        context->options().thread_count_hint != 0
-            ? static_cast<int>(context->options().thread_count_hint)
-            : -1;  // Let the TFLite runtime decide.
-
     OpResolver op_resolver(context->options());
-    ::tflite::InterpreterBuilder builder(*self->model_, op_resolver);
-    builder.SetNumThreads(num_threads);
-    TfLiteStatus status = builder(&self->interpreter_);
+    TfLiteStatus status = ::tflite::InterpreterBuilder(
+        *self->model_, op_resolver)(&self->interpreter_);
     if (status != kTfLiteOk) {
       return base::unexpected(
           mojom::Error::New(mojom::Error::Code::kUnknownError,

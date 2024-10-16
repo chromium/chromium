@@ -50,7 +50,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
       ExecutionContext* execution_context,
       const V8MLDeviceType device_type,
       const V8MLPowerPreference power_preference,
-      const unsigned int num_threads,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
   MLContext(const MLContext&) = delete;
@@ -60,7 +59,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   V8MLDeviceType GetDeviceType() const;
   V8MLPowerPreference GetPowerPreference() const;
-  unsigned int GetNumThreads() const;
 
   const webnn::ContextProperties& GetProperties() { return properties_; }
 
@@ -170,7 +168,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;
-  unsigned int num_threads_;
 
   Member<LostProperty> lost_property_;
 
