@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "mojo/core/node_channel.h"  // nogncheck
+
 #include <stdint.h>
 
 #include <algorithm>
@@ -20,7 +22,7 @@
 #include "mojo/core/channel.h"
 #include "mojo/core/connection_params.h"
 #include "mojo/core/entrypoints.h"
-#include "mojo/core/node_channel.h"  // nogncheck
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/test/mock_node_channel_delegate.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
@@ -40,9 +42,11 @@ class FakeChannelDelegate : public Channel::Delegate {
   FakeChannelDelegate() = default;
   ~FakeChannelDelegate() override = default;
 
-  void OnChannelMessage(const void* payload,
-                        size_t payload_size,
-                        std::vector<mojo::PlatformHandle> handles) override {}
+  void OnChannelMessage(
+      const void* payload,
+      size_t payload_size,
+      std::vector<mojo::PlatformHandle> handles,
+      scoped_refptr<mojo::core::ipcz_driver::Envelope> envelope) override {}
   void OnChannelError(Channel::Error error) override {}
 };
 

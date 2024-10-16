@@ -5,6 +5,7 @@
 #ifndef IPCZ_SRC_IPCZ_PARCEL_H_
 #define IPCZ_SRC_IPCZ_PARCEL_H_
 
+#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -136,6 +137,8 @@ class Parcel {
   // objects_view().
   void ConsumeHandles(absl::Span<IpczHandle> out_handles);
 
+  void SetEnvelope(DriverObject envelope);
+
   // Produces a log-friendly description of the Parcel, useful for various
   // debugging log messages.
   std::string Describe() const;
@@ -240,6 +243,8 @@ class Parcel {
   // updated by the containing Parcel as needed.
   size_t num_subparcels_ = 1;
   size_t subparcel_index_ = 0;
+
+  DriverObject envelope_;
 };
 
 }  // namespace ipcz

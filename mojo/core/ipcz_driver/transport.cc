@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/ipcz_driver/invitation.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
@@ -657,9 +658,11 @@ bool Transport::IsIpczTransport() const {
   return true;
 }
 
-void Transport::OnChannelMessage(const void* payload,
-                                 size_t payload_size,
-                                 std::vector<PlatformHandle> handles) {
+void Transport::OnChannelMessage(
+    const void* payload,
+    size_t payload_size,
+    std::vector<PlatformHandle> handles,
+    scoped_refptr<ipcz_driver::Envelope> envelope) {
   std::vector<IpczDriverHandle> driver_handles(handles.size());
   for (size_t i = 0; i < handles.size(); ++i) {
     driver_handles[i] = TransmissiblePlatformHandle::ReleaseAsHandle(
@@ -667,9 +670,13 @@ void Transport::OnChannelMessage(const void* payload,
             std::move(handles[i])));
   }
 
+  IpczTransportActivityOptions options{
+      .size = sizeof(IpczTransportActivityOptions),
+      .envelope = ObjectBase::ReleaseAsHandle(std::move(envelope)),
+  };
   const IpczResult result = activity_handler_(
       ipcz_transport_, static_cast<const uint8_t*>(payload), payload_size,
-      driver_handles.data(), driver_handles.size(), IPCZ_NO_FLAGS, nullptr);
+      driver_handles.data(), driver_handles.size(), IPCZ_NO_FLAGS, &options);
   if (result != IPCZ_RESULT_OK && result != IPCZ_RESULT_UNIMPLEMENTED) {
     OnChannelError(Channel::Error::kReceivedMalformedData);
   }

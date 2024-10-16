@@ -598,6 +598,7 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
   parcel->set_num_subparcels(num_subparcels);
   parcel->set_subparcel_index(subparcel_index);
   parcel->SetObjects(std::move(objects));
+  parcel->SetEnvelope(accept.TakeEnvelope());
   if (!parcel_valid) {
     return false;
   }

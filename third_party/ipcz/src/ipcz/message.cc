@@ -315,6 +315,14 @@ Message::ReceivedDataBuffer Message::TakeReceivedData() && {
   return buffer;
 }
 
+void Message::SetEnvelope(DriverObject envelope) {
+  envelope_ = std::move(envelope);
+}
+
+DriverObject Message::TakeEnvelope() {
+  return std::move(envelope_);
+}
+
 bool Message::CopyDataAndValidateHeader(absl::Span<const uint8_t> data) {
   // Copy the data into a local message object to avoid any TOCTOU issues in
   // case `data` is in unsafe shared memory.

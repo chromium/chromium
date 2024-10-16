@@ -210,6 +210,11 @@ typedef uint32_t IpczTransportActivityFlags;
 extern "C" {
 #endif
 
+struct IpczTransportActivityOptions {
+  size_t size;                // Size of this struct, for extensibility.
+  IpczDriverHandle envelope;  // Optional driver envelope.
+};
+
 // Notifies ipcz of activity on a transport. `listener` must be a handle to an
 // active transport's listener, as provided to the driver by ipcz via
 // ActivateTransport().
@@ -229,13 +234,13 @@ extern "C" {
 // `listener` are mutually exclusive. Overlapping calls are unsafe and will
 // result in undefined behavior.
 typedef IpczResult(IPCZ_API* IpczTransportActivityHandler)(
-    IpczHandle listener,                     // in
-    const void* data,                        // in
-    size_t num_bytes,                        // in
-    const IpczDriverHandle* driver_handles,  // in
-    size_t num_driver_handles,               // in
-    IpczTransportActivityFlags flags,        // in
-    const void* options);                    // in
+    IpczHandle listener,                                  // in
+    const void* data,                                     // in
+    size_t num_bytes,                                     // in
+    const IpczDriverHandle* driver_handles,               // in
+    size_t num_driver_handles,                            // in
+    IpczTransportActivityFlags flags,                     // in
+    const struct IpczTransportActivityOptions* options);  // in
 
 // Structure to be filled in by a driver's GetSharedMemoryInfo().
 struct IPCZ_ALIGN(8) IpczSharedMemoryInfo {

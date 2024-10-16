@@ -399,6 +399,10 @@ class IPCZ_ALIGN(8) Message {
   // Message.
   ReceivedDataBuffer TakeReceivedData() &&;
 
+  void SetEnvelope(DriverObject envelope);
+
+  DriverObject TakeEnvelope();
+
  protected:
   // Returns `x` aligned above to the nearest 8-byte boundary.
   constexpr size_t Align(size_t x) { return (x + 7) & ~7; }
@@ -495,6 +499,8 @@ class IPCZ_ALIGN(8) Message {
   // transmissible handles, there is generally NOT a 1:1 correpsondence between
   // this list and `driver_objects_`.
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_driver_handles_;
+
+  DriverObject envelope_;
 };
 
 // Template helper to wrap the Message type for a specific macro-generated

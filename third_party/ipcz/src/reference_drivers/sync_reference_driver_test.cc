@@ -43,13 +43,14 @@ class TransportReceiver
 
   IpczHandle handle() const { return reinterpret_cast<IpczHandle>(this); }
 
-  static IpczResult Receive(IpczHandle transport,
-                            const void* data,
-                            size_t num_bytes,
-                            const IpczDriverHandle* driver_handles,
-                            size_t num_driver_handles,
-                            IpczTransportActivityFlags flags,
-                            const void* options) {
+  static IpczResult Receive(
+      IpczHandle transport,
+      const void* data,
+      size_t num_bytes,
+      const IpczDriverHandle* driver_handles,
+      size_t num_driver_handles,
+      IpczTransportActivityFlags flags,
+      const struct IpczTransportActivityOptions* options) {
     const TransportHandlers& handlers =
         TransportReceiver::FromHandle(transport)->handlers_;
     if (flags & IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED) {

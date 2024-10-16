@@ -141,6 +141,10 @@ void Parcel::ConsumeHandles(absl::Span<IpczHandle> out_handles) {
   objects_.view.remove_prefix(out_handles.size());
 }
 
+void Parcel::SetEnvelope(DriverObject envelope) {
+  envelope_ = std::move(envelope);
+}
+
 std::string Parcel::Describe() const {
   std::stringstream ss;
   ss << "parcel " << sequence_number() << " (";

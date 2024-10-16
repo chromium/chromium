@@ -26,6 +26,10 @@
 
 namespace mojo::core {
 
+namespace ipcz_driver {
+class Envelope;
+}
+
 const size_t kChannelMessageAlignment = 8;
 
 constexpr bool IsAlignedForChannelMessage(size_t n) {
@@ -304,9 +308,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     // Notify of a received message. |payload| is not owned and must not be
     // retained; it will be null if |payload_size| is 0. |handles| are
     // transferred to the callee.
-    virtual void OnChannelMessage(const void* payload,
-                                  size_t payload_size,
-                                  std::vector<PlatformHandle> handles) = 0;
+    virtual void OnChannelMessage(
+        const void* payload,
+        size_t payload_size,
+        std::vector<PlatformHandle> handles,
+        scoped_refptr<ipcz_driver::Envelope> envelope) = 0;
 
     // Notify that an error has occured and the Channel will cease operation.
     virtual void OnChannelError(Error error) = 0;
@@ -451,6 +457,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   DispatchResult TryDispatchMessage(
       base::span<const char> buffer,
       std::optional<std::vector<PlatformHandle>> received_handles,
+      scoped_refptr<ipcz_driver::Envelope> envelope,
       size_t* size_hint);
 
   // Called by the implementation when something goes horribly wrong. It is NOT
@@ -529,6 +536,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   base::MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
 
   FRIEND_TEST_ALL_PREFIXES(ChannelTest, IpczHeaderCompatibilityTest);
+  FRIEND_TEST_ALL_PREFIXES(ChannelTest, TryDispatchMessageWithEnvelope);
 };
 
 }  // namespace mojo::core

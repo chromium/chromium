@@ -23,6 +23,7 @@
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/request_context.h"
 
 namespace mojo {
@@ -576,9 +577,11 @@ void NodeChannel::CreateAndBindLocalBrokerHost(
 #endif
 }
 
-void NodeChannel::OnChannelMessage(const void* payload,
-                                   size_t payload_size,
-                                   std::vector<PlatformHandle> handles) {
+void NodeChannel::OnChannelMessage(
+    const void* payload,
+    size_t payload_size,
+    std::vector<PlatformHandle> handles,
+    scoped_refptr<ipcz_driver::Envelope> envelope) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   RequestContext request_context(RequestContext::Source::SYSTEM);

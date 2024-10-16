@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/embedder/features.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/apple/mach_logging.h"
@@ -966,12 +967,13 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
 Channel::DispatchResult Channel::TryDispatchMessage(
     base::span<const char> buffer,
     size_t* size_hint) {
-  return TryDispatchMessage(buffer, std::nullopt, size_hint);
+  return TryDispatchMessage(buffer, std::nullopt, nullptr, size_hint);
 }
 
 Channel::DispatchResult Channel::TryDispatchMessage(
     base::span<const char> buffer,
     std::optional<std::vector<PlatformHandle>> received_handles,
+    scoped_refptr<ipcz_driver::Envelope> envelope,
     size_t* size_hint) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
               "Mojo dispatch message");
@@ -1021,7 +1023,8 @@ Channel::DispatchResult Channel::TryDispatchMessage(
     }
 
     auto data = buffer.first(num_bytes).subspan(header_size);
-    delegate_->OnChannelMessage(data.data(), data.size(), std::move(handles));
+    delegate_->OnChannelMessage(data.data(), data.size(), std::move(handles),
+                                std::move(envelope));
     *size_hint = num_bytes;
     return DispatchResult::kOK;
   }
@@ -1104,7 +1107,8 @@ Channel::DispatchResult Channel::TryDispatchMessage(
       return DispatchResult::kError;
     }
   } else if (!deferred && delegate_) {
-    delegate_->OnChannelMessage(payload, payload_size, std::move(handles));
+    delegate_->OnChannelMessage(payload, payload_size, std::move(handles),
+                                std::move(envelope));
   }
 
   *size_hint = legacy_header->num_bytes;

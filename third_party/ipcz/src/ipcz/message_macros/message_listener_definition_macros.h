@@ -17,30 +17,34 @@
   }                                                                           \
   bool name##MessageListener::OnTransportMessage(                             \
       const DriverTransport::RawMessage& raw_message,                         \
-      const DriverTransport& transport) {                                     \
+      const DriverTransport& transport, IpczDriverHandle envelope) {          \
     if (raw_message.data.size() < sizeof(internal::MessageHeaderV0)) {        \
       return false;                                                           \
     }                                                                         \
     const auto& header = *reinterpret_cast<const internal::MessageHeaderV0*>( \
         raw_message.data.data());                                             \
     switch (header.message_id) {
-#define IPCZ_MSG_END_INTERFACE()                                     \
-  default:                                                           \
-    Message message;                                                 \
-    return message.DeserializeUnknownType(raw_message, transport) && \
-           OnMessage(message);                                       \
-    }                                                                \
+#define IPCZ_MSG_END_INTERFACE()                                      \
+  default:                                                            \
+    Message message;                                                  \
+    message.SetEnvelope(                                              \
+        DriverObject(*transport.driver_object().driver(), envelope)); \
+    return message.DeserializeUnknownType(raw_message, transport) &&  \
+           OnMessage(message);                                        \
+    }                                                                 \
     }
 
 #define IPCZ_MSG_ID(x)
 
-#define IPCZ_MSG_BEGIN(name, id_decl)                   \
-  case name::kId: {                                     \
-    name message(Message::kIncoming);                   \
-    if (!message.Deserialize(raw_message, transport)) { \
-      return false;                                     \
-    }                                                   \
-    return OnMessage(message);                          \
+#define IPCZ_MSG_BEGIN(name, id_decl)                                 \
+  case name::kId: {                                                   \
+    name message(Message::kIncoming);                                 \
+    message.SetEnvelope(                                              \
+        DriverObject(*transport.driver_object().driver(), envelope)); \
+    if (!message.Deserialize(raw_message, transport)) {               \
+      return false;                                                   \
+    }                                                                 \
+    return OnMessage(message);                                        \
   }
 
 #define IPCZ_MSG_END()
