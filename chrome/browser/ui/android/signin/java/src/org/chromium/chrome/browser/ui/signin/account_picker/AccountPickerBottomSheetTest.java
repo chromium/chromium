@@ -34,8 +34,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
-import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -84,9 +82,9 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -95,7 +93,6 @@ import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -144,7 +141,7 @@ public class AccountPickerBottomSheetTest {
     @Captor private ArgumentCaptor<Callback<Boolean>> mUpdateCredentialsSuccessCallbackCaptor;
 
     private AccountPickerBottomSheetCoordinator mCoordinator;
-    private CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private boolean mIsAccountManaged;
     private @SigninAccessPoint int mSigninAccessPoint;
 
@@ -268,7 +265,7 @@ public class AccountPickerBottomSheetTest {
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
                                             mSigninAccessPoint),
-                                    new CustomDeviceLockActivityLauncher(),
+                                    new SigninTestUtil.CustomDeviceLockActivityLauncher(),
                                     AccountPickerLaunchMode.DEFAULT,
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
@@ -294,7 +291,7 @@ public class AccountPickerBottomSheetTest {
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
                                             mSigninAccessPoint),
-                                    new CustomDeviceLockActivityLauncher(),
+                                    new SigninTestUtil.CustomDeviceLockActivityLauncher(),
                                     AccountPickerLaunchMode.CHOOSE_ACCOUNT,
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
@@ -750,7 +747,7 @@ public class AccountPickerBottomSheetTest {
                         withText(TestAccounts.ACCOUNT1.getEmail()),
                         R.id.account_picker_state_expanded)
                 .perform(click());
-        completeDeviceLockIfOnAutomotive();
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         // Verify that the user is signed in right away.
         checkVisibleViewDoesNotExist(withId(R.id.account_picker_state_collapsed));
@@ -849,7 +846,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
         onView(withText(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail())).perform(click());
 
-        completeDeviceLockIfOnAutomotive();
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         waitForView(
@@ -1102,7 +1099,7 @@ public class AccountPickerBottomSheetTest {
                         withText(TestAccounts.ACCOUNT1.getEmail()),
                         R.id.account_picker_state_expanded)
                 .perform(click());
-        completeDeviceLockIfOnAutomotive();
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         // Verify the error view content.
         waitForView(
@@ -1279,7 +1276,7 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
-        completeDeviceLockIfOnAutomotive();
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         waitForView(
@@ -1309,7 +1306,7 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
-        completeDeviceLockIfOnAutomotive();
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         waitForView(
@@ -1516,7 +1513,7 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
-        completeDeviceLockIfOnAutomotive();
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         waitForView(
@@ -1561,7 +1558,7 @@ public class AccountPickerBottomSheetTest {
 
         clickContinueButton(bottomSheetView);
         if (clearDeviceLock && BuildInfo.getInstance().isAutomotive) {
-            completeDeviceLock(true);
+            SigninTestUtil.completeDeviceLock(mDeviceLockActivityLauncher, true);
         }
     }
 
@@ -1594,7 +1591,7 @@ public class AccountPickerBottomSheetTest {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         clickContinueButton(bottomSheetView);
 
-        completeDeviceLock(deviceLockCreated);
+        SigninTestUtil.completeDeviceLock(mDeviceLockActivityLauncher, deviceLockCreated);
 
         if (deviceLockCreated) {
             assertSignInProceeded(bottomSheetView);
@@ -1625,21 +1622,6 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
-    }
-
-    private void completeDeviceLockIfOnAutomotive() {
-        if (BuildInfo.getInstance().isAutomotive) {
-            completeDeviceLock(true);
-        }
-    }
-
-    private void completeDeviceLock(boolean deviceLockCreated) {
-        assertTrue(mDeviceLockActivityLauncher.isLaunched());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mDeviceLockActivityLauncher.runCallback(
-                            deviceLockCreated ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
-                });
     }
 
     private static void checkZeroAccountBottomSheet() {
@@ -1696,7 +1678,7 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowBottomSheetForAccount(
             @AccountPickerLaunchMode int launchMode, @Nullable CoreAccountId accountId) {
-        mDeviceLockActivityLauncher = new CustomDeviceLockActivityLauncher();
+        mDeviceLockActivityLauncher = new SigninTestUtil.CustomDeviceLockActivityLauncher();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
@@ -1779,32 +1761,5 @@ public class AccountPickerBottomSheetTest {
         // withEffectiveVisibility(VISIBLE) is needed here to get only the visible view of the
         // matcher.
         return onViewWaiting(allOf(matcher, isDisplayed()));
-    }
-
-    private static class CustomDeviceLockActivityLauncher implements DeviceLockActivityLauncher {
-        private WindowAndroid.IntentCallback mCallback;
-        private boolean mLaunched;
-
-        CustomDeviceLockActivityLauncher() {}
-
-        @Override
-        public void launchDeviceLockActivity(
-                Context context,
-                String selectedAccount,
-                boolean requireDeviceLockReauthentication,
-                WindowAndroid windowAndroid,
-                WindowAndroid.IntentCallback callback,
-                @DeviceLockActivityLauncher.Source String source) {
-            mCallback = callback;
-            mLaunched = true;
-        }
-
-        boolean isLaunched() {
-            return mLaunched;
-        }
-
-        void runCallback(int activityResult) {
-            mCallback.onIntentCompleted(activityResult, null);
-        }
     }
 }

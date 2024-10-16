@@ -1289,7 +1289,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    public void testFragmentWithChildAccount_doesNotApplyFREStringVariation() {
+    public void testFragmentWithChildAccount_doesNotApplyFreStringVariation() {
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
 
@@ -1599,6 +1599,6 @@ public class SigninFirstRunFragmentTest {
 
     private void clickContinueButton(String continueAsText) {
         onView(withText(continueAsText)).perform(click());
-        SigninTestUtil.completeAutoDeviceLockIfNeeded(mFragment);
+        SigninTestUtil.completeAutoDeviceLockForFirstRunIfNeeded(mFragment);
     }
 }

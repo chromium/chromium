@@ -398,6 +398,7 @@ android_library("chrome_java_integration_test_support") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/device_lock/android:java",
     "//components/browser_ui/notifications/android:test_support_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",

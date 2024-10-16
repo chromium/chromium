@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -56,6 +57,7 @@ public class SigninTestRule extends AccountManagerTestRule {
             // sign out).
             forceSignOut();
         }
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
         super.tearDownRule();
     }
 
@@ -207,5 +209,13 @@ public class SigninTestRule extends AccountManagerTestRule {
     public void forceSignOut() {
         SigninTestUtil.forceSignOut();
         mIsSignedIn = false;
+    }
+
+    /** Completes the device lock flow when on automotive devices. */
+    public void completeDeviceLockIfOnAutomotive() {
+        SigninTestUtil.CustomDeviceLockActivityLauncher deviceLockActivityLauncher =
+                new SigninTestUtil.CustomDeviceLockActivityLauncher();
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(deviceLockActivityLauncher);
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(deviceLockActivityLauncher);
     }
 }

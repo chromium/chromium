@@ -9,6 +9,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertTrue;
+
+import android.app.Activity;
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
@@ -23,6 +28,7 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -30,11 +36,39 @@ import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.concurrent.TimeoutException;
 
 /** Utility class for test signin functionality. */
 public final class SigninTestUtil {
+    public static class CustomDeviceLockActivityLauncher implements DeviceLockActivityLauncher {
+        private WindowAndroid.IntentCallback mCallback;
+        private boolean mLaunched;
+
+        public CustomDeviceLockActivityLauncher() {}
+
+        @Override
+        public void launchDeviceLockActivity(
+                Context context,
+                String selectedAccount,
+                boolean requireDeviceLockReauthentication,
+                WindowAndroid windowAndroid,
+                WindowAndroid.IntentCallback callback,
+                @DeviceLockActivityLauncher.Source String source) {
+            mCallback = callback;
+            mLaunched = true;
+        }
+
+        public boolean isLaunched() {
+            return mLaunched;
+        }
+
+        public void runCallback(int activityResult) {
+            mCallback.onIntentCompleted(activityResult, null);
+        }
+    }
+
     /**
      * @return The primary account of the requested {@link ConsentLevel}.
      */
@@ -222,7 +256,8 @@ public final class SigninTestUtil {
      *
      * @param fragment The fragment under test.
      */
-    public static void completeAutoDeviceLockIfNeeded(SigninFirstRunFragment fragment) {
+    // TODO(crbug.com/328117919): Delete this method after deleting sign-in tests for FRE on Auto.
+    public static void completeAutoDeviceLockForFirstRunIfNeeded(SigninFirstRunFragment fragment) {
         if (!ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().isAutomotive)) {
             return;
         }
@@ -230,6 +265,29 @@ public final class SigninTestUtil {
         onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
 
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.onDeviceLockReady());
+    }
+
+    /** Completes the device lock flow when on automotive devices. */
+    public static void completeDeviceLockIfOnAutomotive(
+            CustomDeviceLockActivityLauncher deviceLockActivityLauncher) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            completeDeviceLock(deviceLockActivityLauncher, true);
+        }
+    }
+
+    /**
+     * Completes or cancels the device lock flow, depending on whether the device lock was created.
+     */
+    public static void completeDeviceLock(
+            CustomDeviceLockActivityLauncher deviceLockActivityLauncher,
+            boolean deviceLockCreated) {
+        assertTrue(BuildInfo.getInstance().isAutomotive);
+        assertTrue(deviceLockActivityLauncher.isLaunched());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    deviceLockActivityLauncher.runCallback(
+                            deviceLockCreated ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
+                });
     }
 
     private SigninTestUtil() {}

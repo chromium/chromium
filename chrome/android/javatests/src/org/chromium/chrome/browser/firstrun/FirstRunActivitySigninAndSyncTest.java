@@ -512,7 +512,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     private void completeAutoDeviceLockIfNeeded() {
         if (mFirstRunActivity.getCurrentFragmentForTesting() instanceof SigninFirstRunFragment) {
-            SigninTestUtil.completeAutoDeviceLockIfNeeded(
+            SigninTestUtil.completeAutoDeviceLockForFirstRunIfNeeded(
                     (SigninFirstRunFragment) mFirstRunActivity.getCurrentFragmentForTesting());
         }
     }
