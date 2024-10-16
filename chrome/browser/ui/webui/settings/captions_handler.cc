@@ -62,8 +62,6 @@ CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   soda_available_ =
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  soda_available_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

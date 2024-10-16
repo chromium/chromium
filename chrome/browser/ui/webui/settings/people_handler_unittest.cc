@@ -1053,175 +1053,6 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST(PeopleHandlerMainProfile, Signout) {
-  content::BrowserTaskEnvironment task_environment;
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-
-  std::unique_ptr<TestingProfile> profile =
-      IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(builder);
-
-  auto identity_test_env_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
-  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
-  auto* identity_manager = identity_test_env->identity_manager();
-
-  identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
-                                                 ConsentLevel::kSync);
-  ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-
-  identity_test_env->MakeAccountAvailable("a@gmail.com");
-  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
-
-  PeopleHandler handler(profile.get());
-  base::Value::List args;
-  args.Append(/*delete_profile=*/false);
-  handler.HandleSignout(args);
-
-  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
-  // Signout should only revoke sync consent and not change any accounts.
-  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
-}
-
-#if DCHECK_IS_ON()
-TEST(PeopleHandlerMainProfile, DeleteProfileCrashes) {
-  content::BrowserTaskEnvironment task_environment;
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-
-  std::unique_ptr<TestingProfile> profile =
-      IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(builder);
-
-  PeopleHandler handler(profile.get());
-  base::Value::List args;
-  args.Append(/*delete_profile=*/true);
-  EXPECT_DEATH(handler.HandleSignout(args), ".*");
-}
-#endif  // DCHECK_IS_ON()
-
-TEST(PeopleHandlerSecondaryProfile, SignoutWhenSyncing) {
-  content::BrowserTaskEnvironment task_environment;
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(false);
-
-  std::unique_ptr<TestingProfile> profile =
-      IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(builder);
-
-  auto identity_test_env_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
-  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
-  auto* identity_manager = identity_test_env->identity_manager();
-
-  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
-  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
-  identity_test_env->SetPrimaryAccount(account_1.email,
-                                       signin::ConsentLevel::kSync);
-  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
-
-  PeopleHandler handler(profile.get());
-  base::Value::List args;
-  args.Append(/*delete_profile=*/false);
-  handler.HandleSignout(args);
-  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(identity_manager->GetAccountsWithRefreshTokens().empty());
-}
-
-TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
-  content::BrowserTaskEnvironment task_environment;
-
-  network::TestURLLoaderFactory url_loader_factory =
-      network::TestURLLoaderFactory();
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(true);
-  builder.AddTestingFactories(
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-              {TestingProfile::TestingFactory{
-                  ChromeSigninClientFactory::GetInstance(),
-                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                      &url_loader_factory)}}));
-
-  std::unique_ptr<TestingProfile> profile =
-      IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(builder);
-
-  auto identity_test_env_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
-  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
-  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
-  auto* identity_manager = identity_test_env->identity_manager();
-
-  identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
-                                                 ConsentLevel::kSignin);
-  ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
-
-  identity_test_env->MakeAccountAvailable("a@gmail.com", {.set_cookie = true});
-  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
-
-  PeopleHandler handler(profile.get());
-  base::Value::List accounts = handler.GetStoredAccountsList();
-
-  ASSERT_EQ(1u, accounts.size());
-  ASSERT_TRUE(accounts[0].GetDict().FindString("email"));
-  EXPECT_EQ("user@gmail.com", *accounts[0].GetDict().FindString("email"));
-}
-
-TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  content::BrowserTaskEnvironment task_environment;
-
-  network::TestURLLoaderFactory url_loader_factory =
-      network::TestURLLoaderFactory();
-
-  TestingProfile::Builder builder;
-  builder.SetIsMainProfile(false);
-  builder.AddTestingFactories(
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-              {TestingProfile::TestingFactory{
-                  ChromeSigninClientFactory::GetInstance(),
-                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                      &url_loader_factory)}}));
-
-  std::unique_ptr<TestingProfile> profile =
-      IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(builder);
-
-  auto identity_test_env_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
-  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
-  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
-  auto* identity_manager = identity_test_env->identity_manager();
-
-  auto account_1 = identity_test_env->MakeAccountAvailable(
-      "a@gmail.com", {.set_cookie = true});
-  auto account_2 = identity_test_env->MakeAccountAvailable(
-      "b@gmail.com", {.set_cookie = true});
-  identity_test_env->SetPrimaryAccount(account_2.email,
-                                       signin::ConsentLevel::kSignin);
-  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
-
-  PeopleHandler handler(profile.get());
-  base::Value::List accounts = handler.GetStoredAccountsList();
-
-  ASSERT_EQ(2u, accounts.size());
-  ASSERT_TRUE(accounts[0].GetDict().FindString("email"));
-  ASSERT_TRUE(accounts[1].GetDict().FindString("email"));
-  EXPECT_EQ(account_2.email, *accounts[0].GetDict().FindString("email"));
-  EXPECT_EQ(account_1.email, *accounts[1].GetDict().FindString("email"));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Regression test for crash in guest mode. https://crbug.com/1040476
 TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
@@ -1875,7 +1706,7 @@ TEST_F(
 
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {
  public:
   PeopleHandlerSignoutTest() = default;
@@ -2049,7 +1880,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ExplicitBrowserSigninPeopleHandlerSignoutTest

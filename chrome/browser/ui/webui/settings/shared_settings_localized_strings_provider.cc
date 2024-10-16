@@ -227,14 +227,6 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-    html_source->AddLocalizedString(
-        "manageSyncedDataSubtitle",
-        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT);
-  }
-#endif
-
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
           GURL(chrome::kSyncGoogleDashboardURL),
@@ -268,10 +260,6 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
       "showSyncSettingsRevamp",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean(
-      "showSyncSettingsRevamp",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing));
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);

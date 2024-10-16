@@ -123,10 +123,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -148,7 +144,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/display/screen.h"
 #endif
 
@@ -259,10 +255,6 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      chromeos::BrowserParamsProxy::Get()->SessionType() ==
-              crosapi::mojom::SessionType::kPublicSession ||
-          profile->IsGuestSession());
 #else
                           profile->IsGuestSession());
 #endif
@@ -542,7 +534,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"classicTheme", IDS_SETTINGS_CLASSIC_THEME},
       {"useClassicTheme", IDS_SETTINGS_USE_CLASSIC_THEME},
 #endif
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
       {"showWindowDecorations", IDS_SHOW_WINDOW_DECORATIONS},
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -568,9 +560,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("toolbarPinningEnabled",
                           features::IsToolbarPinningEnabled());
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
                                       ->GetPlatformRuntimeProperties()
                                       .supports_server_side_window_decorations;
@@ -604,10 +594,6 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SIGNED_IN_PROFILE},
       {"clearCookiesSummarySyncing",
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION},
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"clearCookiesSummarySignedInMainProfile",
-       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE},
-#endif
       {"clearCookiesSummarySignedInSupervisedProfile",
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE},
       {"clearCookiesCounter", IDS_DEL_COOKIES_COUNTER},
@@ -1480,22 +1466,11 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
       {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
       {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
-#endif
       {"verifyAccount", IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddLocalizedString(
-      "syncAdvancedPageTitle",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)
-          ? IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE
-          : IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE);
-#endif
 }
 
 void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
@@ -1641,9 +1616,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"syncEverythingCheckboxLabel",
        IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
       {"appCheckboxLabel", IDS_SETTINGS_APPS_CHECKBOX_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"appCheckboxSublabel", IDS_SETTINGS_APPS_CHECKBOX_SUBLABEL},
-#endif
       {"paymentsCheckboxLabel", IDS_SYNC_DATATYPE_PAYMENTS},
       {"nonPersonalizedServicesSectionLabel",
        IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
@@ -1751,10 +1723,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
               ? chromeos::settings::mojom::kPeopleSectionPath
               : chromeos::settings::mojom::kMyAccountsSubpagePath)
           .spec());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean(
-      "isAccountManagerEnabled",
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
 #endif
 
   AddSignOutDialogStrings(html_source, profile);
@@ -3549,18 +3517,12 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
 void AddSystemStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"systemPageTitle", IDS_SETTINGS_SYSTEM},
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
       {"backgroundAppsLabel", IDS_SETTINGS_SYSTEM_BACKGROUND_APPS_LABEL},
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       {"hardwareAccelerationLabel",
        IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL},
       {"proxySettingsLabel", IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL},
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"useAshProxyLabel", IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL},
-      {"usesAshProxyLabel", IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL},
-#endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"featureNotificationsLabel",
        IDS_SETTINGS_SYSTEM_FEATURE_NOTIFICATIONS_LABEL},
@@ -3568,7 +3530,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddString(
       "proxySettingsExtensionLabel",
       l10n_util::GetStringFUTF16(
@@ -3579,7 +3540,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_POLICY_LABEL,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
-#endif
 
   // TODO(dbeam): we should probably rename anything involving "localized
   // strings" to "load time data" as all primitive types are used now.

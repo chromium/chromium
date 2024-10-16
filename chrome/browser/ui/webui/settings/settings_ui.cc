@@ -290,9 +290,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<DefaultBrowserHandler>());
   AddSettingsPageUIHandler(std::make_unique<ManageProfileHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean("isSecondaryUser", !profile->IsMainProfile());
-#endif
 
 #endif
 
@@ -349,14 +346,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros has no access to AccountHasUserFacingPassword() (Ash only). Assign
-  // userCannotManuallyEnterPassword to false so that WebUI would make auth
-  // token request, which is forwarded via crosapi to Ash, which then calls
-  // AccountHasUserFacingPassword().
-  html_source->AddBoolean("userCannotManuallyEnterPassword", false);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool show_privacy_guide =
       base::FeatureList::IsEnabled(features::kPrivacyGuideForceAvailable) ||

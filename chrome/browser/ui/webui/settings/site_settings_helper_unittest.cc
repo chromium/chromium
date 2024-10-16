@@ -1572,10 +1572,6 @@ class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(SiteSettingsHelperIsolatedWebAppTest,

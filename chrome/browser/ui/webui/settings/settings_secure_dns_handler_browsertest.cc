@@ -412,13 +412,8 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const std::string kDnsOverHttpsTemplatesPrefName =
-      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
-#else
   const std::string kDnsOverHttpsTemplatesPrefName =
       prefs::kDnsOverHttpsTemplates;
-#endif
 
   std::string good_post_template = "https://foo.test/";
   std::string good_get_template = "https://bar.test/dns-query{?dns}";
