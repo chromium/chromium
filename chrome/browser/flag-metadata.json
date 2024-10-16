@@ -3186,7 +3186,7 @@
   {
     "name": "enable-family-link-extensions-permissions",
     "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 138
   },
   {
     "name": "enable-fast-ink-for-software-cursor",
