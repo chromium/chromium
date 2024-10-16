@@ -198,7 +198,7 @@ void RecordNewTabGenerated(LensOverlayNewTabSource tab_source) {
 }
 
 void RecordGeneratedTabCount(int generated_tab_count) {
-  base::UmaHistogramCounts100("Lens.Overlay.GeneratedTab.Count",
+  base::UmaHistogramCounts100("Lens.Overlay.GeneratedTab.SessionCount",
                               generated_tab_count);
 }
 
