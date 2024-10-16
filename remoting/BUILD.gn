@@ -47,6 +47,10 @@ group("remoting_all") {
         "//remoting/host/linux:remoting_user_session",
       ]
     }
+
+    if (use_glib) {
+      deps += [ "//remoting/host/linux/dbus_interfaces:gen_dbus_interface" ]
+    }
   }
 
   if (enable_me2me_host) {

@@ -786,6 +786,7 @@ if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
       "//build/config/linux/gtk",
       "//remoting/base:logging",
       "//remoting/host/linux:x11",
+      "//remoting/host/linux/dbus_interfaces:interface_headers",
       "//third_party/webrtc_overrides:webrtc_component",
       "//ui/base",
       "//ui/base/x",
