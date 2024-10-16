@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, SessionResult, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -199,6 +199,12 @@ class MockRemoteHandler extends PageHandlerRemote {
   override endSession(): Promise<{error: UpdateSessionError | null}> {
     return Promise.resolve({error: null});
   }
+
+  override removeStudent(id: string):
+      Promise<{error: RemoveStudentError | null}> {
+    id;
+    return Promise.resolve({error: null});
+  }
 }
 
 suite('ClientDelegateTest', function() {
@@ -390,6 +396,11 @@ suite('ClientDelegateTest', function() {
 
   test('client delegate should translate data for end session', async () => {
     const result = await clientDelegateImpl.getInstance().endSession();
+    assertTrue(result);
+  });
+
+  test('client delegate should translate data for remove student', async () => {
+    const result = await clientDelegateImpl.getInstance().removeStudent('1');
     assertTrue(result);
   });
 

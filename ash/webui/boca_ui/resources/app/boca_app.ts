@@ -153,6 +153,11 @@ export declare interface ClientApiDelegate {
   createSession(sessionConfig: SessionConfig): Promise<boolean>;
 
   /**
+   * Remove a student from the current session.
+   */
+  removeStudent(id: string): Promise<boolean>;
+
+  /**
    * Retrivies the current session.
    */
   getSession(): Promise<Session|null>;

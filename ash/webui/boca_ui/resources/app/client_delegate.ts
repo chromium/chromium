@@ -139,6 +139,10 @@ export class ClientDelegateFactory {
         const result = await pageHandler.endSession();
         return !result.error;
       },
+      removeStudent: async (id: string) => {
+        const result = await pageHandler.removeStudent(id);
+        return !result.error;
+      },
       updateOnTaskConfig: async (onTaskConfig: OnTaskConfig) => {
         const result = await pageHandler.updateOnTaskConfig(
             {

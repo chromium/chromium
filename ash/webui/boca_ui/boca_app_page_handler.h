@@ -54,6 +54,8 @@ class BocaAppHandler : public mojom::PageHandler,
                      CreateSessionCallback callback) override;
   void GetSession(GetSessionCallback callback) override;
   void EndSession(EndSessionCallback callback) override;
+  void RemoveStudent(const std::string& id,
+                     RemoveStudentCallback callback) override;
   void UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                           UpdateOnTaskConfigCallback callback) override;
   void UpdateCaptionConfig(mojom::CaptionConfigPtr config,

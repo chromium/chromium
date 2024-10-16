@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "components/account_id/account_id.h"
@@ -159,6 +160,10 @@ class MockSessionClientImpl : public SessionClientImpl {
   MOCK_METHOD(void,
               UpdateSession,
               (std::unique_ptr<UpdateSessionRequest>),
+              (override));
+  MOCK_METHOD(void,
+              RemoveStudent,
+              (std::unique_ptr<RemoveStudentRequest>),
               (override));
 };
 
@@ -1215,5 +1220,100 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_EQ("youtube", result[2]->activity->active_tab);
   EXPECT_FALSE(result[2]->activity->is_active);
 }
+
+TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceed) {
+  auto* session_id = "123";
+  auto session = std::make_unique<::boca::Session>();
+  session->set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
+
+  RemoveStudentRequest request(nullptr, kGaiaId, session_id,
+                               future.GetCallback());
+
+  const char student_id[] = "id";
+  EXPECT_CALL(*session_client_impl(), RemoveStudent(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(kGaiaId, request->gaia_id());
+            ASSERT_EQ(1u, request->student_ids().size());
+            ASSERT_EQ(student_id, request->student_ids()[0]);
+            request->callback().Run(true);
+          })));
+
+  boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, RemoveStudentWithHTTPFailure) {
+  auto* session_id = "123";
+  auto session = std::make_unique<::boca::Session>();
+  session->set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
+
+  RemoveStudentRequest request(nullptr, kGaiaId, session_id,
+                               future.GetCallback());
+
+  const char student_id[] = "id";
+  EXPECT_CALL(*session_client_impl(), RemoveStudent(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(kGaiaId, request->gaia_id());
+            ASSERT_EQ(1u, request->student_ids().size());
+            ASSERT_EQ(student_id, request->student_ids()[0]);
+            request->callback().Run(
+                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+          })));
+
+  boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, RemoveStudentWithEmptySession) {
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(nullptr));
+
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
+
+  boca_app_handler()->RemoveStudent("any", future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::RemoveStudentError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, RemoveStudentWithNonActiveSession) {
+  ::boca::Session session;
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::RemoveStudentError>> future_1;
+
+  boca_app_handler()->RemoveStudent("any", future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::RemoveStudentError::kInvalid, future_1.Get().value());
+}
+
 }  // namespace
 }  // namespace ash::boca

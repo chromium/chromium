@@ -130,6 +130,11 @@ enum UpdateSessionError{
   kHTTPError,
 };
 
+enum RemoveStudentError{
+  kInvalid,
+  kHTTPError,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
@@ -148,6 +153,8 @@ interface PageHandler {
   GetSession() => (SessionResult result);
   // End session.
   EndSession() => (UpdateSessionError? error);
+  // Remove student from session.
+  RemoveStudent(string id) => (RemoveStudentError? error);
   // Update OnTask config.
   UpdateOnTaskConfig(OnTaskConfig on_task_config)
   => (UpdateSessionError? error);

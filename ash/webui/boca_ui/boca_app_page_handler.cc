@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "content/public/browser/web_ui.h"
@@ -274,6 +275,35 @@ void BocaAppHandler::EndSession(EndSessionCallback callback) {
   request->set_session_state(
       std::make_unique<::boca::Session::SessionState>(::boca::Session::PAST));
   session_client_impl_->UpdateSession(std::move(request));
+}
+
+void BocaAppHandler::RemoveStudent(const std::string& id,
+                                   RemoveStudentCallback callback) {
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    std::move(callback).Run(mojom::RemoveStudentError::kInvalid);
+    return;
+  }
+
+  std::unique_ptr<RemoveStudentRequest> request =
+      std::make_unique<RemoveStudentRequest>(
+          session_client_impl_->sender(), user_identity_.gaia_id(),
+          session->session_id(),
+          base::BindOnce(
+              [](RemoveStudentCallback callback,
+                 base::expected<bool, google_apis::ApiErrorCode> result) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(
+                      mojom::RemoveStudentError::kHTTPError);
+                  return;
+                }
+                std::move(callback).Run(std::nullopt);
+              },
+              std::move(callback)));
+
+  request->set_student_ids({id});
+  session_client_impl_->RemoveStudent(std::move(request));
 }
 
 void BocaAppHandler::UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
