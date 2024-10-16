@@ -242520,6 +242520,19 @@
        {}
       ]
      ],
+     "inline-child-with-overflow-shadow.html": [
+      "2c2d50af60c1b1eceff434253e432cf6bb70587c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/inline-child-with-overflow-shadow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "inline-element-size.html": [
       "a571ace718a32882d727ac965bb2431451d8046c",
       [
@@ -242534,7 +242547,7 @@
       ]
      ],
      "inline-with-offset-from-containing-block.html": [
-      "026ecb240a35f1ca1c7044f95f4d09468af9e05f",
+      "6bbb8b49392c84adecf32f972e4889f2ba356968",
       [
        null,
        [
@@ -242554,7 +242567,7 @@
            ],
            [
             0,
-            1400
+            1500
            ]
           ]
          ]
@@ -244502,8 +244515,38 @@
        ]
       ]
      },
+     "nested-elements-in-overflow.html": [
+      "cce8fe8d8ffee2ffec953fc2207aed280b809be4",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/nested-elements-in-overflow-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            60
+           ],
+           [
+            0,
+            500
+           ]
+          ]
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "new-and-old-sizes-match.html": [
-      "f23f63d28ffa31c185858d5af8f639a905329ad8",
+      "7245e4b42f26a00710be23f8d545b1fcb6c8766e",
       [
        null,
        [
@@ -244519,11 +244562,11 @@
           [
            [
             0,
-            15
+            25
            ],
            [
             0,
-            500
+            1500
            ]
           ]
          ]
@@ -245703,6 +245746,19 @@
        [
         [
          "/css/css-view-transitions/new-root-vertical-writing-mode-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "outer-padding-inner-background.html": [
+      "6bbcf514ab47241fee2a4f5475cc364e176ed26c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/outer-padding-inner-background-ref.html",
          "=="
         ]
        ],
@@ -281893,6 +281949,19 @@
          {}
         ]
        ],
+       "table-align-float.xhtml": [
+        "05de0d6b2807d7df911a88d2429e2f265152478b",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/tables/table-align-float-ref.xhtml",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "table-border-1.html": [
         "333881399555a8018be91b9c6053b15be694def3",
         [
@@ -303962,7 +304031,7 @@
       []
      ],
      "helpers.js": [
-      "0f20a71237c83589f676afeacb4660b39457fea3",
+      "56e2a2812b65a7978242654cf9cd82ff756a9fa9",
       []
      ],
      "reporting_origin.py": [
@@ -354203,6 +354272,10 @@
       "e80dd7b95c88255986e06f07cdd7b1edfee8e0fa",
       []
      ],
+     "calc-serialization-002-expected.txt": [
+      "38d79990aa9ea7a3611edff0d4b1d4ae9dbbae53",
+      []
+     ],
      "calc-size": {
       "animation": {
        "calc-size-height-interpolation-expected.txt": [
@@ -354312,7 +354385,7 @@
       []
      ],
      "minmax-length-percent-serialize-expected.txt": [
-      "d0f5e33eeda2dea30e4cd400f04eeeeebeef8f7c",
+      "c972ea870198bfbeaec9507fdba02688cda94623",
       []
      ],
      "minmax-percentage-serialize-expected.txt": [
@@ -355101,6 +355174,10 @@
       "44a41f1bf93366e06f2eae0cbfcd4acb126d192f",
       []
      ],
+     "inline-child-with-overflow-shadow-ref.html": [
+      "69ed62da57db63215db71f234e80f6b369ca0614",
+      []
+     ],
      "inline-element-size-ref.html": [
       "ea791930e9bdf51a25125062b7da7cedafea1b95",
       []
@@ -355363,6 +355440,10 @@
        ]
       }
      },
+     "nested-elements-in-overflow-ref.html": [
+      "a05172fa40eb5171a773bcfb25709bddc2e4939b",
+      []
+     ],
      "new-and-old-sizes-match-ref.html": [
       "79e89801391530b6fb074545a92db68493667f05",
       []
@@ -355549,6 +355630,10 @@
      ],
      "old-root-vertical-writing-mode-ref.html": [
       "2927b468d08d452afc6a66267bf9786a6b00498e",
+      []
+     ],
+     "outer-padding-inner-background-ref.html": [
+      "7c7ee533f5c6d94a6b855ecb304371daadb2403d",
       []
      ],
      "paint-holding-in-iframe-ref.html": [
@@ -382485,6 +382570,10 @@
          []
         ]
        },
+       "table-align-float-ref.xhtml": [
+        "fc6b78605755f9096b51eaa4c6908176d212c720",
+        []
+       ],
        "table-attribute-expected.txt": [
         "9121ccdb7dc77800ac638fff7d8ec579a1aefc70",
         []
@@ -435269,7 +435358,7 @@
      ]
     },
     "aggregatable-report-no-contributions.sub.https.html": [
-     "b42a61b7bd50a2934b0b7f479618d466047146bc",
+     "b84f1905626fcfd2b3344abc3518c22aca9186b9",
      [
       null,
       {
@@ -435419,7 +435508,7 @@
      ]
     ],
     "simple-verbose-debug-report.sub.https.html": [
-     "8a477f732f494a84e5802ace639d8cbec4e2a6c9",
+     "cc2e37cae8eb826b1182c40d7fa2ad81e789c12f",
      [
       null,
       {
@@ -463330,7 +463419,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "a14d9b79db84dd03519e86d309b4c3028353e57f",
+       "23ee07d177ac525c2ce2b4e60cd1861a33cc23c5",
        [
         null,
         {}
@@ -478215,6 +478304,13 @@
         {}
        ]
       ],
+      "the-check-pseudo-element.tentative.html": [
+       "70f35091bc9484ae6e6802e64aa18bab9b0b8610",
+       [
+        null,
+        {}
+       ]
+      ],
       "tree-abiding-pseudo-elements.html": [
        "7839a38049a190135149c0d3d3b35fbc2d29d207",
        [
@@ -491322,7 +491418,7 @@
       ]
      ],
      "calc-serialization-002.html": [
-      "28a7de5cdabfa2d84140106284921b4457fd9908",
+      "a3b99cf87bbe8bbb9b52b4b762abab979707880b",
       [
        null,
        {}
@@ -491862,7 +491958,7 @@
       ]
      ],
      "minmax-length-percent-serialize.html": [
-      "0a109d7c18ecfb30855cf6b147ea9b423385ac99",
+      "5d11b85046741b6665775cb5549e87c00d1fd477",
       [
        null,
        {}
@@ -526139,6 +526235,13 @@
     ],
     "history-length-outer-page-navigation-not-reflected-in-fenced.https.html": [
      "da643040316e93407d7b9edc333c6227ae6015ce",
+     [
+      null,
+      {}
+     ]
+    ],
+    "http-localhost-url.https.html": [
+     "a8b16d75c858bdd7ebfa3d782754f0c2e878b11b",
      [
       null,
       {}
@@ -658636,7 +658739,14 @@
        ]
       ],
       "Selection-getComposedRanges-collapsed.html": [
-       "99ab82eb39cf44ac19cc32b42bd50eb1eef1b93a",
+       "3ea6e0c62c734a8b13f5737daca5c4684b4b0bfa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "Selection-getComposedRanges-slot.html": [
+       "d9664b0e1505fad35444628d707de390fac0e11f",
        [
         null,
         {}
@@ -759654,7 +759764,7 @@
       ]
      ],
      "constructor-submitter-coordinate.html": [
-      "992f64b721749b85e6d60ed701883242e8faf0fd",
+      "b7bf128bd1207a7f52327216304794c2fb6d048d",
       [
        null,
        {}
@@ -759892,6 +760002,15 @@
           "FormData: set"
          ]
         ]
+       }
+      ]
+     ],
+     "submitter-coordinate-value.html": [
+      "69bea0ac3f94f48fec9e201b6eda640870557756",
+      [
+       null,
+       {
+        "testdriver": true
        }
       ]
      ]
