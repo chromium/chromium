@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
@@ -16,15 +15,13 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
-#include "ui/base/l10n/l10n_util.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 using on_device_translation::SupportedLanguage;
 
 bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
@@ -44,7 +41,6 @@ bool IsSupportedPopularLanguage(const std::string& lang) {
   }
   return on_device_translation::IsPopularLanguage(*supported_lang);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -70,8 +66,6 @@ void TranslationManagerImpl::CanCreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
     CanCreateTranslatorCallback callback) {
-  // The API is not supported on Android yet.
-#if !BUILDFLAG(IS_ANDROID)
   CHECK(browser_context_);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())
@@ -83,9 +77,6 @@ void TranslationManagerImpl::CanCreateTranslator(
   }
   OnDeviceTranslationServiceController::GetInstance()->CanTranslate(
       source_lang, target_lang, std::move(callback));
-#else
-  std::move(callback).Run(false);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void TranslationManagerImpl::CreateTranslator(
@@ -93,8 +84,6 @@ void TranslationManagerImpl::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<blink::mojom::Translator> receiver,
     CreateTranslatorCallback callback) {
-  // The API is not supported on Android yet.
-#if !BUILDFLAG(IS_ANDROID)
   CHECK(browser_context_);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())
@@ -108,12 +97,8 @@ void TranslationManagerImpl::CreateTranslator(
       std::make_unique<Translator>(source_lang, target_lang,
                                    std::move(callback)),
       std::move(receiver));
-#else
-  std::move(callback).Run(false);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 bool TranslationManagerImpl::PassAcceptLanguagesCheck(
     const std::string& accept_languages_str,
@@ -152,4 +137,3 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
   }
   return true;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)

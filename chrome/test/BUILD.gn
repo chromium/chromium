@@ -31,6 +31,7 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/soda/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
@@ -7284,8 +7285,6 @@ test("unit_tests") {
       "../browser/new_tab_page/promos/promo_service_unittest.cc",
       "../browser/notifications/muted_notification_handler_unittest.cc",
       "../browser/notifications/screen_capture_notification_blocker_unittest.cc",
-      "../browser/on_device_translation/language_pack_util_unittest.cc",
-      "../browser/on_device_translation/translation_manager_impl_unittest.cc",
       "../browser/password_manager/generated_password_leak_detection_pref_unittest.cc",
       "../browser/platform_util_unittest.cc",
       "../browser/policy/policy_path_parser_unittest.cc",
@@ -7620,13 +7619,10 @@ test("unit_tests") {
 
     if (is_linux || is_mac || is_win) {
       sources += [
-        "../browser/component_updater/translate_kit_component_installer_unittest.cc",
-        "../browser/component_updater/translate_kit_language_pack_component_installer_unittest.cc",
         "../browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl_unittest.cc",
         "../browser/ui/sync/sync_passphrase_dialog_unittest.cc",
         "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
       ]
-      deps += [ "//chrome/browser/on_device_translation:prefs" ]
     }
 
     sources += [
@@ -7766,7 +7762,6 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
-      "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/profile_resetter:fake_profile_resetter",
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/resources:component_extension_resources_grit",
@@ -7866,7 +7861,7 @@ test("unit_tests") {
       "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/cpp:unit_tests",
-      "//components/services/on_device_translation/public/cpp",
+      "//components/services/on_device_translation/buildflags",
       "//components/session_proto_db:session_proto_db",
       "//components/signin/public/base:signin_buildflags",
       "//components/soda:constants",
@@ -9291,6 +9286,9 @@ test("unit_tests") {
       "../browser/enterprise/connectors/test:test_support",
       "../services/system_signals:unit_tests",
     ]
+  }
+  if (enable_on_device_translation) {
+    deps += [ "//chrome/browser/on_device_translation:unit_tests" ]
   }
 
   if (enable_pdf) {

@@ -21,13 +21,10 @@
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/services/on_device_translation/public/cpp/features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace component_updater {
 

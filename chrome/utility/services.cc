@@ -17,7 +17,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/language_detection/language_detection_service_impl.h"
 #include "components/services/language_detection/public/mojom/language_detection.mojom.h"
-#include "components/services/on_device_translation/on_device_translation_service.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
@@ -143,6 +143,10 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
 #include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "components/services/on_device_translation/on_device_translation_service.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 namespace {
 
@@ -433,12 +437,14 @@ auto RunMahiContentExtractionServiceFactory(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 auto RunOnDeviceTranslationService(
     mojo::PendingReceiver<
         on_device_translation::mojom::OnDeviceTranslationService> receiver) {
   return std::make_unique<on_device_translation::OnDeviceTranslationService>(
       std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunBabelOrcaTachyonParsingService(
@@ -555,7 +561,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunMahiContentExtractionServiceFactory);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   services.Add(RunOnDeviceTranslationService);
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 }
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {

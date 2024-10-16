@@ -26,6 +26,7 @@ import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -868,8 +869,6 @@ static_library("browser") {
     "ntp_tiles/chrome_popular_sites_factory.h",
     "offline_items_collection/offline_content_aggregator_factory.cc",
     "offline_items_collection/offline_content_aggregator_factory.h",
-    "on_device_translation/translation_manager_impl.cc",
-    "on_device_translation/translation_manager_impl.h",
     "optimization_guide/model_execution/chrome_on_device_model_service_controller.cc",
     "optimization_guide/model_execution/chrome_on_device_model_service_controller.h",
     "optimization_guide/prediction/prediction_model_download_client.cc",
@@ -2300,7 +2299,6 @@ static_library("browser") {
     "//components/services/heap_profiling",
     "//components/services/language_detection/public/cpp",
     "//components/services/language_detection/public/mojom",
-    "//components/services/on_device_translation:on_device_translation_service",
     "//components/services/paint_preview_compositor/public/mojom:mojom",
     "//components/services/patch/content",
     "//components/services/quarantine",
@@ -3895,10 +3893,6 @@ static_library("browser") {
       "notifications/screen_capture_notification_blocker.cc",
       "notifications/screen_capture_notification_blocker.h",
       "obsolete_system/obsolete_system.h",
-      "on_device_translation/service_controller.cc",
-      "on_device_translation/service_controller.h",
-      "on_device_translation/translator.cc",
-      "on_device_translation/translator.h",
       "page_info/about_this_site_side_panel_throttle.cc",
       "page_info/about_this_site_side_panel_throttle.h",
       "page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.cc",
@@ -4235,9 +4229,6 @@ static_library("browser") {
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/new_tab_page/chrome_colors",
-      "//chrome/browser/on_device_translation:constants",
-      "//chrome/browser/on_device_translation:language_pack_util",
-      "//chrome/browser/on_device_translation:prefs",
       "//chrome/browser/policy:path_parser",
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/screen_ai:prefs",
@@ -8042,6 +8033,22 @@ static_library("browser") {
       ]
     }
   }
+  if (enable_on_device_translation) {
+    sources += [
+      "on_device_translation/service_controller.cc",
+      "on_device_translation/service_controller.h",
+      "on_device_translation/translation_manager_impl.cc",
+      "on_device_translation/translation_manager_impl.h",
+      "on_device_translation/translator.cc",
+      "on_device_translation/translator.h",
+    ]
+    deps += [
+      "//chrome/browser/on_device_translation:constants",
+      "//chrome/browser/on_device_translation:language_pack_util",
+      "//chrome/browser/on_device_translation:prefs",
+      "//components/services/on_device_translation:on_device_translation_service",
+    ]
+  }
 
   if (enable_pdf) {
     sources += [
@@ -8541,6 +8548,7 @@ static_library("browser_public_dependencies") {
     "//components/reporting/proto:configuration_file_proto",
     "//components/safe_browsing:buildflags",
     "//components/search_engines",
+    "//components/services/on_device_translation/buildflags",
     "//components/services/storage/public/mojom",
     "//components/session_proto_db:session_proto_db",
     "//components/sharing_message",

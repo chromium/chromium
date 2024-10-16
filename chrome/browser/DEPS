@@ -332,6 +332,7 @@ include_rules = [
   "+components/services/heap_profiling",
   "+components/services/language_detection/public/cpp",
   "+components/services/language_detection/public/mojom",
+  "+components/services/on_device_translation/buildflags",
   "+components/services/on_device_translation/public",
   "+components/services/paint_preview_compositor/public/mojom",
   "+components/services/patch/content",

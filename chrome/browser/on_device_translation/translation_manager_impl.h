@@ -49,11 +49,9 @@ class TranslationManagerImpl
       mojo::PendingReceiver<blink::mojom::Translator> receiver,
       CreateTranslatorCallback callback) override;
 
-#if !BUILDFLAG(IS_ANDROID)
   static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
                                        const std::string& source_lang,
                                        const std::string& target_lang);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtr<content::BrowserContext> browser_context_;
   mojo::Receiver<blink::mojom::TranslationManager> receiver_{this};
