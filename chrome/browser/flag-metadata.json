@@ -8054,11 +8054,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "service-worker-static-router",
-    "owners": [ "yyanagisawa@google.com", "sisidovski@google.com", "chrome-worker@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "set-market-url-for-testing",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which
