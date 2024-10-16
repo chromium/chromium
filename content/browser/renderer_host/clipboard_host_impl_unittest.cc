@@ -111,8 +111,8 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
 
   std::vector<uint8_t> png =
       ui::clipboard_test_util::ReadPng(system_clipboard());
-  SkBitmap actual;
-  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  SkBitmap actual = gfx::PNGCodec::Decode(png);
+  ASSERT_TRUE(!actual.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
 }
 
@@ -370,8 +370,8 @@ TEST_F(ClipboardHostImplWriteTest, WriteBitmap) {
 
   std::vector<uint8_t> png =
       ui::clipboard_test_util::ReadPng(system_clipboard());
-  SkBitmap actual;
-  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  SkBitmap actual = gfx::PNGCodec::Decode(png);
+  ASSERT_FALSE(actual.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
 }
 
@@ -382,8 +382,8 @@ TEST_F(ClipboardHostImplWriteTest, WriteBitmap_Empty) {
 
   std::vector<uint8_t> png =
       ui::clipboard_test_util::ReadPng(system_clipboard());
-  SkBitmap actual;
-  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  SkBitmap actual = gfx::PNGCodec::Decode(png);
+  EXPECT_TRUE(actual.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
   EXPECT_TRUE(png.empty());
 }

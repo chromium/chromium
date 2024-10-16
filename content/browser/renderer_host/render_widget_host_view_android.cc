@@ -173,8 +173,9 @@ std::string CompressAndSaveBitmap(const std::string& dir,
                                   const SkBitmap& bitmap) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  std::vector<unsigned char> data;
-  if (!gfx::JPEGCodec::Encode(bitmap, 85, &data)) {
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/85);
+  if (!data) {
     LOG(ERROR) << "Failed to encode bitmap to JPEG";
     return std::string();
   }
@@ -195,12 +196,12 @@ std::string CompressAndSaveBitmap(const std::string& dir,
     return std::string();
   }
   unsigned int bytes_written =
-      fwrite(reinterpret_cast<const char*>(data.data()), 1, data.size(),
+      fwrite(reinterpret_cast<const char*>(data->data()), 1, data->size(),
              out_file.get());
   out_file.reset();  // Explicitly close before a possible Delete below.
 
   // If there were errors, don't leave a partial file around.
-  if (bytes_written != data.size()) {
+  if (bytes_written != data->size()) {
     base::DeleteFile(screenshot_path);
     LOG(ERROR) << "Error writing screenshot file to disk";
     return std::string();

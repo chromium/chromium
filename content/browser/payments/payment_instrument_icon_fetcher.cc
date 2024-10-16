@@ -57,16 +57,12 @@ void OnIconFetched(
     return;
   }
 
-  std::vector<unsigned char> bitmap_data;
-  bool success = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bitmap_data);
-  DCHECK(success);
+  std::optional<std::vector<uint8_t>> bitmap_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     base::Base64Encode(std::string_view(
-                         reinterpret_cast<const char*>(&bitmap_data[0]),
-                         bitmap_data.size()))));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                base::Base64Encode(bitmap_data.value())));
 }
 
 void DownloadBestMatchingIcon(

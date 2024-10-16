@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,19 +71,18 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     return web_contents->GetRootBrowserAccessibilityManager();
   }
 
-  void GetBitmapFromImageDataURL(ui::BrowserAccessibility* target,
-                                 SkBitmap* bitmap) {
+  SkBitmap GetBitmapFromImageDataURL(ui::BrowserAccessibility* target) {
     std::string image_data_url =
         target->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
     std::string mimetype;
     std::string charset;
     std::string png_data;
-    ASSERT_TRUE(net::DataURL::Parse(GURL(image_data_url), &mimetype, &charset,
-                                    &png_data));
-    ASSERT_EQ("image/png", mimetype);
-    ASSERT_TRUE(gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(png_data.data()),
-        png_data.size(), bitmap));
+    CHECK(net::DataURL::Parse(GURL(image_data_url), &mimetype, &charset,
+                              &png_data));
+    CHECK_EQ("image/png", mimetype);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+    CHECK(!bitmap.isNull());
+    return bitmap;
   }
 
   void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {
@@ -513,8 +513,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
   // causing flakes when doing so.
   std::ignore = waiter2.WaitForNotification();
 
-  SkBitmap bitmap;
-  GetBitmapFromImageDataURL(target, &bitmap);
+  SkBitmap bitmap = GetBitmapFromImageDataURL(target);
   ASSERT_EQ(4, bitmap.width());
   ASSERT_EQ(2, bitmap.height());
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
@@ -561,8 +560,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
   // causing flakes when doing so.
   std::ignore = waiter2.WaitForNotification();
 
-  SkBitmap bitmap;
-  GetBitmapFromImageDataURL(target, &bitmap);
+  SkBitmap bitmap = GetBitmapFromImageDataURL(target);
   ASSERT_EQ(4, bitmap.width());
   ASSERT_EQ(2, bitmap.height());
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
@@ -600,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ImgElementGetImage) {
   GetManager()->GetImageData(*target, gfx::Size());
   ASSERT_TRUE(waiter2.WaitForNotification());
 
-  SkBitmap bitmap;
-  GetBitmapFromImageDataURL(target, &bitmap);
+  SkBitmap bitmap = GetBitmapFromImageDataURL(target);
   ASSERT_EQ(2, bitmap.width());
   ASSERT_EQ(3, bitmap.height());
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
