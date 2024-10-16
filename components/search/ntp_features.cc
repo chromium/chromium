@@ -13,6 +13,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+namespace {
+
+const char kMobilePromoQRCodeURL[] =
+    "https://apps.apple.com/app/apple-store/"
+    "id535886823?pt=9008&ct=desktop-chr-ntp&mt=8";
+
+}  // namespace
+
 namespace ntp_features {
 
 // If enabled, shows a confirm dialog before removing search suggestions from
@@ -433,5 +441,12 @@ int GetWallpaperSearchButtonHideCondition() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kNtpWallpaperSearchButtonHideCondition,
       kNtpWallpaperSearchButtonHideConditionParam, 2);
+}
+
+std::string GetMobilePromoTargetURL() {
+  std::string field_trial_url = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpMobilePromo,
+      ntp_features::kNtpMobilePromoTargetUrlParam);
+  return (field_trial_url.empty()) ? kMobilePromoQRCodeURL : field_trial_url;
 }
 }  // namespace ntp_features

@@ -210,6 +210,8 @@ int GetWallpaperSearchButtonAnimationShownThreshold();
 
 // Returns the condition to use to hide the wallpaper search button.
 int GetWallpaperSearchButtonHideCondition();
+
+std::string GetMobilePromoTargetURL();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

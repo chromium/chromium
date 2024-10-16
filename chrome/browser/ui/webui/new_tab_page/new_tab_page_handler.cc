@@ -109,10 +109,6 @@ constexpr auto kModuleInteractionNames =
         {kDisableInteraction, kDismissInteraction, kIgnoreInteraction,
          kUseInteraction});
 
-const char kMobilePromoQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-ntp&mt=8";
-
 // Returns a list of module IDs that are eligible for HATS.
 std::vector<std::string> GetSurveyEligibleModuleIds() {
   return base::SplitString(
@@ -435,12 +431,7 @@ base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
 }
 
 std::string MakeMobilePromoQRCode() {
-  std::string field_trial_url = base::GetFieldTrialParamValueByFeature(
-      ntp_features::kNtpMobilePromo,
-      ntp_features::kNtpMobilePromoTargetUrlParam);
-  std::string_view qr_code_url = (field_trial_url.empty())
-                                     ? std::string_view(kMobilePromoQRCodeURL)
-                                     : field_trial_url;
+  std::string qr_code_url = ntp_features::GetMobilePromoTargetURL();
   auto generated_code = qr_code_generator::GenerateImage(
       base::as_byte_span(qr_code_url), qr_code_generator::ModuleStyle::kCircles,
       qr_code_generator::LocatorStyle::kRounded,
