@@ -137,10 +137,7 @@ message ComposeQuality {
   // Was this session a successful session.
   FinalModelStatus final_model_status = 10;
 
-  // The input mode used for this request.
-  ComposeUpfrontInputMode mode = 11;
-
-  reserved 3;
+  reserved 3, 11;
 }
 
 // A helper message to store the int64 high and uint64 low bits of an int128

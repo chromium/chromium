@@ -94,7 +94,7 @@ message TabOrganizationQuality {
 
     Choice choice = 3;
 
-    // TODO(b/331852814): Remove along with the multi tab organization flag
+    // TODO(crbug.com/331852814): Remove along with the multi tab organization flag
     UserFeedback user_feedback = 4;
 
     // The label of the organization if it was accepted. |edited| signifies that
