@@ -976,12 +976,12 @@
   {
     "name": "bind-cookies-to-port",
     "owners": [ "bingler@chromium.org"],
-    "expiry_milestone": 132
+    "expiry_milestone": 142
   },
   {
     "name": "bind-cookies-to-scheme",
     "owners": [ "bingler@chromium.org"],
-    "expiry_milestone": 132
+    "expiry_milestone": 142
   },
   {
     "name": "biometric-auth-identity-check",
