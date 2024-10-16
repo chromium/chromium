@@ -723,32 +723,48 @@ Node* Node::moveBefore(Node* new_child,
                        ExceptionState& exception_state) {
   DCHECK(new_child);
 
-  // Only perform a state-preserving atomic move if the child is ALREADY
-  // connected to this document, and its document is the same as `this`'s. If
-  // the child is NOT connected to this document, then script can run during the
+  // Only perform a state-preserving atomic move if the new parent and the child
+  // are ALREADY connected, and its document is the same as `this`'s. If the
+  // child is NOT connected to this document, then script could run during the
   // node's initial post-insertion steps (i.e.,
   // `Node::DidNotifySubtreeInsertionsToDocument()`), and no script is permitted
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
-      isConnected() && new_child->isConnected() && GetDocument().IsActive() &&
-      (GetDocument() == new_child->GetDocument()) && new_child->IsElementNode();
+      // "If either parent or node are not connected, then..."
+      isConnected() && new_child->isConnected() &&
+      // "If parent’s shadow-including root is not the same as node’s
+      // shadow-including root, then..."
+      GetDocument() == new_child->GetDocument() &&
+      // "If node is not an Element or a CharacterData node, then ..."
+      (new_child->IsElementNode() || new_child->IsCharacterDataNode()) &&
+      // "If parent is not an Element node, then throw a "HierarchyRequestError"
+      // DOMException."
+      IsElementNode();
+  // These two conditions below are caught by `EnsurePreInsertionValidity()`
+  // that gets invoked in `insertBefore()`:
+  //
+  // "If node is a host-including inclusive ancestor of parent, then...
+  // "If child is non-null and its parent is not parent, then..."
 
-  if (perform_state_preserving_atomic_move) {
-    // When `moveBefore()` is called, AND we're actually performing a
-    // state-preserving atomic move, no script can run synchronously during the
-    // move. That means it is impossible for nested `moveBefore()` calls to
-    // occur. Assert that no atomic move is already in progress.
-    DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-    GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  // ...throw a "HierarchyRequestError" DOMException."
+  if (!perform_state_preserving_atomic_move) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "State-preserving atomic move cannot be performed on nodes "
+        "participating in an invalid hierarchy.");
+    return nullptr;
   }
+
+  // No script can run synchronously during the move. That means it is
+  // impossible for nested `moveBefore()` calls to occur. Assert that no atomic
+  // move is already in progress.
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
 
   // Mutation events are disabled during the `moveBefore()` API.
   MutationEventSuppressionScope scope(GetDocument());
 
   Node* return_node = insertBefore(new_child, ref_child, exception_state);
-
-  // Regardless of whether we were *actually* performing a state-preserving
-  // atomic move, we can safely, unconditionally reset the document's boolean.
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
 
   // We don't need to conditionally return `nullptr` if `exception_state` had an
