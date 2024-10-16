@@ -364,26 +364,6 @@ source_set("enterprise_app_agent_ui") {
   ]
 }
 
-source_set("first_run_profile_agent") {
-  sources = [
-    "first_run_profile_agent.h",
-    "first_run_profile_agent.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/profile",
-    "//ios/chrome/browser/first_run/ui_bundled",
-    "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:signin_util",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
-  ]
-}
-
 source_set("search_engine_choice_profile_agent") {
   sources = [
     "search_engine_choice_profile_agent.h",

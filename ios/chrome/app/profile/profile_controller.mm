@@ -7,8 +7,8 @@
 #import <memory>
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/docking_promo_profile_agent.h"
+#import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/app/profile/post_restore_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
