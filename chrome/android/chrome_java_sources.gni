@@ -1215,6 +1215,5 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetrics.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappLauncherActivity.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
-  "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorActivity.java",
   "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
 ]

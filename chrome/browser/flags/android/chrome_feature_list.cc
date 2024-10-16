@@ -68,7 +68,6 @@
 #include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/common/content_features.h"
-#include "device/fido/features.h"
 #include "media/base/media_switches.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
@@ -121,7 +120,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kUserBypassUI,
     &data_sharing::features::kDataSharingFeature,
     &data_sharing::features::kDataSharingJoinOnly,
-    &device::kWebAuthnEnableAndroidCableAuthenticator,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kDownloadsMigrateToJobsAPI,
     &base::features::kCollectAndroidFrameTimelineMetrics,

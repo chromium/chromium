@@ -99,12 +99,6 @@ BASE_FEATURE(kChromeOsPasskeys,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Deprecation flag.
-// Default disabled in M125. Remove in or after M128.
-BASE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator,
-             "WebAuthenticationEnableAndroidCableAuthenticator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Development flag. Must not be enabled by default once
 // kWebAuthnEnclaveAuthenticator is enabled.
 BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,

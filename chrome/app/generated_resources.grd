@@ -16944,13 +16944,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
    </if>
 
-   <message name="IDS_CABLEV2_MAKE_CREDENTIAL_NOTIFICATION_TITLE" desc="The title of a notification shown on Android that informs the user that a website wishes to register their phone for signing into that website." formatter_data="android_java">
-     Verify with this phone
-   </message>
-   <message name="IDS_CABLEV2_GET_ASSERTION_NOTIFICATION_TITLE" desc="The title of a notification shown on Android that informs the user that a website wishes to use their phone to sign them in on another computer." formatter_data="android_java">
-     Verify your identity
-   </message>
-
    <!-- Incognito Profile Menu bubble. -->
     <message name="IDS_INCOGNITO_PROFILE_MENU_TITLE" desc="The title of the Incognito version of profile menu.">
       Incognito

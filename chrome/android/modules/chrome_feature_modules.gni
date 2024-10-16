@@ -5,8 +5,6 @@
 import("//build/config/android/config.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/buildflags.gni")
-import(
-    "//chrome/android/modules/cablev2_authenticator/cablev2_authenticator_module.gni")
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -34,7 +32,6 @@ if (enable_arcore) {
 # Each new module needs to add a desc to one of the lists below.
 
 chrome_module_descs = [
-  cablev2_authenticator_module_desc,
   test_dummy_module_desc,
   stack_unwinder_module_desc,
 ]

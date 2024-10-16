@@ -554,8 +554,6 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
             "WebApkInstallFailureNotification";
     public static final String WEB_APK_MIN_SHELL_APK_VERSION = "WebApkMinShellVersion";
-    public static final String WEB_AUTHN_ENABLE_CABLE_AUTHENTICATOR =
-            "WebAuthenticationEnableAndroidCableAuthenticator";
     public static final String WEB_FEED_AWARENESS = "WebFeedAwareness";
     public static final String WEB_FEED_ONBOARDING = "WebFeedOnboarding";
     public static final String WEB_FEED_SORT = "WebFeedSort";

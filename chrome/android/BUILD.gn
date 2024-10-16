@@ -326,7 +326,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/features/tab_ui:java_resources",
       "//chrome/android/features/tab_ui/public:java",
       "//chrome/android/features/tab_ui/public:ui_java_resources",
-      "//chrome/android/modules/cablev2_authenticator/public:java",
       "//chrome/android/modules/stack_unwinder/provider:java",
       "//chrome/android/webapk/libs/client:client_java",
       "//chrome/android/webapk/libs/common:common_java",

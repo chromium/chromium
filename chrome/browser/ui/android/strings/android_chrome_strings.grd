@@ -5792,109 +5792,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Stack Unwinder
       </message>
 
-      <message name="IDS_CABLEV2_AUTHENTICATOR_MODULE_TITLE"
-        desc="Text shown when the caBLEv2 module (i.e. for Phone as a Security Key) is
-              referenced in install start, success, and failure UI (e.g. in
-              IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Phone as a
-              Security Key Support for Chrome…'). A security key is usually a physical piece of
-              hardware used for authentication and this feature is about using a mobile
-              phone in place of one.">
-        Phone as a Security Key Support
-      </message>
-
-      <message name="IDS_CABLEV2_ACTIVITY_TITLE"
-        desc="The label of the Activity for using your phone as a security key. A 'security key' in this context is generally a small USB device that is used for logging into websites. This feature allows Chrome on an Android phone to act as a security key. A user may see it in Android permissions prompts (see screenshot).">
-         Google Chrome as a Security Key
-      </message>
-
-      <message name="IDS_CABLEV2_REGISTRATION_SUCCEEDED"
-        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to register their phone as an authentication device was successful. The translation of the verb should hopefully match that in TC ID 1295743531323106866. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
-         Registration succeeded
-      </message>
-
-      <message name="IDS_CABLEV2_REGISTRATION_FAILED"
-        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to register their phone as an authentication device was unsuccessful. The translation of the verb should hopefully match that in TC ID 1295743531323106866. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
-         Registration failed
-      </message>
-
-      <message name="IDS_CABLEV2_SIGN_IN_SUCCEEDED"
-        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to sign-in using their phone as an authentication device was successful. The translation of 'sign-in' should hopefully match that in TC ID 6840924527405570820. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
-         Sign-in succeeded
-      </message>
-
-      <message name="IDS_CABLEV2_SIGN_IN_FAILED"
-        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to sign-in using their phone as an authentication device was unsuccessful. The translation of 'sign-in' should hopefully match that in TC ID 6840924527405570820. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
-         Sign-in failed
-      </message>
-
-      <message name="IDS_CABLEV2_SERVERLINK_CONNECTING_TO_YOUR_DEVICE" desc="The title of a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it.">
-         Connecting to your device…
-      </message>
-
-      <message name="IDS_CABLEV2_SERVERLINK_STATUS_CONNECTING" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it.">
-        This may take a minute
-      </message>
-
-      <message name="IDS_CABLEV2_FCM_STATUS_CONNECTING" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. In this state the phone needs to send a radio message to the computer and this works best if the phone is physically close to the computer. This message suggests to the user to move their phone closer to the computer to aid this.">
-        Place your phone close to the computer
-      </message>
-
-      <message name="IDS_CABLEV2_SERVERLINK_STATUS_CONNECTED" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. (In the attached image, this text will appear in place of the text 'This may take a minute'.) This text is shown once the connection to the desktop/laptop has completed and the phone is awaiting instructions.">
-        Connected to device
-      </message>
-
-      <message name="IDS_CABLEV2_SERVERLINK_STATUS_PROCESSING" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. (In the attached image, this text will appear in place of the text 'This may take a minute'.) This text is shown once a challenge from the desktop/laptop has been received.">
-        Processing request
-      </message>
-
-      <message name="IDS_CABLEV2_SERVERLINK_STATUS_DFM_INSTALL" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. This text is shown while Chrome is downloading the component that can complete the connection.">
-        Updating Chrome to connect to other devices
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_TITLE" desc="The title of an error screen shown when the user is trying to use their phone to sign into a website on a laptop, but something (probably out of their control) went wrong">
-        Something went wrong
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_TIMEOUT" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but the phone was until to contact the laptop within a reasonable amount of time.">
-        Can’t connect to your computer. Try another verification option.
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_BLE_PERMISSION" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but the user denied Chrome the permission it needs to do this. Below this message is a button that will open the Settings app where the user can grant the permission. 'Nearby devices' is the name of the specific permission in Settings that needs to be granted. It is TC ID 5529147543651181991 and, ideally, the same wording that will appear in Settings would be used here.">
-        <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> needs Nearby devices permission in order to connect to your device
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_NO_SCREENLOCK" desc="The description of an error shown when the user is trying to use their phone to register or authenticate with a website on a laptop, but no screen lock is set on the phone. The term 'screen lock' refers to setting a pattern, PIN, or fingerprint that is used each time the phone is unlocked. This is needed when using the phone to authenticate because we want the owner of the phone to prove that they authorize the action. This message appears above a button that opens the phone's settings directly at the screen for configuring a screen lock.">
-        To use this device as a security key, set a screen lock
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_DISCO_CRED" desc="The description of an error shown when the user is trying to use their phone to register or authenticate with a website on a laptop, but the phone doesn't support the type of sign-in requested.">
-        This verification method isn’t available for this device. Pick a different option on your other device.
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_GENERIC" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but some generic error occured.">
-        Try another verification option
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_CODE" desc="A line of text on an error screen that is shown with lower contrast in order to include a numeric error code to aid in debugging.">
-        (Error <ph name="error_code">%1$d<ex>104</ex></ph>)
-      </message>
-
-      <message name="IDS_CABLEV2_ERROR_CLOSE" desc="A button at the bottom on an error screen to dismiss it">
-        Close
-      </message>
-
-      <message name="IDS_CABLEV2_MAKE_CREDENTIAL_NOTIFICATION_BODY" desc="The body of a notification shown on Android that informs the user that a website wishes to register their phone for signing into that website.">
-        Your computer wants to register this device for signing in to a site
-      </message>
-
-      <message name="IDS_CABLEV2_GET_ASSERTION_NOTIFICATION_BODY" desc="The title of a notification shown on Android that informs the user that a website wishes to use their phone to sign them in on another computer.">
-        Your computer wants to use this device to sign in to a site
-      </message>
-
-      <message name="IDS_CABLEV2_BLE_ENABLE_TITLE" desc="The title of a screen that'll appear on a phone when we need to enable Bluetooth on the device. This screen will appear for a couple of seconds to give context, then a prompt will appear to allow the user to confirm that they wish to enable Bluetooth. Bluetooth is a radio technology commonly found in phones.">
-        Turning on Bluetooth…
-      </message>
-
       <message name="IDS_CABLEV2_PAASK_TITLE" desc="The title of an entry in settings for controlling how a phone can be used as a security key. A security key is typically a physical USB peripheral used to secure accounts. In this case, the user's phone can act as a security key.">
         Phone as a security key
       </message>
@@ -5925,30 +5822,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <message name="IDS_CABLEV2_UNLINK_CONFIRMATION" desc="The text in a toast that appears after clicking a button labeled 'Remove all linked devices' (IDS_CABLEV2_UNLINK_BUTTON). A 'toast' is a bubble that appears, briefly, near the bottom of the screen. (Unfortunately I was unable to capture it in the screenshot.)">
         Removed
-      </message>
-
-      <message name="IDS_CABLEV2_QR_TITLE" desc="The title on a screen that confirms that the user wants to connect to a computer that displayed a QR code.">
-        Connect with QR Code?
-      </message>
-
-      <message name="IDS_CABLEV2_QR_BODY_PHONE" desc="The body text on a screen that confirms that the user wants to connect to a device that displayed a QR code. This message is specific to phones and won't appear on tablets. The device displaying the QR code might be a computer, laptop, phone, table, or even TV.">
-        You can use this phone to sign in on the device that’s displaying this QR code.
-      </message>
-
-      <message name="IDS_CABLEV2_QR_BODY_TABLET" desc="The body text on a screen that confirms that the user wants to connect to a device that displayed a QR code. This message is specific to tablets and won't appear on phones. The device displaying the QR code might be a computer, laptop, phone, table, or even TV.">
-        You can use this tablet to sign in on the device that’s displaying this QR code.
-      </message>
-
-      <message name="IDS_CABLEV2_QR_REMEMBER" desc="The label of a checkbox that appears on a screen confirming that the user wants to connect to a computer from which they just scanned a QR code. If the computer is 'remembered' then it'll be able to connect to the phone automatically in the future. The 'computer' is a laptop, desktop, or (eventually) another phone or tablet.">
-        Remember this computer
-      </message>
-
-      <message name="IDS_CABLEV2_QR_ALLOW" desc="The label of a button that the user presses to confirm that they want to connect to a computer from which they just scanned a QR code.">
-        Allow
-      </message>
-
-      <message name="IDS_CABLEV2_QR_DONT_ALLOW" desc="The label of a button that the user can press to decline to connect to a computer from which they just scanned a QR code.">
-        Don’t allow
       </message>
 
       <!-- QR Code -->
@@ -6042,10 +5915,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <message name="IDS_SHARING_INCLUDING_LINK_TITLE_TEMPLATE" desc="Title used in share sheet when sharing the highlighted text with a generated link.">
         Including link: <ph name="ORIGIN">%1$s<ex>https://www.example.com</ex></ph>
-      </message>
-
-      <message name="IDS_QR_CODE_OPEN_SETTINGS_LABEL" desc="Text on button on QR Code sharing tab triggering Android settings.">
-        Open Settings
       </message>
 
       <message name="IDS_QR_CODE_FILENAME_PREFIX" desc="File name prefix for downloaded qrcode that is followed by timestamp.">
