@@ -2410,6 +2410,14 @@
       status: "experimental",
     },
     {
+      // Makes the HTML parser close <select> tags before inserting <input>
+      // tags to match the old parser behavior in case we have compat issues
+      // launching SelectParserRelaxation. If SelectParserRelaxation stays
+      // stable in M131, then this flag can be removed in M133.
+      name: "InputClosesSelect",
+      depends_on: ["SelectParserRelaxation"],
+    },
+    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android and
       // iOS.
