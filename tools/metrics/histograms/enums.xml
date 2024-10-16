@@ -20514,6 +20514,7 @@ from previous Chrome versions.
   <int value="98029688" label="MediaAppDisplayExif:disabled"/>
   <int value="98134240" label="material-design-ink-drop-animation-speed"/>
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
+  <int value="98273391" label="force-ntp-mobile-promo"/>
   <int value="98773632" label="DesktopPWAsTabStripCustomizations:enabled"/>
   <int value="99128921"
       label="SyncOnlySeparateUserDisplayModeForCrOS:disabled"/>

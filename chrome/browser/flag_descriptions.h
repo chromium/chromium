@@ -3041,6 +3041,9 @@ extern const char kNtpMiddleSlotPromoDismissalDescription[];
 extern const char kNtpMobilePromoName[];
 extern const char kNtpMobilePromoDescription[];
 
+extern const char kForceNtpMobilePromoName[];
+extern const char kForceNtpMobilePromoDescription[];
+
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
 

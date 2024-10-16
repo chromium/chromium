@@ -6973,6 +6973,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpMobilePromoName, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpMobilePromo)},
 
+    {"force-ntp-mobile-promo", flag_descriptions::kForceNtpMobilePromoName,
+     flag_descriptions::kForceNtpMobilePromoName, kOsDesktop,
+     SINGLE_VALUE_TYPE(switches::kForceNtpMobilePromo)},
+
     {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
      flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesDragAndDrop)},

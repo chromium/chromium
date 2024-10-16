@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -1511,6 +1513,12 @@ void NewTabPageHandler::GetMobilePromoQrCode(
 
 void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
     GetMobilePromoQrCodeCallback callback) {
+  // Skip eligibility checks if the promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    std::move(callback).Run(MakeMobilePromoQRCode());
+    return;
+  }
   // Verify that the user is currently syncing their preferences before
   // bothering to query segmentation.
   // TODO(crbug.com/369871205): Also check other restrictions (e.g. user hasn't
@@ -1581,6 +1589,12 @@ void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
 }
 
 void NewTabPageHandler::OnMobilePromoShown() {
+  // Don't change prefs if promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    return;
+  }
+
   promos_utils::IOSDesktopNtpPromoShown(profile_->GetPrefs());
   int appearance_count =
       profile_->GetPrefs()
@@ -1591,6 +1605,12 @@ void NewTabPageHandler::OnMobilePromoShown() {
 }
 
 void NewTabPageHandler::OnDismissMobilePromo() {
+  // Don't change prefs if promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    return;
+  }
+
   int appearance_count =
       profile_->GetPrefs()
           ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
@@ -1602,6 +1622,12 @@ void NewTabPageHandler::OnDismissMobilePromo() {
 }
 
 void NewTabPageHandler::OnUndoDismissMobilePromo() {
+  // Don't change prefs if promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    return;
+  }
+
   int appearance_count =
       profile_->GetPrefs()
           ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)

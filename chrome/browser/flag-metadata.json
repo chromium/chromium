@@ -4821,6 +4821,11 @@
      "expiry_milestone": 136
   },
   {
+    "name": "force-ntp-mobile-promo",
+    "owners": [ "rkgibson@google.com", "bling-mony-pod@google.com", "pauladedeji@google.com" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "force-resync-drive",
     "owners": [ "cassycc@google.com", "alexbn@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 132

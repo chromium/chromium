@@ -5285,6 +5285,11 @@ const char kNtpMobilePromoName[] = "NTP Mobile Promo";
 const char kNtpMobilePromoDescription[] =
     "Shows a promo for installing on mobile to the New Tab Page.";
 
+const char kForceNtpMobilePromoName[] = "Force NTP Mobile Promo";
+const char kForceNtpMobilePromoDescription[] =
+    "Forces a promo for installing on mobile to the New Tab Page to show "
+    "without preconditions.";
+
 const char kNtpModulesDragAndDropName[] = "NTP Modules Drag and Drop";
 const char kNtpModulesDragAndDropDescription[] =
     "Enables modules to be reordered via dragging and dropping on the "
