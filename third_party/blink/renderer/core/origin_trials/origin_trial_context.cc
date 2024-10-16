@@ -530,8 +530,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
 
   if (trial_name == "FoldableAPIs") {
-    return base::FeatureList::IsEnabled(features::kViewportSegments) &&
-           base::FeatureList::IsEnabled(features::kDevicePosture);
+    return base::FeatureList::IsEnabled(features::kViewportSegments);
   }
 
   if (trial_name == "PermissionElement") {

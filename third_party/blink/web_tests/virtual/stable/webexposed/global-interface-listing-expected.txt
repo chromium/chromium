@@ -1610,6 +1610,12 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
+interface DevicePosture : EventTarget
+    attribute @@toStringTag
+    getter onchange
+    getter type
+    method constructor
+    setter onchange
 interface Document : Node
     static method parseHTMLUnsafe
     attribute @@toStringTag
@@ -5963,6 +5969,7 @@ interface Navigator
     getter credentials
     getter deprecatedRunAdAuctionEnforcesKAnonymity
     getter deviceMemory
+    getter devicePosture
     getter doNotTrack
     getter geolocation
     getter gpu

@@ -1376,11 +1376,7 @@
     },
     {
       name: "DevicePosture",
-      public: true,
-      status: "experimental",
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
-      origin_trial_feature_name: "FoldableAPIs",
+      status: "stable",
     },
     {
       // This feature makes the <dialog> element close properly when its "open"

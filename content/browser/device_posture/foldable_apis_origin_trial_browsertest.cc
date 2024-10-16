@@ -91,23 +91,7 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     interceptor_.reset();
     ContentBrowserTest::TearDownOnMainThread();
-    web_contents_impl()
-        ->GetDevicePostureProvider()
-        ->DisableDevicePostureOverrideForEmulation();
     view()->SetDisplayFeatureForTesting(nullptr);
-  }
-
-  bool HasDevicePostureApi() {
-    return EvalJs(shell(), "'devicePosture' in navigator").ExtractBool();
-  }
-
-  bool HasDevicePostureCSSApi() {
-    return EvalJs(shell(),
-                  "window.matchMedia('(device-posture: continuous)').matches")
-               .ExtractBool() ||
-           EvalJs(shell(),
-                  "window.matchMedia('(device-posture: folded)').matches")
-               .ExtractBool();
   }
 
   bool HasViewportSegmentsApi() {
@@ -142,8 +126,6 @@ IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest,
                        ValidOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kValidTokenUrl));
   SetUpFoldableState();
-  EXPECT_TRUE(HasDevicePostureApi());
-  EXPECT_TRUE(HasDevicePostureCSSApi());
   EXPECT_TRUE(HasViewportSegmentsApi());
   EXPECT_TRUE(HasViewportSegmentsCSSApi());
   EXPECT_TRUE(HasViewportSegmentsEnvVariablesCSSApi());
@@ -152,8 +134,6 @@ IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest,
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest, NoOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kNoTokenUrl));
   SetUpFoldableState();
-  EXPECT_FALSE(HasDevicePostureApi());
-  EXPECT_FALSE(HasDevicePostureCSSApi());
   EXPECT_FALSE(HasViewportSegmentsApi());
   EXPECT_FALSE(HasViewportSegmentsCSSApi());
   EXPECT_FALSE(HasViewportSegmentsEnvVariablesCSSApi());
@@ -164,9 +144,8 @@ class FoldableAPIsOriginTrialKillSwitchBrowserTest
  public:
   FoldableAPIsOriginTrialKillSwitchBrowserTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {},
-        {blink::features::kDevicePosture, blink::features::kViewportSegments});
+    scoped_feature_list_.InitWithFeatures({},
+                                          {blink::features::kViewportSegments});
   }
 
  private:
@@ -177,8 +156,6 @@ IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialKillSwitchBrowserTest,
                        ValidOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kValidTokenUrl));
   SetUpFoldableState();
-  EXPECT_FALSE(HasDevicePostureApi());
-  EXPECT_FALSE(HasDevicePostureCSSApi());
   EXPECT_FALSE(HasViewportSegmentsApi());
   EXPECT_FALSE(HasViewportSegmentsCSSApi());
   EXPECT_FALSE(HasViewportSegmentsEnvVariablesCSSApi());
@@ -188,8 +165,6 @@ IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialKillSwitchBrowserTest,
                        NoOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kNoTokenUrl));
   SetUpFoldableState();
-  EXPECT_FALSE(HasDevicePostureApi());
-  EXPECT_FALSE(HasDevicePostureCSSApi());
   EXPECT_FALSE(HasViewportSegmentsApi());
   EXPECT_FALSE(HasViewportSegmentsCSSApi());
   EXPECT_FALSE(HasViewportSegmentsEnvVariablesCSSApi());
