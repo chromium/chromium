@@ -33,11 +33,6 @@ bool IsArcWindow(aura::Window* window) {
          chromeos::AppType::ARC_APP;
 }
 
-bool IsLacrosWindow(aura::Window* window) {
-  return window->GetProperty(chromeos::kAppTypeKey) ==
-         chromeos::AppType::LACROS;
-}
-
 bool HasWindowInfo(int32_t restore_window_id) {
   // DeskTemplateReadHandler::GetWindowInfo returns nullptr if
   // `restore_window_id` is unknown.

@@ -72,10 +72,6 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  if (app_restore::IsLacrosWindow(window)) {
-    return;
-  }
-
   if (!SessionID::IsValidValue(window_id)) {
     return;
   }
