@@ -256,12 +256,7 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   // Frame data. It is a responsibility of the client of the Vp9Parser to
   // maintain validity of this data while it is being used outside of that
   // class.
-  // RAW_PTR_EXCLUSION: Rewriting causes unrelated test failures.
-  // TODO(crbug.com/349424269): Fix tests and rewrite.
-  RAW_PTR_EXCLUSION const uint8_t* data;
-
-  // Size of |data| in bytes.
-  size_t frame_size;
+  base::span<const uint8_t> data;
 
   // Size of compressed header in bytes.
   size_t header_size_in_bytes = 0;

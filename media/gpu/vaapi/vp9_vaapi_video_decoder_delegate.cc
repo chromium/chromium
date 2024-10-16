@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/macros.h"
@@ -89,7 +90,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
   VAEncryptionParameters crypto_param{};
   if (IsEncryptedSession()) {
     const ProtectedSessionState state = SetupDecryptDecode(
-        /*full_sample=*/false, frame_hdr->frame_size, &crypto_param,
+        /*full_sample=*/false, frame_hdr->data.size(), &crypto_param,
         &encryption_segment_info,
         decrypt_config ? decrypt_config->subsamples()
                        : std::vector<SubsampleEntry>());
@@ -170,7 +171,8 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK((pic_param.profile == 0 && pic_param.bit_depth == 8) ||
          (pic_param.profile == 2 && pic_param.bit_depth == 10));
 
-  slice_param.slice_data_size = frame_hdr->frame_size;
+  slice_param.slice_data_size =
+      base::checked_cast<uint32_t>(frame_hdr->data.size());
   slice_param.slice_data_offset = 0;
   slice_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
 
@@ -250,24 +252,25 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     protected_vp9_data =
         std::make_unique<uint8_t[]>(protected_data_size.ValueOrDie());
     // Copy the UCH.
-    memcpy(protected_vp9_data.get(), frame_hdr->data,
+    memcpy(protected_vp9_data.get(), frame_hdr->data.data(),
            frame_hdr->uncompressed_header_size);
     // Copy the transcrypted data.
     memcpy(protected_vp9_data.get() + frame_hdr->uncompressed_header_size,
-           frame_hdr->data + decrypt_config->subsamples()[0].clear_bytes,
-           base::strict_cast<size_t>(decrypt_config->subsamples()[0].cypher_bytes));
+           frame_hdr->data.data() + decrypt_config->subsamples()[0].clear_bytes,
+           base::strict_cast<size_t>(
+               decrypt_config->subsamples()[0].cypher_bytes));
     buffers.push_back({encoded_data->id(),
                        {encoded_data->type(), encoded_data->size(),
                         protected_vp9_data.get()}});
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
-                                                  frame_hdr->frame_size);
+                                                  frame_hdr->data.size());
     if (!encoded_data)
       return DecodeStatus::kFail;
     buffers.push_back(
         {encoded_data->id(),
-         {encoded_data->type(), encoded_data->size(), frame_hdr->data}});
+         {encoded_data->type(), encoded_data->size(), frame_hdr->data.data()}});
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   }
   if (uses_crypto) {

@@ -409,7 +409,8 @@ void Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
 
   scoped_refptr<MmappedBuffer> buffer = queue->GetBuffer(0);
 
-  buffer->mmapped_planes()[0].CopyIn(frame_hdr.data, frame_hdr.frame_size);
+  buffer->mmapped_planes()[0].CopyIn(frame_hdr.data.data(),
+                                     frame_hdr.data.size());
 }
 
 VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,

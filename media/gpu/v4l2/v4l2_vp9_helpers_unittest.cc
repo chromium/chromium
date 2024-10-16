@@ -120,7 +120,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
                                           &frame_decrypt_config),
                 Vp9Parser::Result::kOk);
 
-      EXPECT_EQ(frame_header.frame_size, buffers[j].size());
+      EXPECT_EQ(frame_header.data.size(), buffers[j].size());
       // show_frame is 1 if and only if the frame is in the top spatial layer.
       EXPECT_EQ(frame_header.show_frame, j == i);
     }

@@ -112,9 +112,9 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   }
 
   // Append this picture to the current superframe.
-  AppendData(frame_data_.get(), pic->frame_hdr->data,
-             pic->frame_hdr->frame_size);
-  frame_sizes_.push_back(pic->frame_hdr->frame_size);
+  AppendData(frame_data_.get(), pic->frame_hdr->data.data(),
+             pic->frame_hdr->data.size());
+  frame_sizes_.push_back(pic->frame_hdr->data.size());
 
   // If this is an output picture, submit the current superframe for decoding.
   if (pic->frame_hdr->show_frame || pic->frame_hdr->show_existing_frame) {
