@@ -48,8 +48,10 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -65,6 +67,14 @@ import java.util.Optional;
 
 /** Helper methods that can be used across multiple Autofill UIs. */
 public class AutofillUiUtils {
+    // URL for the "Payment methods" page on the Google Wallet website. To manage a specific FOP,
+    // append its instrument id as a query parameter using '&id='.
+    private static final String MANAGE_PAYMENT_METHODS_URL =
+            "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
+    // URL for the "Payment methods" page on the Google Wallet sandbox website. To manage a specific
+    // sandbox FOP, append its instrument id as a query parameter using '&id='.
+    private static final String MANAGE_SANDBOX_PAYMENT_METHODS_URL =
+            "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
     public static final String CAPITAL_ONE_ICON_URL =
             "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png";
 
@@ -813,5 +823,19 @@ public class AutofillUiUtils {
         view.setOnTouchListener(
                 (View v, MotionEvent ev) ->
                         (ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0);
+    }
+
+    /**
+     * Returns the link to open the payment method management page for a specific instrument on the
+     * Google Wallet website.
+     *
+     * @param instrumentId Instrument id of the payment method.
+     * @return URL to manage the payment method on Google Wallet.
+     */
+    public static String getManagePaymentMethodUrlForInstrumentId(long instrumentId) {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
+            return MANAGE_SANDBOX_PAYMENT_METHODS_URL + "&id=" + instrumentId;
+        }
+        return MANAGE_PAYMENT_METHODS_URL + "&id=" + instrumentId;
     }
 }

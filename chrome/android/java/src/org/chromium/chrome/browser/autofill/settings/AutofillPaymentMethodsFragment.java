@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
-
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -29,12 +27,12 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -44,7 +42,6 @@ import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -81,11 +78,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     @VisibleForTesting
     static final String PREF_FINANCIAL_ACCOUNTS_MANAGEMENT = "financial_accounts_management";
-
-    private static final String AUTOFILL_MANAGE_PAYMENTS_URL =
-            "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
-    private static final String AUTOFILL_MANAGE_PAYMENTS_SANDBOX_URL =
-            "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
@@ -289,7 +281,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
             // Set card icon. It can be either a custom card art or a network icon.
             card_pref.setIcon(
-                    getCardIcon(
+                    AutofillUiUtils.getCardIcon(
                             getStyledContext(),
                             personalDataManager,
                             card.getCardArtUrl(),
@@ -340,7 +332,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 iban_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
                 iban_pref.setOnPreferenceClickListener(
                         preference -> {
-                            mServerIbanManageLinkOpenerCallback.onResult(getManageIbanLink(iban));
+                            mServerIbanManageLinkOpenerCallback.onResult(
+                                    AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(
+                                            iban.getInstrumentId()));
                             return true;
                         });
             }
@@ -658,15 +652,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         settingsNavigation.startSettings(
                 getActivity(), FinancialAccountsManagementFragment.class, args);
         return true;
-    }
-
-    // TODO(b/369900711): Create a shared getManageServerPaymentMethodLink() for cards and IBANs.
-    // Returns the URL for managing IBAN in GPay Web.
-    private String getManageIbanLink(Iban iban) {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
-            return AUTOFILL_MANAGE_PAYMENTS_SANDBOX_URL + "&id=" + iban.getInstrumentId();
-        }
-        return AUTOFILL_MANAGE_PAYMENTS_URL + "&id=" + iban.getInstrumentId();
     }
 
     public void setServerIbanManageLinkOpenerCallbackForTesting(Callback<String> callback) {
