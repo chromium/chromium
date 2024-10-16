@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.privacy_guide;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
-import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -72,13 +70,6 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
         @CookieControlsMode
         int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(mProfile);
         return allowCookies && cookieControlsMode != CookieControlsMode.OFF;
-    }
-
-    @Override
-    public boolean shouldDisplayPreload() {
-        return PreloadPagesSettingsBridge.getState(mProfile)
-                        == PreloadPagesState.STANDARD_PRELOADING
-                || PreloadPagesSettingsBridge.getState(mProfile) == PreloadPagesState.NO_PRELOADING;
     }
 
     @Override

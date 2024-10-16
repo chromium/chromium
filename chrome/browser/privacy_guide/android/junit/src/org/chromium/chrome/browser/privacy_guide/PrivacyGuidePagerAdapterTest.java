@@ -32,7 +32,6 @@ import java.util.Set;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
-    ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
 })
 public class PrivacyGuidePagerAdapterTest {
     public static Collection<Object[]> generateBooleanCombinations(int nElements) {
@@ -59,7 +58,7 @@ public class PrivacyGuidePagerAdapterTest {
 
     @Parameters
     public static Collection<Object[]> data() {
-        int nElements = 5; // Number of elements in each combination
+        int nElements = 4; // Number of elements in each combination
         return generateBooleanCombinations(nElements);
     }
 
@@ -76,9 +75,6 @@ public class PrivacyGuidePagerAdapterTest {
     public boolean mShouldDisplayCookies;
 
     @Parameter(3)
-    public boolean mShouldDisplayPreload;
-
-    @Parameter(4)
     public boolean mShouldDisplayAdTopics;
 
     private StepDisplayHandler mStepDisplayHandler;
@@ -119,11 +115,6 @@ public class PrivacyGuidePagerAdapterTest {
                     }
 
                     @Override
-                    public boolean shouldDisplayPreload() {
-                        return mShouldDisplayPreload;
-                    }
-
-                    @Override
                     public boolean shouldDisplayAdTopics() {
                         return mShouldDisplayAdTopics;
                     }
@@ -159,10 +150,6 @@ public class PrivacyGuidePagerAdapterTest {
                 "Safe Browsing step displayed incorrectly",
                 mShouldDisplaySafeBrowsing,
                 fragmentClassSet.contains(SafeBrowsingFragment.class));
-        Assert.assertEquals(
-                "Preload step displayed incorrectly",
-                mShouldDisplayPreload,
-                fragmentClassSet.contains(PreloadFragment.class));
         Assert.assertEquals(
                 "Ad Topics step displayed incorrectly",
                 mShouldDisplayAdTopics,

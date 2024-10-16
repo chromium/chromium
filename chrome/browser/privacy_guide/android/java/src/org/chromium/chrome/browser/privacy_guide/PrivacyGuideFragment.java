@@ -55,7 +55,6 @@ public class PrivacyGuideFragment extends Fragment
         FragmentType.HISTORY_SYNC,
         FragmentType.SAFE_BROWSING,
         FragmentType.COOKIES,
-        FragmentType.PRELOAD,
         FragmentType.AD_TOPICS,
         FragmentType.DONE,
     })
@@ -65,9 +64,8 @@ public class PrivacyGuideFragment extends Fragment
         int HISTORY_SYNC = 2;
         int SAFE_BROWSING = 3;
         int COOKIES = 4;
-        int PRELOAD = 5;
-        int AD_TOPICS = 6;
-        int DONE = 7;
+        int AD_TOPICS = 5;
+        int DONE = 6;
         int MAX_VALUE = DONE;
     }
 
@@ -89,7 +87,6 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.HISTORY_SYNC,
                             FragmentType.COOKIES,
                             FragmentType.SAFE_BROWSING,
-                            FragmentType.PRELOAD,
                             FragmentType.AD_TOPICS,
                             FragmentType.DONE));
 
@@ -269,10 +266,6 @@ public class PrivacyGuideFragment extends Fragment
 
         if (childFragment instanceof SafeBrowsingFragment) {
             ((SafeBrowsingFragment) childFragment)
-                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
-        }
-        if (childFragment instanceof PreloadFragment) {
-            ((PreloadFragment) childFragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
         if (childFragment instanceof DoneFragment) {

@@ -278,12 +278,6 @@ class PrivacyGuideMetricsDelegate {
                     mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode(mProfile);
                     break;
                 }
-            case PrivacyGuideFragment.FragmentType.PRELOAD:
-                {
-                    // TODO(crbug.com/40281867): Initial state for the preload card should be added
-                    // here.
-                    break;
-                }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
                 {
                     mInitialAdTopicsState = PrivacyGuideUtils.isAdTopicsEnabled(mProfile);
@@ -327,12 +321,6 @@ class PrivacyGuideMetricsDelegate {
             case PrivacyGuideFragment.FragmentType.COOKIES:
                 {
                     recordMetricsOnNextForCookiesCard();
-                    break;
-                }
-            case PrivacyGuideFragment.FragmentType.PRELOAD:
-                {
-                    // TODO(crbug.com/40281867): Metrics on next for preload card should be recorded
-                    // here.
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
@@ -479,12 +467,6 @@ class PrivacyGuideMetricsDelegate {
             case PrivacyGuideFragment.FragmentType.MSBB:
                 {
                     RecordUserAction.record("Settings.PrivacyGuide.BackClickMSBB");
-                    break;
-                }
-            case PrivacyGuideFragment.FragmentType.PRELOAD:
-                {
-                    // TODO(crbug.com/40281867): Metrics for preload card back click should be
-                    // recorded here.
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:

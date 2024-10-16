@@ -354,18 +354,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_PRELOAD_PAGES_TITLE" desc="Title for the Preload Pages section. This section allows the user to control whether Chrome will preload pages that it thinks the user is likely to load in the future. [CHAR_LIMIT=32]">
         Preload Pages
       </message>
-      <message name="IDS_PRELOAD_PAGES_PRIVACY_GUIDE_SUMMARY" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
-        Choose whether to preload pages
-      </message>
-      <message name="IDS_PRELOAD_PAGES_STANDARD_PRIVACY_GUIDE_BULLET_ONE" desc="First bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
-        Browsing and searching is faster
-      </message>
-      <message name="IDS_PRELOAD_PAGES_STANDARD_PRIVACY_GUIDE_BULLET_TWO" desc="Second bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
-        Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them
-      </message>
-      <message name="IDS_PRELOAD_PAGES_STANDARD_PRIVACY_GUIDE_BULLET_THREE" desc="Third bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
-        If you allow cookies, Chrome may use them when preloading
-      </message>
       <message name="IDS_PRELOAD_PAGES_TITLE" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
         Preload pages
       </message>
