@@ -9,7 +9,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -19,10 +18,7 @@ import org.chromium.url.GURL;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 /** An observer for firing navigation events on {@link CustomTabsCallback}. */
-@ActivityScope
 public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     // An operation was aborted (due to user action). Should match the value in net_error_list.h.
     private static final int NET_ERROR_ABORTED = -3;
@@ -30,11 +26,9 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     private final CustomTabsSessionToken mSessionToken;
     private final CustomTabsConnection mConnection;
 
-    @Inject
-    public CustomTabNavigationEventObserver(
-            BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection) {
+    public CustomTabNavigationEventObserver(BrowserServicesIntentDataProvider intentDataProvider) {
         mSessionToken = intentDataProvider.getSession();
-        mConnection = connection;
+        mConnection = CustomTabsConnection.getInstance();
     }
 
     @Override

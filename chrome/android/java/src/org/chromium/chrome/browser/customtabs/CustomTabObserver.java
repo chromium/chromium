@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -37,10 +36,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /** A {@link TabObserver} that also handles custom tabs specific logging and messaging. */
-@ActivityScope
 public class CustomTabObserver extends EmptyTabObserver {
     private final CustomTabsConnection mCustomTabsConnection;
     private final CustomTabsSessionToken mSession;
@@ -98,12 +94,9 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    @Inject
-    public CustomTabObserver(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabsConnection connection) {
+    public CustomTabObserver(BrowserServicesIntentDataProvider intentDataProvider) {
         mOpenedByChrome = intentDataProvider.isOpenedByChrome();
-        mCustomTabsConnection = mOpenedByChrome ? null : connection;
+        mCustomTabsConnection = mOpenedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = intentDataProvider.getSession();
         resetPageLoadTracking();
     }

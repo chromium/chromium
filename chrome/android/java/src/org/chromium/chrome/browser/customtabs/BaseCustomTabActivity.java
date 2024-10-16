@@ -117,6 +117,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
     private boolean mWarmupOnDestroy;
     private TabObserverRegistrar mTabObserverRegistrar;
+    private CustomTabObserver mCustomTabObserver;
+    private CustomTabNavigationEventObserver mCustomTabNavigationEventObserver;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -326,6 +328,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                                 this);
         mTabProvider = new CustomTabActivityTabProvider();
         mTabObserverRegistrar = new TabObserverRegistrar(getLifecycleDispatcher(), mTabProvider);
+        mCustomTabObserver = new CustomTabObserver(mIntentDataProvider);
+        mCustomTabNavigationEventObserver =
+                new CustomTabNavigationEventObserver(mIntentDataProvider);
 
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
@@ -857,5 +862,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabActivityTabProvider getCustomTabActivityTabProvider() {
         return mTabProvider;
+    }
+
+    public CustomTabObserver getCustomTabObserver() {
+        return mCustomTabObserver;
+    }
+
+    public CustomTabNavigationEventObserver getCustomTabNavigationEventObserver() {
+        return mCustomTabNavigationEventObserver;
     }
 }

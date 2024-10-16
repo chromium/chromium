@@ -36,7 +36,8 @@ public class CustomTabNavigationEventObserverUnitTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mObserver = new CustomTabNavigationEventObserver(mIntentData, mConnection);
+        CustomTabsConnection.setInstanceForTesting(mConnection);
+        mObserver = new CustomTabNavigationEventObserver(mIntentData);
     }
 
     @Test

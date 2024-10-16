@@ -20,8 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 
-import dagger.Lazy;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -111,7 +109,7 @@ public class CustomTabActivityNavigationController
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final Lazy<CustomTabObserver> mCustomTabObserver;
+    private final CustomTabObserver mCustomTabObserver;
     private final CloseButtonNavigator mCloseButtonNavigator;
     private final ChromeBrowserInitializer mChromeBrowserInitializer;
     private final Activity mActivity;
@@ -157,7 +155,6 @@ public class CustomTabActivityNavigationController
     public CustomTabActivityNavigationController(
             CustomTabActivityTabController tabController,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Lazy<CustomTabObserver> customTabObserver,
             CloseButtonNavigator closeButtonNavigator,
             ChromeBrowserInitializer chromeBrowserInitializer,
             BaseCustomTabActivity activity,
@@ -166,7 +163,7 @@ public class CustomTabActivityNavigationController
         mTabController = tabController;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
-        mCustomTabObserver = customTabObserver;
+        mCustomTabObserver = activity.getCustomTabObserver();
         mCloseButtonNavigator = closeButtonNavigator;
         mChromeBrowserInitializer = chromeBrowserInitializer;
         mActivity = activity;
@@ -209,7 +206,7 @@ public class CustomTabActivityNavigationController
 
         // TODO(pkotwicz): Figure out whether we want to record these metrics for WebAPKs.
         if (mIntentDataProvider.getWebappExtras() == null) {
-            mCustomTabObserver.get().trackNextPageLoadForLaunch(tab, sourceIntent);
+            mCustomTabObserver.trackNextPageLoadForLaunch(tab, sourceIntent);
         }
 
         IntentHandler.addReferrerAndHeaders(params, mIntentDataProvider.getIntent());

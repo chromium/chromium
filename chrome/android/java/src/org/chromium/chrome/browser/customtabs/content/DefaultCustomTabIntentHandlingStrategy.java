@@ -8,8 +8,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import dagger.Lazy;
-
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
@@ -32,18 +30,16 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabNavigationEventObserver mNavigationEventObserver;
-    private final Lazy<CustomTabObserver> mCustomTabObserver;
+    private final CustomTabObserver mCustomTabObserver;
 
     @Inject
     public DefaultCustomTabIntentHandlingStrategy(
             CustomTabActivityNavigationController navigationController,
-            CustomTabNavigationEventObserver navigationEventObserver,
-            Lazy<CustomTabObserver> customTabObserver,
             BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mNavigationController = navigationController;
-        mNavigationEventObserver = navigationEventObserver;
-        mCustomTabObserver = customTabObserver;
+        mNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
+        mCustomTabObserver = activity.getCustomTabObserver();
     }
 
     @Override
@@ -84,8 +80,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         // Manually generating metrics in case the hidden tab has completely finished loading.
         if (!tab.isLoading() && !tab.isShowingErrorPage()) {
-            mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
-            mCustomTabObserver.get().onPageLoadFinished(tab, gurl);
+            mCustomTabObserver.onPageLoadStarted(tab, gurl);
+            mCustomTabObserver.onPageLoadFinished(tab, gurl);
             mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             mNavigationEventObserver.onPageLoadFinished(tab, gurl);
         }
@@ -95,16 +91,14 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         boolean useSpeculation = TextUtils.equals(speculatedUrl, url);
         boolean hasCommitted = !tab.getWebContents().getLastCommittedUrl().isEmpty();
-        mCustomTabObserver
-                .get()
-                .trackNextPageLoadForHiddenTab(
-                        useSpeculation, hasCommitted, intentDataProvider.getIntent());
+        mCustomTabObserver.trackNextPageLoadForHiddenTab(
+                useSpeculation, hasCommitted, intentDataProvider.getIntent());
         if (useSpeculation) {
             if (tab.isLoading()) {
                 // CustomTabObserver and CustomTabActivityNavigationObserver are attached
                 // as observers in CustomTabActivityTabController, not when the navigation is
                 // initiated in HiddenTabHolder.
-                mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
+                mCustomTabObserver.onPageLoadStarted(tab, gurl);
                 mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             }
 

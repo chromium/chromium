@@ -152,6 +152,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
         when(activity.getCustomTabActivityTabProvider()).thenReturn(tabProvider);
         when(activity.getTabObserverRegistrar()).thenReturn(tabObserverRegistrar);
+        when(activity.getCustomTabObserver()).thenReturn(customTabObserver);
+        when(activity.getCustomTabNavigationEventObserver()).thenReturn(navigationEventObserver);
     }
 
     @Override
@@ -176,9 +178,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 warmupManager,
                 tabPersistencePolicy,
                 tabFactory,
-                () -> customTabObserver,
                 webContentsFactory,
-                navigationEventObserver,
                 reparentingTaskProvider,
                 () -> realAsyncTabParamsManager,
                 () -> activity.getSavedInstanceState(),
@@ -193,7 +193,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 new CustomTabActivityNavigationController(
                         tabController,
                         intentDataProvider,
-                        () -> customTabObserver,
                         closeButtonNavigator,
                         browserInitializer,
                         activity,
@@ -206,11 +205,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
         CustomTabIntentHandlingStrategy strategy =
-                new DefaultCustomTabIntentHandlingStrategy(
-                        navigationController,
-                        navigationEventObserver,
-                        () -> customTabObserver,
-                        activity) {
+                new DefaultCustomTabIntentHandlingStrategy(navigationController, activity) {
                     @Override
                     public GURL getGurlForUrl(String url) {
                         return new GURL(url);

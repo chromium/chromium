@@ -111,7 +111,7 @@ public class CustomTabActivityTabController
     private final WarmupManager mWarmupManager;
     private final CustomTabTabPersistencePolicy mTabPersistencePolicy;
     private final CustomTabActivityTabFactory mTabFactory;
-    private final Lazy<CustomTabObserver> mCustomTabObserver;
+    private final CustomTabObserver mCustomTabObserver;
     private final WebContentsFactory mWebContentsFactory;
     private final CustomTabNavigationEventObserver mTabNavigationEventObserver;
     private final ActivityTabProvider mActivityTabProvider;
@@ -140,9 +140,7 @@ public class CustomTabActivityTabController
             WarmupManager warmupManager,
             CustomTabTabPersistencePolicy persistencePolicy,
             CustomTabActivityTabFactory tabFactory,
-            Lazy<CustomTabObserver> customTabObserver,
             WebContentsFactory webContentsFactory,
-            CustomTabNavigationEventObserver tabNavigationEventObserver,
             ReparentingTaskProvider reparentingTaskProvider,
             Lazy<AsyncTabParamsManager> asyncTabParamsManager,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
@@ -159,9 +157,9 @@ public class CustomTabActivityTabController
         mWarmupManager = warmupManager;
         mTabPersistencePolicy = persistencePolicy;
         mTabFactory = tabFactory;
-        mCustomTabObserver = customTabObserver;
+        mCustomTabObserver = activity.getCustomTabObserver();
         mWebContentsFactory = webContentsFactory;
-        mTabNavigationEventObserver = tabNavigationEventObserver;
+        mTabNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
         mActivityTabProvider = activityTabProvider;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mReparentingTaskProvider = reparentingTaskProvider;
@@ -552,18 +550,18 @@ public class CustomTabActivityTabController
         // TODO(pshmakov): invert these dependencies.
         // Please don't register new observers here. Instead, inject TabObserverRegistrar in classes
         // dedicated to your feature, and register there.
-        mTabObserverRegistrar.registerTabObserver(mCustomTabObserver.get());
+        mTabObserverRegistrar.registerTabObserver(mCustomTabObserver);
         mTabObserverRegistrar.registerTabObserver(mTabNavigationEventObserver);
         mTabObserverRegistrar.registerPageLoadMetricsObserver(
                 new PageLoadMetricsObserver(mConnection, mSession, tab));
         mTabObserverRegistrar.registerPageLoadMetricsObserver(
-                new FirstMeaningfulPaintObserver(mCustomTabObserver.get(), tab));
+                new FirstMeaningfulPaintObserver(mCustomTabObserver, tab));
 
         // Immediately add the observer to PageLoadMetrics to catch early events that may
         // be generated in the middle of tab initialization.
         mTabObserverRegistrar.addObserversForTab(tab);
         prepareTabBackground(tab);
-        mCustomTabObserver.get().setLongPressLinkSelectText(tab, mIntentDataProvider.isAuthTab());
+        mCustomTabObserver.setLongPressLinkSelectText(tab, mIntentDataProvider.isAuthTab());
     }
 
     public void registerTabObserver(TabObserver observer) {
