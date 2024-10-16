@@ -61,8 +61,6 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/constants.h"
-#include "components/permissions/features.h"
-#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -1716,57 +1714,16 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       int bubble_message_string_id = 0;
       int bubble_done_button_string_id = 0;
-      // -1 means `prompt_denies_count` should not be used.
-      int prompt_denies_count = -1;
-      int kMinimumHistoricalActions = 4;
-      if (base::FeatureList::IsEnabled(
-              permissions::features::kPermissionPredictionsV3)) {
-        prompt_denies_count = 0;
-        base::Time cutoff = base::Time::Now() - base::Days(90);
-
-        permissions::PermissionActionsHistory* action_history =
-            PermissionActionsHistoryFactory::GetForProfile(GetProfile());
-
-        auto actions =
-            action_history->GetHistory(cutoff, request_type,
-                                       permissions::PermissionActionsHistory::
-                                           EntryFilter::WANT_ALL_PROMPTS);
-        for (const auto& entry : actions) {
-          if (entry.action == permissions::PermissionAction::DENIED) {
-            prompt_denies_count++;
-          }
-          if (prompt_denies_count == kMinimumHistoricalActions) {
-            break;
-          }
-        }
-      }
-
       switch (request_type) {
         case permissions::RequestType::kNotifications:
-          if (prompt_denies_count != -1 &&
-              prompt_denies_count < kMinimumHistoricalActions) {
-            // We use the same string as Crowd Deny because a user has not
-            // enough historic actions to make decisions based on it.
-            bubble_message_string_id =
-                IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION;
-          } else {
-            bubble_message_string_id =
-                IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
-          }
+          bubble_message_string_id =
+              IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
           bubble_done_button_string_id =
               IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
           break;
         case permissions::RequestType::kGeolocation:
-          if (prompt_denies_count != -1 &&
-              prompt_denies_count < kMinimumHistoricalActions) {
-            // We use the same string as Crowd Deny because a user has not
-            // enough historic actions to make decisions based on it.
-            bubble_message_string_id =
-                IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION;
-          } else {
-            bubble_message_string_id =
-                IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
-          }
+          bubble_message_string_id =
+              IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
           bubble_done_button_string_id =
               IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
           break;
