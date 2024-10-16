@@ -133,15 +133,19 @@ class TestMain {
   return self;
 }
 
-// -waitForQuiescenceIncludingAnimationsIdle tends to introduce a long
+// -waitForQuiescenceIncludingAnimationsIdle:isPreEvent: tends to introduce an
 // unnecessary delay, as EarlGrey already checks for animations to complete.
 // Swizzling and skipping the following call speeds up test runs.
 - (void)disableWaitForIdle {
-  SEL originalSelector =
-      NSSelectorFromString(@"waitForQuiescenceIncludingAnimationsIdle:");
+  SEL originalSelector = NSSelectorFromString(
+      @"waitForQuiescenceIncludingAnimationsIdle:isPreEvent:");
   SEL swizzledSelector = @selector(skipQuiescenceDelay);
   Method originalMethod = class_getInstanceMethod(
       objc_getClass("XCUIApplicationProcess"), originalSelector);
+  if (originalMethod == nil) {
+    NSLog(@"Could not swizzle waitForQuiescenceIncludingAnimationsIdle.");
+    return;
+  }
   Method swizzledMethod =
       class_getInstanceMethod([self class], swizzledSelector);
   method_exchangeImplementations(originalMethod, swizzledMethod);
