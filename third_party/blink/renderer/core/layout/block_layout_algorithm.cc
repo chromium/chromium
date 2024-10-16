@@ -1037,24 +1037,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
                                      previous_inflow_position);
   }
 
-  if (constraint_space.IsNewFormattingContext() &&
-      line_clamp_data_.ShouldRelayoutWithNoForcedTruncate()) [[unlikely]] {
-    // Truncation of the last line was forced, but there are no lines after the
-    // truncated line. Rerun layout without forcing truncation. This is only
-    // done if line-clamp was specified on the element as the element containing
-    // the node may have subsequent lines. If there aren't, the containing
-    // element will relayout.
-    return container_builder_.Abort(LayoutResult::kNeedsLineClampRelayout);
-  }
-
-  if (constraint_space.ShouldTextBoxTrimEnd() &&
-      !container_builder_.IsBlockEndTrimmed()) [[unlikely]] {
-    // The `text-box-trim: end` should apply to the last inflow child. If that
-    // turned out to be empty, it should be applied to the previous child
-    // instead.
-    return container_builder_.Abort(LayoutResult::kTextBoxTrimEndDidNotApply);
-  }
-
   if (!child_iterator.NextChild(previous_inline_break_token).node) {
     // We've gone through all the children. This doesn't necessarily mean that
     // we're done fragmenting, as there may be parallel flows [1] (visible
@@ -1081,6 +1063,25 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     PreviousInflowPosition* previous_inflow_position,
     InlineChildLayoutContext* inline_child_layout_context) {
+  const auto& constraint_space = GetConstraintSpace();
+  if (constraint_space.IsNewFormattingContext() &&
+      line_clamp_data_.ShouldRelayoutWithNoForcedTruncate()) [[unlikely]] {
+    // Truncation of the last line was forced, but there are no lines after the
+    // truncated line. Rerun layout without forcing truncation. This is only
+    // done if line-clamp was specified on the element as the element containing
+    // the node may have subsequent lines. If there aren't, the containing
+    // element will relayout.
+    return container_builder_.Abort(LayoutResult::kNeedsLineClampRelayout);
+  }
+
+  if (constraint_space.ShouldTextBoxTrimEnd() &&
+      !container_builder_.IsBlockEndTrimmed()) [[unlikely]] {
+    // The `text-box-trim: end` should apply to the last inflow child. If that
+    // turned out to be empty, it should be applied to the previous child
+    // instead.
+    return container_builder_.Abort(LayoutResult::kTextBoxTrimEndDidNotApply);
+  }
+
   // With CSSLineClamp enabled, if we line-clamped inside this box, its size
   // must be set exactly as if there were no layout boxes after the clamp point.
   // We therefore use the previous inflow position that we saved at the clamp
@@ -1092,7 +1093,6 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
         &*line_clamp_data_.previous_inflow_position_when_clamped;
   }
 
-  const auto& constraint_space = GetConstraintSpace();
   LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   MarginStrut end_margin_strut = previous_inflow_position->margin_strut;
 
