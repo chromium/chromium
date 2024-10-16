@@ -160,35 +160,31 @@ TEST(SpanWriterTest, WriteNativeEndian_Unsigned) {
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteU8NativeEndian(uint8_t{0x09}));
+    EXPECT_TRUE(r.WriteU8NativeEndian(0x09));
     EXPECT_EQ(r.remaining(), 3u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{3},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 3, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteU16NativeEndian(uint16_t{0x0809}));
+    EXPECT_TRUE(r.WriteU16NativeEndian(0x0809));
     EXPECT_EQ(r.remaining(), 2u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{8},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 8, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteU32NativeEndian(0x06070809u));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{8},
-                                  uint8_t{7}, uint8_t{6}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 8, 7, 6}));
   }
   {
     auto r = SpanWriter(base::span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteU64NativeEndian(0x0203040506070809lu));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kBigArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{8},
-                                     uint8_t{7}, uint8_t{6}, uint8_t{5},
-                                     uint8_t{4}, uint8_t{3}, uint8_t{2}}));
+    EXPECT_EQ(kBigArray,
+              base::span<const uint8_t>({1, 9, 8, 7, 6, 5, 4, 3, 2}));
   }
 }
 
@@ -199,36 +195,31 @@ TEST(SpanWriterTest, WriteNativeEndian_Signed) {
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteI8NativeEndian(int8_t{-0x09}));
+    EXPECT_TRUE(r.WriteI8NativeEndian(-0x09));
     EXPECT_EQ(r.remaining(), 3u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{3},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 3, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteI16NativeEndian(int16_t{-0x0809}));
+    EXPECT_TRUE(r.WriteI16NativeEndian(-0x0809));
     EXPECT_EQ(r.remaining(), 2u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteI32NativeEndian(-0x06070809));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                                  uint8_t{0xf8}, uint8_t{0xf9}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 0xf8, 0xf9}));
   }
   {
     auto r = SpanWriter(base::span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteI64NativeEndian(-0x0203040506070809l));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kBigArray,
-              base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                          uint8_t{0xf8}, uint8_t{0xf9}, uint8_t{0xfa},
-                          uint8_t{0xfb}, uint8_t{0xfc}, uint8_t{0xfd}}));
+    EXPECT_EQ(kBigArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 0xf8, 0xf9,
+                                                    0xfa, 0xfb, 0xfc, 0xfd}));
   }
 }
 
@@ -239,35 +230,31 @@ TEST(SpanWriterTest, WriteLittleEndian_Unsigned) {
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteU8LittleEndian(uint8_t{0x09}));
+    EXPECT_TRUE(r.WriteU8LittleEndian(0x09));
     EXPECT_EQ(r.remaining(), 3u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{3},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 3, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteU16LittleEndian(uint16_t{0x0809}));
+    EXPECT_TRUE(r.WriteU16LittleEndian(0x0809));
     EXPECT_EQ(r.remaining(), 2u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{8},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 8, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteU32LittleEndian(0x06070809u));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{8},
-                                  uint8_t{7}, uint8_t{6}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 8, 7, 6}));
   }
   {
     auto r = SpanWriter(base::span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteU64LittleEndian(0x0203040506070809lu));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kBigArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{8},
-                                     uint8_t{7}, uint8_t{6}, uint8_t{5},
-                                     uint8_t{4}, uint8_t{3}, uint8_t{2}}));
+    EXPECT_EQ(kBigArray,
+              base::span<const uint8_t>({1, 9, 8, 7, 6, 5, 4, 3, 2}));
   }
 }
 
@@ -278,36 +265,31 @@ TEST(SpanWriterTest, WriteLittleEndian_Signed) {
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteI8LittleEndian(int8_t{-0x09}));
+    EXPECT_TRUE(r.WriteI8LittleEndian(-0x09));
     EXPECT_EQ(r.remaining(), 3u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{3},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 3, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteI16LittleEndian(int16_t{-0x0809}));
+    EXPECT_TRUE(r.WriteI16LittleEndian(-0x0809));
     EXPECT_EQ(r.remaining(), 2u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteI32LittleEndian(-0x06070809));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                                  uint8_t{0xf8}, uint8_t{0xf9}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 0xf8, 0xf9}));
   }
   {
     auto r = SpanWriter(base::span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteI64LittleEndian(-0x0203040506070809l));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kBigArray,
-              base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                          uint8_t{0xf8}, uint8_t{0xf9}, uint8_t{0xfa},
-                          uint8_t{0xfb}, uint8_t{0xfc}, uint8_t{0xfd}}));
+    EXPECT_EQ(kBigArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 0xf8, 0xf9,
+                                                    0xfa, 0xfb, 0xfc, 0xfd}));
   }
 }
 
@@ -318,35 +300,31 @@ TEST(SpanWriterTest, WriteBigEndian_Unsigned) {
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteU8BigEndian(uint8_t{0x09}));
+    EXPECT_TRUE(r.WriteU8BigEndian(0x09));
     EXPECT_EQ(r.remaining(), 3u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{9}, uint8_t{3},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 9, 3, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteU16BigEndian(uint16_t{0x0809}));
+    EXPECT_TRUE(r.WriteU16BigEndian(0x0809));
     EXPECT_EQ(r.remaining(), 2u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{8}, uint8_t{9},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 8, 9, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteU32BigEndian(0x06070809u));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{6}, uint8_t{7},
-                                  uint8_t{8}, uint8_t{9}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 6, 7, 8, 9}));
   }
   {
     auto r = SpanWriter(base::span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteU64BigEndian(0x0203040506070809lu));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kBigArray, base::span({uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                     uint8_t{4}, uint8_t{5}, uint8_t{6},
-                                     uint8_t{7}, uint8_t{8}, uint8_t{9}}));
+    EXPECT_EQ(kBigArray,
+              base::span<const uint8_t>({1, 2, 3, 4, 5, 6, 7, 8, 9}));
   }
 }
 
@@ -357,36 +335,31 @@ TEST(SpanWriterTest, WriteBigEndian_Signed) {
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteI8BigEndian(int8_t{-0x09}));
+    EXPECT_TRUE(r.WriteI8BigEndian(-0x09));
     EXPECT_EQ(r.remaining(), 3u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{3},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 3, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
-    EXPECT_TRUE(r.WriteI16BigEndian(int16_t{-0x0809}));
+    EXPECT_TRUE(r.WriteI16BigEndian(-0x0809));
     EXPECT_EQ(r.remaining(), 2u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf7}, uint8_t{0xf7},
-                                  uint8_t{4}, uint8_t{5}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf7, 0xf7, 4, 5}));
   }
   {
     auto r = SpanWriter(base::span(kArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteI32BigEndian(-0x06070809));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kArray, base::span({uint8_t{1}, uint8_t{0xf9}, uint8_t{0xf8},
-                                  uint8_t{0xf7}, uint8_t{0xf7}}));
+    EXPECT_EQ(kArray, base::span<const uint8_t>({1, 0xf9, 0xf8, 0xf7, 0xf7}));
   }
   {
     auto r = SpanWriter(base::span(kBigArray));
     EXPECT_TRUE(r.Skip(1u));
     EXPECT_TRUE(r.WriteI64BigEndian(-0x0203040506070809l));
     EXPECT_EQ(r.remaining(), 0u);
-    EXPECT_EQ(kBigArray,
-              base::span({uint8_t{1}, uint8_t{0xfd}, uint8_t{0xfc},
-                          uint8_t{0xfb}, uint8_t{0xfa}, uint8_t{0xf9},
-                          uint8_t{0xf8}, uint8_t{0xf7}, uint8_t{0xf7}}));
+    EXPECT_EQ(kBigArray, base::span<const uint8_t>({1, 0xfd, 0xfc, 0xfb, 0xfa,
+                                                    0xf9, 0xf8, 0xf7, 0xf7}));
   }
 }
 
