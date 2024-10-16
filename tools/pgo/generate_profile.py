@@ -42,6 +42,9 @@ from telemetry.internal.backends import android_browser_backend_settings
 
 _ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 
+# See https://crbug.com/373822787 for how this value was calculated.
+_ANDROID_64_BLOCK_COUNT_THRESHOLD = 1300000000
+
 _EXE_EXT = '.exe' if sys.platform == 'win32' else ''
 _THIS_DIR = os.path.dirname(__file__)
 _ROOT_DIR = f'{_THIS_DIR}/../..'
@@ -246,6 +249,22 @@ def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
         raise MergeError('Failed to generate valid profile data.')
 
 
+def run_profdata_show(file_name, topn=1000):
+    _LOGGER.info(f'Calculating topn={topn} for {file_name}')
+    cmd = [_PROFDATA, 'show', '-topn', str(topn), file_name]
+    _LOGGER.debug(f"Running command: {' '.join(cmd)}")
+    proc = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    _LOGGER.info(proc.stdout)
+    return proc.stdout
+
+
+def get_max_internal_block_count(file_name):
+    for line in run_profdata_show(file_name).splitlines():
+        if line.startswith("Maximum internal block count: "):
+            return int(line.split(":", 1)[1])
+    return None
+
+
 def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
     _LOGGER.info(f"Running benchmark: {' '.join(benchmark_args)}")
@@ -417,8 +436,7 @@ def run_benchmarks(benchmarks: List[List[str]], args: OptionsNamespace):
     return fail_count
 
 
-def merge_profdata(args: OptionsNamespace):
-    profile_output_path = f'{args.outputdir}/profile{args.suffix}'
+def merge_profdata(profile_output_path: str, args: OptionsNamespace):
     _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
     profdata_files = glob.glob(f'{args.profiledir}/*{args.suffix}')
     _LOGGER.debug(f"Found {len(profdata_files)} profdata files")
@@ -506,7 +524,22 @@ def main():
                         'runs.')
 
     if not args.skip_profdata:
-        merge_profdata(args)
+        profile_output_path = f'{args.outputdir}/profile{args.suffix}'
+        merge_profdata(profile_output_path, args)
+        if ('64' in str(args.android_browser)
+                and args.isolated_script_test_output):
+            # We are on the arm64 bot, where we want to avoid perf regressions.
+            max_internal_block_count = get_max_internal_block_count(
+                profile_output_path)
+            _LOGGER.info(
+                f'Maximum internal block count: {max_internal_block_count}')
+            assert max_internal_block_count is not None, 'Failed to get ' \
+                'max internal block count from profdata.'
+            # TODO(crbug.com/373822787): Remove this when no longer needed.
+            if max_internal_block_count < _ANDROID_64_BLOCK_COUNT_THRESHOLD:
+                raise MergeError(
+                    f"max_internal_block_count={max_internal_block_count} is "
+                    f"lower than {_ANDROID_64_BLOCK_COUNT_THRESHOLD}.")
 
     if not args.keep_temps:
         _LOGGER.info('Cleaning up %s, use --keep-temps to keep it.',
