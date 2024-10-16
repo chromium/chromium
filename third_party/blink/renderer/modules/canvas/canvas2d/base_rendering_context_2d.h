@@ -897,7 +897,8 @@ ALWAYS_INLINE bool BlendModeRequiresLayersForShadows(SkBlendMode blendMode) {
   return blendMode == SkBlendMode::kDstOver ||
          blendMode == SkBlendMode::kPlus ||
          blendMode == SkBlendMode::kMultiply ||
-         blendMode == SkBlendMode::kXor || blendMode == SkBlendMode::kOverlay ||
+         blendMode == SkBlendMode::kXor || blendMode == SkBlendMode::kScreen ||
+         blendMode == SkBlendMode::kOverlay ||
          blendMode == SkBlendMode::kDarken ||
          blendMode == SkBlendMode::kLighten ||
          blendMode == SkBlendMode::kColorDodge ||

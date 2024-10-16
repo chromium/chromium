@@ -340,12 +340,18 @@ def _write_cairo_images(pycairo_code: str, output_files: _OutputPaths,
     if _CanvasType.HTML_CANVAS in canvas_types:
         full_code = (f'{pycairo_code}\n'
                      f'surface.write_to_png("{output_files.element}")\n')
-        eval(compile(full_code, '<string>', 'exec'), {'cairo': cairo})
+        eval(compile(full_code, '<string>', 'exec'), {
+            'cairo': cairo,
+            'math': math,
+        })
 
     if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER} & canvas_types:
         full_code = (f'{pycairo_code}\n'
                      f'surface.write_to_png("{output_files.offscreen}")\n')
-        eval(compile(full_code, '<string>', 'exec'), {'cairo': cairo})
+        eval(compile(full_code, '<string>', 'exec'), {
+            'cairo': cairo,
+            'math': math,
+        })
 
 
 class _Variant():
