@@ -14,6 +14,7 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -182,6 +183,7 @@
   _applicationHandler = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
+  [self unblockOtherScenesIfPossible];
   [super stop];
 }
 
@@ -326,12 +328,18 @@
   [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
 }
 
-- (void)blockOtherScene {
+- (BOOL)blockOtherScenesIfPossible {
   SceneState* sceneState = self.browser->GetSceneState();
+  if (sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return NO;
+  }
   _UIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  return YES;
 }
 
-- (void)unblockOtherScene {
+- (void)unblockOtherScenesIfPossible {
   _UIBlocker.reset();
 }
 
@@ -339,6 +347,12 @@
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   CHECK(presentModally);
+  SceneState* sceneState = self.browser->GetSceneState();
+  if (sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return;
+  }
   _syncEncryptionPassphraseTableViewController =
       [[SyncEncryptionPassphraseTableViewController alloc]
           initWithBrowser:self.browser];

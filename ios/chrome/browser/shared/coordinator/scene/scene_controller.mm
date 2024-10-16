@@ -2215,7 +2215,11 @@ using UserFeedbackDataCallback =
         showSyncPassphraseSettingsFromViewController:baseViewController];
     return;
   }
-
+  if (self.sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return;
+  }
   Browser* browser = self.mainInterface.browser;
   self.settingsNavigationController =
       [SettingsNavigationController syncPassphraseControllerForBrowser:browser
@@ -3539,6 +3543,7 @@ using UserFeedbackDataCallback =
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.
+// Call completion with Cancelled if the current scene is blocked.
 - (void)startSigninCoordinatorWithCompletion:
     (ShowSigninCommandCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
@@ -3574,6 +3579,16 @@ using UserFeedbackDataCallback =
   }
 
   DCHECK(self.signinCoordinator);
+
+  if (self.sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    if (completion) {
+      completion(SigninCoordinatorResultInterrupted, nil);
+    }
+    self.signinCoordinator = nil;
+    return;
+  }
   self.sceneState.signinInProgress = YES;
 
   __block std::unique_ptr<ScopedUIBlocker> uiBlocker =

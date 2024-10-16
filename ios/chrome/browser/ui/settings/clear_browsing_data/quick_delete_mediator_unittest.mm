@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -49,6 +50,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
                               ios::HistoryServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
     history_service_ = ios::HistoryServiceFactory::GetForProfile(
         profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
 
@@ -90,7 +92,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
                                    identityManager:identityManager
                                browsingDataRemover:browsing_data_remover
                                discoverFeedService:discover_feed_service
-                    canPerformTabsClosureAnimation:NO];
+                    canPerformTabsClosureAnimation:NO
+                                   uiBlockerTarget:scene_state_];
   }
 
   ~QuickDeleteMediatorTest() override {
@@ -210,6 +213,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
   FakeBrowsingDataCounterWrapperProducer*
       fake_browsing_data_counter_wrapper_producer_;
+  SceneState* scene_state_;
 };
 
 // Tests the construction of the browsing history summary with different inputs.

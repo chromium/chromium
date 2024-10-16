@@ -258,9 +258,12 @@
   if (_blockUserInteractions) {
     return;
   }
+  if (![self.delegate blockOtherScenesIfPossible]) {
+    // This scene is currently blocked. Abort signout.
+    return;
+  }
   _blockUpdates = YES;
   _blockUserInteractions = YES;
-  [self.delegate blockOtherScene];
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                              forSwitch:NO
@@ -274,7 +277,7 @@
   if (_blockUserInteractions) {
     return;
   }
-  [self.delegate blockOtherScene];
+  [self.delegate blockOtherScenesIfPossible];
   _blockUpdates = YES;
   _blockUserInteractions = YES;
   id<SystemIdentity> newIdentity = nil;
@@ -368,7 +371,7 @@
 
 // Callback for signout.
 - (void)signoutEndedWithSuccess:(BOOL)success {
-  [self.delegate unblockOtherScene];
+  [self.delegate unblockOtherScenesIfPossible];
   if (success) {
     // By signing-out the user cancelled the option to signin in this menu.
     self.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
@@ -386,7 +389,7 @@
                      toIdentity:(id<SystemIdentity>)newIdentity {
   if (!signoutSuccess) {
     // User had not signed-out. Allow to interact with the UI.
-    [self.delegate unblockOtherScene];
+    [self.delegate unblockOtherScenesIfPossible];
     _blockUserInteractions = NO;
     _accountSwitchInProgress.RunAndReset();
     [self restartUpdates];
@@ -408,7 +411,7 @@
   CHECK(_authenticationFlow);
   _authenticationFlow = nil;
   _accountSwitchInProgress.RunAndReset();
-  [self.delegate unblockOtherScene];
+  [self.delegate unblockOtherScenesIfPossible];
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {

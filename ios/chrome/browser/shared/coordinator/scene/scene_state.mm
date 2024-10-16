@@ -229,6 +229,10 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 #pragma mark - UIBlockerTarget
 
+- (BOOL)isUIBlocked {
+  return _presentingModalOverlay;
+}
+
 - (id<UIBlockerManager>)uiBlockerManager {
   return _appState;
 }

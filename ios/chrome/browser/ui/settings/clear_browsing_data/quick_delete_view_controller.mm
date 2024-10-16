@@ -197,7 +197,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   base::UmaHistogramEnumeration(
       browsing_data::kDeleteBrowsingDataDialogHistogram,
       DeleteBrowsingDataDialogAction::kDeletionSelected);
-  [_mutator triggerDeletion];
+  [_mutator triggerDeletionIfPossible];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -391,7 +391,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Disable accessibility elements on entire window to avoid Voiceover focusing
   // on new elements during the deletion or the animation.
   self.view.window.accessibilityElementsHidden = YES;
-  [self.presentationHandler blockOtherWindows];
+  [self.presentationHandler blockOtherScenesIfPossible];
 }
 
 - (void)deletionFinished {

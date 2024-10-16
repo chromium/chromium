@@ -37,8 +37,9 @@ enum class TimePeriod;
                             forceWebStatesReload:(BOOL)forceWebStatesReload;
 
 // Method invoked on deletion in progress to block other windows to avoid having
-// multiple deletions occur concurrently.
-- (void)blockOtherWindows;
+// multiple deletions occur concurrently. Returns whether the block was
+// successful.
+- (BOOL)blockOtherScenesIfPossible;
 
 // Method invoked on deletion completed to release other blocked windows.
 - (void)releaseOtherWindows;

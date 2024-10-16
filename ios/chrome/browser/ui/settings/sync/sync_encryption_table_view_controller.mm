@@ -182,6 +182,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
                 initWithBrowser:self.browser];
+        // Loading the Sync Create Passphrase view will start a UIBlocker with
+        // the current scene as target. There is no need to check whether it is
+        // possible to in order for the Sync Encryption view to be displayed, a
+        // UIBlocker is already started with the current target.
+
         [self configureHandlersForRootViewController:controller];
         [self.navigationController pushViewController:controller animated:YES];
       }

@@ -94,6 +94,7 @@ extern NSString* const kSettingsDoneButtonId;
 // Creates a new SyncEncryptionPassphraseCollectionViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil.
+// When called, the current scene must not be blocked.
 + (instancetype)
     syncPassphraseControllerForBrowser:(Browser*)browser
                               delegate:

@@ -17,6 +17,7 @@
     (AccountMenuViewController*)viewController;
 
 // Sign out, display a toast.
+// Does nothing if the current scene is blocked.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // The user tapped on the `index`-th account.

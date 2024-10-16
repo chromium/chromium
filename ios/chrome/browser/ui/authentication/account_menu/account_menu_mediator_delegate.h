@@ -36,6 +36,7 @@
 
 // Sign out, display a toast, and call `callback` with argument stating whether
 // it’s a success.
+// It should only be called when the current scene is not blocked.
 - (void)signOutFromTargetRect:(CGRect)targetRect
                     forSwitch:(BOOL)forSwith
                      callback:(void (^)(BOOL))callback;
@@ -51,11 +52,11 @@
 // The user tapped on "Add account…".
 - (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback;
 
-// Blocks the user from using Chromium.
-- (void)blockOtherScene;
+// Blocks the user from using Chromium. Returns whether the block was possible.
+- (BOOL)blockOtherScenesIfPossible;
 
-// Stops the `blockOtherScene`.
-- (void)unblockOtherScene;
+// Stops the `blockOtherScenesIfPossible`.
+- (void)unblockOtherScenesIfPossible;
 
 @end
 

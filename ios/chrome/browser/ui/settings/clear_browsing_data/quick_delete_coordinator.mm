@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
@@ -84,13 +85,14 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
 
-  _mediator = [[QuickDeleteMediator alloc]
-                           initWithPrefs:profile->GetPrefs()
-      browsingDataCounterWrapperProducer:producer
-                         identityManager:identityManager
-                     browsingDataRemover:browsingDataRemover
-                     discoverFeedService:discoverFeedService
-          canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation];
+  _mediator =
+      [[QuickDeleteMediator alloc] initWithPrefs:profile->GetPrefs()
+              browsingDataCounterWrapperProducer:producer
+                                 identityManager:identityManager
+                             browsingDataRemover:browsingDataRemover
+                             discoverFeedService:discoverFeedService
+                  canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation
+                                 uiBlockerTarget:self.browser->GetSceneState()];
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -235,9 +237,15 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                      quickDeleteHandler, dismissCompletionBlock));
 }
 
-- (void)blockOtherWindows {
+- (BOOL)blockOtherScenesIfPossible {
   SceneState* sceneState = self.browser->GetSceneState();
+  if (sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return NO;
+  }
   _windowUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  return YES;
 }
 
 - (void)releaseOtherWindows {

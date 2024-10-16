@@ -306,14 +306,14 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                      onSignoutSuccess = value;
                      return true;
                    }]]);
-  OCMExpect([delegate_ blockOtherScene]);
+  OCMExpect([delegate_ blockOtherScenesIfPossible]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
-  OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
   // Simulate a sign-out failure
   onSignoutSuccess(false);
 }
@@ -339,7 +339,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                      SignOut();
                      return true;
                    }]]);
-  OCMExpect([delegate_ blockOtherScene]);
+  OCMExpect([delegate_ blockOtherScenesIfPossible]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -361,7 +361,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // Testing the sign-in callback.
   // The delegate should not receive any message. The mediator directly sign the
   // user back in the previous account.
-  OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
   onSigninSuccess(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 
   // Checks the user is signed-back in.
@@ -388,7 +388,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
                      onSignoutSuccess = value;
                      return true;
                    }]]);
-  OCMExpect([delegate_ blockOtherScene]);
+  OCMExpect([delegate_ blockOtherScenesIfPossible]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -414,7 +414,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   }
   VerifyMock();
 
-  OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
   OCMExpect(
       [delegate_ triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
@@ -464,9 +464,9 @@ TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
                      callback = value;
                      return true;
                    }]]);
-  OCMExpect([delegate_ blockOtherScene]);
+  OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   [mediator_ signOutFromTargetRect:rect];
-  OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   callback(YES);
 }
@@ -483,10 +483,10 @@ TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
                      callback = value;
                      return true;
                    }]]);
-  OCMExpect([delegate_ blockOtherScene]);
+  OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   [mediator_ signOutFromTargetRect:rect];
   [mediator_ disconnect];
-  OCMExpect([delegate_ unblockOtherScene]);
+  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
   callback(NO);
 }
 // Tests tapping on the close button just after the sign-out button.

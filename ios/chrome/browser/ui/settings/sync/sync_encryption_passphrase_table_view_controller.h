@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace sync_encryption_passphrase
 
 // Controller to allow user to specify encryption passphrase for Sync.
+// It should not be instantiated in a scene that is blocked by a UIBlocker.
 @interface SyncEncryptionPassphraseTableViewController
     : SettingsRootTableViewController <SyncObserverModelBridge>
 

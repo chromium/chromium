@@ -45,6 +45,9 @@
 
   if (self.blockAllWindows) {
     SceneState* sceneState = self.browser->GetSceneState();
+    // This could DCHECK if the user tap on buttons creating ui blocker in
+    // two scenes. This class will soon be deleted, so it’s not worth fixing
+    // here.
     _windowUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
   }
 

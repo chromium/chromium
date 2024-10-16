@@ -13,6 +13,8 @@
 // Target to block all UI.
 @protocol UIBlockerTarget <NSObject>
 
+@property(nonatomic, readonly, getter=isUIBlocked) BOOL uiBlocked;
+
 // Returns UI blocker manager.
 @property(nonatomic, weak, readonly) id<UIBlockerManager> uiBlockerManager;
 

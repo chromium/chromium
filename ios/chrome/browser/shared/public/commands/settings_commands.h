@@ -41,6 +41,7 @@ enum class PasswordCheckReferrer;
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the sync encryption passphrase UI, presenting from
 // `baseViewController`.
+// Does nothing if the current scene is blocked.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController;
 

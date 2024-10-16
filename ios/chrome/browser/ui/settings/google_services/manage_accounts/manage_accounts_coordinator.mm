@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -287,6 +288,10 @@ using signin_metrics::PromoAction;
 
 #pragma mark - Private
 
+// Asks the user to confirm whether they want to delete `identity` from the
+// device. If the user confirms, delete the identity. Does nothing if the
+// current scene is blocked or the identity is not present on the device
+// anymore.
 - (void)removeAccountDialogConfirmedWithIdentity:(id<SystemIdentity>)identity {
   [self dismissConfirmRemoveIdentityAlertCoordinator];
   NSArray<id<SystemIdentity>>* allIdentities =
@@ -299,6 +304,11 @@ using signin_metrics::PromoAction;
     return;
   }
   SceneState* sceneState = self.browser->GetSceneState();
+  if (sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return;
+  }
   _UIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
   [_viewController preventUserInteraction];
   __weak __typeof(self) weakSelf = self;

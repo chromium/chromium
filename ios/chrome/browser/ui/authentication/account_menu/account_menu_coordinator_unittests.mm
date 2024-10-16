@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -66,13 +67,14 @@ class AccountMenuCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
@@ -170,6 +172,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   id<SnackbarCommands> mock_snackbar_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
   id<BrowserCommands> mock_browser_commands_handler_;
+  SceneState* scene_state_;
   id<BrowserCoordinatorCommands> mock_browser_coordinator_commands_handler_;
   AccountMenuViewController* view_controller_;
   AccountMenuMediator* mediator_;

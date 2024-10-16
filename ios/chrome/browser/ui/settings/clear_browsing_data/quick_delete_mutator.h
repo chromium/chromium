@@ -16,7 +16,8 @@ enum class TimePeriod;
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange;
 
 // Called when the user decides to go through with the deletion.
-- (void)triggerDeletion;
+// Does nothing if the current scene is blocked.
+- (void)triggerDeletionIfPossible;
 
 // Called on confirming the browsing data types selection with the user choice
 // for the history type.

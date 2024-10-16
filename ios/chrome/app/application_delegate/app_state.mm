@@ -675,7 +675,7 @@ void FlushCookieStoreOnIOThread(
 #pragma mark - UIBlockerManager
 
 - (void)incrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
-  DCHECK(self.uiBlockerTarget == nil || target == self.uiBlockerTarget)
+  CHECK(self.uiBlockerTarget == nil || target == self.uiBlockerTarget)
       << "Another scene is already showing a blocking UI!";
   self.blockingUICounter++;
   if (!self.uiBlockerTarget) {
@@ -684,7 +684,7 @@ void FlushCookieStoreOnIOThread(
 }
 
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
-  DCHECK(self.blockingUICounter > 0 && self.uiBlockerTarget == target);
+  CHECK(self.blockingUICounter > 0 && self.uiBlockerTarget == target);
   self.blockingUICounter--;
   if (self.blockingUICounter == 0) {
     self.uiBlockerTarget = nil;
