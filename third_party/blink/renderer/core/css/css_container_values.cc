@@ -123,11 +123,6 @@ ContainerStuckLogical PhysicalToLogicalLtrHorizontalTb(
 }  // namespace
 
 ContainerStuckLogical CSSContainerValues::StuckInline() const {
-  // TODO(crbug.com/1445189): The WritingDirection should be taken from the
-  // container's containing block, not the container. Otherwise the inset
-  // properties on the sticky positioned will not match the same inset features
-  // in container queries when writing-mode or direction changes on the sticky
-  // positioned itself.
   ContainerStuckPhysical physical =
       writing_direction_.IsHorizontal() ? StuckHorizontal() : StuckVertical();
   ContainerStuckLogical logical = PhysicalToLogicalLtrHorizontalTb(physical);
@@ -135,11 +130,6 @@ ContainerStuckLogical CSSContainerValues::StuckInline() const {
 }
 
 ContainerStuckLogical CSSContainerValues::StuckBlock() const {
-  // TODO(crbug.com/1445189): The WritingDirection should be taken from the
-  // container's containing block, not the container. Otherwise the inset
-  // properties on the sticky positioned will not match the same inset features
-  // in container queries when writing-mode or direction changes on the sticky
-  // positioned itself.
   ContainerStuckPhysical physical =
       writing_direction_.IsHorizontal() ? StuckVertical() : StuckHorizontal();
   ContainerStuckLogical logical = PhysicalToLogicalLtrHorizontalTb(physical);

@@ -59,7 +59,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   std::optional<double> Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
   bool DependsOnStyle() const { return depends_on_style_; }
-  bool DependsOnStuck() const { return depends_on_snapped_; }
+  bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
   bool DependsOnSize() const { return depends_on_size_; }
   bool MayDependOnWritingDirection() const {
