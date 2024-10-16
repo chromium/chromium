@@ -107,22 +107,19 @@ BrowserContext* DesktopAndroidExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 

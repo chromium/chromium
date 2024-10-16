@@ -242,7 +242,7 @@ PermissionsManager* PermissionsManagerFactory::GetForBrowserContext(
 content::BrowserContext* PermissionsManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* browser_context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      browser_context, /*force_guest_profile=*/true);
+      browser_context);
 }
 
 KeyedService* PermissionsManagerFactory::BuildServiceInstanceFor(

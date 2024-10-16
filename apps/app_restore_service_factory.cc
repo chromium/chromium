@@ -45,7 +45,7 @@ bool AppRestoreServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 content::BrowserContext* AppRestoreServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return extensions::ExtensionsBrowserClient::Get()
-      ->GetContextRedirectedToOriginal(context, /*force_guest_profile=*/true);
+      ->GetContextRedirectedToOriginal(context);
 }
 
 }  // namespace apps

@@ -105,8 +105,7 @@ class ShutdownNotifierFactory
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
   }
 };
 

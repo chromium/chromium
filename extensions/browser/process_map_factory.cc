@@ -47,7 +47,7 @@ BrowserContext* ProcessMapFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   // Redirected in incognito.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
 }  // namespace extensions

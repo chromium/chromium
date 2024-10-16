@@ -21,7 +21,7 @@ WarningService::WarningService(content::BrowserContext* browser_context)
   if (browser_context_) {
     extension_registry_observation_.Observe(ExtensionRegistry::Get(
         ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-            browser_context_, /*force_guest_profile=*/true)));
+            browser_context_)));
   }
 }
 
