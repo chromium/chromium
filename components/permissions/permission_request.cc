@@ -95,6 +95,8 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       // Handled by an override in `QuotaPermissionRequest`.
       NOTREACHED_IN_MIGRATION();
       break;
+    case RequestType::kFileSystemAccess:
+      NOTREACHED();
     case RequestType::kHandTracking:
       message_id = IDS_HAND_TRACKING_INFOBAR_TEXT;
       break;

@@ -142,9 +142,9 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #endif
     case RequestType::kTopLevelStorageAccess:
       return RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS;
-#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kFileSystemAccess:
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kCapturedSurfaceControl:
       return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
     case RequestType::kWebAppInstallation:
@@ -1576,18 +1576,8 @@ std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
   DCHECK(permissions::PermissionUtil::DoesSupportTemporaryGrants(type) ||
          type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(b/40101963): Special case for FILE_SYSTEM_WRITE_GUARD required for
-  // android until permission RequestType::kFileSystemAccess is implemented.
-  RequestTypeForUma type_for_uma =
-      type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD
-          ? RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS
-          : GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type));
-  std::string permission_type = GetPermissionRequestString(type_for_uma);
-#else
   std::string permission_type = GetPermissionRequestString(
       GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type)));
-#endif
   return "Permissions.OneTimePermission." + permission_type + ".Event";
 }
 

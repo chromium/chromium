@@ -2780,6 +2780,7 @@ static_library("browser") {
       "android/service_tab_launcher.h",
       "android/shortcut_helper.cc",
       "android/shortcut_helper.h",
+      "android/site_settings/chrome_site_settings_delegate.cc",
       "android/startup_bridge.cc",
       "android/startup_bridge.h",
       "android/tab_android.cc",

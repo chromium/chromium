@@ -75,22 +75,15 @@ public class SingleWebsiteSettingsTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sCTATestRule, false);
 
-    /**
-     * A provider supplying params for {@link #testExceptionToggleShowing}.
-     *
-     * <p>Entries in SingleWebsiteSettings should only have Allow/Block values (independent of what
-     * the global toggle specifies), because if there's a ContentSettingValue entry for the site,
-     * then the user has already made a decision. That decision can only be Allow/Block (a decision
-     * of ASK doesn't make sense because we don't support 'Ask me every time' for a given site).
-     */
+    /** A provider supplying params for {@link #testExceptionToggleShowing}. */
     public static class SingleWebsiteSettingsParams implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
             ArrayList<ParameterSet> testCases = new ArrayList<>();
             for (@ContentSettingsType.EnumType
             int contentSettings : SiteSettingsUtil.SETTINGS_ORDER) {
-                testCases.add(
-                        createParameterSet("Allow_", contentSettings, ContentSettingValues.ALLOW));
+                int enabled = SingleWebsiteSettings.getEnabledValue(contentSettings);
+                testCases.add(createParameterSet("Enabled_", contentSettings, enabled));
                 testCases.add(
                         createParameterSet("Block_", contentSettings, ContentSettingValues.BLOCK));
             }
@@ -317,7 +310,8 @@ public class SingleWebsiteSettingsTest {
             Assert.assertNotNull("Preference cannot be found on screen.", switchPref);
             assertEquals(
                     "Switch check state is different than test setting.",
-                    mContentSettingValue == ContentSettingValues.ALLOW,
+                    mContentSettingValue
+                            == SingleWebsiteSettings.getEnabledValue(mContentSettingsType),
                     switchPref.isChecked());
         }
     }

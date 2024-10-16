@@ -40,6 +40,8 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_CLIPBOARD;
     case RequestType::kDiskQuota:
       return IDR_ANDROID_INFOBAR_FOLDER;
+    case RequestType::kFileSystemAccess:
+      NOTREACHED();
     case RequestType::kGeolocation:
       return IDR_ANDROID_INFOBAR_GEOLOCATION;
     case RequestType::kHandTracking:
@@ -247,10 +249,8 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
 #endif
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return RequestType::kTopLevelStorageAccess;
-#if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       return RequestType::kFileSystemAccess;
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case ContentSettingsType::SMART_CARD_DATA:
       return RequestType::kSmartCard;
@@ -398,10 +398,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "clipboard";
     case permissions::RequestType::kDiskQuota:
       return "disk_quota";
-#if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kFileSystemAccess:
       return "file_system";
-#endif
     case permissions::RequestType::kGeolocation:
       return "geolocation";
     case permissions::RequestType::kHandTracking:

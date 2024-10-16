@@ -17,6 +17,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -129,6 +130,11 @@ public interface SiteSettingsDelegate {
      * @return The set of all origins whose notification permissions are delegated to another app.
      */
     Set<String> getAllDelegatedNotificationOrigins();
+
+    /**
+     * @return The set of all origins that have File System Access grants.
+     */
+    List<String> getOriginsWithFileSystemAccessGrants();
 
     /**
      * Displays a snackbar, informing the user about the Privacy Sandbox settings page, when the

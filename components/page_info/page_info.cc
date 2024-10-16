@@ -127,7 +127,9 @@ ContentSettingsType kPermissionType[] = {
 #if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::HID_GUARD,
     ContentSettingsType::SERIAL_GUARD,
+#endif
     ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+#if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::LOCAL_FONTS,
 #endif
     ContentSettingsType::BLUETOOTH_GUARD,
@@ -1300,22 +1302,10 @@ bool PageInfo::ShouldShowPermission(
   if (info.type == ContentSettingsType::GEOLOCATION && !is_incognito) {
     return true;
   }
-
-  // The File System write permission is desktop only at the moment.
-  if (info.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
-    return false;
-  }
 #else
   // NFC is Android-only at the moment.
   if (info.type == ContentSettingsType::NFC) {
     return false;
-  }
-
-  // Display the File System Access write permission if the File System Access
-  // API is currently being used.
-  if (info.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      web_contents_->HasFileSystemAccessHandles()) {
-    return true;
   }
 
   // Hide camera if camera PTZ is granted or blocked.
@@ -1328,6 +1318,13 @@ bool PageInfo::ShouldShowPermission(
     }
   }
 #endif
+
+  // Display the File System Access write permission if the File System Access
+  // API is currently being used.
+  if (info.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+      web_contents_->HasFileSystemAccessHandles()) {
+    return true;
+  }
 
   // TODO(crbug.com/40064079): Filter out FPS related STORAGE_ACCESS
   // permissions.

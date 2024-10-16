@@ -209,16 +209,6 @@ public class ContentSettingsResources {
                         R.string.website_settings_site_data_page_toggle_sub_label_block,
                         R.string.website_settings_site_data_page_a11y);
 
-            case ContentSettingsType.REQUEST_DESKTOP_SITE:
-                return new ResourceItem(
-                        R.drawable.ic_desktop_windows,
-                        R.string.desktop_site_title,
-                        ContentSettingValues.ALLOW,
-                        ContentSettingValues.BLOCK,
-                        R.string.website_settings_category_desktop_site_allowed,
-                        R.string.website_settings_category_desktop_site_blocked,
-                        R.string.website_settings_category_desktop_site_a11y);
-
             case ContentSettingsType.FEDERATED_IDENTITY_API:
                 return new ResourceItem(
                         R.drawable.ic_account_circle_24dp,
@@ -228,6 +218,16 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_federated_identity_allowed,
                         R.string.website_settings_category_federated_identity_blocked,
                         R.string.website_settings_category_federated_identity_a11y);
+
+            case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
+                return new ResourceItem(
+                        R.drawable.ic_file_save_24,
+                        R.string.website_settings_file_system_write_guard_title,
+                        ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
+                        0,
+                        0,
+                        0);
 
             case ContentSettingsType.GEOLOCATION:
                 return new ResourceItem(
@@ -340,6 +340,16 @@ public class ContentSettingsResources {
                         0,
                         0,
                         0);
+
+            case ContentSettingsType.REQUEST_DESKTOP_SITE:
+                return new ResourceItem(
+                        R.drawable.ic_desktop_windows,
+                        R.string.desktop_site_title,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_desktop_site_allowed,
+                        R.string.website_settings_category_desktop_site_blocked,
+                        R.string.website_settings_category_desktop_site_a11y);
 
             case ContentSettingsType.SENSORS:
                 int sensorsPermissionTitle = R.string.motion_sensors_permission_title;

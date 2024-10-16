@@ -88,14 +88,16 @@ int g_ignore_embargo_days = kDefaultEmbargoDays;
 
 std::string GetStringForContentType(ContentSettingsType content_type) {
   switch (content_type) {
+    case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
+      return "AutoPictureInPicture";
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       return "FederatedIdentityApi";
     case ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION:
       return "FederatedIdentityAutoReauthn";
     case ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION:
       return "FileSystemAccessRestorePermission";
-    case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
-      return "AutoPictureInPicture";
+    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
+      return "FileSystemWriteGuard";
     case ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS:
       return "SubAppInstallationPrompts";
     // If you add a new Content Setting here, also add it to
@@ -259,12 +261,13 @@ const char PermissionDecisionAutoBlocker::kPermissionDisplayEmbargoKey[] =
 bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
     ContentSettingsType content_setting) {
   return PermissionUtil::IsPermission(content_setting) ||
+         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE ||
          content_setting == ContentSettingsType::FEDERATED_IDENTITY_API ||
          content_setting ==
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION ||
          content_setting ==
              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION ||
-         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE ||
+         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
          content_setting == ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS;
   // If you add a new content setting here, also add it to
   // GetStringForContentType.

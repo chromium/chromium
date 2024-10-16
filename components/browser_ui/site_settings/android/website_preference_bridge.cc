@@ -257,6 +257,12 @@ void SetPermissionSettingForOrigin(
       embedder ? GURL(ConvertJavaStringToUTF8(env, embedder)) : GURL();
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
 
+  // FILE_SYSTEM_WRITE_GUARD only allows ASK and BLOCK.
+  if (content_type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+      setting == CONTENT_SETTING_ALLOW) {
+    setting = CONTENT_SETTING_ASK;
+  }
+
   // The permission may have been blocked due to being under embargo, so if it
   // was changed away from BLOCK, clear embargo status if it exists.
   if (setting != CONTENT_SETTING_BLOCK) {

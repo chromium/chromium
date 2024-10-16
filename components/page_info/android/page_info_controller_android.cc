@@ -147,6 +147,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   if (base::FeatureList::IsEnabled(features::kWebNfc))
     permissions_to_display.push_back(ContentSettingsType::NFC);
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  permissions_to_display.push_back(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   if (cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures))
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
   permissions_to_display.push_back(ContentSettingsType::VR);
@@ -232,6 +234,9 @@ std::optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     // audio since last navigation.
     if (web_contents_->WasEverAudible())
       return permission.default_setting;
+  } else if (permission.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    // The file editing permission should show up if there are any open files.
+    return permission.default_setting;
   }
 
   // TODO(crbug.com/40129299): Also return permissions that are non

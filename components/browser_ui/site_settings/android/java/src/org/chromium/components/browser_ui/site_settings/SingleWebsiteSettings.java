@@ -171,9 +171,23 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "vr_permission_list";
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
                 return "clipboard_permission_list";
+            case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
+                return "file_system_write_guard_permission_list";
             default:
                 return null;
         }
+    }
+
+    /**
+     * @param type ContentSettingsType
+     * @return The enabled value of this type (ALLOW or ASK).
+     */
+    @VisibleForTesting
+    public static @ContentSettingValues int getEnabledValue(int contentType) {
+        if (contentType == ContentSettingsType.FILE_SYSTEM_WRITE_GUARD) {
+            return ContentSettingValues.ASK;
+        }
+        return ContentSettingValues.ALLOW;
     }
 
     // A list of preferences keys that will be hidden on this page if this boolean below is true
@@ -1089,14 +1103,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         setUpPreferenceCommon(preference, value);
 
         ChromeSwitchPreference switchPreference = (ChromeSwitchPreference) preference;
-        switchPreference.setChecked(value == ContentSettingValues.ALLOW);
+        @ContentSettingsType.EnumType
+        int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
+        switchPreference.setChecked(value == getEnabledValue(contentType));
         switchPreference.setSummary(
                 isEmbargoed
                         ? getString(R.string.automatically_blocked)
                         : getString(ContentSettingsResources.getCategorySummary(value, isOneTime)));
         switchPreference.setOnPreferenceChangeListener(this);
-        @ContentSettingsType.EnumType
-        int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         if (contentType == mHighlightedPermission) {
             switchPreference.setBackgroundColor(
                     AppCompatResources.getColorStateList(getContext(), mHighlightColor)
@@ -1309,8 +1323,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
         @ContentSettingValues int permission;
         if (newValue instanceof Boolean) {
-            permission =
-                    (Boolean) newValue ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+            permission = (Boolean) newValue ? getEnabledValue(type) : ContentSettingValues.BLOCK;
         } else {
             permission = (Integer) newValue;
         }

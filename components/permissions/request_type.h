@@ -32,9 +32,7 @@ enum class RequestType {
   kClipboard,
   kTopLevelStorageAccess,
   kDiskQuota,
-#if !BUILDFLAG(IS_ANDROID)
   kFileSystemAccess,
-#endif
   kGeolocation,
   kHandTracking,
   kIdentityProvider,

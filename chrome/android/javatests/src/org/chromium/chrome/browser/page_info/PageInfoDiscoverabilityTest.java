@@ -109,6 +109,10 @@ public class PageInfoDiscoverabilityTest {
                             .value(ContentSettingsType.DEFAULT, false));
             parameters.add(
                     new ParameterSet()
+                            .name("RequestType.kFileSystemAccess")
+                            .value(ContentSettingsType.FILE_SYSTEM_WRITE_GUARD, true));
+            parameters.add(
+                    new ParameterSet()
                             .name("RequestType.kGeolocation")
                             .value(ContentSettingsType.GEOLOCATION, true));
             parameters.add(

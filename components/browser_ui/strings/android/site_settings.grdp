@@ -76,6 +76,9 @@
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
     Third-party sign-in
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_FILE_SYSTEM_WRITE_GUARD_TITLE" desc="Title of the permission to edit files [CHAR_LIMIT=32]">
+    File editing
+  </message>
   <message name="IDS_HAND_TRACKING_PERMISSION_TITLE" desc="Title of the permission to use Hand tracking [CHAR_LIMIT=32]">
     Hand tracking
   </message>
