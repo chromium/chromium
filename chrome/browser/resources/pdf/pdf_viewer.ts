@@ -16,7 +16,6 @@ import './elements/viewer_toolbar.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {isMac} from 'chrome://resources/js/platform.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -387,20 +386,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           e.preventDefault();
         }
         return;
-      case '[':
-        // Do not use hasCtrlModifierOnly() here, since Command + [ is already
-        // taken by the "go back to the previous webpage" action.
-        if (hasFixedCtrlModifierOnly(e)) {
-          this.rotateCounterclockwise();
-        }
-        return;
-      case ']':
-        // Do not use hasCtrlModifierOnly() here, since Command + ] is already
-        // taken by the "go forward to the next webpage" action.
-        if (hasFixedCtrlModifierOnly(e)) {
-          this.rotateClockwise();
-        }
-        return;
     }
 
     // Handle toolbar related key events.
@@ -411,23 +396,39 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Helper for handleKeyEvent dealing with events that control toolbars.
    */
   private handleToolbarKeyEvent_(e: KeyboardEvent) {
-    // TODO(thestig): Should this use hasCtrlModifier() or stay as is?
-    if (isMac ? !e.metaKey || e.ctrlKey : !e.ctrlKey || e.metaKey) {
-      return;
-    }
-
     // TODO: Add handling for additional relevant hotkeys for the new unified
     // toolbar.
     switch (e.key) {
+      case '[':
+        // Do not use hasCtrlModifierOnly() here, since Command + [ is already
+        // taken by the "go back to the previous webpage" action.
+        if (hasFixedCtrlModifierOnly(e)) {
+          this.rotateCounterclockwise();
+        }
+        return;
       case '\\':
-        this.$.toolbar.fitToggle();
+        // Do not use hasCtrlModifierOnly() here, to match '[' and ']'.
+        if (hasFixedCtrlModifierOnly(e)) {
+          this.$.toolbar.fitToggle();
+        }
+        return;
+      case ']':
+        // Do not use hasCtrlModifierOnly() here, since Command + ] is already
+        // taken by the "go forward to the next webpage" action.
+        if (hasFixedCtrlModifierOnly(e)) {
+          this.rotateClockwise();
+        }
         return;
       // <if expr="enable_pdf_ink2">
       case 'z':
-        this.$.toolbar.undo();
+        if (hasCtrlModifierOnly(e)) {
+          this.$.toolbar.undo();
+        }
         return;
       case 'y':
-        this.$.toolbar.redo();
+        if (hasCtrlModifierOnly(e)) {
+          this.$.toolbar.redo();
+        }
         return;
       // </if>
     }
