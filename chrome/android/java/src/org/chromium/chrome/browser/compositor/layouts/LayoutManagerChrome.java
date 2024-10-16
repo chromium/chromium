@@ -161,7 +161,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             TabCreatorManager creator,
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
+            TopUiThemeColorProvider topUiColorProvider,
+            Supplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =
@@ -175,9 +176,16 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         renderHost,
                         browserControlsStateProvider,
                         this,
-                        topUiColorProvider);
+                        topUiColorProvider,
+                        bottomControlsOffsetSupplier);
 
-        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
+        super.init(
+                selector,
+                creator,
+                controlContainer,
+                dynamicResourceLoader,
+                topUiColorProvider,
+                bottomControlsOffsetSupplier);
 
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();

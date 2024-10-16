@@ -189,8 +189,15 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             TabCreatorManager creator,
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
-        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
+            TopUiThemeColorProvider topUiColorProvider,
+            Supplier<Integer> bottomControlsOffsetSupplier) {
+        super.init(
+                selector,
+                creator,
+                controlContainer,
+                dynamicResourceLoader,
+                topUiColorProvider,
+                bottomControlsOffsetSupplier);
         if (DeviceClassManager.enableLayerDecorationCache()) {
             mLayerTitleCache = new LayerTitleCache(mHost.getContext(), getResourceManager());
             // TODO: TitleCache should be a part of the ResourceManager.

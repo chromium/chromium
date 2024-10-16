@@ -12,6 +12,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -95,9 +96,11 @@ public class ToolbarSwipeLayout extends Layout {
     private int mNextTabId;
 
     /**
-     * @param context             The current Android's context.
-     * @param updateHost          The {@link LayoutUpdateHost} view for this layout.
-     * @param renderHost          The {@link LayoutRenderHost} view for this layout.
+     * @param context The current Android's context.
+     * @param updateHost The {@link LayoutUpdateHost} view for this layout.
+     * @param renderHost The {@link LayoutRenderHost} view for this layout.
+     * @param bottomControlsOffsetSupplier Supplier of the offset, relative to the bottom of the
+     *     viewport, of the bottom-anchored toolbar.
      */
     public ToolbarSwipeLayout(
             Context context,
@@ -105,7 +108,8 @@ public class ToolbarSwipeLayout extends Layout {
             LayoutRenderHost renderHost,
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager,
-            TopUiThemeColorProvider topUiColorProvider) {
+            TopUiThemeColorProvider topUiColorProvider,
+            Supplier<Integer> bottomControlsOffsetSupplier) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -120,7 +124,6 @@ public class ToolbarSwipeLayout extends Layout {
         mRightTabSupplier = new ObservableSupplierImpl<>();
 
         if (mMoveToolbar) {
-            // TODO(b/369134407, pnoland): Wire bottom toolbar offset for swipe layouts.
             mLeftToolbarOverlay =
                     new TopToolbarOverlayCoordinator(
                             getContext(),
@@ -130,7 +133,7 @@ public class ToolbarSwipeLayout extends Layout {
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
                             topUiColorProvider,
-                            () -> 0,
+                            bottomControlsOffsetSupplier,
                             LayoutType.TOOLBAR_SWIPE,
                             true);
             mLeftToolbarOverlay.setManualVisibility(true);
@@ -145,7 +148,7 @@ public class ToolbarSwipeLayout extends Layout {
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
                             topUiColorProvider,
-                            () -> 0,
+                            bottomControlsOffsetSupplier,
                             LayoutType.TOOLBAR_SWIPE,
                             true);
             mRightToolbarOverlay.setManualVisibility(true);

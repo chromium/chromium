@@ -220,7 +220,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
         CompositorAnimationHandler.setTestingMode(true);
-        mManager.init(mTabModelSelector, null, null, null, mTopUiThemeColorProvider);
+        mManager.init(mTabModelSelector, null, null, null, mTopUiThemeColorProvider, () -> 0);
         initializeMotionEvent();
     }
 

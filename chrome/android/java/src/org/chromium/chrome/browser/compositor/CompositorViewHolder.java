@@ -44,6 +44,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -1419,19 +1420,24 @@ public class CompositorViewHolder extends FrameLayout
 
     /**
      * Sets the appropriate objects this class should represent.
-     * @param tabModelSelector        The {@link TabModelSelector} this View should hold and
-     *                                represent.
-     * @param tabCreatorManager       The {@link TabCreatorManager} for this view.
+     *
+     * @param tabModelSelector The {@link TabModelSelector} this View should hold and represent.
+     * @param tabCreatorManager The {@link TabCreatorManager} for this view.
+     * @param bottomControlsOffsetSupplier Supplier of the offset, relative to the bottom of the
+     *     viewport, of the bottom-anchored toolbar.
      */
     public void onFinishNativeInitialization(
-            TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager) {
+            TabModelSelector tabModelSelector,
+            TabCreatorManager tabCreatorManager,
+            Supplier<Integer> bottomControlsOffsetSupplier) {
         assert mLayoutManager != null;
         mLayoutManager.init(
                 tabModelSelector,
                 tabCreatorManager,
                 mControlContainer,
                 mCompositorView.getResourceManager().getDynamicResourceLoader(),
-                mTopUiThemeColorProvider);
+                mTopUiThemeColorProvider,
+                bottomControlsOffsetSupplier);
 
         mTabModelSelector = tabModelSelector;
         tabModelSelector.addObserver(

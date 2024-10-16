@@ -2072,6 +2072,11 @@ public class ToolbarManager
         mToolbar.onUrlAnimationFinished(hasFocus);
     }
 
+    /** See {@link mBottomToolbarControlsOffsetSupplier} */
+    public Supplier<Integer> getBottomToolbarOffsetSupplier() {
+        return mBottomToolbarControlsOffsetSupplier;
+    }
+
     /** Get the supplier for the current height of the tab strip. Always returns a valid integer. */
     public ObservableSupplier<Integer> getTabStripHeightSupplier() {
         return mTabStripHeightSupplier;

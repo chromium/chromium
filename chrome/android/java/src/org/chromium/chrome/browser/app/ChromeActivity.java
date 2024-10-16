@@ -2128,7 +2128,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());
-        compositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
+        compositorViewHolder.onFinishNativeInitialization(
+                getTabModelSelector(), this, getToolbarManager().getBottomToolbarOffsetSupplier());
 
         SwipeHandler swipeHandler = layoutManager.getToolbarSwipeHandler();
         if (controlContainer != null
