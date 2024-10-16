@@ -52,9 +52,9 @@ $ PATH_TO_INSTALLER.EXE ^
 Required
 
 * [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
-version 10.0.22621.2428. This can be installed separately or by checking the
+version 10.0.26100.1742. This can be installed separately or by checking the
 appropriate box in the Visual Studio Installer.
-* (Windows 11) SDK Debugging Tools 10.0.22621.755 or higher. This version of the
+* (Windows 11) SDK Debugging Tools 10.0.26100.1742 or higher. This version of the
 Debugging tools is needed in order to support reading the large-page PDBs that
 Chrome uses to allow greater-than 4 GiB PDBs. This can be installed after the
 matching Windows SDK version is installed, from: Control Panel -> Programs and
@@ -64,6 +64,13 @@ Windows. If building on ARM64 Windows then you will need to manually copy the
 Debuggers\x64 directory from another machine because it does not get installed
 on ARM64 and is needed, whether you are building Chromium for x64 or ARM64 on
 ARM64.
+
+WARNING: On sufficiently old versions of Windows (1909 or earlier), dawn (or related
+components) may fail with a D3d-related error when using the 26100 SDK. This is because the
+d3dcompiler_47.dll file in the new SDK attempts to dynamically link versions of the Universal
+C Runtime which are not present by default on older systems. If you experience these errors,
+you can either update the UCRT on your system, or install the 22612 SDK and use the
+d3dcompiler_47.dll file included there, which statically links the UCRT.
 
 ## git installation
 
