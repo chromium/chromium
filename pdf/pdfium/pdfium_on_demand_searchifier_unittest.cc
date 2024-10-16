@@ -53,8 +53,12 @@ void WaitUntilFailure(PDFiumOnDemandSearchifier* searchifier,
       base::Milliseconds(100));
 }
 
+VisualAnnotationPtr CreateEmptyAnnotation() {
+  return screen_ai::mojom::VisualAnnotation::New();
+}
+
 VisualAnnotationPtr CreateSampleAnnotation(int call_number) {
-  auto annotation = screen_ai::mojom::VisualAnnotation::New();
+  auto annotation = CreateEmptyAnnotation();
   auto line_box = screen_ai::mojom::LineBox::New();
   line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
   line_box->baseline_box_angle = 0;
@@ -90,17 +94,20 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
     PDFiumTestBase::TearDown();
   }
 
-  void StartSearchify() {
+  void StartSearchify(bool empty_results) {
     // `engine_` is owned by this class, safe to use as unretained.
     engine_->StartSearchify(
         base::BindRepeating(&PDFiumOnDemandSearchifierTest::MockPerformOcr,
-                            base::Unretained(this)));
+                            base::Unretained(this), empty_results));
   }
 
-  void MockPerformOcr(const SkBitmap& /*image*/,
+  void MockPerformOcr(bool empty_results,
+                      const SkBitmap& /*image*/,
                       base::OnceCallback<void(VisualAnnotationPtr)> callback) {
+    VisualAnnotationPtr results = empty_results
+                                      ? CreateEmptyAnnotation()
+                                      : CreateSampleAnnotation(performed_ocrs_);
     // Reply with delay, as done through mojo connection to the OCR service.
-    VisualAnnotationPtr results = CreateSampleAnnotation(performed_ocrs_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(results)),
         base::Milliseconds(100));
@@ -151,7 +158,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
 
   ASSERT_TRUE(searchifier->IsPageScheduled(0));
 
-  StartSearchify();
+  StartSearchify(/*empty_results=*/false);
 
   base::test::TestFuture<void> future;
   WaitUntilIdle(searchifier, future.GetCallback());
@@ -162,6 +169,32 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
   // The page has two images.
   std::string page_text = GetPageText(page);
   ASSERT_EQ(page_text, "OCR Text 0\r\nOCR Text 1");
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest, PageWithImagesNoRecognizableText) {
+  CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
+  // Load the page to trigger searchify checking.
+  page.GetPage();
+  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+
+  PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
+  ASSERT_TRUE(searchifier);
+
+  ASSERT_TRUE(searchifier->IsPageScheduled(0));
+
+  StartSearchify(/*empty_results=*/true);
+
+  base::test::TestFuture<void> future;
+  WaitUntilIdle(searchifier, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(performed_ocrs(), 2);
+  EXPECT_TRUE(page.IsPageSearchified());
+
+  // The page has two images, but no recognizable text.
+  EXPECT_TRUE(GetPageText(page).empty());
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
@@ -182,7 +215,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
     ASSERT_TRUE(searchifier->IsPageScheduled(page)) << page;
   }
 
-  StartSearchify();
+  StartSearchify(/*empty_results=*/false);
 
   base::test::TestFuture<void> future;
   WaitUntilIdle(searchifier, future.GetCallback());
@@ -210,7 +243,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   ASSERT_TRUE(searchifier);
   ASSERT_FALSE(searchifier->IsPageScheduled(0));
 
-  StartSearchify();
+  StartSearchify(/*empty_results=*/false);
 
   base::test::TestFuture<void> future;
   WaitUntilIdle(searchifier, future.GetCallback());
@@ -236,7 +269,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
     ASSERT_TRUE(GetPDFiumPageForTest(*engine(), page).GetPage());
   }
 
-  StartSearchify();
+  StartSearchify(/*empty_results=*/false);
   engine()->GetOcrDisconnectHandler().Run();
 
   base::test::TestFuture<void> future;
