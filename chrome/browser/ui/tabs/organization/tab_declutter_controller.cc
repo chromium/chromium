@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -127,6 +128,13 @@ std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
 
 void TabDeclutterController::DeclutterTabs(
     std::vector<tabs::TabModel*> tab_models) {
+  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.DeclutterTabCount",
+                            tab_models.size());
+  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.TotalTabCount",
+                            tab_strip_model_->count());
+  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.ExcludedTabCount",
+                            excluded_tabs_.size());
+
   for (tabs::TabModel* tab_model : tab_models) {
     if (tab_strip_model_->GetIndexOfTab(tab_model->GetHandle()) ==
         TabStripModel::kNoTab) {
@@ -136,9 +144,9 @@ void TabDeclutterController::DeclutterTabs(
     tab_strip_model_->CloseWebContentsAt(
         tab_strip_model_->GetIndexOfWebContents(tab_model->GetContents()),
         TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-
-    excluded_tabs_.clear();
   }
+
+  excluded_tabs_.clear();
 }
 
 void TabDeclutterController::DidBecomeActive(BrowserWindowInterface* browser) {

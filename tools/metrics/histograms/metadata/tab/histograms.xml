@@ -333,6 +333,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.Declutter.DeclutterTabCount" units="tabs"
+    expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the number of tabs selected for removal using Tab Declutter on Desktop.
+    This is logged from the controller before closing the stale tabs.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Organization.Declutter.ExcludedTabCount" units="tabs"
+    expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the number of tabs excluded from removal during Tab Declutter on
+    Desktop. This is logged from the controller before closing the stale tabs.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Organization.Declutter.TotalTabCount" units="tabs"
+    expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Logs the total number of tabs in the tab strip when the user initiates Tab
+    Declutter on Desktop. This is logged from the controller before closing the
+    stale tabs.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Declutter.Trigger.Outcome"
     enum="TabOrganizationTriggerOutcome" expires_after="2025-02-10">
   <owner>emshack@chromium.org</owner>
