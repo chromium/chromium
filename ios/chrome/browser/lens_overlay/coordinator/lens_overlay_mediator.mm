@@ -140,11 +140,6 @@
   }
 }
 
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigationContext {
-  [self.omniboxCoordinator updateOmniboxState];
-}
-
 - (void)webStateDestroyed:(web::WebState*)webState {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());
@@ -171,8 +166,9 @@
     [self resetOmniboxToCurrentLensResult];
   } else {
     // Setting the query text generates new results.
-    [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)
-                    clearSelection:thumbnailRemoved];
+    NSString* nsText = base::SysUTF16ToNSString(text);
+    [self updateOmniboxText:nsText];
+    [self.lensHandler setQueryText:nsText clearSelection:thumbnailRemoved];
   }
 }
 
@@ -208,6 +204,7 @@
   HistoryElement* lastEntry = _historyStack.lastObject;
   if (lastEntry.lensResult != _currentLensResult) {
     _isReloading = YES;
+    [self updateOmniboxText:lastEntry.lensResult.queryText];
     [self.lensHandler reloadResult:lastEntry.lensResult];
   }
 }
@@ -255,6 +252,7 @@
     self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
     self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
   }
+  [self updateOmniboxText:result.queryText];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
@@ -324,11 +322,19 @@
 
 /// Resets the omnibox state to the `_currentLensResult` text and thumbnail.
 - (void)resetOmniboxToCurrentLensResult {
-  [self.omniboxCoordinator updateOmniboxState];
+  [self updateOmniboxText:_currentLensResult.queryText];
   [self.omniboxCoordinator
       setThumbnailImage:_currentLensResult.isTextSelection
                             ? nil
                             : _currentLensResult.selectionPreviewImage];
+}
+
+/// Updates the steady state omnibox text.
+- (void)updateOmniboxText:(NSString*)text {
+  if (self.omniboxClient) {
+    self.omniboxClient->SetOmniboxSteadyStateText(text);
+  }
+  [self.omniboxCoordinator updateOmniboxState];
 }
 
 /// Whether the navigation to `URL` with the `_currentLensResult` should be

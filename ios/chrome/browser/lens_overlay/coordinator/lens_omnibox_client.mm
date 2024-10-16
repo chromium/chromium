@@ -145,11 +145,8 @@ gfx::Image LensOmniboxClient::GetIconIfExtensionMatch(
 }
 
 std::u16string LensOmniboxClient::GetFormattedFullURL() const {
-  std::optional<TemplateURLService::SearchMetadata> metadata =
-      ios::TemplateURLServiceFactory::GetForProfile(profile_)
-          ->ExtractSearchMetadata(GetURL());
-  if (metadata) {
-    return metadata->search_terms;
+  if (omnibox_steady_state_text_) {
+    return base::SysNSStringToUTF16(omnibox_steady_state_text_);
   }
   return u"";
 }

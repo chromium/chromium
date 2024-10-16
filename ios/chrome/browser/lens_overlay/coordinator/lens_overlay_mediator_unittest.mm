@@ -149,6 +149,9 @@ class LensOverlayMediatorTest : public PlatformTest {
 
     // UI is updated.
     OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
+    // Expect omnibox text update when accepting an omnibox text.
+    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
+    // Expect omnibox text update after page load.
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
 
@@ -201,7 +204,6 @@ class LensOverlayMediatorTest : public PlatformTest {
   /// Simulates a web navigation.
   void SimulateWebNavigation(const GURL& URL, BOOL expectCanGoBack) {
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
-    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
 
     web::FakeNavigationContext navigationContext;
     navigationContext.SetWebState(fake_web_state_.get());
@@ -210,7 +212,6 @@ class LensOverlayMediatorTest : public PlatformTest {
     fake_web_state_->OnNavigationStarted(&navigationContext);
     fake_web_state_->OnNavigationFinished(&navigationContext);
 
-    EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
     EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
   }
 
@@ -218,6 +219,9 @@ class LensOverlayMediatorTest : public PlatformTest {
   void GoBack(const GURL& expectedURL,
               BOOL expectCanGoBack,
               id<ChromeLensOverlayResult> expectedResultReload) {
+    // Expect omnibox text update when starting to go back.
+    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
+    // Expect omnibox text update at page load.
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
 
