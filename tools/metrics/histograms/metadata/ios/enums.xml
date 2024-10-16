@@ -218,6 +218,7 @@ the generic promo launch. -->
   <int value="0" label="Primary Action Button"/>
   <int value="1" label="Secondary Action Button"/>
   <int value="2" label="Swipe Down"/>
+  <int value="3" label="Tertiary Action Button"/>
 </enum>
 
 <enum name="IOSDockingPromoAction">
