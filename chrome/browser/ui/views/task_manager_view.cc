@@ -473,13 +473,17 @@ void TaskManagerView::Init() {
   // Has a border if the feature is disabled, since the redesign version doesn't
   // have a border.
   bool table_has_border = !tm_refresh_enabled,
-       large_header_padding = tm_refresh_enabled,
+       header_padding = tm_refresh_enabled,
        scroll_view_rounded = tm_refresh_enabled,
        layout_refresh = tm_refresh_enabled;
 
-  if (large_header_padding) {
-    views::TableHeaderStyle header_style = {/*vertical_padding=*/16,
-                                            /*horizontal_padding=*/8};
+  if (header_padding) {
+    views::TableHeaderStyle header_style = {
+        .cell_vertical_padding = 16,
+        .cell_horizontal_padding = 12,
+        .resize_bar_vertical_padding = 16,
+        .separator_horizontal_padding = 6,
+        .font_weight = gfx::Font::Weight::MEDIUM};
     tab_table->SetHeaderStyle(header_style);
   }
 

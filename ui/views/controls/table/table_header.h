@@ -36,9 +36,12 @@ class VIEWS_EXPORT TableHeader : public View {
   void UpdateFocusState();
 
   // TableHeader customization getters.
-  int GetVerticalPadding() const;
-  int GetHorizontalPadding() const;
+  int GetCellVerticalPadding() const;
+  int GetCellHorizontalPadding() const;
+  int GetResizeBarVerticalPadding() const;
+  int GetSeparatorHorizontalPadding() const;
   int GetSortIndicatorWidth() const;
+  gfx::Font::Weight GetFontWeight() const;
 
   // views::View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
@@ -98,13 +101,13 @@ class VIEWS_EXPORT TableHeader : public View {
 
   bool is_resizing() const { return resize_details_.get() != nullptr; }
 
-  const gfx::FontList font_list_;
-
   // The table body that this `TableHeader` belongs to. The table body has
   // nearly the same lifetime as the header, but during destruction of the
   // `ScrollView` that contains both the body and the header, the body may be
   // destroyed first.
   const base::WeakPtr<TableView> table_;
+
+  const gfx::FontList font_list_;
 
   // If non-null a resize is in progress.
   std::unique_ptr<ColumnResizeDetails> resize_details_;

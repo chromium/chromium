@@ -1241,7 +1241,7 @@ void TableView::UpdateVisibleColumnSizes() {
 
   std::vector<int> sizes = views::CalculateTableColumnSizes(
       layout_width_, first_column_padding, header_->font_list(), font_list_,
-      std::max(cell_margin, header_->GetHorizontalPadding()) * 2,
+      std::max(cell_margin, header_->GetCellHorizontalPadding()) * 2,
       header_->GetSortIndicatorWidth(), columns, model_);
   DCHECK_EQ(visible_columns_.size(), sizes.size());
   int x = 0;

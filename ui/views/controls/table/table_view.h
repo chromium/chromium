@@ -50,8 +50,11 @@ class TableViewObserver;
 class TableViewTestHelper;
 
 struct TableHeaderStyle {
-  std::optional<int> vertical_padding;
-  std::optional<int> horizontal_padding;
+  std::optional<int> cell_vertical_padding;
+  std::optional<int> cell_horizontal_padding;
+  std::optional<int> resize_bar_vertical_padding;
+  std::optional<int> separator_horizontal_padding;
+  std::optional<gfx::Font::Weight> font_weight;
 };
 
 // The cell's in the first column of a table can contain:
