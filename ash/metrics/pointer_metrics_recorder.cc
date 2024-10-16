@@ -26,12 +26,7 @@ chromeos::AppType GetDestination(views::Widget* target) {
 
   aura::Window* window = target->GetNativeWindow();
   DCHECK(window);
-  chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
-  // Use "BROWSER" for Lacros Chrome's pointer metrics.
-  if (app_type == chromeos::AppType::LACROS) {
-    return chromeos::AppType::BROWSER;
-  }
-  return app_type;
+  return window->GetProperty(chromeos::kAppTypeKey);
 }
 
 DownEventMetric2 FindCombination(chromeos::AppType destination,

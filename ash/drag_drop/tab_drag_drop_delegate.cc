@@ -23,7 +23,6 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
-#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -64,11 +63,6 @@ constexpr char kTabDraggingInTabletModeMaxLatencyHistogram[] =
     "Ash.TabDrag.PresentationTime.MaxLatency.TabletMode";
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsSourceWindowForDrag, false)
-
-bool IsLacrosWindow(const aura::Window* window) {
-  auto app_type = window->GetProperty(chromeos::kAppTypeKey);
-  return app_type == chromeos::AppType::LACROS;
-}
 
 // Returns the overview session if overview mode is active, otherwise returns
 // nullptr.
@@ -189,16 +183,10 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
     return;
   }
 
-  auto is_lacros = IsLacrosWindow(source_window_);
-
   // https://crbug.com/1286203:
   // It's possible new window is created when the dragged WebContents
   // closes itself during the drag session.
   if (!new_window) {
-    if (is_lacros && !crosapi::lacros_startup_state::IsLacrosEnabled()) {
-      LOG(ERROR) << "New browser window creation for tab detaching failed.\n"
-                 << "Check whether Lacros is enabled";
-    }
     return;
   }
 

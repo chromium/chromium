@@ -852,9 +852,8 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
-  if (app_type == chromeos::AppType::BROWSER ||
-      app_type == chromeos::AppType::LACROS) {
+  if (toplevel->GetProperty(chromeos::kAppTypeKey) ==
+      chromeos::AppType::BROWSER) {
     return nullptr;
   }
 
