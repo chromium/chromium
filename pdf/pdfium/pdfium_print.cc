@@ -440,21 +440,20 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
       kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
   SkPixmap src(info, FPDFBitmap_GetBuffer(bitmap.get()),
                FPDFBitmap_GetStride(bitmap.get()));
-  std::vector<uint8_t> compressed_bitmap_data;
-  bool encoded = gfx::JPEGCodec::Encode(src, kQuality, &compressed_bitmap_data);
-
+  std::optional<std::vector<uint8_t>> compressed_bitmap_data =
+      gfx::JPEGCodec::Encode(src, kQuality);
   ScopedFPDFPage temp_page_holder(
       FPDFPage_New(temp_doc.get(), 0, source_page_width, source_page_height));
   FPDF_PAGE temp_page = temp_page_holder.get();
-  if (encoded) {
-    base::span<const uint8_t> compressed_bitmap_span =
-        base::make_span(compressed_bitmap_data);
+  if (compressed_bitmap_data) {
+    base::span<const uint8_t> compressed_bitmap_span(
+        compressed_bitmap_data.value());
     FPDF_FILEACCESS file_access = {};
     file_access.m_FileLen =
-        static_cast<unsigned long>(compressed_bitmap_data.size());
+        static_cast<unsigned long>(compressed_bitmap_span.size());
     file_access.m_GetBlock = [](void* param, unsigned long pos,
                                 unsigned char* buf, unsigned long size) {
-      const auto& compressed_bitmap_span =
+      base::span<const uint8_t>& compressed_bitmap_span =
           *static_cast<base::span<const uint8_t>*>(param);
       if (pos + size < pos || pos + size > compressed_bitmap_span.size()) {
         return 0;
@@ -464,7 +463,7 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
       buf_span.copy_from(compressed_bitmap_span.subspan(pos, size));
       return 1;
     };
-    file_access.m_Param = &compressed_bitmap_data;
+    file_access.m_Param = &compressed_bitmap_span;
 
     FPDFImageObj_LoadJpegFileInline(&temp_page, 1, temp_img.get(),
                                     &file_access);

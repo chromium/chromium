@@ -45,18 +45,20 @@ void PdfiumProgressiveSearchifier::AddPage(
   CHECK(page);
   ScopedFPDFPageObject image(FPDFPageObj_NewImageObj(doc_.get()));
   CHECK(image);
-  std::vector<uint8_t> encoded;
-  CHECK(gfx::JPEGCodec::Encode(bitmap, 100, &encoded));
-  base::span<const uint8_t> encoded_span = base::make_span(encoded);
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  CHECK(encoded.has_value());
+  base::span<const uint8_t> encoded_span(encoded.value());
   FPDF_FILEACCESS file_access = {};
   file_access.m_FileLen = static_cast<unsigned long>(encoded_span.size());
   file_access.m_GetBlock = [](void* param, unsigned long pos,
                               unsigned char* buf, unsigned long size) {
-    const auto& encoded_span = *static_cast<base::span<const uint8_t>*>(param);
+    base::span<const uint8_t>& encoded_span =
+        *static_cast<base::span<const uint8_t>*>(param);
     if (pos + size < pos || pos + size > encoded_span.size()) {
       return 0;
     }
-    // TODO(tsepez): spanify arguments to remove the error.
+    // TODO(thestig): spanify arguments to remove the error.
     base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
     buf_span.copy_from(encoded_span.subspan(pos, size));
     return 1;
