@@ -33954,6 +33954,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="126" label="PaintOrder"/>
   <int value="127" label="ShowPickerSelect"/>
   <int value="128" label="Inert"/>
+  <int value="129" label="IntlSegmenter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
