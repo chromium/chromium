@@ -157,6 +157,12 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
+    public @NonNull TabCreator getTabCreator() {
+        assert false : "This should be unreachable in production, it may be mocked for testing.";
+        return null;
+    }
+
+    @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         assert false;

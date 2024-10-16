@@ -76,4 +76,9 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                 /* supportUndo= */ false,
                 /* isArchivedTabModel= */ false);
     }
+
+    @Override
+    public TabCreator getIncognitoTabCreator() {
+        return mIncognitoTabCreator;
+    }
 }

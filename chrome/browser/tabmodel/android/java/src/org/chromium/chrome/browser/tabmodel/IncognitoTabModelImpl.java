@@ -33,6 +33,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public interface IncognitoTabModelDelegate {
         /** Creates a fully working TabModel to delegate calls to. */
         TabModelInternal createTabModel();
+
+        /** Returns the tab creator for incognito tabs. */
+        TabCreator getIncognitoTabCreator();
     }
 
     private final IncognitoTabModelDelegate mDelegate;
@@ -242,6 +245,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
+    }
+
+    @Override
+    public @NonNull TabCreator getTabCreator() {
+        return mDelegate.getIncognitoTabCreator();
     }
 
     @Override

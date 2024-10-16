@@ -254,9 +254,14 @@ public class TabModelImpl extends TabModelJniBridge {
         return mTabCountSupplier;
     }
 
+    @Override
+    public @NonNull TabCreator getTabCreator() {
+        return isIncognitoBranded() ? mIncognitoTabCreator : mRegularTabCreator;
+    }
+
     /**
-     * Initializes the newly created tab, adds it to controller, and dispatches creation
-     * step notifications.
+     * Initializes the newly created tab, adds it to controller, and dispatches creation step
+     * notifications.
      */
     @Override
     public void addTab(

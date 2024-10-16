@@ -129,6 +129,10 @@ public interface TabModel extends TabList {
     @NonNull
     ObservableSupplier<Integer> getTabCountSupplier();
 
+    /** Returns the tab creator for this tab model. */
+    @NonNull
+    TabCreator getTabCreator();
+
     /**
      * Adds a newly created tab to this model.
      *
