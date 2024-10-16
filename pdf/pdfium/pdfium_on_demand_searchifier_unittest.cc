@@ -25,6 +25,8 @@ namespace chrome_pdf {
 
 namespace {
 
+using VisualAnnotationPtr = screen_ai::mojom::VisualAnnotationPtr;
+
 void WaitUntilIdle(PDFiumOnDemandSearchifier* searchifier,
                    base::OnceClosure callback) {
   if (searchifier->IsIdleForTesting()) {
@@ -51,7 +53,7 @@ void WaitUntilFailure(PDFiumOnDemandSearchifier* searchifier,
       base::Milliseconds(100));
 }
 
-screen_ai::mojom::VisualAnnotationPtr CreateDummyAnnotation(int call_number) {
+VisualAnnotationPtr CreateSampleAnnotation(int call_number) {
   auto annotation = screen_ai::mojom::VisualAnnotation::New();
   auto line_box = screen_ai::mojom::LineBox::New();
   line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
@@ -95,20 +97,12 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
                             base::Unretained(this)));
   }
 
-  void MockPerformOcr(
-      const SkBitmap& image,
-      base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
-          callback) {
+  void MockPerformOcr(const SkBitmap& /*image*/,
+                      base::OnceCallback<void(VisualAnnotationPtr)> callback) {
     // Reply with delay, as done through mojo connection to the OCR service.
+    VisualAnnotationPtr results = CreateSampleAnnotation(performed_ocrs_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
-                   callback,
-               int call_number) {
-              std::move(callback).Run(CreateDummyAnnotation(call_number));
-            },
-            std::move(callback), performed_ocrs_),
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(results)),
         base::Milliseconds(100));
 
     performed_ocrs_++;
