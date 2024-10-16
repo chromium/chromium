@@ -31,7 +31,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/app_mall.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
@@ -90,7 +90,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
     apps.insert(apps.end(), {
       GetConfigForAppMall(),
       GetConfigForCalculator(),
-      GetConfigForContainer(device_info),
+      GetConfigForGemini(device_info),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
       GetConfigForGoogleMeet(),

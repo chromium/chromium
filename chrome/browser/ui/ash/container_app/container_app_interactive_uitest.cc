@@ -43,7 +43,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -330,7 +330,7 @@ class ContainerAppInteractiveUiTestBase
 
     // Cache install info for the container app.
     container_app_install_info_ =
-        web_app::GetConfigForContainer(device_info).app_info_factory.Run();
+        web_app::GetConfigForGemini(device_info).app_info_factory.Run();
   }
 
  private:
@@ -875,7 +875,7 @@ class ContainerAppInteractiveUiIneligibilityTest
     if (GetLoginType() == ash::LoggedInUserMixin::LogInType::kChild) {
       app_data = std::make_unique<web_app::ScopedTestingPreinstalledAppData>();
       app_data->apps.emplace_back(
-          web_app::GetConfigForContainer(/*device_info=*/std::nullopt));
+          web_app::GetConfigForGemini(/*device_info=*/std::nullopt));
     }
 
     ContainerAppInteractiveUiTestBase::SetUpOnMainThread();

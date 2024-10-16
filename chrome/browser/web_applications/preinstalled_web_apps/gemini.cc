@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 
 #include <memory>
 #include <vector>
@@ -55,7 +55,7 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   // Attempt to retrieve the activation time threshold from the command-line
   // switch. Note that this switch will only be used for testing purposes.
   base::Time activation_time_threshold =
-      chromeos::switches::GetContainerAppPreinstallActivationTimeThreshold()
+      chromeos::switches::GetGeminiAppPreinstallActivationTimeThreshold()
           .value_or(base::Time());
 
   // Fall back to the actual activation time threshold.
@@ -82,7 +82,7 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
 
 }  // namespace
 
-ExternalInstallOptions GetConfigForContainer(
+ExternalInstallOptions GetConfigForGemini(
     const std::optional<DeviceInfo>& device_info) {
   static constexpr char kUrl[] = "https://gemini.google.com/";
   ExternalInstallOptions options(
@@ -102,8 +102,8 @@ ExternalInstallOptions GetConfigForContainer(
         info->dark_mode_background_color = info->dark_mode_theme_color =
             0xFF131314;
         info->display_mode = blink::mojom::DisplayMode::kStandalone;
-        info->icon_bitmaps.any = LoadBundledIcons(
-            {IDR_PREINSTALLED_WEB_APPS_CONTAINER_ICON_192_PNG});
+        info->icon_bitmaps.any =
+            LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GEMINI_ICON_192_PNG});
         info->launch_query_params = GetLaunchQueryParams(device_info);
         info->scope = GURL(kUrl);
         info->title = u"Gemini";
@@ -116,8 +116,8 @@ ExternalInstallOptions GetConfigForContainer(
   options.only_use_app_info_factory = true;
   options.user_type_allowlist = {apps::kUserTypeUnmanaged};
 
-  // NOTE: This will cause the container app to be installed even if it was
-  // previously uninstalled by the user. The container app is not intended to be
+  // NOTE: This will cause the Gemini app to be installed even if it was
+  // previously uninstalled by the user. The Gemini app is not intended to be
   // uninstallable. See https://crrev.com/c/chromium/src/+/5390614.
   options.override_previous_user_uninstall = true;
 

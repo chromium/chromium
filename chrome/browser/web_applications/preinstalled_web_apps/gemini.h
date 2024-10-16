@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_CONTAINER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_CONTAINER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_GEMINI_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_GEMINI_H_
 
 #include <optional>
 
@@ -12,10 +12,10 @@
 
 namespace web_app {
 
-// Returns the config for preinstalling the container app.
-ExternalInstallOptions GetConfigForContainer(
+// Returns the config for preinstalling the Gemini app.
+ExternalInstallOptions GetConfigForGemini(
     const std::optional<DeviceInfo>& device_info);
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_CONTAINER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_GEMINI_H_

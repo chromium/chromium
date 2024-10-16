@@ -9,24 +9,24 @@
 namespace chromeos::switches {
 
 // The name for the command-line switch used to provide the activation time
-// threshold for the container app. Note that this switch will only be used for
+// threshold for the Gemini app. Note that this switch will only be used for
 // testing purposes.
-const char kContainerAppPreinstallActivationTimeThreshold[] =
-    "container-app-preinstall-activation-time-threshold";
+const char kGeminiAppPreinstallActivationTimeThreshold[] =
+    "gemini-app-preinstall-activation-time-threshold";
 
 // Use in test to override mahi age and country restriction.
 const char kMahiRestrictionsOverride[] = "mahi-restrictions-override";
 
 // Returns the value from the command-line switch for the activation time
-// threshold for the container app. Returns an absent value if the command-line
+// threshold for the Gemini app. Returns an absent value if the command-line
 // switch isn't present or cannot be parsed. Note that this switch will only be
 // used for testing purposes.
-std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold() {
+std::optional<base::Time> GetGeminiAppPreinstallActivationTimeThreshold() {
   base::Time activation_time_threshold;
   return base::Time::FromUTCString(
              base::CommandLine::ForCurrentProcess()
                  ->GetSwitchValueASCII(
-                     kContainerAppPreinstallActivationTimeThreshold)
+                     kGeminiAppPreinstallActivationTimeThreshold)
                  .c_str(),
              &activation_time_threshold)
              ? std::make_optional(activation_time_threshold)

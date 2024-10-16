@@ -20,13 +20,13 @@
 namespace chromeos::switches {
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kContainerAppPreinstallActivationTimeThreshold[];
+extern const char kGeminiAppPreinstallActivationTimeThreshold[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kMahiRestrictionsOverride[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold();
+std::optional<base::Time> GetGeminiAppPreinstallActivationTimeThreshold();
 
 }  // namespace chromeos::switches
 
