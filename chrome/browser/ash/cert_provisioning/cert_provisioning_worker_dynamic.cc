@@ -413,13 +413,26 @@ void CertProvisioningWorkerDynamic::GenerateKeyForVa() {
 
   tpm_challenge_key_subtle_impl_ =
       attestation::TpmChallengeKeySubtleFactory::Create();
-  tpm_challenge_key_subtle_impl_->StartPrepareKeyStep(
-      GetVaFlowType(cert_scope_),
-      /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
-      GetKeyName(cert_profile_.profile_id), profile_,
-      base::BindOnce(&CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-      /*signals=*/std::nullopt);
+
+  switch (cert_profile_.key_type) {
+    case KeyType::kRsa:
+      tpm_challenge_key_subtle_impl_->StartPrepareKeyStep(
+          GetVaFlowType(cert_scope_),
+          /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+          GetKeyName(cert_profile_.profile_id), profile_,
+          base::BindOnce(&CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone,
+                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+          /*signals=*/std::nullopt);
+      break;
+    case KeyType::kEc:
+      tpm_challenge_key_subtle_impl_->StartPrepareKeyStep(
+          GetVaFlowType(cert_scope_),
+          /*will_register_key=*/true, ::attestation::KEY_TYPE_ECC,
+          GetKeyName(cert_profile_.profile_id), profile_,
+          base::BindOnce(&CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone,
+                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+          /*signals=*/std::nullopt);
+  }
 }
 
 void CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone(
@@ -1167,16 +1180,25 @@ void CertProvisioningWorkerDynamic::InitAfterDeserialization() {
   // Only initialize TpmChallengeKeySubtle if any Verified Access operations can
   // still happen, i.e. if VA is enabled and the key has not been moved into the
   // PKCS#11 token ("registered") yet.
-  // TODO(b/364893005): Update to support ECC keys as well, once VA support is
-  // ready.
   if (cert_profile_.is_va_enabled &&
       key_location_ != KeyLocation::kPkcs11Token) {
-    tpm_challenge_key_subtle_impl_ =
-        attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-            GetVaFlowType(cert_scope_),
-            /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
-            GetKeyName(cert_profile_.profile_id), BytesToStr(public_key_),
-            profile_);
+    switch (cert_profile_.key_type) {
+      case KeyType::kRsa:
+        tpm_challenge_key_subtle_impl_ =
+            attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
+                GetVaFlowType(cert_scope_),
+                /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+                GetKeyName(cert_profile_.profile_id), BytesToStr(public_key_),
+                profile_);
+        break;
+      case KeyType::kEc:
+        tpm_challenge_key_subtle_impl_ =
+            attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
+                GetVaFlowType(cert_scope_),
+                /*will_register_key=*/true, ::attestation::KEY_TYPE_ECC,
+                GetKeyName(cert_profile_.profile_id), BytesToStr(public_key_),
+                profile_);
+    }
   }
 }
 
