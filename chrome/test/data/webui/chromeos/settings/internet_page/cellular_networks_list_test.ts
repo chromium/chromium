@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {CellularNetworksListElement, NetworkListElement} from 'chrome://os-settings/lazy_load.js';
-import {LocalizedLinkElement, MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState, PaperSpinnerLiteElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, LocalizedLinkElement, MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState, PaperSpinnerLiteElement, Router} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -569,4 +569,20 @@ suite('<cellular-networks-list>', () => {
             cellularNetworkList.i18n('cellularNetworkInstallingProfile')));
         assertTrue(inhibitedSpinner.active);
       });
+
+  test('Should not call getPageContentData in guest mode', async () => {
+    loadTimeData.overrideValues({isGuest: true});
+
+    // Reinitialize Router and routes based on load time data. Some routes
+    // should not exist in guest mode, including the route that determines
+    // whether the multi-device page is available.
+    Router.resetInstanceForTesting(createRouterForTesting());
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
+
+    await init();
+    const numGetPageContentDataCalls =
+        browserProxy.getCallCount('getPageContentData');
+    assertEquals(0, numGetPageContentDataCalls);
+  })
 });

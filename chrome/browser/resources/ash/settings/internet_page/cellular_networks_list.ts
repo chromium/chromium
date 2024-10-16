@@ -44,6 +44,7 @@ import {castExists} from '../assert_extras.js';
 import {MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
 import type {MultiDevicePageContentData} from '../multidevice_page/multidevice_constants.js';
 import {MultiDeviceFeatureState} from '../multidevice_page/multidevice_constants.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './cellular_networks_list.html.js';
 
@@ -219,6 +220,16 @@ export class CellularNetworksListElement extends
               loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
         },
       },
+
+      /**
+       * Return true if multi device page is available to user.
+       */
+      isMultiDevicePageAvailable_: {
+        type: Boolean,
+        value() {
+          return !!routes.MULTIDEVICE;
+        },
+      },
     };
   }
 
@@ -244,6 +255,7 @@ export class CellularNetworksListElement extends
   private shouldShowEidDialog_: boolean;
   private shouldShowInstallErrorDialog_: boolean;
   private tetherNetworks_: OncMojo.NetworkStateProperties[];
+  private isMultiDevicePageAvailable_: boolean;
 
   constructor() {
     super();
@@ -258,12 +270,14 @@ export class CellularNetworksListElement extends
 
     this.addEventListener('install-profile', this.installProfile_);
 
-    this.addWebUiListener(
-        'settings.updateMultidevicePageContentData',
-        this.onMultiDevicePageContentDataChanged_.bind(this));
+    if (this.isMultiDevicePageAvailable_) {
+      this.addWebUiListener(
+          'settings.updateMultidevicePageContentData',
+          this.onMultiDevicePageContentDataChanged_.bind(this));
 
-    MultiDeviceBrowserProxyImpl.getInstance().getPageContentData().then(
-        this.onMultiDevicePageContentDataChanged_.bind(this));
+      MultiDeviceBrowserProxyImpl.getInstance().getPageContentData().then(
+          this.onMultiDevicePageContentDataChanged_.bind(this));
+    }
   }
 
   override onAvailableEuiccListChanged(): void {
@@ -373,6 +387,7 @@ export class CellularNetworksListElement extends
 
   private onMultiDevicePageContentDataChanged_(
       newData: MultiDevicePageContentData): void {
+    assert(this.isMultiDevicePageAvailable_);
     this.multiDevicePageContentData_ = newData;
   }
 
