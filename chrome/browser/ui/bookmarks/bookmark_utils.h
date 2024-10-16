@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/models/image_model.h"
@@ -17,6 +16,8 @@
 
 class GURL;
 class Profile;
+
+struct BookmarkParentFolder;
 
 namespace bookmarks {
 class BookmarkNode;

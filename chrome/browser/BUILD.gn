@@ -4254,6 +4254,8 @@ static_library("browser") {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/apps:impl",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/commerce",
@@ -4454,6 +4456,7 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tab_group_impl",
       "//chrome/browser/ui/tabs:tab_model_impl",
       "//chrome/browser/ui/tabs:tab_strip_impl",
+      "//chrome/browser/ui/bookmarks:impl",
     ]
 
     #!is_android
@@ -9081,6 +9084,7 @@ static_library("test_support") {
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/search_engine_choice:browser_tests",
+    "//chrome/browser/ui/bookmarks:browser_tests",
     "//chrome/test:test_support",
   ]
 

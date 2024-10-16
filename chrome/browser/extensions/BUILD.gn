@@ -710,6 +710,7 @@ source_set("extensions") {
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/global_error",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",

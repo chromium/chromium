@@ -1948,6 +1948,7 @@ if (!is_android) {
       "//chrome/browser/ui/blocked_content",
       "//chrome/browser/ui/blocked_content:browser_tests",
       "//chrome/browser/ui/bluetooth",
+      "//chrome/browser/ui/bookmarks:browser_tests",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/content_settings",
@@ -3023,7 +3024,6 @@ if (!is_android) {
       "../browser/translate/translate_manager_browsertest.cc",
       "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_browsertest.cc",
       "../browser/ui/ask_google_for_suggestions_dialog_browsertest.cc",
-      "../browser/ui/bookmarks/bookmark_browsertest.cc",
       "../browser/ui/browser_actions_browsertest.cc",
       "../browser/ui/browser_browsertest.cc",
       "../browser/ui/browser_command_controller_browsertest.cc",
@@ -7362,14 +7362,6 @@ test("unit_tests") {
       "../browser/themes/theme_service_unittest.cc",
       "../browser/themes/theme_syncable_service_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_unittest.cc",
-      "../browser/ui/bookmarks//bookmark_utils_unittest.cc",
-      "../browser/ui/bookmarks/bookmark_context_menu_controller_unittest.cc",
-      "../browser/ui/bookmarks/bookmark_drag_drop_unittest.cc",
-      "../browser/ui/bookmarks/bookmark_editor_unittest.cc",
-      "../browser/ui/bookmarks/bookmark_stats_tab_helper_unittest.cc",
-      "../browser/ui/bookmarks/bookmark_ui_utils_desktop_unittest.cc",
-      "../browser/ui/bookmarks/bookmark_unittest.cc",
-      "../browser/ui/bookmarks/recently_used_folders_combo_model_unittest.cc",
       "../browser/ui/breadcrumb_manager_browser_agent_unittest.cc",
       "../browser/ui/browser_actions_unittest.cc",
       "../browser/ui/browser_close_unittest.cc",
@@ -7591,6 +7583,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tabs:tab_group",

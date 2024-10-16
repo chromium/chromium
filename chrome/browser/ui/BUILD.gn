@@ -977,28 +977,6 @@ static_library("ui") {
     sources += [
       "app_icon_loader.cc",
       "app_icon_loader.h",
-      "bookmarks/bookmark_bar.h",
-      "bookmarks/bookmark_context_menu_controller.cc",
-      "bookmarks/bookmark_context_menu_controller.h",
-      "bookmarks/bookmark_drag_drop.cc",
-      "bookmarks/bookmark_drag_drop.h",
-      "bookmarks/bookmark_editor.cc",
-      "bookmarks/bookmark_editor.h",
-      "bookmarks/bookmark_stats.cc",
-      "bookmarks/bookmark_stats.h",
-      "bookmarks/bookmark_stats_tab_helper.cc",
-      "bookmarks/bookmark_stats_tab_helper.h",
-      "bookmarks/bookmark_tab_helper.cc",
-      "bookmarks/bookmark_tab_helper.h",
-      "bookmarks/bookmark_tab_helper_observer.h",
-      "bookmarks/bookmark_utils.cc",
-      "bookmarks/bookmark_utils.h",
-      "bookmarks/bookmark_utils_desktop.cc",
-      "bookmarks/bookmark_utils_desktop.h",
-      "bookmarks/recently_used_folders_combo_model.cc",
-      "bookmarks/recently_used_folders_combo_model.h",
-      "bookmarks/test_bookmark_navigation_wrapper.cc",
-      "bookmarks/test_bookmark_navigation_wrapper.h",
       "breadcrumb_manager_browser_agent.cc",
       "breadcrumb_manager_browser_agent.h",
       "browser.cc",
@@ -1719,6 +1697,8 @@ static_library("ui") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/apps:impl",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
@@ -1929,6 +1909,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tab_group_impl",
       "//chrome/browser/ui/tabs:tab_model_impl",
       "//chrome/browser/ui/tabs:tab_strip_impl",
+      "//chrome/browser/ui/bookmarks:impl",
     ]
 
     if (is_mac) {
@@ -5201,8 +5182,6 @@ static_library("ui") {
 
     if (!is_chromeos) {
       sources += [
-        "bookmarks/bookmark_bubble_sign_in_delegate.cc",
-        "bookmarks/bookmark_bubble_sign_in_delegate.h",
         "idle_dialog.h",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",
@@ -5738,10 +5717,6 @@ static_library("ui_public_dependencies") {
   if (chrome_root_store_cert_management_ui) {
     public_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
-  }
-
-  if (enable_dice_support) {
-    public_deps += [ "//chrome/browser/ui/signin:bubble_signin_promo_delegate" ]
   }
 }
 
