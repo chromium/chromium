@@ -184,7 +184,6 @@ android_resources("java_resources") {
     "java/res/layout/privacy_guide_explanation_item.xml",
     "java/res/layout/privacy_guide_history_sync_step.xml",
     "java/res/layout/privacy_guide_msbb_step.xml",
-    "java/res/layout/privacy_guide_msbb_v3_step.xml",
     "java/res/layout/privacy_guide_sb_enhanced_explanation.xml",
     "java/res/layout/privacy_guide_sb_step.xml",
     "java/res/layout/privacy_guide_steps.xml",

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
@@ -18,9 +17,7 @@ public class MSBBFragment extends PrivacyGuideBasePage {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
-                ? inflater.inflate(R.layout.privacy_guide_msbb_v3_step, container, false)
-                : inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
+        return inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
     }
 
     @Override

@@ -1515,18 +1515,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
         If you also share Chrome usage reports, those reports include the URLs you visit
       </message>
-      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_TWO_V3" desc="Second bullet point that describes the details of the MSBB toggle.">
-        From the address bar, you can open page info to see additional info about the page you're visiting
-      </message>
-      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_THREE_V3" desc="Third bullet point that describes the details of the MSBB toggle.">
-        If you also save your bookmarks in your Google Account, you can track product prices in Chrome and get notified when the price drops
-      </message>
-      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_FOUR_V3" desc="Forth bullet point that describes the details of the MSBB toggle.">
-        URLs you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page you're visiting
-      </message>
-      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_FIVE_V3" desc="Fifth bullet point that describes the details of the MSBB toggle.">
-        If you also share Chrome usage reports, those reports include the URLs you visit
-      </message>
       <message name="IDS_PRIVACY_GUIDE_HISTORY_SYNC_TOGGLE" desc="Title for the history sync toggle.">
         History sync
       </message>

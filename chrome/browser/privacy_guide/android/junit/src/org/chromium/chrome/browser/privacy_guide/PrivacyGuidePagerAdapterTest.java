@@ -20,8 +20,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +28,6 @@ import java.util.Set;
 
 /** JUnit tests of the class {@link PrivacyGuidePagerAdapter} */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
-})
 public class PrivacyGuidePagerAdapterTest {
     public static Collection<Object[]> generateBooleanCombinations(int nElements) {
         Collection<Object[]> result = new ArrayList<>();
