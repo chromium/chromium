@@ -162,45 +162,6 @@ RemoteServiceState SyncWorker::GetCurrentState() const {
   return service_state_;
 }
 
-void SyncWorker::GetOriginStatusMap(
-    RemoteFileSyncService::StatusMapCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetMetadataDatabase())
-    return;
-
-  std::vector<std::string> app_ids;
-  GetMetadataDatabase()->GetRegisteredAppIDs(&app_ids);
-
-  std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map(
-      new RemoteFileSyncService::OriginStatusMap);
-  for (std::vector<std::string>::const_iterator itr = app_ids.begin();
-       itr != app_ids.end(); ++itr) {
-    const std::string& app_id = *itr;
-    GURL origin = extensions::Extension::GetBaseURLFromExtensionId(app_id);
-    (*status_map)[origin] =
-        GetMetadataDatabase()->IsAppEnabled(app_id) ? "Enabled" : "Disabled";
-  }
-
-  std::move(callback).Run(std::move(status_map));
-}
-
-base::Value::List SyncWorker::DumpFiles(const GURL& origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetMetadataDatabase())
-    return base::Value::List();
-  return GetMetadataDatabase()->DumpFiles(origin.host());
-}
-
-base::Value::List SyncWorker::DumpDatabase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetMetadataDatabase())
-    return base::Value::List();
-  return GetMetadataDatabase()->DumpDatabase();
-}
-
 void SyncWorker::SetSyncEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

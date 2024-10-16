@@ -29,10 +29,6 @@
 
 class Profile;
 
-namespace content {
-class StoragePartition;
-}
-
 namespace storage {
 class FileSystemContext;
 }
@@ -58,10 +54,6 @@ class SyncFileSystemService final
       public FileStatusObserver,
       public extensions::ExtensionRegistryObserver {
  public:
-  using DumpFilesCallback = base::OnceCallback<void(base::Value::List)>;
-  using ExtensionStatusMapCallback =
-      base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
-
   // Uses SyncFileSystemServiceFactory instead.
   explicit SyncFileSystemService(Profile* profile);
   ~SyncFileSystemService() override;
@@ -74,12 +66,6 @@ class SyncFileSystemService final
   void InitializeForApp(storage::FileSystemContext* file_system_context,
                         const GURL& app_origin,
                         SyncStatusCallback callback);
-
-  void GetExtensionStatusMap(ExtensionStatusMapCallback callback);
-  void DumpFiles(content::StoragePartition* storage_partition,
-                 const GURL& origin,
-                 DumpFilesCallback callback);
-  void DumpDatabase(DumpFilesCallback callback);
 
   // Returns the file |url|'s sync status.
   void GetFileSyncStatus(const storage::FileSystemURL& url,
@@ -120,19 +106,6 @@ class SyncFileSystemService final
   void DidRegisterOrigin(const GURL& app_origin,
                          SyncStatusCallback callback,
                          SyncStatusCode status);
-
-  void DidInitializeFileSystemForDump(const GURL& app_origin,
-                                      DumpFilesCallback callback,
-                                      SyncStatusCode status);
-  void DidDumpFiles(const GURL& app_origin,
-                    DumpFilesCallback callback,
-                    base::Value::List files);
-
-  void DidDumpDatabase(DumpFilesCallback callback, base::Value::List list);
-
-  void DidGetExtensionStatusMap(
-      ExtensionStatusMapCallback callback,
-      std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map);
 
   // Overrides sync_enabled_ setting. This should be called only by tests.
   void SetSyncEnabledForTesting(bool enabled);

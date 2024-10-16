@@ -540,11 +540,6 @@ bool MetadataDatabaseIndexOnDisk::HasDemotedDirtyTracker() const {
                           base::CompareCase::SENSITIVE);
 }
 
-bool MetadataDatabaseIndexOnDisk::IsDemotedDirtyTracker(
-    int64_t tracker_id) const {
-  return DBHasKey(GenerateDemotedDirtyIDKey(tracker_id));
-}
-
 void MetadataDatabaseIndexOnDisk::PromoteDemotedDirtyTracker(
     int64_t tracker_id) {
   std::string demoted_key = GenerateDemotedDirtyIDKey(tracker_id);
@@ -664,35 +659,6 @@ MetadataDatabaseIndexOnDisk::GetRegisteredAppIDs() const {
     result.push_back(id);
   }
   return result;
-}
-
-std::vector<int64_t> MetadataDatabaseIndexOnDisk::GetAllTrackerIDs() const {
-  std::vector<int64_t> tracker_ids;
-  std::unique_ptr<LevelDBWrapper::Iterator> itr(db_->NewIterator());
-  for (itr->Seek(kFileTrackerKeyPrefix); itr->Valid(); itr->Next()) {
-    std::string id_str;
-    if (!RemovePrefix(itr->key().ToString(), kFileTrackerKeyPrefix, &id_str))
-      break;
-
-    int64_t tracker_id;
-    if (!base::StringToInt64(id_str, &tracker_id))
-      continue;
-    tracker_ids.push_back(tracker_id);
-  }
-  return tracker_ids;
-}
-
-std::vector<std::string>
-MetadataDatabaseIndexOnDisk::GetAllMetadataIDs() const {
-  std::vector<std::string> file_ids;
-  std::unique_ptr<LevelDBWrapper::Iterator> itr(db_->NewIterator());
-  for (itr->Seek(kFileMetadataKeyPrefix); itr->Valid(); itr->Next()) {
-    std::string file_id;
-    if (!RemovePrefix(itr->key().ToString(), kFileMetadataKeyPrefix, &file_id))
-      break;
-    file_ids.push_back(file_id);
-  }
-  return file_ids;
 }
 
 int64_t MetadataDatabaseIndexOnDisk::BuildTrackerIndexes() {

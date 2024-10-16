@@ -406,11 +406,6 @@ bool MetadataDatabaseIndex::HasDemotedDirtyTracker() const {
   return !demoted_dirty_trackers_.empty();
 }
 
-bool MetadataDatabaseIndex::IsDemotedDirtyTracker(int64_t tracker_id) const {
-  return demoted_dirty_trackers_.find(tracker_id) !=
-      demoted_dirty_trackers_.end();
-}
-
 void MetadataDatabaseIndex::PromoteDemotedDirtyTracker(int64_t tracker_id) {
   if (demoted_dirty_trackers_.erase(tracker_id) == 1)
     dirty_trackers_.insert(tracker_id);
@@ -486,20 +481,6 @@ std::vector<std::string> MetadataDatabaseIndex::GetRegisteredAppIDs() const {
   std::vector<std::string> result;
   result.reserve(app_root_by_app_id_.size());
   for (const auto& pair : app_root_by_app_id_)
-    result.push_back(pair.first);
-  return result;
-}
-
-std::vector<int64_t> MetadataDatabaseIndex::GetAllTrackerIDs() const {
-  std::vector<int64_t> result;
-  for (const auto& pair : tracker_by_id_)
-    result.push_back(pair.first);
-  return result;
-}
-
-std::vector<std::string> MetadataDatabaseIndex::GetAllMetadataIDs() const {
-  std::vector<std::string> result;
-  for (const auto& pair : metadata_by_id_)
     result.push_back(pair.first);
   return result;
 }

@@ -253,40 +253,6 @@ TEST_F(SyncWorkerTest, UpdateRegisteredApps) {
   ASSERT_FALSE(metadata_database()->FindAppRootTracker("app_2", &tracker));
 }
 
-TEST_F(SyncWorkerTest, GetOriginStatusMap) {
-  FileTracker tracker;
-  SyncStatusCode sync_status = SYNC_STATUS_UNKNOWN;
-  GURL origin = extensions::Extension::GetBaseURLFromExtensionId(kAppID);
-
-  sync_worker()->RegisterOrigin(GURL("chrome-extension://app_0"),
-                                CreateResultReceiver(&sync_status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  sync_worker()->RegisterOrigin(GURL("chrome-extension://app_1"),
-                                CreateResultReceiver(&sync_status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map;
-  sync_worker()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(2u, status_map->size());
-  EXPECT_EQ("Enabled", (*status_map)[GURL("chrome-extension://app_0")]);
-  EXPECT_EQ("Enabled", (*status_map)[GURL("chrome-extension://app_1")]);
-
-  sync_worker()->DisableOrigin(GURL("chrome-extension://app_1"),
-                               CreateResultReceiver(&sync_status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  sync_worker()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(2u, status_map->size());
-  EXPECT_EQ("Enabled", (*status_map)[GURL("chrome-extension://app_0")]);
-  EXPECT_EQ("Disabled", (*status_map)[GURL("chrome-extension://app_1")]);
-}
-
 TEST_F(SyncWorkerTest, UpdateServiceState) {
   EXPECT_EQ(REMOTE_SERVICE_OK, sync_worker()->GetCurrentState());
 

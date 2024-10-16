@@ -48,20 +48,6 @@ namespace {
 // Command line flag to disable on-disk indexing.
 const char kDisableMetadataDatabaseOnDisk[] = "disable-syncfs-on-disk-indexing";
 
-std::string FileKindToString(FileKind file_kind) {
-  switch (file_kind) {
-    case FILE_KIND_UNSUPPORTED:
-      return "unsupported";
-    case FILE_KIND_FILE:
-      return "file";
-    case FILE_KIND_FOLDER:
-      return "folder";
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
-}
-
 base::FilePath ReverseConcatPathComponents(
     const std::vector<base::FilePath>& components) {
   if (components.empty())
@@ -813,23 +799,6 @@ bool MetadataDatabase::BuildPathForTracker(int64_t tracker_id,
   return true;
 }
 
-base::FilePath MetadataDatabase::BuildDisplayPathForTracker(
-    const FileTracker& tracker) const {
-  base::FilePath path;
-  if (tracker.active()) {
-    BuildPathForTracker(tracker.tracker_id(), &path);
-    return path;
-  }
-  BuildPathForTracker(tracker.parent_tracker_id(), &path);
-  if (tracker.has_synced_details()) {
-    path = path.Append(
-        base::FilePath::FromUTF8Unsafe(tracker.synced_details().title()));
-  } else {
-    path = path.Append(FILE_PATH_LITERAL("<unknown>"));
-  }
-  return path;
-}
-
 bool MetadataDatabase::FindNearestActiveAncestor(
     const std::string& app_id,
     const base::FilePath& full_path,
@@ -1561,60 +1530,6 @@ SyncStatusCode MetadataDatabase::WriteToDatabase() {
   return LevelDBStatusToSyncStatusCode(db_->Commit());
 }
 
-base::Value::List MetadataDatabase::DumpFiles(const std::string& app_id) {
-  base::Value::List files;
-
-  FileTracker app_root_tracker;
-  if (!FindAppRootTracker(app_id, &app_root_tracker))
-    return files;
-
-  std::vector<int64_t> stack;
-  AppendContents(
-      index_->GetFileTrackerIDsByParent(app_root_tracker.tracker_id()), &stack);
-  while (!stack.empty()) {
-    int64_t tracker_id = stack.back();
-    stack.pop_back();
-    AppendContents(index_->GetFileTrackerIDsByParent(tracker_id), &stack);
-
-    FileTracker tracker;
-    if (!index_->GetFileTracker(tracker_id, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
-    }
-
-    base::Value::Dict file;
-
-    base::FilePath path = BuildDisplayPathForTracker(tracker);
-    file.Set("path", path.AsUTF8Unsafe());
-    if (tracker.has_synced_details()) {
-      file.Set("title", tracker.synced_details().title());
-      file.Set("type", FileKindToString(tracker.synced_details().file_kind()));
-    }
-
-    base::Value::Dict details;
-    details.Set("file_id", tracker.file_id());
-    if (tracker.has_synced_details() &&
-        tracker.synced_details().file_kind() == FILE_KIND_FILE) {
-      details.Set("md5", tracker.synced_details().md5());
-    }
-    details.Set("active", tracker.active() ? "true" : "false");
-    details.Set("dirty", tracker.dirty() ? "true" : "false");
-
-    file.Set("details", std::move(details));
-
-    files.Append(std::move(file));
-  }
-
-  return files;
-}
-
-base::Value::List MetadataDatabase::DumpDatabase() {
-  base::Value::List list;
-  list.Append(DumpTrackers());
-  list.Append(DumpMetadata());
-  return list;
-}
-
 bool MetadataDatabase::HasNewerFileMetadata(const std::string& file_id,
                                             int64_t change_id) {
   FileMetadata metadata;
@@ -1622,119 +1537,6 @@ bool MetadataDatabase::HasNewerFileMetadata(const std::string& file_id,
     return false;
   DCHECK(metadata.has_details());
   return metadata.details().change_id() >= change_id;
-}
-
-base::Value::List MetadataDatabase::DumpTrackers() {
-  base::Value::List trackers;
-
-  // Append the first element for metadata.
-  base::Value::Dict metadata;
-  static constexpr const char* kTrackerKeys[] = {
-      "tracker_id", "path",  "file_id",        "tracker_kind", "app_id",
-      "active",     "dirty", "folder_listing", "demoted",      "title",
-      "kind",       "md5",   "etag",           "missing",      "change_id",
-  };
-  base::Value::List keys;
-  for (const char* str : kTrackerKeys) {
-    keys.Append(str);
-  }
-  metadata.Set("title", "Trackers");
-  metadata.Set("keys", std::move(keys));
-  trackers.Append(std::move(metadata));
-
-  // Append tracker data.
-  std::vector<int64_t> tracker_ids(index_->GetAllTrackerIDs());
-  for (std::vector<int64_t>::const_iterator itr = tracker_ids.begin();
-       itr != tracker_ids.end(); ++itr) {
-    const int64_t tracker_id = *itr;
-    FileTracker tracker;
-    if (!index_->GetFileTracker(tracker_id, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
-    }
-
-    base::Value::Dict dict;
-    base::FilePath path = BuildDisplayPathForTracker(tracker);
-    dict.Set("tracker_id", base::NumberToString(tracker_id));
-    dict.Set("path", path.AsUTF8Unsafe());
-    dict.Set("file_id", tracker.file_id());
-    TrackerKind tracker_kind = tracker.tracker_kind();
-    dict.Set("tracker_kind",
-             tracker_kind == TRACKER_KIND_APP_ROOT
-                 ? "AppRoot"
-                 : tracker_kind == TRACKER_KIND_DISABLED_APP_ROOT
-                       ? "Disabled App"
-                       : tracker.tracker_id() == GetSyncRootTrackerID()
-                             ? "SyncRoot"
-                             : "Regular");
-    dict.Set("app_id", tracker.app_id());
-    dict.Set("active", tracker.active() ? "true" : "false");
-    dict.Set("dirty", tracker.dirty() ? "true" : "false");
-    dict.Set("folder_listing",
-             tracker.needs_folder_listing() ? "needed" : "no");
-
-    bool is_demoted = index_->IsDemotedDirtyTracker(tracker.tracker_id());
-    dict.Set("demoted", is_demoted ? "true" : "false");
-    if (tracker.has_synced_details()) {
-      const FileDetails& details = tracker.synced_details();
-      dict.Set("title", details.title());
-      dict.Set("kind", FileKindToString(details.file_kind()));
-      dict.Set("md5", details.md5());
-      dict.Set("etag", details.etag());
-      dict.Set("missing", details.missing() ? "true" : "false");
-      dict.Set("change_id", base::NumberToString(details.change_id()));
-    }
-    trackers.Append(std::move(dict));
-  }
-  return trackers;
-}
-
-base::Value::List MetadataDatabase::DumpMetadata() {
-  base::Value::List files;
-
-  // Append the first element for metadata.
-  base::Value::Dict metadata;
-  static constexpr const char* kFileKeys[] = {"file_id",   "title",  "type",
-                                              "md5",       "etag",   "missing",
-                                              "change_id", "parents"};
-  base::Value::List keys;
-  for (const char* str : kFileKeys) {
-    keys.Append(str);
-  }
-  metadata.Set("title", "Metadata");
-  metadata.Set("keys", std::move(keys));
-  files.Append(std::move(metadata));
-
-  // Append metadata data.
-  std::vector<std::string> metadata_ids(index_->GetAllMetadataIDs());
-  for (std::vector<std::string>::const_iterator itr = metadata_ids.begin();
-       itr != metadata_ids.end(); ++itr) {
-    const std::string& file_id = *itr;
-    FileMetadata file;
-    if (!index_->GetFileMetadata(file_id, &file)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
-    }
-
-    base::Value::Dict dict;
-    dict.Set("file_id", file_id);
-    if (file.has_details()) {
-      const FileDetails& details = file.details();
-      dict.Set("title", details.title());
-      dict.Set("type", FileKindToString(details.file_kind()));
-      dict.Set("md5", details.md5());
-      dict.Set("etag", details.etag());
-      dict.Set("missing", details.missing() ? "true" : "false");
-      dict.Set("change_id", base::NumberToString(details.change_id()));
-
-      std::vector<std::string_view> parents;
-      for (int i = 0; i < details.parent_folder_ids_size(); ++i)
-        parents.push_back(details.parent_folder_ids(i));
-      dict.Set("parents", base::JoinString(parents, ","));
-    }
-    files.Append(std::move(dict));
-  }
-  return files;
 }
 
 void MetadataDatabase::AttachSyncRoot(
