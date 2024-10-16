@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.hub.PaneHubController;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.data_sharing.TestDataSharingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -131,6 +133,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         TrackerFactory.setTrackerForTests(mTracker);
+        DataSharingServiceFactory.setForTesting(new TestDataSharingService());
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mProfile.isOffTheRecord()).thenReturn(false);

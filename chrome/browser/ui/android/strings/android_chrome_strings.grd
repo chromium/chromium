@@ -6623,6 +6623,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DATA_SHARING_BROWSER_MESSAGE_MANAGE" desc="The action button text on a pop up message to manage a tab group members.">
         Manage
       </message>
+      <message name="IDS_TAB_GROUP_NEW_ACTIVITY_LABEL" desc="The label on a chip denoting a tab group has had recent activity.">
+        New activity
+      </message>
+      <message name="IDS_TAB_ADDED_LABEL" desc="The label on a chip denoting a tab was recently added.">
+        Added
+      </message>
+      <message name="IDS_TAB_CHANGED_LABEL" desc="The label on a chip denoting a tab was recently changed.">
+        Changed
+      </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">

@@ -731,6 +731,11 @@ public class TabListCoordinator
         }
     }
 
+    /** Returns the handler for showing notifications. */
+    public TabListNotificationHandler getTabListNotificationHandler() {
+        return mMediator;
+    }
+
     void postHiding() {
         unregisterLayoutChangeListener();
         mMediator.postHiding();

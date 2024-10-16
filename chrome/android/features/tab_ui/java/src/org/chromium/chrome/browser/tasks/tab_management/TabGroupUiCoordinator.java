@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -43,6 +44,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -78,12 +80,15 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabCreatorManager mTabCreatorManager;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
+    private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
+
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
+    private @Nullable TabBubbler mTabBubbler;
 
     /** Creates a new {@link TabGroupUiCoordinator} */
     public TabGroupUiCoordinator(
@@ -255,6 +260,18 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mOmniboxFocusStateSupplier,
                             sharedImageTilesCoordinator);
 
+            Profile profile = mTabModelSelector.getModel(false).getProfile();
+            DataSharingService dataSharingService =
+                    DataSharingServiceFactory.getForProfile(profile);
+            @NonNull ServiceStatus serviceStatus = dataSharingService.getServiceStatus();
+            if (serviceStatus.isAllowedToJoin()) {
+                mTabBubbler =
+                        new TabBubbler(
+                                profile,
+                                mTabStripCoordinator.getTabListNotificationHandler(),
+                                mCurrentTabGroupId);
+            }
+
             TabGroupUtils.startObservingForCreationIPH();
         }
     }
@@ -284,6 +301,11 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                     mBottomSheetController);
         }
         mTabStripCoordinator.resetWithListOfTabs(tabs, false);
+
+        mCurrentTabGroupId.set(tabs == null || tabs.isEmpty() ? null : tabs.get(0).getTabGroupId());
+        if (mTabBubbler != null) {
+            mTabBubbler.showAll();
+        }
     }
 
     /**
@@ -331,6 +353,10 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         mModelChangeProcessor.destroy();
         if (mMediator != null) {
             mMediator.destroy();
+        }
+        if (mTabBubbler != null) {
+            mTabBubbler.destroy();
+            mTabBubbler = null;
         }
     }
 }
