@@ -176,14 +176,12 @@ public class TrackExitReasonsOfInterestTest {
                                                 + "."
                                                 + TrackExitReasonsOfInterest.sUmaSuffixMap.get(
                                                         state),
-                                        ProcessExitReasonFromSystem
-                                                .convertApplicationExitInfoToExitReason(
-                                                        systemReason))
+                                        ProcessExitReasonFromSystem.convertToExitReason(
+                                                systemReason))
                                 .expectIntRecord(
                                         TrackExitReasonsOfInterest.UMA_COUNTS,
-                                        ProcessExitReasonFromSystem
-                                                .convertApplicationExitInfoToExitReason(
-                                                        systemReason))
+                                        ProcessExitReasonFromSystem.convertToExitReason(
+                                                systemReason))
                                 .expectIntRecord(
                                         TrackExitReasonsOfInterest.UMA_DELTA,
                                         (int) (currentTimeMillis - previousTimeMillis))
@@ -359,12 +357,10 @@ public class TrackExitReasonsOfInterestTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 TrackExitReasonsOfInterest.UMA_COUNTS + ".DESTROYED",
-                                ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
-                                        systemReason))
+                                ProcessExitReasonFromSystem.convertToExitReason(systemReason))
                         .expectIntRecord(
                                 TrackExitReasonsOfInterest.UMA_COUNTS,
-                                ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(
-                                        systemReason))
+                                ProcessExitReasonFromSystem.convertToExitReason(systemReason))
                         .expectIntRecord(
                                 TrackExitReasonsOfInterest.UMA_DELTA,
                                 (int) (currentTimeMillis - previousTimeMillis))

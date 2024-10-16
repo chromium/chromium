@@ -83,8 +83,7 @@ public class TrackExitReasonsOfInterest {
     @VisibleForTesting
     public static int findExitReasonAndLog(AppStateData data) {
         int systemReason = ProcessExitReasonFromSystem.getExitReason(data.mPid);
-        Integer convertedReason =
-                ProcessExitReasonFromSystem.convertApplicationExitInfoToExitReason(systemReason);
+        Integer convertedReason = ProcessExitReasonFromSystem.convertToExitReason(systemReason);
 
         // If the converted reason is null, the system reason is unknown and we cannot
         // log it.
