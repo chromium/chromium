@@ -126,6 +126,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         value: false,
       },
       showRelativeTimes: {type: Boolean, value: false},
+      otherHistoryResultClicked: {type: Boolean, value: false},
     };
   }
 
@@ -137,6 +138,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   private actionMenuItem_: SearchResultItem|null = null;
   private answerSource_: SearchResultItem|null = null;
+  private answerLinkClicked_: boolean = false;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private clickedIndices_: Set<number> = new Set();
   private enableAnswers_: boolean;
@@ -171,6 +173,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private searchResultPromise_: Promise<void>|null = null;
   showRelativeTimes: boolean = false;
   showMoreFromSiteMenuOption: boolean = false;
+  otherHistoryResultClicked: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -316,6 +319,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private onAnswerLinkClick_(e: MouseEvent) {
+    this.answerLinkClicked_ = true;
     this.dispatchEvent(new CustomEvent('answer-click', {
       detail: {
         item: this.answerSource_,
@@ -392,13 +396,17 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
     this.clickedIndices_.add(e.model.index);
     this.browserProxy_.recordSearchResultsMetrics(
-        true, true, this.hasAnswer_(), false, false);
+        /* nonEmptyResults= */ true, /* userClickedResult= */ true,
+        /* answerShown= */ this.hasAnswer_(),
+        /* answerCitationClicked= */ this.answerLinkClicked_,
+        /* otherHistoryResultClicked= */ this.otherHistoryResultClicked);
   }
 
   private onSearchQueryChanged_() {
     // Flush any old results metrics before overwriting the member variable.
     this.flushDebouncedUserMetrics_();
     this.clickedIndices_.clear();
+    this.answerLinkClicked_ = false;
 
     // Cache the amount of characters that the user typed for this query so
     // that it can be sent with the quality log since `numCharsForQuery` will
@@ -494,7 +502,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       const nonEmptyResults: boolean = !!this.searchResult_ &&
           this.searchResult_.items && this.searchResult_.items.length > 0;
       this.browserProxy_.recordSearchResultsMetrics(
-          nonEmptyResults, false, this.hasAnswer_(), false, false);
+          nonEmptyResults, /* userClickedResult= */ false,
+          /* answerShown= */ this.hasAnswer_(),
+          /* answerCitationClicked= */ this.answerLinkClicked_,
+          /* otherHistoryResultClicked= */ this.otherHistoryResultClicked);
     }
 
     if (!this.forceSuppressLogging && canLog) {

@@ -48,6 +48,8 @@ export class HistoryClustersAppElement extends CrLitElement {
 
       historyEmbeddingsDisclaimerLinkClicked_: {type: Boolean},
 
+      nonEmbeddingsResultClicked_: {type: Boolean},
+
       /**
        * The current query for which related clusters are requested and shown.
        */
@@ -72,6 +74,7 @@ export class HistoryClustersAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableHistoryEmbeddings');
   protected historyEmbeddingsDisclaimerLinkClicked_ = false;
   query: string = '';
+  protected nonEmbeddingsResultClicked_: boolean = false;
   protected scrollTarget_?: HTMLElement;
   protected searchIcon_?: string;
 
@@ -125,6 +128,8 @@ export class HistoryClustersAppElement extends CrLitElement {
   protected onSearchChanged_(event: CustomEvent<string>) {
     // Update the query based on the value of the search field, if necessary.
     this.query = event.detail;
+
+    this.nonEmbeddingsResultClicked_ = false;
   }
 
   protected onHistoryEmbeddingsResultClick_(
@@ -166,6 +171,10 @@ export class HistoryClustersAppElement extends CrLitElement {
     if (this.$.searchbox) {
       this.$.searchbox.setValue(event.detail);
     }
+  }
+
+  protected onClusterLinkClick_() {
+    this.nonEmbeddingsResultClicked_ = true;
   }
 
   protected shouldShowHistoryEmbeddingsResults_(): boolean {

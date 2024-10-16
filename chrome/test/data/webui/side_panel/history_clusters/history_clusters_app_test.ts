@@ -198,4 +198,20 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     assertDeepEquals({url: 'http://google.com'}, removeVisitArgs[0]);
     assertEquals(1000, removeVisitArgs[1]);
   });
+
+  test('SendsClusterClickToEmbeddings', async () => {
+    const embeddingsComponent = await forceEmbeddingsComponent();
+    assertTrue(!!embeddingsComponent);
+    assertFalse(embeddingsComponent.otherHistoryResultClicked);
+
+    app.$.historyClusters.dispatchEvent(
+        new CustomEvent('record-history-link-click'));
+    await app.updateComplete;
+    assertTrue(embeddingsComponent.otherHistoryResultClicked);
+
+    app.$.searchbox.dispatchEvent(
+        new CustomEvent('search-changed', {detail: 'new query'}));
+    await app.updateComplete;
+    assertFalse(embeddingsComponent.otherHistoryResultClicked);
+  });
 });

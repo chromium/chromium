@@ -10,7 +10,7 @@ import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {AnswerStatus, PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
-import type {SearchQuery, SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
+import type {SearchQuery, SearchResult, SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -535,6 +535,119 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       resultsElements[0]!.dispatchEvent(new Event('click'));
       window.dispatchEvent(new Event('beforeunload'));
       assertEquals(0, handler.getCallCount('sendQualityLog'));
+    });
+
+    test('RecordsMetrics', async () => {
+      // Clicking on a result sends metrics for the click.
+      const resultsElements = getResultElements();
+      resultsElements[0]!.dispatchEvent(new Event('click'));
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ true,
+            /* answerShown= */ false,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ false,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'));
+
+      async function resetAndUpdateResults(
+          resultOverrides: Partial<SearchResult>) {
+        handler.resetResolver('recordSearchResultsMetrics');
+        const newQuery = 'query ' + Math.random();
+        element.searchQuery = newQuery;
+        element.searchResultChangedForTesting(Object.assign(
+            {
+              query: newQuery,
+              answerStatus: AnswerStatus.kUnspecified,
+              answer: '',
+              items: [mockResults],
+            },
+            resultOverrides));
+        return flushTasks();
+      }
+
+      // Empty results sends metrics.
+      await resetAndUpdateResults({items: []});
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ false,
+            /* userClickedResult= */ false,
+            /* answerShown= */ false,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ false,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Empty result set metrics are flushed.');
+
+      if (!enableAnswers) {
+        return;
+      }
+
+      // Result set with answer sends metrics.
+      const resultWithAnswer = Object.assign({}, mockResults[0], {
+        answerData: {answerTextDirectives: []},
+      });
+      await resetAndUpdateResults({
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [resultWithAnswer, ...mockResults],
+      });
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ false,
+            /* answerShown= */ true,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ false,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Shown answers are recorded.');
+
+      // Non-embedding result clicks are recorded.
+      await resetAndUpdateResults({
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [resultWithAnswer, ...mockResults],
+      });
+      element.otherHistoryResultClicked = true;
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ false,
+            /* answerShown= */ true,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ true,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Non-embedding result clicked is recorded.');
+
+      // Clicking answers is recorded.
+      await resetAndUpdateResults({
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [resultWithAnswer, ...mockResults],
+      });
+      element.otherHistoryResultClicked = false;
+      const answerLink =
+          element.shadowRoot!.querySelector<HTMLAnchorElement>('.answer-link');
+      assertTrue(!!answerLink);
+      answerLink.addEventListener('click', (e) => e.preventDefault());
+      answerLink.click();
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ false,
+            /* answerShown= */ true,
+            /* answerCitationClicked= */ true,
+            /* otherHistoryResultClicked= */ false,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Clicking answers is recorded.');
     });
 
     test('ShowsAnswerSection', async () => {
