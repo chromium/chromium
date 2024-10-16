@@ -5506,6 +5506,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_INCOGNITO_LOCK_SETTING_NAME" translateable="false" desc="Name of the Setting to protect Incognito tabs with either soft lock or biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        **Hide Incognito tabs**
       </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_DO_NOT_HIDE" translateable="false" desc="Incognito lock setting option to disable hiding Incognito tabs. This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       **Don't hide**
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_TITLE" translateable="false" desc="Incognito lock setting option to enable hiding Incognito tabs with a soft lock.  This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       **Hide after 10 minutes**
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_DESCRIPTION" translateable="false" desc="Description for enabling Incognito soft lock setting. This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       **When you return, tabs are blurred until you tap to continue**
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_REAUTH" translateable="false" desc="Incognito lock setting option to enable hiding/locking Incognito tabs with a biometric authentication, e.g. Face ID or Touch ID. This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       **Lock immediately with <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>**
+      </message>
       <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT" desc="The number of the open tabs found as search results in the tab grid.">
         <ph name="COUNT">$1<ex>2</ex></ph> found
       </message>

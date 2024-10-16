@@ -416,6 +416,9 @@ Things to consider:
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO" desc="Button to open a link from an external app in Incognito mode rather than a regular tab. [iOS only]">
         Open in Chrome Incognito
       </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HEADER" translateable="false" desc="Header string for incognito lock settings page.  This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       **Hide open Incognito tabs when you leave Chrome**
+      </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        Lock Incognito tabs when you close Chrome
       </message>

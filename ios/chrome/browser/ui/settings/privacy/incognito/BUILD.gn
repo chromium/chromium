@@ -24,5 +24,12 @@ source_set("incognito_ui") {
     "incognito_lock_view_controller_presentation_delegate.h",
   ]
 
-  deps = [ "//ios/chrome/browser/ui/settings:settings_root" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ui/base",
+  ]
 }
