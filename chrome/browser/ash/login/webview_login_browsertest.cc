@@ -1039,6 +1039,16 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
         .IsActiveForTesting();
   }
 
+  void ExpectAutoReloadDisabled() {
+    // Check policy not set
+    PrefService* local_state = g_browser_process->local_state();
+    int pref_reload_interval = local_state->GetInteger(
+        ash::prefs::kAuthenticationFlowAutoReloadInterval);
+    EXPECT_EQ(pref_reload_interval, 0);
+
+    EXPECT_FALSE(IsAutoReloadActive());
+  }
+
  private:
   policy::DevicePolicyBuilder device_policy_builder_;
 
@@ -1052,14 +1062,9 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
                        NewUserWithAutoReloadDisabled) {
-  EnterUsernameAndGoToPasswordPage();
-  // Check policy not set
-  PrefService* local_state = g_browser_process->local_state();
-  int pref_reload_interval = local_state->GetInteger(
-      ash::prefs::kAuthenticationFlowAutoReloadInterval);
-  EXPECT_EQ(pref_reload_interval, 0);
+  WaitForGaiaPageLoad();
 
-  EXPECT_FALSE(IsAutoReloadActive());
+  ExpectAutoReloadDisabled();
 
   std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
   test::OobeJS().ExpectEQ(frame_url + ".search('auto_reload_attempts')", -1);
@@ -1175,6 +1180,20 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   // A reload should take place after kPostponeInterval has passed.
   WaitForGaiaPageReload();
   test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=1')", -1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       AutoreloadDisabledThenEnabled) {
+  WaitForGaiaPageLoad();
+
+  ExpectAutoReloadDisabled();
+
+  SetAutoReloadInterval(10);  // 10 minutes
+  WaitForGaiaPageReload();
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  AdvanceTime(base::Minutes(10));
+  WaitForGaiaPageReload();
 }
 
 class ReauthWebviewLoginTest : public WebviewLoginTest {

@@ -42,6 +42,11 @@ AuthenticationFlowAutoReloadManager::~AuthenticationFlowAutoReloadManager() {
 }
 
 void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
+  // This `ReloadGaia` callback will be needed if the policy value gets
+  // updated, so it is being moved here regardless of the current policy value
+  // to be able to reload the gaia page if the policy value is changed.
+  callback_ = std::move(callback);
+
   std::optional<base::TimeDelta> reload_interval_ = GetAutoReloadInterval();
   if (!reload_interval_.has_value()) {
     return;
@@ -50,7 +55,6 @@ void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
   idle_state_observer_.Reset();
   idle_state_observer_.Observe(ui::IdlePollingService::GetInstance());
   reload_postponed_ = false;
-  callback_ = std::move(callback);
 
   // Start timer for automatic reload of authentication flow
   const base::Time now =
@@ -105,11 +109,19 @@ void AuthenticationFlowAutoReloadManager::Terminate() {
   auto_reload_attempts_ = 0;
 }
 
-// TODO(b/353937966): Restart timer on policy being updated
 void AuthenticationFlowAutoReloadManager::OnPolicyUpdated() {
   std::optional<base::TimeDelta> reload_interval_ = GetAutoReloadInterval();
   if (!reload_interval_.has_value() && auto_reload_timer_->IsRunning()) {
     auto_reload_timer_->Stop();
+  } else if (reload_interval_.has_value() && callback_) {
+    // Immediately reload the authentication flow to restart the timer with the
+    // new reload interval. Restarting avoids the complexity of extending the
+    // existing timer, which would require calculating the remaining time from
+    // the current interval and adjusting for the new interval. Accumulating the
+    // new interval on the current one by calling `Activate` would delay the
+    // reload beyond the configured time, potentially causing the login page to
+    // expire without an automatic reload for some time.
+    ReloadAuthenticationFlow();
   }
 }
 
