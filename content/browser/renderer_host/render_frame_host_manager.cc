@@ -1791,37 +1791,6 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         dest_site_instance->GetProcess()->IncrementPendingReuseRefCount();
       }
 
-      if (request->IsInPrerenderedMainFrame() &&
-          speculative_render_frame_host_) {
-        // For prerendered pages, the main frame is never in the provisional
-        // state in the renderer. Discarding it now is going to lead to crashes
-        // in the renderer, e.g. https://crbug.com/40063628 and
-        // https://crbug.com/40076091. Try to gather some info now to help
-        // diagnose the renderer-side crashes.
-        SCOPED_CRASH_KEY_STRING256("Bug40076091", "reason",
-                                   reason ? *reason : "n/a");
-        SCOPED_CRASH_KEY_NUMBER(
-            "Bug40076091", "bcg_swap_type",
-            base::to_underlying(browsing_context_group_swap->type()));
-        SCOPED_CRASH_KEY_NUMBER(
-            "Bug40076091", "bi_swap_result",
-            base::to_underlying(
-                request->coop_status().browsing_instance_swap_result()));
-        SCOPED_CRASH_KEY_STRING64(
-            "Bug40076091", "currrent_si",
-            current_site_instance->GetSiteInfo().GetDebugString());
-        SCOPED_CRASH_KEY_STRING64(
-            "Bug40076091", "dest_si",
-            dest_site_instance->GetSiteInfo().GetDebugString());
-        // When this happens, this is a bug. In tests, crash so the failure
-        // isn't silent. But in the wild, crashing the user's browser from a
-        // recoverable error is not useful, so don't crash there :)
-#if DCHECK_IS_ON()
-        DCHECK(false);
-#else
-        base::debug::DumpWithoutCrashing();
-#endif
-      }
       DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),
