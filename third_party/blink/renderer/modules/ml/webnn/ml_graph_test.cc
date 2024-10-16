@@ -1153,7 +1153,8 @@ TEST_F(MLGraphTest, CreateNamedArrayBufferViewsTest) {
            V8MLOperandDataType::Enum::kUint32,
            V8MLOperandDataType::Enum::kInt64,
            V8MLOperandDataType::Enum::kUint64, V8MLOperandDataType::Enum::kInt8,
-           V8MLOperandDataType::Enum::kUint8});
+           V8MLOperandDataType::Enum::kUint8, V8MLOperandDataType::Enum::kUint4,
+           V8MLOperandDataType::Enum::kInt4});
   static_assert(kOperandDataTypes.size() == V8MLOperandDataType::kEnumSize,
                 "The number of operand data types declared here needs to match "
                 "all possible enumeration values defined in the IDL.");
@@ -1206,6 +1207,10 @@ TEST_F(MLGraphTest, CreateNamedArrayBufferViewsTest) {
           EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt8);
           break;
         case V8MLOperandDataType::Enum::kUint8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint8);
+          break;
+        case V8MLOperandDataType::Enum::kInt4:
+        case V8MLOperandDataType::Enum::kUint4:
           EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint8);
           break;
       }

@@ -28,6 +28,10 @@ webnn::OperandDataType FromMojoDataType(webnn::mojom::DataType data_type) {
       return webnn::OperandDataType::kInt8;
     case webnn::mojom::DataType::kUint8:
       return webnn::OperandDataType::kUint8;
+    case webnn::mojom::DataType::kInt4:
+      return webnn::OperandDataType::kInt4;
+    case webnn::mojom::DataType::kUint4:
+      return webnn::OperandDataType::kUint4;
   }
 }
 
@@ -49,6 +53,10 @@ webnn::mojom::DataType ToMojoDataType(webnn::OperandDataType data_type) {
       return webnn::mojom::DataType::kInt8;
     case webnn::OperandDataType::kUint8:
       return webnn::mojom::DataType::kUint8;
+    case webnn::OperandDataType::kInt4:
+      return webnn::mojom::DataType::kInt4;
+    case webnn::OperandDataType::kUint4:
+      return webnn::mojom::DataType::kUint4;
   }
 }
 

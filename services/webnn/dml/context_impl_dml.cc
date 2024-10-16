@@ -73,6 +73,11 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8, OperandDataType::kInt32, OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts4To32{
+      OperandDataType::kInt4,  OperandDataType::kUint4,
+      OperandDataType::kInt8,  OperandDataType::kUint8,
+      OperandDataType::kInt32, OperandDataType::kUint32};
+
   static constexpr SupportedDataTypes kInts8To32{
       OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32,
       OperandDataType::kUint32};
@@ -87,17 +92,17 @@ ContextProperties ContextImplDml::GetProperties(
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
-      {/*input=*/SupportedDataTypes::All(),
-       /*constant=*/SupportedDataTypes::All(),
+      {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
-       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       /*arg_min_max_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc#tensor-support
        /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cast_operator_desc#tensor-support
-       /*cast_input=*/SupportedDataTypes::All(),
+       /*cast_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_clip_operator_desc#tensor-support
        /*clamp_input=*/kFloat16To32Ints8To32,
@@ -336,7 +341,7 @@ ContextProperties ContextImplDml::GetProperties(
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_tile_operator_desc#tensor-support
-       /*tile_input=*/SupportedDataTypes::All(),
+       /*tile_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
        // Transpose is emulated by identity.
        /*transpose_input=*/kFloat16To32Ints8To32,
@@ -355,73 +360,99 @@ ContextProperties ContextImplDml::GetProperties(
        /*where_value=*/kFloat16To32Ints8To32});
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
-    properties.data_type_limits.concat_inputs = SupportedDataTypes::All();
+    properties.data_type_limits.concat_inputs =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.add_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.sub_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.mul_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.equal_input = SupportedDataTypes::All();
-    properties.data_type_limits.greater_input = SupportedDataTypes::All();
+    properties.data_type_limits.equal_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.greater_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.greater_or_equal_input =
-        SupportedDataTypes::All();
-    properties.data_type_limits.lesser_input = SupportedDataTypes::All();
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.lesser_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.lesser_or_equal_input =
-        SupportedDataTypes::All();
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.abs_input = kFloat16To32Int8To64;
-    properties.data_type_limits.identity_input = SupportedDataTypes::All();
-    properties.data_type_limits.expand_input = SupportedDataTypes::All();
-    properties.data_type_limits.gather_input = SupportedDataTypes::All();
+    properties.data_type_limits.identity_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.expand_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.gather_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.gather_elements_input =
-        SupportedDataTypes::All();
-    properties.data_type_limits.gather_nd_input = SupportedDataTypes::All();
-    properties.data_type_limits.reshape_input = SupportedDataTypes::All();
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.gather_nd_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reshape_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.scatter_elements_input =
-        SupportedDataTypes::All();
-    properties.data_type_limits.scatter_nd_input = SupportedDataTypes::All();
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.scatter_nd_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.sign_input =
         DataTypeConstraint::kFloat16To32Int8To64;
-    properties.data_type_limits.slice_input = SupportedDataTypes::All();
-    properties.data_type_limits.split_input = SupportedDataTypes::All();
-    properties.data_type_limits.transpose_input = SupportedDataTypes::All();
+    properties.data_type_limits.slice_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.split_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.transpose_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.triangular_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_0) {
-    properties.data_type_limits.clamp_input = SupportedDataTypes::All();
+    properties.data_type_limits.clamp_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.cumulative_sum_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.max_input = SupportedDataTypes::All();
-    properties.data_type_limits.min_input = SupportedDataTypes::All();
-    properties.data_type_limits.pad_input = SupportedDataTypes::All(),
+    properties.data_type_limits.max_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.min_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.pad_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.reduce_l1_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.reduce_max_input = SupportedDataTypes::All();
-    properties.data_type_limits.reduce_min_input = SupportedDataTypes::All();
+    properties.data_type_limits.reduce_max_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reduce_min_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.reduce_sum_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.reduce_sum_square_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.where_value = SupportedDataTypes::All();
-    properties.data_type_limits.max_pool2d_input = SupportedDataTypes::All();
+    properties.data_type_limits.where_value =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.max_pool2d_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_1) {
-    properties.data_type_limits.add_input = SupportedDataTypes::All();
-    properties.data_type_limits.sub_input = SupportedDataTypes::All();
-    properties.data_type_limits.mul_input = SupportedDataTypes::All();
+    properties.data_type_limits.add_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.sub_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.mul_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.div_input = kFloat16To32Ints8To32;
     properties.data_type_limits.prelu_input =
         DataTypeConstraint::kFloat16To32Int8To32;
     properties.data_type_limits.relu_input =
         DataTypeConstraint::kFloat16To32Int8To32;
-    properties.data_type_limits.triangular_input = SupportedDataTypes::All();
+    properties.data_type_limits.triangular_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
-    properties.data_type_limits.div_input = SupportedDataTypes::All();
+    properties.data_type_limits.div_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.dequantize_linear_scale =
         DataTypeConstraint::kFloat16To32;
     properties.data_type_limits.quantize_linear_input =
@@ -430,6 +461,14 @@ ContextProperties ContextImplDml::GetProperties(
 
   if (feature_level >= DML_FEATURE_LEVEL_6_2) {
     properties.data_type_limits.resample2d_input = kFloat16To32Ints8;
+  }
+
+  if (feature_level >= DML_FEATURE_LEVEL_6_3) {
+    properties.data_type_limits.input = SupportedDataTypes::All();
+    properties.data_type_limits.constant = SupportedDataTypes::All();
+    properties.data_type_limits.dequantize_linear_input = kInts4To32;
+    properties.data_type_limits.quantize_linear_zero_point =
+        DataTypeConstraint::kInts4ToInts8;
   }
 
   return properties;

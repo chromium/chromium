@@ -99,6 +99,11 @@ base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
       return ::tflite::TensorType_INT8;
     case OperandDataType::kUint8:
       return ::tflite::TensorType_UINT8;
+    case OperandDataType::kInt4:
+      return ::tflite::TensorType_INT4;
+    case OperandDataType::kUint4:
+    default:
+      NOTREACHED() << "Unsupported data type.";
   }
 }
 
@@ -331,17 +336,23 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       OperandDataType::kInt8,    OperandDataType::kUint8,
       OperandDataType::kInt32,   OperandDataType::kUint32,
       OperandDataType::kInt64};
+  static constexpr SupportedDataTypes kAllDataTypesExceptUint4 = {
+      OperandDataType::kFloat32, OperandDataType::kFloat16,
+      OperandDataType::kInt32,   OperandDataType::kUint32,
+      OperandDataType::kInt64,   OperandDataType::kUint64,
+      OperandDataType::kInt8,    OperandDataType::kUint8,
+      OperandDataType::kInt4};
 
   return ContextProperties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
-      {/*input=*/SupportedDataTypes::All(),
-       /*constant=*/SupportedDataTypes::All(),
+      {/*input=*/kAllDataTypesExceptUint4,
+       /*constant=*/kAllDataTypesExceptUint4,
        /*arg_min_max_input=*/kFloat16To32AndInt8To32AndUint8,
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*cast_input=*/kFloat16To32AndInts8To32AndInt64,
        /*clamp_input=*/DataTypeConstraint::kFloat16To32,
-       /*concat_inputs=*/SupportedDataTypes::All(),
+       /*concat_inputs=*/kAllDataTypesExceptUint4,
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        // CumulativeSum is not implemented.
@@ -431,7 +442,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*reduce_sum_square_input=*/kFloat16To32AndInt32,
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
        /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*reshape_input=*/SupportedDataTypes::All(),
+       /*reshape_input=*/kAllDataTypesExceptUint4,
        // TODO(crbug.com/370538329): Implement scatterElements.
        /*scatter_elements_input=*/{},
        /*scatter_elements_indices=*/{},
@@ -4451,6 +4462,8 @@ auto GraphBuilderTflite::SerializeTriangular(
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
     case OperandDataType::kUint64:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
       NOTREACHED() << "This data type is not supported by triangular.";
   }
 

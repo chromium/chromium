@@ -292,6 +292,8 @@ std::optional<BlobDataType> OperandTypeToDataTypeInWeightFile(
     case OperandDataType::kUint32:
     case OperandDataType::kInt64:
     case OperandDataType::kUint64:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
       return std::nullopt;
   }
 }
@@ -315,6 +317,8 @@ CoreML::Specification::MILSpec::DataType OperandTypeToMILDataType(
       return CoreML::Specification::MILSpec::DataType::INT8;
     case OperandDataType::kUint8:
       return CoreML::Specification::MILSpec::DataType::UINT8;
+    default:
+      NOTREACHED() << "Unsupported data type.";
   }
 }
 
@@ -2980,7 +2984,9 @@ GraphBuilderCoreml::AddConstantImmediateValue(
     case OperandDataType::kInt64:
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
-    case OperandDataType::kUint8: {
+    case OperandDataType::kUint8:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4: {
       NOTREACHED() << "Unsupported data type.";
     }
   }
@@ -3061,6 +3067,8 @@ GraphBuilderCoreml::PopulateFeatureDescription(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
       NOTREACHED() << "Unsupported input data type";
   }
   // FeatureDescriptions are about input and output features, WebNN allows

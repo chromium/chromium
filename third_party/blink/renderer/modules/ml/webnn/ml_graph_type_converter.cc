@@ -73,6 +73,10 @@ webnn::OperandDataType ToOperandDataType(
       return webnn::OperandDataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:
       return webnn::OperandDataType::kUint8;
+    case blink::V8MLOperandDataType::Enum::kInt4:
+      return webnn::OperandDataType::kInt4;
+    case blink::V8MLOperandDataType::Enum::kUint4:
+      return webnn::OperandDataType::kUint4;
   }
 }
 

@@ -338,6 +338,10 @@ std::string DataTypeConstraintToString(
                                 return "int8";
                               case OperandDataType::kUint8:
                                 return "uint8";
+                              case OperandDataType::kInt4:
+                                return "int4";
+                              case OperandDataType::kUint4:
+                                return "uint4";
                             }
                           });
   return base::JoinString(data_types, /*separator=*/",");

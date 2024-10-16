@@ -36,6 +36,8 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
       // Unsupported data types for MLMultiArrays in CoreML.
       NOTREACHED();
   }

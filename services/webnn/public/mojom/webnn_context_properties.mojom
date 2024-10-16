@@ -32,6 +32,8 @@ struct SupportedDataTypes {
   bool uint64;
   bool int8;
   bool uint8;
+  bool int4;
+  bool uint4;
 };
 
 // Represents the data type limits exposed through

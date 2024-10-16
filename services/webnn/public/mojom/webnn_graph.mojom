@@ -19,6 +19,8 @@ enum DataType {
   kUint64,
   kInt8,
   kUint8,
+  kInt4,
+  kUint4
 };
 
 // Represents the `MLOperandDescriptor` in the WebIDL definition.

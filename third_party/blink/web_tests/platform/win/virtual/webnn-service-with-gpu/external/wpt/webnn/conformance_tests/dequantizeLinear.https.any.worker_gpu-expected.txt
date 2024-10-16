@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] dequantizeLinear uint4 1D tensor with even input size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint4 for output, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8]."
+[FAIL] dequantizeLinear uint4 1D tensor with odd input size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint4 for output, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8]."
+[FAIL] dequantizeLinear uint4 4D constant tensor broadcasting zeroPoint
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint4 for output, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8]."
+[FAIL] dequantizeLinear int4 1D tensor with even size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int4 for output, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8]."
+[FAIL] dequantizeLinear int4 1D tensor with odd size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int4 for output, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8]."
+Harness: the test ran to completion.
+

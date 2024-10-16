@@ -71,39 +71,49 @@ uint64_t CalculateDMLBufferTensorSize(
     DML_TENSOR_DATA_TYPE data_type,
     const std::vector<uint32_t>& dimensions,
     const std::vector<uint32_t>& strides = {}) {
-  size_t element_size;
+  uint64_t element_size_in_bits;
   switch (data_type) {
+    case DML_TENSOR_DATA_TYPE_FLOAT64:
+    case DML_TENSOR_DATA_TYPE_UINT64:
+    case DML_TENSOR_DATA_TYPE_INT64:
+      element_size_in_bits = 64;
+      break;
     case DML_TENSOR_DATA_TYPE_FLOAT32:
     case DML_TENSOR_DATA_TYPE_UINT32:
     case DML_TENSOR_DATA_TYPE_INT32:
-      element_size = 4;
+      element_size_in_bits = 32;
       break;
     case DML_TENSOR_DATA_TYPE_FLOAT16:
     case DML_TENSOR_DATA_TYPE_UINT16:
     case DML_TENSOR_DATA_TYPE_INT16:
-      element_size = 2;
+      element_size_in_bits = 16;
       break;
     case DML_TENSOR_DATA_TYPE_UINT8:
     case DML_TENSOR_DATA_TYPE_INT8:
-      element_size = 1;
+      element_size_in_bits = 8;
       break;
-    case DML_TENSOR_DATA_TYPE_FLOAT64:
-    case DML_TENSOR_DATA_TYPE_UINT64:
-    case DML_TENSOR_DATA_TYPE_INT64:
-      element_size = 8;
+    case DML_TENSOR_DATA_TYPE_UINT4:
+    case DML_TENSOR_DATA_TYPE_INT4:
+      element_size_in_bits = 4;
       break;
     default:
       NOTREACHED();
   }
 
+  base::CheckedNumeric<uint64_t> checked_buffer_length_in_bytes =
+      (base::CheckedNumeric<uint64_t>(element_size_in_bits) *
+           CalculateElementCount(dimensions, strides) +
+       7) /
+      8;
+
   // Calculate the total size of the tensor in bytes. It should be rounded up to
   // the nearest 4 bytes according to the alignment requirement:
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
-  base::CheckedNumeric<uint64_t> buffer_tensor_size =
-      base::bits::AlignUp<uint64_t>(
-          CalculateElementCount(dimensions, strides) * element_size, 4);
+  uint64_t buffer_tensor_size = base::bits::AlignUp<uint64_t>(
+      checked_buffer_length_in_bytes.ValueOrDie<uint64_t>(), 4);
 
-  return buffer_tensor_size.ValueOrDie();
+  CHECK_NE(buffer_tensor_size, 0u);
+  return buffer_tensor_size;
 }
 
 std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
