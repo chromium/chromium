@@ -46,6 +46,7 @@
 #include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/containers/contains.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/skbitmap_operations.h"
 #endif
@@ -901,14 +902,17 @@ SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
   return SkBitmapOperations::Rotate(bitmap, rotation);
 }
 
-void PDFiumPage::OnSearchifyGotOcrResult() {
-  if (!IsPageSearchified()) {
-    first_searchify_added_object_index_ = FPDFPage_CountObjects(GetPage());
+void PDFiumPage::OnSearchifyGotOcrResult(
+    base::span<FPDF_PAGEOBJECT> text_objects) {
+  got_searchify_results_ = true;
+  for (FPDF_PAGEOBJECT text_object : text_objects) {
+    bool inserted = searchify_added_text_.insert(text_object).second;
+    CHECK(inserted);
   }
 }
 
 bool PDFiumPage::IsPageSearchified() const {
-  return first_searchify_added_object_index_ != -1;
+  return got_searchify_results_;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1813,19 +1817,8 @@ Thumbnail PDFiumPage::GetThumbnail(float device_pixel_ratio) {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 bool PDFiumPage::IsCharacterAddedBySearchify(int char_index) {
-  if (!IsPageSearchified()) {
-    return false;
-  }
-
-  FPDF_PAGE page = GetPage();
-  int objects_count = FPDFPage_CountObjects(page);
   FPDF_PAGEOBJECT object = FPDFText_GetTextObject(GetTextPage(), char_index);
-  for (int i = first_searchify_added_object_index_; i < objects_count; ++i) {
-    if (object == FPDFPage_GetObject(page, i)) {
-      return true;
-    }
-  }
-  return false;
+  return base::Contains(searchify_added_text_, object);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

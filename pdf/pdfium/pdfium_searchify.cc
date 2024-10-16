@@ -120,11 +120,12 @@ FS_MATRIX CalculateWordMoveMatrix(const SearchifyBoundingBoxOrigin& word_origin,
   return move_matrix;
 }
 
-void AddWordOnImage(FPDF_DOCUMENT document,
-                    FPDF_PAGE page,
-                    FPDF_FONT font,
-                    const screen_ai::mojom::WordBoxPtr& word,
-                    base::span<const FS_MATRIX> transform_matrices) {
+// Returns the newly created text object, or nullptr on error.
+FPDF_PAGEOBJECT AddWordOnImage(FPDF_DOCUMENT document,
+                               FPDF_PAGE page,
+                               FPDF_FONT font,
+                               const screen_ai::mojom::WordBoxPtr& word,
+                               base::span<const FS_MATRIX> transform_matrices) {
   ScopedFPDFPageObject text(
       FPDFPageObj_CreateTextObj(document, font, word->bounding_box.height()));
   CHECK(text);
@@ -139,7 +140,7 @@ void AddWordOnImage(FPDF_DOCUMENT document,
   std::vector<uint32_t> charcodes = Utf8ToCharcodes(word_string);
   if (charcodes.empty()) {
     DLOG(ERROR) << "Got empty word";
-    return;
+    return nullptr;
   }
   bool result =
       FPDFText_SetCharcodes(text.get(), charcodes.data(), charcodes.size());
@@ -162,7 +163,9 @@ void AddWordOnImage(FPDF_DOCUMENT document,
     FPDFPageObj_TransformF(text.get(), &matrix);
   }
 
+  FPDF_PAGEOBJECT text_ptr = text.get();
   FPDFPage_InsertObject(page, text.release());
+  return text_ptr;
 }
 
 }  // namespace
@@ -221,16 +224,17 @@ std::vector<uint8_t> PDFiumSearchify(
   return output_file_write.TakeBuffer();
 }
 
-void AddTextOnImage(FPDF_DOCUMENT document,
-                    FPDF_PAGE page,
-                    FPDF_FONT font,
-                    FPDF_PAGEOBJECT image,
-                    screen_ai::mojom::VisualAnnotationPtr annotation,
-                    const gfx::Size& image_pixel_size) {
+std::vector<FPDF_PAGEOBJECT> AddTextOnImage(
+    FPDF_DOCUMENT document,
+    FPDF_PAGE page,
+    FPDF_FONT font,
+    FPDF_PAGEOBJECT image,
+    screen_ai::mojom::VisualAnnotationPtr annotation,
+    const gfx::Size& image_pixel_size) {
   const gfx::SizeF image_rendered_size = GetRenderedImageSize(image);
   if (image_rendered_size.IsEmpty()) {
     DLOG(ERROR) << "Failed to get image rendered dimensions";
-    return;
+    return {};
   }
 
   // The transformation matrices is applied as follows:
@@ -249,9 +253,15 @@ void AddTextOnImage(FPDF_DOCUMENT document,
   if (!CalculateImageWithoutScalingMatrix(image, image_rendered_size,
                                           image_without_scaling_matrix)) {
     DLOG(ERROR) << "Failed to get image matrix";
-    return;
+    return {};
   }
 
+  size_t estimated_word_count = 0;
+  for (const auto& line : annotation->lines) {
+    estimated_word_count += line->words.size();
+  }
+  std::vector<FPDF_PAGEOBJECT> added_text_objects;
+  added_text_objects.reserve(estimated_word_count);
   for (const auto& line : annotation->lines) {
     SearchifyBoundingBoxOrigin baseline_origin =
         ConvertToPdfOrigin(line->baseline_box, line->baseline_box_angle,
@@ -270,9 +280,11 @@ void AddTextOnImage(FPDF_DOCUMENT document,
           word->bounding_box.width(),
           word->direction ==
               screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT);
-      AddWordOnImage(document, page, font, word, transform_matrices);
+      added_text_objects.push_back(
+          AddWordOnImage(document, page, font, word, transform_matrices));
     }
   }
+  return added_text_objects;
 }
 
 SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(

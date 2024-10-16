@@ -4,6 +4,8 @@
 
 #include "pdf/pdfium/pdfium_on_demand_searchifier.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
@@ -162,11 +164,12 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
     screen_ai::mojom::VisualAnnotationPtr annotation) {
   CHECK_EQ(state_, State::kWaitingForResults);
   if (annotation) {
-    current_page_->OnSearchifyGotOcrResult();
     FPDF_PAGEOBJECT image =
         FPDFPage_GetObject(current_page_->GetPage(), image_index);
-    AddTextOnImage(engine_->doc(), current_page_->GetPage(), font_.get(), image,
-                   std::move(annotation), image_size);
+    std::vector<FPDF_PAGEOBJECT> added_text_objects =
+        AddTextOnImage(engine_->doc(), current_page_->GetPage(), font_.get(),
+                       image, std::move(annotation), image_size);
+    current_page_->OnSearchifyGotOcrResult(added_text_objects);
   }
   SearchifyNextImage();
 }
