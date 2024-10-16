@@ -6146,7 +6146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.GetSharesResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="2024-10-23">
+    enum="NativeSmbFileShare_MountResult" expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -6156,7 +6156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountCount" units="Active Mounts"
-    expires_after="2024-10-23">
+    expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -6166,7 +6166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="2025-02-23">
+    enum="NativeSmbFileShare_MountResult" expires_after="2025-05-21">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
