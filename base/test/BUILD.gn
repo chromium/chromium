@@ -8,6 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -37,6 +38,17 @@ static_library("test_config") {
     "//base:clang_profiling_buildflags",
     "//build:chromeos_buildflags",
   ]
+}
+
+rust_static_library("test_rust_logger_consumer") {
+  allow_unsafe = true  # Unsafe needed for FFI
+  testonly = true
+  deps = [ "//third_party/rust/log/v0_4:lib" ]
+  sources = [ "logging/test_rust_logger_consumer.rs" ]
+
+  crate_root = "logging/test_rust_logger_consumer.rs"
+
+  cxx_bindings = [ "logging/test_rust_logger_consumer.rs" ]
 }
 
 static_library("test_support") {
@@ -180,6 +192,7 @@ static_library("test_support") {
 
   public_deps = [
     ":test_config",
+    ":test_rust_logger_consumer",
     "//base",
     "//base:base_static",
     "//base:i18n",

@@ -38,6 +38,8 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build/timestamp.gni")
 import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
@@ -1042,6 +1044,9 @@ component("base") {
   if (!is_nacl) {
     # Used by metrics/crc32, except on NaCl builds.
     deps += [ "//third_party/zlib" ]
+
+    # NaCl does not support Rust.
+    deps += [ ":rust_logger" ]
   }
 
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
@@ -1564,6 +1569,8 @@ component("base") {
       "files/scoped_temp_file.h",
       "json/json_file_value_serializer.cc",
       "json/json_file_value_serializer.h",
+      "logging/rust_log_integration.cc",
+      "logging/rust_log_integration.h",
       "memory/discardable_memory.cc",
       "memory/discardable_memory.h",
       "memory/discardable_memory_allocator.cc",
@@ -2466,6 +2473,31 @@ component("base") {
   }
 }
 
+rust_bindgen("rust_log_bindgen") {
+  header = "logging/rust_log_integration.h"
+  cpp = true
+  visibility = [ ":*" ]
+}
+
+rust_static_library("rust_logger") {
+  allow_unsafe = true  # Unsafe needed for FFI.
+  deps = [
+    ":rust_log_bindgen",
+    "//third_party/rust/log/v0_4:lib",
+  ]
+  visibility = [ ":base" ]
+  sources = [ "logging/rust_logger.rs" ]
+  crate_root = "logging/rust_logger.rs"
+
+  cxx_bindings = [ "logging/rust_logger.rs" ]
+
+  _bindgen_output = get_target_outputs(":rust_log_bindgen")
+  inputs = _bindgen_output
+  rustenv =
+      [ "RUST_LOG_INTEGRATION_BINDGEN_RS_FILE=" +
+        rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+}
+
 if (is_linux || is_chromeos) {
   # Split out as a separate target for two reasons:
   # - the line number reader is 2x slower in debug builds if not optimized,
@@ -3275,6 +3307,7 @@ test("base_unittests") {
     "json/string_escape_unittest.cc",
     "json/values_util_unittest.cc",
     "lazy_instance_unittest.cc",
+    "logging/rust_log_integration_unittest.cc",
     "logging_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/discardable_memory_backing_field_trial_unittest.cc",

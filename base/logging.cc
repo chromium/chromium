@@ -126,6 +126,10 @@ typedef FILE* FileHandle;
 #include "base/fuchsia/scoped_fx_logger.h"
 #endif
 
+#if !BUILDFLAG(IS_NACL)
+#include "base/logging/rust_logger.rs.h"
+#endif
+
 namespace logging {
 
 namespace {
@@ -520,6 +524,11 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   if (g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) {
     GetScopedFxLogger() = base::ScopedFxLogger::CreateForProcess();
   }
+#endif
+
+#if !BUILDFLAG(IS_NACL)
+  // Connects Rust logging with the //base logging functionality.
+  internal::init_rust_log_crate();
 #endif
 
   // Ignore file options unless logging to file is set.

@@ -153,7 +153,6 @@ ban_features = [
 ]
 
 [crate.log]
-group = 'test'
 
 [crate.nom]
 remove_deps = ['minimal-lexical']
