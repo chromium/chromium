@@ -424,3 +424,17 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_metrics_unittest.cc" ]
+  deps = [
+    ":profile_attributes",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

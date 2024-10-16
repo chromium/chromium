@@ -6210,6 +6210,7 @@ test("unit_tests") {
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiles:profile_statistics",
     "//chrome/browser/profiles:profiles_extra_parts",
+    "//chrome/browser/profiles:unit_tests",
     "//chrome/browser/profiling_host",
     "//chrome/browser/push_messaging:budget_proto",
     "//chrome/browser/reading_list",
