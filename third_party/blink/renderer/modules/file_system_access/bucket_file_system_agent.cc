@@ -65,14 +65,15 @@ void BucketFileSystemAgent::getDirectory(
     path_components.push_back(component);
   }
 
+  // Copy prior to move.
   String directory_name =
       path_components.empty() ? g_empty_string : path_components.back();
   storage_bucket->GetDirectoryForDevTools(
-      execution_context, path_components,
+      execution_context, std::move(path_components),
       WTF::BindOnce(&BucketFileSystemAgent::DidGetDirectoryHandle,
                     WrapWeakPersistent(this),
                     WrapWeakPersistent(execution_context), storage_key,
-                    directory_name, std::move(callback)));
+                    std::move(directory_name), std::move(callback)));
 }
 
 void BucketFileSystemAgent::DidGetDirectoryHandle(
