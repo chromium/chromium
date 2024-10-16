@@ -58,16 +58,15 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     @Inject
     public CustomTabSessionHandler(
             BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabActivityTabProvider tabProvider,
             Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
             Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
             CustomTabIntentHandler intentHandler,
             CustomTabsConnection connection,
-            Activity activity,
+            BaseCustomTabActivity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             SessionDataHolder sessionDataHolder) {
         mIntentDataProvider = intentDataProvider;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
         mBottomBarDelegate = bottomBarDelegate;
         mIntentHandler = intentHandler;

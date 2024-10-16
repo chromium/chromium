@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkV
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
 import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -42,6 +43,7 @@ public class BaseCustomTabActivityModule {
     private final CustomTabActivityNavigationController.DefaultBrowserProvider
             mDefaultBrowserProvider;
     private final CipherFactory mCipherFactory;
+    private final BaseCustomTabActivity mActivity;
 
     public BaseCustomTabActivityModule(
             BrowserServicesIntentDataProvider intentDataProvider,
@@ -49,7 +51,8 @@ public class BaseCustomTabActivityModule {
             IntentIgnoringCriterion intentIgnoringCriterion,
             TopUiThemeColorProvider topUiThemeColorProvider,
             CustomTabActivityNavigationController.DefaultBrowserProvider defaultBrowserProvider,
-            CipherFactory cipherFactory) {
+            CipherFactory cipherFactory,
+            BaseCustomTabActivity activity) {
         mIntentDataProvider = intentDataProvider;
         mActivityType = intentDataProvider.getActivityType();
         mNightModeController = nightModeController;
@@ -57,6 +60,12 @@ public class BaseCustomTabActivityModule {
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mDefaultBrowserProvider = defaultBrowserProvider;
         mCipherFactory = cipherFactory;
+        mActivity = activity;
+    }
+
+    @Provides
+    public BaseCustomTabActivity providesBaseCustomTabActivity() {
+        return mActivity;
     }
 
     @Provides
@@ -144,6 +153,7 @@ public class BaseCustomTabActivityModule {
                 IntentIgnoringCriterion intentIgnoringCriterion,
                 TopUiThemeColorProvider topUiThemeColorProvider,
                 DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
-                CipherFactory cipherFactory);
+                CipherFactory cipherFactory,
+                BaseCustomTabActivity activity);
     }
 }

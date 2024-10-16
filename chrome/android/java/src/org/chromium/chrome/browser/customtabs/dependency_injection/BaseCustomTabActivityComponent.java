@@ -28,9 +28,7 @@ import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -59,8 +57,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     CustomTabActivityTabFactory resolveTabFactory();
 
-    CustomTabActivityTabProvider resolveTabProvider();
-
     CustomTabBottomBarDelegate resolveBottomBarDelegate();
 
     CustomTabCompositorContentInitializer resolveCompositorContentInitializer();
@@ -80,8 +76,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabTaskDescriptionHelper resolveTaskDescriptionHelper();
 
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
-
-    TabObserverRegistrar resolveTabObserverRegistrar();
 
     TwaFinishHandler resolveTwaFinishHandler();
 

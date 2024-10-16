@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -57,6 +58,7 @@ public class CurrentPageVerifierTest {
     @Mock Tab mTab;
     @Mock ClientPackageNameProvider mClientPackageNameProvider;
     @Captor ArgumentCaptor<CustomTabTabObserver> mTabObserverCaptor;
+    @Mock public BaseCustomTabActivity mActivity;
 
     TestVerifier mVerifierDelegate = new TestVerifier();
 
@@ -72,13 +74,11 @@ public class CurrentPageVerifierTest {
                 .registerActivityTabObserver(mTabObserverCaptor.capture());
         when(mIntentDataProvider.getTrustedWebActivityAdditionalOrigins())
                 .thenReturn(Collections.singletonList("https://www.origin2.com/"));
+        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
+        when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
         mCurrentPageVerifier =
                 new CurrentPageVerifier(
-                        mLifecycleDispatcher,
-                        mTabObserverRegistrar,
-                        mTabProvider,
-                        mIntentDataProvider,
-                        mVerifierDelegate);
+                        mLifecycleDispatcher, mActivity, mIntentDataProvider, mVerifierDelegate);
         // TODO(peconn): Add check on permission updated being updated.
     }
 

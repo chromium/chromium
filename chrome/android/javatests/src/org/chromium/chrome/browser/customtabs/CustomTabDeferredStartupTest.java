@@ -26,7 +26,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -105,10 +104,8 @@ public class CustomTabDeferredStartupTest {
 
         @Override
         public void onPreInflationStartup() {
-            BaseCustomTabActivityComponent baseCustomTabActivityComponent =
-                    (BaseCustomTabActivityComponent) mActivity.getComponent();
-            baseCustomTabActivityComponent
-                    .resolveTabProvider()
+            mActivity
+                    .getCustomTabActivityTabProvider()
                     .addObserver(new InitialTabCreationObserver(mObserver));
         }
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebApkSplashNetworkErrorObserver;
@@ -43,11 +43,11 @@ public class WebappSplashController implements SplashDelegate {
     @Inject
     public WebappSplashController(
             SplashController splashController,
-            Activity activity,
-            TabObserverRegistrar tabObserverRegistrar,
+            BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;
-        mTabObserverRegistrar = tabObserverRegistrar;
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
+
         mWebappInfo = WebappInfo.create(intentDataProvider);
 
         mSplashController.setConfig(this, HIDE_ANIMATION_DURATION_MS);

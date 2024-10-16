@@ -63,10 +63,10 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
 
     @Inject
     public WebappActionsNotificationManager(
-            CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mTabProvider = tabProvider;
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            BaseCustomTabActivity activity) {
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
         lifecycleDispatcher.register(this);
     }

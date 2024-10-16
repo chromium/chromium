@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import dagger.Lazy;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
@@ -35,11 +36,11 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     @Inject
     public DefaultCustomTabIntentHandlingStrategy(
-            CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabNavigationEventObserver navigationEventObserver,
-            Lazy<CustomTabObserver> customTabObserver) {
-        mTabProvider = tabProvider;
+            Lazy<CustomTabObserver> customTabObserver,
+            BaseCustomTabActivity activity) {
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mNavigationController = navigationController;
         mNavigationEventObserver = navigationEventObserver;
         mCustomTabObserver = customTabObserver;

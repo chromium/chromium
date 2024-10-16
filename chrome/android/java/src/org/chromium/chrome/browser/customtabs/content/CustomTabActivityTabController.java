@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabCookiesFetcher;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -128,13 +129,12 @@ public class CustomTabActivityTabController
 
     @Inject
     public CustomTabActivityTabController(
-            AppCompatActivity activity,
+            BaseCustomTabActivity activity,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             CustomTabsConnection connection,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityTabProvider activityTabProvider,
-            TabObserverRegistrar tabObserverRegistrar,
             Lazy<CompositorViewHolder> compositorViewHolder,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WarmupManager warmupManager,
@@ -143,7 +143,6 @@ public class CustomTabActivityTabController
             Lazy<CustomTabObserver> customTabObserver,
             WebContentsFactory webContentsFactory,
             CustomTabNavigationEventObserver tabNavigationEventObserver,
-            CustomTabActivityTabProvider tabProvider,
             ReparentingTaskProvider reparentingTaskProvider,
             Lazy<AsyncTabParamsManager> asyncTabParamsManager,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
@@ -155,7 +154,7 @@ public class CustomTabActivityTabController
         mActivity = activity;
         mConnection = connection;
         mIntentDataProvider = intentDataProvider;
-        mTabObserverRegistrar = tabObserverRegistrar;
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mCompositorViewHolder = compositorViewHolder;
         mWarmupManager = warmupManager;
         mTabPersistencePolicy = persistencePolicy;
@@ -164,7 +163,7 @@ public class CustomTabActivityTabController
         mWebContentsFactory = webContentsFactory;
         mTabNavigationEventObserver = tabNavigationEventObserver;
         mActivityTabProvider = activityTabProvider;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mReparentingTaskProvider = reparentingTaskProvider;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -82,10 +83,9 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     @Inject
     public AuthTabVerifier(
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             ChromeOriginVerifierFactory originVerifierFactory,
-            Activity activity,
+            BaseCustomTabActivity activity,
             ExternalAuthUtils externalAuthUtils) {
         mLifecycleDispatcher = lifecycleDispatcher;
         mIntentDataProvider = intentDataProvider;
@@ -101,6 +101,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
         mStatus = mVerifiedByAndroid ? VerificationStatus.SUCCESS : VerificationStatus.PENDING;
         mActivityResult = Activity.RESULT_OK;
 
+        CustomTabActivityTabProvider tabProvider = activity.getCustomTabActivityTabProvider();
         if (shouldRunOriginVerifier()) {
             WebContents webContents =
                     tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;

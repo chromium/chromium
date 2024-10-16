@@ -34,9 +34,9 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
     private final TabObserverRegistrar mTabObserverRegistrar;
 
     @Inject
-    public CustomTabDownloadObserver(Activity activity, TabObserverRegistrar tabObserverRegistrar) {
+    public CustomTabDownloadObserver(BaseCustomTabActivity activity) {
         mActivity = activity;
-        mTabObserverRegistrar = tabObserverRegistrar;
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mTabObserverRegistrar.registerTabObserver(this);
     }
 

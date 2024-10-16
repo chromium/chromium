@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
@@ -66,8 +67,9 @@ public class CustomTabToolbarCoordinatorUnitTest {
     @Mock private Tab mTab;
     @Mock private CustomButtonParams mCustomButtonParams;
     @Mock private PendingIntent mPendingIntent;
+    @Mock private BaseCustomTabActivity mActivity;
 
-    private Activity mActivity;
+    private Activity mActivityForResources;
     private CustomTabActivityTabController mTabController;
     private CustomTabToolbarCoordinator mCoordinator;
 
@@ -75,13 +77,14 @@ public class CustomTabToolbarCoordinatorUnitTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivityForResources = Robolectric.setupActivity(Activity.class);
         mTabController = env.createTabController();
+
+        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
 
         mCoordinator =
                 new CustomTabToolbarCoordinator(
                         env.intentDataProvider,
-                        mTabProvider,
                         env.connection,
                         mActivity,
                         mActivityWindowAndroid,
@@ -129,7 +132,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     public void testCreateShareButtonWithCustomActions() {
         int testColor = 0x99aabbcc;
         mCoordinator.onCustomButtonClick(
-                CustomButtonParamsImpl.createShareButton(mActivity, testColor));
+                CustomButtonParamsImpl.createShareButton(mActivityForResources, testColor));
         verify(mShareDelegate)
                 .share(any(), eq(false), eq(ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON));
     }

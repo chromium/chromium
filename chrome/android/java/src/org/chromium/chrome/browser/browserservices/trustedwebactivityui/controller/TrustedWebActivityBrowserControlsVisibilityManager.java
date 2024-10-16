@@ -11,6 +11,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -60,13 +61,12 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
 
     @Inject
     public TrustedWebActivityBrowserControlsVisibilityManager(
-            TabObserverRegistrar tabObserverRegistrar,
-            CustomTabActivityTabProvider tabProvider,
+            BaseCustomTabActivity activity,
             CustomTabToolbarCoordinator toolbarCoordinator,
             CloseButtonVisibilityManager closeButtonVisibilityManager,
             BrowserServicesIntentDataProvider intentDataProvider) {
-        mTabObserverRegistrar = tabObserverRegistrar;
-        mTabProvider = tabProvider;
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
         mCloseButtonVisibilityManager = closeButtonVisibilityManager;
 

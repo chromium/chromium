@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler.IntentIgnoringCriterion;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
@@ -115,6 +116,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
     private boolean mWarmupOnDestroy;
+    private TabObserverRegistrar mTabObserverRegistrar;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -312,14 +314,19 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
                                 new DefaultBrowserProviderImpl(),
-                                mCipherFactory)
+                                mCipherFactory,
+                                this)
                         : new BaseCustomTabActivityModule(
                                 mIntentDataProvider,
                                 mNightModeStateController,
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
                                 new DefaultBrowserProviderImpl(),
-                                mCipherFactory);
+                                mCipherFactory,
+                                this);
+        mTabProvider = new CustomTabActivityTabProvider();
+        mTabObserverRegistrar = new TabObserverRegistrar(getLifecycleDispatcher(), mTabProvider);
+
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
                         .createBaseCustomTabActivityComponent(commonsModule, baseCustomTabsModule);
@@ -328,7 +335,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         mToolbarCoordinator = component.resolveToolbarCoordinator();
         mNavigationController = component.resolveNavigationController();
         mTabController = component.resolveTabController();
-        mTabProvider = component.resolveTabProvider();
         mStatusBarColorProvider = component.resolveCustomTabStatusBarColorProvider();
         mTabFactory = component.resolveTabFactory();
         mCustomTabIntentHandler = component.resolveIntentHandler();
@@ -843,5 +849,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCipherFactory.saveToBundle(outState);
+    }
+
+    public TabObserverRegistrar getTabObserverRegistrar() {
+        return mTabObserverRegistrar;
+    }
+
+    public CustomTabActivityTabProvider getCustomTabActivityTabProvider() {
+        return mTabProvider;
     }
 }

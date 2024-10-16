@@ -38,8 +38,7 @@ import javax.inject.Inject;
 /**
  * Helper that updates the Android task description given the state of the current tab.
  *
- * <p>
- * The task description is what is shown in Android's Overview/Recents screen for each entry.
+ * <p>The task description is what is shown in Android's Overview/Recents screen for each entry.
  */
 @ActivityScope
 public class CustomTabTaskDescriptionHelper implements NativeInitObserver, DestroyObserver {
@@ -64,15 +63,13 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
     @Inject
     public CustomTabTaskDescriptionHelper(
-            Activity activity,
-            CustomTabActivityTabProvider tabProvider,
-            TabObserverRegistrar tabObserverRegistrar,
+            BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         mActivity = activity;
-        mTabProvider = tabProvider;
-        mTabObserverRegistrar = tabObserverRegistrar;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mIntentDataProvider = intentDataProvider;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
 

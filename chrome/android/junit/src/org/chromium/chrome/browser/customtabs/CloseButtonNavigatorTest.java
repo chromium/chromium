@@ -70,6 +70,7 @@ public class CloseButtonNavigatorTest {
     @Mock public WebappExtras mWebappExtras;
     @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
+    @Mock public BaseCustomTabActivity mActivity;
 
     private final Stack<Tab> mTabs = new Stack<>();
     private CloseButtonNavigator mCloseButtonNavigator;
@@ -92,12 +93,10 @@ public class CloseButtonNavigatorTest {
                     assertTrue(mTabController.onlyOneTabRemaining());
                     mTabController.closeTab();
                 };
+        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         mCloseButtonNavigator =
                 new CloseButtonNavigator(
-                        mTabController,
-                        mTabProvider,
-                        mIntentDataProvider,
-                        mMinimizationManagerHolder);
+                        mTabController, mIntentDataProvider, mMinimizationManagerHolder, mActivity);
 
         // Set up our mTabs to act as the mock tab model:
         // - mTabController.closeTab removes the top tab.

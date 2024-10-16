@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -112,13 +111,12 @@ public class CustomTabBottomBarDelegate
 
     @Inject
     public CustomTabBottomBarDelegate(
-            Activity activity,
+            BaseCustomTabActivity activity,
             WindowAndroid windowAndroid,
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
             CustomTabNightModeStateController nightModeStateController,
             SystemNightModeMonitor systemNightModeMonitor,
-            CustomTabActivityTabProvider tabProvider,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -126,7 +124,7 @@ public class CustomTabBottomBarDelegate
         mBrowserControlsSizer = browserControlsSizer;
         mNightModeStateController = nightModeStateController;
         mSystemNightModeMonitor = systemNightModeMonitor;
-        mTabProvider = () -> tabProvider.getTab();
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         browserControlsSizer.addObserver(this);
         mKeepContentView = false;
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);

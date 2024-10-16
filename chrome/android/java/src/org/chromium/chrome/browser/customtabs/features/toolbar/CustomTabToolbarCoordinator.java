@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -56,13 +57,13 @@ import javax.inject.Named;
  * Works with the toolbar in a Custom Tab. Encapsulates interactions with Chrome's toolbar-related
  * classes such as {@link ToolbarManager} and {@link BrowserControlsVisibilityManager}.
  *
- * TODO(pshmakov):
+ * <p>TODO(pshmakov): <br>
  * 1. Reduce the coupling between Custom Tab toolbar and Chrome's common code. In particular,
  * ToolbarLayout has Custom Tab specific methods that throw unless we're in a Custom Tab - we need a
- * better design.
+ * better design. <br>
  * 2. Make toolbar lazy. E.g. in Trusted Web Activities we always start without toolbar - delay
- * executing any initialization code and creating {@link ToolbarManager} until the toolbar needs
- * to appear.
+ * executing any initialization code and creating {@link ToolbarManager} until the toolbar needs to
+ * appear. <br>
  * 3. Refactor to MVC.
  */
 @ActivityScope
@@ -90,9 +91,8 @@ public class CustomTabToolbarCoordinator {
     @Inject
     public CustomTabToolbarCoordinator(
             BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabActivityTabProvider tabProvider,
             CustomTabsConnection connection,
-            Activity activity,
+            BaseCustomTabActivity activity,
             ActivityWindowAndroid windowAndroid,
             @Named(APP_CONTEXT) Context appContext,
             Lazy<BrowserControlsVisibilityManager> controlsVisiblityManager,
@@ -102,7 +102,7 @@ public class CustomTabToolbarCoordinator {
             CustomTabCompositorContentInitializer compositorContentInitializer,
             CustomTabToolbarColorController toolbarColorController) {
         mIntentDataProvider = intentDataProvider;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mConnection = connection;
         mActivity = activity;
         mWindowAndroid = windowAndroid;

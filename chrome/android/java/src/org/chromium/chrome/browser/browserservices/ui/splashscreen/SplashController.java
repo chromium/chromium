@@ -104,19 +104,17 @@ public class SplashController extends CustomTabTabObserver
 
     @Inject
     public SplashController(
-            Activity activity,
+            BaseCustomTabActivity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            TabObserverRegistrar tabObserverRegistrar,
             CustomTabOrientationController orientationController,
             TwaFinishHandler finishHandler,
-            CustomTabActivityTabProvider tabProvider,
             Lazy<CompositorViewHolder> compositorViewHolder) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
-        mTabObserverRegistrar = tabObserverRegistrar;
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mObservers = new ObserverList<>();
         mFinishHandler = finishHandler;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mCompositorViewHolder = compositorViewHolder;
 
         mIsWindowInitiallyTranslucent =

@@ -28,6 +28,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -53,6 +54,7 @@ public class TwaVerifierTest {
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
     @Mock ClientPackageNameProvider mClientPackageNameProvider;
     @Mock ExternalAuthUtils mExternalAuthUtils;
+    @Mock BaseCustomTabActivity mActivity;
 
     private TwaVerifier mDelegate;
 
@@ -70,15 +72,16 @@ public class TwaVerifierTest {
                 .thenReturn(mOriginVerifier);
 
         when(mClientPackageNameProvider.get()).thenReturn("some.package.name");
+        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mActivityTabProvider);
 
         mDelegate =
                 new TwaVerifier(
                         mLifecycleDispatcher,
                         mIntentDataProvider,
                         mOriginVerifierFactory,
-                        mActivityTabProvider,
                         mClientPackageNameProvider,
-                        mExternalAuthUtils);
+                        mExternalAuthUtils,
+                        mActivity);
     }
 
     @Test

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -16,6 +14,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.net.NetworkChangeNotifier;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Handles the incoming intents: the one that starts the activity, as well as subsequent intents
@@ -42,17 +40,16 @@ public class CustomTabIntentHandler {
 
     @Inject
     public CustomTabIntentHandler(
-            CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabIntentHandlingStrategy handlingStrategy,
             IntentIgnoringCriterion intentIgnoringCriterion,
-            @Named(ACTIVITY_CONTEXT) Context context,
-            CustomTabMinimizationManagerHolder minimizationManagerHolder) {
-        mTabProvider = tabProvider;
+            CustomTabMinimizationManagerHolder minimizationManagerHolder,
+            BaseCustomTabActivity activity) {
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
         mHandlingStrategy = handlingStrategy;
         mIntentIgnoringCriterion = intentIgnoringCriterion;
-        mContext = context;
+        mContext = activity;
         mMinimizationManagerHolder = minimizationManagerHolder;
 
         observeInitialTabCreationIfNecessary();

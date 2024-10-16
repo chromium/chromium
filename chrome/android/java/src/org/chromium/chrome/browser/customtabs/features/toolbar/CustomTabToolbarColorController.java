@@ -18,6 +18,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -76,14 +77,12 @@ public class CustomTabToolbarColorController {
     @Inject
     public CustomTabToolbarColorController(
             BrowserServicesIntentDataProvider intentDataProvider,
-            Activity activity,
-            CustomTabActivityTabProvider tabProvider,
-            TabObserverRegistrar tabObserverRegistrar,
+            BaseCustomTabActivity activity,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;
-        mTabProvider = tabProvider;
-        mTabObserverRegistrar = tabObserverRegistrar;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mTopUiThemeColorProvider = topUiThemeColorProvider;
     }
 

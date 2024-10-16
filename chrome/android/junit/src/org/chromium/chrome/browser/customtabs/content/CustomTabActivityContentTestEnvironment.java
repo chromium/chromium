@@ -29,13 +29,13 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -76,8 +76,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public final Intent mIntent = new Intent();
 
+    @Mock public BaseCustomTabActivity activity;
     @Mock public CustomTabDelegateFactory customTabDelegateFactory;
-    @Mock public ChromeActivity activity;
     @Mock public CustomTabsConnection connection;
     @Mock public ColorProvider colorProvider;
     @Mock public CustomTabIntentDataProvider intentDataProvider;
@@ -149,6 +149,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(reparentingTaskProvider.get(any())).thenReturn(reparentingTask);
         when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
         when(intentDataProvider.getColorProvider()).thenReturn(colorProvider);
+
+        when(activity.getCustomTabActivityTabProvider()).thenReturn(tabProvider);
+        when(activity.getTabObserverRegistrar()).thenReturn(tabObserverRegistrar);
     }
 
     @Override
@@ -168,7 +171,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 connection,
                 intentDataProvider,
                 activityTabProvider,
-                tabObserverRegistrar,
                 () -> compositorViewHolder,
                 lifecycleDispatcher,
                 warmupManager,
@@ -177,7 +179,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 () -> customTabObserver,
                 webContentsFactory,
                 navigationEventObserver,
-                tabProvider,
                 reparentingTaskProvider,
                 () -> realAsyncTabParamsManager,
                 () -> activity.getSavedInstanceState(),
@@ -191,7 +192,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         CustomTabActivityNavigationController controller =
                 new CustomTabActivityNavigationController(
                         tabController,
-                        tabProvider,
                         intentDataProvider,
                         () -> customTabObserver,
                         closeButtonNavigator,
@@ -207,22 +207,21 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
             CustomTabActivityNavigationController navigationController) {
         CustomTabIntentHandlingStrategy strategy =
                 new DefaultCustomTabIntentHandlingStrategy(
-                        tabProvider,
                         navigationController,
                         navigationEventObserver,
-                        () -> customTabObserver) {
+                        () -> customTabObserver,
+                        activity) {
                     @Override
                     public GURL getGurlForUrl(String url) {
                         return new GURL(url);
                     }
                 };
         return new CustomTabIntentHandler(
-                tabProvider,
                 intentDataProvider,
                 strategy,
                 (intent) -> false,
-                activity,
-                mMinimizationManagerHolder);
+                mMinimizationManagerHolder,
+                activity);
     }
 
     public void warmUp() {

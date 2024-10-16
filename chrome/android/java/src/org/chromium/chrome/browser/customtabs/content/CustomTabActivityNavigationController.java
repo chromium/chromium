@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -155,16 +156,15 @@ public class CustomTabActivityNavigationController
     @Inject
     public CustomTabActivityNavigationController(
             CustomTabActivityTabController tabController,
-            CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             Lazy<CustomTabObserver> customTabObserver,
             CloseButtonNavigator closeButtonNavigator,
             ChromeBrowserInitializer chromeBrowserInitializer,
-            Activity activity,
+            BaseCustomTabActivity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             DefaultBrowserProvider customTabsDefaultBrowserProvider) {
         mTabController = tabController;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
         mCustomTabObserver = customTabObserver;
         mCloseButtonNavigator = closeButtonNavigator;

@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -52,11 +53,12 @@ public class TwaVerifier implements Verifier, DestroyObserver {
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
             ChromeOriginVerifierFactory originVerifierFactory,
-            CustomTabActivityTabProvider tabProvider,
             ClientPackageNameProvider clientPackageNameProvider,
-            ExternalAuthUtils externalAuthUtils) {
+            ExternalAuthUtils externalAuthUtils,
+            BaseCustomTabActivity activity) {
         mIntentDataProvider = intentDataProvider;
 
+        CustomTabActivityTabProvider tabProvider = activity.getCustomTabActivityTabProvider();
         // TODO(peconn): See if we can get rid of the dependency on Web Contents.
         WebContents webContents =
                 tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;

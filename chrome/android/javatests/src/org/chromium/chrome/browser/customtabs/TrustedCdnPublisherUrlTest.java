@@ -106,14 +106,16 @@ public class TrustedCdnPublisherUrlTest {
                                             intentIgnoringCriterion,
                                     TopUiThemeColorProvider topUiThemeColorProvider,
                                     DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
-                                    CipherFactory cipherFactory) ->
+                                    CipherFactory cipherFactory,
+                                    BaseCustomTabActivity activity) ->
                                     new BaseCustomTabActivityModule(
                                             intentDataProvider,
                                             nightModeController,
                                             intentIgnoringCriterion,
                                             topUiThemeColorProvider,
                                             new FakeDefaultBrowserProviderImpl(),
-                                            cipherFactory));
+                                            cipherFactory,
+                                            activity));
 
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
     public ChromeRenderTestRule mRenderTestRule =

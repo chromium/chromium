@@ -55,10 +55,10 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
             CustomTabsConnection connection,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityTabProvider tabProvider) {
+            BaseCustomTabActivity activity) {
         mConnection = connection;
         mIntentDataProvider = intentDataProvider;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         lifecycleDispatcher.register(this);
     }
 

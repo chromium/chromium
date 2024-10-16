@@ -82,14 +82,16 @@ public class TabReparentingTest {
                                             intentIgnoringCriterion,
                                     TopUiThemeColorProvider topUiThemeColorProvider,
                                     DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
-                                    CipherFactory cipherFactory) ->
+                                    CipherFactory cipherFactory,
+                                    BaseCustomTabActivity activity) ->
                                     new BaseCustomTabActivityModule(
                                             intentDataProvider,
                                             nightModeController,
                                             intentIgnoringCriterion,
                                             topUiThemeColorProvider,
                                             new FakeDefaultBrowserProviderImpl(),
-                                            cipherFactory));
+                                            cipherFactory,
+                                            activity));
 
     @Rule
     public RuleChain mRuleChain =

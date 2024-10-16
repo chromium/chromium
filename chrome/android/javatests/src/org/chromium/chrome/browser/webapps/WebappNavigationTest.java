@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
 import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.FakeDefaultBrowserProviderImpl;
@@ -98,14 +99,16 @@ public class WebappNavigationTest {
                                             intentIgnoringCriterion,
                                     TopUiThemeColorProvider topUiThemeColorProvider,
                                     DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
-                                    CipherFactory cipherFactory) ->
+                                    CipherFactory cipherFactory,
+                                    BaseCustomTabActivity activity) ->
                                     new BaseCustomTabActivityModule(
                                             intentDataProvider,
                                             nightModeController,
                                             intentIgnoringCriterion,
                                             topUiThemeColorProvider,
                                             new FakeDefaultBrowserProviderImpl(),
-                                            cipherFactory));
+                                            cipherFactory,
+                                            activity));
 
     @Rule
     public RuleChain mRuleChain =
