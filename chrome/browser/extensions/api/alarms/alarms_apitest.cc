@@ -18,12 +18,9 @@ using extensions::ResultCatcher;
 
 namespace extensions {
 
-using ContextType = ExtensionApiTest::ContextType;
-
-class AlarmsApiTest : public ExtensionApiTest,
-                      public testing::WithParamInterface<ContextType> {
+class AlarmsApiTest : public ExtensionApiTest {
  public:
-  AlarmsApiTest() : ExtensionApiTest(GetParam()) {}
+  AlarmsApiTest() = default;
   ~AlarmsApiTest() override = default;
   AlarmsApiTest& operator=(const AlarmsApiTest&) = delete;
   AlarmsApiTest(const AlarmsApiTest&) = delete;
@@ -60,16 +57,9 @@ class AlarmsApiTest : public ExtensionApiTest,
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         AlarmsApiTest,
-                         ::testing::Values(ContextType::kEventPage));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         AlarmsApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 // Tests that an alarm created by an extension with incognito split mode is
 // only triggered in the browser context it was created in.
-IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSplit) {
+IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   Profile* incognito_profile =
@@ -102,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSplit) {
 
 // Tests that the behavior for an alarm created in incognito context should be
 // the same if incognito is in spanning mode.
-IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSpanning) {
+IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
 
@@ -114,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSpanning) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_P(AlarmsApiTest, Count) {
+IN_PROC_BROWSER_TEST_F(AlarmsApiTest, Count) {
   EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
 }
 
