@@ -488,12 +488,24 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     index++;
   }
 
+  base::ElapsedTimer serialization_timer;
+
   std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
+  }
+
+  base::UmaHistogramTimes(
+      "Storage.SharedStorage.SelectURL.DataSerialization.Time",
+      serialization_timer.Elapsed());
+
+  if (serialized_data->message) {
+    base::UmaHistogramMemoryKB(
+        "Storage.SharedStorage.SelectURL.DataSerialization.SizeKB",
+        serialized_data->message->DataLengthInBytes() / 1024);
   }
 
   bool resolve_to_config = options->resolveToConfig();
@@ -597,11 +609,22 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
     return EmptyPromise();
   }
 
+  base::ElapsedTimer serialization_timer;
+
   std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return EmptyPromise();
+  }
+
+  base::UmaHistogramTimes("Storage.SharedStorage.Run.DataSerialization.Time",
+                          serialization_timer.Elapsed());
+
+  if (serialized_data->message) {
+    base::UmaHistogramMemoryKB(
+        "Storage.SharedStorage.Run.DataSerialization.SizeKB",
+        serialized_data->message->DataLengthInBytes() / 1024);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(

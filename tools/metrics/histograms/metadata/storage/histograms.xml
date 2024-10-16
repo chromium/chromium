@@ -1599,6 +1599,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Run.DataDeserialization.Time" units="ms"
+    expires_after="2025-04-15">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time to deserialize the data during `run()`. Only measures when
+    the deserialization succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Run.DataSerialization.SizeKB" units="KB"
+    expires_after="2025-04-15">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the size of the serialized data in KB upon successful completion of
+    each serialization during `run()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Run.DataSerialization.Time" units="ms"
+    expires_after="2025-04-15">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time to serialize the data parameter during `run()`. Only
+    measures when the serialization succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.SelectURL.DataDeserialization.Time"
+    units="ms" expires_after="2025-04-15">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time to deserialize the data during `selectURL()`. Only
+    measures when the deserialization succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.SelectURL.DataSerialization.SizeKB"
+    units="KB" expires_after="2025-04-15">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the size of the serialized data in KB upon successful completion of
+    each serialization during `selectURL()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.SelectURL.DataSerialization.Time"
+    units="ms" expires_after="2025-04-15">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time to serialize the data parameter during `selectURL()`. Only
+    measures when the serialization succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Timing.UrlMappingDuringNavigation"
     units="ms" expires_after="2025-01-31">
   <owner>cammie@chromium.org</owner>

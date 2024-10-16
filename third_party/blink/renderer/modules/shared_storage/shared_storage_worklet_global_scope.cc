@@ -12,6 +12,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -508,6 +510,8 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   base::ranges::transform(urls, std::back_inserter(urls_param),
                           [](const KURL& url) { return url.GetString(); });
 
+  base::ElapsedTimer deserialization_timer;
+
   std::optional<ScriptValue> data_param =
       Deserialize(isolate, /*execution_context=*/this, serialized_data);
   if (!data_param) {
@@ -516,6 +520,10 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
              /*index=*/0);
     return;
   }
+
+  base::UmaHistogramTimes(
+      "Storage.SharedStorage.SelectURL.DataDeserialization.Time",
+      deserialization_timer.Elapsed());
 
   v8::Maybe<ScriptPromise<IDLAny>> result = registered_run_function->Invoke(
       instance.Get(isolate), urls_param, *data_param);
@@ -584,6 +592,8 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   V8RunFunctionForSharedStorageRunOperation* registered_run_function =
       operation_definition->GetRunFunctionForSharedStorageRunOperation();
 
+  base::ElapsedTimer deserialization_timer;
+
   std::optional<ScriptValue> data_param =
       Deserialize(isolate, /*execution_context=*/this, serialized_data);
   if (!data_param) {
@@ -592,6 +602,9 @@ void SharedStorageWorkletGlobalScope::RunOperation(
              kSharedStorageCannotDeserializeDataErrorMessage);
     return;
   }
+
+  base::UmaHistogramTimes("Storage.SharedStorage.Run.DataDeserialization.Time",
+                          deserialization_timer.Elapsed());
 
   v8::Maybe<ScriptPromise<IDLAny>> result =
       registered_run_function->Invoke(instance.Get(isolate), *data_param);
