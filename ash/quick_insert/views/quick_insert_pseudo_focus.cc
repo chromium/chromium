@@ -25,9 +25,10 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
     return;
   }
 
-  // PickerItemView has special pseudo focus behavior, so handle it separately.
-  if (auto* item_view = views::AsViewClass<PickerItemView>(view)) {
-    item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  // QuickInsertItemView has special pseudo focus behavior, so handle it
+  // separately.
+  if (auto* item_view = views::AsViewClass<QuickInsertItemView>(view)) {
+    item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
     if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
       list_item_view->SetBadgeVisible(true);
     }
@@ -55,9 +56,10 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
     return;
   }
 
-  // PickerItemView has special pseudo focus behavior, so handle it separately.
-  if (auto* item_view = views::AsViewClass<PickerItemView>(view)) {
-    item_view->SetItemState(PickerItemView::ItemState::kNormal);
+  // QuickInsertItemView has special pseudo focus behavior, so handle it
+  // separately.
+  if (auto* item_view = views::AsViewClass<QuickInsertItemView>(view)) {
+    item_view->SetItemState(QuickInsertItemView::ItemState::kNormal);
     if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
       list_item_view->SetBadgeVisible(false);
     }
@@ -90,8 +92,9 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
     return true;
   }
 
-  // PickerItemView has special pseudo focus behavior, so handle it separately.
-  if (auto* item_view = views::AsViewClass<PickerItemView>(view)) {
+  // QuickInsertItemView has special pseudo focus behavior, so handle it
+  // separately.
+  if (auto* item_view = views::AsViewClass<QuickInsertItemView>(view)) {
     item_view->SelectItem();
     return true;
   }

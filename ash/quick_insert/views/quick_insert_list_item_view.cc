@@ -104,8 +104,8 @@ DEFINE_VIEW_BUILDER(/* no export */, ash::LeadingIconImageView)
 namespace ash {
 
 PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
-    : PickerItemView(std::move(select_item_callback),
-                     FocusIndicatorStyle::kFocusBar) {
+    : QuickInsertItemView(std::move(select_item_callback),
+                          FocusIndicatorStyle::kFocusBar) {
   // This view only contains one child for the moment, but treat this as a
   // full-width vertical list.
   SetLayoutManager(
@@ -164,7 +164,7 @@ PickerListItemView::~PickerListItemView() {
 }
 
 void PickerListItemView::SetItemState(ItemState item_state) {
-  PickerItemView::SetItemState(item_state);
+  QuickInsertItemView::SetItemState(item_state);
   if (GetItemState() == ItemState::kPseudoFocused) {
     ShowPreview();
     shortcut_hint_container_->SetVisible(false);
@@ -321,12 +321,12 @@ void PickerListItemView::SetPreview(
 }
 
 void PickerListItemView::OnMouseEntered(const ui::MouseEvent& event) {
-  PickerItemView::OnMouseEntered(event);
+  QuickInsertItemView::OnMouseEntered(event);
   ShowPreview();
 }
 
 void PickerListItemView::OnMouseExited(const ui::MouseEvent& event) {
-  PickerItemView::OnMouseExited(event);
+  QuickInsertItemView::OnMouseExited(event);
   HidePreview();
 }
 

@@ -32,10 +32,11 @@
 namespace ash {
 namespace {
 
-// How much to clip the focused PickerItemView by. Inset by at least the default
-// focus ring inset so the clipping is actually visible, then clip by the actual
-// desired amount. It would be better to absolute value the halo inset here, but
-// to keep this constexpr, also multiply by -1 to keep it positive.
+// How much to clip the focused QuickInsertItemView by. Inset by at least the
+// default focus ring inset so the clipping is actually visible, then clip by
+// the actual desired amount. It would be better to absolute value the halo
+// inset here, but to keep this constexpr, also multiply by -1 to keep it
+// positive.
 constexpr float kPseudoFocusClipInset =
     views::FocusRing::kDefaultHaloInset * -1.0f + 2.0f;
 
@@ -43,8 +44,9 @@ constexpr auto kPickerItemFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
 }  // namespace
 
-PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
-                               FocusIndicatorStyle focus_indicator_style)
+QuickInsertItemView::QuickInsertItemView(
+    SelectItemCallback select_item_callback,
+    FocusIndicatorStyle focus_indicator_style)
     : views::Button(select_item_callback),
       select_item_callback_(select_item_callback),
       focus_indicator_style_(focus_indicator_style) {
@@ -55,11 +57,11 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
       StyleUtil::SetUpFocusRingForView(this);
       views::FocusRing::Get(this)->SetHasFocusPredicate(
           base::BindRepeating([](const View* view) {
-            const auto* v = views::AsViewClass<PickerItemView>(view);
+            const auto* v = views::AsViewClass<QuickInsertItemView>(view);
             CHECK(v);
             return (v->HasFocus() ||
                     v->GetItemState() ==
-                        PickerItemView::ItemState::kPseudoFocused);
+                        QuickInsertItemView::ItemState::kPseudoFocused);
           }));
       break;
     case FocusIndicatorStyle::kFocusBar:
@@ -69,13 +71,13 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
   }
 }
 
-PickerItemView::~PickerItemView() = default;
+QuickInsertItemView::~QuickInsertItemView() = default;
 
-void PickerItemView::StateChanged(ButtonState old_state) {
+void QuickInsertItemView::StateChanged(ButtonState old_state) {
   UpdateBackground();
 }
 
-void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
+void QuickInsertItemView::PaintButtonContents(gfx::Canvas* canvas) {
   views::Button::PaintButtonContents(canvas);
 
   if (focus_indicator_style_ == FocusIndicatorStyle::kFocusBar &&
@@ -87,21 +89,21 @@ void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
-void PickerItemView::SelectItem() {
+void QuickInsertItemView::SelectItem() {
   select_item_callback_.Run();
 }
 
-void PickerItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void QuickInsertItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateClipPathForFocusRingWithInsetGap();
 }
 
-void PickerItemView::OnMouseEntered(const ui::MouseEvent& event) {
+void QuickInsertItemView::OnMouseEntered(const ui::MouseEvent& event) {
   if (submenu_controller_ != nullptr) {
     submenu_controller_->Close();
   }
 }
 
-void PickerItemView::SetCornerRadius(int corner_radius) {
+void QuickInsertItemView::SetCornerRadius(int corner_radius) {
   if (corner_radius_ == corner_radius) {
     return;
   }
@@ -112,20 +114,20 @@ void PickerItemView::SetCornerRadius(int corner_radius) {
   UpdateBackground();
 }
 
-PickerSubmenuController* PickerItemView::GetSubmenuController() {
+PickerSubmenuController* QuickInsertItemView::GetSubmenuController() {
   return submenu_controller_;
 }
 
-void PickerItemView::SetSubmenuController(
+void QuickInsertItemView::SetSubmenuController(
     PickerSubmenuController* submenu_controller) {
   submenu_controller_ = submenu_controller;
 }
 
-PickerItemView::ItemState PickerItemView::GetItemState() const {
+QuickInsertItemView::ItemState QuickInsertItemView::GetItemState() const {
   return item_state_;
 }
 
-void PickerItemView::SetItemState(ItemState item_state) {
+void QuickInsertItemView::SetItemState(ItemState item_state) {
   if (item_state_ == item_state) {
     return;
   }
@@ -146,7 +148,7 @@ void PickerItemView::SetItemState(ItemState item_state) {
   }
 }
 
-void PickerItemView::UpdateClipPathForFocusRingWithInsetGap() {
+void QuickInsertItemView::UpdateClipPathForFocusRingWithInsetGap() {
   if (focus_indicator_style_ != FocusIndicatorStyle::kFocusRingWithInsetGap) {
     return;
   }
@@ -162,9 +164,9 @@ void PickerItemView::UpdateClipPathForFocusRingWithInsetGap() {
   SetClipPath(clip_path);
 }
 
-void PickerItemView::UpdateBackground() {
+void QuickInsertItemView::UpdateBackground() {
   if (GetState() == views::Button::ButtonState::STATE_HOVERED ||
-      item_state_ == PickerItemView::ItemState::kPseudoFocused) {
+      item_state_ == QuickInsertItemView::ItemState::kPseudoFocused) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysHoverOnSubtle, corner_radius_));
   } else {
@@ -172,7 +174,7 @@ void PickerItemView::UpdateBackground() {
   }
 }
 
-BEGIN_METADATA(PickerItemView)
+BEGIN_METADATA(QuickInsertItemView)
 END_METADATA
 
 }  // namespace ash

@@ -160,8 +160,8 @@ views::View* PickerSearchResultsView::GetItemAbove(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
-  if (views::IsViewClass<PickerItemView>(item)) {
-    // Skip views that aren't PickerItemViews, to allow users to quickly
+  if (views::IsViewClass<QuickInsertItemView>(item)) {
+    // Skip views that aren't QuickInsertItemViews, to allow users to quickly
     // navigate between items.
     return section_list_view_->GetItemAbove(item);
   }
@@ -174,8 +174,8 @@ views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
-  if (views::IsViewClass<PickerItemView>(item)) {
-    // Skip views that aren't PickerItemViews, to allow users to quickly
+  if (views::IsViewClass<QuickInsertItemView>(item)) {
+    // Skip views that aren't QuickInsertItemViews, to allow users to quickly
     // navigate between items.
     return section_list_view_->GetItemBelow(item);
   }
@@ -278,7 +278,7 @@ void PickerSearchResultsView::AddResultToSection(
     PickerSectionView* section_view) {
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
-  PickerItemView* view = section_view->AddResult(
+  QuickInsertItemView* view = section_view->AddResult(
       result, preview_controller_,
       ConvertLocalFileResultStyle(local_file_result_style_),
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,

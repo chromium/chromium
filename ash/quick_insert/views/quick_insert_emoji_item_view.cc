@@ -52,7 +52,7 @@ PickerEmojiItemView::PickerEmojiItemView(
     Style style,
     SelectItemCallback select_item_callback,
     const std::u16string& text)
-    : PickerItemView(std::move(select_item_callback)) {
+    : QuickInsertItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kCornerRadius);
   SetProperty(views::kElementIdentifierKey, kPickerEmojiItemElementId);

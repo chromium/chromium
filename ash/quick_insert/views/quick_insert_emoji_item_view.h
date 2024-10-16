@@ -19,8 +19,8 @@ class Label;
 namespace ash {
 
 // Picker item which contains just an emoji.
-class ASH_EXPORT PickerEmojiItemView : public PickerItemView {
-  METADATA_HEADER(PickerEmojiItemView, PickerItemView)
+class ASH_EXPORT PickerEmojiItemView : public QuickInsertItemView {
+  METADATA_HEADER(PickerEmojiItemView, QuickInsertItemView)
 
  public:
   enum class Style { kEmoji, kEmoticon, kSymbol };

@@ -247,7 +247,7 @@ TEST_F(QuickInsertListItemViewTest,
       &preview_controller,
       file_info_future.GetSequenceBoundCallback().Then(GetNulloptFileInfo()),
       base::FilePath(), base::DoNothing(), /*update_icon=*/true);
-  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
 
   PickerPreviewBubbleView* bubble_view =
       preview_controller.bubble_view_for_testing();
@@ -272,7 +272,7 @@ TEST_F(QuickInsertListItemViewTest,
           base::ReturnValueOnce<std::optional<base::File::Info>>(
               base::File::Info())),
       base::FilePath(), base::DoNothing(), /*update_icon=*/true);
-  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
 
   PickerPreviewBubbleView* bubble_view =
       preview_controller.bubble_view_for_testing();
@@ -304,7 +304,7 @@ TEST_F(QuickInsertListItemViewTest,
                             GetFileInfoCallback(only_modified)),
                         base::FilePath(), base::DoNothing(),
                         /*update_icon=*/true);
-  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
 
   PickerPreviewBubbleView* bubble_view =
       preview_controller.bubble_view_for_testing();
@@ -332,15 +332,15 @@ TEST_F(QuickInsertListItemViewTest,
                             GetFileInfoCallback(only_modified)),
                         base::FilePath(), base::DoNothing(),
                         /*update_icon=*/true);
-  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
   PickerPreviewBubbleView* bubble_view =
       preview_controller.bubble_view_for_testing();
   ASSERT_TRUE(file_info_future.Wait()) << "File info was never resolved";
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
-  item_view->SetItemState(PickerItemView::ItemState::kNormal);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kNormal);
 
-  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
 
   EXPECT_TRUE(bubble_view->GetLabelVisibleForTesting());
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
@@ -357,9 +357,9 @@ TEST_F(QuickInsertListItemViewTest, ClosesPreviewBubbleAfterLosingPseudoFocus) {
   item_view->SetPreview(&preview_controller, base::NullCallback(),
                         base::FilePath(), base::DoNothing(),
                         /*update_icon=*/true);
-  item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
 
-  item_view->SetItemState(PickerItemView::ItemState::kNormal);
+  item_view->SetItemState(QuickInsertItemView::ItemState::kNormal);
 
   EXPECT_EQ(preview_controller.bubble_view_for_testing(), nullptr);
 }

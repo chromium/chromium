@@ -11,23 +11,23 @@ namespace ash {
 namespace {
 
 TEST(QuickInsertItemViewTest, DefaultIsNormalState) {
-  PickerItemView item_view(base::DoNothing());
+  QuickInsertItemView item_view(base::DoNothing());
 
-  EXPECT_EQ(item_view.GetItemState(), PickerItemView::ItemState::kNormal);
+  EXPECT_EQ(item_view.GetItemState(), QuickInsertItemView::ItemState::kNormal);
 }
 
 TEST(QuickInsertItemViewTest, NoBackgroundInNormalState) {
-  PickerItemView item_view(base::DoNothing());
+  QuickInsertItemView item_view(base::DoNothing());
 
-  item_view.SetItemState(PickerItemView::ItemState::kNormal);
+  item_view.SetItemState(QuickInsertItemView::ItemState::kNormal);
 
   EXPECT_FALSE(item_view.background());
 }
 
 TEST(QuickInsertItemViewTest, HasBackgroundInPseudoFocusedState) {
-  PickerItemView item_view(base::DoNothing());
+  QuickInsertItemView item_view(base::DoNothing());
 
-  item_view.SetItemState(PickerItemView::ItemState::kPseudoFocused);
+  item_view.SetItemState(QuickInsertItemView::ItemState::kPseudoFocused);
 
   EXPECT_TRUE(item_view.background());
 }

@@ -22,7 +22,7 @@ TEST_F(QuickInsertPseudoFocusTest,
   ApplyPickerPseudoFocusToView(&item_view);
 
   EXPECT_EQ(item_view.GetItemState(),
-            PickerItemView::ItemState::kPseudoFocused);
+            QuickInsertItemView::ItemState::kPseudoFocused);
   EXPECT_TRUE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
@@ -33,7 +33,7 @@ TEST_F(QuickInsertPseudoFocusTest,
 
   RemovePickerPseudoFocusFromView(&item_view);
 
-  EXPECT_EQ(item_view.GetItemState(), PickerItemView::ItemState::kNormal);
+  EXPECT_EQ(item_view.GetItemState(), QuickInsertItemView::ItemState::kNormal);
   EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
 }
 

@@ -92,10 +92,10 @@ std::u16string GetTooltipForEmojiResult(const PickerEmojiResult& result) {
 
 // Creates an item view for a search result. Only supports results that can be
 // added to the emoji bar, i.e. emojis, symbols and emoticons.
-std::unique_ptr<PickerItemView> CreateItemView(
+std::unique_ptr<QuickInsertItemView> CreateItemView(
     const PickerEmojiResult& result,
     base::RepeatingClosure select_result_callback) {
-  std::unique_ptr<PickerItemView> item_view;
+  std::unique_ptr<QuickInsertItemView> item_view;
   switch (result.type) {
     case PickerEmojiResult::Type::kEmoji:
       item_view = std::make_unique<PickerEmojiItemView>(

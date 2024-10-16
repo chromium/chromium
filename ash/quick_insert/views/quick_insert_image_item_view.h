@@ -20,8 +20,8 @@ class ImageView;
 namespace ash {
 
 // Picker item which contains just an image.
-class ASH_EXPORT PickerImageItemView : public PickerItemView {
-  METADATA_HEADER(PickerImageItemView, PickerItemView)
+class ASH_EXPORT PickerImageItemView : public QuickInsertItemView {
+  METADATA_HEADER(PickerImageItemView, QuickInsertItemView)
 
  public:
   PickerImageItemView(std::unique_ptr<views::ImageView> image,

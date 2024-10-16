@@ -145,8 +145,8 @@ views::View* PickerZeroStateView::GetItemAbove(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
-  if (views::IsViewClass<PickerItemView>(item)) {
-    // Skip views that aren't PickerItemViews, to allow users to quickly
+  if (views::IsViewClass<QuickInsertItemView>(item)) {
+    // Skip views that aren't QuickInsertItemViews, to allow users to quickly
     // navigate between items.
     return section_list_view_->GetItemAbove(item);
   }
@@ -159,8 +159,8 @@ views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
-  if (views::IsViewClass<PickerItemView>(item)) {
-    // Skip views that aren't PickerItemViews, to allow users to quickly
+  if (views::IsViewClass<QuickInsertItemView>(item)) {
+    // Skip views that aren't QuickInsertItemViews, to allow users to quickly
     // navigate between items.
     return section_list_view_->GetItemBelow(item);
   }
@@ -216,7 +216,7 @@ void PickerZeroStateView::OnResultSelected(const PickerSearchResult& result) {
 
 void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
                                              PickerSectionView* section) {
-  PickerItemView* view = section->AddResult(
+  QuickInsertItemView* view = section->AddResult(
       result, preview_controller_,
       base::FeatureList::IsEnabled(ash::features::kPickerGrid)
           ? PickerSectionView::LocalFileResultStyle::kRow

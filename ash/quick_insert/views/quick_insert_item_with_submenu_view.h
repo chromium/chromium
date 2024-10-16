@@ -25,8 +25,8 @@ class Label;
 namespace ash {
 
 // View for a Picker item which has a submenu.
-class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
-  METADATA_HEADER(PickerItemWithSubmenuView, PickerItemView)
+class ASH_EXPORT PickerItemWithSubmenuView : public QuickInsertItemView {
+  METADATA_HEADER(PickerItemWithSubmenuView, QuickInsertItemView)
 
  public:
   PickerItemWithSubmenuView();
@@ -45,7 +45,7 @@ class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
 
   void ShowSubmenu();
 
-  // PickerItemView:
+  // QuickInsertItemView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
   const std::u16string& GetTextForTesting() const;
@@ -58,7 +58,7 @@ class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
   base::WeakPtrFactory<PickerItemWithSubmenuView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemWithSubmenuView, PickerItemView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemWithSubmenuView, QuickInsertItemView)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, LeadingIcon)
 VIEW_BUILDER_PROPERTY(std::u16string, Text)
 END_VIEW_BUILDER

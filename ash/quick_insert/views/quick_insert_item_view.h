@@ -18,8 +18,8 @@ enum class PickerActionType;
 class PickerSubmenuController;
 
 // View for a Picker item which can be selected.
-class ASH_EXPORT PickerItemView : public views::Button {
-  METADATA_HEADER(PickerItemView, views::Button)
+class ASH_EXPORT QuickInsertItemView : public views::Button {
+  METADATA_HEADER(QuickInsertItemView, views::Button)
 
  public:
   // Used to determine how the item looks and how the user can interact with it.
@@ -38,7 +38,8 @@ class ASH_EXPORT PickerItemView : public views::Button {
   enum class FocusIndicatorStyle {
     // Indicate focus using a rounded rectangular ring around the item.
     kFocusRing,
-    // Similar to `kFocusRing`, but clips the PickerItemView with a 1dp border
+    // Similar to `kFocusRing`, but clips the QuickInsertItemView with a 1dp
+    // border
     // as well as adding a rounded rectangular ring.
     kFocusRingWithInsetGap,
     // Indicate focus using a vertical bar with half rounded corners at the left
@@ -48,12 +49,12 @@ class ASH_EXPORT PickerItemView : public views::Button {
 
   using SelectItemCallback = base::RepeatingClosure;
 
-  explicit PickerItemView(SelectItemCallback select_item_callback,
-                          FocusIndicatorStyle focus_indicator_style =
-                              FocusIndicatorStyle::kFocusRing);
-  PickerItemView(const PickerItemView&) = delete;
-  PickerItemView& operator=(const PickerItemView&) = delete;
-  ~PickerItemView() override;
+  explicit QuickInsertItemView(SelectItemCallback select_item_callback,
+                               FocusIndicatorStyle focus_indicator_style =
+                                   FocusIndicatorStyle::kFocusRing);
+  QuickInsertItemView(const QuickInsertItemView&) = delete;
+  QuickInsertItemView& operator=(const QuickInsertItemView&) = delete;
+  ~QuickInsertItemView() override;
 
   // views::Button:
   void StateChanged(ButtonState old_state) override;
@@ -89,12 +90,12 @@ class ASH_EXPORT PickerItemView : public views::Button {
   raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemView, views::Button)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, QuickInsertItemView, views::Button)
 VIEW_BUILDER_PROPERTY(PickerSubmenuController*, SubmenuController)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerItemView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertItemView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_ITEM_VIEW_H_

@@ -47,7 +47,7 @@ constexpr auto kBorderInsets = gfx::Insets::TLBR(8, 16, 8, 16);
 }  // namespace
 
 PickerItemWithSubmenuView::PickerItemWithSubmenuView()
-    : PickerItemView(base::DoNothing(), FocusIndicatorStyle::kFocusBar) {
+    : QuickInsertItemView(base::DoNothing(), FocusIndicatorStyle::kFocusBar) {
   SetCallback(base::BindRepeating(&PickerItemWithSubmenuView::ShowSubmenu,
                                   weak_ptr_factory_.GetWeakPtr()));
 

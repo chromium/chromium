@@ -41,8 +41,8 @@ class PickerShortcutHintView;
 
 // View for a Picker list item with text or an image as its primary contents.
 // Can optionally have other parts such as a leading icon and secondary text.
-class ASH_EXPORT PickerListItemView : public PickerItemView {
-  METADATA_HEADER(PickerListItemView, PickerItemView)
+class ASH_EXPORT PickerListItemView : public QuickInsertItemView {
+  METADATA_HEADER(PickerListItemView, QuickInsertItemView)
 
  public:
   using AsyncBitmapResolver = HoldingSpaceImage::AsyncBitmapResolver;
@@ -54,7 +54,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   PickerListItemView& operator=(const PickerListItemView&) = delete;
   ~PickerListItemView() override;
 
-  // PickerItemView:
+  // QuickInsertItemView:
   void SetItemState(ItemState item_state) override;
 
   void SetLeadingIcon(const ui::ImageModel& icon,

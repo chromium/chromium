@@ -103,7 +103,7 @@ TEST_F(QuickInsertSectionViewTest, AddsListItem) {
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
@@ -120,7 +120,7 @@ TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(2));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
@@ -135,7 +135,7 @@ TEST_F(QuickInsertSectionViewTest, AddsGifItem) {
 
   section_view.AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<PickerImageItemView>(items[0]));
@@ -156,7 +156,7 @@ TEST_F(QuickInsertSectionViewTest, AddsResults) {
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(2));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
@@ -177,7 +177,7 @@ TEST_F(QuickInsertSectionViewTest,
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -200,7 +200,7 @@ TEST_F(QuickInsertSectionViewTest,
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -227,7 +227,7 @@ TEST_F(QuickInsertSectionViewTest,
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -259,7 +259,7 @@ TEST_F(QuickInsertSectionViewTest,
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -291,7 +291,7 @@ TEST_F(QuickInsertSectionViewTest,
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -323,7 +323,7 @@ TEST_F(QuickInsertSectionViewTest,
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -350,7 +350,7 @@ TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
@@ -399,7 +399,7 @@ TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
       &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
-  base::span<const raw_ptr<PickerItemView>> items =
+  base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
   ASSERT_THAT(items, SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));

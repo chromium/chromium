@@ -163,9 +163,10 @@ TEST_F(QuickInsertZeroStateViewTest, LeftClickSelectsCategory) {
               SelectZeroStateCategory(PickerCategory::kEmojisGifs))
       .Times(1);
 
-  PickerItemView* category_view = view->category_section_views_for_testing()
-                                      .find(PickerCategoryType::kGeneral)
-                                      ->second->item_views_for_testing()[0];
+  QuickInsertItemView* category_view =
+      view->category_section_views_for_testing()
+          .find(PickerCategoryType::kGeneral)
+          ->second->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(category_view);
   LeftClickOn(*category_view);
 }
@@ -199,7 +200,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
   ASSERT_THAT(
       view->primary_section_view_for_testing()->item_views_for_testing(),
       Not(IsEmpty()));
-  PickerItemView* item_view =
+  QuickInsertItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
@@ -239,7 +240,7 @@ TEST_F(QuickInsertZeroStateViewTest,
           AsView<PickerImageItemView>(
               Property(&PickerListItemView::GetAccessibleName, u"c")),
       }));
-  PickerItemView* item_view =
+  QuickInsertItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[0];
   ASSERT_TRUE(views::IsViewClass<PickerImageItemView>(item_view));
   ViewDrawnWaiter().Wait(item_view);
@@ -336,7 +337,7 @@ TEST_F(QuickInsertZeroStateViewTest,
                   Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
       .Times(1);
 
-  PickerItemView* item_view =
+  QuickInsertItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[1];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
@@ -375,9 +376,9 @@ TEST_F(QuickInsertZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
                   Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
       .Times(1);
 
-  PickerItemView* item_view = view->category_section_views_for_testing()
-                                  .find(PickerCategoryType::kMore)
-                                  ->second->item_views_for_testing()[2];
+  QuickInsertItemView* item_view = view->category_section_views_for_testing()
+                                       .find(PickerCategoryType::kMore)
+                                       ->second->item_views_for_testing()[2];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 }

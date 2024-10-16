@@ -29,8 +29,8 @@ PickerImageItemView::PickerImageItemView(
     std::unique_ptr<views::ImageView> image,
     std::u16string accessible_name,
     SelectItemCallback select_item_callback)
-    : PickerItemView(std::move(select_item_callback),
-                     FocusIndicatorStyle::kFocusRingWithInsetGap),
+    : QuickInsertItemView(std::move(select_item_callback),
+                          FocusIndicatorStyle::kFocusRingWithInsetGap),
       accessible_name_(std::move(accessible_name)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerImageItemCornerRadius);

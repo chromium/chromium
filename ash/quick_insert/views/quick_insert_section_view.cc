@@ -198,14 +198,14 @@ PickerSectionView::PickerSectionView(
 
 PickerSectionView::~PickerSectionView() = default;
 
-std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
+std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     PickerAssetFetcher* asset_fetcher,
     int available_width,
     LocalFileResultStyle local_file_result_style,
     SelectResultCallback select_result_callback) {
-  using ReturnType = std::unique_ptr<PickerItemView>;
+  using ReturnType = std::unique_ptr<QuickInsertItemView>;
   return std::visit(
       base::Overloaded{
           [&](const PickerTextResult& data) -> ReturnType {
@@ -463,7 +463,7 @@ PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
   return item_ptr;
 }
 
-PickerItemView* PickerSectionView::AddResult(
+QuickInsertItemView* PickerSectionView::AddResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     LocalFileResultStyle local_file_result_style,

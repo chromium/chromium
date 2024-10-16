@@ -46,7 +46,7 @@ using QuickInsertImageItemGridViewTest = views::ViewsTestBase;
 TEST_F(QuickInsertImageItemGridViewTest, OneGifItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item =
+  const QuickInsertItemView* item =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
   // Two columns, one item in the first column.
@@ -60,9 +60,9 @@ TEST_F(QuickInsertImageItemGridViewTest, OneGifItem) {
 TEST_F(QuickInsertImageItemGridViewTest, TwoGifItems) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  const QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  const QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
   // Two columns, one item in each column.
@@ -76,13 +76,13 @@ TEST_F(QuickInsertImageItemGridViewTest, TwoGifItems) {
 TEST_F(QuickInsertImageItemGridViewTest, GifItemsWithVaryingHeight) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  const QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  const PickerItemView* item2 =
+  const QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 20)));
-  const PickerItemView* item3 =
+  const QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 30)));
-  const PickerItemView* item4 =
+  const QuickInsertItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 20)));
 
   // One item in first column, three items in second column.
@@ -100,9 +100,9 @@ TEST_F(QuickInsertImageItemGridViewTest,
        DISABLED_GifItemsAreResizedToSameWidth) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  const QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  const QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(80, 160)));
 
   EXPECT_EQ(item1->GetPreferredSize().width(),
@@ -113,7 +113,7 @@ TEST_F(QuickInsertImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   constexpr gfx::Size kGifDimensions(100, 200);
-  const PickerItemView* item =
+  const QuickInsertItemView* item =
       item_grid.AddImageItem(CreateGifItem(kGifDimensions));
 
   EXPECT_EQ(GetAspectRatio(item->GetPreferredSize()),
@@ -123,11 +123,11 @@ TEST_F(QuickInsertImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsTopItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
   EXPECT_THAT(item_grid.children(),
@@ -148,11 +148,11 @@ TEST_F(QuickInsertImageItemGridViewTest, EmptyGridHasNoTopItem) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsBottomItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
   EXPECT_THAT(item_grid.children(),
@@ -173,13 +173,13 @@ TEST_F(QuickInsertImageItemGridViewTest, EmptyGridHasNoBottomItem) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsItemAbove) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  PickerItemView* item4 =
+  QuickInsertItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(
@@ -206,13 +206,13 @@ TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsItemBelow) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  PickerItemView* item4 =
+  QuickInsertItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(
@@ -239,13 +239,13 @@ TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsItemLeftOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  PickerItemView* item4 =
+  QuickInsertItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(
@@ -264,11 +264,11 @@ TEST_F(QuickInsertImageItemGridViewTest, GetsItemLeftOf) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 300)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
   EXPECT_THAT(item_grid.children(),
@@ -293,13 +293,13 @@ TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
 TEST_F(QuickInsertImageItemGridViewTest, GetsItemRightOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  PickerItemView* item4 =
+  QuickInsertItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(
@@ -329,13 +329,13 @@ TEST_F(QuickInsertImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
   PickerImageItemGridView* item_grid = widget->SetContentsView(
       std::make_unique<PickerImageItemGridView>(kDefaultGridWidth));
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  PickerItemView* item4 =
+  QuickInsertItemView* item4 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   views::FocusManager* focus_manager = item_grid->GetFocusManager();
@@ -361,13 +361,13 @@ TEST_F(QuickInsertImageItemGridViewTest,
   PickerImageItemGridView* item_grid = widget->SetContentsView(
       std::make_unique<PickerImageItemGridView>(kDefaultGridWidth));
 
-  PickerItemView* item1 =
+  QuickInsertItemView* item1 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerItemView* item2 =
+  QuickInsertItemView* item2 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  PickerItemView* item3 =
+  QuickInsertItemView* item3 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  PickerItemView* item4 =
+  QuickInsertItemView* item4 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   views::FocusManager* focus_manager = item_grid->GetFocusManager();

@@ -29,7 +29,7 @@ class PickerImageItemGridView;
 class PickerImageItemRowView;
 class PickerImageItemView;
 class PickerItemWithSubmenuView;
-class PickerItemView;
+class QuickInsertItemView;
 class PickerListItemContainerView;
 class PickerListItemView;
 class PickerPreviewBubbleController;
@@ -66,7 +66,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // `asset_fetcher` can be null for most result types.
   // Both `preview_controller` and `asset_fetcher` must outlive the return
   // value.
-  static std::unique_ptr<PickerItemView> CreateItemFromResult(
+  static std::unique_ptr<QuickInsertItemView> CreateItemFromResult(
       const PickerSearchResult& result,
       PickerPreviewBubbleController* preview_controller,
       PickerAssetFetcher* asset_fetcher,
@@ -99,10 +99,11 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Same as `CreateItemFromResult`, but additionally adds the item to this
   // section.
-  PickerItemView* AddResult(const PickerSearchResult& result,
-                            PickerPreviewBubbleController* preview_controller,
-                            LocalFileResultStyle local_file_result_style,
-                            SelectResultCallback select_result_callback);
+  QuickInsertItemView* AddResult(
+      const PickerSearchResult& result,
+      PickerPreviewBubbleController* preview_controller,
+      LocalFileResultStyle local_file_result_style,
+      SelectResultCallback select_result_callback);
 
   void ClearItems();
 
@@ -146,11 +147,12 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // TODO: b/322900302 - Figure out a nice way to access the item views for
   // keyboard navigation (e.g. how to handle grid items).
-  base::span<const raw_ptr<PickerItemView>> item_views() const {
+  base::span<const raw_ptr<QuickInsertItemView>> item_views() const {
     return item_views_;
   }
 
-  base::span<const raw_ptr<PickerItemView>> item_views_for_testing() const {
+  base::span<const raw_ptr<QuickInsertItemView>> item_views_for_testing()
+      const {
     return item_views_;
   }
   views::View* GetImageRowMoreItemsButtonForTesting();
@@ -185,7 +187,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<PickerImageItemRowView> image_item_row_ = nullptr;
 
   // The views for each result item.
-  std::vector<raw_ptr<PickerItemView>> item_views_;
+  std::vector<raw_ptr<QuickInsertItemView>> item_views_;
 
   // `asset_fetcher` outlives `this`.
   raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;

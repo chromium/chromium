@@ -317,7 +317,7 @@ PickerView* GetPickerViewFromWidget(views::Widget& widget) {
 }
 
 // Gets the first category item view that can be clicked to select a category.
-PickerItemView* GetFirstCategoryItemView(PickerView* picker_view) {
+QuickInsertItemView* GetFirstCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
       .category_section_views_for_testing()
       .begin()
@@ -534,9 +534,9 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultInsertsResult) {
                     ->item_views_for_testing(),
                 Not(IsEmpty()));
 
-    PickerItemView* result_view = view->search_results_view_for_testing()
-                                      .section_views_for_testing()[0]
-                                      ->item_views_for_testing()[0];
+    QuickInsertItemView* result_view = view->search_results_view_for_testing()
+                                           .section_views_for_testing()[0]
+                                           ->item_views_for_testing()[0];
     ViewDrawnWaiter().Wait(result_view);
     LeftClickOn(result_view);
 
@@ -569,9 +569,9 @@ TEST_F(QuickInsertViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
     auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
     PickerView* view = GetPickerViewFromWidget(*widget);
-    PickerItemView* result_view = view->zero_state_view_for_testing()
-                                      .primary_section_view_for_testing()
-                                      ->item_views_for_testing()[0];
+    QuickInsertItemView* result_view = view->zero_state_view_for_testing()
+                                           .primary_section_view_for_testing()
+                                           ->item_views_for_testing()[0];
     ViewDrawnWaiter().Wait(result_view);
     LeftClickOn(result_view);
 
@@ -621,9 +621,9 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultOpensResult) {
                   ->item_views_for_testing(),
               Not(IsEmpty()));
 
-  PickerItemView* result_view = view->search_results_view_for_testing()
-                                    .section_views_for_testing()[0]
-                                    ->item_views_for_testing()[0];
+  QuickInsertItemView* result_view = view->search_results_view_for_testing()
+                                         .section_views_for_testing()[0]
+                                         ->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
 
@@ -2881,7 +2881,7 @@ TEST_F(QuickInsertViewTest, EnterOnZeroState) {
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  base::span<const raw_ptr<PickerItemView>> zero_state_item_views =
+  base::span<const raw_ptr<QuickInsertItemView>> zero_state_item_views =
       picker_view->zero_state_view_for_testing()
           .primary_section_view_for_testing()
           ->item_views_for_testing();
@@ -2889,7 +2889,7 @@ TEST_F(QuickInsertViewTest, EnterOnZeroState) {
   ASSERT_THAT(
       zero_state_item_views,
       ElementsAre(ResultOf(
-          [&](const raw_ptr<PickerItemView> view) {
+          [&](const raw_ptr<QuickInsertItemView> view) {
             ViewDrawnWaiter().Wait(view);
             suggested_item_view = views::AsViewClass<PickerListItemView>(view);
             return suggested_item_view;
@@ -2921,7 +2921,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnZeroState) {
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  base::span<const raw_ptr<PickerItemView>> zero_state_item_views =
+  base::span<const raw_ptr<QuickInsertItemView>> zero_state_item_views =
       picker_view->zero_state_view_for_testing()
           .primary_section_view_for_testing()
           ->item_views_for_testing();
@@ -2929,7 +2929,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnZeroState) {
   ASSERT_THAT(
       zero_state_item_views,
       ElementsAre(ResultOf(
-          [&](const raw_ptr<PickerItemView> view) {
+          [&](const raw_ptr<QuickInsertItemView> view) {
             ViewDrawnWaiter().Wait(view);
             suggested_item_view = views::AsViewClass<PickerListItemView>(view);
             return suggested_item_view;
@@ -2974,7 +2974,7 @@ TEST_F(QuickInsertViewTest, EnterOnSearchResults) {
       ElementsAre(Pointee(Property(
           "item views", &PickerSectionView::item_views_for_testing,
           ElementsAre(ResultOf(
-              [&](const raw_ptr<PickerItemView> view) {
+              [&](const raw_ptr<QuickInsertItemView> view) {
                 ViewDrawnWaiter().Wait(view);
                 search_item_view = views::AsViewClass<PickerListItemView>(view);
                 return search_item_view;
@@ -3020,7 +3020,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnSearchResults) {
       ElementsAre(Pointee(Property(
           "item views", &PickerSectionView::item_views_for_testing,
           ElementsAre(ResultOf(
-              [&](const raw_ptr<PickerItemView> view) {
+              [&](const raw_ptr<QuickInsertItemView> view) {
                 ViewDrawnWaiter().Wait(view);
                 search_item_view = views::AsViewClass<PickerListItemView>(view);
                 return search_item_view;

@@ -782,7 +782,7 @@ TEST_P(QuickInsertSearchResultsViewResultSelectionTest,
 
   EXPECT_CALL(mock_delegate, SelectSearchResult(test_case.result));
 
-  PickerItemView* result_view =
+  QuickInsertItemView* result_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(*result_view);
