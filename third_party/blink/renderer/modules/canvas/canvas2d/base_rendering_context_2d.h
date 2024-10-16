@@ -892,25 +892,26 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
 namespace {
 
-// Blend modes that require compositing with layers when shadows are drawn.
-ALWAYS_INLINE bool BlendModeRequiresLayersForShadows(SkBlendMode blendMode) {
-  return blendMode == SkBlendMode::kDstOver ||
-         blendMode == SkBlendMode::kPlus ||
-         blendMode == SkBlendMode::kMultiply ||
-         blendMode == SkBlendMode::kXor || blendMode == SkBlendMode::kScreen ||
-         blendMode == SkBlendMode::kOverlay ||
-         blendMode == SkBlendMode::kDarken ||
-         blendMode == SkBlendMode::kLighten ||
-         blendMode == SkBlendMode::kColorDodge ||
-         blendMode == SkBlendMode::kColorBurn ||
-         blendMode == SkBlendMode::kHardLight ||
-         blendMode == SkBlendMode::kSoftLight ||
-         blendMode == SkBlendMode::kDifference ||
-         blendMode == SkBlendMode::kExclusion ||
-         blendMode == SkBlendMode::kHue ||
-         blendMode == SkBlendMode::kSaturation ||
-         blendMode == SkBlendMode::kColor ||
-         blendMode == SkBlendMode::kLuminosity;
+// Returns true if the blend modes is compatible with `DropShadowPaintFilter`.
+//
+// The HTML specification requires the shadow to be composited against the
+// background first, and the foreground to be composited on the result.
+// Conceptually:
+//   composite(composite(background, shadow), foreground)
+//
+// This would normally be implemented by drawing the shape twice, once for the
+// shadow and once for the foreground. As an optimization, we can implement
+// shadows using `DropShadowPaintFilter`. This filter however doesn't follow the
+// HTML specification. It draws the foreground on the shadow first, without
+// compositing and then composite the result onto the background. Conceptually:
+//   composite(background, sourceOver(shadow, foreground))
+//
+// For the composite ops listed below, these two operations turns out to be
+// equivalent. We can therefore use `DropShadowPaintFilter` with them.
+ALWAYS_INLINE bool BlendModeSupportsShadowFilter(SkBlendMode blendMode) {
+  return blendMode == SkBlendMode::kSrcOver ||
+         blendMode == SkBlendMode::kSrcATop ||
+         blendMode == SkBlendMode::kDstOut;
 }
 
 ALWAYS_INLINE bool BlendModeDoesntPreserveOpaqueDestinationAlpha(
@@ -929,13 +930,19 @@ ALWAYS_INLINE bool BlendModeDoesntPreserveOpaqueDestinationAlpha(
 ALWAYS_INLINE bool BaseRenderingContext2D::BlendModeRequiresCompositedDraw(
     const CanvasRenderingContext2DState& state) const {
   SkBlendMode blend_mode = state.GlobalComposite();
+  // The "copy" composite operation (a.k.a. `SkBlendMode::kSrc`) is handled as a
+  // special case in `DrawInternal` and thus doesn't require `CompositedDraw`.
+  if (blend_mode == SkBlendMode::kSrc) {
+    return false;
+  }
   // Blend modes that require CompositedDraw in every case.
   if (IsFullCanvasCompositeMode(blend_mode)) {
     return true;
   }
-  // Blend modes that require CompositedDraw if shadows are drawn.
+  // For blend modes not compatible with `DropShadowPaintFilter`, we must
+  // manually composite the shadow and foreground one after the other.
   return state.ShouldDrawShadows() &&
-         BlendModeRequiresLayersForShadows(blend_mode);
+         !BlendModeSupportsShadowFilter(blend_mode);
 }
 
 ALWAYS_INLINE void BaseRenderingContext2D::ResetAlphaIfNeeded(
