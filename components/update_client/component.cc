@@ -5,6 +5,8 @@
 #include "components/update_client/component.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -240,7 +242,7 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
 }
 
 void Component::SetUpdateCheckResult(
-    const std::optional<ProtocolParser::Result>& result,
+    std::optional<ProtocolParser::Result> result,
     ErrorCategory error_category,
     int error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

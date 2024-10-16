@@ -60,7 +60,7 @@ int InstallFromArchive(const base::FilePath& file_path,
                        UpdaterScope scope,
                        const base::Version& pv,
                        const std::string& arguments,
-                       const std::optional<base::FilePath>& installer_data_file,
+                       std::optional<base::FilePath> installer_data_file,
                        bool usage_stats_enabled,
                        base::TimeDelta timeout);
 

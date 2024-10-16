@@ -10,6 +10,7 @@
 #include <winhttp.h>
 
 #include <optional>
+#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "components/winhttp/proxy_info.h"
@@ -74,7 +75,7 @@ class AutoProxyConfiguration final : public ProxyConfiguration {
 // Sets proxy info on a request handle, if WINHTTP_PROXY_INFO is provided.
 void SetProxyForRequest(
     HINTERNET request_handle,
-    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
+    std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info);
 
 }  // namespace winhttp
 

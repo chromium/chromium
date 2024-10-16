@@ -129,8 +129,8 @@ std::string GetUpdateResponseForApp(
     const base::FilePath& update_file,
     const std::string& run_action,
     const std::string& arguments,
-    const std::optional<std::string>& file_hash = std::nullopt,
-    const std::optional<std::string>& status = std::nullopt) {
+    std::optional<std::string> file_hash = std::nullopt,
+    std::optional<std::string> status = std::nullopt) {
   return base::StringPrintf(
       R"(    {)"
       R"(      "appid":"%s",)"

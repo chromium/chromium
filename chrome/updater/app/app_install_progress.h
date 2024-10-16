@@ -85,11 +85,10 @@ class AppInstallProgress {
                                  const base::Version& version) = 0;
   virtual void OnWaitingToDownload(const std::string& app_id,
                                    const std::u16string& app_name) = 0;
-  virtual void OnDownloading(
-      const std::string& app_id,
-      const std::u16string& app_name,
-      const std::optional<base::TimeDelta> time_remaining,
-      int pos) = 0;
+  virtual void OnDownloading(const std::string& app_id,
+                             const std::u16string& app_name,
+                             std::optional<base::TimeDelta> time_remaining,
+                             int pos) = 0;
   virtual void OnWaitingRetryDownload(const std::string& app_id,
                                       const std::u16string& app_name,
                                       base::Time next_retry_time) = 0;
@@ -97,7 +96,7 @@ class AppInstallProgress {
                                   const std::u16string& app_name) = 0;
   virtual void OnInstalling(const std::string& app_id,
                             const std::u16string& app_name,
-                            const std::optional<base::TimeDelta> time_remaining,
+                            std::optional<base::TimeDelta> time_remaining,
                             int pos) = 0;
   virtual void OnPause() = 0;
   virtual void OnComplete(const ObserverCompletionInfo& observer_info) = 0;

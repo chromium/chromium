@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -26,7 +27,7 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
   CrxCache& operator=(const CrxCache&) = delete;
 
   // Constructs an CrxCache to facilitate lookups and updates on a given path.
-  explicit CrxCache(const std::optional<base::FilePath>& path);
+  explicit CrxCache(std::optional<base::FilePath> path);
 
   // Requests a lookup of the previous CRX for the requested component given
   // `id` and `fp`.

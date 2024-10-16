@@ -17,7 +17,7 @@ class GroupPolicyManager : public PolicyManager {
  public:
   GroupPolicyManager(
       bool should_take_policy_critical_section,
-      const std::optional<bool>& override_is_managed_device = std::nullopt);
+      std::optional<bool> override_is_managed_device = std::nullopt);
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
 

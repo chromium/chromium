@@ -53,7 +53,7 @@ class Component {
   CrxUpdateItem GetCrxUpdateItem() const;
 
   // Called by the UpdateEngine when an update check for this component is done.
-  void SetUpdateCheckResult(const std::optional<ProtocolParser::Result>& result,
+  void SetUpdateCheckResult(std::optional<ProtocolParser::Result> result,
                             ErrorCategory error_category,
                             int error);
 

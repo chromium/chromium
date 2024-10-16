@@ -58,7 +58,7 @@ InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& install_args,
-    const std::optional<base::FilePath>& server_install_data,
+    std::optional<base::FilePath> server_install_data,
     bool usage_stats_enabled,
     base::TimeDelta timeout,
     InstallProgressCallback progress_callback);

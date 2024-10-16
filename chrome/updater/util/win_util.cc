@@ -637,7 +637,7 @@ HRESULT DisableCOMExceptionHandling() {
 
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& msi_installer) {
   if (!msi_installer.MatchesExtension(L".msi")) {
     return std::wstring();
@@ -662,7 +662,7 @@ std::wstring BuildMsiCommandLine(
 
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& exe_installer) {
   if (!exe_installer.MatchesExtension(L".exe")) {
     return std::wstring();

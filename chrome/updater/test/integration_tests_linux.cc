@@ -130,7 +130,7 @@ void Clean(UpdaterScope scope) {
 // itself, because it uses the prefs file and writes the log file while it
 // is operating. If the provided path exists, it must be a directory with
 // only these residual files present to be considered "clean".
-void ExpectMostlyClean(const std::optional<base::FilePath>& path) {
+void ExpectMostlyClean(std::optional<base::FilePath> path) {
   EXPECT_TRUE(path);
   if (!path || !base::PathExists(*path)) {
     return;

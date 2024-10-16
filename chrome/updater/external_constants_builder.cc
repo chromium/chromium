@@ -179,7 +179,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearIdleCheckPeriod() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetMachineManaged(
-    const std::optional<bool>& is_managed_device) {
+    std::optional<bool> is_managed_device) {
   if (is_managed_device.has_value()) {
     overrides_.Set(kDevOverrideKeyManagedDevice, is_managed_device.value());
   }

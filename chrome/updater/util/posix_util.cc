@@ -46,7 +46,7 @@ bool AdvanceEnumeratorWithStat(base::FileEnumerator* traversal,
 }  // namespace
 
 // Recursively delete a folder and its contents, returning `true` on success.
-bool DeleteFolder(const std::optional<base::FilePath>& installed_path) {
+bool DeleteFolder(std::optional<base::FilePath> installed_path) {
   if (!installed_path) {
     return false;
   }

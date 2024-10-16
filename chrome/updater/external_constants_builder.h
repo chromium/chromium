@@ -78,7 +78,7 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& ClearIdleCheckPeriod();
 
   ExternalConstantsBuilder& SetMachineManaged(
-      const std::optional<bool>& is_managed_device);
+      std::optional<bool> is_managed_device);
   ExternalConstantsBuilder& ClearMachineManaged();
 
   ExternalConstantsBuilder& SetEnableDiffUpdates(bool enable_diffs);

@@ -403,7 +403,7 @@ std::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
 void ComponentInstaller::DeleteUnselectedComponentVersions(
     const base::FilePath& base_dir,
-    const std::optional<base::Version>& selected_version) {
+    std::optional<base::Version> selected_version) {
   base::FileEnumerator file_enumerator(base_dir, false,
                                        base::FileEnumerator::DIRECTORIES);
 

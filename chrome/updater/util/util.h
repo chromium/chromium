@@ -32,7 +32,7 @@ class Version;
 // Enables insertion of optional `base` types. Must be in the `base` namespace
 // for insertion into gTest expectations to work.
 template <class T>
-inline std::ostream& operator<<(std::ostream& os, const std::optional<T>& opt) {
+inline std::ostream& operator<<(std::ostream& os, std::optional<T> opt) {
   if (!opt.has_value()) {
     return os << "std::nullopt";
   }
@@ -234,7 +234,7 @@ bool MigrateLegacyUpdaters(
         register_callback);
 
 // Delete everything other than `except` under `except.DirName()`.
-[[nodiscard]] bool DeleteExcept(const std::optional<base::FilePath>& except);
+[[nodiscard]] bool DeleteExcept(std::optional<base::FilePath> except);
 
 // Returns the quotient of dividing two integer numbers (m/n) rounded up.
 template <typename T>

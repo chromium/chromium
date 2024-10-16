@@ -5,6 +5,7 @@
 #include "components/update_client/crx_cache.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -45,7 +46,7 @@ void CleanUp(const base::FilePath& path, const std::string& id) {
 
 }  // namespace
 
-CrxCache::CrxCache(const std::optional<base::FilePath>& crx_cache_root_path)
+CrxCache::CrxCache(std::optional<base::FilePath> crx_cache_root_path)
     : crx_cache_root_path_(crx_cache_root_path) {}
 
 CrxCache::~CrxCache() = default;

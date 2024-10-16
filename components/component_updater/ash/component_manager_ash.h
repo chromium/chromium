@@ -14,18 +14,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 
-namespace base {
-class FilePath;
-class Version;
-}  // namespace base
-
 namespace component_updater {
 
 // Contains the path and version of a compatible component.
 struct COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) CompatibleComponentInfo {
   CompatibleComponentInfo();
   CompatibleComponentInfo(const base::FilePath& path_in,
-                          const std::optional<base::Version>& version_in);
+                          std::optional<base::Version> version_in);
   CompatibleComponentInfo(const CompatibleComponentInfo& rhs) = delete;
   CompatibleComponentInfo& operator=(const CompatibleComponentInfo& rhs) =
       delete;

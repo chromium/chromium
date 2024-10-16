@@ -63,7 +63,7 @@ void TpcdMetadataComponentLoaderPolicy::ComponentLoaded(
                      std::move(keys_fd_iterator->second)),
       base::BindOnce(
           [](OnTpcdMetadataComponentReadyCallback on_component_ready_callback,
-             const std::optional<std::string>& maybe_contents) {
+             std::optional<std::string> maybe_contents) {
             if (maybe_contents.has_value()) {
               on_component_ready_callback.Run(maybe_contents.value());
             }

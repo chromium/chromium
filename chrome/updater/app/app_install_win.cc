@@ -89,7 +89,7 @@ class InstallProgressSilentObserver : public AppInstallProgress {
                            const std::u16string& app_name) override;
   void OnDownloading(const std::string& app_id,
                      const std::u16string& app_name,
-                     const std::optional<base::TimeDelta> time_remaining,
+                     std::optional<base::TimeDelta> time_remaining,
                      int pos) override;
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
@@ -98,7 +98,7 @@ class InstallProgressSilentObserver : public AppInstallProgress {
                           const std::u16string& app_name) override;
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
-                    const std::optional<base::TimeDelta> time_remaining,
+                    std::optional<base::TimeDelta> time_remaining,
                     int pos) override;
   void OnPause() override;
   void OnComplete(const ObserverCompletionInfo& observer_info) override;
@@ -136,7 +136,7 @@ void InstallProgressSilentObserver::OnWaitingToDownload(
 void InstallProgressSilentObserver::OnDownloading(
     const std::string& app_id,
     const std::u16string& app_name,
-    const std::optional<base::TimeDelta> time_remaining,
+    std::optional<base::TimeDelta> time_remaining,
     int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -157,7 +157,7 @@ void InstallProgressSilentObserver::OnWaitingToInstall(
 void InstallProgressSilentObserver::OnInstalling(
     const std::string& app_id,
     const std::u16string& app_name,
-    const std::optional<base::TimeDelta> time_remaining,
+    std::optional<base::TimeDelta> time_remaining,
     int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -240,7 +240,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnDownloading(const std::string& app_id,
                      const std::u16string& app_name,
-                     const std::optional<base::TimeDelta> time_remaining,
+                     std::optional<base::TimeDelta> time_remaining,
                      int pos) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
@@ -265,7 +265,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
-                    const std::optional<base::TimeDelta> time_remaining,
+                    std::optional<base::TimeDelta> time_remaining,
                     int pos) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);

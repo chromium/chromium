@@ -103,7 +103,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   void DoUpdateCheck(scoped_refptr<UpdateContext> update_context);
   void UpdateCheckResultsAvailable(
       scoped_refptr<UpdateContext> update_context,
-      const std::optional<ProtocolParser::Results>& results,
+      std::optional<ProtocolParser::Results> results,
       ErrorCategory error_category,
       int error,
       int retry_after_sec);

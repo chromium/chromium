@@ -376,7 +376,7 @@ void InitializeThreadPool(const char* name) {
   base::ThreadPoolInstance::Get()->Start(init_params);
 }
 
-bool DeleteExcept(const std::optional<base::FilePath>& except) {
+bool DeleteExcept(std::optional<base::FilePath> except) {
   if (!except) {
     return false;
   }

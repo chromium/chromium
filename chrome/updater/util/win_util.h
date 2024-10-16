@@ -298,14 +298,14 @@ std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // a log file in the same directory as the MSI installer.
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& msi_installer);
 
 // Builds a command line running the provided `exe_installer`, `arguments`, and
 // `installer_data_file`.
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& exe_installer);
 
 // Returns `true` if the service specified is currently running or starting.

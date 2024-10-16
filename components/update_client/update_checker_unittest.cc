@@ -65,11 +65,10 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   void SetUp() override;
   void TearDown() override;
 
-  void UpdateCheckComplete(
-      const std::optional<ProtocolParser::Results>& results,
-      ErrorCategory error_category,
-      int error,
-      int retry_after_sec);
+  void UpdateCheckComplete(std::optional<ProtocolParser::Results> results,
+                           ErrorCategory error_category,
+                           int error,
+                           int retry_after_sec);
 
  protected:
   void Quit();
@@ -162,7 +161,7 @@ void UpdateCheckerTest::Quit() {
 }
 
 void UpdateCheckerTest::UpdateCheckComplete(
-    const std::optional<ProtocolParser::Results>& results,
+    std::optional<ProtocolParser::Results> results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {

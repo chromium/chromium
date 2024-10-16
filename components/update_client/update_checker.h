@@ -24,11 +24,11 @@ struct UpdateContext;
 
 class UpdateChecker {
  public:
-  using UpdateCheckCallback = base::OnceCallback<void(
-      const std::optional<ProtocolParser::Results>& results,
-      ErrorCategory error_category,
-      int error,
-      int retry_after_sec)>;
+  using UpdateCheckCallback =
+      base::OnceCallback<void(std::optional<ProtocolParser::Results> results,
+                              ErrorCategory error_category,
+                              int error,
+                              int retry_after_sec)>;
 
   using Factory = base::RepeatingCallback<std::unique_ptr<UpdateChecker>(
       scoped_refptr<Configurator> config)>;

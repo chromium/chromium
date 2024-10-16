@@ -234,7 +234,7 @@ std::string GetTestName() {
 }
 
 bool DeleteFileAndEmptyParentDirectories(
-    const std::optional<base::FilePath>& file_path) {
+    std::optional<base::FilePath> file_path) {
   struct Local {
     // Deletes recursively `dir` and its parents up, if dir is empty
     // and until one non-empty parent directory is found.
