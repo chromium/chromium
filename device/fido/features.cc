@@ -92,11 +92,6 @@ const base::FeatureParam<bool> kWebAuthnGpmPin{
     /*default_value=*/true};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Enabled by default in M128. Remove in or after M131.
-BASE_FEATURE(kWebAuthnPasskeysReset,
-             "WebAuthnPasskeysReset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Not yet enabled by default.
 BASE_FEATURE(kChromeOsPasskeys,

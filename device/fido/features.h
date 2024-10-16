@@ -66,10 +66,6 @@ const char kWebAuthnGpmPinFeatureParameterName[] = "WebAuthenticationGpmPin";
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::FeatureParam<bool> kWebAuthnGpmPin;
 
-// Enable handling the passkeys reset flow.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPasskeysReset);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable ChromeOS native passkey support.
 COMPONENT_EXPORT(DEVICE_FIDO)
