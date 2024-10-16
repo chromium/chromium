@@ -1338,6 +1338,7 @@ public class TabGridDialogTest {
     @MediumTest
     @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
+    @DisabledTest(message = "TODO(crbug.com/373952611): Fix flakiness.")
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
