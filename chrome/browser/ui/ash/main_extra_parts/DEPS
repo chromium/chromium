@@ -52,7 +52,7 @@ include_rules = [
   "+chrome/browser/ui/ash/media_client",
   "+chrome/browser/ui/ash/network",
   "+chrome/browser/ui/ash/new_window",
-  "+chrome/browser/ui/ash/picker",
+  "+chrome/browser/ui/ash/quick_insert",
   "+chrome/browser/ui/ash/projector",
   "+chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h",
   "+chrome/browser/ui/ash/session",

@@ -23,6 +23,7 @@
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
