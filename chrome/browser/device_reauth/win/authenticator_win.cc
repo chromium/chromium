@@ -55,7 +55,6 @@ enum class AuthenticationStateWin {
 using AvailabilityCallback = AuthenticatorWinInterface::AvailabilityCallback;
 using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Security::Credentials::UI::IUserConsentVerifierStatics;
-using ABI::Windows::Security::Credentials::UI::UserConsentVerificationResult;
 using ABI::Windows::Security::Credentials::UI::UserConsentVerifierAvailability;
 using enum ABI::Windows::Security::Credentials::UI::
     UserConsentVerifierAvailability;
