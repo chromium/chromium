@@ -11,6 +11,7 @@ source_set("browser_window") {
   sources = [
     "public/browser_window_features.h",
     "public/browser_window_interface.h",
+    "public/browser_window_interface_iterator.h",
   ]
   public_deps = [
     "//base",
@@ -20,7 +21,10 @@ source_set("browser_window") {
 }
 
 source_set("impl") {
-  sources = [ "browser_window_features.cc" ]
+  sources = [
+    "browser_window_features.cc",
+    "browser_window_interface_iterator.cc",
+  ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":browser_window",

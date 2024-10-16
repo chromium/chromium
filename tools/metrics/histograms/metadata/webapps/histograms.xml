@@ -435,6 +435,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebApp.Engagement2.Active" enum="BooleanValid"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Whether the foreground window, foreground tab is a PWA. This metric is
+    recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Count" units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of PWAs that are running. This includes backgrounded tab PWAs.
+    This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Engagement{Context}.{Container}"
     enum="SiteEngagementServiceEngagementType" expires_after="2025-06-21">
   <owner>dmurph@chromium.org</owner>

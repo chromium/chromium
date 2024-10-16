@@ -450,6 +450,8 @@ source_set("web_applications") {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
       "policy/web_app_settings_policy_handler.h",
+      "sampling_metrics_provider.cc",
+      "sampling_metrics_provider.h",
     ]
   }
 
@@ -1160,6 +1162,7 @@ source_set("interactive_ui_tests") {
 
   sources = [
     "isolated_web_apps/isolated_web_app_interactive_uitest.cc",
+    "sampling_metrics_provider_interactive_uitest.cc",
     "web_app_notifications_interactive_uitest.cc",
     "web_app_ui_state_manager_interactive_uitest.cc",
   ]
