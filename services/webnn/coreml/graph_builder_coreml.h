@@ -240,6 +240,8 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForGather(
       const mojom::Gather& operation,
       CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForGelu(const mojom::Gelu& operation,
+                           CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForGemm(
       const mojom::Gemm& operation,
       CoreML::Specification::MILSpec::Block& block);

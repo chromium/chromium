@@ -126,6 +126,7 @@ constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
+constexpr char kOpGeluTypeName[] = "gelu";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpInstanceNormalizationTypeName[] = "instance_norm";
 constexpr char kOpLayerNormalizationTypeName[] = "layer_norm";
@@ -200,6 +201,7 @@ constexpr char kOpParamDataTypeName[] = "dtype";
 constexpr char kOpParamEpsilon[] = "epsilon";
 constexpr char kOpParamGamma[] = "gamma";
 constexpr char kOpParamKeepDims[] = "keep_dims";
+constexpr char kOpParamMode[] = "mode";
 constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamReps[] = "reps";
 constexpr char kOpParamX[] = "x";
@@ -911,6 +913,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForGather(*operation->get_gather(), block));
         break;
       }
+      case mojom::Operation::Tag::kGelu: {
+        AddOperationForGelu(*operation->get_gelu(), block);
+        break;
+      }
       case mojom::Operation::Tag::kGemm: {
         RETURN_IF_ERROR(AddOperationForGemm(*operation->get_gemm(), block));
         break;
@@ -1042,7 +1048,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
-      case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kLstm:
@@ -2064,6 +2069,27 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGather(
   return base::ok();
 }
 
+void GraphBuilderCoreml::AddOperationForGelu(
+    const mojom::Gelu& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.gelu_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpGeluTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  constexpr char kParamModeExact[] = "EXACT";
+
+  SetInputWithValue(*op->mutable_inputs(), kOpParamMode,
+                    CreateStringImmediateValue(kParamModeExact));
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+}
+
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
     const mojom::Gemm& operation,
     CoreML::Specification::MILSpec::Block& block) {
@@ -2401,7 +2427,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
     paddings[i * 2 + 1] = operation.ending_padding[i];
   }
 
-  constexpr char kParamMode[] = "mode";
   constexpr char kParamConstantVal[] = "constant_val";
 
   std::string_view mode;
@@ -2446,7 +2471,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kOpParamPad, Create1DTensorImmediateValue<int32_t>(paddings)},
-       {kParamMode, CreateStringImmediateValue(mode)},
+       {kOpParamMode, CreateStringImmediateValue(mode)},
        {kParamConstantVal,
         CreateFloatValue(input_operand_info.mil_data_type, constant)}});
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());

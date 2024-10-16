@@ -16,7 +16,7 @@ This is a testharness.js-based test.
 [FAIL] conv2d default + hardSwish
   assert_true: assert_array_approx_equals_ulp: test conv2d hardSwish float32 actual 1.1552734375 should be close enough to expected 1.157502485501543 by the acceptable 22 ULP distance, but they have 18699 ULP distance expected true got false
 [FAIL] conv2d default + gelu
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+  assert_true: assert_array_approx_equals_ulp: test conv2d gelu float32 actual 1.4345703125 should be close enough to expected 1.436219573020935 by the acceptable 36 ULP distance, but they have 13835 ULP distance expected true got false
 [FAIL] conv2d default + hardSigmoid
   assert_true: assert_array_approx_equals_ulp: test conv2d hardSigmoid float32 actual 0.80615234375 should be close enough to expected 0.8064656598030677 by the acceptable 20 ULP distance, but they have 5257 ULP distance expected true got false
 [FAIL] conv2d default + linear
@@ -38,7 +38,7 @@ This is a testharness.js-based test.
 [FAIL] convTranspose2d default + elu
   promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
 [FAIL] convTranspose2d default + gelu
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
 [FAIL] convTranspose2d default + hardSigmoid
   promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
 [FAIL] convTranspose2d default + hardSwish
