@@ -5196,6 +5196,7 @@ static_library("browser") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/chromeos/extensions/echo_private:echo_private_api_util",
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/tast_support",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
