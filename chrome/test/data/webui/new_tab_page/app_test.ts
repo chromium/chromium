@@ -1107,35 +1107,6 @@ suite('NewTabPageAppTest', () => {
         assertButtonAnimated();
       });
 
-      [NtpBackgroundImageSource.kWallpaperSearch,
-       NtpBackgroundImageSource.kWallpaperSearchInspiration]
-          .forEach((imageSource) => {
-            test(
-                `having wallpaper search theme ${
-                    imageSource} disables animation`,
-                async () => {
-                  // Arrange.
-                  loadTimeData.overrideValues({
-                    // A non-zero "wallpaperSearchButtonHideCondition" hides the
-                    // button if we set the background image. To ensure that the
-                    // button shows in this test we set it to 0.
-                    wallpaperSearchButtonHideCondition: /*NONE*/ 0,
-                  });
-                  const theme = createTheme();
-                  theme.backgroundImage =
-                      createBackgroundImage('https://foo.com');
-                  theme.backgroundImage.imageSource = imageSource;
-                  assertButtonAnimated();
-
-                  // Act.
-                  callbackRouterRemote.setTheme(theme);
-                  await callbackRouterRemote.$.flushForTesting();
-
-                  // Assert.
-                  assertButtonNotAnimated();
-                });
-          });
-
       ([
         ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
         ['#wallpaperSearchButton', NtpElement.WALLPAPER_SEARCH_BUTTON],
@@ -1258,6 +1229,69 @@ suite('NewTabPageAppTest', () => {
                 'none');
           });
 
+      test('button hides in accordance with callback router', async () => {
+        // Both buttons shown.
+        assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+        assertNotStyle($$(app, '#wallpaperSearchButton')!, 'display', 'none');
+
+        callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Wallpaper search button hides.
+        assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+        assertEquals(null, $$(app, '#wallpaperSearchButton'));
+
+        callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Wallpaper search button remains hidden.
+        assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+        assertEquals(null, $$(app, '#wallpaperSearchButton'));
+      });
+    });
+
+    suite('AnimationDisabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+          wallpaperSearchButtonAnimationEnabled: false,
+        });
+      });
+
+      test('button has no animation if the flag is disabled', () => {
+        assertButtonNotAnimated();
+      });
+    });
+
+    suite('UnconditionalVisibility', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+          // A non-zero hide condition will hide the wallpaper search button
+          // whenever the background image is set.
+          wallpaperSearchButtonHideCondition: /*NONE*/ 0,
+          wallpaperSearchButtonAnimationEnabled: true,
+        });
+      });
+
+      test('hide condition 0 shows button unconditonally', async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonHideCondition: /*NONE*/ 0,
+        });
+
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+
+        const theme = createTheme({isBaseline: false});
+        theme.backgroundImage = createBackgroundImage('https://foo.com');
+        await callbackRouterRemote.$.flushForTesting();
+
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+      });
+
       test(
           'setting background styles both customize chrome buttons',
           async () => {
@@ -1308,42 +1342,28 @@ suite('NewTabPageAppTest', () => {
                 32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
           });
 
-      test(
-          'button hides in accordance with callback router', async () => {
-            // Both buttons shown.
-            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
-            assertNotStyle(
-                $$(app, '#wallpaperSearchButton')!, 'display', 'none');
+      [NtpBackgroundImageSource.kWallpaperSearch,
+       NtpBackgroundImageSource.kWallpaperSearchInspiration]
+          .forEach((imageSource) => {
+            test(
+                `having wallpaper search theme ${
+                    imageSource} disables animation`,
+                async () => {
+                  // Arrange.
+                  const theme = createTheme();
+                  theme.backgroundImage =
+                      createBackgroundImage('https://foo.com');
+                  theme.backgroundImage.imageSource = imageSource;
+                  assertButtonAnimated();
 
-            callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
-            await callbackRouterRemote.$.flushForTesting();
-            await microtasksFinished();
+                  // Act.
+                  callbackRouterRemote.setTheme(theme);
+                  await callbackRouterRemote.$.flushForTesting();
 
-            // Wallpaper search button hides.
-            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
-            assertEquals(null, $$(app, '#wallpaperSearchButton'));
-
-            callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
-            await callbackRouterRemote.$.flushForTesting();
-            await microtasksFinished();
-
-            // Wallpaper search button remains hidden.
-            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
-            assertEquals(null, $$(app, '#wallpaperSearchButton'));
+                  // Assert.
+                  assertButtonNotAnimated();
+                });
           });
-    });
-
-    suite('AnimationDisabled', () => {
-      suiteSetup(() => {
-        loadTimeData.overrideValues({
-          wallpaperSearchButtonEnabled: true,
-          wallpaperSearchButtonAnimationEnabled: false,
-        });
-      });
-
-      test('button has no animation if the flag is disabled', () => {
-        assertButtonNotAnimated();
-      });
     });
 
     suite('ConditionalVisibility', () => {
@@ -1353,28 +1373,9 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
-      test(
-          'hide condition 0 shows button unconditonally', async () => {
-            loadTimeData.overrideValues({
-              wallpaperSearchButtonHideCondition: /*NONE*/ 0,
-            });
-
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-            assertTrue(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
-
-            const theme = createTheme({isBaseline: false});
-            theme.backgroundImage = createBackgroundImage('https://foo.com');
-            await callbackRouterRemote.$.flushForTesting();
-
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-            assertTrue(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
-          });
-
       test('hideCondition 1 hides button if background is set', async () => {
         loadTimeData.overrideValues({
-          wallpaperSearchButtonHideCondition: 1,
+          wallpaperSearchButtonHideCondition: /*BACKGROUND_IMAGE_SET*/ 1,
         });
 
         assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
