@@ -10918,8 +10918,7 @@ if (!is_android && !is_chromeos_device) {
         ]
 
         if (is_chrome_branded) {
-          deps +=
-              [ "//chrome/browser/ui/ash/container_app:interactive_ui_tests" ]
+          deps += [ "//chrome/browser/ui/ash/gemini_app:interactive_ui_tests" ]
         }
 
         deps += [

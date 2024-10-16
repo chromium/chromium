@@ -13,7 +13,7 @@ if (is_chrome_branded) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "container_app_interactive_uitest.cc" ]
+    sources = [ "gemini_app_interactive_uitest.cc" ]
 
     deps = [
       "//ash",
