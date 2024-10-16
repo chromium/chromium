@@ -71,19 +71,19 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private class MultiThumbnailFetcher {
+        private static final int MAX_THUMBNAIL_COUNT = 4;
         private final Tab mInitialTab;
         private final Callback<Drawable> mResultCallback;
         private final boolean mIsTabSelected;
-        private final List<Tab> mTabs = new ArrayList<>(4);
         private final AtomicInteger mThumbnailsToFetch = new AtomicInteger();
 
         private Canvas mCanvas;
         private Bitmap mMultiThumbnailBitmap;
         private String mText;
 
-        private final List<Rect> mFaviconRects = new ArrayList<>(4);
-        private final List<RectF> mThumbnailRects = new ArrayList<>(4);
-        private final List<RectF> mFaviconBackgroundRects = new ArrayList<>(4);
+        private final List<Rect> mFaviconRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
+        private final List<RectF> mThumbnailRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
+        private final List<RectF> mFaviconBackgroundRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
         private final int mThumbnailWidth;
         private final int mThumbnailHeight;
 
@@ -200,41 +200,22 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             // Initialize Tabs.
             List<Tab> relatedTabList =
                     mCurrentTabGroupModelFilterSupplier.get().getRelatedTabList(initialTab.getId());
-            if (relatedTabList.size() <= 4) {
-                int thumbnailCount = relatedTabList.size();
-                mThumbnailsToFetch.set(thumbnailCount);
-
-                mTabs.add(initialTab);
-
-                for (int i = 0; i < thumbnailCount; i++) {
-                    if (relatedTabList.get(i) == initialTab) continue;
-
-                    mTabs.add(relatedTabList.get(i));
-                }
-                for (int i = 0; i < 4 - thumbnailCount; i++) {
-                    mTabs.add(null);
-                }
-            } else {
-                int thumbnailCount = 3;
-                mText = "+" + (relatedTabList.size() - thumbnailCount);
-                mThumbnailsToFetch.set(thumbnailCount);
-
-                mTabs.add(initialTab);
-
-                for (int i = 0; i < thumbnailCount; i++) {
-                    if (relatedTabList.get(i) == initialTab) continue;
-
-                    mTabs.add(relatedTabList.get(i));
-                    if (mTabs.size() == thumbnailCount) break;
-                }
-                mTabs.add(null);
+            int relatedTabCount = relatedTabList.size();
+            boolean showPlus = relatedTabCount > MAX_THUMBNAIL_COUNT;
+            int tabsToShow = showPlus ? MAX_THUMBNAIL_COUNT - 1 : relatedTabCount;
+            Tab[] tabs = new Tab[MAX_THUMBNAIL_COUNT];
+            mText = showPlus ? "+" + (relatedTabList.size() - tabsToShow) : null;
+            mThumbnailsToFetch.set(tabsToShow);
+            for (int i = 0; i < tabsToShow; i++) {
+                tabs[i] = relatedTabList.get(i);
             }
 
             // Fetch and draw all.
-            for (int i = 0; i < 4; i++) {
-                Tab tab = mTabs.get(i);
+            for (int i = 0; i < MAX_THUMBNAIL_COUNT; i++) {
+                Tab tab = tabs[i];
                 RectF thumbnailRect = mThumbnailRects.get(i);
                 if (tab != null) {
+                    // Create final copies to get lambda captures to compile.
                     final int index = i;
                     final GURL url = tab.getUrl();
                     final boolean isIncognito = tab.isIncognito();
