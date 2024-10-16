@@ -27,11 +27,6 @@
 
 class PrefChangeRegistrar;
 
-namespace base {
-class RetainingOneShotTimer;
-class TickClock;
-}
-
 namespace views {
 class Checkbox;
 class ImageButton;
@@ -69,8 +64,6 @@ enum class SessionEvent {
 extern const ui::ClassProperty<bool>* const kIsCaptionBubbleKey;
 #endif
 
-using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
-
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble
 //
@@ -106,19 +99,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // Changes the caption style of the caption bubble.
   void UpdateCaptionStyle(std::optional<ui::CaptionStyle> caption_style);
 
-  // Returns whether the bubble has activity. Activity is defined as
-  // transcription received from the speech service or user interacting with the
-  // bubble through focus, pressing buttons, or dragging.
-  bool HasActivity();
-
   views::Label* GetLabelForTesting();
   views::Label* GetDownloadProgressLabelForTesting();
   views::Label* GetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
-  base::RetainingOneShotTimer* GetInactivityTimerForTesting();
-  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
-    tick_clock_ = tick_clock;
-  }
   views::Button* GetCloseButtonForTesting();
   views::Button* GetBackToTabButtonForTesting();
   views::View* GetHeaderForTesting();
@@ -145,8 +129,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   gfx::Rect GetBubbleBounds() override;
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnLiveTranslateEnabledChanged();
   void OnLiveCaptionLanguageChanged();
@@ -161,7 +143,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void BackToTabButtonPressed();
   void CloseButtonPressed();
   void ExpandOrCollapseButtonPressed();
-  void PinOrUnpinButtonPressed();
   void SwapButtons(views::Button* first_button,
                    views::Button* second_button,
                    bool show_first_button);
@@ -236,13 +217,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void RepositionInContextRect(CaptionBubbleModel::Id model_id,
                                const gfx::Rect& context_rect);
 
-  // After 5 seconds of inactivity, hide the caption bubble. Activity is defined
-  // as transcription received from the speech service or user interacting with
-  // the bubble through focus, pressing buttons, or dragging.
-  void OnInactivityTimeout();
-
-  void ResetInactivityTimer();
-
   void MediaFoundationErrorCheckboxPressed();
   bool HasMediaFoundationError();
 
@@ -274,8 +248,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::ImageButton> close_button_;
   raw_ptr<views::ImageButton> expand_button_;
   raw_ptr<views::ImageButton> collapse_button_;
-  raw_ptr<views::ImageButton> pin_button_;
-  raw_ptr<views::ImageButton> unpin_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
 
   // Flag indicating whether the current source language does not match the user
@@ -305,9 +277,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // Whether the caption bubble is expanded to show more lines of text.
   bool is_expanded_;
 
-  // Whether the caption bubble is pinned or if it should hide on inactivity.
-  bool is_pinned_;
-
   bool has_been_shown_ = false;
 
   // Used to determine whether to propagate theme changes to the widget.
@@ -317,11 +286,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   SkColor link_color_ = gfx::kPlaceholderColor;
   SkColor checkbox_color_ = gfx::kPlaceholderColor;
   SkColor background_color_ = gfx::kPlaceholderColor;
-
-  // A timer which causes the bubble to hide if there is no activity after a
-  // specified interval.
-  std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
-  raw_ptr<const base::TickClock> tick_clock_;
 
   gfx::SlideAnimation controls_animation_;
 

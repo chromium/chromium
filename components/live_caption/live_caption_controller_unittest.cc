@@ -103,8 +103,6 @@ class LiveCaptionControllerTest : public testing::Test {
 TEST_F(LiveCaptionControllerTest, RegisterProfilePrefsCorrect) {
   EXPECT_FALSE(
       testing_pref_service_.GetBoolean(prefs::kLiveCaptionBubbleExpanded));
-  EXPECT_FALSE(
-      testing_pref_service_.GetBoolean(prefs::kLiveCaptionBubblePinned));
   EXPECT_FALSE(testing_pref_service_.GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_FALSE(
       testing_pref_service_.GetBoolean(prefs::kLiveCaptionMaskOffensiveWords));
