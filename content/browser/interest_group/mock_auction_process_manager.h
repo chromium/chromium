@@ -434,12 +434,12 @@ class MockAuctionProcessManager
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override;
+      const std::string& display_name,
+      bool is_idle) override;
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override;
   bool TryUseSharedProcess(ProcessHandle* process_handle) override;
-  bool UsingDedicatedUtilityProcesses() override;
 
   // auction_worklet::mojom::AuctionWorkletService implementation:
   void SetTrustedSignalsCache(

@@ -96,6 +96,14 @@ class CONTENT_EXPORT AuctionProcessManager {
   class CONTENT_EXPORT WorkletProcess : public base::RefCounted<WorkletProcess>,
                                         public RenderProcessHostObserver {
    public:
+    // `is_idle` indicates whether the process will be immediately used. If not,
+    // a timer is started, and if it triggers before ActivateAndBindIfUnbound()
+    // is invoked, the AuctionProcessManager is told to delete process.
+    //
+    // `is_bound_to_origin` indicates if the process may only be used for the
+    // specified worklet_type and origin, or if it may be used for other values
+    // if needed. Only newly created idle processes may not be bound to an
+    // origin.
     WorkletProcess(
         AuctionProcessManager* auction_process_manager,
         scoped_refptr<SiteInstance> site_instance,
@@ -104,13 +112,17 @@ class CONTENT_EXPORT AuctionProcessManager {
             service,
         WorkletType worklet_type,
         const url::Origin& origin,
-        bool uses_shared_process);
+        bool uses_shared_process,
+        bool is_idle,
+        bool is_bound_to_origin);
 
     auction_worklet::mojom::AuctionWorkletService* GetService();
 
     WorkletType worklet_type() const { return worklet_type_; }
 
     const url::Origin& origin() const { return origin_; }
+
+    bool is_bound_to_origin() const { return is_bound_to_origin_; }
 
     RenderProcessHost* render_process_host() const {
       return render_process_host_;
@@ -121,9 +133,18 @@ class CONTENT_EXPORT AuctionProcessManager {
 
     void OnLaunchedWithProcess(const base::Process& process);
 
+    // Sets the worklet type and origin to these values, without
+    // binding this process to the values.
+    // This function may only be called on an unbound process
+    // (i.e. `is_bound_to_origin` is false).
     void ReassignWorkletTypeAndOrigin(WorkletType worklet_type,
                                       const url::Origin& origin);
-    void SetIsIdle(bool is_idle);
+
+    // Sets this process non-idle. Binds the worklet type and origin to these
+    // values if this process was not already bound to an origin and type. This
+    // function should only be called on an idle process.
+    void ActivateAndBindIfUnbound(WorkletType worklet_type,
+                                  const url::Origin& origin);
 
    private:
     friend class base::RefCounted<WorkletProcess>;
@@ -159,8 +180,15 @@ class CONTENT_EXPORT AuctionProcessManager {
 
     // Whether the process is idle or not. If idle, it is owned directly by the
     // AuctionProcessManager. If not, it is held by one or more
-    // ProcessHandle as scoped_refptrs.
-    bool is_idle_ = false;
+    // ProcessHandles as scoped_refptrs.
+    bool is_idle_;
+
+    // Whether the origin and worklet type are bound to this process. If this
+    // worklet has ever been used, or if it's a renderer process, the origin and
+    // type must be bound. Once bound, a WorkletProcess may never become
+    // unbound. ReassignWorkletTypeAndOrigin() may only be called on an unbound
+    // process.
+    bool is_bound_to_origin_;
 
     // When a process is set idle, this timer will start to delete it after a
     // fixed time to prevent holding onto unnecessary unused processes for too
@@ -328,7 +356,8 @@ class CONTENT_EXPORT AuctionProcessManager {
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) = 0;
+      const std::string& display_name,
+      bool is_idle) = 0;
 
   // Hook called when a new process is assigned at the end of
   // TryCreateOrGetProcessForHandle. This function is used for testing.
@@ -353,10 +382,6 @@ class CONTENT_EXPORT AuctionProcessManager {
   // used in tests.
   static std::string ComputeDisplayName(WorkletType worklet_type,
                                         const url::Origin& origin);
-
-  // Return true if a dedicated utility processes are used (rather than regular
-  // renderer processes).
-  virtual bool UsingDedicatedUtilityProcesses() = 0;
 
  private:
   // Contains ProcessHandles which have not yet been assigned processes.
@@ -463,13 +488,13 @@ class CONTENT_EXPORT DedicatedAuctionProcessManager
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override;
+      const std::string& display_name,
+      bool is_idle) override;
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override;
   bool TryUseSharedProcess(ProcessHandle* process_handle) override;
-  bool UsingDedicatedUtilityProcesses() override;
 };
 
 // An alternative implementation of AuctionProcessManager that places worklet
@@ -486,13 +511,13 @@ class CONTENT_EXPORT InRendererAuctionProcessManager
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override;
+      const std::string& display_name,
+      bool is_idle) override;
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override;
   bool TryUseSharedProcess(ProcessHandle* process_handle) override;
-  bool UsingDedicatedUtilityProcesses() override;
 
  private:
   RenderProcessHost* LaunchInSiteInstance(

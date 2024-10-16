@@ -1487,7 +1487,8 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override {
+      const std::string& display_name,
+      bool is_idle) override {
     // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
     // production code. Don't bother to delete the service on pipe close,
     // though; just keep it in a vector instead.
@@ -1498,7 +1499,8 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
     return base::MakeRefCounted<WorkletProcess>(
         this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
         std::move(service), worklet_type, origin,
-        /*uses_shared_process=*/false);
+        /*uses_shared_process=*/false, /*is_idle=*/is_idle,
+        /*is_bound_to_origin=*/true);
   }
 
   void OnNewProcessAssigned(const ProcessHandle* handle) override {
@@ -1514,8 +1516,6 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
   bool TryUseSharedProcess(ProcessHandle* process_handle) override {
     return false;
   }
-
-  bool UsingDedicatedUtilityProcesses() override { return false; }
 
   std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
       auction_worklet_services_;

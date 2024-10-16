@@ -559,7 +559,8 @@ MockAuctionProcessManager::LaunchProcess(
     WorkletType worklet_type,
     const url::Origin& origin,
     scoped_refptr<SiteInstance> site_instance,
-    const std::string& display_name) {
+    const std::string& display_name,
+    bool is_idle) {
   mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
   mojo::ReceiverId receiver_id =
       receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
@@ -579,7 +580,8 @@ MockAuctionProcessManager::LaunchProcess(
   receiver_display_name_map_[receiver_id] = display_name;
   return base::MakeRefCounted<WorkletProcess>(
       this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
-      std::move(service), worklet_type, origin, /*uses_shared_process=*/false);
+      std::move(service), worklet_type, origin, /*uses_shared_process=*/false,
+      /*is_idle=*/is_idle, /*is_bound_to_origin=*/true);
 }
 
 scoped_refptr<SiteInstance> MockAuctionProcessManager::MaybeComputeSiteInstance(
@@ -596,10 +598,6 @@ bool MockAuctionProcessManager::TryUseSharedProcess(
 void MockAuctionProcessManager::SetTrustedSignalsCache(
     mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
         trusted_signals_cache) {}
-
-bool MockAuctionProcessManager::UsingDedicatedUtilityProcesses() {
-  return false;
-}
 
 void MockAuctionProcessManager::LoadBidderWorklet(
     mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>

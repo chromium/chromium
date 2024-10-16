@@ -141,13 +141,15 @@ class TestAuctionProcessManager
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override {
+      const std::string& display_name,
+      bool is_idle) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
     RenderProcessHost* host = site_instance->GetProcess();
     return base::MakeRefCounted<WorkletProcess>(
         this, site_instance, /*render_process_host=*/host, std::move(service),
-        worklet_type, origin, /*uses_shared_process=*/false);
+        worklet_type, origin, /*uses_shared_process=*/false,
+        /*is_idle=*/is_idle, /*is_bound_to_origin=*/true);
   }
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
@@ -159,8 +161,6 @@ class TestAuctionProcessManager
   bool TryUseSharedProcess(ProcessHandle* process_handle) override {
     return false;
   }
-
-  bool UsingDedicatedUtilityProcesses() override { return true; }
 
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
       receiver_set_;
@@ -197,14 +197,17 @@ class DedicatedStyleTestAuctionProcessManager
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override {
+      const std::string& display_name,
+      bool is_idle) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
     receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
+    // Start all idle processes unbound and all non-idle processes bound.
     scoped_refptr<WorkletProcess> process =
         base::MakeRefCounted<WorkletProcess>(
             this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
             std::move(service), worklet_type, origin,
-            /*uses_shared_process=*/false);
+            /*uses_shared_process=*/false, /*is_idle=*/is_idle,
+            /*is_bound_to_origin=*/!is_idle);
     launched_processes_.push_back(process.get());
     return process;
   }
@@ -215,49 +218,45 @@ class DedicatedStyleTestAuctionProcessManager
     return nullptr;
   }
 
-  bool UsingDedicatedUtilityProcesses() override { return true; }
-
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
       receiver_set_;
 
   std::vector<WorkletProcess*> launched_processes_;
 };
 
-class AuctionProcessManagerTest
+class AuctionProcessManagerTestBase
     : public testing::TestWithParam<AuctionProcessManager::WorkletType> {
  protected:
-  AuctionProcessManagerTest()
-      : site_instance_(SiteInstance::Create(&test_browser_context_)) {}
-
-  void SetUp() override {
-    RenderProcessHostImpl::set_render_process_host_factory_for_testing(
-        &rph_factory_);
-    SiteIsolationPolicy::DisableFlagCachingForTesting();
+  void MaybeStartAnticipatoryProcess(
+      const url::Origin& origin,
+      AuctionProcessManager::WorkletType worklet_type) {
+    GetAuctionProcessManager().MaybeStartAnticipatoryProcess(
+        origin, GetSiteInstance(), worklet_type);
   }
 
-  void TearDown() override {
-    RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
+  std::string RequestWorkletServiceOutcomeUmaName(
+      AuctionProcessManager::WorkletType worklet_type) {
+    return base::StrCat(
+        {"Ads.InterestGroup.Auction.",
+         worklet_type == AuctionProcessManager::WorkletType::kSeller ? "Seller."
+                                                                     : "Buyer.",
+         "RequestWorkletServiceOutcome"});
   }
 
-  // Request a worklet service and expect the request to complete synchronously.
-  // There's no async version, since async calls are only triggered by deleting
-  // another handle.
-  std::unique_ptr<AuctionProcessManager::ProcessHandle>
-  GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
-                                const url::Origin& origin) {
-    auto process_handle =
-        std::make_unique<AuctionProcessManager::ProcessHandle>();
-    EXPECT_TRUE(auction_process_manager_.RequestWorkletService(
-        worklet_type, origin, site_instance_, process_handle.get(),
-        NeverInvokedClosure()));
-    EXPECT_TRUE(process_handle->GetService());
-    return process_handle;
-  }
-
-  // Requests a process of type GetParam().
-  std::unique_ptr<AuctionProcessManager::ProcessHandle> GetServiceExpectSuccess(
-      const url::Origin& origin) {
-    return GetServiceOfTypeExpectSuccess(GetParam(), origin);
+  void RequestWorkletService(
+      AuctionProcessManager::ProcessHandle* process_handle,
+      const url::Origin& origin,
+      AuctionProcessManager::WorkletType worklet_type,
+      bool expect_success,
+      RequestWorkletServiceOutcome expected_outcome) {
+    base::HistogramTester histogram_tester;
+    bool success = GetAuctionProcessManager().RequestWorkletService(
+        worklet_type, origin, GetSiteInstance(), process_handle,
+        base::DoNothing());
+    EXPECT_EQ(expect_success, success);
+    histogram_tester.ExpectUniqueSample(
+        RequestWorkletServiceOutcomeUmaName(worklet_type), expected_outcome,
+        1u);
   }
 
   // Returns the maximum number of processes of type GetParam().
@@ -280,13 +279,87 @@ class AuctionProcessManagerTest
   }
 
   // Returns the number of pending requests of GetParam() type.
-  size_t GetPendingRequestsOfParamType() const {
+  size_t GetPendingRequestsOfParamType() {
     switch (GetParam()) {
       case AuctionProcessManager::WorkletType::kSeller:
-        return auction_process_manager_.GetPendingSellerRequestsForTesting();
+        return GetAuctionProcessManager().GetPendingSellerRequestsForTesting();
       case AuctionProcessManager::WorkletType::kBidder:
-        return auction_process_manager_.GetPendingBidderRequestsForTesting();
+        return GetAuctionProcessManager().GetPendingBidderRequestsForTesting();
     }
+  }
+
+  size_t GetActiveProcesses(AuctionProcessManager::WorkletType type) {
+    switch (type) {
+      case AuctionProcessManager::WorkletType::kSeller:
+        return GetAuctionProcessManager().GetSellerProcessCountForTesting();
+      case AuctionProcessManager::WorkletType::kBidder:
+        return GetAuctionProcessManager().GetBidderProcessCountForTesting();
+    }
+  }
+
+  // Returns the number of active processes of GetParam() type.
+  size_t GetActiveProcessesOfParamType() {
+    return GetActiveProcesses(GetParam());
+  }
+
+  void CheckOnlyIdleProcessesWithCount(size_t expected_idle_process_count) {
+    EXPECT_EQ(GetAuctionProcessManager().GetIdleProcessCountForTesting(),
+              expected_idle_process_count);
+    EXPECT_EQ(GetAuctionProcessManager().GetBidderProcessCountForTesting(), 0u);
+    EXPECT_EQ(GetAuctionProcessManager().GetSellerProcessCountForTesting(), 0u);
+  }
+
+  virtual AuctionProcessManager& GetAuctionProcessManager() = 0;
+
+  virtual SiteInstance* GetSiteInstance() = 0;
+
+  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
+  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
+  const url::Origin kOriginC = url::Origin::Create(GURL("https://c.test"));
+
+  BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
+ protected:
+  AuctionProcessManagerTest()
+      : site_instance_(SiteInstance::Create(&test_browser_context_)) {}
+
+  void SetUp() override {
+    RenderProcessHostImpl::set_render_process_host_factory_for_testing(
+        &rph_factory_);
+    SiteIsolationPolicy::DisableFlagCachingForTesting();
+  }
+
+  void TearDown() override {
+    RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
+  }
+
+  AuctionProcessManager& GetAuctionProcessManager() override {
+    return auction_process_manager_;
+  }
+  SiteInstance* GetSiteInstance() override { return site_instance_.get(); }
+
+  // Request a worklet service and expect the request to complete synchronously.
+  // There's no async version, since async calls are only triggered by deleting
+  // another handle.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle>
+  GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
+                                const url::Origin& origin) {
+    auto process_handle =
+        std::make_unique<AuctionProcessManager::ProcessHandle>();
+    EXPECT_TRUE(auction_process_manager_.RequestWorkletService(
+        worklet_type, origin, site_instance_, process_handle.get(),
+        NeverInvokedClosure()));
+    EXPECT_TRUE(process_handle->GetService());
+    return process_handle;
+  }
+
+  // Requests a process of type GetParam().
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> GetServiceExpectSuccess(
+      const url::Origin& origin) {
+    return GetServiceOfTypeExpectSuccess(GetParam(), origin);
   }
 
   base::OnceClosure NeverInvokedClosure() {
@@ -294,16 +367,10 @@ class AuctionProcessManagerTest
         []() { ADD_FAILURE() << "This should not be called"; });
   }
 
-  BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
   TestBrowserContext test_browser_context_;
   MockRenderProcessHostFactory rph_factory_;
   scoped_refptr<SiteInstance> site_instance_;
   TestAuctionProcessManager auction_process_manager_;
-
-  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
-  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
-  const url::Origin kOriginC = url::Origin::Create(GURL("https://c.test"));
 };
 
 class DedicatedStyleAuctionProcessManagerTest
@@ -315,53 +382,8 @@ class DedicatedStyleAuctionProcessManagerTest
         {{"AnticipatoryProcessHoldTime", "10s"}});
   }
 
-  void MaybeStartAnticipatoryProcess(
-      const url::Origin& origin,
-      AuctionProcessManager::WorkletType worklet_type) {
-    auction_process_manager_.MaybeStartAnticipatoryProcess(
-        origin, site_instance_.get(), worklet_type);
-  }
-
-  std::string RequestWorkletServiceOutcomeUmaName(
-      AuctionProcessManager::WorkletType worklet_type) {
-    return base::StrCat(
-        {"Ads.InterestGroup.Auction.",
-         worklet_type == AuctionProcessManager::WorkletType::kSeller ? "Seller."
-                                                                     : "Buyer.",
-         "RequestWorkletServiceOutcome"});
-  }
-
-  void RequestWorkletService(
-      AuctionProcessManager::ProcessHandle* process_handle,
-      const url::Origin& origin,
-      AuctionProcessManager::WorkletType worklet_type,
-      bool expect_success,
-      RequestWorkletServiceOutcome expected_outcome) {
-    base::HistogramTester histogram_tester;
-    bool success = auction_process_manager_.RequestWorkletService(
-        worklet_type, origin, site_instance_.get(), process_handle,
-        base::DoNothing());
-    EXPECT_EQ(expect_success, success);
-    histogram_tester.ExpectUniqueSample(
-        RequestWorkletServiceOutcomeUmaName(worklet_type), expected_outcome,
-        1u);
-  }
-
-  // Returns the number of active processes of GetParam() type.
-  size_t GetActiveProcessesOfParamType() {
-    switch (GetParam()) {
-      case AuctionProcessManager::WorkletType::kSeller:
-        return auction_process_manager_.GetSellerProcessCountForTesting();
-      case AuctionProcessManager::WorkletType::kBidder:
-        return auction_process_manager_.GetBidderProcessCountForTesting();
-    }
-  }
-
-  void CheckOnlyIdleProcessesWithCount(size_t expected_idle_process_count) {
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
-              expected_idle_process_count);
-    EXPECT_EQ(auction_process_manager_.GetBidderProcessCountForTesting(), 0u);
-    EXPECT_EQ(auction_process_manager_.GetSellerProcessCountForTesting(), 0u);
+  AuctionProcessManager& GetAuctionProcessManager() override {
+    return auction_process_manager_;
   }
 
   DedicatedStyleTestAuctionProcessManager auction_process_manager_;
@@ -1124,14 +1146,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
       // The `process_handle` gets deleted between iterations of the for loop
       // so we'll only have 1 active process at this point.
       EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
-      if (worklet_type_to_assign ==
-          AuctionProcessManager::WorkletType::kSeller) {
-        EXPECT_EQ(auction_process_manager_.GetSellerProcessCountForTesting(),
-                  1u);
-      } else {
-        EXPECT_EQ(auction_process_manager_.GetBidderProcessCountForTesting(),
-                  1u);
-      }
+      EXPECT_EQ(GetActiveProcesses(worklet_type_to_assign), 1u);
     }
   }
 }
@@ -1308,7 +1323,8 @@ class PartialSiteIsolationContentBrowserClient
 // environment. Since this class creates SiteInstances and (implicitly)
 // BrowsingInstances, it's important that it knows whether to use
 // kOriginKeyedProcessesByDefault at the time it's constructed.
-class InRendererAuctionProcessManagerTestBase : public ::testing::Test {
+class InRendererAuctionProcessManagerTestBase
+    : public AuctionProcessManagerTestBase {
  public:
   explicit InRendererAuctionProcessManagerTestBase(
       bool disable_origin_keyed_processes_by_default) {
@@ -1316,10 +1332,16 @@ class InRendererAuctionProcessManagerTestBase : public ::testing::Test {
     // important to do it here before we create any SiteInstances, since that
     // will create BrowsingInstances, and each BrowsingInstance will create
     // a default isolation state based on kOriginKeyedProcessesByDefault.
+    std::vector<base::test::FeatureRef> disabled_features;
     if (disable_origin_keyed_processes_by_default) {
-      feature_list_.InitAndDisableFeature(
-          features::kOriginKeyedProcessesByDefault);
+      disabled_features.push_back(features::kOriginKeyedProcessesByDefault);
     }
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kFledgeStartAnticipatoryProcesses,
+          {{"AnticipatoryProcessHoldTime", "3s"}}}},
+        /*disabled_features=*/
+        disabled_features);
 
     SiteInstance::StartIsolatingSite(
         &test_browser_context_, kIsolatedOrigin.GetURL(),
@@ -1339,6 +1361,11 @@ class InRendererAuctionProcessManagerTestBase : public ::testing::Test {
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
   }
 
+  AuctionProcessManager& GetAuctionProcessManager() override {
+    return auction_process_manager_;
+  }
+  SiteInstance* GetSiteInstance() override { return site_instance1_.get(); }
+
   std::unique_ptr<AuctionProcessManager::ProcessHandle>
   GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
                                 scoped_refptr<SiteInstance> site_instance,
@@ -1357,17 +1384,19 @@ class InRendererAuctionProcessManagerTestBase : public ::testing::Test {
         []() { ADD_FAILURE() << "This should not be called"; });
   }
 
-  BrowserTaskEnvironment task_environment_;
   TestBrowserContext test_browser_context_;
   MockRenderProcessHostFactory rph_factory_;
+
+  // Make sure `scoped_command_line_` gets destructed after the
+  // `auction_process_manager_`. Otherwise idle worklet processes
+  // may try to read it after destruction.
+  base::test::ScopedCommandLine scoped_command_line_;
 
   // `site_instance1_` and `site_instance2_` are in different browsing
   // instances.
   scoped_refptr<SiteInstance> site_instance1_, site_instance2_;
   InRendererAuctionProcessManager auction_process_manager_;
 
-  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
-  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
   const url::Origin kIsolatedOrigin =
       url::Origin::Create(GURL("https://bank.test"));
 
@@ -1390,10 +1419,13 @@ class InRendererAuctionProcessManagerTest
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kSitePerProcess);
   }
-
- private:
-  base::test::ScopedCommandLine scoped_command_line_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InRendererAuctionProcessManagerTest,
+    testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                    AuctionProcessManager::WorkletType::kBidder));
 
 // A test class for AuctionProcessManager tests that require Android-like
 // behavior, i.e. site-per-process is disabled, kOriginKeyedProcessesByDefault
@@ -1425,7 +1457,6 @@ class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
   }
 
  private:
-  base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList feature_list;
   PartialSiteIsolationContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> original_browser_client_;
@@ -1493,6 +1524,39 @@ TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
       RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 1);
 }
 
+// Test that anticipatory processes are not created for origins that can use the
+// shared renderer process.
+TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+       MaybeStartAnticipatoryProcess_DoesNotStartIfSharedProcessPossible) {
+  MaybeStartAnticipatoryProcess(kOriginA,
+                                AuctionProcessManager::WorkletType::kBidder);
+  CheckOnlyIdleProcessesWithCount(0);
+}
+
+// Test that anticipatory processes can be created for isolated origins.
+TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+       MaybeStartAnticipatoryProcess_StartsProcessForIsolatedOrigin) {
+  MaybeStartAnticipatoryProcess(kIsolatedOrigin,
+                                AuctionProcessManager::WorkletType::kBidder);
+  CheckOnlyIdleProcessesWithCount(1);
+
+  // Don't use this process for an origin that can use a shared process.
+  AuctionProcessManager::ProcessHandle handle1, handle2;
+  RequestWorkletService(&handle1, kOriginA,
+                        AuctionProcessManager::WorkletType::kBidder,
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedSharedProcess);
+  CheckOnlyIdleProcessesWithCount(1);
+
+  // Can use this process for the same isolated origin.
+  RequestWorkletService(
+      &handle2, kIsolatedOrigin, AuctionProcessManager::WorkletType::kBidder,
+      /*expect_success=*/true, RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(GetActiveProcesses(AuctionProcessManager::WorkletType::kBidder),
+            1u);
+}
+
 TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   base::HistogramTester histogram_tester;
 
@@ -1553,6 +1617,236 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
       RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 3);
+}
+
+TEST_P(
+    InRendererAuctionProcessManagerTest,
+    MaybeStartAnticipatoryProcess_UsesIdleProcessOnlyForMatchingOriginAndType) {
+  CheckOnlyIdleProcessesWithCount(0);
+
+  // We only start one process when we try to create one for the same
+  // origin/type twice.
+  MaybeStartAnticipatoryProcess(kOriginA, GetParam());
+  CheckOnlyIdleProcessesWithCount(1);
+  MaybeStartAnticipatoryProcess(kOriginA, GetParam());
+  CheckOnlyIdleProcessesWithCount(1);
+
+  // We don't consume this process when we request a process for a different
+  // origin or type.
+  AuctionProcessManager::ProcessHandle handle1, handle2, handle3, handle4;
+  RequestWorkletService(
+      &handle1, kOriginB, GetParam(), /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  RequestWorkletService(
+      &handle2, kOriginA, GetParamInverse(), /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  RequestWorkletService(
+      &handle3, kOriginB, GetParamInverse(), /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  EXPECT_EQ(GetActiveProcessesOfParamType(), 1u);
+  EXPECT_EQ(GetActiveProcesses(GetParamInverse()), 2u);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+
+  // We do consume the process when we request the same type and origin.
+  RequestWorkletService(&handle4, kOriginA, GetParam(), /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(GetActiveProcessesOfParamType(), 2u);
+}
+
+TEST_P(InRendererAuctionProcessManagerTest,
+       MaybeStartAnticipatoryProcess_CorrectProcessGetsAssigned) {
+  std::vector<std::tuple<url::Origin, AuctionProcessManager::WorkletType>>
+      origins_and_types;
+  for (url::Origin origin : {kOriginA, kOriginB, kOriginC}) {
+    for (AuctionProcessManager::WorkletType type :
+         {GetParam(), GetParamInverse()}) {
+      origins_and_types.emplace_back(origin, type);
+    }
+  }
+
+  for (const auto& [origin_to_assign, type_to_assign] : origins_and_types) {
+    // Start the processes.
+    for (const auto& [origin_to_start, type_to_start] : origins_and_types) {
+      MaybeStartAnticipatoryProcess(origin_to_start, type_to_start);
+    }
+    CheckOnlyIdleProcessesWithCount(origins_and_types.size());
+
+    // Assign one of them.
+    {
+      AuctionProcessManager::ProcessHandle handle;
+      RequestWorkletService(&handle, origin_to_assign, type_to_assign,
+                            /*expect_success=*/true,
+                            RequestWorkletServiceOutcome::kUsedIdleProcess);
+      EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+                origins_and_types.size() - 1);
+      EXPECT_EQ(GetActiveProcesses(type_to_assign), 1u);
+    }
+
+    // We should be able to start a new process again
+    // because it's gone out of scope.
+    EXPECT_EQ(GetActiveProcesses(type_to_assign), 0u);
+    MaybeStartAnticipatoryProcess(origin_to_assign, type_to_assign);
+    CheckOnlyIdleProcessesWithCount(origins_and_types.size());
+
+    // Trying to start the processes again should be redundant and
+    // should not increase our process count.
+    for (const auto& [origin_to_start, type_to_start] : origins_and_types) {
+      MaybeStartAnticipatoryProcess(origin_to_start, type_to_start);
+    }
+    CheckOnlyIdleProcessesWithCount(origins_and_types.size());
+
+    // Reset the number of processes for the next loop by letting the idle
+    // processes expire. The active process has already gone out of scope.
+    task_environment_.FastForwardBy(
+        features::kFledgeStartAnticipatoryProcessExpirationTime.Get());
+    CheckOnlyIdleProcessesWithCount(0);
+  }
+}
+
+TEST_P(InRendererAuctionProcessManagerTest,
+       MaybeStartAnticipatoryProcess_RespectsLimitWithIdleProcessesOnly) {
+  for (size_t i = 0; i < GetMaxProcesses(); ++i) {
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%i.test", i)));
+    MaybeStartAnticipatoryProcess(origin, GetParam());
+    CheckOnlyIdleProcessesWithCount(i + 1);
+  }
+  // Can't make another one.
+  MaybeStartAnticipatoryProcess(kOriginA, GetParam());
+  CheckOnlyIdleProcessesWithCount(GetMaxProcesses());
+
+  // Can make an anticipatory process of the other type.
+  MaybeStartAnticipatoryProcess(kOriginA, GetParamInverse());
+  CheckOnlyIdleProcessesWithCount(GetMaxProcesses() + 1);
+
+  // Can start an active process of the other type.
+  AuctionProcessManager::ProcessHandle handle0, handle1, handle2;
+  RequestWorkletService(
+      &handle0, kOriginB, GetParamInverse(),
+      /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses() + 1);
+  EXPECT_EQ(GetActiveProcesses(GetParamInverse()), 1u);
+
+  // We can make a new process even if the origin doesn't match a
+  // previously created process of the same type. It will create a new process
+  // and evict one of our idle processes.
+  RequestWorkletService(
+      &handle1, kOriginA, GetParam(), /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses());
+  EXPECT_EQ(GetActiveProcessesOfParamType(), 1u);
+
+  // We can use one of the idle processes to make a new process if the origin
+  // and type match. We should still have a process on behalf of 1.test because
+  // the oldest one will get cleared (0.test).
+  RequestWorkletService(
+      &handle2,
+      url::Origin::Create(GURL(base::StringPrintf("https://%i.test", 1))),
+      GetParam(), /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses() - 1);
+  EXPECT_EQ(GetActiveProcessesOfParamType(), 2u);
+
+  // We should be able to make up to the limit # of processes (we've already
+  // created 2).
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>> handles;
+  for (size_t i = 0; i < GetMaxProcesses() - 2; ++i) {
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%i_2.test", i)));
+    handles.emplace_back(
+        std::make_unique<AuctionProcessManager::ProcessHandle>());
+    RequestWorkletService(
+        handles.back().get(), origin, GetParam(),
+        /*expect_success=*/true,
+        RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  }
+  // An idle process of the other type should still exist.
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(GetActiveProcessesOfParamType(), GetMaxProcesses());
+
+  // Now we will hit the process limit when we request a new process.
+  AuctionProcessManager::ProcessHandle hit_limit_handle;
+  RequestWorkletService(&hit_limit_handle, kOriginB, GetParam(),
+                        /*expect_success=*/false,
+                        RequestWorkletServiceOutcome::kHitProcessLimit);
+
+  // The idle process of the other type should not have been cleared.
+  // We should be able to use it.
+  AuctionProcessManager::ProcessHandle other_type_handle;
+  RequestWorkletService(&other_type_handle, kOriginA, GetParamInverse(),
+                        /*expect_success=*/true,
+                        RequestWorkletServiceOutcome::kUsedIdleProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(GetActiveProcessesOfParamType(), GetMaxProcesses());
+  EXPECT_EQ(GetActiveProcesses(GetParamInverse()), 2u);
+}
+
+TEST_P(InRendererAuctionProcessManagerTest,
+       MaybeStartAnticipatoryProcess_RespectsLimitWithActiveAndIdleProcesses) {
+  // Alternate making idle and active processes.
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>> handles;
+  for (size_t i = 0; i < GetMaxProcesses(); ++i) {
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%i.test", i)));
+    if (i % 2 == 0) {
+      MaybeStartAnticipatoryProcess(origin, GetParam());
+    } else {
+      handles.emplace_back(
+          std::make_unique<AuctionProcessManager::ProcessHandle>());
+      RequestWorkletService(
+          handles.back().get(), origin, GetParam(),
+          /*expect_success=*/true,
+          RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+    }
+    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+              i + 1 - handles.size());
+    EXPECT_EQ(GetActiveProcessesOfParamType(), handles.size());
+  }
+
+  // Can't make another anticipatory process.
+  MaybeStartAnticipatoryProcess(kOriginA, GetParam());
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses() - handles.size());
+  EXPECT_EQ(GetActiveProcessesOfParamType(), handles.size());
+
+  // We can evict one of the anticipatory processes to make a new active
+  // process.
+  handles.emplace_back(
+      std::make_unique<AuctionProcessManager::ProcessHandle>());
+  RequestWorkletService(
+      handles.back().get(), kOriginA, GetParam(), /*expect_success=*/true,
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
+  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+            GetMaxProcesses() - handles.size());
+  EXPECT_EQ(GetActiveProcessesOfParamType(), handles.size());
+}
+
+TEST_P(
+    InRendererAuctionProcessManagerTest,
+    MaybeStartAnticipatoryProcess_ProcessesCanBeAssignedInDifferentOrderFromHowTheyWereMade) {
+  std::vector<url::Origin> origins{kOriginA, kOriginB, kOriginC};
+  for (url::Origin origin : origins) {
+    MaybeStartAnticipatoryProcess(origin, GetParam());
+  }
+  CheckOnlyIdleProcessesWithCount(3);
+
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>> handles;
+  for (size_t i = 0; i < 3; i++) {
+    url::Origin origin = origins[2 - i];
+    std::unique_ptr<AuctionProcessManager::ProcessHandle> handle =
+        std::make_unique<AuctionProcessManager::ProcessHandle>();
+    RequestWorkletService(handle.get(), origin, GetParam(),
+                          /*expect_success=*/true,
+                          RequestWorkletServiceOutcome::kUsedIdleProcess);
+    EXPECT_EQ(GetActiveProcessesOfParamType(), i + 1u);
+    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2 - i);
+    handles.push_back(std::move(handle));
+  }
 }
 
 TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,

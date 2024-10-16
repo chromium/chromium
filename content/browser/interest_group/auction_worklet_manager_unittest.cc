@@ -565,13 +565,15 @@ class MockAuctionProcessManager
       WorkletType worklet_type,
       const url::Origin& origin,
       scoped_refptr<SiteInstance> site_instance,
-      const std::string& display_name) override {
+      const std::string& display_name,
+      bool is_idle) override {
     mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
         pending_receiver;
     auto worklet_process = base::MakeRefCounted<WorkletProcess>(
         this, /*site_instance=*/nullptr, /*render_process_host=*/nullptr,
         pending_receiver.InitWithNewPipeAndPassRemote(), worklet_type, origin,
-        /*uses_shared_process=*/false);
+        /*uses_shared_process=*/false, /*is_idle=*/is_idle,
+        /*is_bound_to_origin=*/true);
     mojo::ReceiverId receiver_id =
         receiver_set_.Add(this, std::move(pending_receiver));
 
@@ -622,8 +624,6 @@ class MockAuctionProcessManager
   bool TryUseSharedProcess(ProcessHandle* process_handle) override {
     return false;
   }
-
-  bool UsingDedicatedUtilityProcesses() override { return false; }
 
   void DisableBidderWorkletDtorPendingSignalsCheck() {
     enable_bidder_worklet_dtor_pending_signals_check_ = false;
