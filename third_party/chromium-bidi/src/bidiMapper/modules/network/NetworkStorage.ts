@@ -60,7 +60,7 @@ export class NetworkStorage {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     browserClient: CdpClient,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
@@ -79,7 +79,7 @@ export class NetworkStorage {
   #getOrCreateNetworkRequest(
     id: Network.Request,
     cdpTarget: CdpTarget,
-    redirectCount?: number
+    redirectCount?: number,
   ): NetworkRequest {
     let request = this.getRequestById(id);
     if (request) {
@@ -92,7 +92,7 @@ export class NetworkStorage {
       this,
       cdpTarget,
       redirectCount,
-      this.#logger
+      this.#logger,
     );
 
     this.addRequest(request);
@@ -116,12 +116,12 @@ export class NetworkStorage {
             this.#getOrCreateNetworkRequest(
               params.requestId,
               cdpTarget,
-              request.redirectCount + 1
+              request.redirectCount + 1,
             ).onRequestWillBeSentEvent(params);
           } else {
             this.#getOrCreateNetworkRequest(
               params.requestId,
-              cdpTarget
+              cdpTarget,
             ).onRequestWillBeSentEvent(params);
           }
         },
@@ -131,7 +131,7 @@ export class NetworkStorage {
         (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
           this.#getOrCreateNetworkRequest(
             params.requestId,
-            cdpTarget
+            cdpTarget,
           ).onRequestWillBeSentExtraInfoEvent(params);
         },
       ],
@@ -140,7 +140,7 @@ export class NetworkStorage {
         (params: Protocol.Network.ResponseReceivedEvent) => {
           this.#getOrCreateNetworkRequest(
             params.requestId,
-            cdpTarget
+            cdpTarget,
           ).onResponseReceivedEvent(params);
         },
       ],
@@ -149,7 +149,7 @@ export class NetworkStorage {
         (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
           this.#getOrCreateNetworkRequest(
             params.requestId,
-            cdpTarget
+            cdpTarget,
           ).onResponseReceivedExtraInfoEvent(params);
         },
       ],
@@ -158,7 +158,7 @@ export class NetworkStorage {
         (params: Protocol.Network.RequestServedFromCacheEvent) => {
           this.#getOrCreateNetworkRequest(
             params.requestId,
-            cdpTarget
+            cdpTarget,
           ).onServedFromCache();
         },
       ],
@@ -167,7 +167,7 @@ export class NetworkStorage {
         (params: Protocol.Network.LoadingFailedEvent) => {
           this.#getOrCreateNetworkRequest(
             params.requestId,
-            cdpTarget
+            cdpTarget,
           ).onLoadingFailedEvent(params);
         },
       ],
@@ -177,7 +177,7 @@ export class NetworkStorage {
           this.#getOrCreateNetworkRequest(
             // CDP quirk if the Network domain is not present this is undefined
             event.networkId ?? event.requestId,
-            cdpTarget
+            cdpTarget,
           ).onRequestPaused(event);
         },
       ],
@@ -188,7 +188,7 @@ export class NetworkStorage {
           if (!request) {
             request = this.#getOrCreateNetworkRequest(
               event.requestId,
-              cdpTarget
+              cdpTarget,
             );
           }
 
@@ -217,13 +217,13 @@ export class NetworkStorage {
       }
 
       stages.request ||= intercept.phases.includes(
-        Network.InterceptPhase.BeforeRequestSent
+        Network.InterceptPhase.BeforeRequestSent,
       );
       stages.response ||= intercept.phases.includes(
-        Network.InterceptPhase.ResponseStarted
+        Network.InterceptPhase.ResponseStarted,
       );
       stages.auth ||= intercept.phases.includes(
-        Network.InterceptPhase.AuthRequired
+        Network.InterceptPhase.AuthRequired,
       );
     }
 
@@ -232,7 +232,7 @@ export class NetworkStorage {
 
   getInterceptsForPhase(
     request: NetworkRequest,
-    phase: Network.InterceptPhase
+    phase: Network.InterceptPhase,
   ): Set<Network.Intercept> {
     if (request.url === NetworkRequest.unknownParameter) {
       return new Set();
@@ -292,7 +292,7 @@ export class NetworkStorage {
   removeIntercept(intercept: Network.Intercept) {
     if (!this.#intercepts.has(intercept)) {
       throw new NoSuchInterceptException(
-        `Intercept '${intercept}' does not exist.`
+        `Intercept '${intercept}' does not exist.`,
       );
     }
     this.#intercepts.delete(intercept);
@@ -333,7 +333,7 @@ export class NetworkStorage {
   }
 
   set defaultCacheBehavior(
-    behavior: Network.SetCacheBehaviorParameters['cacheBehavior']
+    behavior: Network.SetCacheBehaviorParameters['cacheBehavior'],
   ) {
     this.#defaultCacheBehavior = behavior;
   }

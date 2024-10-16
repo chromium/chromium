@@ -71,7 +71,7 @@ export class CdpTarget {
     networkStorage: NetworkStorage,
     prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -85,7 +85,7 @@ export class CdpTarget {
       networkStorage,
       prerenderingDisabled,
       unhandledPromptBehavior,
-      logger
+      logger,
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
@@ -111,7 +111,7 @@ export class CdpTarget {
     networkStorage: NetworkStorage,
     prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
@@ -172,7 +172,7 @@ export class CdpTarget {
         this.#cdpClient
           .sendCommand('Page.getFrameTree')
           .then((frameTree) =>
-            this.#restoreFrameTreeState(frameTree.frameTree)
+            this.#restoreFrameTreeState(frameTree.frameTree),
           ),
         this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
@@ -235,7 +235,7 @@ export class CdpTarget {
       // Restore not yet known nested frames. The top-level frame is created when the
       // target is attached.
       const parentBrowsingContext = this.#browsingContextStorage.getContext(
-        frame.parentId
+        frame.parentId,
       );
       BrowsingContextImpl.create(
         frame.id,
@@ -248,11 +248,11 @@ export class CdpTarget {
         frame.url,
         undefined,
         this.#unhandledPromptBehavior,
-        this.#logger
+        this.#logger,
       );
     }
     frameTree.childFrames?.map((frameTree) =>
-      this.#restoreFrameTreeState(frameTree)
+      this.#restoreFrameTreeState(frameTree),
     );
   }
 
@@ -354,7 +354,7 @@ export class CdpTarget {
     this.#deviceAccessEnabled = enabled;
     try {
       await this.#cdpClient.sendCommand(
-        enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+        enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable',
       );
     } catch (err) {
       this.#logger?.(LogType.debugError, err);
@@ -395,7 +395,7 @@ export class CdpTarget {
             session: this.cdpSessionId,
           },
         },
-        this.id
+        this.id,
       );
     });
   }
@@ -421,7 +421,7 @@ export class CdpTarget {
         })
         .map((script) => {
           return script.initInTarget(this, true);
-        })
+        }),
     );
   }
 
@@ -434,7 +434,7 @@ export class CdpTarget {
   isSubscribedTo(moduleOrEvent: ChromiumBidi.EventNames): boolean {
     return this.#eventManager.subscriptionManager.isSubscribedTo(
       moduleOrEvent,
-      this.topLevelId
+      this.topLevelId,
     );
   }
 }

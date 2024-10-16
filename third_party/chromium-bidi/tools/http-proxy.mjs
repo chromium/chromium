@@ -24,7 +24,6 @@
 import http from 'node:http';
 
 function log(...args) {
-  // eslint-disable-next-line no-console
   console.log(...args);
 }
 
@@ -40,10 +39,10 @@ const proxyServer = http
       (proxyResponse) => {
         originalResponse.writeHead(
           proxyResponse.statusCode,
-          proxyResponse.headers
+          proxyResponse.headers,
         );
         proxyResponse.pipe(originalResponse, {end: true});
-      }
+      },
     );
 
     originalRequest.pipe(proxyRequest, {end: true});

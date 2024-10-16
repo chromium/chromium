@@ -38,19 +38,19 @@ export class BrowsingContextProcessor {
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
-    eventManager: EventManager
+    eventManager: EventManager,
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
     this.#eventManager.addSubscribeHook(
       ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-      this.#onContextCreatedSubscribeHook.bind(this)
+      this.#onContextCreatedSubscribeHook.bind(this),
     );
   }
 
   getTree(
-    params: BrowsingContext.GetTreeParameters
+    params: BrowsingContext.GetTreeParameters,
   ): BrowsingContext.GetTreeResult {
     const resultContexts =
       params.root === undefined
@@ -59,23 +59,23 @@ export class BrowsingContextProcessor {
 
     return {
       contexts: resultContexts.map((c) =>
-        c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
+        c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE),
       ),
     };
   }
 
   async create(
-    params: BrowsingContext.CreateParameters
+    params: BrowsingContext.CreateParameters,
   ): Promise<BrowsingContext.CreateResult> {
     let referenceContext: BrowsingContextImpl | undefined;
     let userContext = 'default';
     if (params.referenceContext !== undefined) {
       referenceContext = this.#browsingContextStorage.getContext(
-        params.referenceContext
+        params.referenceContext,
       );
       if (!referenceContext.isTopLevelContext()) {
         throw new InvalidArgumentException(
-          `referenceContext should be a top-level context`
+          `referenceContext should be a top-level context`,
         );
       }
       userContext = referenceContext.userContext;
@@ -118,13 +118,13 @@ export class BrowsingContextProcessor {
       if (
         // See https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/protocol/target_handler.cc;l=90;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
         (err as Error).message.startsWith(
-          'Failed to find browser context with id'
+          'Failed to find browser context with id',
         ) ||
         // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
         (err as Error).message === 'browserContextId'
       ) {
         throw new NoSuchUserContextException(
-          `The context ${userContext} was not found`
+          `The context ${userContext} was not found`,
         );
       }
       throw err;
@@ -133,7 +133,7 @@ export class BrowsingContextProcessor {
     // Wait for the new target to be attached and to be added to the browsing context
     // storage.
     const context = await this.#browsingContextStorage.waitForContext(
-      result.targetId
+      result.targetId,
     );
     // Wait for the new tab to be loaded to avoid race conditions in the
     // `browsingContext` events, when the `browsingContext.domContentLoaded` and
@@ -146,13 +146,13 @@ export class BrowsingContextProcessor {
   }
 
   navigate(
-    params: BrowsingContext.NavigateParameters
+    params: BrowsingContext.NavigateParameters,
   ): Promise<BrowsingContext.NavigateResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
 
     return context.navigate(
       params.url,
-      params.wait ?? BrowsingContext.ReadinessState.None
+      params.wait ?? BrowsingContext.ReadinessState.None,
     );
   }
 
@@ -161,17 +161,17 @@ export class BrowsingContextProcessor {
 
     return context.reload(
       params.ignoreCache ?? false,
-      params.wait ?? BrowsingContext.ReadinessState.None
+      params.wait ?? BrowsingContext.ReadinessState.None,
     );
   }
 
   async activate(
-    params: BrowsingContext.ActivateParameters
+    params: BrowsingContext.ActivateParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     if (!context.isTopLevelContext()) {
       throw new InvalidArgumentException(
-        'Activation is only supported on the top-level context'
+        'Activation is only supported on the top-level context',
       );
     }
     await context.activate();
@@ -179,26 +179,26 @@ export class BrowsingContextProcessor {
   }
 
   async captureScreenshot(
-    params: BrowsingContext.CaptureScreenshotParameters
+    params: BrowsingContext.CaptureScreenshotParameters,
   ): Promise<BrowsingContext.CaptureScreenshotResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.captureScreenshot(params);
   }
 
   async print(
-    params: BrowsingContext.PrintParameters
+    params: BrowsingContext.PrintParameters,
   ): Promise<BrowsingContext.PrintResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.print(params);
   }
 
   async setViewport(
-    params: BrowsingContext.SetViewportParameters
+    params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     if (!context.isTopLevelContext()) {
       throw new InvalidArgumentException(
-        'Emulating viewport is only supported on the top-level context'
+        'Emulating viewport is only supported on the top-level context',
       );
     }
     await context.setViewport(params.viewport, params.devicePixelRatio);
@@ -206,17 +206,17 @@ export class BrowsingContextProcessor {
   }
 
   async traverseHistory(
-    params: BrowsingContext.TraverseHistoryParameters
+    params: BrowsingContext.TraverseHistoryParameters,
   ): Promise<BrowsingContext.TraverseHistoryResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     if (!context) {
       throw new InvalidArgumentException(
-        `No browsing context with id ${params.context}`
+        `No browsing context with id ${params.context}`,
       );
     }
     if (!context.isTopLevelContext()) {
       throw new InvalidArgumentException(
-        'Traversing history is only supported on the top-level context'
+        'Traversing history is only supported on the top-level context',
       );
     }
     await context.traverseHistory(params.delta);
@@ -224,7 +224,7 @@ export class BrowsingContextProcessor {
   }
 
   async handleUserPrompt(
-    params: BrowsingContext.HandleUserPromptParameters
+    params: BrowsingContext.HandleUserPromptParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     try {
@@ -245,7 +245,7 @@ export class BrowsingContextProcessor {
 
     if (!context.isTopLevelContext()) {
       throw new InvalidArgumentException(
-        `Non top-level browsing context ${context.id} cannot be closed.`
+        `Non top-level browsing context ${context.id} cannot be closed.`,
       );
     }
     // Parent session of a page target session can be a `browser` or a `tab` session.
@@ -253,12 +253,12 @@ export class BrowsingContextProcessor {
     try {
       const detachedFromTargetPromise = new Promise<void>((resolve) => {
         const onContextDestroyed = (
-          event: Protocol.Target.DetachedFromTargetEvent
+          event: Protocol.Target.DetachedFromTargetEvent,
         ) => {
           if (event.targetId === params.context) {
             parentCdpClient.off(
               'Target.detachedFromTarget',
-              onContextDestroyed
+              onContextDestroyed,
             );
             resolve();
           }
@@ -302,14 +302,14 @@ export class BrowsingContextProcessor {
   }
 
   async locateNodes(
-    params: BrowsingContext.LocateNodesParameters
+    params: BrowsingContext.LocateNodesParameters,
   ): Promise<BrowsingContext.LocateNodesResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.locateNodes(params);
   }
 
   #onContextCreatedSubscribeHook(
-    contextId: BrowsingContext.BrowsingContext
+    contextId: BrowsingContext.BrowsingContext,
   ): Promise<void> {
     const context = this.#browsingContextStorage.getContext(contextId);
     const contextsToReport = [
@@ -323,7 +323,7 @@ export class BrowsingContextProcessor {
           method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
           params: context.serializeToBidiValue(),
         },
-        context.id
+        context.id,
       );
     });
     return Promise.resolve();

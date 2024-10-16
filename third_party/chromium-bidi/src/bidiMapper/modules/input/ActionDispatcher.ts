@@ -55,18 +55,18 @@ const IS_MAC_DECL = (() => {
 
 async function getElementCenter(
   context: BrowsingContextImpl,
-  element: Script.SharedReference
+  element: Script.SharedReference,
 ) {
   const sandbox = await context.getOrCreateSandbox(undefined);
   const result = await sandbox.callFunction(
     CALCULATE_IN_VIEW_CENTER_PT_DECL,
     false,
     {type: 'undefined'},
-    [element]
+    [element],
   );
   if (result.type === 'exception') {
     throw new NoSuchElementException(
-      `Origin element ${element.sharedId} was not found`
+      `Origin element ${element.sharedId} was not found`,
     );
   }
   assert(result.result.type === 'array');
@@ -98,7 +98,7 @@ export class ActionDispatcher {
   constructor(
     inputState: InputState,
     context: BrowsingContextImpl,
-    isMacOS: boolean
+    isMacOS: boolean,
   ) {
     this.#inputState = inputState;
     this.#context = context;
@@ -106,7 +106,7 @@ export class ActionDispatcher {
   }
 
   async dispatchActions(
-    optionsByTick: readonly (readonly Readonly<ActionOption>[])[]
+    optionsByTick: readonly (readonly Readonly<ActionOption>[])[],
   ) {
     await this.#inputState.queue.run(async () => {
       for (const options of optionsByTick) {
@@ -116,7 +116,7 @@ export class ActionDispatcher {
   }
 
   async dispatchTickActions(
-    options: readonly Readonly<ActionOption>[]
+    options: readonly Readonly<ActionOption>[],
   ): Promise<void> {
     this.#tickStart = performance.now();
     this.#tickDuration = 0;
@@ -167,7 +167,7 @@ export class ActionDispatcher {
         await this.#dispatchPointerDownAction(
           source as PointerSource,
           keyState,
-          action
+          action,
         );
         this.#inputState.cancelList.push({
           id,
@@ -183,7 +183,7 @@ export class ActionDispatcher {
         await this.#dispatchPointerMoveAction(
           source as PointerSource,
           keyState,
-          action
+          action,
         );
         break;
       }
@@ -192,7 +192,7 @@ export class ActionDispatcher {
         await this.#dispatchPointerUpAction(
           source as PointerSource,
           keyState,
-          action
+          action,
         );
         break;
       }
@@ -201,7 +201,7 @@ export class ActionDispatcher {
         await this.#dispatchScrollAction(
           source as WheelSource,
           keyState,
-          action
+          action,
         );
         break;
       }
@@ -211,7 +211,7 @@ export class ActionDispatcher {
   async #dispatchPointerDownAction(
     source: PointerSource,
     keyState: KeySource,
-    action: Readonly<Input.PointerDownAction>
+    action: Readonly<Input.PointerDownAction>,
   ) {
     const {button} = action;
     if (source.pressed.has(button)) {
@@ -240,7 +240,7 @@ export class ActionDispatcher {
             buttons: source.buttons,
             clickCount: source.setClickCount(
               button,
-              new PointerSource.ClickContext(x, y, performance.now())
+              new PointerSource.ClickContext(x, y, performance.now()),
             ),
             pointerType,
             tangentialPressure,
@@ -248,7 +248,7 @@ export class ActionDispatcher {
             tiltY,
             twist,
             force: pressure,
-          }
+          },
         );
         break;
       case Input.PointerType.Touch:
@@ -271,7 +271,7 @@ export class ActionDispatcher {
               },
             ],
             modifiers,
-          }
+          },
         );
         break;
     }
@@ -284,7 +284,7 @@ export class ActionDispatcher {
   #dispatchPointerUpAction(
     source: PointerSource,
     keyState: KeySource,
-    action: Readonly<Input.PointerUpAction>
+    action: Readonly<Input.PointerUpAction>,
   ) {
     const {button} = action;
     if (!source.pressed.has(button)) {
@@ -310,7 +310,7 @@ export class ActionDispatcher {
             buttons: source.buttons,
             clickCount: source.getClickCount(button),
             pointerType,
-          }
+          },
         );
       case Input.PointerType.Touch:
         return this.#context.cdpTarget.cdpClient.sendCommand(
@@ -328,7 +328,7 @@ export class ActionDispatcher {
               },
             ],
             modifiers,
-          }
+          },
         );
     }
     // --- Platform-specific code ends here ---
@@ -337,7 +337,7 @@ export class ActionDispatcher {
   async #dispatchPointerMoveAction(
     source: PointerSource,
     keyState: KeySource,
-    action: Readonly<Input.PointerMoveAction>
+    action: Readonly<Input.PointerMoveAction>,
   ): Promise<void> {
     const {x: startX, y: startY, subtype: pointerType} = source;
     const {
@@ -359,12 +359,12 @@ export class ActionDispatcher {
       offsetX,
       offsetY,
       startX,
-      startY
+      startY,
     );
 
     if (targetX < 0 || targetY < 0) {
       throw new MoveTargetOutOfBoundsException(
-        `Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`
+        `Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`,
       );
     }
 
@@ -406,7 +406,7 @@ export class ActionDispatcher {
                 tiltY,
                 twist,
                 force: pressure,
-              }
+              },
             );
             break;
           case Input.PointerType.Pen:
@@ -427,7 +427,7 @@ export class ActionDispatcher {
                   modifiers,
                   clickCount: 0,
                   button: getCdpButton(
-                    source.pressed.values().next().value ?? 5
+                    source.pressed.values().next().value ?? 5,
                   ),
                   buttons: source.buttons,
                   pointerType,
@@ -436,7 +436,7 @@ export class ActionDispatcher {
                   tiltY,
                   twist,
                   force: pressure ?? 0.5,
-                }
+                },
               );
             }
             break;
@@ -461,7 +461,7 @@ export class ActionDispatcher {
                     },
                   ],
                   modifiers,
-                }
+                },
               );
             }
             break;
@@ -482,7 +482,7 @@ export class ActionDispatcher {
     offsetX: number,
     offsetY: number,
     startX: number,
-    startY: number
+    startY: number,
   ) {
     let targetX: number;
     let targetY: number;
@@ -498,7 +498,7 @@ export class ActionDispatcher {
       default: {
         const {x: posX, y: posY} = await getElementCenter(
           this.#context,
-          origin.element
+          origin.element,
         );
         // SAFETY: These can never be special numbers.
         targetX = posX + offsetX;
@@ -512,7 +512,7 @@ export class ActionDispatcher {
   async #dispatchScrollAction(
     _source: WheelSource,
     keyState: KeySource,
-    action: Readonly<Input.WheelScrollAction>
+    action: Readonly<Input.WheelScrollAction>,
   ): Promise<void> {
     const {
       deltaX: targetDeltaX,
@@ -525,7 +525,7 @@ export class ActionDispatcher {
 
     if (origin === 'pointer') {
       throw new InvalidArgumentException(
-        '"pointer" origin is invalid for scrolling.'
+        '"pointer" origin is invalid for scrolling.',
       );
     }
 
@@ -534,12 +534,12 @@ export class ActionDispatcher {
       offsetX,
       offsetY,
       0,
-      0
+      0,
     );
 
     if (targetX < 0 || targetY < 0) {
       throw new MoveTargetOutOfBoundsException(
-        `Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`
+        `Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`,
       );
     }
 
@@ -573,7 +573,7 @@ export class ActionDispatcher {
             x: targetX,
             y: targetY,
             modifiers,
-          }
+          },
         );
         // --- Platform-specific code ends here ---
 
@@ -585,7 +585,7 @@ export class ActionDispatcher {
 
   async #dispatchKeyDownAction(
     source: KeySource,
-    action: Readonly<Input.KeyDownAction>
+    action: Readonly<Input.KeyDownAction>,
   ) {
     const rawKey = action.value;
     if (!isSingleGrapheme(rawKey)) {
@@ -668,7 +668,7 @@ export class ActionDispatcher {
         ((this.#isMacOS && !source.ctrl && !source.meta) || !this.#isMacOS)
       ) {
         promises.push(
-          this.#context.cdpTarget.cdpClient.sendCommand('Input.cancelDragging')
+          this.#context.cdpTarget.cdpClient.sendCommand('Input.cancelDragging'),
         );
       }
     }
@@ -725,7 +725,7 @@ export class ActionDispatcher {
         isSystemKey: source.alt || undefined,
         isKeypad: location === 3,
         modifiers,
-      }
+      },
     );
     // --- Platform-specific code ends here ---
   }
@@ -738,7 +738,7 @@ export class ActionDispatcher {
 const getKeyEventUnmodifiedText = (
   key: string,
   source: KeySource,
-  isGrapheme: boolean
+  isGrapheme: boolean,
 ) => {
   if (isGrapheme) {
     // Graphemes should be presented as text in the CDP command.
@@ -919,7 +919,7 @@ function getTilt(action: {azimuthAngle?: number; altitudeAngle?: number}): {
 
 function getRadii(
   width: number,
-  height: number
+  height: number,
 ): {radiusX: number; radiusY: number} {
   return {
     radiusX: width ? width / 2 : 0.5,

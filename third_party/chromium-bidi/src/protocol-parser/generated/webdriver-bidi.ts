@@ -32,7 +32,7 @@ export const EventSchema = z.lazy(() =>
       type: z.literal('event'),
     })
     .and(EventDataSchema)
-    .and(ExtensibleSchema)
+    .and(ExtensibleSchema),
 );
 export const CommandSchema = z.lazy(() =>
   z
@@ -40,7 +40,7 @@ export const CommandSchema = z.lazy(() =>
       id: JsUintSchema,
     })
     .and(CommandDataSchema)
-    .and(ExtensibleSchema)
+    .and(ExtensibleSchema),
 );
 export const CommandResponseSchema = z.lazy(() =>
   z
@@ -49,7 +49,7 @@ export const CommandResponseSchema = z.lazy(() =>
       id: JsUintSchema,
       result: ResultDataSchema,
     })
-    .and(ExtensibleSchema)
+    .and(ExtensibleSchema),
 );
 export const EventDataSchema = z.lazy(() =>
   z.union([
@@ -57,7 +57,7 @@ export const EventDataSchema = z.lazy(() =>
     LogEventSchema,
     NetworkEventSchema,
     ScriptEventSchema,
-  ])
+  ]),
 );
 export const CommandDataSchema = z.lazy(() =>
   z.union([
@@ -68,7 +68,7 @@ export const CommandDataSchema = z.lazy(() =>
     ScriptCommandSchema,
     SessionCommandSchema,
     StorageCommandSchema,
-  ])
+  ]),
 );
 export const ResultDataSchema = z.lazy(() =>
   z.union([
@@ -78,11 +78,11 @@ export const ResultDataSchema = z.lazy(() =>
     ScriptResultSchema,
     SessionResultSchema,
     StorageResultSchema,
-  ])
+  ]),
 );
 export const EmptyParamsSchema = z.lazy(() => ExtensibleSchema);
 export const MessageSchema = z.lazy(() =>
-  z.union([CommandResponseSchema, ErrorResponseSchema, EventSchema])
+  z.union([CommandResponseSchema, ErrorResponseSchema, EventSchema]),
 );
 export const ErrorResponseSchema = z.lazy(() =>
   z
@@ -93,7 +93,7 @@ export const ErrorResponseSchema = z.lazy(() =>
       message: z.string(),
       stacktrace: z.string().optional(),
     })
-    .and(ExtensibleSchema)
+    .and(ExtensibleSchema),
 );
 export const EmptyResultSchema = z.lazy(() => ExtensibleSchema);
 export const ExtensibleSchema = z.lazy(() => z.record(z.string(), z.any()));
@@ -134,7 +134,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'unknown command',
     'unknown error',
     'unsupported operation',
-  ])
+  ]),
 );
 export const SessionCommandSchema = z.lazy(() =>
   z.union([
@@ -143,7 +143,7 @@ export const SessionCommandSchema = z.lazy(() =>
     Session.StatusSchema,
     Session.SubscribeSchema,
     Session.UnsubscribeSchema,
-  ])
+  ]),
 );
 export namespace Session {
   export const ProxyConfigurationSchema = z.lazy(() =>
@@ -154,18 +154,18 @@ export namespace Session {
       Session.PacProxyConfigurationSchema,
       Session.SystemProxyConfigurationSchema,
       z.object({}),
-    ])
+    ]),
   );
 }
 export const SessionResultSchema = z.lazy(() =>
-  z.union([Session.NewResultSchema, Session.StatusResultSchema])
+  z.union([Session.NewResultSchema, Session.StatusResultSchema]),
 );
 export namespace Session {
   export const CapabilitiesRequestSchema = z.lazy(() =>
     z.object({
       alwaysMatch: Session.CapabilityRequestSchema.optional(),
       firstMatch: z.array(Session.CapabilityRequestSchema).optional(),
-    })
+    }),
   );
 }
 export namespace Session {
@@ -179,7 +179,7 @@ export namespace Session {
         proxy: Session.ProxyConfigurationSchema.optional(),
         unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Session {
@@ -188,7 +188,7 @@ export namespace Session {
       .object({
         proxyType: z.literal('autodetect'),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Session {
@@ -197,7 +197,7 @@ export namespace Session {
       .object({
         proxyType: z.literal('direct'),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Session {
@@ -213,9 +213,9 @@ export namespace Session {
       .and(
         z.object({
           noProxy: z.array(z.string()).optional(),
-        })
+        }),
       )
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Session {
@@ -223,7 +223,7 @@ export namespace Session {
     z.object({
       socksProxy: z.string(),
       socksVersion: z.number().int().nonnegative().gte(0).lte(255),
-    })
+    }),
   );
 }
 export namespace Session {
@@ -233,7 +233,7 @@ export namespace Session {
         proxyType: z.literal('pac'),
         proxyAutoconfigUrl: z.string(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Session {
@@ -242,7 +242,7 @@ export namespace Session {
       .object({
         proxyType: z.literal('system'),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Session {
@@ -253,12 +253,12 @@ export namespace Session {
       confirm: Session.UserPromptHandlerTypeSchema.optional(),
       default: Session.UserPromptHandlerTypeSchema.optional(),
       prompt: Session.UserPromptHandlerTypeSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Session {
   export const UserPromptHandlerTypeSchema = z.lazy(() =>
-    z.enum(['accept', 'dismiss', 'ignore'])
+    z.enum(['accept', 'dismiss', 'ignore']),
   );
 }
 export namespace Session {
@@ -269,7 +269,7 @@ export namespace Session {
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
         .optional(),
-    })
+    }),
   );
 }
 export namespace Session {
@@ -277,7 +277,7 @@ export namespace Session {
     z.object({
       method: z.literal('session.status'),
       params: EmptyParamsSchema,
-    })
+    }),
   );
 }
 export namespace Session {
@@ -285,7 +285,7 @@ export namespace Session {
     z.object({
       ready: z.boolean(),
       message: z.string(),
-    })
+    }),
   );
 }
 export namespace Session {
@@ -293,14 +293,14 @@ export namespace Session {
     z.object({
       method: z.literal('session.new'),
       params: Session.NewParametersSchema,
-    })
+    }),
   );
 }
 export namespace Session {
   export const NewParametersSchema = z.lazy(() =>
     z.object({
       capabilities: Session.CapabilitiesRequestSchema,
-    })
+    }),
   );
 }
 export namespace Session {
@@ -320,7 +320,7 @@ export namespace Session {
           webSocketUrl: z.string().optional(),
         })
         .and(ExtensibleSchema),
-    })
+    }),
   );
 }
 export namespace Session {
@@ -328,7 +328,7 @@ export namespace Session {
     z.object({
       method: z.literal('session.end'),
       params: EmptyParamsSchema,
-    })
+    }),
   );
 }
 export namespace Session {
@@ -336,7 +336,7 @@ export namespace Session {
     z.object({
       method: z.literal('session.subscribe'),
       params: Session.SubscriptionRequestSchema,
-    })
+    }),
   );
 }
 export namespace Session {
@@ -344,7 +344,7 @@ export namespace Session {
     z.object({
       method: z.literal('session.unsubscribe'),
       params: Session.SubscriptionRequestSchema,
-    })
+    }),
   );
 }
 export const BrowserCommandSchema = z.lazy(() =>
@@ -356,13 +356,13 @@ export const BrowserCommandSchema = z.lazy(() =>
     Browser.RemoveUserContextSchema,
     Browser.SetClientWindowStateSchema,
     z.object({}),
-  ])
+  ]),
 );
 export const BrowserResultSchema = z.lazy(() =>
   z.union([
     Browser.CreateUserContextResultSchema,
     Browser.GetUserContextsResultSchema,
-  ])
+  ]),
 );
 export namespace Browser {
   export const ClientWindowSchema = z.lazy(() => z.string());
@@ -377,7 +377,7 @@ export namespace Browser {
       width: JsUintSchema,
       x: JsIntSchema,
       y: JsIntSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -387,7 +387,7 @@ export namespace Browser {
   export const UserContextInfoSchema = z.lazy(() =>
     z.object({
       userContext: Browser.UserContextSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -395,7 +395,7 @@ export namespace Browser {
     z.object({
       method: z.literal('browser.close'),
       params: EmptyParamsSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -403,12 +403,12 @@ export namespace Browser {
     z.object({
       method: z.literal('browser.createUserContext'),
       params: EmptyParamsSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
   export const CreateUserContextResultSchema = z.lazy(
-    () => Browser.UserContextInfoSchema
+    () => Browser.UserContextInfoSchema,
   );
 }
 export namespace Browser {
@@ -416,14 +416,14 @@ export namespace Browser {
     z.object({
       method: z.literal('browser.getClientWindows'),
       params: EmptyParamsSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
   export const GetClientWindowsResultSchema = z.lazy(() =>
     z.object({
       clientWindows: z.array(Browser.ClientWindowInfoSchema),
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -431,14 +431,14 @@ export namespace Browser {
     z.object({
       method: z.literal('browser.getUserContexts'),
       params: EmptyParamsSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
   export const GetUserContextsResultSchema = z.lazy(() =>
     z.object({
       userContexts: z.array(Browser.UserContextInfoSchema).min(1),
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -446,14 +446,14 @@ export namespace Browser {
     z.object({
       method: z.literal('browser.removeUserContext'),
       params: Browser.RemoveUserContextParametersSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
   export const RemoveUserContextParametersSchema = z.lazy(() =>
     z.object({
       userContext: Browser.UserContextSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -461,7 +461,7 @@ export namespace Browser {
     z.object({
       method: z.literal('browser.setClientWindowState'),
       params: Browser.SetClientWindowStateParametersSchema,
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -473,14 +473,14 @@ export namespace Browser {
         })
         .and(Browser.ClientWindowNamedStateSchema),
       Browser.ClientWindowRectStateSchema,
-    ])
+    ]),
   );
 }
 export namespace Browser {
   export const ClientWindowNamedStateSchema = z.lazy(() =>
     z.object({
       state: z.enum(['fullscreen', 'maximized', 'minimized']),
-    })
+    }),
   );
 }
 export namespace Browser {
@@ -491,7 +491,7 @@ export namespace Browser {
       height: JsUintSchema.optional(),
       x: JsIntSchema.optional(),
       y: JsIntSchema.optional(),
-    })
+    }),
   );
 }
 export const BrowsingContextCommandSchema = z.lazy(() =>
@@ -508,7 +508,7 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
     BrowsingContext.ReloadSchema,
     BrowsingContext.SetViewportSchema,
     BrowsingContext.TraverseHistorySchema,
-  ])
+  ]),
 );
 export const BrowsingContextEventSchema = z.lazy(() =>
   z.union([
@@ -523,7 +523,7 @@ export const BrowsingContextEventSchema = z.lazy(() =>
     BrowsingContext.NavigationStartedSchema,
     BrowsingContext.UserPromptClosedSchema,
     BrowsingContext.UserPromptOpenedSchema,
-  ])
+  ]),
 );
 export const BrowsingContextResultSchema = z.lazy(() =>
   z.union([
@@ -534,14 +534,14 @@ export const BrowsingContextResultSchema = z.lazy(() =>
     BrowsingContext.NavigateResultSchema,
     BrowsingContext.PrintResultSchema,
     BrowsingContext.TraverseHistoryResultSchema,
-  ])
+  ]),
 );
 export namespace BrowsingContext {
   export const BrowsingContextSchema = z.lazy(() => z.string());
 }
 export namespace BrowsingContext {
   export const InfoListSchema = z.lazy(() =>
-    z.array(BrowsingContext.InfoSchema)
+    z.array(BrowsingContext.InfoSchema),
   );
 }
 export namespace BrowsingContext {
@@ -559,7 +559,7 @@ export namespace BrowsingContext {
       parent: z
         .union([BrowsingContext.BrowsingContextSchema, z.null()])
         .optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -569,7 +569,7 @@ export namespace BrowsingContext {
       BrowsingContext.CssLocatorSchema,
       BrowsingContext.InnerTextLocatorSchema,
       BrowsingContext.XPathLocatorSchema,
-    ])
+    ]),
   );
 }
 export namespace BrowsingContext {
@@ -580,7 +580,7 @@ export namespace BrowsingContext {
         name: z.string().optional(),
         role: z.string().optional(),
       }),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -588,7 +588,7 @@ export namespace BrowsingContext {
     z.object({
       type: z.literal('css'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -599,7 +599,7 @@ export namespace BrowsingContext {
       ignoreCase: z.boolean().optional(),
       matchType: z.enum(['full', 'partial']).optional(),
       maxDepth: JsUintSchema.optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -607,7 +607,7 @@ export namespace BrowsingContext {
     z.object({
       type: z.literal('xpath'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -620,17 +620,17 @@ export namespace BrowsingContext {
       navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
       timestamp: JsUintSchema,
       url: z.string(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const ReadinessStateSchema = z.lazy(() =>
-    z.enum(['none', 'interactive', 'complete'])
+    z.enum(['none', 'interactive', 'complete']),
   );
 }
 export namespace BrowsingContext {
   export const UserPromptTypeSchema = z.lazy(() =>
-    z.enum(['alert', 'beforeunload', 'confirm', 'prompt'])
+    z.enum(['alert', 'beforeunload', 'confirm', 'prompt']),
   );
 }
 export namespace BrowsingContext {
@@ -638,14 +638,14 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.activate'),
       params: BrowsingContext.ActivateParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const ActivateParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -655,7 +655,7 @@ export namespace BrowsingContext {
       origin: z.enum(['viewport', 'document']).default('viewport').optional(),
       format: BrowsingContext.ImageFormatSchema.optional(),
       clip: BrowsingContext.ClipRectangleSchema.optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -663,7 +663,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.captureScreenshot'),
       params: BrowsingContext.CaptureScreenshotParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -671,7 +671,7 @@ export namespace BrowsingContext {
     z.object({
       type: z.string(),
       quality: z.number().gte(0).lte(1).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -679,7 +679,7 @@ export namespace BrowsingContext {
     z.union([
       BrowsingContext.BoxClipRectangleSchema,
       BrowsingContext.ElementClipRectangleSchema,
-    ])
+    ]),
   );
 }
 export namespace BrowsingContext {
@@ -687,7 +687,7 @@ export namespace BrowsingContext {
     z.object({
       type: z.literal('element'),
       element: Script.SharedReferenceSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -698,14 +698,14 @@ export namespace BrowsingContext {
       y: z.number(),
       width: z.number(),
       height: z.number(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const CaptureScreenshotResultSchema = z.lazy(() =>
     z.object({
       data: z.string(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -713,7 +713,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.close'),
       params: BrowsingContext.CloseParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -721,7 +721,7 @@ export namespace BrowsingContext {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       promptUnload: z.boolean().default(false).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -729,7 +729,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.create'),
       params: BrowsingContext.CreateParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -742,14 +742,14 @@ export namespace BrowsingContext {
       referenceContext: BrowsingContext.BrowsingContextSchema.optional(),
       background: z.boolean().default(false).optional(),
       userContext: Browser.UserContextSchema.optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const CreateResultSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -757,7 +757,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.getTree'),
       params: BrowsingContext.GetTreeParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -765,14 +765,14 @@ export namespace BrowsingContext {
     z.object({
       maxDepth: JsUintSchema.optional(),
       root: BrowsingContext.BrowsingContextSchema.optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const GetTreeResultSchema = z.lazy(() =>
     z.object({
       contexts: BrowsingContext.InfoListSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -780,7 +780,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.handleUserPrompt'),
       params: BrowsingContext.HandleUserPromptParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -789,7 +789,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       accept: z.boolean().optional(),
       userText: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -800,7 +800,7 @@ export namespace BrowsingContext {
       maxNodeCount: JsUintSchema.gte(1).optional(),
       serializationOptions: Script.SerializationOptionsSchema.optional(),
       startNodes: z.array(Script.SharedReferenceSchema).min(1).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -808,14 +808,14 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.locateNodes'),
       params: BrowsingContext.LocateNodesParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const LocateNodesResultSchema = z.lazy(() =>
     z.object({
       nodes: z.array(Script.NodeRemoteValueSchema),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -823,7 +823,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.navigate'),
       params: BrowsingContext.NavigateParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -832,7 +832,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       url: z.string(),
       wait: BrowsingContext.ReadinessStateSchema.optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -840,7 +840,7 @@ export namespace BrowsingContext {
     z.object({
       navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
       url: z.string(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -848,7 +848,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.print'),
       params: BrowsingContext.PrintParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -865,7 +865,7 @@ export namespace BrowsingContext {
       pageRanges: z.array(z.union([JsUintSchema, z.string()])).optional(),
       scale: z.number().gte(0.1).lte(2).default(1).optional(),
       shrinkToFit: z.boolean().default(true).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -875,7 +875,7 @@ export namespace BrowsingContext {
       left: z.number().gte(0).default(1).optional(),
       right: z.number().gte(0).default(1).optional(),
       top: z.number().gte(0).default(1).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -883,14 +883,14 @@ export namespace BrowsingContext {
     z.object({
       height: z.number().gte(0.0352).default(27.94).optional(),
       width: z.number().gte(0.0352).default(21.59).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
   export const PrintResultSchema = z.lazy(() =>
     z.object({
       data: z.string(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -898,7 +898,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.reload'),
       params: BrowsingContext.ReloadParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -907,7 +907,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       ignoreCache: z.boolean().optional(),
       wait: BrowsingContext.ReadinessStateSchema.optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -915,7 +915,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.setViewport'),
       params: BrowsingContext.SetViewportParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -924,7 +924,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       viewport: z.union([BrowsingContext.ViewportSchema, z.null()]).optional(),
       devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -932,7 +932,7 @@ export namespace BrowsingContext {
     z.object({
       width: JsUintSchema,
       height: JsUintSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -940,7 +940,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.traverseHistory'),
       params: BrowsingContext.TraverseHistoryParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -948,7 +948,7 @@ export namespace BrowsingContext {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       delta: JsIntSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -959,7 +959,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.contextCreated'),
       params: BrowsingContext.InfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -967,7 +967,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.contextDestroyed'),
       params: BrowsingContext.InfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -975,7 +975,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.navigationStarted'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -983,7 +983,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.fragmentNavigated'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -991,7 +991,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.domContentLoaded'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -999,7 +999,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.load'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1007,7 +1007,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.downloadWillBegin'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1015,7 +1015,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.navigationAborted'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1023,7 +1023,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.navigationFailed'),
       params: BrowsingContext.NavigationInfoSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1031,7 +1031,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.userPromptClosed'),
       params: BrowsingContext.UserPromptClosedParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1041,7 +1041,7 @@ export namespace BrowsingContext {
       accepted: z.boolean(),
       type: BrowsingContext.UserPromptTypeSchema,
       userText: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1049,7 +1049,7 @@ export namespace BrowsingContext {
     z.object({
       method: z.literal('browsingContext.userPromptOpened'),
       params: BrowsingContext.UserPromptOpenedParametersSchema,
-    })
+    }),
   );
 }
 export namespace BrowsingContext {
@@ -1060,7 +1060,7 @@ export namespace BrowsingContext {
       message: z.string(),
       type: BrowsingContext.UserPromptTypeSchema,
       defaultValue: z.string().optional(),
-    })
+    }),
   );
 }
 export const NetworkCommandSchema = z.lazy(() =>
@@ -1073,7 +1073,7 @@ export const NetworkCommandSchema = z.lazy(() =>
     Network.ProvideResponseSchema,
     Network.RemoveInterceptSchema,
     Network.SetCacheBehaviorSchema,
-  ])
+  ]),
 );
 export const NetworkEventSchema = z.lazy(() =>
   z.union([
@@ -1082,17 +1082,17 @@ export const NetworkEventSchema = z.lazy(() =>
     Network.FetchErrorSchema,
     Network.ResponseCompletedSchema,
     Network.ResponseStartedSchema,
-  ])
+  ]),
 );
 export const NetworkResultSchema = z.lazy(
-  () => Network.AddInterceptResultSchema
+  () => Network.AddInterceptResultSchema,
 );
 export namespace Network {
   export const AuthChallengeSchema = z.lazy(() =>
     z.object({
       scheme: z.string(),
       realm: z.string(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1101,7 +1101,7 @@ export namespace Network {
       type: z.literal('password'),
       username: z.string(),
       password: z.string(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1114,12 +1114,12 @@ export namespace Network {
       request: Network.RequestDataSchema,
       timestamp: JsUintSchema,
       intercepts: z.array(Network.InterceptSchema).min(1).optional(),
-    })
+    }),
   );
 }
 export namespace Network {
   export const BytesValueSchema = z.lazy(() =>
-    z.union([Network.StringValueSchema, Network.Base64ValueSchema])
+    z.union([Network.StringValueSchema, Network.Base64ValueSchema]),
   );
 }
 export namespace Network {
@@ -1127,7 +1127,7 @@ export namespace Network {
     z.object({
       type: z.literal('string'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1135,7 +1135,7 @@ export namespace Network {
     z.object({
       type: z.literal('base64'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1155,7 +1155,7 @@ export namespace Network {
         sameSite: Network.SameSiteSchema,
         expiry: JsUintSchema.optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Network {
@@ -1163,7 +1163,7 @@ export namespace Network {
     z.object({
       name: z.string(),
       value: Network.BytesValueSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1182,7 +1182,7 @@ export namespace Network {
       requestStart: z.number(),
       responseStart: z.number(),
       responseEnd: z.number(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1190,7 +1190,7 @@ export namespace Network {
     z.object({
       name: z.string(),
       value: Network.BytesValueSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1201,7 +1201,7 @@ export namespace Network {
       lineNumber: JsUintSchema.optional(),
       stackTrace: Script.StackTraceSchema.optional(),
       request: Network.RequestSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1221,14 +1221,14 @@ export namespace Network {
       headersSize: JsUintSchema,
       bodySize: z.union([JsUintSchema, z.null()]),
       timings: Network.FetchTimingInfoSchema,
-    })
+    }),
   );
 }
 export namespace Network {
   export const ResponseContentSchema = z.lazy(() =>
     z.object({
       size: JsUintSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1246,7 +1246,7 @@ export namespace Network {
       bodySize: z.union([JsUintSchema, z.null()]),
       content: Network.ResponseContentSchema,
       authChallenges: z.array(Network.AuthChallengeSchema).optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1261,12 +1261,12 @@ export namespace Network {
       path: z.string().optional(),
       sameSite: Network.SameSiteSchema.optional(),
       secure: z.boolean().optional(),
-    })
+    }),
   );
 }
 export namespace Network {
   export const UrlPatternSchema = z.lazy(() =>
-    z.union([Network.UrlPatternPatternSchema, Network.UrlPatternStringSchema])
+    z.union([Network.UrlPatternPatternSchema, Network.UrlPatternStringSchema]),
   );
 }
 export namespace Network {
@@ -1278,7 +1278,7 @@ export namespace Network {
       port: z.string().optional(),
       pathname: z.string().optional(),
       search: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1286,7 +1286,7 @@ export namespace Network {
     z.object({
       type: z.literal('string'),
       pattern: z.string(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1298,7 +1298,7 @@ export namespace Network {
         .min(1)
         .optional(),
       urlPatterns: z.array(Network.UrlPatternSchema).optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1306,19 +1306,19 @@ export namespace Network {
     z.object({
       method: z.literal('network.addIntercept'),
       params: Network.AddInterceptParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
   export const InterceptPhaseSchema = z.lazy(() =>
-    z.enum(['beforeRequestSent', 'responseStarted', 'authRequired'])
+    z.enum(['beforeRequestSent', 'responseStarted', 'authRequired']),
   );
 }
 export namespace Network {
   export const AddInterceptResultSchema = z.lazy(() =>
     z.object({
       intercept: Network.InterceptSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1326,7 +1326,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.continueRequest'),
       params: Network.ContinueRequestParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1338,7 +1338,7 @@ export namespace Network {
       headers: z.array(Network.HeaderSchema).optional(),
       method: z.string().optional(),
       url: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1346,7 +1346,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.continueResponse'),
       params: Network.ContinueResponseParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1358,7 +1358,7 @@ export namespace Network {
       headers: z.array(Network.HeaderSchema).optional(),
       reasonPhrase: z.string().optional(),
       statusCode: JsUintSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1366,7 +1366,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.continueWithAuth'),
       params: Network.ContinueWithAuthParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1379,8 +1379,8 @@ export namespace Network {
         z.union([
           Network.ContinueWithAuthCredentialsSchema,
           Network.ContinueWithAuthNoCredentialsSchema,
-        ])
-      )
+        ]),
+      ),
   );
 }
 export namespace Network {
@@ -1388,14 +1388,14 @@ export namespace Network {
     z.object({
       action: z.literal('provideCredentials'),
       credentials: Network.AuthCredentialsSchema,
-    })
+    }),
   );
 }
 export namespace Network {
   export const ContinueWithAuthNoCredentialsSchema = z.lazy(() =>
     z.object({
       action: z.enum(['default', 'cancel']),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1403,14 +1403,14 @@ export namespace Network {
     z.object({
       method: z.literal('network.failRequest'),
       params: Network.FailRequestParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
   export const FailRequestParametersSchema = z.lazy(() =>
     z.object({
       request: Network.RequestSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1418,7 +1418,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.provideResponse'),
       params: Network.ProvideResponseParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1430,7 +1430,7 @@ export namespace Network {
       headers: z.array(Network.HeaderSchema).optional(),
       reasonPhrase: z.string().optional(),
       statusCode: JsUintSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1438,14 +1438,14 @@ export namespace Network {
     z.object({
       method: z.literal('network.removeIntercept'),
       params: Network.RemoveInterceptParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
   export const RemoveInterceptParametersSchema = z.lazy(() =>
     z.object({
       intercept: Network.InterceptSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1453,7 +1453,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.setCacheBehavior'),
       params: Network.SetCacheBehaviorParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1464,7 +1464,7 @@ export namespace Network {
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
         .optional(),
-    })
+    }),
   );
 }
 export const ScriptEventSchema = z.lazy(() =>
@@ -1472,15 +1472,15 @@ export const ScriptEventSchema = z.lazy(() =>
     Script.MessageSchema,
     Script.RealmCreatedSchema,
     Script.RealmDestroyedSchema,
-  ])
+  ]),
 );
 export namespace Network {
   export const AuthRequiredParametersSchema = z.lazy(() =>
     Network.BaseParametersSchema.and(
       z.object({
         response: Network.ResponseDataSchema,
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Network {
@@ -1488,8 +1488,8 @@ export namespace Network {
     Network.BaseParametersSchema.and(
       z.object({
         initiator: Network.InitiatorSchema,
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Network {
@@ -1497,8 +1497,8 @@ export namespace Network {
     Network.BaseParametersSchema.and(
       z.object({
         errorText: z.string(),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Network {
@@ -1506,8 +1506,8 @@ export namespace Network {
     Network.BaseParametersSchema.and(
       z.object({
         response: Network.ResponseDataSchema,
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Network {
@@ -1515,8 +1515,8 @@ export namespace Network {
     Network.BaseParametersSchema.and(
       z.object({
         response: Network.ResponseDataSchema,
-      })
-    )
+      }),
+    ),
   );
 }
 export const ScriptCommandSchema = z.lazy(() =>
@@ -1527,21 +1527,21 @@ export const ScriptCommandSchema = z.lazy(() =>
     Script.EvaluateSchema,
     Script.GetRealmsSchema,
     Script.RemovePreloadScriptSchema,
-  ])
+  ]),
 );
 export const ScriptResultSchema = z.lazy(() =>
   z.union([
     Script.AddPreloadScriptResultSchema,
     Script.EvaluateResultSchema,
     Script.GetRealmsResultSchema,
-  ])
+  ]),
 );
 export namespace Network {
   export const AuthRequiredSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.authRequired'),
       params: Network.AuthRequiredParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1549,7 +1549,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.beforeRequestSent'),
       params: Network.BeforeRequestSentParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1557,7 +1557,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.fetchError'),
       params: Network.FetchErrorParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1565,7 +1565,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.responseCompleted'),
       params: Network.ResponseCompletedParametersSchema,
-    })
+    }),
   );
 }
 export namespace Network {
@@ -1573,7 +1573,7 @@ export namespace Network {
     z.object({
       method: z.literal('network.responseStarted'),
       params: Network.ResponseStartedParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1585,7 +1585,7 @@ export namespace Script {
       type: z.literal('success'),
       result: Script.RemoteValueSchema,
       realm: Script.RealmSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1596,7 +1596,7 @@ export namespace Script {
       lineNumber: JsUintSchema,
       stackTrace: Script.StackTraceSchema,
       text: z.string(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1604,7 +1604,7 @@ export namespace Script {
     z.object({
       type: z.literal('channel'),
       value: Script.ChannelPropertiesSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1613,7 +1613,7 @@ export namespace Script {
       channel: Script.ChannelSchema,
       serializationOptions: Script.SerializationOptionsSchema.optional(),
       ownership: Script.ResultOwnershipSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1621,7 +1621,7 @@ export namespace Script {
     z.union([
       Script.EvaluateResultSuccessSchema,
       Script.EvaluateResultExceptionSchema,
-    ])
+    ]),
   );
 }
 export namespace Script {
@@ -1630,7 +1630,7 @@ export namespace Script {
       type: z.literal('exception'),
       exceptionDetails: Script.ExceptionDetailsSchema,
       realm: Script.RealmSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1641,7 +1641,7 @@ export namespace Script {
 }
 export namespace Script {
   export const ListLocalValueSchema = z.lazy(() =>
-    z.array(Script.LocalValueSchema)
+    z.array(Script.LocalValueSchema),
   );
 }
 export namespace Script {
@@ -1656,7 +1656,7 @@ export namespace Script {
       Script.ObjectLocalValueSchema,
       Script.RegExpLocalValueSchema,
       Script.SetLocalValueSchema,
-    ])
+    ]),
   );
 }
 export namespace Script {
@@ -1664,7 +1664,7 @@ export namespace Script {
     z.object({
       type: z.literal('array'),
       value: Script.ListLocalValueSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1672,7 +1672,7 @@ export namespace Script {
     z.object({
       type: z.literal('date'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1681,8 +1681,8 @@ export namespace Script {
       z.tuple([
         z.union([Script.LocalValueSchema, z.string()]),
         Script.LocalValueSchema,
-      ])
-    )
+      ]),
+    ),
   );
 }
 export namespace Script {
@@ -1690,7 +1690,7 @@ export namespace Script {
     z.object({
       type: z.literal('map'),
       value: Script.MappingLocalValueSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1698,7 +1698,7 @@ export namespace Script {
     z.object({
       type: z.literal('object'),
       value: Script.MappingLocalValueSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1706,7 +1706,7 @@ export namespace Script {
     z.object({
       pattern: z.string(),
       flags: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1714,7 +1714,7 @@ export namespace Script {
     z.object({
       type: z.literal('regexp'),
       value: Script.RegExpValueSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1722,7 +1722,7 @@ export namespace Script {
     z.object({
       type: z.literal('set'),
       value: Script.ListLocalValueSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1740,21 +1740,21 @@ export namespace Script {
       Script.NumberValueSchema,
       Script.BooleanValueSchema,
       Script.BigIntValueSchema,
-    ])
+    ]),
   );
 }
 export namespace Script {
   export const UndefinedValueSchema = z.lazy(() =>
     z.object({
       type: z.literal('undefined'),
-    })
+    }),
   );
 }
 export namespace Script {
   export const NullValueSchema = z.lazy(() =>
     z.object({
       type: z.literal('null'),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1762,12 +1762,12 @@ export namespace Script {
     z.object({
       type: z.literal('string'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const SpecialNumberSchema = z.lazy(() =>
-    z.enum(['NaN', '-0', 'Infinity', '-Infinity'])
+    z.enum(['NaN', '-0', 'Infinity', '-Infinity']),
   );
 }
 export namespace Script {
@@ -1775,7 +1775,7 @@ export namespace Script {
     z.object({
       type: z.literal('number'),
       value: z.union([z.number(), Script.SpecialNumberSchema]),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1783,7 +1783,7 @@ export namespace Script {
     z.object({
       type: z.literal('boolean'),
       value: z.boolean(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1791,7 +1791,7 @@ export namespace Script {
     z.object({
       type: z.literal('bigint'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1805,7 +1805,7 @@ export namespace Script {
       Script.PaintWorkletRealmInfoSchema,
       Script.AudioWorkletRealmInfoSchema,
       Script.WorkletRealmInfoSchema,
-    ])
+    ]),
   );
 }
 export namespace Script {
@@ -1813,7 +1813,7 @@ export namespace Script {
     z.object({
       realm: Script.RealmSchema,
       origin: z.string(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1823,8 +1823,8 @@ export namespace Script {
         type: z.literal('window'),
         context: BrowsingContext.BrowsingContextSchema,
         sandbox: z.string().optional(),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1833,8 +1833,8 @@ export namespace Script {
       z.object({
         type: z.literal('dedicated-worker'),
         owners: z.tuple([Script.RealmSchema]),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1842,8 +1842,8 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('shared-worker'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1851,8 +1851,8 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('service-worker'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1860,8 +1860,8 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('worker'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1869,8 +1869,8 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('paint-worklet'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1878,8 +1878,8 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('audio-worklet'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1887,8 +1887,8 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('worklet'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Script {
@@ -1902,12 +1902,12 @@ export namespace Script {
       'paint-worklet',
       'audio-worklet',
       'worklet',
-    ])
+    ]),
   );
 }
 export namespace Script {
   export const ListRemoteValueSchema = z.lazy(() =>
-    z.array(Script.RemoteValueSchema)
+    z.array(Script.RemoteValueSchema),
   );
 }
 export namespace Script {
@@ -1916,8 +1916,8 @@ export namespace Script {
       z.tuple([
         z.union([Script.RemoteValueSchema, z.string()]),
         Script.RemoteValueSchema,
-      ])
-    )
+      ]),
+    ),
   );
 }
 export namespace Script {
@@ -1944,12 +1944,12 @@ export namespace Script {
       Script.HtmlCollectionRemoteValueSchema,
       Script.NodeRemoteValueSchema,
       Script.WindowProxyRemoteValueSchema,
-    ])
+    ]),
   );
 }
 export namespace Script {
   export const RemoteReferenceSchema = z.lazy(() =>
-    z.union([Script.SharedReferenceSchema, Script.RemoteObjectReferenceSchema])
+    z.union([Script.SharedReferenceSchema, Script.RemoteObjectReferenceSchema]),
   );
 }
 export namespace Script {
@@ -1959,7 +1959,7 @@ export namespace Script {
         sharedId: Script.SharedIdSchema,
         handle: Script.HandleSchema.optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Script {
@@ -1969,7 +1969,7 @@ export namespace Script {
         handle: Script.HandleSchema,
         sharedId: Script.SharedIdSchema.optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Script {
@@ -1978,7 +1978,7 @@ export namespace Script {
       type: z.literal('symbol'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1988,7 +1988,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.ListRemoteValueSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -1998,7 +1998,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.MappingRemoteValueSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2007,7 +2007,7 @@ export namespace Script {
       type: z.literal('function'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2017,7 +2017,7 @@ export namespace Script {
         handle: Script.HandleSchema.optional(),
         internalId: Script.InternalIdSchema.optional(),
       })
-      .and(Script.RegExpLocalValueSchema)
+      .and(Script.RegExpLocalValueSchema),
   );
 }
 export namespace Script {
@@ -2027,7 +2027,7 @@ export namespace Script {
         handle: Script.HandleSchema.optional(),
         internalId: Script.InternalIdSchema.optional(),
       })
-      .and(Script.DateLocalValueSchema)
+      .and(Script.DateLocalValueSchema),
   );
 }
 export namespace Script {
@@ -2037,7 +2037,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.MappingRemoteValueSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2047,7 +2047,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.ListRemoteValueSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2056,7 +2056,7 @@ export namespace Script {
       type: z.literal('weakmap'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2065,7 +2065,7 @@ export namespace Script {
       type: z.literal('weakset'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2074,7 +2074,7 @@ export namespace Script {
       type: z.literal('generator'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2083,7 +2083,7 @@ export namespace Script {
       type: z.literal('error'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2092,7 +2092,7 @@ export namespace Script {
       type: z.literal('proxy'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2101,7 +2101,7 @@ export namespace Script {
       type: z.literal('promise'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2110,7 +2110,7 @@ export namespace Script {
       type: z.literal('typedarray'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2119,7 +2119,7 @@ export namespace Script {
       type: z.literal('arraybuffer'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2129,7 +2129,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.ListRemoteValueSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2139,7 +2139,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.ListRemoteValueSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2150,7 +2150,7 @@ export namespace Script {
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
       value: Script.NodePropertiesSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2165,7 +2165,7 @@ export namespace Script {
       namespaceURI: z.string().optional(),
       nodeValue: z.string().optional(),
       shadowRoot: z.union([Script.NodeRemoteValueSchema, z.null()]).optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2175,14 +2175,14 @@ export namespace Script {
       value: Script.WindowProxyPropertiesSchema,
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const WindowProxyPropertiesSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2200,7 +2200,7 @@ export namespace Script {
         .enum(['none', 'open', 'all'])
         .default('none')
         .optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2213,14 +2213,14 @@ export namespace Script {
       functionName: z.string(),
       lineNumber: JsUintSchema,
       url: z.string(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const StackTraceSchema = z.lazy(() =>
     z.object({
       callFrames: z.array(Script.StackFrameSchema),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2228,14 +2228,14 @@ export namespace Script {
     z.object({
       realm: Script.RealmSchema,
       context: BrowsingContext.BrowsingContextSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const RealmTargetSchema = z.lazy(() =>
     z.object({
       realm: Script.RealmSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2243,12 +2243,12 @@ export namespace Script {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       sandbox: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const TargetSchema = z.lazy(() =>
-    z.union([Script.ContextTargetSchema, Script.RealmTargetSchema])
+    z.union([Script.ContextTargetSchema, Script.RealmTargetSchema]),
   );
 }
 export namespace Script {
@@ -2256,7 +2256,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.addPreloadScript'),
       params: Script.AddPreloadScriptParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2269,14 +2269,14 @@ export namespace Script {
         .min(1)
         .optional(),
       sandbox: z.string().optional(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const AddPreloadScriptResultSchema = z.lazy(() =>
     z.object({
       script: Script.PreloadScriptSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2284,7 +2284,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.disown'),
       params: Script.DisownParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2292,7 +2292,7 @@ export namespace Script {
     z.object({
       handles: z.array(Script.HandleSchema),
       target: Script.TargetSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2306,7 +2306,7 @@ export namespace Script {
       serializationOptions: Script.SerializationOptionsSchema.optional(),
       this: Script.LocalValueSchema.optional(),
       userActivation: z.boolean().default(false).optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2314,7 +2314,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.callFunction'),
       params: Script.CallFunctionParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2322,7 +2322,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.evaluate'),
       params: Script.EvaluateParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2334,7 +2334,7 @@ export namespace Script {
       resultOwnership: Script.ResultOwnershipSchema.optional(),
       serializationOptions: Script.SerializationOptionsSchema.optional(),
       userActivation: z.boolean().default(false).optional(),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2342,7 +2342,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.getRealms'),
       params: Script.GetRealmsParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2350,14 +2350,14 @@ export namespace Script {
     z.object({
       context: BrowsingContext.BrowsingContextSchema.optional(),
       type: Script.RealmTypeSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Script {
   export const GetRealmsResultSchema = z.lazy(() =>
     z.object({
       realms: z.array(Script.RealmInfoSchema),
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2365,14 +2365,14 @@ export namespace Script {
     z.object({
       method: z.literal('script.removePreloadScript'),
       params: Script.RemovePreloadScriptParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
   export const RemovePreloadScriptParametersSchema = z.lazy(() =>
     z.object({
       script: Script.PreloadScriptSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2381,7 +2381,7 @@ export namespace Script {
       channel: Script.ChannelSchema,
       data: Script.RemoteValueSchema,
       source: Script.SourceSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2389,7 +2389,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.realmCreated'),
       params: Script.RealmInfoSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2397,7 +2397,7 @@ export namespace Script {
     z.object({
       method: z.literal('script.message'),
       params: Script.MessageParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
@@ -2405,14 +2405,14 @@ export namespace Script {
     z.object({
       method: z.literal('script.realmDestroyed'),
       params: Script.RealmDestroyedParametersSchema,
-    })
+    }),
   );
 }
 export namespace Script {
   export const RealmDestroyedParametersSchema = z.lazy(() =>
     z.object({
       realm: Script.RealmSchema,
-    })
+    }),
   );
 }
 export const StorageCommandSchema = z.lazy(() =>
@@ -2420,14 +2420,14 @@ export const StorageCommandSchema = z.lazy(() =>
     Storage.DeleteCookiesSchema,
     Storage.GetCookiesSchema,
     Storage.SetCookieSchema,
-  ])
+  ]),
 );
 export const StorageResultSchema = z.lazy(() =>
   z.union([
     Storage.DeleteCookiesResultSchema,
     Storage.GetCookiesResultSchema,
     Storage.SetCookieResultSchema,
-  ])
+  ]),
 );
 export namespace Storage {
   export const PartitionKeySchema = z.lazy(() =>
@@ -2436,7 +2436,7 @@ export namespace Storage {
         userContext: z.string().optional(),
         sourceOrigin: z.string().optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Storage {
@@ -2444,7 +2444,7 @@ export namespace Storage {
     z.object({
       method: z.literal('storage.getCookies'),
       params: Storage.GetCookiesParametersSchema,
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2461,7 +2461,7 @@ export namespace Storage {
         sameSite: Network.SameSiteSchema.optional(),
         expiry: JsUintSchema.optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Storage {
@@ -2469,7 +2469,7 @@ export namespace Storage {
     z.object({
       type: z.literal('context'),
       context: BrowsingContext.BrowsingContextSchema,
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2480,7 +2480,7 @@ export namespace Storage {
         userContext: z.string().optional(),
         sourceOrigin: z.string().optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Storage {
@@ -2488,7 +2488,7 @@ export namespace Storage {
     z.union([
       Storage.BrowsingContextPartitionDescriptorSchema,
       Storage.StorageKeyPartitionDescriptorSchema,
-    ])
+    ]),
   );
 }
 export namespace Storage {
@@ -2496,7 +2496,7 @@ export namespace Storage {
     z.object({
       filter: Storage.CookieFilterSchema.optional(),
       partition: Storage.PartitionDescriptorSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2504,7 +2504,7 @@ export namespace Storage {
     z.object({
       cookies: z.array(Network.CookieSchema),
       partitionKey: Storage.PartitionKeySchema,
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2512,7 +2512,7 @@ export namespace Storage {
     z.object({
       method: z.literal('storage.setCookie'),
       params: Storage.SetCookieParametersSchema,
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2528,7 +2528,7 @@ export namespace Storage {
         sameSite: Network.SameSiteSchema.optional(),
         expiry: JsUintSchema.optional(),
       })
-      .and(ExtensibleSchema)
+      .and(ExtensibleSchema),
   );
 }
 export namespace Storage {
@@ -2536,14 +2536,14 @@ export namespace Storage {
     z.object({
       cookie: Storage.PartialCookieSchema,
       partition: Storage.PartitionDescriptorSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Storage {
   export const SetCookieResultSchema = z.lazy(() =>
     z.object({
       partitionKey: Storage.PartitionKeySchema,
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2551,7 +2551,7 @@ export namespace Storage {
     z.object({
       method: z.literal('storage.deleteCookies'),
       params: Storage.DeleteCookiesParametersSchema,
-    })
+    }),
   );
 }
 export namespace Storage {
@@ -2559,20 +2559,20 @@ export namespace Storage {
     z.object({
       filter: Storage.CookieFilterSchema.optional(),
       partition: Storage.PartitionDescriptorSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Storage {
   export const DeleteCookiesResultSchema = z.lazy(() =>
     z.object({
       partitionKey: Storage.PartitionKeySchema,
-    })
+    }),
   );
 }
 export const LogEventSchema = z.lazy(() => Log.EntryAddedSchema);
 export namespace Log {
   export const LevelSchema = z.lazy(() =>
-    z.enum(['debug', 'info', 'warn', 'error'])
+    z.enum(['debug', 'info', 'warn', 'error']),
   );
 }
 export namespace Log {
@@ -2581,7 +2581,7 @@ export namespace Log {
       Log.GenericLogEntrySchema,
       Log.ConsoleLogEntrySchema,
       Log.JavascriptLogEntrySchema,
-    ])
+    ]),
   );
 }
 export namespace Log {
@@ -2592,7 +2592,7 @@ export namespace Log {
       text: z.union([z.string(), z.null()]),
       timestamp: JsUintSchema,
       stackTrace: Script.StackTraceSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Log {
@@ -2600,8 +2600,8 @@ export namespace Log {
     Log.BaseLogEntrySchema.and(
       z.object({
         type: z.string(),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Log {
@@ -2611,8 +2611,8 @@ export namespace Log {
         type: z.literal('console'),
         method: z.string(),
         args: z.array(Script.RemoteValueSchema),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Log {
@@ -2620,8 +2620,8 @@ export namespace Log {
     Log.BaseLogEntrySchema.and(
       z.object({
         type: z.literal('javascript'),
-      })
-    )
+      }),
+    ),
   );
 }
 export namespace Log {
@@ -2629,7 +2629,7 @@ export namespace Log {
     z.object({
       method: z.literal('log.entryAdded'),
       params: Log.EntrySchema,
-    })
+    }),
   );
 }
 export const InputCommandSchema = z.lazy(() =>
@@ -2637,14 +2637,14 @@ export const InputCommandSchema = z.lazy(() =>
     Input.PerformActionsSchema,
     Input.ReleaseActionsSchema,
     Input.SetFilesSchema,
-  ])
+  ]),
 );
 export namespace Input {
   export const ElementOriginSchema = z.lazy(() =>
     z.object({
       type: z.literal('element'),
       element: Script.SharedReferenceSchema,
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2652,7 +2652,7 @@ export namespace Input {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       actions: z.array(Input.SourceActionsSchema),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2661,7 +2661,7 @@ export namespace Input {
       type: z.literal('none'),
       id: z.string(),
       actions: z.array(Input.NoneSourceActionSchema),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2670,7 +2670,7 @@ export namespace Input {
       type: z.literal('key'),
       id: z.string(),
       actions: z.array(Input.KeySourceActionSchema),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2680,7 +2680,7 @@ export namespace Input {
       id: z.string(),
       parameters: Input.PointerParametersSchema.optional(),
       actions: z.array(Input.PointerSourceActionSchema),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2688,7 +2688,7 @@ export namespace Input {
     z.object({
       method: z.literal('input.performActions'),
       params: Input.PerformActionsParametersSchema,
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2698,7 +2698,7 @@ export namespace Input {
       Input.KeySourceActionsSchema,
       Input.PointerSourceActionsSchema,
       Input.WheelSourceActionsSchema,
-    ])
+    ]),
   );
 }
 export namespace Input {
@@ -2710,19 +2710,19 @@ export namespace Input {
       Input.PauseActionSchema,
       Input.KeyDownActionSchema,
       Input.KeyUpActionSchema,
-    ])
+    ]),
   );
 }
 export namespace Input {
   export const PointerTypeSchema = z.lazy(() =>
-    z.enum(['mouse', 'pen', 'touch'])
+    z.enum(['mouse', 'pen', 'touch']),
   );
 }
 export namespace Input {
   export const PointerParametersSchema = z.lazy(() =>
     z.object({
       pointerType: Input.PointerTypeSchema.default('mouse').optional(),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2731,7 +2731,7 @@ export namespace Input {
       type: z.literal('wheel'),
       id: z.string(),
       actions: z.array(Input.WheelSourceActionSchema),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2741,12 +2741,12 @@ export namespace Input {
       Input.PointerDownActionSchema,
       Input.PointerUpActionSchema,
       Input.PointerMoveActionSchema,
-    ])
+    ]),
   );
 }
 export namespace Input {
   export const WheelSourceActionSchema = z.lazy(() =>
-    z.union([Input.PauseActionSchema, Input.WheelScrollActionSchema])
+    z.union([Input.PauseActionSchema, Input.WheelScrollActionSchema]),
   );
 }
 export namespace Input {
@@ -2754,7 +2754,7 @@ export namespace Input {
     z.object({
       type: z.literal('pause'),
       duration: JsUintSchema.optional(),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2762,7 +2762,7 @@ export namespace Input {
     z.object({
       type: z.literal('keyDown'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2770,7 +2770,7 @@ export namespace Input {
     z.object({
       type: z.literal('keyUp'),
       value: z.string(),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2778,7 +2778,7 @@ export namespace Input {
     z.object({
       type: z.literal('pointerUp'),
       button: JsUintSchema,
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2788,7 +2788,7 @@ export namespace Input {
         type: z.literal('pointerDown'),
         button: JsUintSchema,
       })
-      .and(Input.PointerCommonPropertiesSchema)
+      .and(Input.PointerCommonPropertiesSchema),
   );
 }
 export namespace Input {
@@ -2801,7 +2801,7 @@ export namespace Input {
         duration: JsUintSchema.optional(),
         origin: Input.OriginSchema.optional(),
       })
-      .and(Input.PointerCommonPropertiesSchema)
+      .and(Input.PointerCommonPropertiesSchema),
   );
 }
 export namespace Input {
@@ -2814,7 +2814,7 @@ export namespace Input {
       deltaY: JsIntSchema,
       duration: JsUintSchema.optional(),
       origin: Input.OriginSchema.default('viewport').optional(),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2844,7 +2844,7 @@ export namespace Input {
         .lte(6.283185307179586)
         .default(0)
         .optional(),
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2853,7 +2853,7 @@ export namespace Input {
       z.literal('viewport'),
       z.literal('pointer'),
       Input.ElementOriginSchema,
-    ])
+    ]),
   );
 }
 export namespace Input {
@@ -2861,14 +2861,14 @@ export namespace Input {
     z.object({
       method: z.literal('input.releaseActions'),
       params: Input.ReleaseActionsParametersSchema,
-    })
+    }),
   );
 }
 export namespace Input {
   export const ReleaseActionsParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2876,7 +2876,7 @@ export namespace Input {
     z.object({
       method: z.literal('input.setFiles'),
       params: Input.SetFilesParametersSchema,
-    })
+    }),
   );
 }
 export namespace Input {
@@ -2885,6 +2885,6 @@ export namespace Input {
       context: BrowsingContext.BrowsingContextSchema,
       element: Script.SharedReferenceSchema,
       files: z.array(z.string()),
-    })
+    }),
   );
 }

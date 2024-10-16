@@ -36,7 +36,6 @@ function getNpmArgs() {
 }
 
 function runWpt(options) {
-  // eslint-disable-next-line no-console
   console.log(`Running WPT with options:\n${JSON.stringify(options, null, 2)}`);
 
   const cwd = packageDirectorySync();

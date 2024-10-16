@@ -32,14 +32,14 @@ export interface BidiCommandParameterParser {
   // Bluetooth domain
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(
-    params: unknown
+    params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters;
   // keep-sorted end
 
   // Browser domain
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
-    params: unknown
+    params: unknown,
   ): Browser.RemoveUserContextParameters;
   // keep-sorted end
 
@@ -47,25 +47,25 @@ export interface BidiCommandParameterParser {
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters;
   parseCaptureScreenshotParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.CaptureScreenshotParameters;
   parseCloseParams(params: unknown): BrowsingContext.CloseParameters;
   parseCreateParams(params: unknown): BrowsingContext.CreateParameters;
   parseGetTreeParams(params: unknown): BrowsingContext.GetTreeParameters;
   parseHandleUserPromptParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.HandleUserPromptParameters;
   parseLocateNodesParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.LocateNodesParameters;
   parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters;
   parsePrintParams(params: unknown): BrowsingContext.PrintParameters;
   parseReloadParams(params: unknown): BrowsingContext.ReloadParameters;
   parseSetViewportParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.SetViewportParameters;
   parseTraverseHistoryParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.TraverseHistoryParameters;
   // keep-sorted end
 
@@ -86,7 +86,7 @@ export interface BidiCommandParameterParser {
   // PermissionsDomain domain
   // keep-sorted start block=yes
   parseSetPermissionsParams(
-    params: unknown
+    params: unknown,
   ): Permissions.SetPermissionParameters;
   // keep-sorted end block=yes
 
@@ -94,20 +94,20 @@ export interface BidiCommandParameterParser {
   // keep-sorted start block=yes
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
   parseContinueRequestParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueRequestParameters;
   parseContinueResponseParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueResponseParameters;
   parseContinueWithAuthParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueWithAuthParameters;
   parseFailRequestParams(params: unknown): Network.FailRequestParameters;
   parseProvideResponseParams(
-    params: unknown
+    params: unknown,
   ): Network.ProvideResponseParameters;
   parseRemoveInterceptParams(
-    params: unknown
+    params: unknown,
   ): Network.RemoveInterceptParameters;
   parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters;
   // keep-sorted end block=yes
@@ -115,14 +115,14 @@ export interface BidiCommandParameterParser {
   // Script domain
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
-    params: unknown
+    params: unknown,
   ): Script.AddPreloadScriptParameters;
   parseCallFunctionParams(params: unknown): Script.CallFunctionParameters;
   parseDisownParams(params: unknown): Script.DisownParameters;
   parseEvaluateParams(params: unknown): Script.EvaluateParameters;
   parseGetRealmsParams(params: unknown): Script.GetRealmsParameters;
   parseRemovePreloadScriptParams(
-    params: unknown
+    params: unknown,
   ): Script.RemovePreloadScriptParameters;
   // keep-sorted end
 

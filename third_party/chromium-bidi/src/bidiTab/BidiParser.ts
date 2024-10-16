@@ -33,7 +33,7 @@ export class BidiParser implements BidiCommandParameterParser {
   // Bluetooth domain
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(
-    params: unknown
+    params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters {
     return Parser.Bluetooth.parseHandleRequestDevicePromptParams(params);
   }
@@ -42,7 +42,7 @@ export class BidiParser implements BidiCommandParameterParser {
   // Browser domain
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
-    params: unknown
+    params: unknown,
   ): Browser.RemoveUserContextParameters {
     return Parser.Browser.parseRemoveUserContextParams(params);
   }
@@ -54,7 +54,7 @@ export class BidiParser implements BidiCommandParameterParser {
     return Parser.BrowsingContext.parseActivateParams(params);
   }
   parseCaptureScreenshotParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.CaptureScreenshotParameters {
     return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
   }
@@ -68,12 +68,12 @@ export class BidiParser implements BidiCommandParameterParser {
     return Parser.BrowsingContext.parseGetTreeParams(params);
   }
   parseHandleUserPromptParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.HandleUserPromptParameters {
     return Parser.BrowsingContext.parseHandleUserPromptParameters(params);
   }
   parseLocateNodesParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.LocateNodesParameters {
     return Parser.BrowsingContext.parseLocateNodesParams(params);
   }
@@ -87,12 +87,12 @@ export class BidiParser implements BidiCommandParameterParser {
     return Parser.BrowsingContext.parseReloadParams(params);
   }
   parseSetViewportParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.SetViewportParameters {
     return Parser.BrowsingContext.parseSetViewportParams(params);
   }
   parseTraverseHistoryParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.TraverseHistoryParameters {
     return Parser.BrowsingContext.parseTraverseHistoryParams(params);
   }
@@ -130,17 +130,17 @@ export class BidiParser implements BidiCommandParameterParser {
     return Parser.Network.parseAddInterceptParameters(params);
   }
   parseContinueRequestParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueRequestParameters {
     return Parser.Network.parseContinueRequestParameters(params);
   }
   parseContinueResponseParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueResponseParameters {
     return Parser.Network.parseContinueResponseParameters(params);
   }
   parseContinueWithAuthParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueWithAuthParameters {
     return Parser.Network.parseContinueWithAuthParameters(params);
   }
@@ -148,12 +148,12 @@ export class BidiParser implements BidiCommandParameterParser {
     return Parser.Network.parseFailRequestParameters(params);
   }
   parseProvideResponseParams(
-    params: unknown
+    params: unknown,
   ): Network.ProvideResponseParameters {
     return Parser.Network.parseProvideResponseParameters(params);
   }
   parseRemoveInterceptParams(
-    params: unknown
+    params: unknown,
   ): Network.RemoveInterceptParameters {
     return Parser.Network.parseRemoveInterceptParameters(params);
   }
@@ -165,7 +165,7 @@ export class BidiParser implements BidiCommandParameterParser {
   // Permissions domain
   // keep-sorted start block=yes
   parseSetPermissionsParams(
-    params: unknown
+    params: unknown,
   ): Permissions.SetPermissionParameters {
     return Parser.Permissions.parseSetPermissionsParams(params);
   }
@@ -174,7 +174,7 @@ export class BidiParser implements BidiCommandParameterParser {
   // Script domain
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
-    params: unknown
+    params: unknown,
   ): Script.AddPreloadScriptParameters {
     return Parser.Script.parseAddPreloadScriptParams(params);
   }
@@ -191,7 +191,7 @@ export class BidiParser implements BidiCommandParameterParser {
     return Parser.Script.parseGetRealmsParams(params);
   }
   parseRemovePreloadScriptParams(
-    params: unknown
+    params: unknown,
   ): Script.RemovePreloadScriptParameters {
     return Parser.Script.parseRemovePreloadScriptParams(params);
   }

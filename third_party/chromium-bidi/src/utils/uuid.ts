@@ -18,7 +18,7 @@
 function bytesToHex(bytes: Uint8Array) {
   return bytes.reduce(
     (str, byte) => str + byte.toString(16).padStart(2, '0'),
-    ''
+    '',
   );
 }
 
@@ -50,7 +50,7 @@ export function uuidv4(): `${string}-${string}-${string}-${string}-${string}` {
   } else {
     // Node (<=16) without
     // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('crypto').webcrypto.getRandomValues(randomValues);
   }
 

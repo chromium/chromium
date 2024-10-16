@@ -281,7 +281,7 @@ const STRING_FORMAT_TEST_CASES = [
 function testPattern(
   formatString: string,
   argument: unknown,
-  expected: string
+  expected: string,
 ) {
   const inputArgs = [
     {
@@ -383,7 +383,7 @@ describe('logHelper', () => {
       ] satisfies Script.RemoteValue[];
 
       expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
-        'More value is provided: "test string %i string test 1 2"'
+        'More value is provided: "test string %i string test 1 2"',
       );
     });
 
@@ -396,7 +396,7 @@ describe('logHelper', () => {
         'Less value is provided: "test string %i %i string test 1"';
 
       expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
-        outputString
+        outputString,
       );
     });
   });

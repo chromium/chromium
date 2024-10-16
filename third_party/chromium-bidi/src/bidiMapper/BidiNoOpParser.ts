@@ -34,7 +34,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   // Bluetooth domain
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(
-    params: unknown
+    params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters {
     return params as Bluetooth.HandleRequestDevicePromptParameters;
   }
@@ -43,7 +43,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   // Browser domain
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
-    params: unknown
+    params: unknown,
   ): Browser.RemoveUserContextParameters {
     return params as Browser.RemoveUserContextParameters;
   }
@@ -55,7 +55,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     return params as BrowsingContext.ActivateParameters;
   }
   parseCaptureScreenshotParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.CaptureScreenshotParameters {
     return params as BrowsingContext.CaptureScreenshotParameters;
   }
@@ -69,12 +69,12 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     return params as BrowsingContext.GetTreeParameters;
   }
   parseHandleUserPromptParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.HandleUserPromptParameters {
     return params as BrowsingContext.HandleUserPromptParameters;
   }
   parseLocateNodesParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.LocateNodesParameters {
     return params as BrowsingContext.LocateNodesParameters;
   }
@@ -88,12 +88,12 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     return params as BrowsingContext.ReloadParameters;
   }
   parseSetViewportParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.SetViewportParameters {
     return params as BrowsingContext.SetViewportParameters;
   }
   parseTraverseHistoryParams(
-    params: unknown
+    params: unknown,
   ): BrowsingContext.TraverseHistoryParameters {
     return params as BrowsingContext.TraverseHistoryParameters;
   }
@@ -115,7 +115,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   // Script domain
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
-    params: unknown
+    params: unknown,
   ): Script.AddPreloadScriptParameters {
     return params as Script.AddPreloadScriptParameters;
   }
@@ -132,7 +132,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     return params as Script.GetRealmsParameters;
   }
   parseRemovePreloadScriptParams(
-    params: unknown
+    params: unknown,
   ): Script.RemovePreloadScriptParameters {
     return params as Script.RemovePreloadScriptParameters;
   }
@@ -157,17 +157,17 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     return params as Network.AddInterceptParameters;
   }
   parseContinueRequestParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueRequestParameters {
     return params as Network.ContinueRequestParameters;
   }
   parseContinueResponseParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueResponseParameters {
     return params as Network.ContinueResponseParameters;
   }
   parseContinueWithAuthParams(
-    params: unknown
+    params: unknown,
   ): Network.ContinueWithAuthParameters {
     return params as Network.ContinueWithAuthParameters;
   }
@@ -175,12 +175,12 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     return params as Network.FailRequestParameters;
   }
   parseProvideResponseParams(
-    params: unknown
+    params: unknown,
   ): Network.ProvideResponseParameters {
     return params as Network.ProvideResponseParameters;
   }
   parseRemoveInterceptParams(
-    params: unknown
+    params: unknown,
   ): Network.RemoveInterceptParameters {
     return params as Network.RemoveInterceptParameters;
   }
@@ -192,7 +192,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   // Permissions domain
   // keep-sorted start block=yes
   parseSetPermissionsParams(
-    params: unknown
+    params: unknown,
   ): Permissions.SetPermissionParameters {
     return params as Permissions.SetPermissionParameters;
   }

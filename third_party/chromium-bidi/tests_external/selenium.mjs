@@ -37,13 +37,13 @@ const chromePath = installAndGetChromePath();
 const chromeDriverPath = installAndGetChromeDriverPath();
 
 const chromeService = new chrome.ServiceBuilder(chromeDriverPath).addArguments(
-  `--bidi-mapper-path=${getBidiMapperPath()}`
+  `--bidi-mapper-path=${getBidiMapperPath()}`,
 );
 
 const driver = new Builder()
   .forBrowser('chrome')
   .setChromeOptions(
-    new chrome.Options().enableBidi().setChromeBinaryPath(chromePath)
+    new chrome.Options().enableBidi().setChromeBinaryPath(chromePath),
   )
   .setChromeService(chromeService)
   .build();
@@ -57,7 +57,7 @@ try {
   // Navigate tab to some page.
   await browsingContext.navigate(
     'data:text/html,<h1>SOME PAGE</h1>',
-    'complete'
+    'complete',
   );
 
   const scriptManager = await ScriptManager(browsingContext, driver);
@@ -67,7 +67,7 @@ try {
     browsingContext.id,
     '(document.getElementsByTagName("h1")[0])',
     false,
-    'root'
+    'root',
   );
   assert.strictEqual(evaluateResult.resultType, 'success');
   const elementId = evaluateResult.result.sharedId;

@@ -30,7 +30,7 @@ export class CdpProcessor {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     cdpConnection: CdpConnection,
-    browserCdpClient: CdpClient
+    browserCdpClient: CdpClient,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
@@ -58,7 +58,7 @@ export class CdpProcessor {
   }
 
   async sendCommand(
-    params: Cdp.SendCommandParameters
+    params: Cdp.SendCommandParameters,
   ): Promise<Cdp.SendCommandResult> {
     const client = params.session
       ? this.#cdpConnection.getCdpClient(params.session)

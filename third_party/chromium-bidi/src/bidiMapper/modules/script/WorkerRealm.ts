@@ -46,7 +46,7 @@ export class WorkerRealm extends Realm {
     ownerRealms: Realm[],
     realmId: Script.Realm,
     realmStorage: RealmStorage,
-    realmType: WorkerRealmType
+    realmType: WorkerRealmType,
   ) {
     super(
       cdpClient,
@@ -55,7 +55,7 @@ export class WorkerRealm extends Realm {
       logger,
       origin,
       realmId,
-      realmStorage
+      realmStorage,
     );
 
     this.#ownerRealms = ownerRealms;
@@ -66,7 +66,7 @@ export class WorkerRealm extends Realm {
 
   override get associatedBrowsingContexts(): BrowsingContextImpl[] {
     return this.#ownerRealms.flatMap(
-      (realm) => realm.associatedBrowsingContexts
+      (realm) => realm.associatedBrowsingContexts,
     );
   }
 

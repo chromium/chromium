@@ -18,7 +18,6 @@ import fs from 'fs';
 import path from 'path';
 import url from 'url';
 
-// eslint-disable-next-line
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export function escapeHtml(str) {
@@ -82,7 +81,7 @@ export function flattenTests(report) {
     .flat()
     .sort(
       (a, b) =>
-        a.path?.localeCompare(b.path) || a.name?.localeCompare(b.name) || 0
+        a.path?.localeCompare(b.path) || a.name?.localeCompare(b.name) || 0,
     );
 }
 
@@ -192,7 +191,7 @@ function generateHtml(
   chromeVersion,
   wptHash,
   isFiltered,
-  baseline
+  baseline,
 ) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
   const shortCommitHash = commitHash.slice(0, 8);
@@ -220,7 +219,7 @@ function generateHtml(
 
   const template = fs.readFileSync(
     path.join(__dirname, './template.html'),
-    'utf-8'
+    'utf-8',
   );
 
   return template
@@ -228,7 +227,7 @@ function generateHtml(
     .replace('<chromium-bidi-tests />', getHtmlForTest(map, 'BiDi tests'))
     .replace(
       '<chromium-bidi-tests-interop />',
-      getHtmlForTest(mapInterop, 'Interop tests')
+      getHtmlForTest(mapInterop, 'Interop tests'),
     );
 }
 
@@ -307,7 +306,7 @@ export function generateReport(
   interopReportData,
   commitHash,
   chromeVersion,
-  wptHash
+  wptHash,
 ) {
   return generateHtml(
     groupTests(flattenTests(reportData)),
@@ -316,6 +315,6 @@ export function generateReport(
     chromeVersion,
     wptHash,
     reportData.isFiltered,
-    reportData.baseline
+    reportData.baseline,
   );
 }

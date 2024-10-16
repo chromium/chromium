@@ -78,7 +78,7 @@ function getWptCommit() {
 function getChromeVersion() {
   const version = fs.readFileSync(
     path.join(__dirname, '../../.browser'),
-    'utf8'
+    'utf8',
   );
 
   return version.split('@')[1];
@@ -137,8 +137,8 @@ fs.writeFileSync(
     reportInteropData,
     currentCommit,
     chromeVersion,
-    wptCommit
-  )
+    wptCommit,
+  ),
 );
 
 fs.writeFileSync(
@@ -148,6 +148,6 @@ fs.writeFileSync(
     filteredInteropReportData,
     currentCommit,
     chromeVersion,
-    wptCommit
-  )
+    wptCommit,
+  ),
 );

@@ -26,27 +26,27 @@ export class BluetoothProcessor {
 
   constructor(
     eventManager: EventManager,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
   ) {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
   }
 
   async simulateAdapter(
-    params: Bluetooth.SimulateAdapterParameters
+    params: Bluetooth.SimulateAdapterParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.enable',
       {
         state: params.state,
-      }
+      },
     );
     return {};
   }
 
   async simulatePreconnectedPeripheral(
-    params: Bluetooth.SimulatePreconnectedPeripheralParameters
+    params: Bluetooth.SimulatePreconnectedPeripheralParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     await context.cdpTarget.browserCdpClient.sendCommand(
@@ -56,20 +56,20 @@ export class BluetoothProcessor {
         name: params.name,
         knownServiceUuids: params.knownServiceUuids,
         manufacturerData: params.manufacturerData,
-      }
+      },
     );
     return {};
   }
 
   async simulateAdvertisement(
-    params: Bluetooth.SimulateAdvertisementParameters
+    params: Bluetooth.SimulateAdvertisementParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.simulateAdvertisement',
       {
         entry: params.scanEntry,
-      }
+      },
     );
     return {};
   }
@@ -86,13 +86,13 @@ export class BluetoothProcessor {
             devices: event.devices,
           },
         },
-        cdpTarget.id
+        cdpTarget.id,
       );
     });
   }
 
   async handleRequestDevicePrompt(
-    params: Bluetooth.HandleRequestDevicePromptParameters
+    params: Bluetooth.HandleRequestDevicePromptParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
 
@@ -102,14 +102,14 @@ export class BluetoothProcessor {
         {
           id: params.prompt,
           deviceId: params.device,
-        }
+        },
       );
     } else {
       await context.cdpTarget.cdpClient.sendCommand(
         'DeviceAccess.cancelPrompt',
         {
           id: params.prompt,
-        }
+        },
       );
     }
     return {};

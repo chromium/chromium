@@ -65,12 +65,12 @@ export class WindowBidiTransport implements BidiTransport {
     plainCommandData: string,
     errorCode: ErrorCode,
     error: Error,
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ) {
     const errorResponse = WindowBidiTransport.#getErrorResponse(
       plainCommandData,
       errorCode,
-      error
+      error,
     );
 
     if (channel) {
@@ -96,7 +96,7 @@ export class WindowBidiTransport implements BidiTransport {
   static #getErrorResponse(
     message: string,
     errorCode: ErrorCode,
-    error: Error
+    error: Error,
   ): ErrorResponse {
     // XXX: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.

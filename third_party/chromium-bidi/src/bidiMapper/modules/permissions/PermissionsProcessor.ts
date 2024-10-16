@@ -30,7 +30,7 @@ export class PermissionsProcessor {
   }
 
   async setPermissions(
-    params: Permissions.SetPermissionParameters
+    params: Permissions.SetPermissionParameters,
   ): Promise<EmptyResult> {
     try {
       const userContextId =

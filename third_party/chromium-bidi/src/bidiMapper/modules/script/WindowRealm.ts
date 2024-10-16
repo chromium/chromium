@@ -49,7 +49,7 @@ export class WindowRealm extends Realm {
     origin: string,
     realmId: Script.Realm,
     realmStorage: RealmStorage,
-    sandbox: string | undefined
+    sandbox: string | undefined,
   ) {
     super(
       cdpClient,
@@ -58,7 +58,7 @@ export class WindowRealm extends Realm {
       logger,
       origin,
       realmId,
-      realmStorage
+      realmStorage,
     );
 
     this.#browsingContextId = browsingContextId;
@@ -105,7 +105,7 @@ export class WindowRealm extends Realm {
 
   override serializeForBiDi(
     deepSerializedValue: Protocol.Runtime.DeepSerializedValue,
-    internalIdMap: Map<number, string>
+    internalIdMap: Map<number, string>,
   ) {
     const bidiValue = deepSerializedValue.value;
     if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
@@ -122,7 +122,7 @@ export class WindowRealm extends Realm {
           getSharedId(
             this.#getBrowsingContextId(navigableId),
             navigableId,
-            bidiValue.backendNodeId
+            bidiValue.backendNodeId,
           );
         delete bidiValue['backendNodeId'];
       }
@@ -130,7 +130,7 @@ export class WindowRealm extends Realm {
         for (const i in bidiValue.children) {
           bidiValue.children[i] = this.serializeForBiDi(
             bidiValue.children[i],
-            internalIdMap
+            internalIdMap,
           );
         }
       }
@@ -140,7 +140,7 @@ export class WindowRealm extends Realm {
       ) {
         bidiValue.shadowRoot = this.serializeForBiDi(
           bidiValue.shadowRoot,
-          internalIdMap
+          internalIdMap,
         );
       }
       // `namespaceURI` can be is either `null` or non-empty string.
@@ -152,20 +152,20 @@ export class WindowRealm extends Realm {
   }
 
   override async deserializeForCdp(
-    localValue: Script.LocalValue
+    localValue: Script.LocalValue,
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('sharedId' in localValue && localValue.sharedId) {
       const parsedSharedId = parseSharedId(localValue.sharedId);
       if (parsedSharedId === null) {
         throw new NoSuchNodeException(
-          `SharedId "${localValue.sharedId}" was not found.`
+          `SharedId "${localValue.sharedId}" was not found.`,
         );
       }
       const {documentId, backendNodeId} = parsedSharedId;
       // TODO: add proper validation if the element is accessible from the current realm.
       if (this.browsingContext.navigableId !== documentId) {
         throw new NoSuchNodeException(
-          `SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`
+          `SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`,
         );
       }
 
@@ -184,7 +184,7 @@ export class WindowRealm extends Realm {
           error.message === 'No node with given id found'
         ) {
           throw new NoSuchNodeException(
-            `SharedId "${localValue.sharedId}" was not found.`
+            `SharedId "${localValue.sharedId}" was not found.`,
           );
         }
         throw new UnknownErrorException(error.message, error.stack);
@@ -199,7 +199,7 @@ export class WindowRealm extends Realm {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions,
     userActivation?: boolean,
-    includeCommandLineApi?: boolean
+    includeCommandLineApi?: boolean,
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.#browsingContextId)
@@ -211,7 +211,7 @@ export class WindowRealm extends Realm {
       resultOwnership,
       serializationOptions,
       userActivation,
-      includeCommandLineApi
+      includeCommandLineApi,
     );
   }
 
@@ -222,7 +222,7 @@ export class WindowRealm extends Realm {
     argumentsLocalValues: Script.LocalValue[],
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions,
-    userActivation?: boolean
+    userActivation?: boolean,
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.#browsingContextId)
@@ -235,7 +235,7 @@ export class WindowRealm extends Realm {
       argumentsLocalValues,
       resultOwnership,
       serializationOptions,
-      userActivation
+      userActivation,
     );
   }
 }

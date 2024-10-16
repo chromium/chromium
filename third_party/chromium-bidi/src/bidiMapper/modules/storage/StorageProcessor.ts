@@ -42,7 +42,7 @@ export class StorageProcessor {
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
-    logger: LoggerFn | undefined
+    logger: LoggerFn | undefined,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#browserCdpClient = browserCdpClient;
@@ -50,7 +50,7 @@ export class StorageProcessor {
   }
 
   async deleteCookies(
-    params: Storage.DeleteCookiesParameters
+    params: Storage.DeleteCookiesParameters,
   ): Promise<Storage.DeleteCookiesResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
@@ -60,7 +60,7 @@ export class StorageProcessor {
         'Storage.getCookies',
         {
           browserContextId: this.#getCdpBrowserContextId(partitionKey),
-        }
+        },
       );
     } catch (err: any) {
       if (this.#isNoSuchUserContextError(err)) {
@@ -77,7 +77,7 @@ export class StorageProcessor {
         // are returned.
         (c) =>
           partitionKey.sourceOrigin === undefined ||
-          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin
+          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin,
       )
       .filter((cdpCookie) => {
         const bidiCookie = cdpToBiDiCookie(cdpCookie);
@@ -99,7 +99,7 @@ export class StorageProcessor {
   }
 
   async getCookies(
-    params: Storage.GetCookiesParameters
+    params: Storage.GetCookiesParameters,
   ): Promise<Storage.GetCookiesResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
 
@@ -109,7 +109,7 @@ export class StorageProcessor {
         'Storage.getCookies',
         {
           browserContextId: this.#getCdpBrowserContextId(partitionKey),
-        }
+        },
       );
     } catch (err: any) {
       if (this.#isNoSuchUserContextError(err)) {
@@ -126,7 +126,7 @@ export class StorageProcessor {
         // are returned.
         (c) =>
           partitionKey.sourceOrigin === undefined ||
-          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin
+          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin,
       )
       .map((c) => cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));
@@ -138,7 +138,7 @@ export class StorageProcessor {
   }
 
   async setCookie(
-    params: Storage.SetCookieParameters
+    params: Storage.SetCookieParameters,
   ): Promise<Storage.SetCookieResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
     const cdpCookie = bidiToCdpCookie(params, partitionKey);
@@ -169,7 +169,7 @@ export class StorageProcessor {
   }
 
   #getCdpBrowserContextId(
-    partitionKey: Storage.PartitionKey
+    partitionKey: Storage.PartitionKey,
   ): string | undefined {
     return partitionKey.userContext === 'default'
       ? undefined
@@ -177,7 +177,7 @@ export class StorageProcessor {
   }
 
   #expandStoragePartitionSpecByBrowsingContext(
-    descriptor: Storage.BrowsingContextPartitionDescriptor
+    descriptor: Storage.BrowsingContextPartitionDescriptor,
   ): Storage.PartitionKey {
     const browsingContextId: string = descriptor.context;
     const browsingContext =
@@ -192,7 +192,7 @@ export class StorageProcessor {
   }
 
   #expandStoragePartitionSpecByStorageKey(
-    descriptor: Storage.StorageKeyPartitionDescriptor
+    descriptor: Storage.StorageKeyPartitionDescriptor,
   ): Storage.PartitionKey {
     const unsupportedPartitionKeys = new Map<string, string>();
     let sourceOrigin = descriptor.sourceOrigin;
@@ -222,8 +222,8 @@ export class StorageProcessor {
       this.#logger?.(
         LogType.debugInfo,
         `Unsupported partition keys: ${JSON.stringify(
-          Object.fromEntries(unsupportedPartitionKeys)
-        )}`
+          Object.fromEntries(unsupportedPartitionKeys),
+        )}`,
       );
     }
 
@@ -237,7 +237,7 @@ export class StorageProcessor {
   }
 
   #expandStoragePartitionSpec(
-    partitionSpec: Storage.PartitionDescriptor | undefined
+    partitionSpec: Storage.PartitionDescriptor | undefined,
   ): Storage.PartitionKey {
     if (partitionSpec === undefined) {
       // `userContext` is required in Chromium.

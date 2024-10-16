@@ -30,7 +30,7 @@ import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export function parseObject<T extends ZodType>(
   obj: unknown,
-  schema: T
+  schema: T,
 ): z.infer<T> {
   const parseResult = schema.safeParse(obj);
   if (parseResult.success) {
@@ -40,7 +40,7 @@ export function parseObject<T extends ZodType>(
     .map(
       (e) =>
         `${e.message} in ` +
-        `${e.path.map((p: unknown) => JSON.stringify(p)).join('/')}.`
+        `${e.path.map((p: unknown) => JSON.stringify(p)).join('/')}.`,
     )
     .join(' ');
 
@@ -50,11 +50,11 @@ export function parseObject<T extends ZodType>(
 /** @see https://w3c.github.io/webdriver-bidi/#module-browser */
 export namespace Browser {
   export function parseRemoveUserContextParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Browser.RemoveUserContextParameters {
     return parseObject(
       params,
-      WebDriverBidi.Browser.RemoveUserContextParametersSchema
+      WebDriverBidi.Browser.RemoveUserContextParametersSchema,
     );
   }
 }
@@ -65,14 +65,14 @@ export namespace Network {
     // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
     return parseObject(
       params,
-      WebDriverBidi.Network.AddInterceptParametersSchema
+      WebDriverBidi.Network.AddInterceptParametersSchema,
     ) as Protocol.Network.AddInterceptParameters;
   }
 
   export function parseContinueRequestParameters(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Network.ContinueRequestParametersSchema
+      WebDriverBidi.Network.ContinueRequestParametersSchema,
     );
   }
 
@@ -80,21 +80,21 @@ export namespace Network {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
-      WebDriverBidi.Network.ContinueResponseParametersSchema
+      WebDriverBidi.Network.ContinueResponseParametersSchema,
     ) as Protocol.Network.ContinueResponseParameters;
   }
 
   export function parseContinueWithAuthParameters(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Network.ContinueWithAuthParametersSchema
+      WebDriverBidi.Network.ContinueWithAuthParametersSchema,
     );
   }
 
   export function parseFailRequestParameters(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Network.FailRequestParametersSchema
+      WebDriverBidi.Network.FailRequestParametersSchema,
     );
   }
 
@@ -102,21 +102,21 @@ export namespace Network {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
-      WebDriverBidi.Network.ProvideResponseParametersSchema
+      WebDriverBidi.Network.ProvideResponseParametersSchema,
     ) as Protocol.Network.ProvideResponseParameters;
   }
 
   export function parseRemoveInterceptParameters(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Network.RemoveInterceptParametersSchema
+      WebDriverBidi.Network.RemoveInterceptParametersSchema,
     );
   }
 
   export function parseSetCacheBehavior(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Network.SetCacheBehaviorParametersSchema
+      WebDriverBidi.Network.SetCacheBehaviorParametersSchema,
     ) as Protocol.Network.SetCacheBehaviorParameters;
   }
 }
@@ -124,7 +124,7 @@ export namespace Network {
 /** @see https://w3c.github.io/webdriver-bidi/#module-script */
 export namespace Script {
   export function parseGetRealmsParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Script.GetRealmsParameters {
     return parseObject(params, WebDriverBidi.Script.GetRealmsParametersSchema);
   }
@@ -132,12 +132,12 @@ export namespace Script {
   export function parseEvaluateParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Script.EvaluateParametersSchema
+      WebDriverBidi.Script.EvaluateParametersSchema,
     ) as Protocol.Script.EvaluateParameters;
   }
 
   export function parseDisownParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Script.DisownParameters {
     return parseObject(params, WebDriverBidi.Script.DisownParametersSchema);
   }
@@ -145,21 +145,21 @@ export namespace Script {
   export function parseAddPreloadScriptParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Script.AddPreloadScriptParametersSchema
+      WebDriverBidi.Script.AddPreloadScriptParametersSchema,
     ) as Protocol.Script.AddPreloadScriptParameters;
   }
 
   export function parseRemovePreloadScriptParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Script.RemovePreloadScriptParametersSchema
+      WebDriverBidi.Script.RemovePreloadScriptParametersSchema,
     );
   }
 
   export function parseCallFunctionParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Script.CallFunctionParametersSchema
+      WebDriverBidi.Script.CallFunctionParametersSchema,
     ) as Protocol.Script.CallFunctionParameters;
   }
 }
@@ -169,101 +169,101 @@ export namespace BrowsingContext {
   export function parseActivateParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.ActivateParametersSchema
+      WebDriverBidi.BrowsingContext.ActivateParametersSchema,
     );
   }
 
   export function parseGetTreeParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.GetTreeParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.GetTreeParametersSchema
+      WebDriverBidi.BrowsingContext.GetTreeParametersSchema,
     );
   }
 
   export function parseNavigateParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.NavigateParametersSchema
+      WebDriverBidi.BrowsingContext.NavigateParametersSchema,
     ) as Protocol.BrowsingContext.NavigateParameters;
   }
 
   export function parseReloadParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.ReloadParametersSchema
+      WebDriverBidi.BrowsingContext.ReloadParametersSchema,
     ) as Protocol.BrowsingContext.ReloadParameters;
   }
 
   export function parseCreateParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.CreateParametersSchema
+      WebDriverBidi.BrowsingContext.CreateParametersSchema,
     ) as Protocol.BrowsingContext.CreateParameters;
   }
 
   export function parseCloseParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.CloseParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.CloseParametersSchema
+      WebDriverBidi.BrowsingContext.CloseParametersSchema,
     );
   }
 
   export function parseCaptureScreenshotParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.CaptureScreenshotParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.CaptureScreenshotParametersSchema
+      WebDriverBidi.BrowsingContext.CaptureScreenshotParametersSchema,
     );
   }
 
   export function parsePrintParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.PrintParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.PrintParametersSchema
+      WebDriverBidi.BrowsingContext.PrintParametersSchema,
     );
   }
 
   export function parseSetViewportParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.SetViewportParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.SetViewportParametersSchema
+      WebDriverBidi.BrowsingContext.SetViewportParametersSchema,
     );
   }
 
   export function parseTraverseHistoryParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.TraverseHistoryParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.TraverseHistoryParametersSchema
+      WebDriverBidi.BrowsingContext.TraverseHistoryParametersSchema,
     );
   }
 
   export function parseHandleUserPromptParameters(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.HandleUserPromptParameters {
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.HandleUserPromptParametersSchema
+      WebDriverBidi.BrowsingContext.HandleUserPromptParametersSchema,
     );
   }
 
   export function parseLocateNodesParams(
-    params: unknown
+    params: unknown,
   ): Protocol.BrowsingContext.LocateNodesParameters {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
-      WebDriverBidi.BrowsingContext.LocateNodesParametersSchema
+      WebDriverBidi.BrowsingContext.LocateNodesParametersSchema,
     ) as Protocol.BrowsingContext.LocateNodesParameters;
   }
 }
@@ -271,11 +271,11 @@ export namespace BrowsingContext {
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
   export function parseSubscribeParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Session.SubscriptionRequest {
     return parseObject(
       params,
-      WebDriverBidi.Session.SubscriptionRequestSchema
+      WebDriverBidi.Session.SubscriptionRequestSchema,
     ) as Protocol.Session.SubscriptionRequest;
   }
 }
@@ -284,21 +284,21 @@ export namespace Input {
   export function parsePerformActionsParams(params: unknown) {
     return parseObject(
       params,
-      WebDriverBidi.Input.PerformActionsParametersSchema
+      WebDriverBidi.Input.PerformActionsParametersSchema,
     ) as Protocol.Input.PerformActionsParameters;
   }
 
   export function parseReleaseActionsParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Input.ReleaseActionsParameters {
     return parseObject(
       params,
-      WebDriverBidi.Input.ReleaseActionsParametersSchema
+      WebDriverBidi.Input.ReleaseActionsParametersSchema,
     );
   }
 
   export function parseSetFilesParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Input.SetFilesParameters {
     return parseObject(params, WebDriverBidi.Input.SetFilesParametersSchema);
   }
@@ -313,7 +313,7 @@ export namespace Storage {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
-      WebDriverBidi.Storage.GetCookiesParametersSchema
+      WebDriverBidi.Storage.GetCookiesParametersSchema,
     ) as Protocol.Storage.GetCookiesParameters;
   }
 
@@ -325,7 +325,7 @@ export namespace Storage {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
-      WebDriverBidi.Storage.SetCookieParametersSchema
+      WebDriverBidi.Storage.SetCookieParametersSchema,
     ) as Protocol.Storage.SetCookieParameters;
   }
 
@@ -337,7 +337,7 @@ export namespace Storage {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
-      WebDriverBidi.Storage.DeleteCookiesParametersSchema
+      WebDriverBidi.Storage.DeleteCookiesParametersSchema,
     ) as Protocol.Storage.DeleteCookiesParameters;
   }
 }
@@ -361,22 +361,22 @@ export namespace Cdp {
   });
 
   export function parseSendCommandRequest(
-    params: unknown
+    params: unknown,
   ): Protocol.Cdp.SendCommandParameters {
     return parseObject(
       params,
-      SendCommandRequestSchema
+      SendCommandRequestSchema,
     ) as Protocol.Cdp.SendCommandParameters;
   }
 
   export function parseGetSessionRequest(
-    params: unknown
+    params: unknown,
   ): Protocol.Cdp.GetSessionParameters {
     return parseObject(params, GetSessionRequestSchema);
   }
 
   export function parseResolveRealmRequest(
-    params: unknown
+    params: unknown,
   ): Protocol.Cdp.ResolveRealmParameters {
     return parseObject(params, ResolveRealmRequestSchema);
   }
@@ -384,14 +384,14 @@ export namespace Cdp {
 
 export namespace Permissions {
   export function parseSetPermissionsParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Permissions.SetPermissionParameters {
     return {
       // TODO: remove once "goog:" attributes are not needed.
       ...(params as object),
       ...(parseObject(
         params,
-        WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema
+        WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema,
       ) as Protocol.Permissions.SetPermissionParameters),
     };
   }
@@ -399,11 +399,12 @@ export namespace Permissions {
 
 export namespace Bluetooth {
   export function parseHandleRequestDevicePromptParams(
-    params: unknown
+    params: unknown,
   ): Protocol.Bluetooth.HandleRequestDevicePromptParameters {
     return parseObject(
       params,
-      WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePromptParametersSchema
+      WebDriverBidiBluetooth.Bluetooth
+        .HandleRequestDevicePromptParametersSchema,
     ) as Protocol.Bluetooth.HandleRequestDevicePromptParameters;
   }
 }

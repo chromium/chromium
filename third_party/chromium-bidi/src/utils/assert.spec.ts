@@ -35,7 +35,7 @@ describe('assert', () => {
   it('should throw an error when the predicate is undefined or null', () => {
     expect(() => assert(undefined)).to.throw(
       Error,
-      'Internal assertion failed.'
+      'Internal assertion failed.',
     );
     expect(() => assert(null)).to.throw(Error, 'Internal assertion failed.');
   });

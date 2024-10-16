@@ -27,7 +27,7 @@ describe('DefaultMap', () => {
 
     const cutenessMap = new DefaultMap<string, number>(
       () => defaultValue,
-      [['dog', 100]]
+      [['dog', 100]],
     );
 
     expect(cutenessMap.get('dog')).to.deep.equal(100);

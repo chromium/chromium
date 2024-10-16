@@ -34,14 +34,14 @@ export class NetworkProcessor {
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
-    networkStorage: NetworkStorage
+    networkStorage: NetworkStorage,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
   }
 
   async addIntercept(
-    params: Network.AddInterceptParameters
+    params: Network.AddInterceptParameters,
   ): Promise<Network.AddInterceptResult> {
     this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
 
@@ -58,7 +58,7 @@ export class NetworkProcessor {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleFetchIfNeeded();
-      })
+      }),
     );
 
     return {
@@ -67,7 +67,7 @@ export class NetworkProcessor {
   }
 
   async continueRequest(
-    params: Network.ContinueRequestParameters
+    params: Network.ContinueRequestParameters,
   ): Promise<EmptyResult> {
     if (params.url !== undefined) {
       NetworkProcessor.parseUrlString(params.url);
@@ -76,7 +76,7 @@ export class NetworkProcessor {
     if (params.method !== undefined) {
       if (!NetworkProcessor.isMethodValid(params.method)) {
         throw new InvalidArgumentException(
-          `Method '${params.method}' is invalid.`
+          `Method '${params.method}' is invalid.`,
         );
       }
     }
@@ -99,7 +99,7 @@ export class NetworkProcessor {
   }
 
   async continueResponse(
-    params: Network.ContinueResponseParameters
+    params: Network.ContinueResponseParameters,
   ): Promise<EmptyResult> {
     if (params.headers) {
       NetworkProcessor.validateHeaders(params.headers);
@@ -120,7 +120,7 @@ export class NetworkProcessor {
   }
 
   async continueWithAuth(
-    params: Network.ContinueWithAuthParameters
+    params: Network.ContinueWithAuthParameters,
   ): Promise<EmptyResult> {
     const networkId = params.request;
     const request = this.#getBlockedRequestOrFail(networkId, [
@@ -138,12 +138,12 @@ export class NetworkProcessor {
     const request = this.#getRequestOrFail(networkId);
     if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
-        `Request '${networkId}' in 'authRequired' phase cannot be failed`
+        `Request '${networkId}' in 'authRequired' phase cannot be failed`,
       );
     }
     if (!request.interceptPhase) {
       throw new NoSuchRequestException(
-        `No blocked request found for network id '${networkId}'`
+        `No blocked request found for network id '${networkId}'`,
       );
     }
 
@@ -153,7 +153,7 @@ export class NetworkProcessor {
   }
 
   async provideResponse(
-    params: Network.ProvideResponseParameters
+    params: Network.ProvideResponseParameters,
   ): Promise<EmptyResult> {
     if (params.headers) {
       NetworkProcessor.validateHeaders(params.headers);
@@ -175,24 +175,24 @@ export class NetworkProcessor {
   }
 
   async removeIntercept(
-    params: Network.RemoveInterceptParameters
+    params: Network.RemoveInterceptParameters,
   ): Promise<EmptyResult> {
     this.#networkStorage.removeIntercept(params.intercept);
 
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleFetchIfNeeded();
-      })
+      }),
     );
 
     return {};
   }
 
   async setCacheBehavior(
-    params: Network.SetCacheBehaviorParameters
+    params: Network.SetCacheBehaviorParameters,
   ): Promise<EmptyResult> {
     const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(
-      params.contexts
+      params.contexts,
     );
 
     // Change all targets
@@ -202,7 +202,7 @@ export class NetworkProcessor {
       await Promise.all(
         this.#browsingContextStorage.getAllContexts().map((context) => {
           return context.cdpTarget.toggleSetCacheDisabled();
-        })
+        }),
       );
 
       return {};
@@ -213,7 +213,7 @@ export class NetworkProcessor {
     await Promise.all(
       [...contexts.values()].map((context) => {
         return context.cdpTarget.toggleSetCacheDisabled(cacheDisabled);
-      })
+      }),
     );
 
     return {};
@@ -223,7 +223,7 @@ export class NetworkProcessor {
     const request = this.#networkStorage.getRequestById(id);
     if (!request) {
       throw new NoSuchRequestException(
-        `Network request with ID '${id}' doesn't exist`
+        `Network request with ID '${id}' doesn't exist`,
       );
     }
     return request;
@@ -231,17 +231,17 @@ export class NetworkProcessor {
 
   #getBlockedRequestOrFail(
     id: Network.Request,
-    phases: Network.InterceptPhase[]
+    phases: Network.InterceptPhase[],
   ): NetworkRequest {
     const request = this.#getRequestOrFail(id);
     if (!request.interceptPhase) {
       throw new NoSuchRequestException(
-        `No blocked request found for network id '${id}'`
+        `No blocked request found for network id '${id}'`,
       );
     }
     if (request.interceptPhase && !phases.includes(request.interceptPhase)) {
       throw new InvalidArgumentException(
-        `Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`
+        `Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`,
       );
     }
 
@@ -266,7 +266,7 @@ export class NetworkProcessor {
         headerValue.includes('\0')
       ) {
         throw new InvalidArgumentException(
-          `Header value '${headerValue}' is not acceptable value`
+          `Header value '${headerValue}' is not acceptable value`,
         );
       }
     }
@@ -290,7 +290,7 @@ export class NetworkProcessor {
   }
 
   static parseUrlPatterns(
-    urlPatterns: Network.UrlPattern[]
+    urlPatterns: Network.UrlPattern[],
   ): Network.UrlPattern[] {
     return urlPatterns.map((urlPattern) => {
       switch (urlPattern.type) {
@@ -349,33 +349,33 @@ export class NetworkProcessor {
 
           if (urlPattern.protocol === '') {
             throw new InvalidArgumentException(
-              `URL pattern must specify a protocol`
+              `URL pattern must specify a protocol`,
             );
           }
 
           if (urlPattern.hostname === '') {
             throw new InvalidArgumentException(
-              `URL pattern must specify a hostname`
+              `URL pattern must specify a hostname`,
             );
           }
 
           if ((urlPattern.hostname?.length ?? 0) > 0) {
             if (urlPattern.protocol?.match(/^file/i)) {
               throw new InvalidArgumentException(
-                `URL pattern protocol cannot be 'file'`
+                `URL pattern protocol cannot be 'file'`,
               );
             }
 
             if (urlPattern.hostname?.includes(':')) {
               throw new InvalidArgumentException(
-                `URL pattern hostname must not contain a colon`
+                `URL pattern hostname must not contain a colon`,
               );
             }
           }
 
           if (urlPattern.port === '') {
             throw new InvalidArgumentException(
-              `URL pattern must specify a port`
+              `URL pattern must specify a port`,
             );
           }
 

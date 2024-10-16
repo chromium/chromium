@@ -109,7 +109,7 @@ export class RealmStorage {
     const maybeRealm = this.findRealm(filter);
     if (maybeRealm === undefined) {
       throw new NoSuchFrameException(
-        `Realm ${JSON.stringify(filter)} not found`
+        `Realm ${JSON.stringify(filter)} not found`,
       );
     }
     return maybeRealm;

@@ -41,7 +41,7 @@ export class InputProcessor {
   }
 
   async performActions(
-    params: Input.PerformActionsParameters
+    params: Input.PerformActionsParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     const inputState = this.#inputStateManager.get(context.top);
@@ -49,14 +49,14 @@ export class InputProcessor {
     const dispatcher = new ActionDispatcher(
       inputState,
       context,
-      await ActionDispatcher.isMacOS(context).catch(() => false)
+      await ActionDispatcher.isMacOS(context).catch(() => false),
     );
     await dispatcher.dispatchActions(actionsByTick);
     return {};
   }
 
   async releaseActions(
-    params: Input.ReleaseActionsParameters
+    params: Input.ReleaseActionsParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     const topContext = context.top;
@@ -64,7 +64,7 @@ export class InputProcessor {
     const dispatcher = new ActionDispatcher(
       inputState,
       context,
-      await ActionDispatcher.isMacOS(context).catch(() => false)
+      await ActionDispatcher.isMacOS(context).catch(() => false),
     );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
     this.#inputStateManager.delete(topContext);
@@ -106,11 +106,11 @@ export class InputProcessor {
         }),
         false,
         params.element,
-        [{type: 'number', value: params.files.length}]
+        [{type: 'number', value: params.files.length}],
       );
     } catch {
       throw new NoSuchNodeException(
-        `Could not find element ${params.element.sharedId}`
+        `Could not find element ${params.element.sharedId}`,
       );
     }
 
@@ -119,27 +119,27 @@ export class InputProcessor {
       switch (result.result.value as ErrorCode) {
         case ErrorCode.Node: {
           throw new NoSuchElementException(
-            `Could not find element ${params.element.sharedId}`
+            `Could not find element ${params.element.sharedId}`,
           );
         }
         case ErrorCode.Element: {
           throw new UnableToSetFileInputException(
-            `Element ${params.element.sharedId} is not a input`
+            `Element ${params.element.sharedId} is not a input`,
           );
         }
         case ErrorCode.Type: {
           throw new UnableToSetFileInputException(
-            `Input element ${params.element.sharedId} is not a file type`
+            `Input element ${params.element.sharedId} is not a file type`,
           );
         }
         case ErrorCode.Disabled: {
           throw new UnableToSetFileInputException(
-            `Input element ${params.element.sharedId} is disabled`
+            `Input element ${params.element.sharedId} is disabled`,
           );
         }
         case ErrorCode.Multiple: {
           throw new UnableToSetFileInputException(
-            `Cannot set multiple files on a non-multiple input element`
+            `Cannot set multiple files on a non-multiple input element`,
           );
         }
       }
@@ -159,7 +159,7 @@ export class InputProcessor {
             this.dispatchEvent(
               new Event('cancel', {
                 bubbles: true,
-              })
+              }),
             );
             return;
           }
@@ -168,12 +168,12 @@ export class InputProcessor {
 
           // Dispatch events for this case because it should behave akin to a user action.
           this.dispatchEvent(
-            new Event('input', {bubbles: true, composed: true})
+            new Event('input', {bubbles: true, composed: true}),
           );
           this.dispatchEvent(new Event('change', {bubbles: true}));
         }),
         false,
-        params.element
+        params.element,
       );
       return {};
     }
@@ -189,7 +189,7 @@ export class InputProcessor {
         false,
         params.element,
         [{type: 'number', value: 0}],
-        Script.ResultOwnership.Root
+        Script.ResultOwnership.Root,
       );
       assert(result.type === 'success');
       if (result.result.type !== 'object') {
@@ -230,11 +230,11 @@ export class InputProcessor {
           this.dispatchEvent(
             new Event('cancel', {
               bubbles: true,
-            })
+            }),
           );
         }),
         false,
-        params.element
+        params.element,
       );
     }
     return {};
@@ -242,7 +242,7 @@ export class InputProcessor {
 
   #getActionsByTick(
     params: Input.PerformActionsParameters,
-    inputState: InputState
+    inputState: InputState,
   ): ActionOption[][] {
     const actionsByTick: ActionOption[][] = [];
     for (const action of params.actions) {
@@ -254,11 +254,11 @@ export class InputProcessor {
           const source = inputState.getOrCreate(
             action.id,
             SourceType.Pointer,
-            action.parameters.pointerType
+            action.parameters.pointerType,
           );
           if (source.subtype !== action.parameters.pointerType) {
             throw new InvalidArgumentException(
-              `Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`
+              `Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`,
             );
           }
           break;

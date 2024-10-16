@@ -49,7 +49,7 @@ export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
   if (!logPrefix.startsWith(LogType.bidi)) {
     // If `sendDebugMessage` is defined, send the log message there.
     globalThis.window?.sendDebugMessage?.(
-      JSON.stringify({logType: logPrefix, messages}, null, 2)
+      JSON.stringify({logType: logPrefix, messages}, null, 2),
     );
   }
 

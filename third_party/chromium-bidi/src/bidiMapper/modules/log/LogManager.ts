@@ -27,7 +27,7 @@ import {getRemoteValuesText} from './logHelper.js';
 
 /** Converts CDP StackTrace object to BiDi StackTrace object. */
 function getBidiStackTrace(
-  cdpStackTrace: Protocol.Runtime.StackTrace | undefined
+  cdpStackTrace: Protocol.Runtime.StackTrace | undefined,
 ): Script.StackTrace | undefined {
   const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
     return {
@@ -79,7 +79,7 @@ export class LogManager {
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     eventManager: EventManager,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#cdpTarget = cdpTarget;
     this.#realmStorage = realmStorage;
@@ -91,13 +91,13 @@ export class LogManager {
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     eventManager: EventManager,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     const logManager = new LogManager(
       cdpTarget,
       realmStorage,
       eventManager,
-      logger
+      logger,
     );
 
     logManager.#initializeEntryAddedEventListener();
@@ -111,7 +111,7 @@ export class LogManager {
    */
   async #heuristicSerializeArg(
     arg: Protocol.Runtime.RemoteObject,
-    realm: Realm
+    realm: Realm,
   ): Promise<Script.RemoteValue> {
     switch (arg.type) {
       // TODO: Implement regexp, array, object, map and set heuristics base on
@@ -166,7 +166,7 @@ export class LogManager {
       }
 
       const argsPromise: Promise<Script.RemoteValue[]> = Promise.all(
-        params.args.map((arg) => this.#heuristicSerializeArg(arg, realm))
+        params.args.map((arg) => this.#heuristicSerializeArg(arg, realm)),
       );
 
       for (const browsingContext of realm.associatedBrowsingContexts) {
@@ -192,10 +192,10 @@ export class LogManager {
             (error) => ({
               kind: 'error',
               error,
-            })
+            }),
           ),
           browsingContext.id,
-          ChromiumBidi.Log.EventNames.LogEntryAdded
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
         );
       }
     });
@@ -227,7 +227,7 @@ export class LogManager {
                   text,
                   timestamp: Math.round(params.timestamp),
                   stackTrace: getBidiStackTrace(
-                    params.exceptionDetails.stackTrace
+                    params.exceptionDetails.stackTrace,
                   ),
                   type: 'javascript',
                 },
@@ -236,10 +236,10 @@ export class LogManager {
             (error) => ({
               kind: 'error',
               error,
-            })
+            }),
           ),
           browsingContext.id,
-          ChromiumBidi.Log.EventNames.LogEntryAdded
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
         );
       }
     });
@@ -250,7 +250,7 @@ export class LogManager {
    */
   static async #getExceptionText(
     params: Protocol.Runtime.ExceptionThrownEvent,
-    realm?: Realm
+    realm?: Realm,
   ): Promise<string> {
     if (!params.exceptionDetails.exception) {
       return params.exceptionDetails.text;

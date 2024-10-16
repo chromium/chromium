@@ -22,7 +22,7 @@ import {base64ToString} from './Base64.js';
 describe('base64ToString', () => {
   it('should decode', () => {
     expect(base64ToString('c29tZV9iYXNlNjRfc3RyaW5n')).to.equal(
-      'some_base64_string'
+      'some_base64_string',
     );
   });
 });

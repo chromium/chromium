@@ -43,8 +43,8 @@ describe('SharedId', () => {
         getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
-          PARSED_SHARED_ID.backendNodeId
-        )
+          PARSED_SHARED_ID.backendNodeId,
+        ),
       ).to.equal(SHARED_ID);
     });
   });

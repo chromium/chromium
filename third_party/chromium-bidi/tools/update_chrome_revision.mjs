@@ -27,7 +27,7 @@ import packageJson from '../package.json' assert {type: 'json'};
 
 async function getVersionAndRevisionForCanary() {
   const result = await fetch(
-    'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
+    'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json',
   ).then((response) => {
     return response.json();
   });
@@ -55,7 +55,7 @@ async function updateDevToolsProtocolVersion(revision) {
     .toString()
     .replace(
       `"devtools-protocol": "${currentProtocol}"`,
-      `"devtools-protocol": "${bestNewProtocol}"`
+      `"devtools-protocol": "${bestNewProtocol}"`,
     );
   await writeFile('./package.json', update);
 }
@@ -73,7 +73,7 @@ let message = `update the pinned browser version to ${version}`;
 if (newSemVer.compare(oldSemVer) <= 0) {
   // Exit the process without setting up version
   console.warn(
-    `Version ${version} is older or the same as the current ${currentVersion}`
+    `Version ${version} is older or the same as the current ${currentVersion}`,
   );
   process.exit(0);
 } else if (newSemVer.major === oldSemVer.major) {

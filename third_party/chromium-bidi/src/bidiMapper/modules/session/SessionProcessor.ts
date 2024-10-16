@@ -36,7 +36,7 @@ export class SessionProcessor {
   constructor(
     eventManager: EventManager,
     browserCdpClient: CdpClient,
-    initConnection: (opts: MapperOptions) => Promise<void>
+    initConnection: (opts: MapperOptions) => Promise<void>,
   ) {
     this.#eventManager = eventManager;
     this.#browserCdpClient = browserCdpClient;
@@ -48,7 +48,7 @@ export class SessionProcessor {
   }
 
   #mergeCapabilities(
-    capabilitiesRequest: Session.CapabilitiesRequest
+    capabilitiesRequest: Session.CapabilitiesRequest,
   ): Session.CapabilityRequest {
     // Roughly following https://www.w3.org/TR/webdriver2/#dfn-capabilities-processing.
     // Validations should already be done by the parser.
@@ -62,7 +62,7 @@ export class SessionProcessor {
       for (const key of Object.keys(first)) {
         if (result[key] !== undefined) {
           throw new InvalidArgumentException(
-            `Capability ${key} in firstMatch is already defined in alwaysMatch`
+            `Capability ${key} in firstMatch is already defined in alwaysMatch`,
           );
         }
         result[key] = first[key];
@@ -77,14 +77,14 @@ export class SessionProcessor {
       {};
 
     match.unhandledPromptBehavior = this.#getUnhandledPromptBehavior(
-      match.unhandledPromptBehavior
+      match.unhandledPromptBehavior,
     );
 
     return match;
   }
 
   #getUnhandledPromptBehavior(
-    capabilityValue: unknown
+    capabilityValue: unknown,
   ): Session.UserPromptHandler | undefined {
     if (capabilityValue === undefined) {
       return undefined;
@@ -95,7 +95,7 @@ export class SessionProcessor {
     }
     if (typeof capabilityValue !== 'string') {
       throw new InvalidArgumentException(
-        `Unexpected 'unhandledPromptBehavior' type: ${typeof capabilityValue}`
+        `Unexpected 'unhandledPromptBehavior' type: ${typeof capabilityValue}`,
       );
     }
     switch (capabilityValue) {
@@ -109,7 +109,7 @@ export class SessionProcessor {
         return {default: Session.UserPromptHandlerType.Ignore};
       default:
         throw new InvalidArgumentException(
-          `Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`
+          `Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`,
         );
     }
   }
@@ -144,24 +144,24 @@ export class SessionProcessor {
 
   async subscribe(
     params: Session.SubscriptionRequest,
-    channel: BidiPlusChannel = null
+    channel: BidiPlusChannel = null,
   ): Promise<EmptyResult> {
     await this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
-      channel
+      channel,
     );
     return {};
   }
 
   async unsubscribe(
     params: Session.SubscriptionRequest,
-    channel: BidiPlusChannel = null
+    channel: BidiPlusChannel = null,
   ): Promise<EmptyResult> {
     await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
       params.contexts ?? [null],
-      channel
+      channel,
     );
     return {};
   }

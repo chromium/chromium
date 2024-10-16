@@ -28,7 +28,6 @@ import {
 } from './path-getter/path-getter.mjs';
 
 export function log(...message) {
-  // eslint-disable-next-line no-console
   console.log(`(${basename(process.argv[1])})`, ...message);
 }
 
@@ -64,7 +63,7 @@ export function parseCommandLineArgs() {
           describe: 'Provide a sub E2E file or folder to filter by',
           type: 'string',
         });
-      }
+      },
     )
     .option('k', {
       describe: 'Provide a test name to filter by',
@@ -143,13 +142,13 @@ export function createBiDiServerProcess() {
   }
 
   log(
-    `Starting ${CHROMEDRIVER ? 'ChromeDriver' : 'Mapper'} with DEBUG='${DEBUG}'...`
+    `Starting ${CHROMEDRIVER ? 'ChromeDriver' : 'Mapper'} with DEBUG='${DEBUG}'...`,
   );
 
   if (process.env.VERBOSE === 'true' || process.env.CI) {
     log(`Environment variables:`, runParams.options);
     log(
-      `Command: ${runParams.file} ${runParams.args.map((a) => (a.indexOf(' ') < 0 ? a : a.replaceAll(' ', '\\ '))).join(' ')}`
+      `Command: ${runParams.file} ${runParams.args.map((a) => (a.indexOf(' ') < 0 ? a : a.replaceAll(' ', '\\ '))).join(' ')}`,
     );
   }
 

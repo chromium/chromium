@@ -79,7 +79,7 @@ export class MapperCdpConnection implements CdpConnection {
 
   async createBrowserSession(): Promise<MapperCdpClient> {
     const {sessionId} = await this.#mainBrowserCdpClient.sendCommand(
-      'Target.attachToBrowserTarget'
+      'Target.attachToBrowserTarget',
     );
     return this.#createCdpClient(sessionId);
   }
@@ -99,7 +99,7 @@ export class MapperCdpConnection implements CdpConnection {
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
     params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
-    sessionId?: Protocol.Target.SessionID
+    sessionId?: Protocol.Target.SessionID,
   ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;
@@ -110,7 +110,7 @@ export class MapperCdpConnection implements CdpConnection {
         error: new CloseError(
           `${method} ${JSON.stringify(params)} ${
             sessionId ?? ''
-          } call rejected because the connection has been closed.`
+          } call rejected because the connection has been closed.`,
         ),
       });
       const cdpMessage: CdpMessage<CdpMethod> = {id, method, params};
@@ -152,7 +152,7 @@ export class MapperCdpConnection implements CdpConnection {
       }
     } else if (message.method) {
       const client = this.#sessionCdpClients.get(
-        message.sessionId ?? undefined
+        message.sessionId ?? undefined,
       );
       client?.emit(message.method, message.params || {});
 
@@ -182,7 +182,7 @@ export class MapperCdpConnection implements CdpConnection {
    * @private
    */
   #createCdpClient(
-    sessionId: Protocol.Target.SessionID | undefined
+    sessionId: Protocol.Target.SessionID | undefined,
   ): MapperCdpClient {
     const cdpClient = new MapperCdpClient(this, sessionId);
     this.#sessionCdpClients.set(sessionId, cdpClient);

@@ -61,12 +61,12 @@ export function installAndGetChromeDriverPath() {
 
   if (getChannel() !== 'local') {
     throw new Error(
-      'Auto download of chromedriver is supported only for `local` channel. Either use `CHANNEL=local` or set `CHROMEDRIVER_BIN` environment variable to the path of the chromedriver binary matching required Chrome channel.'
+      'Auto download of chromedriver is supported only for `local` channel. Either use `CHANNEL=local` or set `CHROMEDRIVER_BIN` environment variable to the path of the chromedriver binary matching required Chrome channel.',
     );
   }
 
   return execSync(
-    ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' ')
+    ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' '),
   )
     .toString()
     .trim();

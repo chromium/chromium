@@ -46,7 +46,7 @@ describe('HTML WPT reporter', () => {
             },
           ],
           status: 'OK',
-        })
+        }),
       ).to.deep.equal([
         {
           message: null,
@@ -70,7 +70,7 @@ describe('HTML WPT reporter', () => {
           subtests: [],
           status: 'TIMEOUT',
           message: null,
-        })
+        }),
       ).to.deep.equal([
         {
           message: null,
@@ -113,7 +113,7 @@ describe('HTML WPT reporter', () => {
               message: null,
             },
           ],
-        })
+        }),
       ).to.deep.equal([
         {
           message: null,
@@ -163,7 +163,7 @@ describe('HTML WPT reporter', () => {
               message: null,
             },
           ],
-        })
+        }),
       ).to.deep.equal([
         {
           message: null,

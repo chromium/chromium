@@ -82,7 +82,7 @@ async function runMapperInstance(selfTargetId: string) {
     await cdpConnection.createBrowserSession(),
     selfTargetId,
     new BidiParser(),
-    log
+    log,
   );
 
   log(LogType.debugInfo, 'Mapper instance has been launched');

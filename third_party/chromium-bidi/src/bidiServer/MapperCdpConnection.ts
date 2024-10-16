@@ -46,13 +46,13 @@ export class MapperServerCdpConnection {
   static async create(
     cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
-    verbose: boolean
+    verbose: boolean,
   ): Promise<MapperServerCdpConnection> {
     try {
       const bidiSession = await this.#initMapper(
         cdpConnection,
         mapperTabSource,
-        verbose
+        verbose,
       );
       return new MapperServerCdpConnection(cdpConnection, bidiSession);
     } catch (e) {
@@ -63,7 +63,7 @@ export class MapperServerCdpConnection {
 
   private constructor(
     cdpConnection: MapperCdpConnection,
-    bidiSession: SimpleTransport
+    bidiSession: SimpleTransport,
   ) {
     this.#cdpConnection = cdpConnection;
     this.#bidiSession = bidiSession;
@@ -71,7 +71,7 @@ export class MapperServerCdpConnection {
 
   static async #sendMessage(
     mapperCdpClient: MapperCdpClient,
-    message: string
+    message: string,
   ): Promise<void> {
     try {
       await mapperCdpClient.sendCommand('Runtime.evaluate', {
@@ -92,7 +92,7 @@ export class MapperServerCdpConnection {
 
   static #onBindingCalled = (
     params: Protocol.Runtime.BindingCalledEvent,
-    bidiSession: SimpleTransport
+    bidiSession: SimpleTransport,
   ) => {
     if (params.name === 'sendBidiResponse') {
       bidiSession.emit('message', params.payload);
@@ -119,17 +119,17 @@ export class MapperServerCdpConnection {
   };
 
   static #onConsoleAPICalled = (
-    params: Protocol.Runtime.ConsoleAPICalledEvent
+    params: Protocol.Runtime.ConsoleAPICalledEvent,
   ) => {
     debugInfo(
       'consoleAPICalled: %s %O',
       params.type,
-      params.args.map((arg) => arg.value)
+      params.args.map((arg) => arg.value),
     );
   };
 
   static #onRuntimeExceptionThrown = (
-    params: Protocol.Runtime.ExceptionThrownEvent
+    params: Protocol.Runtime.ExceptionThrownEvent,
   ) => {
     debugInfo('exceptionThrown:', params);
   };
@@ -137,7 +137,7 @@ export class MapperServerCdpConnection {
   static async #initMapper(
     cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
-    verbose: boolean
+    verbose: boolean,
   ): Promise<SimpleTransport> {
     debugInternal('Initializing Mapper.');
 
@@ -146,15 +146,15 @@ export class MapperServerCdpConnection {
     // Run mapper in the first open tab.
     const targets = (await cdpConnection.sendCommand(
       'Target.getTargets',
-      {}
+      {},
     )) as Protocol.Target.GetTargetsResponse;
     const mapperTabTargetId = targets.targetInfos.filter(
-      (target) => target.type === 'page'
+      (target) => target.type === 'page',
     )[0]!.targetId;
 
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
-      {targetId: mapperTabTargetId, flatten: true}
+      {targetId: mapperTabTargetId, flatten: true},
     );
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
@@ -172,19 +172,19 @@ export class MapperServerCdpConnection {
     });
 
     const bidiSession = new SimpleTransport(
-      async (message) => await this.#sendMessage(mapperCdpClient, message)
+      async (message) => await this.#sendMessage(mapperCdpClient, message),
     );
 
     // Process responses from the mapper tab.
     mapperCdpClient.on('Runtime.bindingCalled', (params) =>
-      this.#onBindingCalled(params, bidiSession)
+      this.#onBindingCalled(params, bidiSession),
     );
     // Forward console messages from the mapper tab.
     mapperCdpClient.on('Runtime.consoleAPICalled', this.#onConsoleAPICalled);
     // Catch unhandled exceptions in the mapper.
     mapperCdpClient.on(
       'Runtime.exceptionThrown',
-      this.#onRuntimeExceptionThrown
+      this.#onRuntimeExceptionThrown,
     );
 
     await mapperCdpClient.sendCommand('Runtime.enable');

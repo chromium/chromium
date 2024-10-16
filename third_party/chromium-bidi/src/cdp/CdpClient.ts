@@ -51,7 +51,7 @@ export interface CdpClient extends EventEmitter<CdpEvents> {
    */
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
-    params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0]
+    params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']>;
 }
 
@@ -65,7 +65,7 @@ export class MapperCdpClient
 
   constructor(
     cdpConnection: MapperCdpConnection,
-    sessionId?: Protocol.Target.SessionID
+    sessionId?: Protocol.Target.SessionID,
   ) {
     super();
     this.#cdpConnection = cdpConnection;

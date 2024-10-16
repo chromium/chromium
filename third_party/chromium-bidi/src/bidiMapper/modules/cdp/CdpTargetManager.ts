@@ -72,7 +72,7 @@ export class CdpTargetManager {
     defaultUserContextId: Browser.UserContext,
     prerenderingDisabled: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
@@ -102,11 +102,11 @@ export class CdpTargetManager {
     });
     cdpClient.on(
       'Target.detachedFromTarget',
-      this.#handleDetachedFromTargetEvent.bind(this)
+      this.#handleDetachedFromTargetEvent.bind(this),
     );
     cdpClient.on(
       'Target.targetInfoChanged',
-      this.#handleTargetInfoChangedEvent.bind(this)
+      this.#handleTargetInfoChangedEvent.bind(this),
     );
     cdpClient.on('Inspector.targetCrashed', () => {
       this.#handleTargetCrashedEvent(cdpClient);
@@ -114,21 +114,21 @@ export class CdpTargetManager {
 
     cdpClient.on(
       'Page.frameAttached',
-      this.#handleFrameAttachedEvent.bind(this)
+      this.#handleFrameAttachedEvent.bind(this),
     );
     cdpClient.on(
       'Page.frameDetached',
-      this.#handleFrameDetachedEvent.bind(this)
+      this.#handleFrameDetachedEvent.bind(this),
     );
     cdpClient.on(
       'Page.frameSubtreeWillBeDetached',
-      this.#handleFrameSubtreeWillBeDetached.bind(this)
+      this.#handleFrameSubtreeWillBeDetached.bind(this),
     );
   }
 
   #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
     const parentBrowsingContext = this.#browsingContextStorage.findContext(
-      params.parentFrameId
+      params.parentFrameId,
     );
     if (parentBrowsingContext !== undefined) {
       BrowsingContextImpl.create(
@@ -144,7 +144,7 @@ export class CdpTargetManager {
         'about:blank',
         undefined,
         this.#unhandledPromptBehavior,
-        this.#logger
+        this.#logger,
       );
     }
   }
@@ -158,14 +158,14 @@ export class CdpTargetManager {
   }
 
   #handleFrameSubtreeWillBeDetached(
-    params: Protocol.Page.FrameSubtreeWillBeDetachedEvent
+    params: Protocol.Page.FrameSubtreeWillBeDetachedEvent,
   ) {
     this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
   }
 
   #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: CdpClient
+    parentSessionCdpClient: CdpClient,
   ) {
     const {sessionId, targetInfo} = params;
     const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
@@ -175,7 +175,7 @@ export class CdpTargetManager {
       await targetCdpClient
         .sendCommand('Runtime.runIfWaitingForDebugger')
         .then(() =>
-          parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
+          parentSessionCdpClient.sendCommand('Target.detachFromTarget', params),
         )
         .catch((error) => this.#logger?.(LogType.debugError, error));
     };
@@ -225,10 +225,10 @@ export class CdpTargetManager {
         const cdpTarget = this.#createCdpTarget(
           targetCdpClient,
           parentSessionCdpClient,
-          targetInfo
+          targetInfo,
         );
         const maybeContext = this.#browsingContextStorage.findContext(
-          targetInfo.targetId
+          targetInfo.targetId,
         );
         if (maybeContext && targetInfo.type === 'iframe') {
           // OOPiF.
@@ -238,7 +238,7 @@ export class CdpTargetManager {
           // case is handled by the `findFrameParentId` method.
           const parentId = this.#findFrameParentId(
             targetInfo,
-            parentSessionCdpClient.sessionId
+            parentSessionCdpClient.sessionId,
           );
           const userContext =
             targetInfo.browserContextId &&
@@ -265,7 +265,7 @@ export class CdpTargetManager {
             targetInfo.url === '' ? 'about:blank' : targetInfo.url,
             targetInfo.openerFrameId ?? targetInfo.openerId,
             this.#unhandledPromptBehavior,
-            this.#logger
+            this.#logger,
           );
         }
         return;
@@ -284,12 +284,12 @@ export class CdpTargetManager {
         const cdpTarget = this.#createCdpTarget(
           targetCdpClient,
           parentSessionCdpClient,
-          targetInfo
+          targetInfo,
         );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget,
-          realm
+          realm,
         );
         return;
       }
@@ -301,11 +301,11 @@ export class CdpTargetManager {
         const cdpTarget = this.#createCdpTarget(
           targetCdpClient,
           parentSessionCdpClient,
-          targetInfo
+          targetInfo,
         );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
-          cdpTarget
+          cdpTarget,
         );
         return;
       }
@@ -319,7 +319,7 @@ export class CdpTargetManager {
   /** Try to find the parent browsing context ID for the given attached target. */
   #findFrameParentId(
     targetInfo: Protocol.Target.TargetInfo,
-    parentSessionId: Protocol.Target.SessionID | undefined
+    parentSessionId: Protocol.Target.SessionID | undefined,
   ): string | null {
     if (targetInfo.type !== 'iframe') {
       return null;
@@ -340,7 +340,7 @@ export class CdpTargetManager {
   #createCdpTarget(
     targetCdpClient: CdpClient,
     parentCdpClient: CdpClient,
-    targetInfo: Protocol.Target.TargetInfo
+    targetInfo: Protocol.Target.TargetInfo,
   ) {
     this.#setEventListeners(targetCdpClient);
 
@@ -356,7 +356,7 @@ export class CdpTargetManager {
       this.#networkStorage,
       this.#prerenderingDisabled,
       this.#unhandledPromptBehavior,
-      this.#logger
+      this.#logger,
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
@@ -369,7 +369,7 @@ export class CdpTargetManager {
   #handleWorkerTarget(
     realmType: WorkerRealmType,
     cdpTarget: CdpTarget,
-    ownerRealm?: Realm
+    ownerRealm?: Realm,
   ) {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
@@ -382,7 +382,7 @@ export class CdpTargetManager {
         ownerRealm ? [ownerRealm] : [],
         uniqueId,
         this.#realmStorage,
-        realmType
+        realmType,
       );
       this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
     });
@@ -413,10 +413,10 @@ export class CdpTargetManager {
   }
 
   #handleTargetInfoChangedEvent(
-    params: Protocol.Target.TargetInfoChangedEvent
+    params: Protocol.Target.TargetInfoChangedEvent,
   ) {
     const context = this.#browsingContextStorage.findContext(
-      params.targetInfo.targetId
+      params.targetInfo.targetId,
     );
     if (context) {
       context.onTargetInfoChanged(params);

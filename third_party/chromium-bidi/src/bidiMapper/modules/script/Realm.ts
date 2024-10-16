@@ -47,7 +47,7 @@ export abstract class Realm {
     logger: LoggerFn | undefined,
     origin: string,
     realmId: Script.Realm,
-    realmStorage: RealmStorage
+    realmStorage: RealmStorage,
   ) {
     this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
@@ -64,11 +64,11 @@ export abstract class Realm {
     cdpValue:
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
   ): Script.RemoteValue {
     const bidiValue = this.serializeForBiDi(
       cdpValue.result.deepSerializedValue!,
-      new Map()
+      new Map(),
     );
 
     if (cdpValue.result.objectId) {
@@ -82,7 +82,7 @@ export abstract class Realm {
       } else {
         // No need to await for the object to be released.
         void this.#releaseObject(objectId).catch((error) =>
-          this.#logger?.(LogType.debugError, error)
+          this.#logger?.(LogType.debugError, error),
         );
       }
     }
@@ -103,7 +103,7 @@ export abstract class Realm {
    */
   protected serializeForBiDi(
     deepSerializedValue: Protocol.Runtime.DeepSerializedValue,
-    internalIdMap: Map<number, string>
+    internalIdMap: Map<number, string>,
   ): Script.RemoteValue {
     if (Object.hasOwn(deepSerializedValue, 'weakLocalObjectReference')) {
       const weakLocalObjectReference =
@@ -113,7 +113,7 @@ export abstract class Realm {
       }
 
       (deepSerializedValue as any).internalId = internalIdMap.get(
-        weakLocalObjectReference
+        weakLocalObjectReference,
       );
       delete deepSerializedValue['weakLocalObjectReference'];
     }
@@ -140,7 +140,7 @@ export abstract class Realm {
     // Recursively update the nested values.
     if (
       ['array', 'set', 'htmlcollection', 'nodelist'].includes(
-        deepSerializedValue.type
+        deepSerializedValue.type,
       )
     ) {
       for (const i in bidiValue) {
@@ -200,7 +200,7 @@ export abstract class Realm {
     resultOwnership: Script.ResultOwnership = Script.ResultOwnership.None,
     serializationOptions: Script.SerializationOptions = {},
     userActivation = false,
-    includeCommandLineApi = false
+    includeCommandLineApi = false,
   ): Promise<Script.EvaluateResult> {
     const cdpEvaluateResult = await this.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -210,18 +210,18 @@ export abstract class Realm {
         awaitPromise,
         serializationOptions: Realm.#getSerializationOptions(
           Protocol.Runtime.SerializationOptionsSerialization.Deep,
-          serializationOptions
+          serializationOptions,
         ),
         userGesture: userActivation,
         includeCommandLineAPI: includeCommandLineApi,
-      }
+      },
     );
 
     if (cdpEvaluateResult.exceptionDetails) {
       return await this.#getExceptionResult(
         cdpEvaluateResult.exceptionDetails,
         0,
-        resultOwnership
+        resultOwnership,
       );
     }
 
@@ -256,7 +256,7 @@ export abstract class Realm {
    */
   async serializeCdpObject(
     cdpRemoteObject: Protocol.Runtime.RemoteObject,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
   ): Promise<Script.RemoteValue> {
     // TODO: if the object is a primitive, return it directly without CDP roundtrip.
     const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
@@ -264,7 +264,7 @@ export abstract class Realm {
     const cdpValue: Protocol.Runtime.CallFunctionOnResponse =
       await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
         functionDeclaration: String(
-          (remoteObject: Protocol.Runtime.RemoteObject) => remoteObject
+          (remoteObject: Protocol.Runtime.RemoteObject) => remoteObject,
         ),
         awaitPromise: false,
         arguments: [argument],
@@ -279,7 +279,7 @@ export abstract class Realm {
   }
 
   static #cdpRemoteObjectToCallArgument(
-    cdpRemoteObject: Protocol.Runtime.RemoteObject
+    cdpRemoteObject: Protocol.Runtime.RemoteObject,
   ): Protocol.Runtime.CallArgument {
     if (cdpRemoteObject.objectId !== undefined) {
       return {objectId: cdpRemoteObject.objectId};
@@ -295,25 +295,25 @@ export abstract class Realm {
    * calling `toString()` on the object value.
    */
   async stringifyObject(
-    cdpRemoteObject: Protocol.Runtime.RemoteObject
+    cdpRemoteObject: Protocol.Runtime.RemoteObject,
   ): Promise<string> {
     const {result} = await this.cdpClient.sendCommand(
       'Runtime.callFunctionOn',
       {
         functionDeclaration: String(
-          (remoteObject: Protocol.Runtime.RemoteObject) => String(remoteObject)
+          (remoteObject: Protocol.Runtime.RemoteObject) => String(remoteObject),
         ),
         awaitPromise: false,
         arguments: [cdpRemoteObject],
         returnByValue: true,
         executionContextId: this.executionContextId,
-      }
+      },
     );
     return result.value;
   }
 
   async #flattenKeyValuePairs(
-    mappingLocalValue: Script.MappingLocalValue
+    mappingLocalValue: Script.MappingLocalValue,
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const keyValueArray = await Promise.all(
       mappingLocalValue.map(async ([key, value]) => {
@@ -328,24 +328,24 @@ export abstract class Realm {
         const valueArg = await this.deserializeForCdp(value);
 
         return [keyArg, valueArg];
-      })
+      }),
     );
 
     return keyValueArray.flat();
   }
 
   async #flattenValueList(
-    listLocalValue: Script.ListLocalValue
+    listLocalValue: Script.ListLocalValue,
   ): Promise<Protocol.Runtime.CallArgument[]> {
     return await Promise.all(
-      listLocalValue.map((localValue) => this.deserializeForCdp(localValue))
+      listLocalValue.map((localValue) => this.deserializeForCdp(localValue)),
     );
   }
 
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
   ): Promise<Script.ExceptionDetails> {
     const callFrames =
       cdpExceptionDetails.stackTrace?.callFrames.map((frame) => ({
@@ -378,7 +378,7 @@ export abstract class Realm {
     argumentsLocalValues: Script.LocalValue[] = [],
     resultOwnership: Script.ResultOwnership = Script.ResultOwnership.None,
     serializationOptions: Script.SerializationOptions = {},
-    userActivation = false
+    userActivation = false,
   ): Promise<Script.EvaluateResult> {
     const callFunctionAndSerializeScript = `(...args) => {
       function callFunction(f, args) {
@@ -396,8 +396,8 @@ export abstract class Realm {
       ...(await Promise.all(
         argumentsLocalValues.map(
           async (argumentLocalValue: Script.LocalValue) =>
-            await this.deserializeForCdp(argumentLocalValue)
-        )
+            await this.deserializeForCdp(argumentLocalValue),
+        ),
       )),
     ];
 
@@ -411,11 +411,11 @@ export abstract class Realm {
           arguments: thisAndArgumentsList,
           serializationOptions: Realm.#getSerializationOptions(
             Protocol.Runtime.SerializationOptionsSerialization.Deep,
-            serializationOptions
+            serializationOptions,
           ),
           executionContextId: this.executionContextId,
           userGesture: userActivation,
-        }
+        },
       );
     } catch (error: any) {
       // Heuristic to determine if the problem is in the argument.
@@ -438,7 +438,7 @@ export abstract class Realm {
       return await this.#getExceptionResult(
         cdpCallFunctionResult.exceptionDetails,
         1,
-        resultOwnership
+        resultOwnership,
       );
     }
     return {
@@ -449,7 +449,7 @@ export abstract class Realm {
   }
 
   async deserializeForCdp(
-    localValue: Script.LocalValue
+    localValue: Script.LocalValue,
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('handle' in localValue && localValue.handle) {
       return {objectId: localValue.handle};
@@ -488,20 +488,20 @@ export abstract class Realm {
       case 'date':
         return {
           unserializableValue: `new Date(Date.parse(${JSON.stringify(
-            localValue.value
+            localValue.value,
           )}))`,
         };
       case 'regexp':
         return {
           unserializableValue: `new RegExp(${JSON.stringify(
-            localValue.value.pattern
+            localValue.value.pattern,
           )}, ${JSON.stringify(localValue.value.flags)})`,
         };
       case 'map': {
         // TODO: If none of the nested keys and values has a remote
         // reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
-          localValue.value
+          localValue.value,
         );
         const {result} = await this.cdpClient.sendCommand(
           'Runtime.callFunctionOn',
@@ -515,13 +515,13 @@ export abstract class Realm {
                 }
 
                 return result;
-              }
+              },
             ),
             awaitPromise: false,
             arguments: keyValueArray,
             returnByValue: false,
             executionContextId: this.executionContextId,
-          }
+          },
         );
         // TODO(#375): Release `result.objectId` after using.
         return {objectId: result.objectId};
@@ -530,7 +530,7 @@ export abstract class Realm {
         // TODO: If none of the nested keys and values has a remote
         // reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
-          localValue.value
+          localValue.value,
         );
 
         const {result} = await this.cdpClient.sendCommand(
@@ -550,13 +550,13 @@ export abstract class Realm {
                 }
 
                 return result;
-              }
+              },
             ),
             awaitPromise: false,
             arguments: keyValueArray,
             returnByValue: false,
             executionContextId: this.executionContextId,
-          }
+          },
         );
         // TODO(#375): Release `result.objectId` after using.
         return {objectId: result.objectId};
@@ -570,13 +570,13 @@ export abstract class Realm {
           'Runtime.callFunctionOn',
           {
             functionDeclaration: String(
-              (...args: Protocol.Runtime.CallArgument[]) => args
+              (...args: Protocol.Runtime.CallArgument[]) => args,
             ),
             awaitPromise: false,
             arguments: args,
             returnByValue: false,
             executionContextId: this.executionContextId,
-          }
+          },
         );
         // TODO(#375): Release `result.objectId` after using.
         return {objectId: result.objectId};
@@ -590,13 +590,13 @@ export abstract class Realm {
           'Runtime.callFunctionOn',
           {
             functionDeclaration: String(
-              (...args: Protocol.Runtime.CallArgument[]) => new Set(args)
+              (...args: Protocol.Runtime.CallArgument[]) => new Set(args),
             ),
             awaitPromise: false,
             arguments: args,
             returnByValue: false,
             executionContextId: this.executionContextId,
-          }
+          },
         );
         // TODO(#375): Release `result.objectId` after using.
         return {objectId: result.objectId};
@@ -606,7 +606,7 @@ export abstract class Realm {
         const channelProxy = new ChannelProxy(localValue.value, this.#logger);
         const channelProxySendMessageHandle = await channelProxy.init(
           this,
-          this.#eventManager
+          this.#eventManager,
         );
         return {objectId: channelProxySendMessageHandle};
       }
@@ -616,20 +616,20 @@ export abstract class Realm {
 
     // Intentionally outside to handle unknown types
     throw new Error(
-      `Value ${JSON.stringify(localValue)} is not deserializable.`
+      `Value ${JSON.stringify(localValue)} is not deserializable.`,
     );
   }
 
   async #getExceptionResult(
     exceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
   ): Promise<Script.EvaluateResultException> {
     return {
       exceptionDetails: await this.#serializeCdpExceptionDetails(
         exceptionDetails,
         lineOffset,
-        resultOwnership
+        resultOwnership,
       ),
       realm: this.realmId,
       type: 'exception',
@@ -638,7 +638,7 @@ export abstract class Realm {
 
   static #getSerializationOptions(
     serialization: Protocol.Runtime.SerializationOptionsSerialization,
-    serializationOptions: Script.SerializationOptions
+    serializationOptions: Script.SerializationOptions,
   ): Protocol.Runtime.SerializationOptions {
     return {
       serialization,
@@ -649,7 +649,7 @@ export abstract class Realm {
   }
 
   static #getAdditionalSerializationParameters(
-    serializationOptions: Script.SerializationOptions
+    serializationOptions: Script.SerializationOptions,
   ) {
     const additionalParameters: {
       maxNodeDepth?: Script.SerializationOptions['maxDomDepth'];

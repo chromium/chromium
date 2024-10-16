@@ -151,7 +151,7 @@ export class PointerSource {
 
   setClickCount(
     button: number,
-    context: InstanceType<typeof PointerSource.ClickContext>
+    context: InstanceType<typeof PointerSource.ClickContext>,
   ) {
     let storedContext = this.#clickContexts.get(button);
     if (!storedContext || storedContext.compare(context)) {

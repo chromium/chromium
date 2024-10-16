@@ -33,7 +33,7 @@ export function isCdpEvent(name: string): boolean {
  * Asserts that the given event is known to BiDi or BiDi+, or throws otherwise.
  */
 export function assertSupportedEvent(
-  name: string
+  name: string,
 ): asserts name is ChromiumBidi.EventNames {
   if (!ChromiumBidi.EVENT_NAMES.has(name as never) && !isCdpEvent(name)) {
     throw new InvalidArgumentException(`Unknown event: ${name}`);

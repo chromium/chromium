@@ -20,7 +20,7 @@ const SHARED_ID_DIVIDER = '_element_';
 export function getSharedId(
   frameId: string,
   documentId: string,
-  backendNodeId: number
+  backendNodeId: number,
 ): string {
   return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
 }

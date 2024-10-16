@@ -104,12 +104,12 @@ export class WebSocketServer {
 
   async #onRequest(
     request: http.IncomingMessage,
-    response: http.ServerResponse
+    response: http.ServerResponse,
   ) {
     debugInternal(
       `Received HTTP ${JSON.stringify(
-        request.method
-      )} request for ${JSON.stringify(request.url)}`
+        request.method,
+      )} request for ${JSON.stringify(request.url)}`,
     );
     if (!request.url) {
       throw new Error('Request URL is empty.');
@@ -152,7 +152,7 @@ export class WebSocketServer {
 
       const webSocketUrl = `ws://localhost:${this.#port}/session/${sessionId}`;
       debugInternal(
-        `Session created. WebSocket URL: ${JSON.stringify(webSocketUrl)}.`
+        `Session created. WebSocket URL: ${JSON.stringify(webSocketUrl)}.`,
       );
 
       response.write(
@@ -163,7 +163,7 @@ export class WebSocketServer {
               webSocketUrl,
             },
           },
-        })
+        }),
       );
       return response.end();
     } else if (request.url.startsWith('/session')) {
@@ -173,8 +173,8 @@ export class WebSocketServer {
         } request for ${
           request.url
         } with payload ${await this.#getHttpRequestPayload(
-          request
-        )}. 200 returned.`
+          request,
+        )}. 200 returned.`,
       );
 
       response.writeHead(200, {
@@ -184,15 +184,15 @@ export class WebSocketServer {
       response.write(
         JSON.stringify({
           value: {},
-        })
+        }),
       );
       return response.end();
     }
 
     throw new Error(
       `Unknown "${request.method}" request for "${JSON.stringify(
-        request.url
-      )}" with payload "${await this.#getHttpRequestPayload(request)}".`
+        request.url,
+      )}" with payload "${await this.#getHttpRequestPayload(request)}".`,
     );
   }
 
@@ -208,8 +208,8 @@ export class WebSocketServer {
 
     debugInternal(
       `new WS request received. Path: ${JSON.stringify(
-        request.resourceURL.path
-      )}, sessionId: ${JSON.stringify(requestSessionId)}`
+        request.resourceURL.path,
+      )}, sessionId: ${JSON.stringify(requestSessionId)}`,
     );
 
     if (
@@ -233,11 +233,11 @@ export class WebSocketServer {
       // TODO: connect to an existing BrowserInstance instead.
       const sessionOptions = session.sessionOptions;
       session.browserInstancePromise = this.#closeBrowserInstanceIfLaunched(
-        session
+        session,
       )
         .then(
           async () =>
-            await this.#launchBrowserInstance(connection, sessionOptions)
+            await this.#launchBrowserInstance(connection, sessionOptions),
         )
         .catch((e) => {
           debugInfo('Error while creating session', e);
@@ -253,7 +253,7 @@ export class WebSocketServer {
           connection,
           {},
           ErrorCode.InvalidArgument,
-          `not supported type (${message.type})`
+          `not supported type (${message.type})`,
         );
         return;
       }
@@ -277,7 +277,7 @@ export class WebSocketServer {
           connection,
           {},
           ErrorCode.InvalidArgument,
-          `Cannot parse data as JSON, ${error}`
+          `Cannot parse data as JSON, ${error}`,
         );
         return;
       }
@@ -291,7 +291,7 @@ export class WebSocketServer {
             connection,
             plainCommandData,
             ErrorCode.SessionNotCreated,
-            'WS connection already have an associated session.'
+            'WS connection already have an associated session.',
           );
           return;
         }
@@ -299,7 +299,7 @@ export class WebSocketServer {
         try {
           const sessionOptions = {
             chromeOptions: this.#getChromeOptions(
-              parsedCommandData.params?.capabilities
+              parsedCommandData.params?.capabilities,
             ),
             verbose: this.#verbose,
             sessionNewBody: plainCommandData,
@@ -308,7 +308,7 @@ export class WebSocketServer {
           const browserInstance = await this.#launchBrowserInstance(
             connection,
             sessionOptions,
-            true
+            true,
           );
 
           const sessionId = uuidv4();
@@ -325,7 +325,7 @@ export class WebSocketServer {
             connection,
             plainCommandData,
             ErrorCode.SessionNotCreated,
-            e?.message ?? 'Unknown error'
+            e?.message ?? 'Unknown error',
           );
           return;
         }
@@ -341,7 +341,7 @@ export class WebSocketServer {
             connection,
             plainCommandData,
             ErrorCode.SessionNotCreated,
-            'WS connection does not have an associated session.'
+            'WS connection does not have an associated session.',
           );
           return;
         }
@@ -356,7 +356,7 @@ export class WebSocketServer {
             connection,
             plainCommandData,
             ErrorCode.UnknownError,
-            `Session cannot be closed. Error: ${e?.message}`
+            `Session cannot be closed. Error: ${e?.message}`,
           );
           return;
         }
@@ -367,7 +367,7 @@ export class WebSocketServer {
             type: 'success',
             result: {},
           },
-          connection
+          connection,
         );
         return;
       }
@@ -379,7 +379,7 @@ export class WebSocketServer {
           connection,
           plainCommandData,
           ErrorCode.InvalidSessionId,
-          'Session is not yet initialized.'
+          'Session is not yet initialized.',
         );
         return;
       }
@@ -391,7 +391,7 @@ export class WebSocketServer {
           connection,
           plainCommandData,
           ErrorCode.InvalidSessionId,
-          'Browser instance is not launched.'
+          'Browser instance is not launched.',
         );
         return;
       }
@@ -407,7 +407,7 @@ export class WebSocketServer {
             type: 'success',
             result: {},
           },
-          connection
+          connection,
         );
         return;
       }
@@ -446,12 +446,12 @@ export class WebSocketServer {
   async #launchBrowserInstance(
     connection: websocket.connection,
     sessionOptions: SessionOptions,
-    passSessionNewThrough = false
+    passSessionNewThrough = false,
   ): Promise<BrowserInstance> {
     debugInfo('Scheduling browser launch...');
     const browserInstance = await BrowserInstance.run(
       sessionOptions.chromeOptions,
-      sessionOptions.verbose
+      sessionOptions.verbose,
     );
 
     const body = JSON.parse(sessionOptions.sessionNewBody);
@@ -488,7 +488,7 @@ export class WebSocketServer {
 
   #sendClientMessageString(
     message: string,
-    connection: websocket.connection
+    connection: websocket.connection,
   ): void {
     if (debugSend.enabled) {
       try {
@@ -509,12 +509,12 @@ export class WebSocketServer {
     connection: websocket.connection,
     plainCommandData: unknown,
     errorCode: string,
-    errorMessage: string
+    errorMessage: string,
   ) {
     const errorResponse = this.#getErrorResponse(
       plainCommandData,
       errorCode,
-      errorMessage
+      errorMessage,
     );
     void this.#sendClientMessage(errorResponse, connection);
   }
@@ -522,7 +522,7 @@ export class WebSocketServer {
   #getErrorResponse(
     plainCommandData: any,
     errorCode: string,
-    errorMessage: string
+    errorMessage: string,
   ) {
     // XXX: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.

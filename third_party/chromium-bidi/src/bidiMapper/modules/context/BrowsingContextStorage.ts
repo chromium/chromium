@@ -46,7 +46,7 @@ export class BrowsingContextStorage {
   /** Gets all top-level contexts, i.e. those with no parent. */
   getTopLevelContexts(): BrowsingContextImpl[] {
     return this.getAllContexts().filter((context) =>
-      context.isTopLevelContext()
+      context.isTopLevelContext(),
     );
   }
 
@@ -77,7 +77,7 @@ export class BrowsingContextStorage {
    * Waits for a context with the given ID to be added and returns it.
    */
   waitForContext(
-    browsingContextId: BrowsingContext.BrowsingContext
+    browsingContextId: BrowsingContext.BrowsingContext,
   ): Promise<BrowsingContextImpl> {
     return new Promise((resolve) => {
       const listener = (event: {browsingContext: BrowsingContextImpl}) => {
@@ -97,14 +97,14 @@ export class BrowsingContextStorage {
 
   /** Gets the context with the given ID, if any. */
   findContext(
-    id: BrowsingContext.BrowsingContext
+    id: BrowsingContext.BrowsingContext,
   ): BrowsingContextImpl | undefined {
     return this.#contexts.get(id);
   }
 
   /** Returns the top-level context ID of the given context, if any. */
   findTopLevelContextId(
-    id: BrowsingContext.BrowsingContext | null
+    id: BrowsingContext.BrowsingContext | null,
   ): BrowsingContext.BrowsingContext | null {
     if (id === null) {
       return null;
@@ -136,7 +136,7 @@ export class BrowsingContextStorage {
   }
 
   verifyTopLevelContextsList(
-    contexts: BrowsingContext.BrowsingContext[] | undefined
+    contexts: BrowsingContext.BrowsingContext[] | undefined,
   ) {
     const foundContexts = new Set<BrowsingContextImpl>();
     if (!contexts) {
@@ -149,7 +149,7 @@ export class BrowsingContextStorage {
         foundContexts.add(context);
       } else {
         throw new InvalidArgumentException(
-          `Non top-level context '${contextId}' given.`
+          `Non top-level context '${contextId}' given.`,
         );
       }
     }

@@ -116,7 +116,7 @@ export class BrowsingContextImpl {
     url: string,
     originalOpener?: string,
     unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#cdpTarget = cdpTarget;
     this.#id = id;
@@ -143,7 +143,7 @@ export class BrowsingContextImpl {
     url: string,
     originalOpener?: string,
     unhandledPromptBehavior?: Session.UserPromptHandler,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
       id,
@@ -156,7 +156,7 @@ export class BrowsingContextImpl {
       url,
       originalOpener,
       unhandledPromptBehavior,
-      logger
+      logger,
     );
 
     context.#initListeners();
@@ -193,10 +193,10 @@ export class BrowsingContextImpl {
             kind: 'error',
             error,
           };
-        }
+        },
       ),
       context.id,
-      ChromiumBidi.BrowsingContext.EventNames.ContextCreated
+      ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
     );
 
     return context;
@@ -223,7 +223,7 @@ export class BrowsingContextImpl {
 
   dispose(emitContextDestroyed: boolean) {
     this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by context disposal')
+      new UnknownErrorException('navigation canceled by context disposal'),
     );
     this.#deleteAllChildren();
 
@@ -246,7 +246,7 @@ export class BrowsingContextImpl {
           method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
           params: this.serializeToBidiValue(),
         },
-        this.id
+        this.id,
       );
     }
 
@@ -292,7 +292,7 @@ export class BrowsingContextImpl {
   /** Returns all direct children contexts. */
   get directChildren(): BrowsingContextImpl[] {
     return [...this.#children].map((id) =>
-      this.#browsingContextStorage.getContext(id)
+      this.#browsingContextStorage.getContext(id),
     );
   }
 
@@ -386,7 +386,7 @@ export class BrowsingContextImpl {
 
   serializeToBidiValue(
     maxDepth = 0,
-    addParentField = true
+    addParentField = true,
   ): BrowsingContext.Info {
     return {
       context: this.#id,
@@ -398,7 +398,7 @@ export class BrowsingContextImpl {
       children:
         maxDepth > 0
           ? this.directChildren.map((c) =>
-              c.serializeToBidiValue(maxDepth - 1, false)
+              c.serializeToBidiValue(maxDepth - 1, false),
             )
           : null,
       ...(addParentField ? {parent: this.#parentId} : {}),
@@ -443,7 +443,7 @@ export class BrowsingContextImpl {
             url: this.#url,
           },
         },
-        this.id
+        this.id,
       );
     });
 
@@ -470,7 +470,7 @@ export class BrowsingContextImpl {
             url: this.#pendingNavigationUrl ?? 'UNKNOWN',
           },
         },
-        this.id
+        this.id,
       );
     });
 
@@ -489,8 +489,8 @@ export class BrowsingContextImpl {
       // If there is a pending navigation, reject it.
       this.#pendingCommandNavigation?.reject(
         new UnknownErrorException(
-          `navigation canceled, as new navigation is requested by ${params.reason}`
-        )
+          `navigation canceled, as new navigation is requested by ${params.reason}`,
+        ),
       );
       this.#pendingNavigationUrl = params.url;
     });
@@ -537,7 +537,7 @@ export class BrowsingContextImpl {
                 url: this.#url,
               },
             },
-            this.id
+            this.id,
           );
           this.#lifecycle.DOMContentLoaded.resolve();
           break;
@@ -554,7 +554,7 @@ export class BrowsingContextImpl {
                 url: this.#url,
               },
             },
-            this.id
+            this.id,
           );
           this.#lifecycle.load.resolve();
           break;
@@ -580,7 +580,7 @@ export class BrowsingContextImpl {
             if (!this.#defaultRealmDeferred.isFinished) {
               this.#logger?.(
                 LogType.debugError,
-                'Unexpectedly, isolated realm created before the default one'
+                'Unexpectedly, isolated realm created before the default one',
               );
             }
             origin = this.#defaultRealmDeferred.isFinished
@@ -604,7 +604,7 @@ export class BrowsingContextImpl {
           origin,
           uniqueId,
           this.#realmStorage,
-          sandbox
+          sandbox,
         );
 
         if (auxData.isDefault) {
@@ -617,11 +617,11 @@ export class BrowsingContextImpl {
             this.#cdpTarget
               .getChannels()
               .map((channel) =>
-                channel.startListenerFromWindow(realm, this.#eventManager)
-              )
+                channel.startListenerFromWindow(realm, this.#eventManager),
+              ),
           );
         }
-      }
+      },
     );
 
     this.#cdpTarget.cdpClient.on(
@@ -639,13 +639,13 @@ export class BrowsingContextImpl {
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
         });
-      }
+      },
     );
 
     this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
       if (!this.#defaultRealmDeferred.isFinished) {
         this.#defaultRealmDeferred.reject(
-          new UnknownErrorException('execution contexts cleared')
+          new UnknownErrorException('execution contexts cleared'),
         );
       }
       this.#defaultRealmDeferred = new Deferred<Realm>();
@@ -659,7 +659,7 @@ export class BrowsingContextImpl {
       if (this.#lastUserPromptType === undefined) {
         this.#logger?.(
           LogType.debugError,
-          'Unexpectedly no opening prompt event before closing one'
+          'Unexpectedly no opening prompt event before closing one',
         );
       }
       this.#eventManager.registerEvent(
@@ -680,7 +680,7 @@ export class BrowsingContextImpl {
               accepted && params.userInput ? params.userInput : undefined,
           },
         },
-        this.id
+        this.id,
       );
       this.#lastUserPromptType = undefined;
     });
@@ -704,7 +704,7 @@ export class BrowsingContextImpl {
               : {}),
           },
         },
-        this.id
+        this.id,
       );
 
       switch (promptHandler) {
@@ -723,7 +723,7 @@ export class BrowsingContextImpl {
   }
 
   static #getPromptType(
-    cdpType: Protocol.Page.DialogType
+    cdpType: Protocol.Page.DialogType,
   ): BrowsingContext.UserPromptType {
     switch (cdpType) {
       case 'alert':
@@ -738,7 +738,7 @@ export class BrowsingContextImpl {
   }
 
   #getPromptHandler(
-    promptType: BrowsingContext.UserPromptType
+    promptType: BrowsingContext.UserPromptType,
   ): Session.UserPromptHandlerType {
     const defaultPromptHandler = Session.UserPromptHandlerType.Dismiss;
     switch (promptType) {
@@ -782,7 +782,7 @@ export class BrowsingContextImpl {
       } else {
         this.#logger?.(
           BrowsingContextImpl.LOGGER_PREFIX,
-          'Document changed (navigatedWithinDocument)'
+          'Document changed (navigatedWithinDocument)',
         );
       }
       return;
@@ -801,7 +801,7 @@ export class BrowsingContextImpl {
     } else {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
-        'Document changed (DOMContentLoaded)'
+        'Document changed (DOMContentLoaded)',
       );
     }
 
@@ -810,7 +810,7 @@ export class BrowsingContextImpl {
     } else {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
-        'Document changed (load)'
+        'Document changed (load)',
       );
     }
   }
@@ -818,20 +818,20 @@ export class BrowsingContextImpl {
   #failLifecycleIfNotFinished() {
     if (!this.#lifecycle.DOMContentLoaded.isFinished) {
       this.#lifecycle.DOMContentLoaded.reject(
-        new UnknownErrorException('navigation canceled')
+        new UnknownErrorException('navigation canceled'),
       );
     }
 
     if (!this.#lifecycle.load.isFinished) {
       this.#lifecycle.load.reject(
-        new UnknownErrorException('navigation canceled')
+        new UnknownErrorException('navigation canceled'),
       );
     }
   }
 
   async navigate(
     url: string,
-    wait: BrowsingContext.ReadinessState
+    wait: BrowsingContext.ReadinessState,
   ): Promise<BrowsingContext.NavigateResult> {
     try {
       new URL(url);
@@ -840,7 +840,7 @@ export class BrowsingContextImpl {
     }
 
     this.#pendingCommandNavigation?.reject(
-      new UnknownErrorException('navigation canceled by concurrent navigation')
+      new UnknownErrorException('navigation canceled by concurrent navigation'),
     );
     await this.targetUnblockedOrThrow();
 
@@ -861,7 +861,7 @@ export class BrowsingContextImpl {
         {
           url,
           frameId: this.id,
-        }
+        },
       );
 
       if (cdpNavigateResult.errorText) {
@@ -878,7 +878,7 @@ export class BrowsingContextImpl {
               url,
             },
           },
-          this.id
+          this.id,
         );
 
         throw new UnknownErrorException(cdpNavigateResult.errorText);
@@ -920,7 +920,7 @@ export class BrowsingContextImpl {
 
   async #waitNavigation(
     wait: BrowsingContext.ReadinessState,
-    withinDocument: boolean
+    withinDocument: boolean,
   ) {
     if (withinDocument) {
       await this.#navigation.withinDocument;
@@ -941,7 +941,7 @@ export class BrowsingContextImpl {
   // TODO: support concurrent navigations analogous to `navigate`.
   async reload(
     ignoreCache: boolean,
-    wait: BrowsingContext.ReadinessState
+    wait: BrowsingContext.ReadinessState,
   ): Promise<BrowsingContext.NavigateResult> {
     await this.targetUnblockedOrThrow();
 
@@ -970,11 +970,11 @@ export class BrowsingContextImpl {
 
   async setViewport(
     viewport?: BrowsingContext.Viewport | null,
-    devicePixelRatio?: number | null
+    devicePixelRatio?: number | null,
   ) {
     if (viewport === null && devicePixelRatio === null) {
       await this.#cdpTarget.cdpClient.sendCommand(
-        'Emulation.clearDeviceMetricsOverride'
+        'Emulation.clearDeviceMetricsOverride',
       );
     } else {
       try {
@@ -998,17 +998,17 @@ export class BrowsingContextImpl {
             deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
             mobile: false,
             dontSetVisibleSize: true,
-          }
+          },
         );
       } catch (err) {
         if (
           (err as Error).message.startsWith(
             // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
-            'Width and height values must be positive'
+            'Width and height values must be positive',
           )
         ) {
           throw new UnsupportedOperationException(
-            'Provided viewport dimensions are not supported'
+            'Provided viewport dimensions are not supported',
           );
         }
         throw err;
@@ -1028,11 +1028,11 @@ export class BrowsingContextImpl {
   }
 
   async captureScreenshot(
-    params: BrowsingContext.CaptureScreenshotParameters
+    params: BrowsingContext.CaptureScreenshotParameters,
   ): Promise<BrowsingContext.CaptureScreenshotResult> {
     if (!this.isTopLevelContext()) {
       throw new UnsupportedOperationException(
-        `Non-top-level 'context' (${params.context}) is currently not supported`
+        `Non-top-level 'context' (${params.context}) is currently not supported`,
       );
     }
     const formatParameters = getImageFormatParameters(params);
@@ -1092,7 +1092,7 @@ export class BrowsingContextImpl {
 
     if (rect.width === 0 || rect.height === 0) {
       throw new UnableToCaptureScreenException(
-        `Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`
+        `Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`,
       );
     }
 
@@ -1102,12 +1102,12 @@ export class BrowsingContextImpl {
         clip: {...rect, scale: 1.0},
         ...formatParameters,
         captureBeyondViewport,
-      }
+      },
     );
   }
 
   async print(
-    params: BrowsingContext.PrintParameters
+    params: BrowsingContext.PrintParameters,
   ): Promise<BrowsingContext.PrintResult> {
     const cdpParams: Protocol.Page.PrintToPDFRequest = {};
 
@@ -1143,7 +1143,7 @@ export class BrowsingContextImpl {
         const rangeParts = range.split('-');
         if (rangeParts.length < 1 || rangeParts.length > 2) {
           throw new InvalidArgumentException(
-            `Invalid page range: ${range} is not a valid integer range.`
+            `Invalid page range: ${range} is not a valid integer range.`,
           );
         }
         if (rangeParts.length === 1) {
@@ -1165,7 +1165,7 @@ export class BrowsingContextImpl {
         }
         if (lowerBound > upperBound) {
           throw new InvalidArgumentException(
-            `Invalid page range: ${rangeLowerPart} > ${rangeUpperPart}`
+            `Invalid page range: ${rangeLowerPart} > ${rangeUpperPart}`,
           );
         }
       }
@@ -1181,7 +1181,7 @@ export class BrowsingContextImpl {
     try {
       const result = await this.#cdpTarget.cdpClient.sendCommand(
         'Page.printToPDF',
-        cdpParams
+        cdpParams,
       );
       return {
         data: result.data,
@@ -1215,17 +1215,17 @@ export class BrowsingContextImpl {
           }),
           false,
           {type: 'undefined'},
-          [clip.element]
+          [clip.element],
         );
         if (result.type === 'exception') {
           throw new NoSuchElementException(
-            `Element '${clip.element.sharedId}' was not found`
+            `Element '${clip.element.sharedId}' was not found`,
           );
         }
         assert(result.result.type === 'boolean');
         if (!result.result.value) {
           throw new NoSuchElementException(
-            `Node '${clip.element.sharedId}' is not an Element`
+            `Node '${clip.element.sharedId}' is not an Element`,
           );
         }
         {
@@ -1241,13 +1241,13 @@ export class BrowsingContextImpl {
             }),
             false,
             {type: 'undefined'},
-            [clip.element]
+            [clip.element],
           );
           assert(result.type === 'success');
           const rect = deserializeDOMRect(result.result);
           if (!rect) {
             throw new UnableToCaptureScreenException(
-              `Could not get bounding box for Element '${clip.element.sharedId}'`
+              `Could not get bounding box for Element '${clip.element.sharedId}'`,
             );
           }
           return rect;
@@ -1266,12 +1266,12 @@ export class BrowsingContextImpl {
     }
 
     const history = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.getNavigationHistory'
+      'Page.getNavigationHistory',
     );
     const entry = history.entries[history.currentIndex + delta];
     if (!entry) {
       throw new NoSuchHistoryEntryException(
-        `No history entry at delta ${delta}`
+        `No history entry at delta ${delta}`,
       );
     }
     await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
@@ -1287,7 +1287,7 @@ export class BrowsingContextImpl {
   }
 
   async locateNodes(
-    params: BrowsingContext.LocateNodesParameters
+    params: BrowsingContext.LocateNodesParameters,
   ): Promise<BrowsingContext.LocateNodesResult> {
     // TODO: create a dedicated sandbox instead of `#defaultRealm`.
     return await this.#locateNodesByLocator(
@@ -1295,7 +1295,7 @@ export class BrowsingContextImpl {
       params.locator,
       params.startNodes ?? [],
       params.maxNodeCount,
-      params.serializationOptions
+      params.serializationOptions,
     );
   }
 
@@ -1303,7 +1303,7 @@ export class BrowsingContextImpl {
     realm: Realm,
     locator: BrowsingContext.Locator,
     maxNodeCount: number | undefined,
-    startNodes: Script.SharedReference[]
+    startNodes: Script.SharedReference[],
   ): Promise<{
     functionDeclaration: string;
     argumentsLocalValues: Script.LocalValue[];
@@ -1326,7 +1326,7 @@ export class BrowsingContextImpl {
                   )
                 ) {
                   throw new Error(
-                    'startNodes in css selector should be HTMLElement, Document or DocumentFragment'
+                    'startNodes in css selector should be HTMLElement, Document or DocumentFragment',
                   );
                 }
                 return [...element.querySelectorAll(cssSelector)];
@@ -1336,13 +1336,13 @@ export class BrowsingContextImpl {
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
-                  locateNodesUsingCss(startNode)
+                  locateNodesUsingCss(startNode),
                 )
                 .flat(1);
               return maxNodeCount === 0
                 ? returnedNodes
                 : returnedNodes.slice(0, maxNodeCount);
-            }
+            },
           ),
           argumentsLocalValues: [
             // `cssSelector`
@@ -1367,7 +1367,7 @@ export class BrowsingContextImpl {
               const locateNodesUsingXpath = (element: Node) => {
                 const xPathResult = expression.evaluate(
                   element,
-                  XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+                  XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
                 );
                 const returnedNodes = [];
                 for (let i = 0; i < xPathResult.snapshotLength; i++) {
@@ -1379,13 +1379,13 @@ export class BrowsingContextImpl {
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
-                  locateNodesUsingXpath(startNode)
+                  locateNodesUsingXpath(startNode),
                 )
                 .flat(1);
               return maxNodeCount === 0
                 ? returnedNodes
                 : returnedNodes.slice(0, maxNodeCount);
-            }
+            },
           ),
           argumentsLocalValues: [
             // `xPathSelector`
@@ -1400,7 +1400,7 @@ export class BrowsingContextImpl {
         // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
         if (locator.value === '') {
           throw new InvalidSelectorException(
-            'innerText locator cannot be empty'
+            'innerText locator cannot be empty',
           );
         }
         return {
@@ -1418,7 +1418,7 @@ export class BrowsingContextImpl {
                 : innerTextSelector;
               const locateNodesUsingInnerText: (
                 node: Node,
-                currentMaxDepth: number
+                currentMaxDepth: number,
               ) => HTMLElement[] = (node: Node, currentMaxDepth: number) => {
                 const returnedNodes: HTMLElement[] = [];
                 if (
@@ -1430,8 +1430,8 @@ export class BrowsingContextImpl {
                     // `currentMaxDepth` is not decremented intentionally according to
                     // https://github.com/w3c/webdriver-bidi/pull/713.
                     returnedNodes.push(
-                      ...locateNodesUsingInnerText(child, currentMaxDepth)
-                    )
+                      ...locateNodesUsingInnerText(child, currentMaxDepth),
+                    ),
                   );
                   return returnedNodes;
                 }
@@ -1471,8 +1471,8 @@ export class BrowsingContextImpl {
                           .map((child) =>
                             locateNodesUsingInnerText(
                               child,
-                              currentMaxDepth - 1
-                            )
+                              currentMaxDepth - 1,
+                            ),
                           )
                           .flat(1);
                   if (childNodeMatches.length === 0) {
@@ -1492,13 +1492,13 @@ export class BrowsingContextImpl {
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
-                  locateNodesUsingInnerText(startNode, maxDepth)
+                  locateNodesUsingInnerText(startNode, maxDepth),
                 )
                 .flat(1);
               return maxNodeCount === 0
                 ? returnedNodes
                 : returnedNodes.slice(0, maxNodeCount);
-            }
+            },
           ),
           argumentsLocalValues: [
             // `innerTextSelector`
@@ -1519,7 +1519,7 @@ export class BrowsingContextImpl {
         // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-accessibility-attributes
         if (!locator.value.name && !locator.value.role) {
           throw new InvalidSelectorException(
-            'Either name or role has to be specified'
+            'Either name or role has to be specified',
           );
         }
 
@@ -1537,7 +1537,7 @@ export class BrowsingContextImpl {
           /* resultOwnership=*/ Script.ResultOwnership.Root,
           /* serializationOptions= */ undefined,
           /* userActivation=*/ false,
-          /* includeCommandLineApi=*/ true
+          /* includeCommandLineApi=*/ true,
         );
 
         if (bindings.type !== 'success') {
@@ -1562,7 +1562,7 @@ export class BrowsingContextImpl {
 
               function collect(
                 contextNodes: Element[],
-                selector: {role: string; name: string}
+                selector: {role: string; name: string},
               ) {
                 if (aborted) {
                   return;
@@ -1611,14 +1611,14 @@ export class BrowsingContextImpl {
                 startNodes.length > 0
                   ? startNodes
                   : Array.from(document.documentElement.children).filter(
-                      (c) => c instanceof HTMLElement
+                      (c) => c instanceof HTMLElement,
                     );
               collect(startNodes, {
                 role,
                 name,
               });
               return returnedNodes;
-            }
+            },
           ),
           argumentsLocalValues: [
             // `name`
@@ -1642,13 +1642,13 @@ export class BrowsingContextImpl {
     locator: BrowsingContext.Locator,
     startNodes: Script.SharedReference[],
     maxNodeCount: number | undefined,
-    serializationOptions: Script.SerializationOptions | undefined
+    serializationOptions: Script.SerializationOptions | undefined,
   ): Promise<BrowsingContext.LocateNodesResult> {
     const locatorDelegate = await this.#getLocatorDelegate(
       realm,
       locator,
       maxNodeCount,
-      startNodes
+      startNodes,
     );
 
     serializationOptions = {
@@ -1663,29 +1663,29 @@ export class BrowsingContextImpl {
       {type: 'undefined'},
       locatorDelegate.argumentsLocalValues,
       Script.ResultOwnership.None,
-      serializationOptions
+      serializationOptions,
     );
 
     if (locatorResult.type !== 'success') {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
         'Failed locateNodesByLocator',
-        locatorResult
+        locatorResult,
       );
 
       // Heuristic to detect invalid selector for different types of selectors.
       if (
         // CSS selector.
         locatorResult.exceptionDetails.text?.endsWith(
-          'is not a valid selector.'
+          'is not a valid selector.',
         ) ||
         // XPath selector.
         locatorResult.exceptionDetails.text?.endsWith(
-          'is not a valid XPath expression.'
+          'is not a valid XPath expression.',
         )
       ) {
         throw new InvalidSelectorException(
-          `Not valid selector ${typeof locator.value === 'string' ? locator.value : JSON.stringify(locator.value)}`
+          `Not valid selector ${typeof locator.value === 'string' ? locator.value : JSON.stringify(locator.value)}`,
         );
       }
       // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
@@ -1694,17 +1694,17 @@ export class BrowsingContextImpl {
         'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment'
       ) {
         throw new InvalidArgumentException(
-          'startNodes in css selector should be HTMLElement, Document or DocumentFragment'
+          'startNodes in css selector should be HTMLElement, Document or DocumentFragment',
         );
       }
       throw new UnknownErrorException(
-        `Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`
+        `Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`,
       );
     }
 
     if (locatorResult.result.type !== 'array') {
       throw new UnknownErrorException(
-        `Unexpected selector script result type: ${locatorResult.result.type}`
+        `Unexpected selector script result type: ${locatorResult.result.type}`,
       );
     }
 
@@ -1713,11 +1713,11 @@ export class BrowsingContextImpl {
       (value): Script.NodeRemoteValue => {
         if (value.type !== 'node') {
           throw new UnknownErrorException(
-            `Unexpected selector script result element: ${value.type}`
+            `Unexpected selector script result element: ${value.type}`,
           );
         }
         return value;
-      }
+      },
     );
 
     return {nodes};
@@ -1733,7 +1733,7 @@ export function serializeOrigin(origin: string) {
 }
 
 function getImageFormatParameters(
-  params: Readonly<BrowsingContext.CaptureScreenshotParameters>
+  params: Readonly<BrowsingContext.CaptureScreenshotParameters>,
 ) {
   const {quality, type} = params.format ?? {
     type: 'image/png',
@@ -1756,12 +1756,12 @@ function getImageFormatParameters(
     }
   }
   throw new InvalidArgumentException(
-    `Image format '${type}' is not a supported format`
+    `Image format '${type}' is not a supported format`,
   );
 }
 
 function deserializeDOMRect(
-  result: Script.RemoteValue
+  result: Script.RemoteValue,
 ): Protocol.DOM.Rect | undefined {
   if (result.type !== 'object' || result.value === undefined) {
     return;
@@ -1821,7 +1821,7 @@ function normalizeRect(box: Readonly<Protocol.DOM.Rect>): Protocol.DOM.Rect {
 /** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
 function getIntersectionRect(
   first: Readonly<Protocol.DOM.Rect>,
-  second: Readonly<Protocol.DOM.Rect>
+  second: Readonly<Protocol.DOM.Rect>,
 ): Protocol.DOM.Rect {
   first = normalizeRect(first);
   second = normalizeRect(second);
@@ -1832,11 +1832,11 @@ function getIntersectionRect(
     y,
     width: Math.max(
       Math.min(first.x + first.width, second.x + second.width) - x,
-      0
+      0,
     ),
     height: Math.max(
       Math.min(first.y + first.height, second.y + second.height) - y,
-      0
+      0,
     ),
   };
 }

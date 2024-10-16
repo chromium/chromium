@@ -60,7 +60,7 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
   off(type: '*', handler: WildcardHandler<Events>): this;
   off<Key extends keyof Events>(
     type: Key,
-    handler: Handler<Events[Key]>
+    handler: Handler<Events[Key]>,
   ): EventEmitter<Events>;
   off(type: any, handler: any): this {
     this.#emitter.off(type, handler);

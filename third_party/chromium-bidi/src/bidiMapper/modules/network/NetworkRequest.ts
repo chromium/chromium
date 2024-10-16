@@ -122,7 +122,7 @@ export class NetworkRequest {
     networkStorage: NetworkStorage,
     cdpTarget: CdpTarget,
     redirectCount = 0,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#id = id;
     this.#eventManager = eventManager;
@@ -229,7 +229,7 @@ export class NetworkRequest {
       bodySize = this.#requestOverrides.bodySize;
     } else {
       bodySize = bidiBodySizeFromCdpPostDataEntries(
-        this.#request.info?.request.postDataEntries ?? []
+        this.#request.info?.request.postDataEntries ?? [],
       );
     }
     return bodySize;
@@ -262,10 +262,10 @@ export class NetworkRequest {
     } else {
       headers = [
         ...bidiNetworkHeadersFromCdpNetworkHeaders(
-          this.#request.info?.request.headers
+          this.#request.info?.request.headers,
         ),
         ...bidiNetworkHeadersFromCdpNetworkHeaders(
-          this.#request.extraInfo?.headers
+          this.#request.extraInfo?.headers,
         ),
       ];
     }
@@ -321,7 +321,7 @@ export class NetworkRequest {
       requestStart: getTiming(this.#response.info?.timing?.sendStart),
       // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
       responseStart: getTiming(
-        this.#response.info?.timing?.receiveHeadersStart
+        this.#response.info?.timing?.receiveHeadersStart,
       ),
       responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd),
     };
@@ -358,7 +358,7 @@ export class NetworkRequest {
     options: {
       wasRedirected?: boolean;
       hasFailed?: boolean;
-    } = {}
+    } = {},
   ) {
     const requestExtraInfoCompleted =
       // Flush redirects
@@ -432,14 +432,14 @@ export class NetworkRequest {
   }
 
   onRequestWillBeSentExtraInfoEvent(
-    event: Protocol.Network.RequestWillBeSentExtraInfoEvent
+    event: Protocol.Network.RequestWillBeSentExtraInfoEvent,
   ) {
     this.#request.extraInfo = event;
     this.#emitEventsIfReady();
   }
 
   onResponseReceivedExtraInfoEvent(
-    event: Protocol.Network.ResponseReceivedExtraInfoEvent
+    event: Protocol.Network.ResponseReceivedExtraInfoEvent,
   ) {
     if (
       event.statusCode >= 300 &&
@@ -561,11 +561,11 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
   async continueRequest(
-    overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
+    overrides: Omit<Network.ContinueRequestParameters, 'request'> = {},
   ) {
     const overrideHeaders = this.#getOverrideHeader(
       overrides.headers,
-      overrides.cookies
+      overrides.cookies,
     );
     const headers = cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
     const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
@@ -587,7 +587,7 @@ export class NetworkRequest {
   }
 
   async #continueRequest(
-    overrides: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {}
+    overrides: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {},
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
@@ -604,7 +604,7 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
   async continueResponse(
-    overrides: Omit<Network.ContinueResponseParameters, 'request'> = {}
+    overrides: Omit<Network.ContinueResponseParameters, 'request'> = {},
   ) {
     if (this.interceptPhase === Network.InterceptPhase.AuthRequired) {
       if (overrides.credentials) {
@@ -628,7 +628,7 @@ export class NetworkRequest {
     if (this.#interceptPhase === Network.InterceptPhase.ResponseStarted) {
       const overrideHeaders = this.#getOverrideHeader(
         overrides.headers,
-        overrides.cookies
+        overrides.cookies,
       );
       const responseHeaders =
         cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
@@ -667,7 +667,7 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
   async continueWithAuth(
-    authChallenge: Omit<Network.ContinueWithAuthParameters, 'request'>
+    authChallenge: Omit<Network.ContinueWithAuthParameters, 'request'>,
   ) {
     let username: string | undefined;
     let password: string | undefined;
@@ -681,7 +681,7 @@ export class NetworkRequest {
     }
 
     const response = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
-      authChallenge.action
+      authChallenge.action,
     );
 
     await this.#continueWithAuth({
@@ -693,7 +693,7 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
   async provideResponse(
-    overrides: Omit<Network.ProvideResponseParameters, 'request'>
+    overrides: Omit<Network.ProvideResponseParameters, 'request'>,
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
@@ -715,7 +715,7 @@ export class NetworkRequest {
 
     const overrideHeaders = this.#getOverrideHeader(
       overrides.headers,
-      overrides.cookies
+      overrides.cookies,
     );
     const responseHeaders =
       cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
@@ -733,7 +733,7 @@ export class NetworkRequest {
   }
 
   async #continueWithAuth(
-    authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse']
+    authChallengeResponse: Protocol.Fetch.ContinueWithAuthRequest['authChallengeResponse'],
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
@@ -768,7 +768,7 @@ export class NetworkRequest {
       Object.assign(event, {
         type: 'event' as const,
       }),
-      this.#context
+      this.#context,
     );
   }
 
@@ -814,7 +814,7 @@ export class NetworkRequest {
     const headers = [
       ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
       ...bidiNetworkHeadersFromCdpNetworkHeaders(
-        this.#response.extraInfo?.headers
+        this.#response.extraInfo?.headers,
       ),
       // TODO: Verify how to dedupe these
       // ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
@@ -880,7 +880,7 @@ export class NetworkRequest {
         ...this.#getBaseEventParams(Network.InterceptPhase.BeforeRequestSent),
         initiator: {
           type: NetworkRequest.#getInitiatorType(
-            this.#request.info.initiator.type
+            this.#request.info.initiator.type,
           ),
           columnNumber: this.#request.info.initiator.columnNumber,
           lineNumber: this.#request.info.initiator.lineNumber,
@@ -922,7 +922,7 @@ export class NetworkRequest {
 
   #getOverrideHeader(
     headers: Network.Header[] | undefined,
-    cookies: Network.CookieHeader[] | undefined
+    cookies: Network.CookieHeader[] | undefined,
   ): Network.Header[] | undefined {
     if (!headers && !cookies) {
       return undefined;
@@ -937,7 +937,7 @@ export class NetworkRequest {
         (header) =>
           header.name.localeCompare('cookie', undefined, {
             sensitivity: 'base',
-          }) !== 0
+          }) !== 0,
       );
       overrideHeaders.push(cookieHeader);
     }
@@ -946,7 +946,7 @@ export class NetworkRequest {
   }
 
   static #getInitiatorType(
-    initiatorType: Protocol.Network.Initiator['type']
+    initiatorType: Protocol.Network.Initiator['type'],
   ): Network.Initiator['type'] {
     switch (initiatorType) {
       case 'parser':
@@ -960,7 +960,7 @@ export class NetworkRequest {
 }
 
 function getCdpBodyFromBiDiBytesValue(
-  body?: Network.BytesValue
+  body?: Network.BytesValue,
 ): string | undefined {
   let parsedBody: string | undefined;
   if (body?.type === 'string') {

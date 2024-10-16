@@ -67,8 +67,8 @@ export default [
       'plugin:import/typescript',
       'plugin:mocha/recommended',
       'plugin:prettier/recommended',
-      'plugin:promise/recommended'
-    )
+      'plugin:promise/recommended',
+    ),
   ),
   {
     name: 'JavaScript rules',
@@ -156,7 +156,7 @@ export default [
     .extends(
       'plugin:@typescript-eslint/eslint-recommended',
       'plugin:@typescript-eslint/recommended',
-      'plugin:@typescript-eslint/recommended-requiring-type-checking'
+      'plugin:@typescript-eslint/recommended-requiring-type-checking',
     )
     .map((config) => ({
       ...config,

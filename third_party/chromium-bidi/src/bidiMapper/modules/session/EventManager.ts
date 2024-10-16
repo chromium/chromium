@@ -39,7 +39,7 @@ class EventWrapper {
 
   constructor(
     event: Promise<Result<ChromiumBidi.Event>>,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: BrowsingContext.BrowsingContext | null,
   ) {
     this.#event = event;
     this.#contextId = contextId;
@@ -72,7 +72,7 @@ type EventManagerEventsMap = {
  * Maps event name to a desired buffer length.
  */
 const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
-  [[ChromiumBidi.Log.EventNames.LogEntryAdded, 100]]
+  [[ChromiumBidi.Log.EventNames.LogEntryAdded, 100]],
 );
 
 /**
@@ -130,21 +130,21 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   static #getMapKey(
     eventName: ChromiumBidi.EventNames,
-    browsingContext: BrowsingContext.BrowsingContext | null
+    browsingContext: BrowsingContext.BrowsingContext | null,
   ) {
     return JSON.stringify({eventName, browsingContext});
   }
 
   addSubscribeHook(
     event: ChromiumBidi.EventNames,
-    hook: (contextId: BrowsingContext.BrowsingContext) => Promise<void>
+    hook: (contextId: BrowsingContext.BrowsingContext) => Promise<void>,
   ): void {
     this.#subscribeHooks.get(event).push(hook);
   }
 
   registerEvent(
     event: ChromiumBidi.Event,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: BrowsingContext.BrowsingContext | null,
   ): void {
     this.registerPromiseEvent(
       Promise.resolve({
@@ -152,20 +152,20 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
         value: event,
       }),
       contextId,
-      event.method
+      event.method,
     );
   }
 
   registerPromiseEvent(
     event: Promise<Result<ChromiumBidi.Event>>,
     contextId: BrowsingContext.BrowsingContext | null,
-    eventName: ChromiumBidi.EventNames
+    eventName: ChromiumBidi.EventNames,
   ): void {
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedChannels =
       this.#subscriptionManager.getChannelsSubscribedToEvent(
         eventName,
-        contextId
+        contextId,
       );
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
@@ -181,7 +181,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   async subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -203,19 +203,19 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     for (const eventName of eventNames) {
       for (const contextId of contextIds) {
         addedSubscriptionItems.push(
-          ...this.#subscriptionManager.subscribe(eventName, contextId, channel)
+          ...this.#subscriptionManager.subscribe(eventName, contextId, channel),
         );
 
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
           contextId,
-          channel
+          channel,
         )) {
           // The order of the events is important.
           this.emit(EventManagerEvents.Event, {
             message: OutgoingMessage.createFromPromise(
               eventWrapper.event,
-              channel
+              channel,
             ),
             event: eventName,
           });
@@ -238,7 +238,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   async unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -253,7 +253,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map(async (context) => {
         return await context.toggleModulesIfNeeded();
-      })
+      }),
     );
   }
 
@@ -275,12 +275,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     }
     const bufferMapKey = EventManager.#getMapKey(
       eventName,
-      eventWrapper.contextId
+      eventWrapper.contextId,
     );
     if (!this.#eventBuffers.has(bufferMapKey)) {
       this.#eventBuffers.set(
         bufferMapKey,
-        new Buffer<EventWrapper>(eventBufferLength.get(eventName)!)
+        new Buffer<EventWrapper>(eventBufferLength.get(eventName)!),
       );
     }
     this.#eventBuffers.get(bufferMapKey)!.add(eventWrapper);
@@ -294,7 +294,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   #markEventSent(
     eventWrapper: EventWrapper,
     channel: BidiPlusChannel,
-    eventName: ChromiumBidi.EventNames
+    eventName: ChromiumBidi.EventNames,
   ) {
     if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
@@ -303,12 +303,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
 
     const lastSentMapKey = EventManager.#getMapKey(
       eventName,
-      eventWrapper.contextId
+      eventWrapper.contextId,
     );
 
     const lastId = Math.max(
       this.#lastMessageSent.get(lastSentMapKey)?.get(channel) ?? 0,
-      eventWrapper.id
+      eventWrapper.id,
     );
 
     const channelMap = this.#lastMessageSent.get(lastSentMapKey);
@@ -325,7 +325,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   #getBufferedEvents(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
     const lastSentMessageId =
@@ -345,10 +345,10 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
             // Events without context are already in the result.
             _contextId !== null &&
             // Events from deleted contexts should not be sent.
-            this.#browsingContextStorage.hasContext(_contextId)
+            this.#browsingContextStorage.hasContext(_contextId),
         )
         .map((_contextId) =>
-          this.#getBufferedEvents(eventName, _contextId, channel)
+          this.#getBufferedEvents(eventName, _contextId, channel),
         )
         .forEach((events) => result.push(...events));
     }

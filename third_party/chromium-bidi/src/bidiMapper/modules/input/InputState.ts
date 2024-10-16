@@ -41,16 +41,16 @@ export class InputState {
   getOrCreate(
     id: string,
     type: SourceType.Pointer,
-    subtype: Input.PointerType
+    subtype: Input.PointerType,
   ): PointerSource;
   getOrCreate<Type extends SourceType>(
     id: string,
-    type: Type
+    type: Type,
   ): InputSourceFor<Type>;
   getOrCreate<Type extends SourceType>(
     id: string,
     type: Type,
-    subtype?: Input.PointerType
+    subtype?: Input.PointerType,
   ): InputSourceFor<Type> {
     let source = this.#sources.get(id);
     if (!source) {
@@ -80,7 +80,7 @@ export class InputState {
           break;
         default:
           throw new InvalidArgumentException(
-            `Expected "${SourceType.None}", "${SourceType.Key}", "${SourceType.Pointer}", or "${SourceType.Wheel}". Found unknown source type ${type}.`
+            `Expected "${SourceType.None}", "${SourceType.Key}", "${SourceType.Pointer}", or "${SourceType.Wheel}". Found unknown source type ${type}.`,
           );
       }
       this.#sources.set(id, source);
@@ -88,7 +88,7 @@ export class InputState {
     }
     if (source.type !== type) {
       throw new InvalidArgumentException(
-        `Input source type of ${id} is ${source.type}, but received ${type}.`
+        `Input source type of ${id} is ${source.type}, but received ${type}.`,
       );
     }
     return source as InputSourceFor<Type>;

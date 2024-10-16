@@ -186,7 +186,7 @@
             .querySelectorAll(query)
             .forEach(
               (element) =>
-                (element.style.display = failureState === 'all' ? '' : 'none')
+                (element.style.display = failureState === 'all' ? '' : 'none'),
             );
         }
       });

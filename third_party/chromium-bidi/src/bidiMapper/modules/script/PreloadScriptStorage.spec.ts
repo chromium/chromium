@@ -55,12 +55,12 @@ describe('PreloadScriptStorage', () => {
     expect(
       preloadScriptStorage.find({
         id: '',
-      })
+      }),
     ).to.be.empty;
     expect(
       preloadScriptStorage.find({
         targetId: '',
-      })
+      }),
     ).to.be.empty;
   });
 
@@ -126,13 +126,13 @@ describe('PreloadScriptStorage', () => {
       preloadScriptStorage.find({
         id: MOCKED_UUID_2,
         targetId: CDP_TARGET_ID,
-      })
+      }),
     ).to.deep.equal([preloadScript1]);
     expect(
       preloadScriptStorage.find({
         targetId: CDP_TARGET_ID,
         global: true,
-      })
+      }),
     ).to.deep.equal([preloadScript1]);
   });
 });

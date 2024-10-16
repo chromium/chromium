@@ -54,7 +54,7 @@ export class MockCdpNetworkEvents {
       url: string;
       frameId: string;
       type: Protocol.Network.ResourceType;
-    }> = {}
+    }> = {},
   ) {
     this.cdpClient = cdpClient;
 
@@ -427,7 +427,7 @@ export class MockCdpNetworkEvents {
   findAndReplaceKey(
     source: Record<string, unknown>,
     searchKey: string,
-    value: unknown
+    value: unknown,
   ): void {
     for (const key of Object.keys(source)) {
       if (key === searchKey) {
@@ -438,7 +438,7 @@ export class MockCdpNetworkEvents {
         this.findAndReplaceKey(
           source[key] as Record<string, unknown>,
           searchKey,
-          value
+          value,
         );
       }
     }

@@ -48,7 +48,7 @@ describe('CdpConnection', () => {
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
-      browserMessage
+      browserMessage,
     );
   });
 
@@ -57,7 +57,7 @@ describe('CdpConnection', () => {
     const cdpConnection = new MapperCdpConnection(mockCdpServer);
 
     expect(() => cdpConnection.getCdpClient(SOME_SESSION_ID)).to.throw(
-      'Unknown CDP session ID'
+      'Unknown CDP session ID',
     );
 
     await mockCdpServer.emulateIncomingMessage({
@@ -87,7 +87,7 @@ describe('CdpConnection', () => {
     });
 
     expect(() => cdpConnection.getCdpClient(SOME_SESSION_ID)).to.throw(
-      'Unknown CDP session ID'
+      'Unknown CDP session ID',
     );
   });
 

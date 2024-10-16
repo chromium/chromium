@@ -32,7 +32,6 @@ import {
 process.chdir(packageDirectorySync());
 
 function log(message, ...messages) {
-  // eslint-disable-next-line no-console
   console.log(`(${process.argv[1]}) ${message}`, ...messages);
 }
 
@@ -53,7 +52,7 @@ function usage() {
       [WPT_METADATA=<default: 'wpt-metadata/$\{ 'chromedriver' | 'mapper' }/$\{ 'headless' | 'headful' }>]
       ${process.argv[1]}
       [--wpt-report WPT_REPORT]
-      [webdriver/tests/bidi/[...]]`
+      [webdriver/tests/bidi/[...]]`,
   );
 }
 
@@ -132,7 +131,7 @@ const WPT_METADATA =
   join(
     'wpt-metadata',
     CHROMEDRIVER === 'true' ? 'chromedriver' : 'mapper',
-    HEADLESS === 'true' ? 'headless' : 'headful'
+    HEADLESS === 'true' ? 'headless' : 'headful',
   );
 
 if (HEADLESS === 'true') {
@@ -181,7 +180,7 @@ if (RUN_TESTS === 'true') {
       '--log-mach',
       '-',
       '--log-mach-level',
-      'info'
+      'info',
     );
   }
 
@@ -217,10 +216,10 @@ if (RUN_TESTS === 'true') {
       `--webdriver-arg=--bidi-mapper-path=${join(
         'lib',
         'iife',
-        'mapperTab.js'
+        'mapperTab.js',
       )}`,
       `--webdriver-arg=--log-path=${chromeDriverLogs}`,
-      `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`
+      `--webdriver-arg=--log-level=${VERBOSE === 'true' ? 'ALL' : 'INFO'}`,
     );
   } else {
     log('Using pure mapper...');
@@ -245,7 +244,7 @@ if (RUN_TESTS === 'true') {
     ...process.argv.slice(2, process.argv.length - 1),
     PRODUCT,
     // The last argument is the test.
-    test
+    test,
   );
 
   // TODO: escaping here is not quite correct.

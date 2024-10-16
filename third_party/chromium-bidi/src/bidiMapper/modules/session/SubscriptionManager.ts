@@ -34,13 +34,13 @@ import {isCdpEvent} from './events.js';
  */
 export function cartesianProduct(...a: any[][]) {
   return a.reduce((a: unknown[], b: unknown[]) =>
-    a.flatMap((d) => b.map((e) => [d, e].flat()))
+    a.flatMap((d) => b.map((e) => [d, e].flat())),
   );
 }
 
 /** Expands "AllEvents" events into atomic events. */
 export function unrollEvents(
-  events: ChromiumBidi.EventNames[]
+  events: ChromiumBidi.EventNames[],
 ): ChromiumBidi.EventNames[] {
   const allEvents = new Set<ChromiumBidi.EventNames>();
 
@@ -95,16 +95,16 @@ export class SubscriptionManager {
 
   getChannelsSubscribedToEvent(
     eventMethod: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null
+    contextId: BrowsingContext.BrowsingContext | null,
   ): BidiPlusChannel[] {
     const prioritiesAndChannels = Array.from(
-      this.#channelToContextToEventMap.keys()
+      this.#channelToContextToEventMap.keys(),
     )
       .map((channel) => ({
         priority: this.#getEventSubscriptionPriorityForChannel(
           eventMethod,
           contextId,
-          channel
+          channel,
         ),
         channel,
       }))
@@ -122,7 +122,7 @@ export class SubscriptionManager {
   #getEventSubscriptionPriorityForChannel(
     eventMethod: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ): null | number {
     const contextToEventMap = this.#channelToContextToEventMap.get(channel);
     if (contextToEventMap === undefined) {
@@ -176,7 +176,7 @@ export class SubscriptionManager {
    */
   isSubscribedTo(
     moduleOrEvent: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null = null
+    contextId: BrowsingContext.BrowsingContext | null = null,
   ): boolean {
     const topLevelContext =
       this.#browsingContextStorage.findTopLevelContextId(contextId);
@@ -221,7 +221,7 @@ export class SubscriptionManager {
   subscribe(
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ): SubscriptionItem[] {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
@@ -231,31 +231,31 @@ export class SubscriptionManager {
       case ChromiumBidi.BiDiModule.BrowsingContext:
         return Object.values(ChromiumBidi.BrowsingContext.EventNames)
           .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
+            this.subscribe(specificEvent, contextId, channel),
           )
           .flat();
       case ChromiumBidi.BiDiModule.Log:
         return Object.values(ChromiumBidi.Log.EventNames)
           .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
+            this.subscribe(specificEvent, contextId, channel),
           )
           .flat();
       case ChromiumBidi.BiDiModule.Network:
         return Object.values(ChromiumBidi.Network.EventNames)
           .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
+            this.subscribe(specificEvent, contextId, channel),
           )
           .flat();
       case ChromiumBidi.BiDiModule.Script:
         return Object.values(ChromiumBidi.Script.EventNames)
           .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
+            this.subscribe(specificEvent, contextId, channel),
           )
           .flat();
       case ChromiumBidi.BiDiModule.Bluetooth:
         return Object.values(ChromiumBidi.Bluetooth.EventNames)
           .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel)
+            this.subscribe(specificEvent, contextId, channel),
           )
           .flat();
       default:
@@ -298,7 +298,7 @@ export class SubscriptionManager {
   unsubscribeAll(
     events: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ) {
     // Assert all contexts are known.
     for (const contextId of contextIds) {
@@ -316,7 +316,7 @@ export class SubscriptionManager {
     // If any of the unsubscriptions are invalid, do not unsubscribe from anything.
     eventContextPairs
       .map(([event, contextId]) =>
-        this.#checkUnsubscribe(event, contextId, channel)
+        this.#checkUnsubscribe(event, contextId, channel),
       )
       .forEach((unsubscribe) => unsubscribe());
   }
@@ -328,7 +328,7 @@ export class SubscriptionManager {
   unsubscribe(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ) {
     this.unsubscribeAll([eventName], [contextId], channel);
   }
@@ -336,7 +336,7 @@ export class SubscriptionManager {
   #checkUnsubscribe(
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel
+    channel: BidiPlusChannel,
   ): () => void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
@@ -345,7 +345,7 @@ export class SubscriptionManager {
       throw new InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
-        }. No subscription found.`
+        }. No subscription found.`,
       );
     }
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
@@ -354,7 +354,7 @@ export class SubscriptionManager {
       throw new InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
-        }. No subscription found.`
+        }. No subscription found.`,
       );
     }
     const eventMap = contextToEventMap.get(contextId)!;
@@ -363,7 +363,7 @@ export class SubscriptionManager {
       throw new InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
-        }. No subscription found.`
+        }. No subscription found.`,
       );
     }
 

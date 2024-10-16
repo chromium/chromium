@@ -22,7 +22,7 @@ describe('NetworkProcessor', () => {
   describe('parse url string', () => {
     it('invalid string', () => {
       expect(() => NetworkProcessor.parseUrlString('invalid.url%%')).to.throw(
-        `Invalid URL 'invalid.url%%'`
+        `Invalid URL 'invalid.url%%'`,
       );
     });
 
@@ -40,7 +40,7 @@ describe('NetworkProcessor', () => {
             type: 'string',
             pattern: 'invalid.url%%',
           },
-        ])
+        ]),
       ).to.throw(`Invalid URL 'invalid.url%%'`);
     });
 
@@ -55,7 +55,7 @@ describe('NetworkProcessor', () => {
             type: 'string',
             pattern: 'https://example.org/*',
           },
-        ])
+        ]),
       ).to.deep.equal([
         {
           type: 'string',
@@ -76,7 +76,7 @@ describe('NetworkProcessor', () => {
             protocol: '',
             hostname: 'example.com',
           },
-        ])
+        ]),
       ).to.throw('URL pattern must specify a protocol');
     });
 
@@ -88,7 +88,7 @@ describe('NetworkProcessor', () => {
             protocol: 'https',
             hostname: '',
           },
-        ])
+        ]),
       ).to.throw('URL pattern must specify a hostname');
     });
 
@@ -100,7 +100,7 @@ describe('NetworkProcessor', () => {
             protocol: 'file',
             hostname: 'doc.txt',
           },
-        ])
+        ]),
       ).to.throw(`URL pattern protocol cannot be 'file'`);
     });
 
@@ -112,7 +112,7 @@ describe('NetworkProcessor', () => {
             protocol: 'https',
             hostname: 'a:b',
           },
-        ])
+        ]),
       ).to.throw('URL pattern hostname must not contain a colon');
     });
 
@@ -125,7 +125,7 @@ describe('NetworkProcessor', () => {
             hostname: 'example.com',
             port: '',
           },
-        ])
+        ]),
       ).to.throw('URL pattern must specify a port');
     });
 
@@ -136,7 +136,7 @@ describe('NetworkProcessor', () => {
             type: 'pattern',
             protocol: '%',
           },
-        ])
+        ]),
       ).to.throw(/Forbidden characters/);
     });
 
@@ -151,7 +151,7 @@ describe('NetworkProcessor', () => {
             port: '443',
             search: '?q=search',
           },
-        ])
+        ]),
       ).to.deep.equal([
         {
           type: 'pattern',
@@ -166,7 +166,7 @@ describe('NetworkProcessor', () => {
 
     it('valid pattern empty', () => {
       expect(
-        NetworkProcessor.parseUrlPatterns([{type: 'pattern'}])
+        NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]),
       ).to.deep.equal([
         {
           type: 'pattern',

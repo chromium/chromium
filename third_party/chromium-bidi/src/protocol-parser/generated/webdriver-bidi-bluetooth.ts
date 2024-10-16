@@ -34,7 +34,7 @@ export namespace Bluetooth {
     z.object({
       key: z.number().int().nonnegative(),
       data: z.string(),
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -45,7 +45,7 @@ export namespace Bluetooth {
     z.object({
       id: Bluetooth.RequestDeviceSchema,
       name: z.union([z.string(), z.null()]),
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -60,7 +60,7 @@ export namespace Bluetooth {
       manufacturerData: z
         .array(Bluetooth.BluetoothManufacturerDataSchema)
         .optional(),
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -68,7 +68,7 @@ export namespace Bluetooth {
     z.object({
       method: z.literal('bluetooth.handleRequestDevicePrompt'),
       params: Bluetooth.HandleRequestDevicePromptParametersSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -82,8 +82,8 @@ export namespace Bluetooth {
         z.union([
           Bluetooth.HandleRequestDevicePromptAcceptParametersSchema,
           Bluetooth.HandleRequestDevicePromptCancelParametersSchema,
-        ])
-      )
+        ]),
+      ),
   );
 }
 export namespace Bluetooth {
@@ -91,14 +91,14 @@ export namespace Bluetooth {
     z.object({
       accept: z.literal(true),
       device: Bluetooth.RequestDeviceSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
   export const HandleRequestDevicePromptCancelParametersSchema = z.lazy(() =>
     z.object({
       accept: z.literal(false),
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -106,7 +106,7 @@ export namespace Bluetooth {
     z.object({
       method: z.literal('bluetooth.simulateAdapter'),
       params: Bluetooth.SimulateAdapterParametersSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -114,7 +114,7 @@ export namespace Bluetooth {
     z.object({
       context: z.string(),
       state: z.enum(['absent', 'powered-off', 'powered-on']),
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -122,7 +122,7 @@ export namespace Bluetooth {
     z.object({
       method: z.literal('bluetooth.simulatePreconnectedPeripheral'),
       params: Bluetooth.SimulatePreconnectedPeripheralParametersSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -133,7 +133,7 @@ export namespace Bluetooth {
       name: z.string(),
       manufacturerData: z.array(Bluetooth.BluetoothManufacturerDataSchema),
       knownServiceUuids: z.array(Bluetooth.BluetoothServiceUuidSchema),
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -141,7 +141,7 @@ export namespace Bluetooth {
     z.object({
       method: z.literal('bluetooth.simulateAdvertisement'),
       params: Bluetooth.SimulateAdvertisementParametersSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -149,7 +149,7 @@ export namespace Bluetooth {
     z.object({
       context: z.string(),
       scanEntry: Bluetooth.SimulateAdvertisementScanEntryParametersSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -158,7 +158,7 @@ export namespace Bluetooth {
       deviceAddress: z.string(),
       rssi: z.number(),
       scanRecord: Bluetooth.ScanRecordSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -166,7 +166,7 @@ export namespace Bluetooth {
     z.object({
       method: z.literal('bluetooth.requestDevicePromptUpdated'),
       params: Bluetooth.RequestDevicePromptUpdatedParametersSchema,
-    })
+    }),
   );
 }
 export namespace Bluetooth {
@@ -175,6 +175,6 @@ export namespace Bluetooth {
       context: z.string(),
       prompt: Bluetooth.RequestDevicePromptSchema,
       devices: z.array(Bluetooth.RequestDeviceInfoSchema),
-    })
+    }),
   );
 }

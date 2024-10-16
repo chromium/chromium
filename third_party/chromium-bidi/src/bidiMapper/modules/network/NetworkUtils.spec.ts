@@ -102,7 +102,7 @@ describe('NetworkUtils', () => {
       const bidiNetworkHeaders: Network.Header[] = [];
       const cdpNetworkHeaders =
         networkUtils.cdpNetworkHeadersFromBidiNetworkHeaders(
-          bidiNetworkHeaders
+          bidiNetworkHeaders,
         );
 
       expect(cdpNetworkHeaders).to.deep.equal({});
@@ -127,7 +127,7 @@ describe('NetworkUtils', () => {
       ];
       const cdpNetworkHeaders =
         networkUtils.cdpNetworkHeadersFromBidiNetworkHeaders(
-          bidiNetworkHeaders
+          bidiNetworkHeaders,
         );
 
       expect(cdpNetworkHeaders).to.deep.equal({
@@ -142,7 +142,7 @@ describe('NetworkUtils', () => {
       const cdpFetchHeaderEntryArray: Protocol.Fetch.HeaderEntry[] = [];
       const bidiNetworkHeaders =
         networkUtils.bidiNetworkHeadersFromCdpFetchHeaders(
-          cdpFetchHeaderEntryArray
+          cdpFetchHeaderEntryArray,
         );
 
       expect(bidiNetworkHeaders).to.deep.equal([]);
@@ -161,7 +161,7 @@ describe('NetworkUtils', () => {
       ];
       const bidiNetworkHeaders =
         networkUtils.bidiNetworkHeadersFromCdpFetchHeaders(
-          cdpFetchHeaderEntryArray
+          cdpFetchHeaderEntryArray,
         );
 
       expect(bidiNetworkHeaders).to.deep.equal([

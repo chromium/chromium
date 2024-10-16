@@ -57,10 +57,10 @@ export class BrowserInstance {
 
   static async run(
     chromeOptions: ChromeOptions,
-    verbose: boolean
+    verbose: boolean,
   ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
-      path.join(os.tmpdir(), 'web-driver-bidi-server-')
+      path.join(os.tmpdir(), 'web-driver-bidi-server-'),
     );
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
@@ -106,7 +106,7 @@ export class BrowserInstance {
     const browserProcess = launch(launchArguments);
 
     const cdpEndpoint = await browserProcess.waitForLineOutput(
-      CDP_WEBSOCKET_ENDPOINT_REGEX
+      CDP_WEBSOCKET_ENDPOINT_REGEX,
     );
 
     // There is a conflict between prettier and eslint here.
@@ -122,7 +122,7 @@ export class BrowserInstance {
     const mapperCdpConnection = await MapperServerCdpConnection.create(
       cdpConnection,
       mapperTabSource,
-      verbose
+      verbose,
     );
 
     return new BrowserInstance(mapperCdpConnection, browserProcess);
@@ -130,7 +130,7 @@ export class BrowserInstance {
 
   constructor(
     mapperCdpConnection: MapperServerCdpConnection,
-    browserProcess: Process
+    browserProcess: Process,
   ) {
     this.#mapperCdpConnection = mapperCdpConnection;
     this.#browserProcess = browserProcess;

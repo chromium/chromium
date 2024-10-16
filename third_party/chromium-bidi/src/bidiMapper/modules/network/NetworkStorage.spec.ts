@@ -84,7 +84,7 @@ describe('NetworkStorage', () => {
         }
         return await Promise.resolve();
       },
-      logger
+      logger,
     );
     // Subscribe to the `network` module globally
     eventManager.subscriptionManager.subscribe(
@@ -92,7 +92,7 @@ describe('NetworkStorage', () => {
       // Verify that the Request send the message
       // To the correct context
       MockCdpNetworkEvents.defaultFrameId,
-      null
+      null,
     );
     eventManager.on(EventManagerEvents.Event, ({message, event}) => {
       processingQueue.add(message, event);

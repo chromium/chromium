@@ -153,14 +153,14 @@ e2eArgs.push(
   '--verbose',
   '-vv',
   // Do not throw an error if there are unused snapshots.
-  '--snapshot-warn-unused'
+  '--snapshot-warn-unused',
 );
 if (PYTEST_TOTAL_CHUNKS !== 1) {
   e2eArgs.push(
     '--num-shards',
     PYTEST_TOTAL_CHUNKS,
     '--shard-id',
-    PYTEST_THIS_CHUNK
+    PYTEST_THIS_CHUNK,
   );
 }
 
@@ -168,7 +168,7 @@ if (argv.fileOrFolder) {
   e2eArgs.push(
     ...(Array.isArray(argv.fileOrFolder)
       ? argv.fileOrFolder
-      : [argv.fileOrFolder])
+      : [argv.fileOrFolder]),
   );
 }
 if (process.env.HEADLESS === 'false' && !argv.k) {

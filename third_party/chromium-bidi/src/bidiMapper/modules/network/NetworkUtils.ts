@@ -37,7 +37,7 @@ export function computeHeadersSize(headers: Network.Header[]): number {
 
 /** Converts from CDP Network domain headers to BiDi network headers. */
 export function bidiNetworkHeadersFromCdpNetworkHeaders(
-  headers?: Protocol.Network.Headers
+  headers?: Protocol.Network.Headers,
 ): Network.Header[] {
   if (!headers) {
     return [];
@@ -54,7 +54,7 @@ export function bidiNetworkHeadersFromCdpNetworkHeaders(
 
 /** Converts from CDP Fetch domain headers to BiDi network headers. */
 export function bidiNetworkHeadersFromCdpNetworkHeadersEntries(
-  headers?: Protocol.Fetch.HeaderEntry[]
+  headers?: Protocol.Fetch.HeaderEntry[],
 ): Network.Header[] {
   if (!headers) {
     return [];
@@ -71,7 +71,7 @@ export function bidiNetworkHeadersFromCdpNetworkHeadersEntries(
 
 /** Converts from Bidi network headers to CDP Network domain headers. */
 export function cdpNetworkHeadersFromBidiNetworkHeaders(
-  headers?: Network.Header[]
+  headers?: Network.Header[],
 ): Protocol.Network.Headers | undefined {
   if (headers === undefined) {
     return undefined;
@@ -86,7 +86,7 @@ export function cdpNetworkHeadersFromBidiNetworkHeaders(
 
 /** Converts from CDP Fetch domain header entries to Bidi network headers. */
 export function bidiNetworkHeadersFromCdpFetchHeaders(
-  headers?: Protocol.Fetch.HeaderEntry[]
+  headers?: Protocol.Fetch.HeaderEntry[],
 ): Network.Header[] {
   if (!headers) {
     return [];
@@ -103,7 +103,7 @@ export function bidiNetworkHeadersFromCdpFetchHeaders(
 
 /** Converts from Bidi network headers to CDP Fetch domain header entries. */
 export function cdpFetchHeadersFromBidiNetworkHeaders(
-  headers?: Network.Header[]
+  headers?: Network.Header[],
 ): Protocol.Fetch.HeaderEntry[] | undefined {
   if (headers === undefined) {
     return undefined;
@@ -116,7 +116,7 @@ export function cdpFetchHeadersFromBidiNetworkHeaders(
 }
 
 export function networkHeaderFromCookieHeaders(
-  headers?: Network.CookieHeader[]
+  headers?: Network.CookieHeader[],
 ): Network.Header | undefined {
   if (headers === undefined) {
     return undefined;
@@ -146,7 +146,7 @@ export function networkHeaderFromCookieHeaders(
 
 /** Converts from Bidi auth action to CDP auth challenge response. */
 export function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
-  action: 'default' | 'cancel' | 'provideCredentials'
+  action: 'default' | 'cancel' | 'provideCredentials',
 ) {
   switch (action) {
     case 'default':
@@ -164,7 +164,7 @@ export function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
  * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
  */
 export function cdpToBiDiCookie(
-  cookie: Protocol.Network.Cookie
+  cookie: Protocol.Network.Cookie,
 ): Network.Cookie {
   const result: Network.Cookie = {
     name: cookie.name,
@@ -215,7 +215,7 @@ export function deserializeByteValue(value: Network.BytesValue): string {
  */
 export function bidiToCdpCookie(
   params: Storage.SetCookieParameters,
-  partitionKey: Storage.PartitionKey
+  partitionKey: Storage.PartitionKey,
 ): Protocol.Network.CookieParam {
   const deserializedValue = deserializeByteValue(params.cookie.value);
   const result: Protocol.Network.CookieParam = {
@@ -261,7 +261,7 @@ export function bidiToCdpCookie(
 }
 
 function sameSiteCdpToBiDi(
-  sameSite: Protocol.Network.CookieSameSite
+  sameSite: Protocol.Network.CookieSameSite,
 ): Network.SameSite {
   switch (sameSite) {
     case 'Strict':
@@ -278,7 +278,7 @@ function sameSiteCdpToBiDi(
 }
 
 export function sameSiteBiDiToCdp(
-  sameSite: Network.SameSite
+  sameSite: Network.SameSite,
 ): Protocol.Network.CookieSameSite {
   switch (sameSite) {
     case Network.SameSite.Strict:
@@ -300,7 +300,7 @@ export function sameSiteBiDiToCdp(
  */
 export function isSpecialScheme(protocol: string): boolean {
   return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(
-    protocol.replace(/:$/, '')
+    protocol.replace(/:$/, ''),
   );
 }
 
@@ -312,7 +312,7 @@ type RequireStringPattern = Omit<
 /** Matches the given URLPattern against the given URL. */
 export function matchUrlPattern(
   urlPattern: Network.UrlPattern,
-  url: string | undefined
+  url: string | undefined,
 ): boolean {
   switch (urlPattern.type) {
     case 'string': {
@@ -331,7 +331,7 @@ export function matchUrlPattern(
 }
 
 export function bidiBodySizeFromCdpPostDataEntries(
-  entries: Protocol.Network.PostDataEntry[]
+  entries: Protocol.Network.PostDataEntry[],
 ): number {
   let size = 0;
   for (const entry of entries) {

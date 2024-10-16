@@ -20,7 +20,7 @@ const INTERESTING_LABELS = new Set(['chromium-bidi-2023']);
 export const LABELS_TO_TESTS = new Map();
 
 const response = await fetch(
-  'https://wpt.fyi/api/metadata?includeTestLevel=true&product=chrome'
+  'https://wpt.fyi/api/metadata?includeTestLevel=true&product=chrome',
 );
 const data = await response.json();
 

@@ -22,7 +22,7 @@ import {uuidv4} from './uuid.js';
 describe('uuidv4', () => {
   it('should generate an UUID in the correct format', () => {
     expect(uuidv4()).match(
-      /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+      /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
     );
   });
 

@@ -44,7 +44,7 @@ export class ScriptProcessor {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
@@ -54,12 +54,12 @@ export class ScriptProcessor {
     this.#eventManager = eventManager;
     this.#eventManager.addSubscribeHook(
       ChromiumBidi.Script.EventNames.RealmCreated,
-      this.#onRealmCreatedSubscribeHook.bind(this)
+      this.#onRealmCreatedSubscribeHook.bind(this),
     );
   }
 
   #onRealmCreatedSubscribeHook(
-    contextId: BrowsingContext.BrowsingContext
+    contextId: BrowsingContext.BrowsingContext,
   ): Promise<void> {
     const context = this.#browsingContextStorage.getContext(contextId);
     const contextsToReport = [
@@ -84,7 +84,7 @@ export class ScriptProcessor {
           method: ChromiumBidi.Script.EventNames.RealmCreated,
           params: realm.realmInfo,
         },
-        context.id
+        context.id,
       );
     }
 
@@ -92,10 +92,10 @@ export class ScriptProcessor {
   }
 
   async addPreloadScript(
-    params: Script.AddPreloadScriptParameters
+    params: Script.AddPreloadScriptParameters,
   ): Promise<Script.AddPreloadScriptResult> {
     const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(
-      params.contexts
+      params.contexts,
     );
 
     const preloadScript = new PreloadScript(params, this.#logger);
@@ -106,10 +106,10 @@ export class ScriptProcessor {
         ? new Set<CdpTarget>(
             this.#browsingContextStorage
               .getTopLevelContexts()
-              .map((context) => context.cdpTarget)
+              .map((context) => context.cdpTarget),
           )
         : new Set<CdpTarget>(
-            [...contexts.values()].map((context) => context.cdpTarget)
+            [...contexts.values()].map((context) => context.cdpTarget),
           );
 
     await preloadScript.initInTargets(cdpTargets, false);
@@ -120,7 +120,7 @@ export class ScriptProcessor {
   }
 
   async removePreloadScript(
-    params: Script.RemovePreloadScriptParameters
+    params: Script.RemovePreloadScriptParameters,
   ): Promise<EmptyResult> {
     const {script: id} = params;
 
@@ -138,7 +138,7 @@ export class ScriptProcessor {
   }
 
   async callFunction(
-    params: Script.CallFunctionParameters
+    params: Script.CallFunctionParameters,
   ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
     return await realm.callFunction(
@@ -148,12 +148,12 @@ export class ScriptProcessor {
       params.arguments,
       params.resultOwnership,
       params.serializationOptions,
-      params.userActivation
+      params.userActivation,
     );
   }
 
   async evaluate(
-    params: Script.EvaluateParameters
+    params: Script.EvaluateParameters,
   ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
     return await realm.evaluate(
@@ -161,14 +161,14 @@ export class ScriptProcessor {
       params.awaitPromise,
       params.resultOwnership,
       params.serializationOptions,
-      params.userActivation
+      params.userActivation,
     );
   }
 
   async disown(params: Script.DisownParameters): Promise<EmptyResult> {
     const realm = await this.#getRealm(params.target);
     await Promise.all(
-      params.handles.map(async (handle) => await realm.disown(handle))
+      params.handles.map(async (handle) => await realm.disown(handle)),
     );
     return {};
   }

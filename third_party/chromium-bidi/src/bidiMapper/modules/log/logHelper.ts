@@ -33,7 +33,7 @@ export function logMessageFormatter(args: Script.RemoteValue[]): string {
   const argFormat = (args[0] as {type: string; value: string}).value.toString();
   const argValues = args.slice(1, undefined);
   const tokens = argFormat.split(
-    new RegExp(specifiers.map((spec) => `(${spec})`).join('|'), 'g')
+    new RegExp(specifiers.map((spec) => `(${spec})`).join('|'), 'g'),
   );
 
   for (const token of tokens) {
@@ -45,7 +45,7 @@ export function logMessageFormatter(args: Script.RemoteValue[]): string {
       // raise an exception when less value is provided
       assert(
         arg,
-        `Less value is provided: "${getRemoteValuesText(args, false)}"`
+        `Less value is provided: "${getRemoteValuesText(args, false)}"`,
       );
       if (token === '%s') {
         output += stringFromArg(arg);
@@ -81,7 +81,7 @@ export function logMessageFormatter(args: Script.RemoteValue[]): string {
   // raise an exception when more value is provided
   if (argValues.length > 0) {
     throw new Error(
-      `More value is provided: "${getRemoteValuesText(args, false)}"`
+      `More value is provided: "${getRemoteValuesText(args, false)}"`,
     );
   }
 
@@ -176,7 +176,7 @@ function stringFromArg(arg: Script.RemoteValue): string {
 
 export function getRemoteValuesText(
   args: Script.RemoteValue[],
-  formatText: boolean
+  formatText: boolean,
 ): string {
   const arg = args[0];
 

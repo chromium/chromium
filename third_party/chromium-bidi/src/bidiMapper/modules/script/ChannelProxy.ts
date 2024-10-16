@@ -47,7 +47,7 @@ export class ChannelProxy {
     const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
     const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(
       realm,
-      channelHandle
+      channelHandle,
     );
 
     void this.#startListener(realm, channelHandle, eventManager);
@@ -107,7 +107,7 @@ export class ChannelProxy {
 
   /** Creates a ChannelProxy in the given realm. */
   static async #createAndGetHandleInRealm(
-    realm: Realm
+    realm: Realm,
   ): Promise<Script.Handle> {
     const createChannelHandleResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -118,7 +118,7 @@ export class ChannelProxy {
           serialization:
             Protocol.Runtime.SerializationOptionsSerialization.IdOnly,
         },
-      }
+      },
     );
     if (
       createChannelHandleResult.exceptionDetails ||
@@ -132,7 +132,7 @@ export class ChannelProxy {
   /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
   static async #createSendMessageHandle(
     realm: Realm,
-    channelHandle: Script.Handle
+    channelHandle: Script.Handle,
   ): Promise<Script.Handle> {
     const sendMessageArgResult = await realm.cdpClient.sendCommand(
       'Runtime.callFunctionOn',
@@ -140,7 +140,7 @@ export class ChannelProxy {
         functionDeclaration: String(
           (channelHandle: {sendMessage: (message: string) => void}) => {
             return channelHandle.sendMessage;
-          }
+          },
         ),
         arguments: [{objectId: channelHandle}],
         executionContextId: realm.executionContextId,
@@ -148,7 +148,7 @@ export class ChannelProxy {
           serialization:
             Protocol.Runtime.SerializationOptionsSerialization.IdOnly,
         },
-      }
+      },
     );
     // TODO: check for exceptionDetails.
     return sendMessageArgResult.result.objectId!;
@@ -158,7 +158,7 @@ export class ChannelProxy {
   async #startListener(
     realm: Realm,
     channelHandle: Script.Handle,
-    eventManager: EventManager
+    eventManager: EventManager,
   ) {
     // noinspection InfiniteLoopJS
     for (;;) {
@@ -168,7 +168,7 @@ export class ChannelProxy {
           {
             functionDeclaration: String(
               async (channelHandle: {getMessage: () => Promise<unknown>}) =>
-                await channelHandle.getMessage()
+                await channelHandle.getMessage(),
             ),
             arguments: [
               {
@@ -184,7 +184,7 @@ export class ChannelProxy {
                 this.#properties.serializationOptions?.maxObjectDepth ??
                 undefined,
             },
-          }
+          },
         );
 
         if (message.exceptionDetails) {
@@ -202,12 +202,12 @@ export class ChannelProxy {
                 channel: this.#properties.channel,
                 data: realm.cdpToBidiValue(
                   message,
-                  this.#properties.ownership ?? Script.ResultOwnership.None
+                  this.#properties.ownership ?? Script.ResultOwnership.None,
                 ),
                 source: realm.source,
               },
             },
-            browsingContext.id
+            browsingContext.id,
           );
         }
       } catch (error) {
@@ -254,7 +254,7 @@ export class ChannelProxy {
           serialization:
             Protocol.Runtime.SerializationOptionsSerialization.IdOnly,
         },
-      }
+      },
     );
     if (
       channelHandleResult.exceptionDetails !== undefined ||
@@ -293,7 +293,7 @@ export class ChannelProxy {
           delete w[id];
         }
         return channelProxy.sendMessage;
-      }
+      },
     );
     const channelProxyEval = ChannelProxy.#createChannelProxyEvalStr();
     return `(${delegate})('${this.#id}',${channelProxyEval})`;

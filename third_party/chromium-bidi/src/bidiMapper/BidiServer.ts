@@ -84,13 +84,13 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     selfTargetId: string,
     defaultUserContextId: Browser.UserContext,
     parser?: BidiCommandParameterParser,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ) {
     super();
     this.#logger = logger;
     this.#messageQueue = new ProcessingQueue<OutgoingMessage>(
       this.#processOutgoingMessage,
-      this.#logger
+      this.#logger,
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
@@ -99,11 +99,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#eventManager,
       this.#browsingContextStorage,
       browserCdpClient,
-      logger
+      logger,
     );
     this.#bluetoothProcessor = new BluetoothProcessor(
       this.#eventManager,
-      this.#browsingContextStorage
+      this.#browsingContextStorage,
     );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
@@ -121,7 +121,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           'Security.setIgnoreCertificateErrors',
           {
             ignore: options.acceptInsecureCerts ?? false,
-          }
+          },
         );
         new CdpTargetManager(
           cdpConnection,
@@ -136,7 +136,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           defaultUserContextId,
           options?.['goog:prerenderingDisabled'] ?? false,
           options?.unhandledPromptBehavior,
-          logger
+          logger,
         );
 
         // Needed to get events about new targets.
@@ -162,7 +162,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
         await this.#topLevelContextsLoaded();
       },
-      this.#logger
+      this.#logger,
     );
     this.#eventManager.on(EventManagerEvents.Event, ({message, event}) => {
       this.emitOutgoingMessage(message, event);
@@ -171,7 +171,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       CommandProcessorEvents.Response,
       ({message, event}) => {
         this.emitOutgoingMessage(message, event);
-      }
+      },
     );
   }
 
@@ -184,7 +184,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     browserCdpClient: CdpClient,
     selfTargetId: string,
     parser?: BidiCommandParameterParser,
-    logger?: LoggerFn
+    logger?: LoggerFn,
   ): Promise<BidiServer> {
     // The default context is not exposed in Target.getBrowserContexts but can
     // be observed via Target.getTargets. To determine the default browser
@@ -212,7 +212,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       selfTargetId,
       defaultUserContextId,
       parser,
-      logger
+      logger,
     );
 
     return server;
@@ -223,7 +223,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
    */
   emitOutgoingMessage(
     messageEntry: Promise<Result<OutgoingMessage>>,
-    event: string
+    event: string,
   ): void {
     this.#messageQueue.add(messageEntry, event);
   }
@@ -236,7 +236,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     await Promise.all(
       this.#browsingContextStorage
         .getTopLevelContexts()
-        .map((c) => c.lifecycleLoaded())
+        .map((c) => c.lifecycleLoaded()),
     );
   }
 }

@@ -21,7 +21,7 @@ export class Exception extends Error {
   constructor(
     public error: ErrorCode,
     public override message: string,
-    public stacktrace?: string
+    public stacktrace?: string,
   ) {
     super();
   }

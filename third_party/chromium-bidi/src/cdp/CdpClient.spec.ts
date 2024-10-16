@@ -33,7 +33,7 @@ const CDP_SESSION_ID = 'SessionA';
 
 async function createCdpClient(
   stubTransport: StubTransport,
-  sessionId: string
+  sessionId: string,
 ): Promise<CdpClient> {
   const cdpConnection = new MapperCdpConnection(stubTransport);
 
@@ -65,7 +65,7 @@ describe('CdpClient', () => {
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
-      expectedMessageStr
+      expectedMessageStr,
     );
   });
 
@@ -148,7 +148,7 @@ describe('CdpClient', () => {
     sinon.assert.calledOnceWithExactly(
       genericCallback,
       'Target.attachedToTarget',
-      {targetId: TEST_TARGET_ID}
+      {targetId: TEST_TARGET_ID},
     );
     genericCallback.resetHistory();
 

@@ -105,12 +105,12 @@ export class PreloadScript {
    */
   async initInTargets(
     cdpTargets: Iterable<CdpTarget>,
-    runImmediately: boolean
+    runImmediately: boolean,
   ) {
     await Promise.all(
       Array.from(cdpTargets).map((cdpTarget) =>
-        this.initInTarget(cdpTarget, runImmediately)
-      )
+        this.initInTarget(cdpTarget, runImmediately),
+      ),
     );
   }
 
@@ -125,7 +125,7 @@ export class PreloadScript {
         source: this.#getEvaluateString(),
         worldName: this.#sandbox,
         runImmediately,
-      }
+      },
     );
 
     this.#cdpPreloadScripts.push({
@@ -147,7 +147,7 @@ export class PreloadScript {
           'Page.removeScriptToEvaluateOnNewDocument',
           {
             identifier: cdpPreloadScriptId,
-          }
+          },
         );
       }),
     ]);
@@ -156,7 +156,7 @@ export class PreloadScript {
   /** Removes the provided cdp target from the list of cdp preload scripts. */
   dispose(cdpTargetId: Protocol.Target.TargetID) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
-      (cdpPreloadScript) => cdpPreloadScript.target?.id !== cdpTargetId
+      (cdpPreloadScript) => cdpPreloadScript.target?.id !== cdpTargetId,
     );
     this.#targetIds.delete(cdpTargetId);
   }

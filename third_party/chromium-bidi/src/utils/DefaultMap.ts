@@ -26,7 +26,7 @@ export class DefaultMap<K, V> extends Map<K, V> {
 
   constructor(
     getDefaultValue: (key: K) => V,
-    entries?: readonly (readonly [K, V])[] | null
+    entries?: readonly (readonly [K, V])[] | null,
   ) {
     super(entries);
     this.#getDefaultValue = getDefaultValue;

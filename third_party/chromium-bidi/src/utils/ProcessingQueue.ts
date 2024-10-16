@@ -59,7 +59,7 @@ export class ProcessingQueue<T> {
               LogType.debugError,
               'Event threw before sending:',
               entry.error.message,
-              entry.error.stack
+              entry.error.stack,
             );
             return;
           }
@@ -69,7 +69,7 @@ export class ProcessingQueue<T> {
           this.#logger?.(
             LogType.debugError,
             'Event was not processed:',
-            error?.message
+            error?.message,
           );
         });
     }

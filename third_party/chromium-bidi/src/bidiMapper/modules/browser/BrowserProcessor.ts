@@ -41,7 +41,7 @@ export class BrowserProcessor {
   }
 
   async createUserContext(
-    params: Record<string, any>
+    params: Record<string, any>,
   ): Promise<Browser.CreateUserContextResult> {
     const request: Protocol.Target.CreateBrowserContextRequest = {
       proxyServer: params['goog:proxyServer'] ?? undefined,
@@ -53,7 +53,7 @@ export class BrowserProcessor {
     }
     const context = await this.#browserCdpClient.sendCommand(
       'Target.createBrowserContext',
-      request
+      request,
     );
     return {
       userContext: context.browserContextId,
@@ -61,12 +61,12 @@ export class BrowserProcessor {
   }
 
   async removeUserContext(
-    params: Browser.RemoveUserContextParameters
+    params: Browser.RemoveUserContextParameters,
   ): Promise<EmptyResult> {
     const userContext = params.userContext;
     if (userContext === 'default') {
       throw new InvalidArgumentException(
-        '`default` user context cannot be removed'
+        '`default` user context cannot be removed',
       );
     }
     try {
@@ -85,7 +85,7 @@ export class BrowserProcessor {
 
   async getUserContexts(): Promise<Browser.GetUserContextsResult> {
     const result = await this.#browserCdpClient.sendCommand(
-      'Target.getBrowserContexts'
+      'Target.getBrowserContexts',
     );
     return {
       userContexts: [

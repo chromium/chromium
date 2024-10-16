@@ -27,18 +27,18 @@
 import z from 'zod';
 
 export const PermissionsCommandSchema = z.lazy(
-  () => Permissions.SetPermissionSchema
+  () => Permissions.SetPermissionSchema,
 );
 export namespace Permissions {
   export const PermissionDescriptorSchema = z.lazy(() =>
     z.object({
       name: z.string(),
-    })
+    }),
   );
 }
 export namespace Permissions {
   export const PermissionStateSchema = z.lazy(() =>
-    z.enum(['granted', 'denied', 'prompt'])
+    z.enum(['granted', 'denied', 'prompt']),
   );
 }
 export namespace Permissions {
@@ -46,7 +46,7 @@ export namespace Permissions {
     z.object({
       method: z.literal('permissions.setPermission'),
       params: Permissions.SetPermissionParametersSchema,
-    })
+    }),
   );
 }
 export namespace Permissions {
@@ -56,6 +56,6 @@ export namespace Permissions {
       state: Permissions.PermissionStateSchema,
       origin: z.string(),
       userContext: z.string().optional(),
-    })
+    }),
   );
 }

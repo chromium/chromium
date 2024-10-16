@@ -157,7 +157,7 @@ describe('ProcessingQueue', () => {
         kind: 'success',
         value: 1,
       }),
-      ''
+      '',
     );
     await wait(1);
     sinon.assert.calledOnceWithExactly(processor, 1);
@@ -168,7 +168,7 @@ describe('ProcessingQueue', () => {
         kind: 'success',
         value: 2,
       }),
-      ''
+      '',
     );
     await wait(1);
     sinon.assert.calledOnceWithExactly(processor, 2);
@@ -191,14 +191,14 @@ describe('ProcessingQueue', () => {
         kind: 'success',
         value: 1,
       }),
-      eventNames[0]
+      eventNames[0],
     );
     queue.add(
       Promise.resolve({
         kind: 'error',
         error: new Error('Error'),
       }),
-      eventNames[1]
+      eventNames[1],
     );
     queue.add(Promise.reject(new Error('Error')), eventNames[2]);
 

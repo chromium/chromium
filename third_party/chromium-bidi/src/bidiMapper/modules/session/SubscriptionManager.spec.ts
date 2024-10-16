@@ -79,14 +79,14 @@ describe('SubscriptionManager', () => {
     describe('specific context', () => {
       it('new subscription', () => {
         expect(
-          subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL)
+          subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL),
         ).to.deep.equal([{event: SOME_EVENT, contextId: SOME_CONTEXT}]);
       });
 
       it('existing subscription', () => {
         subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
         expect(
-          subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL)
+          subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL),
         ).to.deep.equal([]);
       });
     });
@@ -94,7 +94,7 @@ describe('SubscriptionManager', () => {
     describe('global', () => {
       it('new subscription', () => {
         expect(
-          subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL)
+          subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL),
         ).to.deep.equal([
           {event: SOME_EVENT, contextId: SOME_CONTEXT},
           {event: SOME_EVENT, contextId: ANOTHER_CONTEXT},
@@ -104,7 +104,7 @@ describe('SubscriptionManager', () => {
       it('existing subscription', () => {
         subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
         expect(
-          subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL)
+          subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL),
         ).to.deep.equal([{event: SOME_EVENT, contextId: ANOTHER_CONTEXT}]);
       });
     });
@@ -120,15 +120,18 @@ describe('SubscriptionManager', () => {
 
     // `SOME_EVENT` was fist subscribed in `SOME_CHANNEL`.
     expect(
-      subscriptionManager.getChannelsSubscribedToEvent(SOME_EVENT, SOME_CONTEXT)
+      subscriptionManager.getChannelsSubscribedToEvent(
+        SOME_EVENT,
+        SOME_CONTEXT,
+      ),
     ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
 
     // `ANOTHER_EVENT` was fist subscribed in `ANOTHER_CHANNEL`.
     expect(
       subscriptionManager.getChannelsSubscribedToEvent(
         ANOTHER_EVENT,
-        SOME_CONTEXT
-      )
+        SOME_CONTEXT,
+      ),
     ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
 
     // `YET_ANOTHER_EVENT` was first subscribed in `SOME_CHANNEL` via
@@ -136,8 +139,8 @@ describe('SubscriptionManager', () => {
     expect(
       subscriptionManager.getChannelsSubscribedToEvent(
         YET_ANOTHER_EVENT,
-        SOME_CONTEXT
-      )
+        SOME_CONTEXT,
+      ),
     ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
   });
 
@@ -147,8 +150,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL]);
     });
 
@@ -157,8 +160,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           ANOTHER_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -168,8 +171,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -180,14 +183,14 @@ describe('SubscriptionManager', () => {
           subscriptionManager.unsubscribeAll(
             [SOME_EVENT, ANOTHER_EVENT],
             [null],
-            SOME_CHANNEL
-          )
+            SOME_CHANNEL,
+          ),
         ).to.throw('No subscription found');
         expect(
           subscriptionManager.getChannelsSubscribedToEvent(
             SOME_EVENT,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.deep.equal([SOME_CHANNEL]);
       });
 
@@ -197,19 +200,19 @@ describe('SubscriptionManager', () => {
         subscriptionManager.unsubscribeAll(
           [SOME_EVENT, ANOTHER_EVENT],
           [null],
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
         expect(
           subscriptionManager.getChannelsSubscribedToEvent(
             SOME_EVENT,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.deep.equal([]);
         expect(
           subscriptionManager.getChannelsSubscribedToEvent(
             ANOTHER_EVENT,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.deep.equal([]);
       });
     });
@@ -221,8 +224,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL]);
     });
 
@@ -232,8 +235,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
     });
 
@@ -245,8 +248,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
     });
 
@@ -257,8 +260,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
     });
   });
@@ -269,8 +272,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL]);
     });
 
@@ -279,8 +282,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          ANOTHER_CONTEXT
-        )
+          ANOTHER_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -289,8 +292,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           ANOTHER_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -300,8 +303,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -311,8 +314,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -322,8 +325,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -334,8 +337,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL]);
     });
 
@@ -345,8 +348,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
     });
 
@@ -358,8 +361,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
     });
 
@@ -370,8 +373,8 @@ describe('SubscriptionManager', () => {
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
     });
   });
@@ -381,13 +384,13 @@ describe('SubscriptionManager', () => {
       subscriptionManager.subscribe(
         SOME_EVENT,
         SOME_NESTED_CONTEXT,
-        SOME_CHANNEL
+        SOME_CHANNEL,
       );
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL]);
     });
 
@@ -395,13 +398,13 @@ describe('SubscriptionManager', () => {
       subscriptionManager.subscribe(
         SOME_EVENT,
         ANOTHER_NESTED_CONTEXT,
-        SOME_CHANNEL
+        SOME_CHANNEL,
       );
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -410,13 +413,13 @@ describe('SubscriptionManager', () => {
       subscriptionManager.unsubscribe(
         SOME_EVENT,
         SOME_NESTED_CONTEXT,
-        SOME_CHANNEL
+        SOME_CHANNEL,
       );
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([]);
     });
 
@@ -426,14 +429,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.unsubscribe(
           SOME_EVENT,
           SOME_NESTED_CONTEXT,
-          ANOTHER_CHANNEL
+          ANOTHER_CHANNEL,
         );
       }).to.throw('No subscription found');
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
-          SOME_CONTEXT
-        )
+          SOME_CONTEXT,
+        ),
       ).to.deep.equal([SOME_CHANNEL]);
     });
   });
@@ -464,7 +467,7 @@ describe('SubscriptionManager', () => {
   describe('unroll events', () => {
     it('all Browsing Context events', () => {
       expect(
-        unrollEvents([ChromiumBidi.BiDiModule.BrowsingContext])
+        unrollEvents([ChromiumBidi.BiDiModule.BrowsingContext]),
       ).to.have.members([
         ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
         ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
@@ -509,7 +512,7 @@ describe('SubscriptionManager', () => {
         unrollEvents([
           ChromiumBidi.Script.EventNames.RealmCreated,
           ChromiumBidi.Log.EventNames.LogEntryAdded,
-        ])
+        ]),
       ).to.have.members([
         ChromiumBidi.Script.EventNames.RealmCreated,
         ChromiumBidi.Log.EventNames.LogEntryAdded,
@@ -521,7 +524,7 @@ describe('SubscriptionManager', () => {
         unrollEvents([
           ChromiumBidi.BiDiModule.Log,
           ChromiumBidi.Log.EventNames.LogEntryAdded,
-        ])
+        ]),
       ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAdded]);
     });
   });
@@ -532,14 +535,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.Network.EventNames.ResponseCompleted,
           null,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.BiDiModule.Network,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -547,14 +550,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.Network.EventNames.ResponseCompleted,
           SOME_CONTEXT,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.BiDiModule.Network,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -562,14 +565,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.BiDiModule.Network,
           null,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.BiDiModule.Network,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -577,14 +580,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.BiDiModule.Network,
           SOME_CONTEXT,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.BiDiModule.Network,
-            SOME_NESTED_CONTEXT
-          )
+            SOME_NESTED_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -592,14 +595,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.BiDiModule.Network,
           SOME_CONTEXT,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.BiDiModule.Network,
-            ANOTHER_NESTED_CONTEXT
-          )
+            ANOTHER_NESTED_CONTEXT,
+          ),
         ).to.equal(false);
       });
 
@@ -607,8 +610,8 @@ describe('SubscriptionManager', () => {
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.BiDiModule.Network,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(false);
       });
     });
@@ -618,14 +621,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.Network.EventNames.ResponseCompleted,
           null,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.Network.EventNames.ResponseCompleted,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -633,14 +636,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.Network.EventNames.ResponseCompleted,
           SOME_CONTEXT,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.Network.EventNames.ResponseCompleted,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -648,14 +651,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.BiDiModule.Network,
           null,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.Network.EventNames.ResponseCompleted,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -663,14 +666,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.Network.EventNames.ResponseCompleted,
           SOME_CONTEXT,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.Network.EventNames.ResponseCompleted,
-            SOME_NESTED_CONTEXT
-          )
+            SOME_NESTED_CONTEXT,
+          ),
         ).to.equal(true);
       });
 
@@ -678,14 +681,14 @@ describe('SubscriptionManager', () => {
         subscriptionManager.subscribe(
           ChromiumBidi.Network.EventNames.ResponseCompleted,
           SOME_CONTEXT,
-          SOME_CHANNEL
+          SOME_CHANNEL,
         );
 
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.Network.EventNames.ResponseCompleted,
-            ANOTHER_NESTED_CONTEXT
-          )
+            ANOTHER_NESTED_CONTEXT,
+          ),
         ).to.equal(false);
       });
 
@@ -693,8 +696,8 @@ describe('SubscriptionManager', () => {
         expect(
           subscriptionManager.isSubscribedTo(
             ChromiumBidi.Network.EventNames.ResponseCompleted,
-            SOME_CONTEXT
-          )
+            SOME_CONTEXT,
+          ),
         ).to.equal(false);
       });
     });
