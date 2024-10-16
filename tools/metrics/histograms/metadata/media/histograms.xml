@@ -6757,6 +6757,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.WebMediaPlayerCompositor.ReasonToClearRenderBuffer"
+    enum="ReasonToClearRenderBuffer" expires_after="2025-10-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Returns the reason why the render buffer was cleared in
+    WebMediaPlayerMsCompositor. Recorded in the call to EnqueueFrame() if the
+    render buffer is cleared. If multiple conditions apply, only the first
+    matching enum is reported.
+  </summary>
+</histogram>
+
 <histogram name="Media.WebMediaPlayerImpl.HLS.HasAccessControl" enum="Boolean"
     expires_after="2025-03-09">
   <owner>tmathmeyer@chromium.org</owner>

@@ -1742,6 +1742,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Gestures trigger reaction effects"/>
 </enum>
 
+<enum name="ReasonToClearRenderBuffer">
+  <int value="0" label="Video frame with out-of-order timestamp."/>
+  <int value="1" label="Call to UpdateCurrentFrame() is overdue."/>
+</enum>
+
 <enum name="RemotingCompatibility">
   <int value="0" label="Compatible"/>
   <int value="1" label="Incompatible, no audio nor video"/>

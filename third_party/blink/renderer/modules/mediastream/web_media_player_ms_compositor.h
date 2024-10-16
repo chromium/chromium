@@ -310,9 +310,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // |dropped_frame_count_|, |current_metadata_| and |render_started_|.
   base::Lock current_frame_lock_;
 
-  // TODO(crbug.com/353554171): Remove this once the mechanism is fixed.
-  std::optional<base::TimeDelta> maximum_vsync_delay_for_renderer_reset_;
-
   base::WeakPtr<WebMediaPlayerMSCompositor> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerMSCompositor> weak_ptr_factory_{this};
 };
