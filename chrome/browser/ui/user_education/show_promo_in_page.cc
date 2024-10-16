@@ -101,7 +101,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     anchor_subscription_ = base::CallbackListSubscription();
     navigate_handle_.reset();
-    timeout_.AbandonAndStop();
+    timeout_.Stop();
 
     // It's possible that the browser window was closed and somehow the tab
     // opened in another window. It's an edge case but an important one since a

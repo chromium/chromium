@@ -928,7 +928,7 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
 
 void LoginDisplayHostWebUI::ShowWebUI() {
   session_observation_.Reset();
-  show_webui_guard_.AbandonAndStop();
+  show_webui_guard_.Stop();
 
   DCHECK(login_window_);
   DCHECK(login_view_);

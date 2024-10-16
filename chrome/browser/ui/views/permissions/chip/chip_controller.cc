@@ -784,9 +784,9 @@ void ChipController::StartDismissTimer() {
 }
 
 void ChipController::ResetTimers() {
-  collapse_timer_.AbandonAndStop();
-  dismiss_timer_.AbandonAndStop();
-  delay_prompt_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
+  dismiss_timer_.Stop();
+  delay_prompt_timer_.Stop();
 }
 
 views::Widget* ChipController::GetBubbleWidget() {

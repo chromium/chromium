@@ -110,7 +110,7 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
 void ExtensionsRequestAccessButton::ResetConfirmation() {
   SetVisible(false);
   confirmation_origin_ = std::nullopt;
-  collapse_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
 }
 
 bool ExtensionsRequestAccessButton::IsShowingConfirmation() const {
