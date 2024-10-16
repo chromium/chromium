@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_DRAG_EVENT_REWRITER_H_
-#define ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_DRAG_EVENT_REWRITER_H_
+#ifndef ASH_ACCESSIBILITY_DRAG_EVENT_REWRITER_H_
+#define ASH_ACCESSIBILITY_DRAG_EVENT_REWRITER_H_
 
 #include "ash/ash_export.h"
 #include "ui/events/event_rewriter.h"
@@ -11,16 +11,13 @@
 namespace ash {
 
 // EventRewriter to change move events into drag events during drag-and-drop
-// actions from Autoclick.
-class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
+// actions from Autoclick and FaceGaze.
+class ASH_EXPORT DragEventRewriter : public ui::EventRewriter {
  public:
-  AutoclickDragEventRewriter() = default;
-
-  AutoclickDragEventRewriter(const AutoclickDragEventRewriter&) = delete;
-  AutoclickDragEventRewriter& operator=(const AutoclickDragEventRewriter&) =
-      delete;
-
-  ~AutoclickDragEventRewriter() override = default;
+  DragEventRewriter() = default;
+  DragEventRewriter(const DragEventRewriter&) = delete;
+  DragEventRewriter& operator=(const DragEventRewriter&) = delete;
+  ~DragEventRewriter() override = default;
 
   void SetEnabled(bool enabled);
   bool IsEnabled() const;
@@ -37,4 +34,4 @@ class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_DRAG_EVENT_REWRITER_H_
+#endif  // ASH_ACCESSIBILITY_DRAG_EVENT_REWRITER_H_

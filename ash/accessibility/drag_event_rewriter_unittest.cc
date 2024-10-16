@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 
 #include <memory>
 
@@ -42,16 +42,12 @@ class CopyingSink : public ui::EventSink {
 
 }  // anonymous namespace
 
-class AutoclickDragEventRewriterTest : public AshTestBase {
+class DragEventRewriterTest : public AshTestBase {
  public:
-  AutoclickDragEventRewriterTest() = default;
-
-  AutoclickDragEventRewriterTest(const AutoclickDragEventRewriterTest&) =
-      delete;
-  AutoclickDragEventRewriterTest& operator=(
-      const AutoclickDragEventRewriterTest&) = delete;
-
-  ~AutoclickDragEventRewriterTest() override = default;
+  DragEventRewriterTest() = default;
+  DragEventRewriterTest(const DragEventRewriterTest&) = delete;
+  DragEventRewriterTest& operator=(const DragEventRewriterTest&) = delete;
+  ~DragEventRewriterTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -75,13 +71,13 @@ class AutoclickDragEventRewriterTest : public AshTestBase {
   // Generates ui::Events from simulated user input.
   raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
-  // AutoclickDragEventRewriter.
+  // DragEventRewriter.
   TestEventRecorder event_recorder_;
 
-  AutoclickDragEventRewriter drag_event_rewriter_;
+  DragEventRewriter drag_event_rewriter_;
 };
 
-TEST_F(AutoclickDragEventRewriterTest, EventsNotConsumedWhenDisabled) {
+TEST_F(DragEventRewriterTest, EventsNotConsumedWhenDisabled) {
   drag_event_rewriter_.SetEnabled(false);
   // Events are not consume.
   generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -108,7 +104,7 @@ TEST_F(AutoclickDragEventRewriterTest, EventsNotConsumedWhenDisabled) {
             event_recorder_.last_recorded_event_type());
 }
 
-TEST_F(AutoclickDragEventRewriterTest, OnlyMouseMoveEventsConsumedWhenEnabled) {
+TEST_F(DragEventRewriterTest, OnlyMouseMoveEventsConsumedWhenEnabled) {
   drag_event_rewriter_.SetEnabled(true);
   // Most events are still not consumed.
   generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -135,7 +131,7 @@ TEST_F(AutoclickDragEventRewriterTest, OnlyMouseMoveEventsConsumedWhenEnabled) {
   EXPECT_EQ(5U, event_recorder_.recorded_event_count());
 }
 
-TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {
+TEST_F(DragEventRewriterTest, RewritesMouseMovesToDrags) {
   drag_event_rewriter_.SetEnabled(true);
   base::TimeTicks time_stamp = ui::EventTimeForNow();
   gfx::Point location(100, 100);

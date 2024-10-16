@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 
 namespace ash {
 
-void AutoclickDragEventRewriter::SetEnabled(bool enabled) {
+void DragEventRewriter::SetEnabled(bool enabled) {
   enabled_ = enabled;
 }
 
-bool AutoclickDragEventRewriter::IsEnabled() const {
+bool DragEventRewriter::IsEnabled() const {
   return enabled_;
 }
 
-ui::EventDispatchDetails AutoclickDragEventRewriter::RewriteEvent(
+ui::EventDispatchDetails DragEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
   // Only rewrite mouse moved events to drag events when enabled.
-  if (!enabled_)
+  if (!enabled_) {
     return SendEvent(continuation, &event);
+  }
 
   // On touchpads, a SCROLL_FLING_CANCEL can also indicate the start of a drag.
   // If this rewriter is enabled, a SCROLL_FLING_CANCEL should simply be
@@ -51,7 +52,7 @@ ui::EventDispatchDetails AutoclickDragEventRewriter::RewriteEvent(
   return SendEventFinally(continuation, &rewritten_event);
 }
 
-bool AutoclickDragEventRewriter::SupportsNonRootLocation() const {
+bool DragEventRewriter::SupportsNonRootLocation() const {
   return true;
 }
 

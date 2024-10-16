@@ -7,9 +7,9 @@
 #include <tuple>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
 #include "ash/accessibility/autoclick/autoclick_ring_handler.h"
 #include "ash/accessibility/autoclick/autoclick_scroll_position_handler.h"
+#include "ash/accessibility/drag_event_rewriter.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
@@ -77,7 +77,7 @@ base::TimeDelta AutoclickController::GetDefaultAutoclickDelay() {
 AutoclickController::AutoclickController()
     : delay_(GetDefaultAutoclickDelay()),
       autoclick_ring_handler_(std::make_unique<AutoclickRingHandler>()),
-      drag_event_rewriter_(std::make_unique<AutoclickDragEventRewriter>()) {
+      drag_event_rewriter_(std::make_unique<DragEventRewriter>()) {
   Shell::GetPrimaryRootWindow()->GetHost()->GetEventSource()->AddEventRewriter(
       drag_event_rewriter_.get());
   Shell::Get()->cursor_manager()->AddObserver(this);
