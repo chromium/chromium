@@ -58,6 +58,7 @@ void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePaths(
       base::make_span(kAshGraduationResources, kAshGraduationResourcesSize));
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"appTitle", IDS_GRADUATION_APP_TITLE},
       {"backButtonLabel", IDS_GRADUATION_APP_BACK_BUTTON_LABEL},
       {"doneButtonLabel", IDS_GRADUATION_APP_DONE_BUTTON_LABEL},
       {"getStartedButtonLabel", IDS_GRADUATION_APP_GET_STARTED_BUTTON_LABEL},
