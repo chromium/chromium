@@ -79,11 +79,6 @@ const char kAndroidExtendedKeyboardShortcutsDescription[] =
     "If enabled, allows for extended keyboard shortcuts (i.e. Alt + Backspace "
     "to delete line).";
 
-const char kAndroidNoSurfaceSyncForBrowserControlsName[] =
-    "Android No Surface Sync For Browser Controls";
-const char kAndroidNoSurfaceSyncForBrowserControlsDescription[] =
-    "Disable surface sync for top controls when scrolling";
-
 const char kAndroidBrowserControlsInVizName[] =
     "Android Browser Controls in Viz";
 const char kAndroidBrowserControlsInVizDescription[] =

@@ -11198,14 +11198,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin, FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-no-surface-sync-for-browser-controls",
-     flag_descriptions::kAndroidNoSurfaceSyncForBrowserControlsName,
-     flag_descriptions::kAndroidNoSurfaceSyncForBrowserControlsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidNoSurfaceSyncForBrowserControls)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cros-soul-gd", flag_descriptions::kCrosSoulGravediggerName,
      flag_descriptions::kCrosSoulGravediggerDescription, kOsCrOS,

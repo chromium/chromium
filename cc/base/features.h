@@ -79,12 +79,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 // Use DMSAA instead of MSAA for rastering tiles on Android GL backend. Note
 // that the above flag kUseDMSAAForTiles is used for Android Vulkan backend.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTilesAndroidGL);
-
-// Break synchronization of scrolling website content and browser controls in
-// android to see performance gains for moving browser controls to viz.
-// WARNING: Don't enable this feature! It should only be used to measure
-// performance on prestable channels.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAndroidNoSurfaceSyncForBrowserControls);
 #endif
 
 // Updating browser controls state will IPC directly from browser main to the

@@ -76,9 +76,6 @@ extern const char kAndroidBottomToolbarDescription[];
 extern const char kAndroidExtendedKeyboardShortcutsName[];
 extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 
-extern const char kAndroidNoSurfaceSyncForBrowserControlsName[];
-extern const char kAndroidNoSurfaceSyncForBrowserControlsDescription[];
-
 extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 
