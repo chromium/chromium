@@ -1262,6 +1262,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalSubgroups:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
     case wgpu::FeatureName::MultiDrawIndirect:
+    case wgpu::FeatureName::Float32Blendable:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:

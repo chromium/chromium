@@ -689,6 +689,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::ShaderF16;
     case V8GPUFeatureName::Enum::kFloat32Filterable:
       return wgpu::FeatureName::Float32Filterable;
+    case V8GPUFeatureName::Enum::kFloat32Blendable:
+      return wgpu::FeatureName::Float32Blendable;
     case V8GPUFeatureName::Enum::kDualSourceBlending:
       return wgpu::FeatureName::DualSourceBlending;
     case V8GPUFeatureName::Enum::kSubgroups:
