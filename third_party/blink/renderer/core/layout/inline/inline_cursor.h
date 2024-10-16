@@ -529,9 +529,10 @@ class CORE_EXPORT InlineCursor {
   // Functions to enumerate fragments for a |LayoutObject|.
   //
 
-  // Move to first |FragmentItem| or |NGPaintFragment| associated to
-  // |layout_object|. When |layout_object| has no associated fragments, this
-  // cursor points nothing.
+  // Move to the first `FragmentItem` associated to the `layout_object`.
+  // This cursor points nothing if any of the following conditions are true:
+  // * The `layout_object` has no associated fragments.
+  // * The `layout_object.IsOutOfFlowPositioned()`.
   void MoveTo(const LayoutObject& layout_object);
 
   // Same as |MoveTo|, except that this enumerates fragments for descendants
