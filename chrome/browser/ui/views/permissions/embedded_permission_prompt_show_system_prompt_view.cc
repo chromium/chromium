@@ -12,11 +12,17 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    EmbeddedPermissionPromptShowSystemPromptView,
+    kMainViewId);
+
 EmbeddedPermissionPromptShowSystemPromptView::
     EmbeddedPermissionPromptShowSystemPromptView(
         Browser* browser,
         base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
-    : EmbeddedPermissionPromptBaseView(browser, delegate) {}
+    : EmbeddedPermissionPromptBaseView(browser, delegate) {
+  SetProperty(views::kElementIdentifierKey, kMainViewId);
+}
 
 EmbeddedPermissionPromptShowSystemPromptView::
     ~EmbeddedPermissionPromptShowSystemPromptView() = default;

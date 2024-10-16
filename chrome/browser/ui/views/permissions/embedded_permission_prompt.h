@@ -126,6 +126,7 @@ class EmbeddedPermissionPrompt
       const ContentSettingsType other_request_type);
 
   void CloseView();
+  void CloseViewAndScrim();
 
   void FinalizePrompt();
   void SendDelegateAction(Action action);

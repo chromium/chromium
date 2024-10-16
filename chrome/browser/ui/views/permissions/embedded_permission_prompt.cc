@@ -160,7 +160,7 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
 }
 
 EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
-  CloseView();
+  CloseViewAndScrim();
 }
 
 EmbeddedPermissionPrompt::Variant
@@ -298,12 +298,14 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
 
   if (prompt_view) {
     prompt_view_tracker_.SetView(prompt_view);
-    content_scrim_widget_ =
-        EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
-            weak_factory_.GetWeakPtr(),
-            SkColorSetA(web_contents()->GetColorProvider().GetColor(
-                            ui::kColorRefNeutral20),
-                        0.8 * SK_AlphaOPAQUE));
+    if (!content_scrim_widget_) {
+      content_scrim_widget_ =
+          EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
+              weak_factory_.GetWeakPtr(),
+              SkColorSetA(web_contents()->GetColorProvider().GetColor(
+                              ui::kColorRefNeutral20),
+                          0.8 * SK_AlphaOPAQUE));
+    }
     // If the tab/native view is closed, the `content_scrim_widget_` may be
     // nullptr. In this scenario, skip showing the prompt.
     if (!content_scrim_widget_) {
@@ -626,14 +628,19 @@ void EmbeddedPermissionPrompt::CloseView() {
     prompt_types_.clear();
     embedded_prompt_variant_ = Variant::kUninitialized;
   }
+}
+
+void EmbeddedPermissionPrompt::CloseViewAndScrim() {
+  CloseView();
 
   if (content_scrim_widget_) {
     content_scrim_widget_->Close();
+    content_scrim_widget_ = nullptr;
   }
 }
 
 void EmbeddedPermissionPrompt::FinalizePrompt() {
-  CloseView();
+  CloseViewAndScrim();
 
   // If by this point we've not sent an action to the delegate, send a dismiss
   // action.

@@ -7,12 +7,14 @@
 #include <string>
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -744,6 +746,46 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::ElementAnchoredBubbleAction::kDismissedScrim,
           permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0));
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+                       TestOsSystemPromptTransition) {
+  base::AutoReset<bool> mock_system_prompt =
+      system_permission_settings::MockSystemPromptForTesting();
+
+  views::NamedWidgetShownWaiter original_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+
+  EmbeddedPermissionPromptContentScrimView* original_scrim_view = nullptr;
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      Do([&]() {
+        // Save the reference to the scrim.
+        original_scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                original_waiter.WaitIfNeededAndGet()->GetContentsView());
+      }),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      InAnyContext(WaitForShow(
+          EmbeddedPermissionPromptShowSystemPromptView::kMainViewId)),
+      Do([&]() {
+        auto* scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                waiter.WaitIfNeededAndGet()->GetContentsView());
+        // Verify that the scrim view is the same one that was opened at the
+        // beginning, and wasn't closed and reopened during the transition.
+        EXPECT_EQ(scrim_view, original_scrim_view);
+        scrim_view->OnMousePressed(ui::MouseEvent(
+            ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      }));
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest
