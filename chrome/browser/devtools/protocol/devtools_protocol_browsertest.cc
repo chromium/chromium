@@ -939,12 +939,10 @@ class DevToolsProtocolScreenshotTest : public DevToolsProtocolTest {
     CHECK(!error());
     const std::string* base64_data = result()->FindString("data");
     CHECK(base64_data);
-    std::string png_data;
-    CHECK(base::Base64Decode(*base64_data, &png_data));
-    SkBitmap bitmap;
-    CHECK(gfx::PNGCodec::Decode(
-        reinterpret_cast<unsigned const char*>(png_data.data()),
-        png_data.size(), &bitmap));
+    std::optional<std::vector<uint8_t>> png_data =
+        base::Base64Decode(*base64_data);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(png_data.value());
+    CHECK(!bitmap.isNull());
     return bitmap;
   }
 };

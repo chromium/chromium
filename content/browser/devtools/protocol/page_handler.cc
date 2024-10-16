@@ -101,39 +101,40 @@ constexpr char kErrorNotAttached[] = "Not attached to a page";
 constexpr char kErrorInactivePage[] = "Not attached to an active page";
 
 using BitmapEncoder =
-    base::RepeatingCallback<bool(const SkBitmap& bitmap,
-                                 std::vector<uint8_t>& output)>;
+    base::RepeatingCallback<std::optional<std::vector<uint8_t>>(
+        const SkBitmap& bitmap)>;
 
-bool EncodeBitmapAsPngSlow(const SkBitmap& bitmap,
-                           std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsPngSlow(
+    const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsPngSlow");
-  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false);
 }
 
-bool EncodeBitmapAsPngFast(const SkBitmap& bitmap,
-                           std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsPngFast(
+    const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsPngFast");
-  return gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, false, &output);
+  return gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap,
+                                               /*discard_transparency=*/false);
 }
 
-bool EncodeBitmapAsJpeg(int quality,
-                        const SkBitmap& bitmap,
-                        std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsJpeg(int quality,
+                                                       const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsJpeg");
-  return gfx::JPEGCodec::Encode(bitmap, quality, &output);
+  return gfx::JPEGCodec::Encode(bitmap, quality);
 }
 
-bool EncodeBitmapAsWebp(int quality,
-                        const SkBitmap& bitmap,
-                        std::vector<uint8_t>& output) {
+std::optional<std::vector<uint8_t>> EncodeBitmapAsWebp(int quality,
+                                                       const SkBitmap& bitmap) {
   TRACE_EVENT0("devtools", "EncodeBitmapAsWebp");
-  return gfx::WebpCodec::Encode(bitmap, quality, &output);
+  return gfx::WebpCodec::Encode(bitmap, quality);
 }
 
 absl::variant<protocol::Response, BitmapEncoder>
 GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
-  if (quality < 0 || quality > 100)
+  if (quality < 0 || quality > 100) {
     quality = kDefaultScreenshotQuality;
+  }
 
   if (format == protocol::Page::CaptureScreenshot::FormatEnum::Png) {
     return base::BindRepeating(optimize_for_speed ? EncodeBitmapAsPngFast
@@ -1495,10 +1496,8 @@ void PageHandler::ScreencastFrameCaptured(
       FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           [](const SkBitmap& bitmap,
-             BitmapEncoder encoder) -> std::vector<uint8_t> {
-            std::vector<uint8_t> result;
-            encoder.Run(bitmap, result);
-            return result;
+             BitmapEncoder encoder) -> std::optional<std::vector<uint8_t>> {
+            return encoder.Run(bitmap);
           },
           bitmap, screencast_encoder_),
       base::BindOnce(&PageHandler::ScreencastFrameEncoded,
@@ -1507,13 +1506,13 @@ void PageHandler::ScreencastFrameCaptured(
 
 void PageHandler::ScreencastFrameEncoded(
     std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata,
-    std::vector<uint8_t> data) {
-  if (data.empty()) {
+    std::optional<std::vector<uint8_t>> data) {
+  if (!data) {
     --frames_in_flight_;
     return;  // Encode failed.
   }
 
-  frontend_->ScreencastFrame(Binary::fromVector(std::move(data)),
+  frontend_->ScreencastFrame(Binary::fromVector(std::move(data).value()),
                              std::move(page_metadata), session_id_);
 }
 
@@ -1538,7 +1537,7 @@ void PageHandler::ScreenshotCaptured(
     return;
   }
 
-  std::vector<uint8_t> encoded_bitmap;
+  std::optional<std::vector<uint8_t>> encoded_bitmap;
   const SkBitmap& bitmap = *image.ToSkBitmap();
 
   if (!request->requested_image_size.IsEmpty() &&
@@ -1547,12 +1546,18 @@ void PageHandler::ScreenshotCaptured(
     SkBitmap cropped = SkBitmapOperations::CreateTiledBitmap(
         bitmap, 0, 0, request->requested_image_size.width(),
         request->requested_image_size.height());
-    request->encoder.Run(cropped, encoded_bitmap);
+    encoded_bitmap = request->encoder.Run(cropped);
   } else {
-    request->encoder.Run(bitmap, encoded_bitmap);
+    encoded_bitmap = request->encoder.Run(bitmap);
+  }
+
+  if (encoded_bitmap) {
+    request->callback->sendSuccess(
+        Binary::fromVector(std::move(encoded_bitmap).value()));
+    return;
   }
   // TODO(caseq): send failure if we fail to encode?
-  request->callback->sendSuccess(Binary::fromVector(std::move(encoded_bitmap)));
+  request->callback->sendSuccess(Binary());
 }
 
 Response PageHandler::StopLoading() {
