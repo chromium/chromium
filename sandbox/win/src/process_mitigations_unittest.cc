@@ -1394,9 +1394,7 @@ TEST(ProcessMitigationsTest, FsctlDisabled) {
 // This test passes if we are able to set the policy or the policy set fails
 // with ERROR_NOT_SUPPORTED due to incorrect scheduler type.
 TEST(ProcessMitigationsTest, RestrictCoreSharing) {
-  // This feature is enabled starting with build number 25922.
-  const auto& version = base::win::OSInfo::GetInstance()->version_number();
-  if (version.build < 25922) {
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
     return;
   }
 

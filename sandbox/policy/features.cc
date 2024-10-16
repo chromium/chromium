@@ -109,7 +109,7 @@ BASE_FEATURE(kWinSboxNoFakeGdiInit,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Restrict Core Sharing mitigation for the renderer process, when
-// running Windows 11 Build 25922 and above. See param definition of
+// running Windows 11 Build 26100 (24H2) and above. See param definition of
 // RestrictCoreSharing in
 // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-
 // process_mitigation_side_channel_isolation_policy
