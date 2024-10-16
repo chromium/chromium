@@ -17,7 +17,8 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -26,16 +27,6 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "extensions/browser/state_store.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos::platform_keys {
 
@@ -108,35 +99,15 @@ bool PolicyAllowsCorporateKeyUsageForExtension(
 //
 // KeystoreService is expected to always outlive ExtensionKeyPermissionsService
 // because ExtensionKeyPermissionsService instances are owned by
-// ExtensionPlatformKeysService and:
-//
-// For Lacros-Chrome it returns a remote mojo implementation owned by
-// LacrosService (that is created before the start of the main loop and should
-// outlive ExtensionPlatformKeysService).
-//
-// For Ash-Chrome the factory can return:
+// ExtensionPlatformKeysService and the factory can return:
 // * an instance owned by CrosapiManager (that is created before profiles and
 // should outlive ExtensionPlatformKeysService)
-// * or an appropriate keyed service that will always exist
-// during ExtensionPlatformKeysService lifetime (because of KeyedService
-// dependencies).
+// * or an appropriate keyed service that will always exist during
+// ExtensionPlatformKeysService lifetime (because of KeyedService dependencies).
 crosapi::mojom::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
-  // implemented for secondary profiles in Lacros.
-  CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
-      << "Attempted to use an incorrect profile. Please file a bug at "
-         "https://bugs.chromium.org/ if this happens.";
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      .get();
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace

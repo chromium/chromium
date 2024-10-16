@@ -19,7 +19,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -39,16 +41,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using crosapi::keystore_service_util::MakeEcKeystoreSigningAlgorithm;
@@ -74,11 +66,11 @@ namespace {
 
 // Verify the allowlisted kKeyPermissionsInLoginScreen feature behaviors.
 bool IsExtensionAllowlisted(const extensions::Extension* extension) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Can be nullptr if the extension is uninstalled before the SignTask is
   // completed.
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   const extensions::Feature* key_permissions_in_login_screen =
       extensions::FeatureProvider::GetBehaviorFeature(
@@ -86,9 +78,6 @@ bool IsExtensionAllowlisted(const extensions::Extension* extension) {
 
   return key_permissions_in_login_screen->IsAvailableToExtension(extension)
       .is_available();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 KeystoreType KeystoreTypeFromTokenId(platform_keys::TokenId token_id) {
@@ -138,13 +127,7 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
   return KeystoreSigningScheme::kUnknown;
 }
 
-// Returns appropriate KeystoreService for |browser_context|.
-//
-// For Lacros-Chrome it returns a remote mojo implementation owned by
-// LacrosService (that is created before the start of the main loop and should
-// outlive ExtensionPlatformKeysService).
-//
-// For Ash-Chrome the factory can return:
+// Returns appropriate KeystoreService for |browser_context|, which can be:
 // * an instance owned by CrosapiManager (that is created before profiles and
 // should outlive ExtensionPlatformKeysService)
 // * or an appropriate keyed service that will always exist
@@ -152,24 +135,8 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
 // dependencies).
 crosapi::mojom::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
-  // implemented for secondary profiles in Lacros.
-  CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
-      << "Attempted to use an incorrect profile. Please file a bug at "
-         "https://bugs.chromium.org/ if this happens.";
-
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>()) {
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::KeystoreService>().get();
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace
@@ -916,24 +883,6 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (sw_backed) {
-    // Software-backed RSA keys are only supported starting with KeyStore
-    // interface version 16.
-    // TODO(crbug.com/40793151): Remove this code with M-100.
-    const int kSoftwareBackedRsaMinVersion = 16;
-    if (!chromeos::LacrosService::Get() ||
-        (chromeos::LacrosService::Get()
-             ->GetInterfaceVersion<KeystoreService>() <
-         kSoftwareBackedRsaMinVersion)) {
-      std::move(callback).Run(
-          /*public_key_spki_der=*/std::vector<uint8_t>(),
-          crosapi::mojom::KeystoreError::kUnsupportedKeyType);
-      return;
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   StartOrQueueTask(std::make_unique<GenerateRSAKeyTask>(
       token_id, modulus_length, sw_backed, std::move(extension_id),
       std::move(callback), this));
@@ -958,14 +907,8 @@ void ExtensionPlatformKeysService::GenerateECKey(
 }
 
 bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
-// TODO(crbug.com/40156265) Revisit this place when Lacros-Chrome starts being
-// used on the login screen.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::ProfileHelper::IsSigninProfile(
       Profile::FromBrowserContext(browser_context_));
-#else
-  return false;
-#endif
 }
 
 void ExtensionPlatformKeysService::SignDigest(
