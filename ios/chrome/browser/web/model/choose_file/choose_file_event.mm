@@ -8,11 +8,13 @@
 
 ChooseFileEvent::ChooseFileEvent(
     bool allow_multiple_files,
+    bool has_selected_file,
     std::vector<std::string> accept_file_extensions,
     std::vector<std::string> accept_mime_types,
     web::WebState* web_state,
     base::Time time)
     : allow_multiple_files{allow_multiple_files},
+      has_selected_file{has_selected_file},
       accept_file_extensions{std::move(accept_file_extensions)},
       accept_mime_types{std::move(accept_mime_types)},
       web_state{web_state->GetWeakPtr()},

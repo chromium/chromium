@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+struct ChooseFileEvent;
+
 // The different first level options the user can select.
 enum class DriveFilePickerFirstLevel {
   kMyDrive,
@@ -51,8 +53,11 @@ enum class DriveFilePickerSearchState {
 // The size of the currently selected file.
 @property(nonatomic, assign) uint64_t fileSize;
 
-// Report the metrics.
-- (void)reportMetrics;
+// Report the metrics at the start of the flow.
+- (void)reportActivationMetricsForEvent:(const ChooseFileEvent&)event;
+
+// Report the metrics at the end of the flow.
+- (void)reportOutcomeMetrics;
 
 @end
 

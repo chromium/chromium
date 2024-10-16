@@ -148,7 +148,7 @@
 }
 
 - (void)stop {
-  [_metricsHelper reportMetrics];
+  [_metricsHelper reportOutcomeMetrics];
   [self.baseViewController.view.window
       removeGestureRecognizer:_tapToDismissGestureRecognizer];
   [_mediator disconnect];
@@ -372,7 +372,7 @@
 - (void)showDiscardSelectionAlert {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock discardSelectionBlock = ^{
-    [weakSelf stopAnimated];
+    [weakSelf userInterrupted];
   };
   UIAlertController* discardSelectionAlertController =
       DiscardSelectionAlertController(discardSelectionBlock, nil);

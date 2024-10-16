@@ -5049,6 +5049,27 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Web.FileInput.ContentState"
+    enum="IOSWebFileInputContentState" expires_after="2025-10-15">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    An enum describing the state of the file input when clicked (whether it
+    accepts multiple files and whether it already has some files).
+  </summary>
+</histogram>
+
+<histogram name="IOS.Web.FileInput.ContentState.Drive"
+    enum="IOSWebFileInputContentState" expires_after="2025-10-15">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    An enum describing the state of the file input when clicked (whether it
+    accepts multiple files and whether it already has some files) specifically
+    when choosing a file from Drive.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Web.FileInput.EventDropped" enum="Boolean"
     expires_after="2024-12-15">
   <owner>olivierrobin@chromium.org</owner>
