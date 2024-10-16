@@ -70,8 +70,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CodeCacheRejectReason" enum="V8CodeCacheRejectReason"
-    expires_after="M77">
-  <owner>yangguo@chromium.org</owner>
+    expires_after="2025-10-16">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@chromium.org</owner>
   <summary>
     Reason code data has been rejected when attempting to deserialize.
   </summary>
