@@ -72,6 +72,27 @@ class CustomElementDisconnectedCallbackReaction final
 
 // ----------------------------------------------------------------
 
+class CustomElementConnectedMoveCallbackReaction final
+    : public CustomElementReaction {
+ public:
+  explicit CustomElementConnectedMoveCallbackReaction(
+      CustomElementDefinition& definition)
+      : CustomElementReaction(definition) {
+    DCHECK(definition.HasConnectedMoveCallback());
+  }
+  CustomElementConnectedMoveCallbackReaction(
+      const CustomElementConnectedMoveCallbackReaction&) = delete;
+  CustomElementDisconnectedCallbackReaction& operator=(
+      const CustomElementConnectedMoveCallbackReaction&) = delete;
+
+ private:
+  void Invoke(Element& element) override {
+    definition_->RunConnectedMoveCallback(element);
+  }
+};
+
+// ----------------------------------------------------------------
+
 class CustomElementAdoptedCallbackReaction final
     : public CustomElementReaction {
  public:
@@ -261,6 +282,12 @@ CustomElementReaction& CustomElementReactionFactory::CreateConnected(
 CustomElementReaction& CustomElementReactionFactory::CreateDisconnected(
     CustomElementDefinition& definition) {
   return *MakeGarbageCollected<CustomElementDisconnectedCallbackReaction>(
+      definition);
+}
+
+CustomElementReaction& CustomElementReactionFactory::CreateConnectedMove(
+    CustomElementDefinition& definition) {
+  return *MakeGarbageCollected<CustomElementConnectedMoveCallbackReaction>(
       definition);
 }
 

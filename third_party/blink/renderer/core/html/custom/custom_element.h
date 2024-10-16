@@ -104,6 +104,7 @@ class CORE_EXPORT CustomElement {
 
   static void Enqueue(Element&, CustomElementReaction&);
   static void EnqueueConnectedCallback(Element&);
+  static void EnqueueConnectedMoveCallback(Element&);
   static void EnqueueDisconnectedCallback(Element&);
   static void EnqueueAdoptedCallback(Element&,
                                      Document& old_owner,

@@ -3095,7 +3095,11 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     EnqueueAutofocus(*this);
 
     if (GetCustomElementState() == CustomElementState::kCustom) {
-      CustomElement::EnqueueConnectedCallback(*this);
+      if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+        CustomElement::EnqueueConnectedMoveCallback(*this);
+      } else {
+        CustomElement::EnqueueConnectedCallback(*this);
+      }
     } else if (GetCustomElementState() == CustomElementState::kUndefined) {
       CustomElement::TryToUpgrade(*this);
     }
@@ -3198,7 +3202,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       document.SetCSSTarget(nullptr);
     }
 
-    if (GetCustomElementState() == CustomElementState::kCustom) {
+    if (GetCustomElementState() == CustomElementState::kCustom &&
+        !GetDocument().StatePreservingAtomicMoveInProgress()) {
       CustomElement::EnqueueDisconnectedCallback(*this);
     }
   }

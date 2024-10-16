@@ -38,6 +38,7 @@ class ScriptCustomElementDefinitionData {
   V8CustomElementConstructor* constructor_ = nullptr;
   V8VoidFunction* connected_callback_ = nullptr;
   V8VoidFunction* disconnected_callback_ = nullptr;
+  V8VoidFunction* connected_move_callback_ = nullptr;
   V8CustomElementAdoptedCallback* adopted_callback_ = nullptr;
   V8CustomElementAttributeChangedCallback* attribute_changed_callback_ =
       nullptr;

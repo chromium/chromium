@@ -42,6 +42,7 @@ ScriptCustomElementDefinition::ScriptCustomElementDefinition(
       constructor_(data.constructor_),
       connected_callback_(data.connected_callback_),
       disconnected_callback_(data.disconnected_callback_),
+      connected_move_callback_(data.connected_move_callback_),
       adopted_callback_(data.adopted_callback_),
       attribute_changed_callback_(data.attribute_changed_callback_),
       form_associated_callback_(data.form_associated_callback_),
@@ -56,6 +57,7 @@ void ScriptCustomElementDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(constructor_);
   visitor->Trace(connected_callback_);
   visitor->Trace(disconnected_callback_);
+  visitor->Trace(connected_move_callback_);
   visitor->Trace(adopted_callback_);
   visitor->Trace(attribute_changed_callback_);
   visitor->Trace(form_associated_callback_);
@@ -182,6 +184,10 @@ bool ScriptCustomElementDefinition::HasDisconnectedCallback() const {
   return disconnected_callback_ != nullptr;
 }
 
+bool ScriptCustomElementDefinition::HasConnectedMoveCallback() const {
+  return connected_move_callback_ != nullptr;
+}
+
 bool ScriptCustomElementDefinition::HasAdoptedCallback() const {
   return adopted_callback_ != nullptr;
 }
@@ -214,6 +220,14 @@ void ScriptCustomElementDefinition::RunDisconnectedCallback(Element& element) {
     return;
 
   disconnected_callback_->InvokeAndReportException(&element);
+}
+
+void ScriptCustomElementDefinition::RunConnectedMoveCallback(Element& element) {
+  if (!connected_move_callback_) {
+    return;
+  }
+
+  connected_move_callback_->InvokeAndReportException(&element);
 }
 
 void ScriptCustomElementDefinition::RunAdoptedCallback(Element& element,
