@@ -9,6 +9,8 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapper.h"
@@ -94,6 +96,8 @@ class BASE_EXPORT SharedMemoryMapping {
 // instances.
 class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
  public:
+  using iterator = base::CheckedContiguousIterator<const uint8_t>;
+
   // Default constructor initializes an invalid instance.
   ReadOnlySharedMemoryMapping();
 
@@ -113,6 +117,18 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   // access the memory as a single `T` or `GetMemoryAsSpan<T>()` to access it as
   // an array of `T`.
   const uint8_t* data() const { return mapped_memory().data(); }
+
+  // Iterate memory as bytes up to the end of its logical size.
+  iterator begin() const {
+    // SAFETY: There is an internal invariant (enforced in the constructors)
+    // that `size() <= mapped_memory().size()`, so `data()` points to at least
+    // that many valid bytes.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+  }
+  iterator end() const {
+    // SAFETY: As in `begin()` above.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+  }
 
   // TODO(crbug.com/355451178): Deprecated. Use `span(mapping)` to make a span
   // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T` or
@@ -178,6 +194,9 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
 // instances.
 class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
  public:
+  using iterator = base::CheckedContiguousIterator<uint8_t>;
+  using const_iterator = base::CheckedContiguousIterator<const uint8_t>;
+
   // Default constructor initializes an invalid instance.
   WritableSharedMemoryMapping();
 
@@ -197,6 +216,25 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   // access the memory as a single `T` or `GetMemoryAsSpan<T>()` to access it as
   // an array of `T`.
   uint8_t* data() const { return mapped_memory().data(); }
+
+  // Iterate memory as bytes up to the end of its logical size.
+  iterator begin() {
+    // SAFETY: As in the ReadOnly code above.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+  }
+  const_iterator begin() const {
+    // SAFETY: As in the ReadOnly code above.
+    return UNSAFE_BUFFERS(const_iterator(data(), data() + size()));
+  }
+  iterator end() {
+    // SAFETY: As in the ReadOnly code above.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+  }
+  const_iterator end() const {
+    // SAFETY: As in the ReadOnly code above.
+    return UNSAFE_BUFFERS(
+        const_iterator(data(), data() + size(), data() + size()));
+  }
 
   // TODO(crbug.com/355451178): Deprecated. Use `span(mapping)` to make a span
   // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T`, or
