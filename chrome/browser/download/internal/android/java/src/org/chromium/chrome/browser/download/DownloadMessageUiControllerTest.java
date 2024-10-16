@@ -287,6 +287,27 @@ public class DownloadMessageUiControllerTest {
     @Test
     @SmallTest
     @Feature({"Download"})
+    public void testMultipleOfflineItemCompleteAndBlocked() {
+        OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
+        item.failState = FailState.FILE_BLOCKED;
+        mTestController.onItemUpdated(item);
+        mTestController.verify(MESSAGE_DOWNLOAD_FAILED, DESCRIPTION_BLOCKED);
+        mTestController.verifyIgnoreAction(true);
+
+        OfflineItem item2 = createOfflineItem(OfflineItemState.COMPLETE);
+        mTestController.onItemUpdated(item2);
+        mTestController.verify(MESSAGE_SINGLE_DOWNLOAD_COMPLETE, DESCRIPTION_DOWNLOAD_COMPLETE);
+        mTestController.verifyIgnoreAction(false);
+
+        OfflineItem item3 = createOfflineItem(OfflineItemState.COMPLETE);
+        mTestController.onItemUpdated(item3);
+        mTestController.verify(MESSAGE_TWO_DOWNLOAD_COMPLETE, null);
+        mTestController.verifyIgnoreAction(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
     public void testSingleOfflineItemPending() {
         OfflineItem item = createOfflineItem(OfflineItemState.PENDING);
         mTestController.onItemUpdated(item);

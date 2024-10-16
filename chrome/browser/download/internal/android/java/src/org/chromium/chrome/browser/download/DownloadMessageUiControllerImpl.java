@@ -750,7 +750,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 info.id = itemToShow.id;
                 info.link = getContext().getString(R.string.open_downloaded_label);
                 info.icon = R.drawable.infobar_download_complete_animation;
-            } else {
+            } else if (resultState == ResultState.FAILED) {
                 // TODO(shaktisahu): Incorporate various types of failure messages.
                 // TODO(shaktisahu, xingliu): Consult UX to handle multiple schedule variations.
                 boolean allFailedDownloadsAreBlocked =
@@ -778,6 +778,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 } else {
                     info.link = getContext().getString(R.string.details_link);
                 }
+            } else {
+                info.link = getContext().getString(R.string.details_link);
             }
         }
 
