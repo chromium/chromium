@@ -87,7 +87,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
            initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                      profile_.get())
                         webState:fake_web_state_.get()
-                     syncService:SyncServiceFactory::GetForBrowserState(
+                     syncService:SyncServiceFactory::GetForProfile(
                                      profile_.get())
                              URL:GURL("http://www.example.com/")
         invokedOnObfuscatedField:NO

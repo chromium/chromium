@@ -76,7 +76,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     infobars::InfoBarManager* infobar_manager,
     id<AutofillClientIOSBridge> bridge)
     : pref_service_(profile->GetPrefs()),
-      sync_service_(SyncServiceFactory::GetForBrowserState(profile)),
+      sync_service_(SyncServiceFactory::GetForProfile(profile)),
       personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
           profile->GetOriginalProfile())),
       autocomplete_history_manager_(
