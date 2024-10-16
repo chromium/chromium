@@ -379,7 +379,7 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
             '-xctestrun',
             xctestrun_path,
             '-destination',
-            'platform=iOS Simulator,OS=17.4,name=iPhone 15',
+            'platform=iOS Simulator,name=iPhone 15',
         ]
         with open(xctestrun_path, 'wb') as fp:
             if is_xcuitest:
