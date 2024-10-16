@@ -99,6 +99,8 @@ class CRDTP_EXPORT Binary : public Serializable {
   // Allow explicit conversion to `base::span`.
   const uint8_t* data() const { return bytes_->data(); }
   size_t size() const { return bytes_->size(); }
+  auto begin() const { return bytes_->begin(); }
+  auto end() const { return bytes_->end(); }
   // data()/size() provide access to Binary's data as a span, but each one
   // requires a virtual call. Like RefCountedData, provide this operator as an
   // optimization.
