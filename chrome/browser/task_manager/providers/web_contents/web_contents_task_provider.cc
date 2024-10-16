@@ -412,8 +412,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
       new_task = std::make_unique<FencedFrameTask>(render_frame_host,
                                                    primary_main_frame_task);
     } else {
-      new_task = std::make_unique<SubframeTask>(render_frame_host,
-                                                primary_main_frame_task);
+      new_task = std::make_unique<SubframeTask>(
+          render_frame_host, primary_main_frame_task->AsWeakPtr());
     }
   }
 

@@ -21,7 +21,7 @@ namespace task_manager {
 class SubframeTask : public RendererTask {
  public:
   SubframeTask(content::RenderFrameHost* render_frame_host,
-               RendererTask* main_task);
+               base::WeakPtr<RendererTask> main_task);
   SubframeTask(const SubframeTask&) = delete;
   SubframeTask& operator=(const SubframeTask&) = delete;
   ~SubframeTask() override;
