@@ -37,9 +37,6 @@
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// The app state for the app that owns this scene. Set in init.
-@property(nonatomic, weak, readonly) AppState* appState;
-
 // The profile state for profile that owns this scene.
 @property(nonatomic, weak) ProfileState* profileState;
 

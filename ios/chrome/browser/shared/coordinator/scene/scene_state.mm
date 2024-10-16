@@ -58,6 +58,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 @implementation SceneState {
   ContentVisibility _contentVisibility;
   NSString* _sceneSessionID;
+  AppState* _appState;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState {
