@@ -404,34 +404,6 @@ bool IsLogicalBinaryOperator(
   }
 }
 
-// Allows a tensor's shape to be specified through either the
-// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
-// now to give callers the opportunity to migrate their code to use `shape`.
-//
-// TODO(crbug.com/365813262): Remove this function after about a milestone.
-base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
-    ScriptState* script_state,
-    const MLOperandDescriptor& desc) {
-  if (!desc.hasDimensions()) {
-    return desc.shape();
-  }
-
-  if (desc.shape() != desc.dimensions()) {
-    if (!desc.shape().empty()) {
-      return base::unexpected(
-          "Invalid operand descriptor: shape and dimensions do not match.");
-    } else {
-      LogConsoleWarning(
-          script_state,
-          "WARNING: MLOperandDescriptor.dimensions is deprecated. "
-          "Use MLOperandDescriptor.shape instead.",
-          mojom::blink::ConsoleMessageSource::kDeprecation);
-    }
-  }
-
-  return desc.dimensions();
-}
-
 void LogConsoleWarning(ScriptState* script_state,
                        const String& message,
                        mojom::blink::ConsoleMessageSource message_source) {

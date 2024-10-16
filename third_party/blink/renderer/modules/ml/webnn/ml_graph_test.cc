@@ -1062,78 +1062,6 @@ TEST_F(MLGraphTest, BuildTest) {
   }
 }
 
-// Test that callers specifying `MLOperandDescriptor.dimensions` in place of
-// `MLOperandDescriptor.shape` will not break.
-//
-// TODO(crbug.com/365813262): Remove this test once
-// `MLOperandDescriptor.dimensions` is no longer supported.
-TEST_F(MLGraphTest, MLOperandDescriptorShapeTest) {
-  V8TestingScope scope;
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  MLContext* context = CreateContext(scope, MLContextOptions::Create());
-  DummyExceptionStateForTesting exception_state;
-  auto* builder =
-      MLGraphBuilder::Create(scope.GetScriptState(), context, exception_state);
-  ASSERT_THAT(builder, testing::NotNull());
-
-  {
-    // Use scalar shape if neither `dimensions` nor `shape` are specified.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::IsEmpty());
-  }
-  {
-    // Allow passing `shape` without `dimensions`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setShape({3, 4, 5});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::ElementsAre(3, 4, 5));
-  }
-  {
-    // Allow passing `dimensions` without `shape`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({3, 4, 5});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::ElementsAre(3, 4, 5));
-  }
-  {
-    // Allow passing the same non-empty value for `shape` and `dimensions`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({3, 4, 5});
-    desc->setShape({3, 4, 5});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::ElementsAre(3, 4, 5));
-  }
-  {
-    // Disallow passing different non-empty values for `shape` and `dimensions`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({3, 4, 5});
-    desc->setShape({1, 2});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    EXPECT_THAT(input, testing::IsNull());
-  }
-}
-
 // Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.
 struct ArrayBufferViewHelper {
   size_t number_of_elements;
@@ -1430,46 +1358,6 @@ TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   ASSERT_THAT(ml_tensor, testing::NotNull());
   EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
   EXPECT_EQ(ml_tensor->shape(), desc->shape());
-}
-
-// Test that callers specifying `MLOperandDescriptor.dimensions` in place of
-// `MLOperandDescriptor.shape` will not break.
-//
-// TODO(crbug.com/365813262): Remove this test once
-// `MLOperandDescriptor.dimensions` is no longer supported.
-TEST_F(MLGraphTest, CreateWebNNTensorWithDimensionsTest) {
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  auto* options = MLContextOptions::Create();
-  // Create WebNN Context with GPU device type.
-  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
-  auto* script_state = scope.GetScriptState();
-
-  MLContext* ml_context = CreateContext(scope, options);
-
-  auto* desc = MLTensorDescriptor::Create();
-  desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-  // Set `dimensions` rather than `shape`.
-  desc->setDimensions({2, 2});
-
-  ScriptPromiseTester tensor_tester(
-      script_state,
-      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
-  tensor_tester.WaitUntilSettled();
-  EXPECT_TRUE(tensor_tester.IsFulfilled());
-
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
-  MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
-  ASSERT_THAT(ml_tensor, testing::NotNull());
-  EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
-  EXPECT_THAT(ml_tensor->shape(), testing::ElementsAre(2, 2));
 }
 
 TEST_F(MLGraphTest, WriteWebNNTensorTest) {

@@ -108,15 +108,6 @@ webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type);
 MODULES_EXPORT bool IsLogicalBinaryOperator(
     webnn::mojom::blink::ElementWiseBinary::Kind kind);
 
-// Allows a tensor's shape to be specified through either the
-// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
-// now to give callers the opportunity to migrate their code to use `shape`.
-//
-// TODO(crbug.com/365813262): Remove this function after about a milestone.
-MODULES_EXPORT base::expected<Vector<uint32_t>, std::string>
-GetShapeFromDescriptor(ScriptState* script_state,
-                       const MLOperandDescriptor& desc);
-
 MODULES_EXPORT void LogConsoleWarning(
     ScriptState* script_state,
     const String& message,

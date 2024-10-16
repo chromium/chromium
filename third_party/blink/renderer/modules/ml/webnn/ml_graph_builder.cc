@@ -1034,11 +1034,8 @@ MLOperand* MLGraphBuilder::input(ScriptState* script_state,
                                  ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
-  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
-      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *desc));
-
   auto input_operand = MLOperand::ValidateAndCreateInput(
-      this, desc->dataType().AsEnum(), std::move(shape), std::move(name));
+      this, desc->dataType().AsEnum(), desc->shape(), std::move(name));
   if (!input_operand.has_value()) {
     exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
@@ -1064,12 +1061,9 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
-      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *desc));
-
-  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor descriptor,
       webnn::OperandDescriptor::Create(
-          FromBlinkDataType(desc->dataType().AsEnum()), shape));
+          FromBlinkDataType(desc->dataType().AsEnum()), desc->shape()));
 
   if (GetArrayBufferViewType(descriptor.data_type()) !=
       buffer_view->GetType()) {
