@@ -307,7 +307,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarPhoneCleanup,
     &kTabGroupCreationDialogAndroid,
     &kTabGroupParityAndroid,
-    &kTabletTabSwitcherLongPressMenu,
     &kTabletToolbarReordering,
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
@@ -960,10 +959,6 @@ BASE_FEATURE(kTabGroupCreationDialogAndroid,
 
 BASE_FEATURE(kTabGroupParityAndroid,
              "TabGroupParityAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabletTabSwitcherLongPressMenu,
-             "TabletTabSwitcherLongPressMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabletToolbarReordering,
