@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
@@ -23,9 +24,12 @@ std::u16string GetTitle(
         IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING);
   }
   if (actions.size() == 1) {
+    std::u16string extension_name =
+        extensions::util::GetFixupExtensionNameForUIDisplay(
+            actions[0]->GetActionName());
     return l10n_util::GetStringFUTF16(
         IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_SINGLE_EXTENSION_TITLE,
-        actions[0]->GetActionName());
+        extension_name);
   }
   return l10n_util::GetStringUTF16(
       IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_MULTIPLE_EXTENSIONS_TITLE);
@@ -42,6 +46,7 @@ void ShowReloadPageDialog(
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser);
   DCHECK(container);
+  std::u16string title;
 
   ui::DialogModel::Builder dialog_builder;
   if (base::FeatureList::IsEnabled(
@@ -51,11 +56,7 @@ void ShowReloadPageDialog(
       actions.push_back(container->GetActionForId(extension_id));
     }
 
-    dialog_builder.SetTitle(GetTitle(actions))
-        .AddOkButton(base::BindOnce(std::move(callback)),
-                     ui::DialogModel::Button::Params().SetLabel(
-                         l10n_util::GetStringUTF16(
-                             IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
+    title = GetTitle(actions);
 
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
@@ -63,21 +64,23 @@ void ShowReloadPageDialog(
       dialog_builder.SetIcon(GetIcon(actions[0], web_contents));
     } else if (extension_ids.size() > 1) {
       for (auto* action : actions) {
+        std::u16string extension_name =
+            extensions::util::GetFixupExtensionNameForUIDisplay(
+                actions[0]->GetActionName());
         dialog_builder.AddMenuItem(
-            GetIcon(action, web_contents), action->GetActionName(),
-            base::DoNothing(),
+            GetIcon(action, web_contents), extension_name, base::DoNothing(),
             ui::DialogModelMenuItem::Params().SetIsEnabled(false));
       }
     }
   } else {
-    dialog_builder
-        .SetTitle(l10n_util::GetStringUTF16(
-            IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING))
-        .AddOkButton(base::BindOnce(std::move(callback)),
-                     ui::DialogModel::Button::Params().SetLabel(
-                         l10n_util::GetStringUTF16(
-                             IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
+    title = l10n_util::GetStringUTF16(
+        IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING);
   }
+
+  dialog_builder.SetTitle(title).AddOkButton(
+      base::BindOnce(std::move(callback)),
+      ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+          IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
 
   ShowDialog(container, extension_ids, dialog_builder.Build());
 }

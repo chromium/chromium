@@ -350,13 +350,17 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
 }
 
 std::u16string GetFixupExtensionNameForUIDisplay(
-    const std::string& extension_name) {
+    const std::u16string& extension_name) {
   const size_t extension_name_char_limit =
       75;  // Extension name char limit on CWS
   gfx::BreakType break_type = gfx::BreakType::CHARACTER_BREAK;
   std::u16string fixup_extension_name = gfx::TruncateString(
-      base::UTF8ToUTF16(extension_name), extension_name_char_limit, break_type);
+      extension_name, extension_name_char_limit, break_type);
   return fixup_extension_name;
+}
+std::u16string GetFixupExtensionNameForUIDisplay(
+    const std::string& extension_name) {
+  return GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(extension_name));
 }
 
 }  // namespace util
