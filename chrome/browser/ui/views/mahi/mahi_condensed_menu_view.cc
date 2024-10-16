@@ -111,10 +111,13 @@ END_METADATA
 
 MahiCondensedMenuView::MahiCondensedMenuView()
     : view_shadow_(std::make_unique<views::ViewShadow>(this, /*elevation=*/2)) {
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kMenuRadius);
+  view_shadow_->SetRoundedCornerRadius(corner_radius);
+
   SetUseDefaultFillLayout(true);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorSysSurface, views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                                views::ShapeContextTokens::kMenuRadius)));
+  SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface,
+                                                         corner_radius));
 
   menu_button_ = AddChildView(std::make_unique<MahiCondensedMenuButton>());
 }
