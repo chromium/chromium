@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/docking_promo_profile_agent.h"
+#import "ios/chrome/app/profile/docking_promo_profile_agent.h"
 
 #import <optional>
 
