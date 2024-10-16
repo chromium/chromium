@@ -1198,7 +1198,7 @@ void ScrollableShelfView::ScheduleScrollForItemDragIfNeeded(
 
   drag_item_bounds_in_screen_.emplace(item_bounds_in_screen);
   if (AreBoundsWithinVisibleSpace(*drag_item_bounds_in_screen_)) {
-    page_flip_timer_.AbandonAndStop();
+    page_flip_timer_.Stop();
     return;
   }
 
@@ -1210,7 +1210,7 @@ void ScrollableShelfView::ScheduleScrollForItemDragIfNeeded(
 void ScrollableShelfView::CancelScrollForItemDrag() {
   drag_item_bounds_in_screen_.reset();
   if (page_flip_timer_.IsRunning())
-    page_flip_timer_.AbandonAndStop();
+    page_flip_timer_.Stop();
 }
 
 void ScrollableShelfView::OnImplicitAnimationsCompleted() {

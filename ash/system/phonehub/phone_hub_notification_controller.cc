@@ -160,7 +160,7 @@ class PhoneHubAshNotificationView : public AshNotificationView {
 
   void EnableReplyButton() {
     reply_button_->SetEnabled(true);
-    enable_reply_timer_.AbandonAndStop();
+    enable_reply_timer_.Stop();
   }
 
  private:

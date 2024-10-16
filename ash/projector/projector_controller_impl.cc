@@ -227,7 +227,7 @@ void ProjectorControllerImpl::OnTranscriptionError() {
           : SpeechRecognitionEndState::kSpeechRecognitionEnounteredError;
   RecordSpeechRecognitionEndState(end_state, use_on_device_speech_recognition);
 
-  force_stop_recognition_timer_.AbandonAndStop();
+  force_stop_recognition_timer_.Stop();
 
   // TODO(b/261093550) Investigate the real reason why
   // we get a speech recognition error after we notify it to
@@ -264,7 +264,7 @@ void ProjectorControllerImpl::OnSpeechRecognitionStopped(bool forced) {
 
   // Try to wrap up recording. This can be no-op if DLP check is not completed.
   MaybeWrapUpRecording();
-  force_stop_recognition_timer_.AbandonAndStop();
+  force_stop_recognition_timer_.Stop();
 }
 
 NewScreencastPrecondition

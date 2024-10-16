@@ -138,7 +138,7 @@ class BackGestureContextualNudge::ContextualNudgeView
       // Cancel the animation if it's waiting to be shown.
       animation_stage_ = AnimationStage::kWaitingCancelled;
       DCHECK(show_timer_.IsRunning());
-      show_timer_.AbandonAndStop();
+      show_timer_.Stop();
       std::move(callback_).Run(/*animation_completed=*/false);
     } else if (animation_stage_ == AnimationStage::kSlidingIn ||
                animation_stage_ == AnimationStage::kBouncing ||
