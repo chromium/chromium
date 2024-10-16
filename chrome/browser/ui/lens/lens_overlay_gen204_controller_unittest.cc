@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/lens/core/mojom/lens.mojom-shared.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -23,6 +24,10 @@ namespace lens {
 // The gen204 id for testing.
 constexpr uint64_t kGen204Id = 0;
 
+// The test latency.
+constexpr base::TimeDelta kRequestLatency = base::Milliseconds(100);
+constexpr base::TimeDelta kClusterInfoLatency = base::Milliseconds(200);
+
 // The test invocation source.
 const lens::LensOverlayInvocationSource kInvocationSource =
     lens::LensOverlayInvocationSource::kAppMenu;
@@ -31,16 +36,25 @@ const lens::LensOverlayInvocationSource kInvocationSource =
 constexpr char kEncodedAnalyticsId[] = "test";
 
 // Query parameter keys.
+constexpr char kEncodedAnalyticsIdParameter[] = "cad";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kSemanticEventTimestampParameter[] = "zx";
 constexpr char kSemanticEventIdParameter[] = "rid";
+constexpr char kLatencyRequestTypeQueryParameter[] = "rt";
+constexpr char kUserActionIdParameter[] = "rcid";
 constexpr char kUserActionParameter[] = "uact";
+
+// Task completion ids.
+constexpr int kCopyAsImageTaskCompletionID = 233325;
+constexpr int kCopyTextTaskCompletionID = 198153;
+constexpr int kSaveAsImageTaskCompletionID = 233326;
+constexpr int kSelectTextTaskCompletionID = 198157;
+constexpr int kTranslateTaskCompletionID = 198158;
 
 // Semantic event ids.
 constexpr int kTextGleamsViewStartSemanticEventID = 234181;
 constexpr int kTextGleamsViewEndSemanticEventID = 234180;
 
-// TODO(crbug/369687023): Unit tests for latency and task completion events.
 class LensOverlayGen204ControllerMock : public LensOverlayGen204Controller {
  public:
   LensOverlayGen204ControllerMock() = default;
@@ -60,6 +74,33 @@ class LensOverlayGen204ControllerMock : public LensOverlayGen204Controller {
 
 class LensOverlayGen204ControllerTest : public testing::Test {
  public:
+  std::optional<lens::mojom::UserAction> GetTaskCompletionIdFromUrl(GURL url) {
+    std::string event_id_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kUserActionIdParameter,
+                                           &event_id_param));
+    int event_id;
+    base::StringToInt(event_id_param, &event_id);
+    switch (event_id) {
+      case kCopyAsImageTaskCompletionID:
+        return std::make_optional<lens::mojom::UserAction>(
+            lens::mojom::UserAction::kCopyAsImage);
+      case kCopyTextTaskCompletionID:
+        return std::make_optional<lens::mojom::UserAction>(
+            lens::mojom::UserAction::kCopyText);
+      case kSaveAsImageTaskCompletionID:
+        return std::make_optional<lens::mojom::UserAction>(
+            lens::mojom::UserAction::kSaveAsImage);
+      case kSelectTextTaskCompletionID:
+        return std::make_optional<lens::mojom::UserAction>(
+            lens::mojom::UserAction::kTextSelection);
+      case kTranslateTaskCompletionID:
+        return std::make_optional<lens::mojom::UserAction>(
+            lens::mojom::UserAction::kTranslateText);
+      default:
+        return std::nullopt;
+    }
+  }
+
   std::optional<lens::mojom::SemanticEvent> GetSemanticEventFromUrl(GURL url) {
     std::string event_id_param;
     EXPECT_TRUE(net::GetValueForKeyInQuery(url, kSemanticEventIdParameter,
@@ -93,6 +134,119 @@ class LensOverlayGen204ControllerTest : public testing::Test {
     profile_ = profile_builder.Build();
   }
 };
+
+TEST_F(LensOverlayGen204ControllerTest,
+       LatencyGen204IfEnabled_AttachesAllParams) {
+  auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
+  gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
+  gen204_controller->SendLatencyGen204IfEnabled(
+      kRequestLatency, /*cluster_info_latency=*/std::nullopt,
+      /*is_translate_query=*/false);
+
+  auto url = gen204_controller->last_url_sent_;
+
+  // Check that the gen204 id param is present.
+  std::string gen204_id_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kGen204IdentifierQueryParameter,
+                                         &gen204_id_param));
+
+  // Check that the request type param is present and contains the latency.
+  std::string request_type_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kLatencyRequestTypeQueryParameter,
+                                         &request_type_param));
+  ASSERT_EQ(request_type_param, "fpof.100");
+
+  ASSERT_EQ(gen204_controller->num_gen204s_sent_, 1);
+
+  // Send a translate query.
+  gen204_controller->SendLatencyGen204IfEnabled(
+      kRequestLatency, /*cluster_info_latency=*/std::nullopt,
+      /*is_translate_query=*/true);
+
+  // Check that the new request type param is present and contains the latency.
+  EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
+                                         kLatencyRequestTypeQueryParameter,
+                                         &request_type_param));
+  ASSERT_EQ(request_type_param, "fptf.100");
+
+  ASSERT_EQ(gen204_controller->num_gen204s_sent_, 2);
+
+  // Send an objects query with cluster info.
+  gen204_controller->SendLatencyGen204IfEnabled(
+      kRequestLatency,
+      std::make_optional<base::TimeDelta>(kClusterInfoLatency),
+      /*is_translate_query=*/false);
+
+  // Check that the new request type param is present and contains the latency.
+  EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
+                                         kLatencyRequestTypeQueryParameter,
+                                         &request_type_param));
+  ASSERT_EQ(request_type_param, "fpof.100,sct.200");
+
+  ASSERT_EQ(gen204_controller->num_gen204s_sent_, 3);
+}
+
+TEST_F(LensOverlayGen204ControllerTest,
+       TaskCompletionGen204IfEnabled_AttachesAllParams) {
+  auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
+  gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
+  gen204_controller->SendTaskCompletionGen204IfEnabled(
+      kEncodedAnalyticsId, lens::mojom::UserAction::kCopyText);
+
+  auto url = gen204_controller->last_url_sent_;
+  EXPECT_THAT(GetTaskCompletionIdFromUrl(url),
+              testing::Optional(lens::mojom::UserAction::kCopyText));
+
+  // Check for the uact param.
+  std::string uact_param;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(url, kUserActionParameter, &uact_param));
+  ASSERT_EQ(uact_param, "4");
+
+  // Check that the gen204 id param is present.
+  std::string gen204_id_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kGen204IdentifierQueryParameter,
+                                         &gen204_id_param));
+
+  // Check that the encoded analytics id param is correct.
+  std::string encoded_analytics_id_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kEncodedAnalyticsIdParameter,
+                                         &encoded_analytics_id_param));
+  EXPECT_EQ(encoded_analytics_id_param, kEncodedAnalyticsId);
+
+  ASSERT_EQ(gen204_controller->num_gen204s_sent_, 1);
+}
+
+TEST_F(LensOverlayGen204ControllerTest,
+       TaskCompletionGen204IfEnabled_AttachesCorrectEventId) {
+  auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
+  gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
+
+  gen204_controller->SendTaskCompletionGen204IfEnabled(
+      kEncodedAnalyticsId, lens::mojom::UserAction::kCopyText);
+  EXPECT_THAT(GetTaskCompletionIdFromUrl(gen204_controller->last_url_sent_),
+              testing::Optional(lens::mojom::UserAction::kCopyText));
+
+  gen204_controller->SendTaskCompletionGen204IfEnabled(
+      kEncodedAnalyticsId, lens::mojom::UserAction::kTranslateText);
+  EXPECT_THAT(GetTaskCompletionIdFromUrl(gen204_controller->last_url_sent_),
+              testing::Optional(lens::mojom::UserAction::kTranslateText));
+
+  gen204_controller->SendTaskCompletionGen204IfEnabled(
+      kEncodedAnalyticsId, lens::mojom::UserAction::kCopyAsImage);
+  EXPECT_THAT(GetTaskCompletionIdFromUrl(gen204_controller->last_url_sent_),
+              testing::Optional(lens::mojom::UserAction::kCopyAsImage));
+
+  gen204_controller->SendTaskCompletionGen204IfEnabled(
+      kEncodedAnalyticsId, lens::mojom::UserAction::kSaveAsImage);
+  EXPECT_THAT(GetTaskCompletionIdFromUrl(gen204_controller->last_url_sent_),
+              testing::Optional(lens::mojom::UserAction::kSaveAsImage));
+
+  gen204_controller->SendTaskCompletionGen204IfEnabled(
+      kEncodedAnalyticsId, lens::mojom::UserAction::kTextSelection);
+  EXPECT_THAT(GetTaskCompletionIdFromUrl(gen204_controller->last_url_sent_),
+              testing::Optional(lens::mojom::UserAction::kTextSelection));
+}
 
 TEST_F(LensOverlayGen204ControllerTest,
        SemanticEventGen204IfEnabled_OnQueryFlowEndSendsTextEndEvent) {
@@ -144,6 +298,24 @@ TEST_F(LensOverlayGen204ControllerTest,
                                          &gen204_id_param));
 
   ASSERT_EQ(gen204_controller->num_gen204s_sent_, 1);
+}
+
+TEST_F(LensOverlayGen204ControllerTest,
+       SemanticEventGen204IfEnabled_AttachesCorrectEventId) {
+  auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
+  gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
+
+  gen204_controller->SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent::kTextGleamsViewStart);
+  EXPECT_THAT(
+      GetSemanticEventFromUrl(gen204_controller->last_url_sent_),
+      testing::Optional(lens::mojom::SemanticEvent::kTextGleamsViewStart));
+
+  gen204_controller->SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent::kTextGleamsViewEnd);
+  EXPECT_THAT(
+      GetSemanticEventFromUrl(gen204_controller->last_url_sent_),
+      testing::Optional(lens::mojom::SemanticEvent::kTextGleamsViewEnd));
 }
 
 }  // namespace lens

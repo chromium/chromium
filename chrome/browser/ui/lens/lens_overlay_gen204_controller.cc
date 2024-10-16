@@ -39,9 +39,11 @@ constexpr int kTextGleamsViewStartSemanticEventID = 234181;
 constexpr int kTextGleamsViewEndSemanticEventID = 234180;
 
 // Query parameter keys.
+constexpr char kEncodedAnalyticsIdParameter[] = "cad";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
-constexpr char kRequestTypeQueryParameter[] = "rt";
+constexpr char kLatencyRequestTypeQueryParameter[] = "rt";
 constexpr char kSemanticEventIdParameter[] = "rid";
+constexpr char kUserActionIdParameter[] = "rcid";
 
 // Request type parameter values.
 constexpr char kFullPageObjectsFetchRequestType[] = "fpof";
@@ -123,14 +125,16 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
                   base::NumberToString(cluster_info_latency->InMilliseconds())
                       .c_str())
             : "";
+    // PRIu64 and PRId64 are macros for formatting uint64_t and int64_t
+    // respectively, allowing us to bypass using NumberToString.
     std::string query = base::StringPrintf(
-        "gen_204?atyp=csi&%s=%s&%s=%s.%s%s&s=web",
-        kGen204IdentifierQueryParameter,
-        base::NumberToString(gen204_id_).c_str(), kRequestTypeQueryParameter,
+        "gen_204?atyp=csi&%s=%" PRIu64 "&%s=%s.%" PRId64 "%s&s=web",
+        kGen204IdentifierQueryParameter, gen204_id_,
+        kLatencyRequestTypeQueryParameter,
         is_translate_query ? kFullPageTranslateFetchRequestType
                            : kFullPageObjectsFetchRequestType,
-        base::NumberToString(full_image_latency.InMilliseconds()).c_str(),
-        cluster_info_latency_string.c_str());
+        full_image_latency.InMilliseconds(),
+        cluster_info_latency_string);
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
                               .GoogleBaseURLValue())
@@ -169,9 +173,9 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
         return;
     }
     std::string query = base::StringPrintf(
-        "gen_204?uact=4&%s=%s&rcid=%d&cad=%s", kGen204IdentifierQueryParameter,
-        base::NumberToString(gen204_id_).c_str(), task_id,
-        encoded_analytics_id.c_str());
+        "gen_204?uact=4&%s=%" PRIu64 "&%s=%d&%s=%s",
+        kGen204IdentifierQueryParameter, gen204_id_, kUserActionIdParameter,
+        task_id, kEncodedAnalyticsIdParameter, encoded_analytics_id.c_str());
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
                               .GoogleBaseURLValue())
