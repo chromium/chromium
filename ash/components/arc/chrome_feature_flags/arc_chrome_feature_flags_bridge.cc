@@ -77,8 +77,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   }
   mojom::FeatureFlagsPtr flags = mojom::FeatureFlags::New();
   flags->jelly_colors = true;
-  flags->touchscreen_emulation =
-      base::FeatureList::IsEnabled(kTouchscreenEmulation);
+  flags->touchscreen_emulation = true;
   flags->rounded_window_compat_strategy =
       base::FeatureList::IsEnabled(arc::kRoundedWindowCompat)
           ? static_cast<mojom::RoundedWindowCompatStrategy>(

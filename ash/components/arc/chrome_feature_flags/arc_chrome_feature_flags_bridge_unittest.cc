@@ -70,18 +70,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly) {
   EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(kTouchscreenEmulation);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->touchscreen_emulation);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(kTouchscreenEmulation);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->touchscreen_emulation);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(kRoundedWindowCompat);
   Connect();

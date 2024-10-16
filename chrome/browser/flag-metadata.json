@@ -389,11 +389,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "arc-touchscreen-emulation",
-    "owners": [ "yhanada@chromium.org" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "arc-unthrottle-on-active-audio-v2",
     "owners": [ "pteerapong@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 140
