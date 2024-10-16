@@ -149,7 +149,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
     }
 
     @Test
@@ -164,7 +164,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
     }
 
     @Test
@@ -254,7 +254,10 @@ public class SigninAndHistorySyncIntegrationTest {
                                                                         .AADC_ADULT_ACCOUNT
                                                                         .getEmail()))))));
 
-        onView(allOf(withId(R.id.button_secondary), isCompletelyDisplayed())).perform(click());
+        // Dismiss history sync.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_secondary), /* checkRootDialog= */ true).perform(click());
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -274,7 +277,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 HistoryOptInMode.OPTIONAL);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
     }
 
     @Test
