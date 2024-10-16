@@ -289,7 +289,7 @@ source->AddBoolean("showDateRanges",
     base::FeatureList::IsEnabled(features::kHistoryShowDateRanges));
 
 webui::SetupWebUIDataSource(
-    source, base::make_span(kHistoryResources, kHistoryResourcesSize),
+    source, base::span<const webui::ResourcePath>(kHistoryResources),
     kGeneratedPath, IDR_HISTORY_HISTORY_HTML);
 ```
 
@@ -411,7 +411,7 @@ resource map can be added as follows:
 
 ```c++
   source->AddResourcePaths(
-      base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize));
+      base::span<const webui::ResourcePath>(kPrintPreviewResources),
 ```
 
 ### WebUIDataSource::AddBoolean()
