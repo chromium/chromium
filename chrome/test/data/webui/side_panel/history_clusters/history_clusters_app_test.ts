@@ -214,4 +214,58 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     await app.updateComplete;
     assertFalse(embeddingsComponent.otherHistoryResultClicked);
   });
+
+  test('CountsCharacters', async () => {
+    const embeddingsComponent = await forceEmbeddingsComponent();
+    assertTrue(!!embeddingsComponent);
+    assertEquals(0, embeddingsComponent.numCharsForQuery);
+
+    function dispatchNativeInput(
+        inputEvent: Partial<InputEvent>, inputValue: string) {
+      app.$.searchbox.dispatchEvent(
+          new CustomEvent('search-term-native-input', {
+            detail: {e: inputEvent, inputValue},
+            composed: true,
+            bubbles: true,
+          }));
+    }
+
+    dispatchNativeInput({data: 'a'}, 'a');
+    await app.updateComplete;
+    assertEquals(
+        1, embeddingsComponent.numCharsForQuery, 'counts normal characters');
+    dispatchNativeInput({data: 'b'}, 'ab');
+    dispatchNativeInput({data: 'c'}, 'abc');
+    await app.updateComplete;
+    assertEquals(
+        3, embeddingsComponent.numCharsForQuery,
+        'counts additional characters');
+
+    dispatchNativeInput({data: 'pasted text'}, 'pasted text');
+    await app.updateComplete;
+    assertEquals(
+        1, embeddingsComponent.numCharsForQuery,
+        'insert that replaces all text counts as 1');
+
+    dispatchNativeInput({data: 'more text'}, 'pasted text more text');
+    await app.updateComplete;
+    assertEquals(
+        2, embeddingsComponent.numCharsForQuery,
+        'insert that adds to existing input increments count');
+
+    dispatchNativeInput({data: null}, 'pasted text more tex');
+    await app.updateComplete;
+    assertEquals(
+        3, embeddingsComponent.numCharsForQuery, 'deletion increments');
+
+    dispatchNativeInput({data: null}, '');
+    await app.updateComplete;
+    assertEquals(
+        0, embeddingsComponent.numCharsForQuery,
+        'deletion of entire input resets counter');
+
+    app.$.searchbox.dispatchEvent(new CustomEvent('search-term-cleared'));
+    await app.updateComplete;
+    assertEquals(0, embeddingsComponent.numCharsForQuery, 'resets on clear');
+  });
 });

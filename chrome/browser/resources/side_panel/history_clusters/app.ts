@@ -50,6 +50,8 @@ export class HistoryClustersAppElement extends CrLitElement {
 
       nonEmbeddingsResultClicked_: {type: Boolean},
 
+      numCharsTypedInSearch_: {type: Number},
+
       /**
        * The current query for which related clusters are requested and shown.
        */
@@ -75,6 +77,7 @@ export class HistoryClustersAppElement extends CrLitElement {
   protected historyEmbeddingsDisclaimerLinkClicked_ = false;
   query: string = '';
   protected nonEmbeddingsResultClicked_: boolean = false;
+  protected numCharsTypedInSearch_: number = 0;
   protected scrollTarget_?: HTMLElement;
   protected searchIcon_?: string;
 
@@ -175,6 +178,34 @@ export class HistoryClustersAppElement extends CrLitElement {
 
   protected onClusterLinkClick_() {
     this.nonEmbeddingsResultClicked_ = true;
+  }
+
+  protected onSearchCleared_() {
+    if (!this.enableHistoryEmbeddings_) {
+      return;
+    }
+
+    this.numCharsTypedInSearch_ = 0;
+  }
+
+  protected onSearchNativeInput_(
+      e: CustomEvent<{e: InputEvent, inputValue: string}>) {
+    if (!this.enableHistoryEmbeddings_) {
+      return;
+    }
+
+    if (e.detail.inputValue.length === 0) {
+      // Input was cleared (eg. backspace/delete was hit).
+      this.numCharsTypedInSearch_ = 0;
+    } else if (e.detail.e.data === e.detail.inputValue) {
+      // If the inserted text matches exactly with the current value of the
+      // input, that implies that the previous input value was cleared or
+      // was empty to begin with. So, reset the num chars typed and count this
+      // input event as 1 char typed.
+      this.numCharsTypedInSearch_ = 1;
+    } else {
+      this.numCharsTypedInSearch_++;
+    }
   }
 
   protected shouldShowHistoryEmbeddingsResults_(): boolean {

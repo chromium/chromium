@@ -495,6 +495,25 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertEquals(21, numChars);
     });
 
+    test('SendsQualityLogOnVisibilityChange', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+      // Remove and re-add element to call connectedCallback again.
+      element.remove();
+      element.inSidePanel = true;
+      document.body.appendChild(element);
+      await flushTasks();
+
+      Object.defineProperty(
+          document, 'visibilityState', {value: 'hidden', writable: true});
+      document.dispatchEvent(new CustomEvent('visibilitychange'));
+      const [clickedIndices, numChars] =
+          await handler.whenCalled('sendQualityLog');
+      assertDeepEquals([], clickedIndices);
+      assertEquals(21, numChars);
+    });
+
     test('ForceFlushesQualityLogOnBeforeUnload', async () => {
       if (!enableAnswers) {
         return;

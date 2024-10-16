@@ -127,6 +127,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       },
       showRelativeTimes: {type: Boolean, value: false},
       otherHistoryResultClicked: {type: Boolean, value: false},
+      inSidePanel: {type: Boolean, value: false},
     };
   }
 
@@ -174,6 +175,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   showRelativeTimes: boolean = false;
   showMoreFromSiteMenuOption: boolean = false;
   otherHistoryResultClicked: boolean = false;
+  inSidePanel: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -182,6 +184,15 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       // closing the tab or navigating to another URL.
       this.flushDebouncedUserMetrics_(/* forceFlush= */ true);
     });
+    if (this.inSidePanel) {
+      // Side panel UI does not fire 'beforeunload' events. Instead, the
+      // visibilityState is changed when the side panel is closed.
+      this.eventTracker_.add(document, 'visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          this.flushDebouncedUserMetrics_();
+        }
+      });
+    }
     this.searchResultChangedId_ =
         this.browserProxy_.callbackRouter.searchResultChanged.addListener(
             this.searchResultChanged_.bind(this));
