@@ -61,14 +61,6 @@ void RecordDriveUploadProtocol(DriveUploadProtocol protocol) {
                             UPLOAD_METHOD_MAX_VALUE);
 }
 
-// Wrapper around base::GetFileSize(), as it is currently overloaded, so
-// base::BindOnce() cannot figure out which version to use.
-// TODO(crbug.com/371234479): Remove this after removing the deprecated version
-// of base::GetFileSize().
-std::optional<int64_t> GetFileSizeWrapper(const base::FilePath& file_path) {
-  return base::GetFileSize(file_path);
-}
-
 }  // namespace
 
 // Refcounted helper class to manage batch request. DriveUploader uses the class
@@ -276,7 +268,7 @@ CancelCallbackOnce DriveUploader::StartUploadFile(
 
   UploadFileInfo* info_ptr = upload_file_info.get();
   blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetFileSizeWrapper, info_ptr->file_path),
+      FROM_HERE, base::GetFileSizeCallback(info_ptr->file_path),
       base::BindOnce(&DriveUploader::StartUploadFileAfterGetFileSize,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(upload_file_info),
