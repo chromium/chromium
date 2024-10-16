@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -95,7 +96,7 @@ void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
 void CameraRollThumbnail::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   phone_hub_metrics::LogCameraRollContentClicked(index_, GetMediaType());
   menu_runner_ = std::make_unique<views::MenuRunner>(
       GetMenuModel(), views::MenuRunner::CONTEXT_MENU |
@@ -103,7 +104,7 @@ void CameraRollThumbnail::ShowContextMenuForViewImpl(
                           views::MenuRunner::USE_ASH_SYS_UI_LAYOUT);
   menu_runner_->RunMenuAt(GetWidget(), button_controller(), GetBoundsInScreen(),
                           views::MenuAnchorPosition::kBubbleTopRight,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 void CameraRollThumbnail::ButtonPressed() {

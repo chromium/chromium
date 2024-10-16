@@ -36,6 +36,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -433,7 +434,7 @@ void HoldingSpaceViewDelegate::UpdateTrayVisibility() {
 void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // In touch mode, gesture events continue to be sent to holding space views
   // after showing the context menu so that it can be aborted if the user
   // initiates a drag sequence. This means both `ui::EventType::kGestureLongTap`
@@ -451,7 +452,7 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
   // In order to determine if the gesture resulting in this context menu being
   // shown was actually the start of a drag sequence, holding space views will
   // have to receive events that would otherwise be consumed by the `MenuHost`.
-  if (source_type == ui::MENU_SOURCE_TOUCH) {
+  if (source_type == ui::mojom::MenuSourceType::kTouch) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 
