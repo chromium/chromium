@@ -153,16 +153,24 @@ class Type:
       # TODO(crbug.com/340297705): We should verify this ref name is actually a
       # custom type we have parsed from the IDL.
       properties['$ref'] = type_details.GetName()
+    elif type_details.IsA('Undefined'):
+      # Similar to void types, we just return None for 'undefined' and let the
+      # caller handle that.
+      return None
     elif type_details.IsA('Promise'):
       properties['type'] = 'promise'
       # Promise types also have an associated type they resolve with. We
       # represent this similar to how we represent arguments for Operations,
       # with 'parameters' list that has a single entry for the type.
-      # TODO(crbug.com/340297705): Add support for Promise<undefined>.
       promise_type = Type(type_details).process()
-      # The Promise type node name is always "Promise", so we remove it.
-      del promise_type['name']
-      properties['parameters'] = [promise_type]
+      if promise_type is None:
+        # Promise type was 'undefined', which we represent as an empty list.
+        properties['parameters'] = []
+      else:
+        # The node name for Promise type nodes is always "Promise", so we just
+        # remove it.
+        del promise_type['name']
+        properties['parameters'] = [promise_type]
     else:
       raise SchemaCompilerError('Unsupported type class when processing type.',
                                 type_details)

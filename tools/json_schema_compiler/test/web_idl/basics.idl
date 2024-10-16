@@ -35,6 +35,7 @@ interface TestWebIdl {
   static Promise<DOMString> stringPromiseReturn();
   static Promise<DOMString?> nullablePromiseReturn();
   static Promise<ExampleType> customTypePromiseReturn();
+  static Promise<undefined> undefinedPromiseReturn();
 };
 
 partial interface Browser {

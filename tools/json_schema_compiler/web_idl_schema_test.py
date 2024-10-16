@@ -112,6 +112,12 @@ class WebIdlSchemaTest(unittest.TestCase):
             }],
             'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'customTypePromiseReturn'))
+    self.assertEqual({
+        'name': 'callback',
+        'parameters': [],
+        'type': 'promise'
+    }, getFunctionAsyncReturn(schema, 'undefinedPromiseReturn'))
+
 
 
   # Tests function parameters are processed as expected.
