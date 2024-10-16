@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Erabili gezi-teklak kontrolatzeko aukera hau nahi duzun joko-ekintzara eramateko. Erabili "Sartu" tekla kontrolatzeko aukera kokatzeko. Erabili "Ihes" tekla bertan behera uzteko.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="1175951029573070619">Normala (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pausatu</translation>
 <translation id="1180621378971766337">eroso</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1191518099344003522">APNa gaituta dago.</translation>
@@ -129,7 +130,7 @@
 <translation id="1567064801249837505">Albumak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
 <translation id="1578784163189013834">Aukeratu pantaila-babeslearen atzeko planoa</translation>
-<translation id="1587031308639983732">Baliteke orduaren araberako aldaketak zehatzak ez izatea. Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="1587031308639983732">Baliteke orduaren araberako aldaketak zehatzak ez izatea. Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="1588438908519853928">Arrunta</translation>
 <translation id="1591562245178063882">Oraingo hilabetea</translation>
 <translation id="1593528591614229756">Ziurtatu zure operadoreak edo administratzaileak eskaintzen dituen APNak hautatzen dituzula. APN bat hautatzean APN pertsonalizatuak desgaituko dira. Baliteke balio ez duten APNek mugikorreko konexioan eragitea. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -549,7 +550,7 @@
 <translation id="3780740315729837296">Esleitu teklatuko tekla bat</translation>
 <translation id="3784455785234192852">Blokeatu</translation>
 <translation id="3785643128701396311">pixel-artea</translation>
-<translation id="3799381533888781854">Desaktibatuta. Administratzaileak kudeatzen du ezarpena.</translation>
+<translation id="3799381533888781854">Desaktibatuta. Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="380097101658023925">RGB koloreak kontrolatzeko aukerak</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4594021849294327751">Sortu transkripzioa</translation>
-<translation id="4602266091140407479">Mikrofonoa</translation>
 <translation id="4607282946861182308">Ezin da sortu horren irudirik. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
 <translation id="4623061655523261501">Sortu dira grabaketen izenak</translation>
@@ -1462,12 +1462,12 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8183975772394450380">Hondartza</translation>
 <translation id="819278132617411009">Erabili Google-ren AA produktibitatea handitzeko</translation>
+<translation id="8200772114523450471">Berrekin</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8208861521865154048">Abantailak</translation>
 <translation id="8226628635270268143">Aukeratu gogoko dituzun argazki eta albumak</translation>
 <translation id="8227119283605456246">Erantsi fitxategia</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
-<translation id="8236972776513018241">Transkripzioa</translation>
 <translation id="8238771987802558562">Aukeratu APN bat</translation>
 <translation id="8246209727385807362">Operadore ezezaguna</translation>
 <translation id="8250926778281121244">herdoil-koloreko</translation>
@@ -1594,7 +1594,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8864415976656252616">Ez dago iradokitako edukirik. Ikusi laguntza-eduki nagusia.</translation>
 <translation id="8868741746785112895">GUIDa</translation>
 <translation id="8876270629542503161">Gailua tableta bat da.</translation>
-<translation id="8878117140814294155">Aktibatu edo desaktibatu mikrofonoaren audioa</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>
 <translation id="8882789155418924367">hontzak</translation>
 <translation id="8892443466059986410">Utzi lasterbideak editatzeari</translation>

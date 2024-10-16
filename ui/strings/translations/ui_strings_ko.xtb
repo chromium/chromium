@@ -224,6 +224,7 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1초}other{#초}}</translation>
 <translation id="9059834730836941392">알림 접기</translation>
 <translation id="9170848237812810038">실행 취소(&amp;U)</translation>
+<translation id="9195990613383871904">내일</translation>
 <translation id="932327136139879170">홈</translation>
 <translation id="944069440740578670">읽지 않은 알림</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1초 전}other{#초 전}}</translation>

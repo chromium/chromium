@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Usa las teclas de flecha para mover este control a la acción del juego que quieras. Usa la tecla Intro para colocar el control. Usa la tecla Escape para cancelar.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Promedio (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Detener</translation>
 <translation id="1180621378971766337">agradable</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1191518099344003522">El APN está habilitado.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">no se pudieron resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación proxy.</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
-<translation id="4602266091140407479">Micrófono</translation>
 <translation id="4607282946861182308">No se pueden crear imágenes con esta instrucción. Prueba otra.</translation>
 <translation id="4609350030397390689">Disminuir el brillo del teclado</translation>
 <translation id="4623061655523261501">Se generaron correctamente los nombres de las grabaciones</translation>
@@ -1462,12 +1462,12 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">una playa</translation>
 <translation id="819278132617411009">Usa la IA de Google para aumentar tu productividad</translation>
+<translation id="8200772114523450471">Reanudar</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Beneficios</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
 <translation id="8230672074305416752">no se pudo hacer ping en la puerta de enlace de la red predeterminada</translation>
-<translation id="8236972776513018241">Transcripción</translation>
 <translation id="8238771987802558562">Elegir un APN</translation>
 <translation id="8246209727385807362">El proveedor es desconocido</translation>
 <translation id="8250926778281121244">óxido</translation>
@@ -1594,7 +1594,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8864415976656252616">No hay contenido sugerido. Consulta el contenido de ayuda principal.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositivo es una tablet.</translation>
-<translation id="8878117140814294155">Activar o desactivar la opción para silenciar el micrófono</translation>
 <translation id="8881098542468797602">Se completó correctamente la prueba</translation>
 <translation id="8882789155418924367">búhos</translation>
 <translation id="8892443466059986410">Cancelar la edición de combinaciones de teclas</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Gunakan tombol panah untuk memindahkan kontrol ini ke tindakan game yang Anda inginkan. Gunakan tombol enter untuk menempatkan kontrol. Gunakan tombol escape untuk membatalkan.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Standar (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Jeda</translation>
 <translation id="1180621378971766337">nyaman</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1191518099344003522">APN diaktifkan.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat gambar ini. Coba perintah lain.</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
 <translation id="4623061655523261501">Nama rekaman berhasil dibuat</translation>
@@ -1462,12 +1462,12 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pantai</translation>
 <translation id="819278132617411009">Gunakan Google AI untuk meningkatkan produktivitas</translation>
+<translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
-<translation id="8236972776513018241">Transkrip</translation>
 <translation id="8238771987802558562">Pilih APN</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
 <translation id="8250926778281121244">cokelat</translation>
@@ -1594,7 +1594,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8864415976656252616">Tidak ada konten yang disarankan. Lihat konten bantuan teratas.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Perangkat adalah tablet.</translation>
-<translation id="8878117140814294155">Aktifkan/nonaktifkan bisukan di mikrofon</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8882789155418924367">burung hantu</translation>
 <translation id="8892443466059986410">Batalkan pengeditan pintasan</translation>

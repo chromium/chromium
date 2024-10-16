@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Utiliser les touches fléchées pour déplacer cette commande vers l'action de jeu souhaitée. Utiliser la touche Entrée pour passer la commande. Utiliser la touche Échap. pour annuler.</translation>
 <translation id="1175697296044146566">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Moyen (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Interrompre</translation>
 <translation id="1180621378971766337">chaleureux</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1191518099344003522">Le nom de point d'accès est activé.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
-<translation id="4602266091140407479">Micro</translation>
 <translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez une autre requête.</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
 <translation id="4623061655523261501">Les noms d'enregistrement ont été générés</translation>
@@ -1462,12 +1462,12 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="819278132617411009">Utiliser l'IA de Google pour être plus productif</translation>
+<translation id="8200772114523450471">Reprendre</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Sélectionner vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
-<translation id="8236972776513018241">Transcription</translation>
 <translation id="8238771987802558562">Choisir un nom de point d'accès</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
 <translation id="8250926778281121244">rouille</translation>
@@ -1594,7 +1594,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8864415976656252616">Aucun contenu suggéré. Voir le contenu d'aide le plus populaire.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">L'appareil est une tablette.</translation>
-<translation id="8878117140814294155">Activer/désactiver le microphone</translation>
 <translation id="8881098542468797602">Test réussi</translation>
 <translation id="8882789155418924367">hiboux</translation>
 <translation id="8892443466059986410">Annuler la modification du raccourci</translation>

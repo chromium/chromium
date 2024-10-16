@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="1545749641540134597">Сканувати QR-код</translation>
 <translation id="1554477036522844996">Нове вікно</translation>
+<translation id="1558391695376153246">Закрити анонімні вкладки</translation>
 <translation id="1571780780926010134">Анонімні вкладки</translation>
 <translation id="1580715474678097352">Захист від небезпечних веб-сайтів</translation>
 <translation id="1580783302095112590">Лист надіслано.</translation>
@@ -411,6 +412,7 @@
 <translation id="288655811176831528">Закрити вкладку</translation>
 <translation id="2888631381369839306">Сповіщення про відстеження цін увімкнено</translation>
 <translation id="288902476966286676">Повернення відправнику</translation>
+<translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="2905479111267140204">У вас є повторно використані паролі (<ph name="NUMBER_OF_PASSWORDS" />), які можуть загрожувати вашій безпеці.</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="2918688092312652908">Позначити як непрочитане</translation>
@@ -445,7 +447,6 @@
 Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="3080525922482950719">Зберігайте сторінки, щоб читати їх пізніше або в режимі офлайн</translation>
 <translation id="3081338492074632642">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
-<translation id="30842332047348094">Кредитні картки</translation>
 <translation id="3087734570205094154">Низ</translation>
 <translation id="309710370695886264">У вас є 1 повторно використаний пароль. Змініть його, щоб захистити свої дані.</translation>
 <translation id="3102139268911534961">Користуйтесь усіма перевагами улюбленого мобільного вебпереглядача на iPhone.</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861908220442487587">Адресу збережено лише на цьому пристрої. Щоб використовувати адресу на інших пристроях, перенесіть її у свій обліковий запис Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3868495844258915202">Показати повну URL-адресу</translation>
+<translation id="3875783148670536197">Докладніше</translation>
 <translation id="3876833929577368454">Запитувати щоразу</translation>
 <translation id="3885587018298784481">Приєднайтеся до сімейної групи</translation>
 <translation id="3888863481921783344">Ці дані застосовуватимуться, щоб показувати вам користувачів, яких можна запросити на подію.</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">Пошук за допомогою Об’єктива</translation>
 <translation id="6231782223312638214">Пропозиції</translation>
 <translation id="6232329973559504466">Пошук в анонімному режимі</translation>
+<translation id="6234310016144827337">Перевірте з’єднання й повторіть спробу</translation>
 <translation id="6234438496206735891">Показати завантаження</translation>
 <translation id="6236952928980352967">Відновити попередження</translation>
 <translation id="6247557882553405851">Google Менеджер паролів</translation>
@@ -1538,7 +1541,6 @@
 <translation id="8157532349231307196">Облікових записів: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Розблокувати за допомогою такого методу автентифікації: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Довжина</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для веб-сайту {website_1}}=2{Для веб-сайтів {website_1} і {website_2}}=3{Для {website_1}, {website_2} і ще 1 веб-сайту}one{Для {website_1}, {website_2} і ще {more_count} веб-сайту}few{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}many{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}other{Для {website_1}, {website_2} і ще {more_count} веб-сайту}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додати пароль</translation>
@@ -1634,6 +1636,7 @@
 <translation id="8609743333007776886">Додати ${url} у закладки</translation>
 <translation id="8620640915598389714">Редагувати</translation>
 <translation id="8625706492572042370">Редагувати головний екран</translation>
+<translation id="8633025649649592204">Останні дії</translation>
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="8637431369725868556">Захистіть себе від небезпечних сайтів.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
@@ -1772,6 +1775,7 @@
 <translation id="9183733013282108610">Пошук в анонімному режимі</translation>
 <translation id="9186762474139509529">Почати запис у журналі</translation>
 <translation id="9191031968346938109">Додати в…</translation>
+<translation id="9196007736149429065">Не вдалося відкрити цей файл</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Щоб налаштувати веб-перегляд, ви можете перемістити адресний рядок згори вниз.</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">‏اس کنٹرول کو اپنے مطلوبہ گیم ایکشن میں منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں۔ کنٹرول رکھنے کے لیے انٹر کلید کا استعمال کریں۔ منسوخ کرنے کے لیے Escape کلید استعمال کریں۔</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> اس <ph name="DEVICE_TYPE" /> کا نظم کرتا ہے۔</translation>
 <translation id="1175951029573070619">اوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1180621378971766337">پرسہولت</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1191518099344003522">‏APN فعال ہے۔</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4594021849294327751">ٹرانسکرپٹ بنائیں</translation>
-<translation id="4602266091140407479">مائیک</translation>
 <translation id="4607282946861182308">اس کی تصاویر نہیں بنا سکتے۔ کوئی اور پرامپٹ آزمائیں۔</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
 <translation id="4623061655523261501">ریکارڈنگ کے نام کامیابی کے ساتھ تخلیق ہو گئے</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8183975772394450380">ساحل</translation>
 <translation id="819278132617411009">‏مزید پروڈکٹیو بننے کے لیے Google AI کا استعمال کریں</translation>
+<translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8206859287963243715">سیلولر</translation>
 <translation id="8208861521865154048">فوائد</translation>
 <translation id="8226628635270268143">اپنی پسندیدہ تصاویر اور البمز منتخب کریں</translation>
 <translation id="8227119283605456246">فائل منسلک کریں</translation>
 <translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
-<translation id="8236972776513018241">ٹرانسکرپٹ</translation>
 <translation id="8238771987802558562">‏ایک APN منتخب کریں</translation>
 <translation id="8246209727385807362">نامعلوم کیریئر</translation>
 <translation id="8250926778281121244">زنگ</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">کوئی تجویز کردہ مواد نہیں ہے۔ سرفہرست مددگار مواد دیکھیں۔</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">آلہ ایک ٹیبلیٹ ہے۔</translation>
-<translation id="8878117140814294155">مائیکروفون پر خاموش کریں بٹن کو ٹوگل کریں</translation>
 <translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>
 <translation id="8882789155418924367">الو</translation>
 <translation id="8892443466059986410">شارٹ کٹ ترمیم کو منسوخ کریں</translation>

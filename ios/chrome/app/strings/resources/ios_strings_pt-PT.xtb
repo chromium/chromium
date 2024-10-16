@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">Morada 1</translation>
 <translation id="1545749641540134597">Ler código QR</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1571780780926010134">Separadores de navegação anónima</translation>
 <translation id="1580715474678097352">Obtenha proteção contra Websites perigosos.</translation>
 <translation id="1580783302095112590">Correio enviado.</translation>
@@ -411,6 +412,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="288655811176831528">Fechar separador</translation>
 <translation id="2888631381369839306">Notificações de acompanhamento de preço ativadas</translation>
 <translation id="288902476966286676">Devolver ao remetente</translation>
+<translation id="2894757982205307093">Novo separador no grupo</translation>
 <translation id="2905479111267140204">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe reutilizadas que podem pôr a sua segurança em risco.</translation>
 <translation id="291754862089661335">Posicione o código QR ou o código de barras nesta moldura</translation>
 <translation id="2918688092312652908">Marcar como não lida</translation>
@@ -445,7 +447,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas.</translation>
 <translation id="3080525922482950719">Pode guardar páginas para ler mais tarde ou offline.</translation>
 <translation id="3081338492074632642">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="WEBSITE" />.</translation>
-<translation id="30842332047348094">Cartões de crédito</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="3102139268911534961">Tire o máximo partido do navegador para dispositivos móveis que conhece e adora no seu iPhone.</translation>
@@ -590,6 +591,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861908220442487587">Este endereço só é guardado neste dispositivo. Para usá-lo nos seus outros dispositivos, mova-o para a sua Conta Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
+<translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3876833929577368454">Perguntar-me sempre</translation>
 <translation id="3885587018298784481">Adira a um grupo familiar</translation>
 <translation id="3888863481921783344">Isto vai ser usado para lhe mostrar possíveis convidados para o seu evento.</translation>
@@ -1103,6 +1105,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6227126502342367214">Pesquisa com a câmara do Lens</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6232329973559504466">Pesquisa na Navegação anónima</translation>
+<translation id="6234310016144827337">Verifique a ligação e tente novamente</translation>
 <translation id="6234438496206735891">Mostrar transferências</translation>
 <translation id="6236952928980352967">Restaurar aviso</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
@@ -1538,7 +1541,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8161614462829037225">Desbloquear com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Comprimento</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{De {website_1}}=2{De {website_1}, {website_2}}=3{De {website_1}, {website_2} e mais 1}other{De {website_1}, {website_2} e mais {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Adicione uma palavra-passe</translation>
@@ -1634,6 +1636,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8609743333007776886">Adicione ${url} aos marcadores</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8625706492572042370">Edite o ecrã principal</translation>
+<translation id="8633025649649592204">Atividade recente</translation>
 <translation id="8636825310635137004">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma palavra-passe comprometida}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>

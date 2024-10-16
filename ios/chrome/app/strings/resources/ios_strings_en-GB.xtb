@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1554477036522844996">New window</translation>
+<translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="1571780780926010134">Incognito tabs</translation>
 <translation id="1580715474678097352">Stay protected from dangerous websites</translation>
 <translation id="1580783302095112590">Mail sent.</translation>
@@ -411,6 +412,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2888631381369839306">Price tracking notifications turned on</translation>
 <translation id="288902476966286676">Return to sender</translation>
+<translation id="2894757982205307093">New tab in group</translation>
 <translation id="2905479111267140204">You have <ph name="NUMBER_OF_PASSWORDS" /> reused passwords that could put your security at risk.</translation>
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2918688092312652908">Mark as unread</translation>
@@ -445,7 +447,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
-<translation id="30842332047348094">Credit cards</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="309710370695886264">You have one reused password. Fix it now to stay safe.</translation>
 <translation id="3102139268911534961">Get the best from the mobile browser that you know and love on your iPhone.</translation>
@@ -590,6 +591,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861908220442487587">This address is only saved on this device. To use it on your other devices, move it to your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Show full URL</translation>
+<translation id="3875783148670536197">Show me how</translation>
 <translation id="3876833929577368454">Ask me every time</translation>
 <translation id="3885587018298784481">Join a family group</translation>
 <translation id="3888863481921783344">This will be used to show you possible invitees to your event.</translation>
@@ -1103,6 +1105,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6227126502342367214">Lens camera search</translation>
 <translation id="6231782223312638214">Suggested</translation>
 <translation id="6232329973559504466">Incognito search</translation>
+<translation id="6234310016144827337">Check your connection and try again</translation>
 <translation id="6234438496206735891">Show downloads</translation>
 <translation id="6236952928980352967">Restore warning</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -1538,7 +1541,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8161614462829037225">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Length</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1}, {website_2}}=3{For {website_1}, {website_2}, and one more}other{For {website_1}, {website_2}, and {more_count} more}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Add password</translation>
@@ -1634,6 +1636,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8609743333007776886">Add ${url} to bookmarks</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8625706492572042370">Edit Home screen</translation>
+<translation id="8633025649649592204">Recent activity</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
@@ -1772,6 +1775,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9183733013282108610">Incognito search</translation>
 <translation id="9186762474139509529">Start logging</translation>
 <translation id="9191031968346938109">Add to…</translation>
+<translation id="9196007736149429065">This file couldn't be opened</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Switch your address bar from the top to the bottom for a customised browsing experience.</translation>

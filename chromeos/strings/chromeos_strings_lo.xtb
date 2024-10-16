@@ -44,6 +44,7 @@
 <translation id="11743817593307477">ໃຊ້ປຸ່ມລູກສອນເພື່ອຍ້າຍຕົວຄວບຄຸມນີ້ໄປຫາການດຳເນີນການໃນເກມທີ່ທ່ານຕ້ອງການ. ໃຊ້ປຸ່ມ Enter ເພື່ອວາງຕົວຄວບຄຸມ. ໃຊ້ປຸ່ມ Escape ເພື່ອຍົກເລີກ.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1180621378971766337">ອົບອຸ່ນ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1191518099344003522">APN ເປີດການນຳໃຊ້ຢູ່.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4594021849294327751">ສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
-<translation id="4602266091140407479">ໄມ</translation>
 <translation id="4607282946861182308">ບໍ່ສາມາດສ້າງຮູບຈາກຂໍ້ຄວາມນີ້ໄດ້. ກະລຸນາລອງໃຊ້ຂໍ້ຄວາມອື່ນ.</translation>
 <translation id="4609350030397390689">ແປ້ນພິມຫຼຸດຄວາມສະຫວ່າງ</translation>
 <translation id="4623061655523261501">ສ້າງຊື່ການບັນທຶກສຳເລັດແລ້ວ</translation>
@@ -1463,12 +1463,12 @@
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8183975772394450380">ຫາດຊາຍ</translation>
 <translation id="819278132617411009">ໃຊ້ Google AI ເພື່ອເຮັດວຽກຢ່າງມີຜະລິດຕະພາບຫຼາຍຂຶ້ນ</translation>
+<translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8226628635270268143">ເລືອກຮູບພາບ ແລະ ອະລະບໍ້າທີ່ທ່ານມັກ</translation>
 <translation id="8227119283605456246">ຄັດ​ຕິດ​ໄຟລ໌</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
-<translation id="8236972776513018241">ຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
 <translation id="8238771987802558562">ເລືອກ APN</translation>
 <translation id="8246209727385807362">ຜູ້ໃຫ້ບໍລິການທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="8250926778281121244">ຂີ້ໝ້ຽງ</translation>
@@ -1595,7 +1595,6 @@
 <translation id="8864415976656252616">ບໍ່ມີເນື້ອຫາທີ່ແນະນຳ. ເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອຍອດນິຍົມ.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ອຸປະກອນແມ່ນແທັບເລັດ.</translation>
-<translation id="8878117140814294155">ເປີດ/ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
 <translation id="8882789155418924367">ນົກເຄົ້າ</translation>
 <translation id="8892443466059986410">ຍົກເລີກການແກ້ໄຂທາງລັດ</translation>

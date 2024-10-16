@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Rugiagėlių mėlynumo spalva</translation>
 <translation id="1246424317317450637">Pusjuodis</translation>
 <translation id="1251750620252348585">Kita 6 lygio antraštė</translation>
+<translation id="1264956950255940376">Primerkti kairiąją akį</translation>
 <translation id="1268366246392928616">Nėra ankstesnės matematinės išraiškos</translation>
 <translation id="1275718070701477396">Pasirinkta</translation>
 <translation id="1284576163386164372">Visada galite peržiūrėti mokymo programas atidarę meniu palietę keturiais pirštais. Tada suaktyvinkite mokymo programą skiltyje „ChromeVox“.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Lietimo orientacija</translation>
 <translation id="1325363694295259631">„<ph name="NAME" />“, meniu elemento akutės pasirinkimas atšauktas</translation>
 <translation id="1325946044405407859">Gelsvai ruda spalva</translation>
+<translation id="1328928545650070438">Nuleisti antakius</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> iš <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">simbolio ir žodžio aidas</translation>
 <translation id="1334570596456017464">Apatinis indeksas</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Arbatpinigiai</translation>
 <translation id="1354356357730355833">kopijuoti</translation>
 <translation id="1360699455582016846">Spustelėkite <ph name="ROUTING_KEY_NUMBER" /> maršruto parinkimo klavišo elementą</translation>
+<translation id="1365650529628379165">Pakelti antakius</translation>
 <translation id="1376703628032300005">eiti prie kito simbolio</translation>
 <translation id="1377925789329510816">Tai yra paskutinė antraštė. Paspauskite „Search“ + H, kad pereitumėte į pirmą antraštę, arba „Search“ + „Shift“ + H, kad pereitumėte į antrą antraštę šiame puslapyje.</translation>
 <translation id="138218114945450791">Šviesiai mėlyna</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Nuoroda</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Sveiki! Tai – „ChromeVox“ mokymo programa. Jei norite bet kuriuo metu išeiti iš šios mokymo programos, paspauskite klavišą „Escape“ viršutiniame kairiajame klaviatūros kampe. Jei norite išjungti „ChromeVox“, laikydami paspaudę klavišus „Control“ ir „Alt“ paspauskite Z. Kai būsite pasiruošę, tarpo klavišu pereikite į kitą pamoką.</translation>
+<translation id="1735957571918073979">Mirktelėti abiem akimis</translation>
 <translation id="174268867904053074">Kitas grafinis elementas</translation>
 <translation id="1756785467854861272">Tamsiai purpurinė spalva</translation>
 <translation id="1758693804775271377">Jei norite naršyti šios temos pamokas, vienu pirštu perbraukite kairėn arba dešinėn</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
 <translation id="1781173782405573156">Praleidimo klavišas</translation>
 <translation id="1787176709638001873">Redaguoti slaptažodžio tekstą</translation>
+<translation id="1795438342141780114">Iš naujo nustatyti žymeklį į centrą</translation>
 <translation id="180203835522132923">Paieškos klavišas + O, tada W</translation>
 <translation id="1810107444790159527">Sąrašo laukelis</translation>
 <translation id="1812527064848182527">gulsčia</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Kitas objektas</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Rodyti komandas Brailio raštu „ChromeVox“ meniu</translation>
+<translation id="1999763610967697511">Nuvilkti</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{atidaromasis laužtinis skliaustas}one{# atidaromasis laužtinis skliaustas}few{# atidaromieji laužtiniai skliaustai}many{# left brackets}other{# atidaromųjų laužtinių skliaustų}}</translation>
 <translation id="2009187674653301682">Ne viršutinis indeksas</translation>
 <translation id="2010555995361223825">„ChromeVox“ meniu</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Palikta rašybos klaida</translation>
 <translation id="2267945578749931355">Kitas simbolis</translation>
 <translation id="2278490101488436824">Perbraukite trim pirštais kairėn</translation>
+<translation id="228059581448666199">Paspausti kairiuoju pelės klavišu</translation>
 <translation id="2303873575703885770">Elemento suaktyvinimas</translation>
 <translation id="2305942658236913680">Nėra kitos antraštės</translation>
 <translation id="2311237334957139798">Pereiti į ankstesnį detalumą</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Nėra ankstesnio ARIA orientyro</translation>
 <translation id="2843814945404750166">Tamsi alyvuogių žalumo spalva</translation>
 <translation id="2843837985843789981">Ankstesnė grupė</translation>
+<translation id="2849035674501872372">Pakelkite galvą</translation>
+<translation id="2860710618359053450">Pasukti žandikaulį į dešinę</translation>
 <translation id="2864481629947106776">Ankstesnė nuoroda</translation>
 <translation id="2867808975387772810">Bibliografija</translation>
 <translation id="2873259058405069099">Eiti į lentelės pradžią</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Naršymas</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{tarpas}one{# tarpas}few{# tarpai}many{# spaces}other{# tarpų}}</translation>
 <translation id="3179119189286472195">Ne nuoroda</translation>
+<translation id="3180990259147710757">Pasukti žandikaulį į kairę</translation>
 <translation id="320041337977930740">Keisti vaizdo stilių į įterptąjį</translation>
 <translation id="3206698050650195442">Išjungti mokymo programą</translation>
 <translation id="3208346789712025453">Nėra kito valdiklio</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{pliuso ženklas}one{# pliuso ženklas}few{# pliuso ženklai}many{# plus signs}other{# pliuso ženklų}}</translation>
 <translation id="338583716107319301">Skyriklis</translation>
 <translation id="3389259863310851658">Ankstesnis formos laukas</translation>
+<translation id="3390740059150071453">Žiūrėti į kairę</translation>
 <translation id="3393605254399152980">Vilkite vienu pirštu, kad būtų pasakyta, ką liečiate</translation>
 <translation id="3406283310380167331">Rodyti formų sąrašą</translation>
 <translation id="3407726812456125464">Klausyti pasirinkto teksto</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Ankstesnis objektas</translation>
 <translation id="4099274309791143834">su submeniu</translation>
 <translation id="4101527861445851766">Pažymėtas žymimasis laukelis</translation>
+<translation id="410225014223200513">Lūpomis suformuoti apskritimą</translation>
 <translation id="4115378294792113321">Purpurinė</translation>
 <translation id="4116415223832267137">Įspėjimas</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{uždaromasis riestinis skliaustas}one{# uždaromasis riestinis skliaustas}few{# uždaromieji riestiniai skliaustas}many{# right braces}other{# uždaromųjų riestinių skliaustų}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Pilkai melsva spalva</translation>
 <translation id="4253168017788158739">Pastaba</translation>
 <translation id="4254798249533888099">Medis</translation>
+<translation id="4255016471934258618">Plačiai išsižioti</translation>
 <translation id="4259220820964911921">Įgalinti veido valdiklį?</translation>
 <translation id="4271220233568730077">Kitas matematinis raktas</translation>
 <translation id="4275397969489577657">Įgalinti įvykių srauto įrašymą į žurnalą</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Ochros spalva</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{taškas}=3{daugtaškis}one{# taškas}few{# taškai}many{# dots}other{# taškų}}</translation>
 <translation id="4352022650330571548">įvesti tekstą „<ph name="PHRASE" />“</translation>
+<translation id="4360738659108163902">Spustelėti dešiniuoju pelės klavišu</translation>
 <translation id="4372435075475052704">min. <ph name="X" /></translation>
 <translation id="4372705107434148843">Sustabdyti kalbą</translation>
 <translation id="4376316291247992553">Peržiūrėkite diagramą kaip brailio rašmenis</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Blyški turkio spalva</translation>
 <translation id="4826415162591436065">Eiti į priekį</translation>
 <translation id="4827410568042294688">nepasirinkta</translation>
+<translation id="483262387981411190">Pristabdyti arba atnaujinti veido kontrolę</translation>
+<translation id="4835598628985424375">Suspausti lūpas tarsi vamzdelį</translation>
 <translation id="4838490795649708173">Palieskite keturiais pirštais</translation>
 <translation id="4839925464551908214">Pereiti prie ankstesnės eilutės</translation>
 <translation id="4841614409681890122">Sodriai rožinė spalva</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Nėra ankstesnio medijų valdiklio</translation>
 <translation id="4855927945655956315">Pagrindiniai klavišai: klavišas „Control“</translation>
+<translation id="485806788160414322">Paleisti arba pristabdyti mediją</translation>
 <translation id="4862744964787595316">Ne pusjuodis</translation>
 <translation id="4865995900839719272">perkelti į ankstesnę eilutę</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Vidutinio ryškumo mėlyna spalva su pilkšvu atspalviu</translation>
 <translation id="5140016802771803559">Sodriai violetinė spalva</translation>
 <translation id="5142101052131610456">Visos pamokos</translation>
+<translation id="514387318601895731">Žiūrėti žemyn</translation>
 <translation id="5158275234811857234">Viršelis</translation>
 <translation id="516076699907426116">Jei norite tęsti, naršykite paliesdami, kad surastumėte mygtuką „Kita pamoka“. Tada dukart palieskite, jei norite tęsti.</translation>
 <translation id="5170206230005240598">Brailio rašto antraštės įgalintos</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">„Google“ patobulinto tinklo teksto į kalbą plėtinys</translation>
 <translation id="5783252477644995371">Valdymas pagal veidą suteikia galimybę valdyti žymeklį nukreipiant veidą ir atlikti veiksmus, pvz., spustelėti kairiuoju klavišu veido gestais, pvz., šypsena</translation>
 <translation id="5805940204952508776">Palieskite dviem pirštais</translation>
+<translation id="5807774529265708172">Rodyti arba slėpti ekrano klaviatūrą</translation>
 <translation id="5819072574982403430">Medžio elementas</translation>
 <translation id="5822819874379903994">Tamsi turkio spalva</translation>
 <translation id="5824976764713185207">Automatiškai nuskaityti puslapį po to, kai baigiamas jo įkėlimas</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Skirtukų sąrašas</translation>
 <translation id="5866042630553435010">Iš dalies pažymėta</translation>
 <translation id="5866210856231860256">Jei norite naršyti šios temos pamokas, paspauskite paieškos ir rodyklės dešinėn klavišus arba paieškos ir rodyklės kairėn klavišus</translation>
+<translation id="5866236843389439313">Nusišypsoti kairiuoju lūpų kampu</translation>
 <translation id="5867591286054666064">Kol rodoma ši mokymo programa, paspauskite bet kurį klavišą, kad išgirstumėte jo pavadinimą.</translation>
 <translation id="5869546221129391014">Tinklelis</translation>
 <translation id="5876817486144482042">Mažinti kalbos garsumą</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Esama data</translation>
 <translation id="5926889058434275234">Jei reikia išsamaus gestų sąrašo, apsilankykite pagalbos centre.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{lygybės ženklas}one{# lygybės ženklas}few{# lygybės ženklai}many{# equal signs}other{# lygybės ženklų}}</translation>
+<translation id="5947651424015173580">Dukart spustelėti pelės klavišu</translation>
 <translation id="5948123859135882163">Kaitalioti struktūrinį ir semantinį matematinių reiškinių interpretavimą</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialogo langas</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{su # elementu}one{su # elementu}few{su # elementais}many{su # elemento}other{su # elementų}}</translation>
 <translation id="5981446804259161541">Šviesiai žydra spalva</translation>
 <translation id="5983179082906765664">Padidinti naršymo detalumą</translation>
+<translation id="5988563937187882754">Pažiūrėti į dešinę</translation>
 <translation id="5992285135956208197">Grafikos dokumentas</translation>
 <translation id="5999630716831179808">Balsai</translation>
 <translation id="6006050241733874051">Forma</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">Nėra</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Nėra kito jungtinio laukelio</translation>
+<translation id="7715455358521357192">Primerkti dešiniąją akį</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
 <translation id="7731785449856576010">Nėra kito medijų valdiklio</translation>
 <translation id="7735498529470878067">Naudodami naršymo paliečiant funkciją galite sparčiai apžvelgti ekrano turinį.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">Ankstesnis žodis</translation>
 <translation id="7846634333498149051">Klaviatūra</translation>
 <translation id="7851816175263618915">Su kai kuriais skyrybos ženklais</translation>
+<translation id="7860802890538098598">Nusišypsoti dešiniuoju lūpų kampu</translation>
 <translation id="7871691770940645922">Virtualusis Brailio ekranas</translation>
 <translation id="7882421473871500483">Ruda</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">Padidinti</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{kabučių ženklas}one{# kabučių ženklas}few{# kabučių ženklai}many{# quotes}other{# kabučių ženklų}}</translation>
+<translation id="8017004049696748317">Pradėti arba sustabdyti diktavimą</translation>
 <translation id="8017588669690167134">Kalbėjimas išjungtas</translation>
 <translation id="801990297710781303">Išnaša</translation>
 <translation id="8028833145828956995">Galite naudoti „ChromeVox“ jutikliniame ekrane</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">Pilka spalva su melsvu atspalviu</translation>
 <translation id="8121539003537428024">Įgalinti visus įvykių filtrus</translation>
 <translation id="8123975449645947908">Slinkti atgal</translation>
+<translation id="8126355825906412872">Nusišypsoti</translation>
 <translation id="8126386426083591964">Nėra ankstesnės 5 lygio antraštės</translation>
 <translation id="812886159861361726">„<ph name="FILE_NAME" />“ atsisiuntimas sustabdytas</translation>
 <translation id="8129445297241948503">Nėra langelio aukščiau</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">Modifikavimo klavišai</translation>
 <translation id="8943282376843390568">Žaliųjų citrinų spalva</translation>
 <translation id="8944511129464116546">iš dalies pažymėta</translation>
+<translation id="8945050808870279132">Suraukti nosį</translation>
 <translation id="8946628535652548639"><ph name="TABLECELLROWINDEX" /> e. <ph name="TABLECELLCOLUMNINDEX" /> s.</translation>
 <translation id="8952400011684167587">Nėra ankstesnės akutės</translation>
 <translation id="8970172509886453271">Nėra ankstesnės skilties</translation>

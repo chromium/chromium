@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Gunakan kekunci anak panah untuk menggerakkan kawalan ini kepada aksi permainan yang dikehendaki. Gunakan kekunci enter untuk menempatkan kawalan. Gunakan kekunci escape untuk membatalkan penempatan kawalan.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Jeda</translation>
 <translation id="1180621378971766337">selesa</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1191518099344003522">APN didayakan.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat imej ini. Cuba gesaan lain.</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
 <translation id="4623061655523261501">Nama rakaman berjaya dijana</translation>
@@ -1462,12 +1462,12 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pantai</translation>
 <translation id="819278132617411009">Gunakan Google AI untuk menjadi lebih produktif</translation>
+<translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Kelebihan</translation>
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
-<translation id="8236972776513018241">Transkrip</translation>
 <translation id="8238771987802558562">Pilih APN</translation>
 <translation id="8246209727385807362">Pembawa tidak diketahui</translation>
 <translation id="8250926778281121244">karat</translation>
@@ -1594,7 +1594,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8864415976656252616">Tiada kandungan yang dicadangkan. Lihat kandungan bantuan paling popular.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Peranti ialah tablet.</translation>
-<translation id="8878117140814294155">Togol redam pada mikrofon</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
 <translation id="8882789155418924367">burung hantu</translation>
 <translation id="8892443466059986410">Batalkan pengeditan pintasan</translation>

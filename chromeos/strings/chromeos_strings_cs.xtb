@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Pomocí kláves se šipkami přesuňte tento ovládací prvek na požadovanou herní akci. Stisknutím klávesy Enter ovládací prvek přiřaďte. Ke zrušení použijte klávesu Escape.</translation>
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Průměrný (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1180621378971766337">útulné</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1191518099344003522">APN je povolen.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Všechny hostitele se nepodařilo vyřešit</translation>
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4594021849294327751">Vytvořit přepis</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Pro tenhle pokyn obrázky vytvořit nelze. Zkuste jiný.</translation>
 <translation id="4609350030397390689">Snížit jas</translation>
 <translation id="4623061655523261501">Názvy nahrávek byly úspěšně vygenerovány</translation>
@@ -1462,12 +1462,12 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pláž</translation>
 <translation id="819278132617411009">Buďte s Google AI produktivnější</translation>
+<translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte své oblíbené fotky a alba</translation>
 <translation id="8227119283605456246">Přiložit soubor</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
-<translation id="8236972776513018241">Přepis</translation>
 <translation id="8238771987802558562">Vyberte APN</translation>
 <translation id="8246209727385807362">Neznámý operátor</translation>
 <translation id="8250926778281121244">rezavá</translation>
@@ -1594,7 +1594,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8864415976656252616">Žádný navrhovaný obsah. Podívejte se na nejnavštěvovanější obsah nápovědy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zařízení je tablet.</translation>
-<translation id="8878117140814294155">Přepnout ztlumení mikrofonu</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>
 <translation id="8882789155418924367">sovy</translation>
 <translation id="8892443466059986410">Zrušit úpravu zkratky</translation>

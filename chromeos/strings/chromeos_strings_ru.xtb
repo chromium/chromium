@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Чтобы переместить этот элемент управления к нужному действию в игре, используйте клавиши со стрелками. Для подтверждения выбора нажмите Ввод. Чтобы отменить выбор, используйте клавишу Escape.</translation>
 <translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средний (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Пауза</translation>
 <translation id="1180621378971766337">уют</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1191518099344003522">Точка доступа включена.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4594021849294327751">Создать расшифровку</translation>
-<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не удалось создать изображения. Попробуйте ввести другой запрос.</translation>
 <translation id="4609350030397390689">Уменьшение яркости клавиатуры</translation>
 <translation id="4623061655523261501">Названия записей созданы</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Работайте эффективнее с ИИ от Google</translation>
+<translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208861521865154048">Преимущества</translation>
 <translation id="8226628635270268143">Выберите любимые фото и альбомы</translation>
 <translation id="8227119283605456246">Прикрепить файл</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
-<translation id="8236972776513018241">Расшифровка</translation>
 <translation id="8238771987802558562">Выбор точки доступа</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>
 <translation id="8250926778281121244">ржаво-коричневый</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Нет рекомендованных материалов. Посмотрите самый популярный справочный контент.</translation>
 <translation id="8868741746785112895">Глобальный уникальный идентификатор</translation>
 <translation id="8876270629542503161">Это планшет.</translation>
-<translation id="8878117140814294155">Включить или отключить микрофон</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>
 <translation id="8882789155418924367">совы</translation>
 <translation id="8892443466059986410">Не изменять сочетание клавиш</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Flytta kontrollen till önskad spelåtgärd med piltangenterna. Placera kontrollen med returtangenten. Avbryt med Esc-tangenten.</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Genomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Paus</translation>
 <translation id="1180621378971766337">mysigt</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1191518099344003522">APN är aktiverat.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4594021849294327751">Skapa transkription</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Det går inte att skapa bilder av detta. Testa en annan prompt.</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
 <translation id="4623061655523261501">Inspelade namn har genererats</translation>
@@ -1462,12 +1462,12 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
 <translation id="819278132617411009">Använd Googles AI för att bli mer produktiv</translation>
+<translation id="8200772114523450471">Återuppta</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Förmåner</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
 <translation id="8227119283605456246">Bifoga fil</translation>
 <translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>
-<translation id="8236972776513018241">Transkription</translation>
 <translation id="8238771987802558562">Välj ett APN</translation>
 <translation id="8246209727385807362">Okänd operatör</translation>
 <translation id="8250926778281121244">rostfärgad</translation>
@@ -1594,7 +1594,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8864415976656252616">Inga innehållsförslag. Visa populärt hjälpinnehåll.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten är en surfplatta.</translation>
-<translation id="8878117140814294155">Slå på eller av ljudet för mikrofonen</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>
 <translation id="8882789155418924367">ugglor</translation>
 <translation id="8892443466059986410">Avbryt redigering av kortkommando</translation>

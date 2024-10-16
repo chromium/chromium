@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="1545749641540134597">Скенирајте QR код</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
+<translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
 <translation id="1571780780926010134">Картички „Инкогнито“</translation>
 <translation id="1580715474678097352">Заштитете се од опасни веб-сајтови</translation>
 <translation id="1580783302095112590">Поштата е испратена.</translation>
@@ -411,6 +412,7 @@
 <translation id="288655811176831528">Затвори ја картичката</translation>
 <translation id="2888631381369839306">Известувањата за „Следење цена“ се вклучени</translation>
 <translation id="288902476966286676">Вратете на испраќачот</translation>
+<translation id="2894757982205307093">Нова картичка во групата</translation>
 <translation id="2905479111267140204">Имате <ph name="NUMBER_OF_PASSWORDS" /> повторно употребени лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
 <translation id="291754862089661335">Ставете го QR/бар-кодот во оваа рамка.</translation>
 <translation id="2918688092312652908">Означи како непрочитано</translation>
@@ -445,7 +447,6 @@
 Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="3080525922482950719">Може да зачувувате страници за да ги читате подоцна или офлајн</translation>
 <translation id="3081338492074632642">Проверете дали лозинката што ја зачувувате се совпаѓа со лозинката за <ph name="WEBSITE" /></translation>
-<translation id="30842332047348094">Кредитни картички</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="309710370695886264">Имате 1 повторно употребена лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
 <translation id="3102139268911534961">Извлечете максимум од мобилниот прелистувач што го знаете и обожавате на вашиот iPhone.</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861908220442487587">Адресава е зачувана само на уредов. За да ја користите на другите уреди, преместете ја во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Прикажи ја целосната URL-адреса</translation>
+<translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3876833929577368454">Прашувај ме секогаш</translation>
 <translation id="3885587018298784481">Придружете се на семејна група</translation>
 <translation id="3888863481921783344">Ова ќе се користи за да ви ги покаже лицата што може да ги поканите на настанот.</translation>
@@ -1103,6 +1105,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6227126502342367214">„Пребарување со камерата“ на Lens</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6232329973559504466">Пребарување во „Инкогнито“</translation>
+<translation id="6234310016144827337">Проверете ја врската и обидете се повторно</translation>
 <translation id="6234438496206735891">Прикажи ги преземањата</translation>
 <translation id="6236952928980352967">Врати предупредување</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -1538,7 +1541,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> сметки</translation>
 <translation id="8161614462829037225">Отклучете со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Должина</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1}, {website_2}}=3{За {website_1}, {website_2} и уште 1}one{За {website_1}, {website_2} и уште {more_count}}other{За {website_1}, {website_2} и уште {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинка</translation>
@@ -1634,6 +1636,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8609743333007776886">Додајте ја ${url} во обележувачите</translation>
 <translation id="8620640915598389714">Измени</translation>
 <translation id="8625706492572042370">Изменете го почетниот екран</translation>
+<translation id="8633025649649592204">Неодамнешна активност</translation>
 <translation id="8636825310635137004">За да ги добиете картичките од другите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="8637431369725868556">Заштитете се од опасни сајтови.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
@@ -1772,6 +1775,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9183733013282108610">Пребарување во „Инкогнито“</translation>
 <translation id="9186762474139509529">Започни со евидентирање</translation>
 <translation id="9191031968346938109">Додај во…</translation>
+<translation id="9196007736149429065">Датотекава не можеше да се отвори</translation>
 <translation id="9200875785104711666">Пред <ph name="TIME" /> д.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Префрлете ја лентата за адреси одозгора најдолу за приспособено доживување при прелистувањето.</translation>

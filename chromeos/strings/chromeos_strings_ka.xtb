@@ -44,6 +44,7 @@
 <translation id="11743817593307477">გამოიყენეთ ისრიანი კლავიშები, მართვის ეს საშუალება თამაშის სასურველ მოქმედებაზე რომ გადაიტანოთ. მართვის საშუალების დასაფიქსირებლად დააჭირეთ კლავიშს „enter“. გასაუქმებლად გამოიყენეთ კლავიში „escape“.</translation>
 <translation id="1175697296044146566">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ.</translation>
 <translation id="1175951029573070619">საშუალო (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">პაუზა</translation>
 <translation id="1180621378971766337">მყუდრო</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1191518099344003522">APN ჩართულია.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4594021849294327751">ტრანსკრიპტის შექმნა</translation>
-<translation id="4602266091140407479">მიკროფონი</translation>
 <translation id="4607282946861182308">ამის სურათების შექმნა ვერ მოხერხდება. ცადეთ სხვა მოთხოვნა.</translation>
 <translation id="4609350030397390689">კლავიატურის სიკაშკაშის დაკლება</translation>
 <translation id="4623061655523261501">ჩანაწერების სახელები წარმატებით დაგენერირდა</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">პლაჟი</translation>
 <translation id="819278132617411009">გამოიყენეთ Google-ის ხელოვნური ინტელექტი პროდუქტიულობის გაზრდაში</translation>
+<translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
 <translation id="8227119283605456246">ფაილის მიმაგრება</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
-<translation id="8236972776513018241">ტრანსკრიპტი</translation>
 <translation id="8238771987802558562">აირჩიეთ APN</translation>
 <translation id="8246209727385807362">უცნობი ოპერატორი</translation>
 <translation id="8250926778281121244">ჟანგისფერი</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">შემოთავაზებული კონტენტი არ არის. გაეცანით პოპულარულ დამხმარე კონტენტს.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">მოწყობილობა არის ტაბლეტი.</translation>
-<translation id="8878117140814294155">მიკროფონის დადუმების გადართვა</translation>
 <translation id="8881098542468797602">ტესტი წარმატებით შესრულდა</translation>
 <translation id="8882789155418924367">ბუები</translation>
 <translation id="8892443466059986410">]მალსახმობის რედაქტირების გაუქმება</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Juhtnupu liigutamiseks soovitud mängutegevusele, kasutage nooleklahve. Juhtnupu asetamiseks kasutage sisestusklahvi. Tühistamiseks kasutage paoklahvi.</translation>
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Keskmine (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Peata</translation>
 <translation id="1180621378971766337">õdus</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1191518099344003522">APN on lubatud.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4594021849294327751">Loo transkriptsioon</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Ei saa selle kohta pilte luua. Proovige muud päringut.</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
 <translation id="4623061655523261501">Salvestiste nimede genereerimine õnnestus</translation>
@@ -1462,12 +1462,12 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8183975772394450380">rand</translation>
 <translation id="819278132617411009">Kasutage Google'i AI-d, et olla produktiivsem</translation>
+<translation id="8200772114523450471">Taasta</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
 <translation id="8227119283605456246">Manusta fail</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
-<translation id="8236972776513018241">Transkriptsioon</translation>
 <translation id="8238771987802558562">Valige APN</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>
 <translation id="8250926778281121244">roostepruunides toonides</translation>
@@ -1594,7 +1594,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8864415976656252616">Soovitatud sisu pole. Vaadake peamist abisisu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Seade on tahvelarvuti.</translation>
-<translation id="8878117140814294155">Mikrofoni sisse- ja väljalülitamine</translation>
 <translation id="8881098542468797602">Test õnnestus</translation>
 <translation id="8882789155418924367">öökullid</translation>
 <translation id="8892443466059986410">Tühista otsetee muutmine</translation>

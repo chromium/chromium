@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Brug piletasterne til at flytte dette styringselement til den ønskede spilhandling. Brug Enter-tasten til at placere styringselementet. Brug Escape-tasten for at annullere.</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gennemsnitligt (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pause</translation>
 <translation id="1180621378971766337">hyggelig</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1191518099344003522">APN er aktiveret.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4594021849294327751">Opret transskription</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Der kan ikke oprettes billeder for denne forespørgsel. Prøv en anden prompt.</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
 <translation id="4623061655523261501">Optagelsesnavnene er genereret</translation>
@@ -1462,12 +1462,12 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
 <translation id="819278132617411009">Brug Google AI til at blive mere produktiv</translation>
+<translation id="8200772114523450471">Genoptag</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
-<translation id="8236972776513018241">Transskription</translation>
 <translation id="8238771987802558562">Vælg et APN</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
 <translation id="8250926778281121244">rust</translation>
@@ -1594,7 +1594,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8864415976656252616">Der er intet foreslået indhold. Se det mest populære indhold i Hjælp.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheden er en tablet.</translation>
-<translation id="8878117140814294155">Slå mikrofonen til eller fra</translation>
 <translation id="8881098542468797602">Testen blev gennemført</translation>
 <translation id="8882789155418924367">ugler</translation>
 <translation id="8892443466059986410">Annuller redigering af genvej</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Користите тастере са стрелицама да бисте преместили ову контролу на радњу у игри коју желите. Користите тастер Enter да бисте поставили контролу. Користите тастер Escape да бисте отказали.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
 <translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Паузирај</translation>
 <translation id="1180621378971766337">удобни</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1191518099344003522">Назив приступне тачке је омогућен.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4594021849294327751">Направи транскрипт</translation>
-<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не можемо да направимо слике на којима је ово. Пробајте са другим упитом.</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
 <translation id="4623061655523261501">Имена за снимак су генерисана</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плажа</translation>
 <translation id="819278132617411009">Користите Google вештачку интелигенцију да бисте били продуктивнији</translation>
+<translation id="8200772114523450471">Настави</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
 <translation id="8208861521865154048">Погодности</translation>
 <translation id="8226628635270268143">Одаберите омиљене слике и албуме</translation>
 <translation id="8227119283605456246">Приложи датотеку</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
-<translation id="8236972776513018241">Транскрипт</translation>
 <translation id="8238771987802558562">Одаберите назив приступне тачке</translation>
 <translation id="8246209727385807362">Непознат мобилни оператер</translation>
 <translation id="8250926778281121244">рђа</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Нема предложеног садржаја. Погледајте најпопуларнији садржај помоћи.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Уређај је таблет.</translation>
-<translation id="8878117140814294155">Укључите/искључите звук микрофона</translation>
 <translation id="8881098542468797602">Тест је успео</translation>
 <translation id="8882789155418924367">сове</translation>
 <translation id="8892443466059986410">Откажите измену пречица</translation>

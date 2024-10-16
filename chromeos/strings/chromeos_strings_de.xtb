@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Mit den Pfeiltasten kannst du das Steuerelement zur gewünschten Aktion im Spiel bewegen. Wenn du das Steuerelement platzieren möchtest, drücke die Eingabetaste. Wenn du die Aktion abbrechen möchtest, drücke die Esc-Taste.</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1175951029573070619">Durchschnittlich (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pause</translation>
 <translation id="1180621378971766337">gemütlich</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1191518099344003522">APN ist aktiviert.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4594021849294327751">Transkript erstellen</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Dafür können keine Bilder erstellt werden. Versuche es mit einem anderen Prompt.</translation>
 <translation id="4609350030397390689">Tastaturhelligkeit verringern</translation>
 <translation id="4623061655523261501">Aufzeichnungsnamen wurden generiert</translation>
@@ -1462,12 +1462,12 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183975772394450380">Strand</translation>
 <translation id="819278132617411009">Mit Google AI produktiver sein</translation>
+<translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8226628635270268143">Hier kannst du deine bevorzugten Fotos und Alben auswählen</translation>
 <translation id="8227119283605456246">Datei anhängen</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
-<translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">APN festlegen</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
 <translation id="8250926778281121244">rostbraunen</translation>
@@ -1594,7 +1594,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8864415976656252616">Keine vorgeschlagenen Artikel. Du kannst dir häufig gelesene Hilfeartikel ansehen.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
-<translation id="8878117140814294155">Mikrofonstummschalten ein/aus</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
 <translation id="8882789155418924367">Eulen</translation>
 <translation id="8892443466059986410">Bearbeiten der Verknüpfung abbrechen</translation>

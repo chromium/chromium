@@ -224,6 +224,7 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{שנ‘ אחת}one{# שנ‘}two{# שנ‘}other{# שנ‘}}</translation>
 <translation id="9059834730836941392">כיווץ ההודעה</translation>
 <translation id="9170848237812810038">&amp;ביטול</translation>
+<translation id="9195990613383871904">מחר</translation>
 <translation id="932327136139879170">בית</translation>
 <translation id="944069440740578670">התראות שלא נקראו</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{לפני שנייה אחת}one{לפני # שניות}two{לפני # שניות}other{לפני # שניות}}</translation>

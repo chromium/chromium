@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
-<translation id="1680090928918677457">Kamera használata</translation>
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
 <translation id="1758486001363313524">Más...</translation>
 <translation id="1921819250265091946">nn</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
-<translation id="2353297238722298836">Kamera és mikrofon engedélyezve</translation>
 <translation id="2507943997699731163">Kérjük, töltse ki ezt a mezőt.</translation>
 <translation id="2613802280814924224">Kérjük, érvényes értéket adjon meg. A legközelebbi érvényes érték <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2746543609216772311">Az érték <ph name="MINIMUM_DATE_OR_TIME" /> vagy azt követő kell, hogy legyen.</translation>
 <translation id="2761667185364618470">Kérjük, jelölje be ezt a jelölőnégyzetet, ha tovább kíván haladni.</translation>
 <translation id="2908441821576996758">Kérjük, adjon meg egy vesszőkkel elválasztott e-mail címlistát.</translation>
-<translation id="2940013921954129954">Pontos hely engedélyezve</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Kérjük, adjon meg érvényes értéket. A mező hiányos, vagy érvénytelen dátum van megadva.</translation>
 <translation id="310520048233152454">Adjon meg egy URL-t.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Kérjük, <ph name="MIN_CHARACTERS" /> karakter hosszú vagy annál hosszabb szöveget adjon meg (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="383465348367842624">A „<ph name="ATSIGN" />” előtti rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="3846214748874656680">Teljes képernyő – ki</translation>
-<translation id="4031179711345676612">Mikrofon engedélyezve</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Részletek</translation>
-<translation id="4663373278480897665">Kamera engedélyezve</translation>
 <translation id="4664250907885839816">A „<ph name="ATSIGN" />” utáni rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="4718048029184481307">Lejátszás kép a képben módban</translation>
 <translation id="4812940957355064477">Kérjük, adjon meg egy számot.</translation>
-<translation id="49269513399674318">Mikrofon használata</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> kiválasztva</translation>
 <translation id="4992066212339426712">Némítás feloldása</translation>
 <translation id="49969490063480558">Kérjük, adja meg a „<ph name="ATSIGN" />” utáni részt is. A(z) „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
 <translation id="5164977714490026579">Az érték legyen nagyobb vagy egyenlő, mint <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5239623327352565343">Helyadatok engedélyezve</translation>
 <translation id="5307600278924710095">Kérjük, adja meg a „<ph name="ATSIGN" />” előtti részt is. A „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
 <translation id="5334352251556557839">Nem sikerült a médiafájl lejátszása.</translation>
 <translation id="537648784377940524">A minimális dátumnak (<ph name="MIN_DATE_OR_TIME" />) a maximális dátum (<ph name="MAX_DATE_OR_TIME" />) elé kell esnie.</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Gyenge lejátszási minőség</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6820355525329141109">Nem sikerült betölteni a beépülő modult.</translation>
-<translation id="688706781007114099">Hely használata</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>
-<translation id="7134810312945846184">Mikrofon és kamera használata</translation>
 <translation id="7263440858009898357">Kérjük, válasszon egyet a lista elemei közül.</translation>
 <translation id="7364796246159120393">Fájl kiválasztása</translation>
 <translation id="739024184232394898">Más...</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Az értéknek <ph name="MINIMUM_TIME" /> és <ph name="MAXIMUM_TIME" /> között kell lennie.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fájl</translation>
 <translation id="8451268428117625855">Válasszon egy fájlt.</translation>
-<translation id="8533587060884335451">Pontos helyadatok használata</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Sorok tördelése</translation>
 <translation id="8750798805984357768">Kérjük, válassza ki az egyik opciót.</translation>

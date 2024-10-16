@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Tumia vitufe vya vishale ili uhamishie kidhibiti hiki kwenye kitendo cha mchezo unachokitaka. Tumia kitufe cha 'Enter' ili uweke kidhibiti. Tumia kitufe cha 'Escape' ili ubatilishe.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Sitisha</translation>
 <translation id="1180621378971766337">kutosha</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1191518099344003522">APN imewashwa.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Imeshindwa kusuluhisha seva pangishi zote</translation>
 <translation id="4593212453765072419">Uthibitishaji wa proksi unahitajika</translation>
 <translation id="4594021849294327751">Tayarisha manukuu</translation>
-<translation id="4602266091140407479">Maikrofoni</translation>
 <translation id="4607282946861182308">Imeshindwa kubuni picha za kidokezo hiki. Jaribu kidokezo kingine.</translation>
 <translation id="4609350030397390689">Punguza mwangaza wa kibodi</translation>
 <translation id="4623061655523261501">Imetayarisha majina ya rekodi</translation>
@@ -1462,12 +1462,12 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ufukwe</translation>
 <translation id="819278132617411009">Tumia Google AI ili uwe na tija zaidi</translation>
+<translation id="8200772114523450471">Endelea</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8208861521865154048">Manufaa</translation>
 <translation id="8226628635270268143">Chagua picha na albamu uzipendazo zaidi</translation>
 <translation id="8227119283605456246">Ambatisha faili</translation>
 <translation id="8230672074305416752">Imeshindwa kuita lango la mtandao chaguomsingi</translation>
-<translation id="8236972776513018241">Manukuu</translation>
 <translation id="8238771987802558562">Chagua APN</translation>
 <translation id="8246209727385807362">Mtoa huduma asiyejulikana</translation>
 <translation id="8250926778281121244">rangi ya kutu</translation>
@@ -1594,7 +1594,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8864415976656252616">Hakuna maudhui yanayopendekezwa. Angalia maudhui maarufu ya usaidizi.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Kifaa hiki ni kompyuta kibao.</translation>
-<translation id="8878117140814294155">Zima au uwashe sauti kwenye maikrofoni</translation>
 <translation id="8881098542468797602">Jaribio limefaulu</translation>
 <translation id="8882789155418924367">bundi</translation>
 <translation id="8892443466059986410">Ghairi ubadilishaji wa njia ya mkato</translation>

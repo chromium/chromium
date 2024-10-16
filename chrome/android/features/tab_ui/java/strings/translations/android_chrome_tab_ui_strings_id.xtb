@@ -58,19 +58,16 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="3078350928901129212">Ikon warna grup tab <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> diubah}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> diubah}}</translation>
-<translation id="3291470810748040983">Anda akan mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3547352561153509682">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Sembunyikan dialog tab tidak aktif</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail untuk pratinjau sheet berbagi.</translation>
 <translation id="381219490185664296">Pisahkan grup tab?</translation>
-<translation id="3882834874697329510">Untuk mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka, aktifkan notifikasi di Setelan.</translation>
 <translation id="3940195383040445971">Pantau harga di tab</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Kelompokkan tab}other{Kelompokkan tab}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab tidak aktif}other{<ph name="TABS_COUNT_MANY" /> tab tidak aktif}}</translation>
 <translation id="3969565576924904454">Buka <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Dapatkan notifikasi</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Dibuat <ph name="NUM_DAYS_ONE" /> hari lalu}other{Dibuat <ph name="NUM_DAYS_MANY" /> hari lalu}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="4139634748112164403">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus secara permanen</translation>
@@ -115,7 +112,6 @@ Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_G
 <translation id="5627941783489838464">Tidak ada pembaruan tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Pulihkan tab}other{Pulihkan tab}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
-<translation id="575494663145460764">Dapatkan notifikasi untuk diskon?</translation>
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>

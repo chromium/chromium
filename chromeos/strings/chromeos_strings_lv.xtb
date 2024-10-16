@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Izmantojiet bultiņas, lai pārvietotu šo vadīklu uz vēlamo spēles darbību. Lai novietotu vadīklu, izmantojiet taustiņu Enter. Lai atceltu, izmantojiet atsoļa taustiņu.</translation>
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1180621378971766337">mājīgs</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1191518099344003522">APN ir iespējots.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4594021849294327751">Izveidot transkripciju</translation>
-<translation id="4602266091140407479">Mikrofons</translation>
 <translation id="4607282946861182308">Nevar izveidot šādus attēlus. Izmēģiniet citu uzvedni.</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
 <translation id="4623061655523261501">Ierakstu nosaukumi ir sekmīgi ģenerēti</translation>
@@ -1462,12 +1462,12 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8183975772394450380">pludmale</translation>
 <translation id="819278132617411009">Izmantojiet Google MI, lai strādātu produktīvāk</translation>
+<translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
 <translation id="8227119283605456246">Pievienot failu</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
-<translation id="8236972776513018241">Transkripcija</translation>
 <translation id="8238771987802558562">Izvēlieties APN</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
 <translation id="8250926778281121244">rūsgana</translation>
@@ -1594,7 +1594,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8864415976656252616">Nav ieteikta satura. Skatiet populārāko palīdzības saturu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Ierīce ir planšetdators.</translation>
-<translation id="8878117140814294155">Izslēgt/ieslēgt mikrofona skaņu</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>
 <translation id="8882789155418924367">pūces</translation>
 <translation id="8892443466059986410">Atcelt saīsnes rediģēšanu</translation>

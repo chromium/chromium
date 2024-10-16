@@ -543,7 +543,7 @@
 <translation id="292506373491190801">अभी चल रहे इवेंट की फ़ाइल</translation>
 <translation id="2931572158271115754">इस सूची में कुछ भी नहीं है.</translation>
 <translation id="2932487126591186298">10 मिनट जोड़े गए. <ph name="REMAINING_TIME" /> का समय बाकी है.</translation>
-<translation id="2935225303485967257">प्रोफ़ाइलें प्रबंधित करें</translation>
+<translation id="2935225303485967257">प्रोफ़ाइलें मैनेज करें</translation>
 <translation id="2941112035454246133">कम</translation>
 <translation id="2942350706960889382">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा</translation>
 <translation id="2942516765047364088">अलमारी की स्थिति</translation>
@@ -645,7 +645,7 @@
 <translation id="3289674678944039601">अडैप्टर से चार्ज हो रहा है</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3291862315280588024">पिछले शब्द के प्रारंभ में जाएं</translation>
-<translation id="3294437725009624529">अतिथि</translation>
+<translation id="3294437725009624529">मेहमान</translation>
 <translation id="3300193645498960160">म्यूट रहते हुए बात करने पर, आपको इसकी सूचना दी जाएगी. ऑडियो आपके डिवाइस में ही रहता है.</translation>
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> के हॉटस्पॉट से <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं</translation>
 <translation id="3307642347673023554">लैपटॉप मोड पर स्विच किया गया</translation>
@@ -1590,6 +1590,7 @@
 <translation id="6352082849089527770">नेटवर्क की कोई जानकारी नहीं है</translation>
 <translation id="6359587239691116345">नई सुविधाएं और बेहतर सुरक्षा पाएं. अगर आपने इस अपडेट को अस्वीकार किया है, तो हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं.</translation>
 <translation id="6362833380917912748">अपने डिवाइस में पहले से मौजूद ऐप्लिकेशन के बारे में जानें</translation>
+<translation id="6364386432014869981">डिवाइस में पहले से मौजूद टचपैड चालू है</translation>
 <translation id="6376931439017688372">ब्लूटूथ चालू है</translation>
 <translation id="6378515133128829137">विंडो को दाईं ओर पिन करें</translation>
 <translation id="6381109794406942707">यह डिवाइस अनलॉक करने के लिए, अपना पिन डालें.</translation>
@@ -1690,6 +1691,8 @@
 <translation id="6682029141988159141">क्लिपबोर्ड से कॉन्टेंट चिपकाएं</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6686023075541098243">अपने फ़ोन की सूचनाओं को देखने की सुविधा सेट अप करें</translation>
+<translation id="6688019813898140556">Esc को पांच बार दबाएं</translation>
+<translation id="6694462491298752106">डिवाइस में पहले से मौजूद टचपैड बंद है</translation>
 <translation id="6694973220096431421">Google Drive में खोजें</translation>
 <translation id="6696025732084565524">आपके अलग किए जाने लायक कीबोर्ड में एक महत्वपूर्ण अपडेट ज़रूरी है</translation>
 <translation id="6697913454192220372">नया डेस्क जोड़ें</translation>

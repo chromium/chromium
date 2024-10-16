@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Folosește tastele săgeți pentru a muta comanda la acțiunea de joc dorită. Folosește tasta Enter pentru a plasa comanda. Folosește tasta Escape pentru a anula.</translation>
 <translation id="1175697296044146566">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Medie (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1180621378971766337">intimă</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1191518099344003522">APN este activat.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4594021849294327751">Creează o transcriere</translation>
-<translation id="4602266091140407479">Microfon</translation>
 <translation id="4607282946861182308">Nu se pot crea imagini pe baza acestei solicitări. Încearcă alta.</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
 <translation id="4623061655523261501">Numele înregistrărilor au fost generate</translation>
@@ -1462,12 +1462,12 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plajă</translation>
 <translation id="819278132617411009">Folosește Google AI pentru productivitate</translation>
+<translation id="8200772114523450471">Reia</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
-<translation id="8236972776513018241">Transcriere</translation>
 <translation id="8238771987802558562">Alege un APN</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>
 <translation id="8250926778281121244">ruginiu</translation>
@@ -1594,7 +1594,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8864415976656252616">Nu există conținut sugerat. Vezi cel mai popular conținut de ajutor.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Dispozitivul este o tabletă.</translation>
-<translation id="8878117140814294155">Dezactivează sunetul microfonului</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
 <translation id="8882789155418924367">bufnițe</translation>
 <translation id="8892443466059986410">Anulează modificarea comenzii rapide</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Энэ удирдлагыг хүссэн тоглоомын үйлдэл рүүгээ шилжүүлэх бол суман товчийг ашиглана уу. Удирдлагыг тавих бол enter товчийг ашиглана уу. Цуцлах бол escape товчийг ашиглана уу.</translation>
 <translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="1175951029573070619">Дундаж (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1180621378971766337">тохитой</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1191518099344003522">APN-г идэвхжүүлсэн.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4594021849294327751">Сийрүүлэг үүсгэх</translation>
-<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Үүний зургийг үүсгэх боломжгүй. Өөр заавар оролдож үзнэ үү.</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
 <translation id="4623061655523261501">Бичлэгийн нэрсийг амжилттай үүсгэлээ</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8183975772394450380">далайн эрэг</translation>
 <translation id="819278132617411009">Илүү бүтээмжтэй байхын тулд Google AI-г ашиглах</translation>
+<translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
 <translation id="8227119283605456246">Файл хавсаргах</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
-<translation id="8236972776513018241">Сийрүүлэг</translation>
 <translation id="8238771987802558562">APN-г сонгох</translation>
 <translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>
 <translation id="8250926778281121244">зэв</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Санал болгосон контент байхгүй. Шилдэг тусламжийн контентыг харна уу.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Төхөөрөмж нь таблет байна.</translation>
-<translation id="8878117140814294155">Микрофоны дууг хаах/нээх</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
 <translation id="8882789155418924367">шар шувууд</translation>
 <translation id="8892443466059986410">Товчлолыг засахыг цуцлах</translation>

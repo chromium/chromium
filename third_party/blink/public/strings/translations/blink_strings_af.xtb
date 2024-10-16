@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="1591562245178063882">Vandeesmaand</translation>
 <translation id="1637811476055996098">Kies lêers</translation>
-<translation id="1680090928918677457">Gebruik kamera</translation>
 <translation id="1729654308190250600">Voer 'n nie-leë e-posadres in.</translation>
 <translation id="1758486001363313524">Ander …</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Verkort hierdie teks na <ph name="MAX_CHARACTERS" /> karakters of minder (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Snit <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2507943997699731163">Vul asseblief hierdie veld in.</translation>
 <translation id="2613802280814924224">Voer asseblief 'n geldige waarde in. Die naaste geldige waarde is <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later wees.</translation>
 <translation id="2761667185364618470">Merk asseblief hierdie blokkie as jy wil voortgaan.</translation>
 <translation id="2908441821576996758">Voer asseblief 'n kommageskeide lys e-posadresse in.</translation>
-<translation id="2940013921954129954">Presiese ligging word toegelaat</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Voer asseblief 'n geldige waarde in. Die veld is onvolledig of het 'n ongeldige datum.</translation>
 <translation id="310520048233152454">Voer 'n URL in</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
 <translation id="383465348367842624">'n Deel gevolg deur "<ph name="ATSIGN" />" moenie die simbool "<ph name="INVALIDCHARACTER" />" bevat nie.</translation>
 <translation id="3846214748874656680">Verlaat volskerm</translation>
-<translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4360991593054037559">Voer asseblief 'n geldige waarde in. Die twee naaste geldige waardes is <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Besonderhede</translation>
-<translation id="4663373278480897665">Kamera word toegelaat</translation>
 <translation id="4664250907885839816">'n Deel wat '<ph name="ATSIGN" />' volg, behoort nie die simbool '<ph name="INVALIDCHARACTER" />' te bevat nie.</translation>
 <translation id="4718048029184481307">Speel tans prent-in-prent</translation>
 <translation id="4812940957355064477">Voer asseblief 'n nommer in.</translation>
-<translation id="49269513399674318">Gebruik mikrofoon</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> gekies</translation>
 <translation id="4992066212339426712">Ontdemp</translation>
 <translation id="49969490063480558">Voer asseblief 'n deel in wat volg op "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" is onvolledig.</translation>
 <translation id="5164977714490026579">Waarde moet groter as of gelyk aan <ph name="MINIMUM" /> wees.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5239623327352565343">Ligging toegelaat</translation>
 <translation id="5307600278924710095">Voer asseblief 'n deel gevolg deur "<ph name="ATSIGN" />" in. "<ph name="INVALIDADDRESS" />" is onvolledig.</translation>
 <translation id="5334352251556557839">Kan nie media speel nie.</translation>
 <translation id="537648784377940524">Minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor maksimum datum (<ph name="MAX_DATE_OR_TIME" />) wees.</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Swak terugspeelgehalte</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6820355525329141109">Kon nie inprop laai nie.</translation>
-<translation id="688706781007114099">Gebruik ligging</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans 1 karakter).</translation>
 <translation id="709897737746224366">Kry passing vir versoekte formaat.</translation>
-<translation id="7134810312945846184">Gebruik mikrofoon en kamera</translation>
 <translation id="7263440858009898357">Kies asseblief 'n item uit die lys.</translation>
 <translation id="7364796246159120393">Kies lêer</translation>
 <translation id="739024184232394898">Ander …</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Waarde moet tussen <ph name="MINIMUM_TIME" /> en <ph name="MAXIMUM_TIME" /> wees.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> lêers</translation>
 <translation id="8451268428117625855">Kies asseblief 'n lêer.</translation>
-<translation id="8533587060884335451">Gebruik presiese ligging</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Reëlomvouing</translation>
 <translation id="8750798805984357768">Kies asseblief een van hierdie opsies.</translation>

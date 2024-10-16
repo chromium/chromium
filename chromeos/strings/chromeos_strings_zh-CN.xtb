@@ -44,6 +44,7 @@
 <translation id="11743817593307477">使用箭头键可将此控件移至您要执行的游戏操作。使用 Enter 键可放置控件。使用 Esc 键可取消。</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">暂停</translation>
 <translation id="1180621378971766337">舒适</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">已启用 APN。</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
-<translation id="4602266091140407479">麦克风</translation>
 <translation id="4607282946861182308">无法创建这样的图片。请试试其他提示。</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4623061655523261501">已成功生成录音名称</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海滩</translation>
 <translation id="819278132617411009">使用 Google AI 提高工作效率</translation>
+<translation id="8200772114523450471">继续</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8226628635270268143">选择您喜爱的照片和相册</translation>
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
-<translation id="8236972776513018241">转写内容</translation>
 <translation id="8238771987802558562">选择 APN</translation>
 <translation id="8246209727385807362">未知运营商</translation>
 <translation id="8250926778281121244">铁锈色</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">没有推荐的内容。请查看热门帮助内容。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">设备类型是平板电脑。</translation>
-<translation id="8878117140814294155">切换麦克风静音</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8882789155418924367">猫头鹰</translation>
 <translation id="8892443466059986410">取消修改快捷方式</translation>

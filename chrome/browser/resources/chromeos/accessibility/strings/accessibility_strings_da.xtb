@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Kornblå</translation>
 <translation id="1246424317317450637">Fed</translation>
 <translation id="1251750620252348585">Næste niveau 6-overskrift</translation>
+<translation id="1264956950255940376">Knib det venstre øje sammen</translation>
 <translation id="1268366246392928616">Der er ingen forrige matematiske udtryk</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1284576163386164372">Du kan til enhver tid se selvstudier ved at åbne menuerne. Du åbner menuerne ved at trykke med fire fingre. Aktivér derefter vejledningen under sektionen "ChromeVox".</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Retning for berøring</translation>
 <translation id="1325363694295259631">Alternativknappen <ph name="NAME" /> til menupunktet er ikke valgt</translation>
 <translation id="1325946044405407859">Gyldenbrun</translation>
+<translation id="1328928545650070438">Sænk øjenbrynene</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> af <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">tegn- og ordekko</translation>
 <translation id="1334570596456017464">Sænket skrift</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">kopiér</translation>
 <translation id="1360699455582016846">Klik på elementet under routing-tasten <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Løft øjenbrynene</translation>
 <translation id="1376703628032300005">gå til næste tegn</translation>
 <translation id="1377925789329510816">Dette er den sidste overskrift. Tryk på søgetasten+H for at gå til den første overskrift, eller tryk på søgetasten+Shift+H for at gå til den anden overskrift på siden.</translation>
 <translation id="138218114945450791">Lyseblå</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">si.fo</translation>
 <translation id="1730447754326314349">Velkommen til ChromeVox-vejledningen. Du kan til enhver tid forlade denne vejledning ved at trykke på Esc-tasten øverst til venstre på tastaturet. Hold Ctrl og Alt nede, og tryk på Z for at deaktivere ChromeVox. Brug mellemrumstasten til at gå til næste lektion, når du er klar.</translation>
+<translation id="1735957571918073979">Blink med begge øjne</translation>
 <translation id="174268867904053074">Næste grafik</translation>
 <translation id="1756785467854861272">Mørk magenta</translation>
 <translation id="1758693804775271377">Stryg til venstre eller højre med én finger for at gennemse lektioner om dette emne</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Rul til højre</translation>
 <translation id="1781173782405573156">Ignorer-tast</translation>
 <translation id="1787176709638001873">Tekst om redigering af adgangskode</translation>
+<translation id="1795438342141780114">Nulstil markøren til midten</translation>
 <translation id="180203835522132923">Søgetasten+O efterfulgt af W</translation>
 <translation id="1810107444790159527">Listefelt</translation>
 <translation id="1812527064848182527">landskab</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Næste objekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Vis braillekommandoer i ChromeVox-menuer</translation>
+<translation id="1999763610967697511">Træk og slip</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{venstre kantet parentes}one{# venstre kantede parenteser}other{# venstre kantede parenteser}}</translation>
 <translation id="2009187674653301682">Ikke hævet skrift</translation>
 <translation id="2010555995361223825">ChromeVox-menuer</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Går væk fra stavefejlen</translation>
 <translation id="2267945578749931355">Næste tegn</translation>
 <translation id="2278490101488436824">Stryg til venstre med tre fingre</translation>
+<translation id="228059581448666199">Venstreklik på musen</translation>
 <translation id="2303873575703885770">Aktivér et element</translation>
 <translation id="2305942658236913680">Der er ikke flere overskrifter</translation>
 <translation id="2311237334957139798">Gå til forrige ved detaljeniveau</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Der er ingen forrige ARIA-orienteringspunkter</translation>
 <translation id="2843814945404750166">Mørk olivengrøn</translation>
 <translation id="2843837985843789981">Forrige gruppe</translation>
+<translation id="2849035674501872372">Find</translation>
+<translation id="2860710618359053450">Drej kæben til venstre</translation>
 <translation id="2864481629947106776">Forrige link</translation>
 <translation id="2867808975387772810">Bibliografi</translation>
 <translation id="2873259058405069099">Gå til starten af ​​tabellen</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Navigation</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{mellemrum}one{# mellemrum}other{# mellemrum}}</translation>
 <translation id="3179119189286472195">Ikke et link</translation>
+<translation id="3180990259147710757">Drej kæben til venstre</translation>
 <translation id="320041337977930740">Skift til visning med sammenfletning</translation>
 <translation id="3206698050650195442">Afslut vejledning</translation>
 <translation id="3208346789712025453">Der er ikke flere styringselementer</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{plus}one{# plustegn}other{# plustegn}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Forrige formularfelt</translation>
+<translation id="3390740059150071453">Kig til venstre</translation>
 <translation id="3393605254399152980">Træk med én finger for at høre, hvad du berører</translation>
 <translation id="3406283310380167331">Vis formularliste</translation>
 <translation id="3407726812456125464">Få den markerede tekst læst op</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Forrige objekt</translation>
 <translation id="4099274309791143834">med undermenu</translation>
 <translation id="4101527861445851766">Et markeret afkrydsningsfelt</translation>
+<translation id="410225014223200513">Form en cirkel med læberne</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Underretning</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{højre klammeparentes}one{# højre klammeparenteser}other{# højre klammeparenteser}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Stålblå</translation>
 <translation id="4253168017788158739">Note</translation>
 <translation id="4254798249533888099">Træ</translation>
+<translation id="4255016471934258618">Åbn munden helt</translation>
 <translation id="4259220820964911921">Vil du aktivere ansigtsstyring?</translation>
 <translation id="4271220233568730077">Næste matematiske udtryk</translation>
 <translation id="4275397969489577657">Aktivér logning af begivenhedsstreaming</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Brændt orange</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punktum}=3{ellipse}one{# punktummer}other{# punktummer}}</translation>
 <translation id="4352022650330571548">skriv <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">Højreklik på musen</translation>
 <translation id="4372435075475052704">min.:<ph name="X" /></translation>
 <translation id="4372705107434148843">Stop tale</translation>
 <translation id="4376316291247992553">Se grafik som braille</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Lys turkis</translation>
 <translation id="4826415162591436065">Naviger frem</translation>
 <translation id="4827410568042294688">fravalgt</translation>
+<translation id="483262387981411190">Sæt ansigtsstyring på pause, eller genoptag</translation>
+<translation id="4835598628985424375">Lav trutmund ved at klemme læberne sammen</translation>
 <translation id="4838490795649708173">Tryk med fire fingre</translation>
 <translation id="4839925464551908214">Gå til forrige række</translation>
 <translation id="4841614409681890122">Pink</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Der er ingen forrige mediewidgets</translation>
 <translation id="4855927945655956315">Vigtige taster: Ctrl</translation>
+<translation id="485806788160414322">Afspil eller sæt medie på pause</translation>
 <translation id="4862744964787595316">Ikke fed</translation>
 <translation id="4865995900839719272">gå tilbage til forrige linje</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Mellemlys skiferblå</translation>
 <translation id="5140016802771803559">Lilla</translation>
 <translation id="5142101052131610456">Alle lektioner</translation>
+<translation id="514387318601895731">Kig ned</translation>
 <translation id="5158275234811857234">Forside</translation>
 <translation id="516076699907426116">Hvis du vil fortsætte, skal du bruge Tryk for at høre for at finde knappen til næste lektion. Tryk derefter to gange for at fortsætte.</translation>
 <translation id="5170206230005240598">Brailletekst er aktiveret</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Udvidelsen Google Enhanced Network til oplæsning</translation>
 <translation id="5783252477644995371">Ansigtsstyring giver dig kontrol over markøren ved at pege med ansigtet samt mulighed for at udføre handlinger såsom at venstreklikke med ansigtsbevægelser, f.eks. et smil</translation>
 <translation id="5805940204952508776">Tryk med to fingre</translation>
+<translation id="5807774529265708172">Vis eller skjul skærmtastatur</translation>
 <translation id="5819072574982403430">Træelement</translation>
 <translation id="5822819874379903994">Mørk turkis</translation>
 <translation id="5824976764713185207">Læs automatisk siden, når den er indlæst</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5866042630553435010">Delvist markeret</translation>
 <translation id="5866210856231860256">Tryk på søgetasten+højrepil eller på søgetasten+venstrepil for at gennemse lektioner til dette emne</translation>
+<translation id="5866236843389439313">Træk venstre mundvige</translation>
 <translation id="5867591286054666064">Undervejs i denne vejledning kan du trykke på en given tast for at høre, hvad den hedder.</translation>
 <translation id="5869546221129391014">Gitter</translation>
 <translation id="5876817486144482042">Skru ned for talevolumen</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Aktuel dato</translation>
 <translation id="5926889058434275234">Gå til Hjælp for at se en liste over bevægelser.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{lig med}one{# lig med-tegn}other{# lig med-tegn}}</translation>
+<translation id="5947651424015173580">Dobbeltklik på musen</translation>
 <translation id="5948123859135882163">Skift fortolkningen af matematiske udtryk mellem strukturel og semantisk</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialogboks</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{med # element}one{med # element}other{med # elementer}}</translation>
 <translation id="5981446804259161541">Lys cyanblå</translation>
 <translation id="5983179082906765664">Øg detaljegraden for navigation</translation>
+<translation id="5988563937187882754">Kig til højre</translation>
 <translation id="5992285135956208197">Grafikdokument</translation>
 <translation id="5999630716831179808">Stemmer</translation>
 <translation id="6006050241733874051">Formular</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Der er ikke flere kombifelter</translation>
+<translation id="7715455358521357192">Knib det højre øje</translation>
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7731785449856576010">Der er ikke flere mediewidgets</translation>
 <translation id="7735498529470878067">Tryk for at høre kan hjælpe dig med hurtigt at få en fornemmelse af, hvad der foregår på skærmen.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">Forrige ord</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7851816175263618915">Nogen tegnsætning</translation>
+<translation id="7860802890538098598">Træk højre mundvige</translation>
 <translation id="7871691770940645922">Virtuelt display til blindskrift</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="78826985582142166">skdr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">Forøg</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{anførelsestegn}one{# anførelsestegn}other{# anførelsestegn}}</translation>
+<translation id="8017004049696748317">Start eller stop diktering</translation>
 <translation id="8017588669690167134">Slå tale fra</translation>
 <translation id="801990297710781303">Fodnote</translation>
 <translation id="8028833145828956995">Du kan bruge ChromeVox med touchskærmen</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">Skifergrå</translation>
 <translation id="8121539003537428024">Aktivér alle hændelsesfiltre</translation>
 <translation id="8123975449645947908">Rul baglæns</translation>
+<translation id="8126355825906412872">Smil</translation>
 <translation id="8126386426083591964">Der er ingen forrige niveau 5-overskrifter</translation>
 <translation id="812886159861361726">Download af <ph name="FILE_NAME" /> er stoppet</translation>
 <translation id="8129445297241948503">Der er ingen celle ovenfor</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">Ændringstaster</translation>
 <translation id="8943282376843390568">Limegrøn</translation>
 <translation id="8944511129464116546">delvist markeret</translation>
+<translation id="8945050808870279132">Rynk på næsen</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Der er ingen forrige alternativknapper</translation>
 <translation id="8970172509886453271">Der er ingen forrige afsnit</translation>

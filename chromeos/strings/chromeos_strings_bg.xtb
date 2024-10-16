@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Използвайте клавишите със стрелки, за да преместите тази контрола до желаното от вас действие в играта. Натиснете клавиша Enter, за да поставите контролата, или Escape, за да анулирате.</translation>
 <translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средна (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Пауза</translation>
 <translation id="1180621378971766337">уютно</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1191518099344003522">Името на точката за достъп (APN) е активирано.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4594021849294327751">Създаване на препис</translation>
-<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не могат да се създадат изображения на това. Опитайте с друга подкана.</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
 <translation id="4623061655523261501">Имената на записите бяха генерирани успешно</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плаж</translation>
 <translation id="819278132617411009">Използвайте AI на Google, за да повишите продуктивността си</translation>
+<translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>
 <translation id="8227119283605456246">Прикачване на файл</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
-<translation id="8236972776513018241">Препис</translation>
 <translation id="8238771987802558562">Избиране на APN</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
 <translation id="8250926778281121244">ръждив</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Няма предложено съдържание. Вижте най-популярното помощно съдържание.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
-<translation id="8878117140814294155">Спиране или пускане на звука на микрофона</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8882789155418924367">сови</translation>
 <translation id="8892443466059986410">Анулиране на редактирането на прекия път</translation>

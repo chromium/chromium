@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Usa i tasti freccia per spostare il controllo sull'azione di gioco che vuoi. Usa il tasto Invio per posizionare il controllo. Usa il tasto Esc per annullare.</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Nella media (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pausa</translation>
 <translation id="1180621378971766337">accogliente</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1191518099344003522">APN attivo.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
-<translation id="4602266091140407479">Microfono</translation>
 <translation id="4607282946861182308">Impossibile creare immagini di quanto richiesto. Prova un altro comando.</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4623061655523261501">Nomi di registrazione generati correttamente</translation>
@@ -1462,12 +1462,12 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8183975772394450380">una spiaggia</translation>
 <translation id="819278132617411009">Usa Google AI per aumentare la produttività</translation>
+<translation id="8200772114523450471">Riprendi</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
 <translation id="8227119283605456246">Allega file</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
-<translation id="8236972776513018241">Trascrizione</translation>
 <translation id="8238771987802558562">Scegli un APN</translation>
 <translation id="8246209727385807362">Operatore sconosciuto</translation>
 <translation id="8250926778281121244">ruggine</translation>
@@ -1594,7 +1594,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8864415976656252616">Nessun contenuto suggerito. Visualizza i contenuti Help principali.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Il dispositivo è un tablet.</translation>
-<translation id="8878117140814294155">Attiva/disattiva audio del microfono</translation>
 <translation id="8881098542468797602">Test effettuato correttamente</translation>
 <translation id="8882789155418924367">gufi</translation>
 <translation id="8892443466059986410">Annulla la modifica della scorciatoia</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">हे नियंत्रण तुम्हाला हव्या असलेल्या गेम कृतीवर हलवण्यासाठी अ‍ॅरो की वापरा. नियंत्रण ठेवण्यासाठी एंटर की वापरा. रद्द करण्यासाठी एस्केप की वापरा.</translation>
 <translation id="1175697296044146566">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="1175951029573070619">सरासरी (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1180621378971766337">आरामदायी</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1191518099344003522">APN सुरू केले आहे.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4594021849294327751">ट्रान्स्क्रिप्ट तयार करा</translation>
-<translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">याच्या इमेज तयार करू शकत नाही. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
 <translation id="4623061655523261501">रेकॉर्डिंगची नावे यशस्वीरीत्या जनरेट केली आहेत</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">एंटर</translation>
 <translation id="8183975772394450380">समुद्रकिनारा</translation>
 <translation id="819278132617411009">आणखी उत्पादनक्षम होण्यासाठी Google AI वापरा</translation>
+<translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>
 <translation id="8227119283605456246">फाइल अटॅच करा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
-<translation id="8236972776513018241">ट्रान्स्क्रिप्ट</translation>
 <translation id="8238771987802558562">APN निवडा</translation>
 <translation id="8246209727385807362">माहीत नसलेला वाहक</translation>
 <translation id="8250926778281121244">रस्ट</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">कोणताही सुचवलेला आशय नाही. सर्वोत्तम मदत आशय पहा.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">डिव्हाइस हे टॅबलेट आहे.</translation>
-<translation id="8878117140814294155">मायक्रोफोन वर म्यूट टॉगल करा</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8882789155418924367">घुबडे</translation>
 <translation id="8892443466059986410">शॉर्टकट संपादित करणे रद्द करा</translation>

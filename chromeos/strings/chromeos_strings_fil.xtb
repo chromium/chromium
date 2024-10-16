@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Gumamit ng mga arrow key para ilipat ang kontrol na ito sa gusto mong pagkilos sa laro. Gamitin ang enter key para ilagay ang kontrol. Gamitin ang escape key para kanselahin.</translation>
 <translation id="1175697296044146566">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="1175951029573070619">Katamtaman (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">I-pause</translation>
 <translation id="1180621378971766337">maaliwalas</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1191518099344003522">Naka-enable ang APN.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4594021849294327751">Gumawa ng transcript</translation>
-<translation id="4602266091140407479">Mic</translation>
 <translation id="4607282946861182308">Hindi makagawa ng mga larawan nito. Sumubok ng ibang prompt.</translation>
 <translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
 <translation id="4623061655523261501">Matagumpay na nakabuo ng mga pangalan ng recording</translation>
@@ -1462,12 +1462,12 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">beach</translation>
 <translation id="819278132617411009">Gamitin ang Google AI para mas maging produktibo</translation>
+<translation id="8200772114523450471">Resume</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
 <translation id="8227119283605456246">Mag-attach ng file</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
-<translation id="8236972776513018241">Transcript</translation>
 <translation id="8238771987802558562">Pumili ng APN</translation>
 <translation id="8246209727385807362">Hindi kilalang carrier</translation>
 <translation id="8250926778281121244">rust</translation>
@@ -1594,7 +1594,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8864415976656252616">Walang iminumungkahing content. Tingnan ang nangungunang content ng tulong.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Tablet ang device.</translation>
-<translation id="8878117140814294155">I-toggle ang pagkaka-mute ng mikropono</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
 <translation id="8882789155418924367">mga kuwago</translation>
 <translation id="8892443466059986410">Kanselahin ang pag-edit ng shortcut</translation>

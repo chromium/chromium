@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Korenbloemblauw</translation>
 <translation id="1246424317317450637">Vet</translation>
 <translation id="1251750620252348585">Volgende kop voor niveau 6</translation>
+<translation id="1264956950255940376">Je linkeroog dichtknijpen</translation>
 <translation id="1268366246392928616">Geen vorige wiskundige uitdrukking</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1284576163386164372">Je kunt de tutorials altijd bekijken door met 4 vingers te tikken om de menu's te openen. Vervolgens activeer je de tutorial in het gedeelte ChromeVox.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Aanraakoriëntatie</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, keuzerondje van menu-item niet geselecteerd</translation>
 <translation id="1325946044405407859">Geelbruin</translation>
+<translation id="1328928545650070438">Je wenkbrauwen fronsen</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> van <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">teken- en woordecho</translation>
 <translation id="1334570596456017464">Subscript</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Fooi</translation>
 <translation id="1354356357730355833">kopiëren</translation>
 <translation id="1360699455582016846">Klik op het item onder de routeringstoets <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Je wenkbrauwen optrekken</translation>
 <translation id="1376703628032300005">naar het volgende teken gaan</translation>
 <translation id="1377925789329510816">Dit is de laatste kop. Druk op Zoeken + H om terug te keren naar de eerste kop of druk op Zoeken + Shift + H om naar de tweede kop op deze pagina te gaan.</translation>
 <translation id="138218114945450791">Lichtblauw</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">footer</translation>
 <translation id="1730447754326314349">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, kun je op elk moment linksboven op het toetsenbord op de Escape-toets drukken. Als je ChromeVox wilt uitzetten, houd je Ctrl en Alt ingedrukt en druk je op Z. Druk als je klaar bent op de spatiebalk om naar de volgende les te gaan.</translation>
+<translation id="1735957571918073979">Met beide ogen knipperen</translation>
 <translation id="174268867904053074">Volgende afbeelding</translation>
 <translation id="1756785467854861272">Donkermagenta</translation>
 <translation id="1758693804775271377">Swipe met één vinger naar links of rechts om door lessen over dit onderwerp te browsen</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Naar rechts scrollen</translation>
 <translation id="1781173782405573156">Overslatoets</translation>
 <translation id="1787176709638001873">Tekst voor bewerken wachtwoord</translation>
+<translation id="1795438342141780114">Cursor resetten naar midden</translation>
 <translation id="180203835522132923">Zoeken + O, dan W</translation>
 <translation id="1810107444790159527">Keuzelijst</translation>
 <translation id="1812527064848182527">liggend</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Volgend object</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Braille-opdrachten bekijken in de ChromeVox-menu's</translation>
+<translation id="1999763610967697511">Slepen en neerzetten</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{vierkante haak links}other{# vierkante haken links}}</translation>
 <translation id="2009187674653301682">Geen superscript</translation>
 <translation id="2010555995361223825">ChromeVox-menu's</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Spelfout sluiten</translation>
 <translation id="2267945578749931355">Volgend teken</translation>
 <translation id="2278490101488436824">Swipe met drie vingers naar links</translation>
+<translation id="228059581448666199">Klikken met de linkermuisknop</translation>
 <translation id="2303873575703885770">Een item activeren</translation>
 <translation id="2305942658236913680">Geen volgende kop</translation>
 <translation id="2311237334957139798">Naar het vorige detailniveau</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Geen vorig ARIA-oriëntatiepunt</translation>
 <translation id="2843814945404750166">Donkerolijfgroen</translation>
 <translation id="2843837985843789981">Vorige groep</translation>
+<translation id="2849035674501872372">Omhoog kijken</translation>
+<translation id="2860710618359053450">Je kaak naar rechts bewegen</translation>
 <translation id="2864481629947106776">Vorige link</translation>
 <translation id="2867808975387772810">Bibliografie</translation>
 <translation id="2873259058405069099">Naar het begin van de tabel gaan</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Navigatie</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{spatie}other{# spaties}}</translation>
 <translation id="3179119189286472195">Geen link</translation>
+<translation id="3180990259147710757">Je kaak naar links bewegen</translation>
 <translation id="320041337977930740">De weergavestijl wijzigen in interleave</translation>
 <translation id="3206698050650195442">Tutorial afsluiten</translation>
 <translation id="3208346789712025453">Geen volgend bedieningselement</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{plusteken}other{# plustekens}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Vorig formulierveld</translation>
+<translation id="3390740059150071453">Naar links kijken</translation>
 <translation id="3393605254399152980">Sleep met één vinger om te horen wat je aanraakt</translation>
 <translation id="3406283310380167331">Lijst met formulieren bekijken</translation>
 <translation id="3407726812456125464">Geselecteerde tekst beluisteren</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Vorig object</translation>
 <translation id="4099274309791143834">met submenu</translation>
 <translation id="4101527861445851766">Een aangevinkt selectievakje</translation>
+<translation id="410225014223200513">Een cirkel met je lippen maken</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Waarschuwing</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{accolade rechts}other{# accolades rechts}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Staalblauw</translation>
 <translation id="4253168017788158739">Opmerking</translation>
 <translation id="4254798249533888099">Structuur</translation>
+<translation id="4255016471934258618">Je mond wijd opendoen</translation>
 <translation id="4259220820964911921">Gezichtsbediening aanzetten?</translation>
 <translation id="4271220233568730077">Volgende wiskundige uitdrukking</translation>
 <translation id="4275397969489577657">Registratie van gebeurtenisstream aanzetten</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punt}=3{ellipsis}other{# punten}}</translation>
 <translation id="4352022650330571548">typ <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">Klikken met de rechtermuisknop</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Spraak stoppen</translation>
 <translation id="4376316291247992553">Afbeelding als braille bekijken</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Lichtturkoois</translation>
 <translation id="4826415162591436065">Verder navigeren</translation>
 <translation id="4827410568042294688">niet geselecteerd</translation>
+<translation id="483262387981411190">Gezichtsbediening onderbreken of hervatten</translation>
+<translation id="4835598628985424375">Je lippen samendrukken</translation>
 <translation id="4838490795649708173">Tik met vier vingers</translation>
 <translation id="4839925464551908214">Naar vorige rij</translation>
 <translation id="4841614409681890122">Diep roze</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">timer</translation>
 <translation id="4854380505292502090">Geen vorige mediawidget</translation>
 <translation id="4855927945655956315">Essentiële toetsen: Ctrl</translation>
+<translation id="485806788160414322">Media afspelen of pauzeren</translation>
 <translation id="4862744964787595316">Niet vet</translation>
 <translation id="4865995900839719272">naar de vorige regel gaan</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Middenleisteenblauw</translation>
 <translation id="5140016802771803559">Rebecca-paars</translation>
 <translation id="5142101052131610456">Alle lessen</translation>
+<translation id="514387318601895731">Omlaag kijken</translation>
 <translation id="5158275234811857234">Omslag</translation>
 <translation id="516076699907426116">Verken via aanraking om naar de knop 'Volgende les' te gaan. Dubbeltik dan om verder te gaan.</translation>
 <translation id="5170206230005240598">Braille-ondertiteling staat aan</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Tekst-naar-spraak-extensie voor uitgebreide netwerkservice van Google</translation>
 <translation id="5783252477644995371">Met gezichtsbediening kun je de cursor bedienen met gezichtsbewegingen en kun je acties uitvoeren, zoals links klikken met gezichtsgebaren zoals glimlachen</translation>
 <translation id="5805940204952508776">Tik met twee vingers</translation>
+<translation id="5807774529265708172">Schermtoetsenbord tonen of verbergen</translation>
 <translation id="5819072574982403430">Item in boomstructuur</translation>
 <translation id="5822819874379903994">Donker turkoois</translation>
 <translation id="5824976764713185207">Pagina automatisch lezen nadat deze is geladen</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5866042630553435010">Gedeeltelijk gecontroleerd</translation>
 <translation id="5866210856231860256">Druk op Zoeken plus pijl-rechts of Zoeken plus pijl-links om door lessen voor dit onderwerp te browsen</translation>
+<translation id="5866236843389439313">De linkerhoek van je mond optrekken</translation>
 <translation id="5867591286054666064">Zolang de handleiding is geopend, kun je op een toets drukken om de naam te horen.</translation>
 <translation id="5869546221129391014">Raster</translation>
 <translation id="5876817486144482042">Spraakvolume verlagen</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Huidige datum</translation>
 <translation id="5926889058434275234">Een volledige lijst met gebaren is te vinden in het Helpcentrum.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{gelijkteken}other{# gelijktekens}}</translation>
+<translation id="5947651424015173580">Dubbelklikken met de muis</translation>
 <translation id="5948123859135882163">Interpretatie van wiskundige formules schakelen tussen structureel en semantisch</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialoogvenster</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{met # item}other{met # items}}</translation>
 <translation id="5981446804259161541">Lichtcyaan</translation>
 <translation id="5983179082906765664">Detailniveau van navigatie vergroten</translation>
+<translation id="5988563937187882754">Naar rechts kijken</translation>
 <translation id="5992285135956208197">Grafisch document</translation>
 <translation id="5999630716831179808">Stemmen</translation>
 <translation id="6006050241733874051">Formulier</translation>
@@ -972,6 +994,7 @@
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Geen volgende keuzelijst met invoervak</translation>
+<translation id="7715455358521357192">Je rechteroog dichtknijpen</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7731785449856576010">Geen volgende mediawidget</translation>
 <translation id="7735498529470878067">Verkennen via aanraking kan handig zijn om snel een beeld te krijgen van wat er op het scherm staat.</translation>
@@ -989,6 +1012,7 @@
 <translation id="7839679365527550018">Vorig woord</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7851816175263618915">Gedeeltelijke interpunctie</translation>
+<translation id="7860802890538098598">De rechterhoek van je mond optrekken</translation>
 <translation id="7871691770940645922">Virtuele brailleleesregel</translation>
 <translation id="7882421473871500483">Bruin</translation>
 <translation id="78826985582142166">schuif</translation>
@@ -1008,6 +1032,7 @@
 <translation id="8004512796067398576">Hoger</translation>
 <translation id="8007540374018858731">k3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{aanhalingsteken}other{# aanhalingstekens}}</translation>
+<translation id="8017004049696748317">Dicteren starten of stoppen</translation>
 <translation id="8017588669690167134">Spraak uit</translation>
 <translation id="801990297710781303">Voetnoot</translation>
 <translation id="8028833145828956995">Je kunt ChromeVox gebruiken met het touchscreen</translation>
@@ -1026,6 +1051,7 @@
 <translation id="8098587210054821856">Leisteengrijs</translation>
 <translation id="8121539003537428024">Alle gebeurtenisfilters aanzetten</translation>
 <translation id="8123975449645947908">Terugscrollen</translation>
+<translation id="8126355825906412872">Lachen</translation>
 <translation id="8126386426083591964">Geen vorige kop van niveau 5</translation>
 <translation id="812886159861361726">Download van <ph name="FILE_NAME" /> is gestopt</translation>
 <translation id="8129445297241948503">Geen cel hierboven beschikbaar</translation>
@@ -1130,6 +1156,7 @@
 <translation id="8940925288729953902">Aanpassingstoetsen</translation>
 <translation id="8943282376843390568">Limoengroen</translation>
 <translation id="8944511129464116546">gedeeltelijk aangevinkt</translation>
+<translation id="8945050808870279132">Je neus optrekken</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Geen vorig keuzerondje</translation>
 <translation id="8970172509886453271">Geen vorig gedeelte</translation>

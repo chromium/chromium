@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Użyj klawiszy strzałek, aby przenieść ten element sterujący do wybranego działania w grze. Aby umieścić element sterujący, naciśnij klawisz Enter. Aby anulować, naciśnij klawisz Escape.</translation>
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1180621378971766337">przytulna</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1191518099344003522">APN jest włączony.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4594021849294327751">Utwórz transkrypcję</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Nie udało się utworzyć obrazów. Użyj innego promptu.</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
 <translation id="4623061655523261501">Nazwy nagrań zostały wygenerowane</translation>
@@ -1460,12 +1460,12 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plażę</translation>
 <translation id="819278132617411009">Wykorzystaj sztuczną inteligencję Google, aby zwiększyć swoją produktywność</translation>
+<translation id="8200772114523450471">Wznów</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
-<translation id="8236972776513018241">Transkrypcja</translation>
 <translation id="8238771987802558562">Wybierz APN</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
 <translation id="8250926778281121244">rdzawy</translation>
@@ -1592,7 +1592,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8864415976656252616">Brak sugerowanych treści. Zapoznaj się z najpopularniejszymi materiałami pomocy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>
-<translation id="8878117140814294155">Przełącz wyciszenie mikrofonu</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8882789155418924367">sowy</translation>
 <translation id="8892443466059986410">Anuluj edytowanie skrótu</translation>

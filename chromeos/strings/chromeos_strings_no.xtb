@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Bruk piltastene for å flytte denne kontrollen til spillhandlingen du ønsker. Trykk på Enter-tasten for å plassere kontrollen. Bruk Escape-tasten for å avbryte.</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gjennomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1180621378971766337">koselig</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1191518099344003522">APN er aktivert.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4594021849294327751">Opprett en transkripsjon</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Kan ikke lage bilder av dette. Prøv en annen forespørsel.</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4623061655523261501">Opptaksnavnene er generert</translation>
@@ -1462,12 +1462,12 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="819278132617411009">Bruk AI-løsninger fra Google for å bli mer produktiv</translation>
+<translation id="8200772114523450471">Fortsett</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
-<translation id="8236972776513018241">Transkripsjon</translation>
 <translation id="8238771987802558562">Velg et APN</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
 <translation id="8250926778281121244">rust</translation>
@@ -1594,7 +1594,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8864415976656252616">Ikke noe foreslått innhold. Se populært hjelpeinnhold.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten er et nettbrett.</translation>
-<translation id="8878117140814294155">Slå av/på mikrofonlyden</translation>
 <translation id="8881098542468797602">Testen er fullført</translation>
 <translation id="8882789155418924367">ugler</translation>
 <translation id="8892443466059986410">Avbryt snarveiredigeringen</translation>

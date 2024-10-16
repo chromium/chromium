@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">Διεύθυνση 1</translation>
 <translation id="1545749641540134597">Σάρωση κωδικού QR</translation>
 <translation id="1554477036522844996">Νέο παράθυρο</translation>
+<translation id="1558391695376153246">Κλείσιμο ανών. περιήγησης</translation>
 <translation id="1571780780926010134">Καρτέλες ανώνυμης περιήγησης</translation>
 <translation id="1580715474678097352">Προστασία από επικίνδυνους ιστοτόπους</translation>
 <translation id="1580783302095112590">Το μήνυμα εστάλη.</translation>
@@ -411,6 +412,7 @@
 <translation id="288655811176831528">Κλείσιμο καρτέλας</translation>
 <translation id="2888631381369839306">Οι ειδοποιήσεις παρακολούθησης τιμών ενεργοποιήθηκαν</translation>
 <translation id="288902476966286676">Επιστροφή στον αποστολέα</translation>
+<translation id="2894757982205307093">Νέα καρτέλα στην ομάδα</translation>
 <translation id="2905479111267140204">Έχετε <ph name="NUMBER_OF_PASSWORDS" /> επαναχρησιμοποιημένους κωδικούς πρόσβασης που θα μπορούσαν να διακυβεύσουν την ασφάλειά σας.</translation>
 <translation id="291754862089661335">Τοποθετήστε τον κώδικα QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο</translation>
 <translation id="2918688092312652908">Επισήμανση ως μη αναγνωσμένo</translation>
@@ -445,7 +447,6 @@
 Ανατρέξτε στις οδηγίες της μηχανής αναζήτησης σχετικά με τη διαγραφή του ιστορικού αναζήτησής σας, εφόσον υπάρχουν.</translation>
 <translation id="3080525922482950719">Μπορείτε να αποθηκεύετε σελίδες για ανάγνωση αργότερα ή εκτός σύνδεσης.</translation>
 <translation id="3081338492074632642">Βεβαιωθείτε ότι ο κωδικός πρόσβασης που αποθηκεύετε αντιστοιχεί στον κωδικό πρόσβασης για το <ph name="WEBSITE" />.</translation>
-<translation id="30842332047348094">Πιστωτικές κάρτες</translation>
 <translation id="3087734570205094154">Κάτω</translation>
 <translation id="309710370695886264">Έχετε 1 επαναχρησιμοποιημένο κωδικό πρόσβασης. Επιδιορθώστε τον τώρα για να παραμείνετε ασφαλείς.</translation>
 <translation id="3102139268911534961">Αξιοποιήστε το αγαπημένο σας πρόγραμμα περιήγησης για κινητά στο iPhone.</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3861908220442487587">Αυτή η διεύθυνση έχει αποθηκευτεί μόνο σε αυτήν τη συσκευή. Για να τη χρησιμοποιήσετε στις άλλες συσκευές σας, μετακινήστε την στον Λογαριασμό σας Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Εμφάνιση πλήρους URL</translation>
+<translation id="3875783148670536197">Οδηγίες</translation>
 <translation id="3876833929577368454">Να γίνεται ερώτηση κάθε φορά</translation>
 <translation id="3885587018298784481">Συμμετοχή σε μια ομάδα οικογένειας</translation>
 <translation id="3888863481921783344">Αυτό θα χρησιμοποιηθεί για την εμφάνιση πιθανών προσκεκλημένων στο συμβάν σας.</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">Αναζήτηση με κάμερα στο Lens</translation>
 <translation id="6231782223312638214">Προτεινόμενο</translation>
 <translation id="6232329973559504466">Ανώνυμη αναζήτηση</translation>
+<translation id="6234310016144827337">Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά</translation>
 <translation id="6234438496206735891">Εμφάνιση λήψεων</translation>
 <translation id="6236952928980352967">Επαναφορά προειδοποίησης</translation>
 <translation id="6247557882553405851">Διαχείριση κωδικών πρόσβασης Google</translation>
@@ -1539,7 +1542,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> λογαριασμοί</translation>
 <translation id="8161614462829037225">Ξεκλείδωμα με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Μήκος</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Για το {website_1}}=2{Για τα {website_1}, {website_2}}=3{Για τα {website_1}, {website_2} και 1 ακόμη}other{Για τα {website_1}, {website_2} και {more_count} ακόμη}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Οι συσκευές σας<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Προσθήκη κωδικού πρόσβασης</translation>
@@ -1635,6 +1637,7 @@
 <translation id="8609743333007776886">Προσθήκη ${url} στους σελιδοδείκτες</translation>
 <translation id="8620640915598389714">Επεξεργασία</translation>
 <translation id="8625706492572042370">Επεξεργασία αρχικής οθόνης</translation>
+<translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
 <translation id="8636825310635137004">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="8637431369725868556">Προστατευτείτε από επικίνδυνους ιστοτόπους.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>

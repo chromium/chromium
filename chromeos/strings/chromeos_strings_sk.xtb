@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Klávesmi so šípkami presuňte tento ovládací prvok na požadovanú akciu v hre. Ovládací prvok umiestnite pomocou klávesa Enter. Zrušiť to môžete klávesom Escape.</translation>
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Priemerné (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1180621378971766337">Útulná</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1191518099344003522">Názov prístupového bodu (APN) je povolený.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4594021849294327751">Vytvoriť prepis</translation>
-<translation id="4602266091140407479">Mikrofón</translation>
 <translation id="4607282946861182308">Obrázky tohto sa nedajú vytvoriť. Vyskúšajte iný pokyn.</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
 <translation id="4623061655523261501">Názvy nahrávok boli úspešne vygenerované</translation>
@@ -1462,12 +1462,12 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pláže</translation>
 <translation id="819278132617411009">Zvýšte si produktivitu pomocou umelej inteligencie od Googlu</translation>
+<translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>
 <translation id="8227119283605456246">Pripojiť súbor</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
-<translation id="8236972776513018241">Prepis</translation>
 <translation id="8238771987802558562">Výber názvu prístupového bodu (APN)</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
 <translation id="8250926778281121244">hrdzavé</translation>
@@ -1594,7 +1594,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8864415976656252616">Žiadny navrhovaný obsah. Pozrite si najlepší pomocný obsah.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zariadenie je tablet.</translation>
-<translation id="8878117140814294155">Prepnúť vypnutie zvuku mikrofónu</translation>
 <translation id="8881098542468797602">Test bol úspešný</translation>
 <translation id="8882789155418924367">sovy</translation>
 <translation id="8892443466059986410">Zrušiť úpravu skratky</translation>

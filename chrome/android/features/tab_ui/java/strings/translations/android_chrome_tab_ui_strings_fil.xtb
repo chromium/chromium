@@ -58,19 +58,16 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> na icon ng kulay ng grupo ng tab</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab, binago ang <ph name="ANY_CHANGED" />}one{Idinagdag ang <ph name="MANY_ADDED" /> tab, binago ang <ph name="ANY_CHANGED" />}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab, binago ang <ph name="ANY_CHANGED" />}}</translation>
-<translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3547352561153509682">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">I-hide ang dialog ng mga hindi aktibong tab</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail ng share sheet.</translation>
 <translation id="381219490185664296">I-ungroup ang grupo ng tab?</translation>
-<translation id="3882834874697329510">Para makakuha ng alerto sa isang bukas na tab kapag may mas mababang presyo, i-on ang mga notification sa Mga Setting.</translation>
 <translation id="3940195383040445971">Subaybayan ang mga presyo sa mga tab</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Igrupo ang tab}one{Igrupo ang mga tab}other{Igrupo ang mga tab}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> hindi aktibong tab}one{<ph name="TABS_COUNT_MANY" /> hindi aktibong tab}other{<ph name="TABS_COUNT_MANY" /> na hindi aktibong tab}}</translation>
 <translation id="3969565576924904454">Buksan ang <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Ma-notify</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Ginawa <ph name="NUM_DAYS_ONE" /> araw ang nakalipas}one{Ginawa <ph name="NUM_DAYS_MANY" /> araw ang nakalipas}other{Ginawa <ph name="NUM_DAYS_MANY" /> na araw ang nakalipas}}</translation>
 <translation id="4133493477912226187">Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="4139634748112164403">Mananatiling nakabukas ang mga tab sa device na ito pero permanenteng made-delete ang grupo</translation>
@@ -115,7 +112,6 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="5627941783489838464">Walang update sa tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{I-restore ang tab}one{I-restore ang mga tab}other{I-restore ang mga tab}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link mula sa Chrome}one{<ph name="TABS_COUNT_MANY" /> link mula sa Chrome}other{<ph name="TABS_COUNT_MANY" /> na link mula sa Chrome}}</translation>
-<translation id="575494663145460764">Makatanggap ng mga alerto para sa mga pagbaba sa presyo?</translation>
 <translation id="58326064309361797">I-drag ang mga tab para pagpangkatin ang mga ito</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5972844218283131174">I-deselect lahat</translation>

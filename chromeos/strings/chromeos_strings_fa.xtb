@@ -44,6 +44,7 @@
 <translation id="11743817593307477">‏بااستفاده از کلیدهای جهت‌نما این کنترل را به کنش بازی مدنظرتان ببرید. با فشار دادن کلید Enter، کنترل را در جای جدید قرار دهید. برای لغو عملیات، از کلید Escape استفاده کنید.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1175951029573070619">متوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">مکث</translation>
 <translation id="1180621378971766337">دنج</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1191518099344003522">«نام نقطه دستیابی» فعال است.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4594021849294327751">ایجاد ترانویسی</translation>
-<translation id="4602266091140407479">میکروفون</translation>
 <translation id="4607282946861182308">نمی‌توان تصویری از این مورد ایجاد کرد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="4609350030397390689">کاهش روشنایی صفحه‌کلید</translation>
 <translation id="4623061655523261501">نام برای ضبط گفتار باموفقیت تولید شد</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8183975772394450380">ساحل</translation>
 <translation id="819278132617411009">‏برای بهره‌وری بیشتر، از هوش مصنوعی Google استفاده کنید</translation>
+<translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
 <translation id="8227119283605456246">پیوست کردن فایل</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
-<translation id="8236972776513018241">ترانویسی</translation>
 <translation id="8238771987802558562">انتخاب «نام نقطه دستیابی»</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
 <translation id="8250926778281121244">زنگاری</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">محتوای پیشنهادی وجود ندارد. محتوای راهنمای برتر را ببینید.</translation>
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8876270629542503161">دستگاه رایانه لوحی است.</translation>
-<translation id="8878117140814294155">روشن کردن حالت بی‌صدای میکروفون</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
 <translation id="8882789155418924367">جغد</translation>
 <translation id="8892443466059986410">لغو کردن ویرایش میان‌بر</translation>

@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">ਲਾਜਵਰੀ</translation>
 <translation id="1246424317317450637">ਗੂੜ੍ਹਾ</translation>
 <translation id="1251750620252348585">ਅਗਲਾ ਪੱਧਰ 6 ਸਿਰਲੇਖ</translation>
+<translation id="1264956950255940376">ਖੱਬੀ ਅੱਖ ਨੂੰ ਥੋੜ੍ਹਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="1268366246392928616">ਕੋਈ ਪਿਛਲਾ ਗਣਿਤ ਸਮੀਕਰਨ ਨਹੀਂ</translation>
 <translation id="1275718070701477396">ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1284576163386164372">ਤੁਸੀਂ ਮੀਨੂ ਨੂੰ ਚਾਰ ਉਂਗਲਾਂ ਦੇ ਟੈਪ ਨਾਲ ਖੋਲ੍ਹ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਟਿਊਟੋਰੀਅਲਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ। ਫਿਰ "ChromeVox" ਸੈਕਸ਼ਨ ਦੇ ਤਹਿਤ ਟਿਊਟੋਰੀਅਲ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ।</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">ਸਪਰਸ਼ ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ਮੀਨੂ ਆਈਟਮ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਅਣਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1325946044405407859">ਤਾਂਬੇ ਰੰਗਾ</translation>
+<translation id="1328928545650070438">ਭਰਵੱਟੇ ਹੇਠਾਂ ਕਰੋ</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ਦਾ <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">ਅੱਖਰ ਅਤੇ ਸ਼ਬਦ ਧੁਨੀ</translation>
 <translation id="1334570596456017464">ਹੇਠਾਂ ਅੰਕਿਤ ਲਿਖਤ</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">ਨੁਕਤਾ</translation>
 <translation id="1354356357730355833">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1360699455582016846">ਰੂਟਿੰਗ ਕੁੰਜੀ <ph name="ROUTING_KEY_NUMBER" /> ਦੇ ਅਧੀਨ ਆਈਟਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="1365650529628379165">ਭਰਵੱਟੇ ਉੱਪਰ ਕਰੋ</translation>
 <translation id="1376703628032300005">ਅਗਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ 'ਤੇ ਜਾਓ</translation>
 <translation id="1377925789329510816">ਇਹ ਆਖਰੀ ਸਿਰਲੇਖ ਹੈ। ਪਹਿਲੇ ਸਿਰਲੇਖ ਤੱਕ ਸੀਮਾਬੱਧ ਕਰਨ ਲਈ Search+H ਦਬਾਓ, ਜਾਂ ਇਸ ਪੰਨੇ 'ਤੇ ਦੂਜੇ ਸਿਰਲੇਖ ਤੱਕ ਜਾਣ ਲਈ Search+Shift+H ਦਬਾਓ।</translation>
 <translation id="138218114945450791">ਹਲਕਾ ਨੀਲਾ</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">ਲਿੰਕ</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">ChromeVox ਟਿਊਟੋਰੀਅਲ ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ। ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਸ ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਲਈ, ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ Escape ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ। ChromeVox ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, Control ਅਤੇ Alt ਨੂੰ ਦਬਾਈ ਰੱਖੋ, ਅਤੇ Z ਨੂੰ ਦਬਾਓ। ਜਦੋਂ ਤੁਸੀਂ ਤਿਆਰ ਹੋਵੋ, ਤਾਂ ਅਗਲੇ ਪਾਠ 'ਤੇ ਜਾਣ ਲਈ ਸਪੇਸਬਾਰ ਵਰਤੋ।</translation>
+<translation id="1735957571918073979">ਦੋਵੇਂ ਅੱਖਾਂ ਝਪਕਾਓ</translation>
 <translation id="174268867904053074">ਅਗਲਾ ਗ੍ਰਾਫਿਕ</translation>
 <translation id="1756785467854861272">ਗੂੜ੍ਹਾ ਮਜੈਂਟਾ</translation>
 <translation id="1758693804775271377">ਇਸ ਵਿਸ਼ੇ ਲਈ ਪਾਠ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵਾਸਤੇ ਇੱਕ ਉਂਗਲ ਨਾਲ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="1781173782405573156">ਕੁੰਜੀ ਦੁਆਰਾ ਪਾਸ ਕਰੋ</translation>
 <translation id="1787176709638001873">ਪਾਸਵਰਡ ਸੰਪਾਦਨ ਲਿਖਤ</translation>
+<translation id="1795438342141780114">ਕਰਸਰ ਨੂੰ ਕੇਂਦਰ ਵਿੱਚ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="180203835522132923">Search + O, ਫਿਰ W</translation>
 <translation id="1810107444790159527">ਸੂਚੀ ਬੌਕਸ</translation>
 <translation id="1812527064848182527">ਲੈਂਡਸਕੇਪ</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">ਅਗਲਾ ਔਬਜੈਕਟ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਬਰੇਲ ਲਿਪੀ ਆਦੇਸ਼ ਦਿਖਾਓ</translation>
+<translation id="1999763610967697511">ਘਸੀਟੋ ਅਤੇ ਛੱਡੋ</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ਖੱਬੀ ਬ੍ਰੈਕਟ}one{# ਖੱਬੀਆਂ ਬ੍ਰੈਕਟਾਂ}other{# ਖੱਬੀਆਂ ਬ੍ਰੈਕਟਾਂ}}</translation>
 <translation id="2009187674653301682">ਕੋਈ ਉੱਪਰ ਅੰਕਿਤ ਲਿਖਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2010555995361223825">ChromeVox ਮੀਨੂ</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">ਗਲਤ ਸ਼ਬਦ-ਜੋੜ ਨੂੰ ਛੱਡਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2267945578749931355">ਅਗਲਾ ਅੱਖਰ</translation>
 <translation id="2278490101488436824">ਤਿੰਨ ਉਂਗਲਾਂ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
+<translation id="228059581448666199">ਮਾਊਸ 'ਤੇ ਖੱਬਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2303873575703885770">ਕਿਸੇ ਆਈਟਮ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="2305942658236913680">ਕੋਈ ਅਗਲਾ ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="2311237334957139798">ਪਿਛਲੇ ਵੇਰਵੇ ਪੱਧਰ 'ਤੇ ਜਾਓ</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">ਕੋਈ ਪਿਛਲੇ ARIA ਭੂਮੀ ਚਿੰਨ੍ਹ ਨਹੀਂ</translation>
 <translation id="2843814945404750166">ਗੂੜ੍ਹਾ ਜੈਤੂਨੀ ਹਰਾ</translation>
 <translation id="2843837985843789981">ਪਿਛਲਾ ਸਮੂਹ</translation>
+<translation id="2849035674501872372">ਉੱਪਰ ਵੱਲ ਦੇਖੋ</translation>
+<translation id="2860710618359053450">ਜਬਾੜੇ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="2864481629947106776">ਪਿਛਲਾ ਲਿੰਕ</translation>
 <translation id="2867808975387772810">ਪੁਸਤਕ ਮਾਲਾ</translation>
 <translation id="2873259058405069099">ਸਾਰਨੀ ਦੀ ਸ਼ੁਰੂਆਤ 'ਤੇ ਜਾਓ</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">ਨੈਵੀਗੇਸ਼ਨ</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ਸਪੇਸ}one{# ਸਪੇਸ}other{# ਸਪੇਸ}}</translation>
 <translation id="3179119189286472195">ਕੋਈ ਲਿੰਕ ਨਹੀਂ</translation>
+<translation id="3180990259147710757">ਜਬਾੜੇ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="320041337977930740">ਡਿਸਪਲੇ ਸਟਾਈਲ ਨੂੰ ਇੰਟਰਲੀਵ 'ਤੇ ਬਦਲੋ</translation>
 <translation id="3206698050650195442">ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="3208346789712025453">ਕੋਈ ਅਗਲਾ ਕੰਟਰੋਲ ਨਹੀਂ</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{ਜੋੜ}one{# ਜੋੜ ਦੇ ਚਿੰਨ੍ਹ}other{# ਜੋੜ ਦੇ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="338583716107319301">ਸੈਪਰੇਟਰ</translation>
 <translation id="3389259863310851658">ਪਿਛਲਾ ਫ਼ਾਰਮ ਖੇਤਰ</translation>
+<translation id="3390740059150071453">ਖੱਬੇ ਪਾਸੇ ਦੇਖੋ</translation>
 <translation id="3393605254399152980">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਪਰਸ਼ ਕੀਤੀ ਆਈਟਮ ਨੂੰ ਸੁਣਨ ਲਈ ਇੱਕ ਉਂਗਲ ਘਸੀਟੋ</translation>
 <translation id="3406283310380167331">ਫਾਰਮ ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="3407726812456125464">ਚੁਣੀ ਹੋਈ ਲਿਖਤ ਨੂੰ ਸੁਣੋ</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">ਪਿਛਲਾ ਔਬਜੈਕਟ</translation>
 <translation id="4099274309791143834">ਸਬਮੀਨੂ ਨਾਲ</translation>
 <translation id="4101527861445851766">ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲੱਗਿਆ ਚੈੱਕ-ਬਾਕਸ</translation>
+<translation id="410225014223200513">ਆਪਣੇ ਬੁੱਲ੍ਹਾਂ ਨਾਲ ਇੱਕ ਚੱਕਰ ਬਣਾਓ</translation>
 <translation id="4115378294792113321">ਮਜੈਂਟਾ</translation>
 <translation id="4116415223832267137">ਚਿਤਾਵਨੀ</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{ਸੱਜੀ ਬ੍ਰੇਸ}one{# ਸੱਜੀਆਂ ਬ੍ਰੇਸਿਜ}other{# ਸੱਜੀਆਂ ਬ੍ਰੇਸਿਜ}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">ਸੁਰਮਈ</translation>
 <translation id="4253168017788158739">ਨੋਟ</translation>
 <translation id="4254798249533888099">ਰੁੱਖ</translation>
+<translation id="4255016471934258618">ਆਪਣੇ ਮੂੰਹ ਨੂੰ ਵੱਧੋ-ਵੱਧ ਖੋਲ੍ਹੋ</translation>
 <translation id="4259220820964911921">ਕੀ ਚਿਹਰਾ ਕੰਟਰੋਲ ਨੂੰ ਚਾਲੂ ਕਰਨ ਹੈ?</translation>
 <translation id="4271220233568730077">ਅਗਲਾ ਮੈਥ</translation>
 <translation id="4275397969489577657">ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਲੌਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">ਗੇਰੂ ਰੰਗ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ਬਿੰਦੀ}=3{ਪਦ-ਲੋਪ ਚਿੰਨ੍ਹ}one{# ਬਿੰਦੀਆਂ}other{# ਬਿੰਦੀਆਂ}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> ਟਾਈਪ ਕਰੋ</translation>
+<translation id="4360738659108163902">ਮਾਊਸ ਉੱਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4372435075475052704">ਨਿਊਨਤਮ:<ph name="X" /></translation>
 <translation id="4372705107434148843">ਸਪੀਚ ਰੋਕੋ</translation>
 <translation id="4376316291247992553">ਗ੍ਰਾਫਿਕ ਨੂੰ ਬਰੇਲ ਲਿਪੀ ਵਜੋਂ ਦੇਖੋ</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">ਫਿੱਕਾ ਫਿਰੋਜ਼ੀ</translation>
 <translation id="4826415162591436065">ਅੱਗੇ ਵੱਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="4827410568042294688">ਅਚੋਣਵਾਂ ਕੀਤਾ</translation>
+<translation id="483262387981411190">ਚਿਹਰਾ ਕੰਟਰੋਲ ਰੋਕੋ ਜਾਂ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
+<translation id="4835598628985424375">ਬੁੱਲ੍ਹਾਂ ਨੂੰ ਇੱਕ-ਦੂਜੇ ਨਾਲ ਘੁੱਟ ਕੇ, ਉਨ੍ਹਾਂ ਨੂੰ ਅੰਦਰ ਵੱਲ ਖਿੱਚੋ</translation>
 <translation id="4838490795649708173">ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="4839925464551908214">ਪਿਛਲੀ ਕਤਾਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="4841614409681890122">ਰਾਣੀ ਰੰਗ</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">ਕੋਈ ਪਿਛਲਾ ਮੀਡੀਆ ਵਿਜੇਟ ਨਹੀਂ</translation>
 <translation id="4855927945655956315">ਅਹਿਮ ਕੁੰਜੀਆਂ: Control</translation>
+<translation id="485806788160414322">ਮੀਡੀਆ ਚਲਾਓ ਜਾਂ ਰੋਕੋ</translation>
 <translation id="4862744964787595316">ਗੂੜ੍ਹਾ ਨਹੀਂ</translation>
 <translation id="4865995900839719272">ਪਿਛਲੀ ਲਾਈਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">ਮੱਧਮ ਸੁਰਮਈ ਨੀਲਾ</translation>
 <translation id="5140016802771803559">ਬੈਂਗਣੀ</translation>
 <translation id="5142101052131610456">ਸਾਰੇ ਪਾਠ</translation>
+<translation id="514387318601895731">ਹੇਠਾਂ ਵੱਲ ਦੇਖੋ</translation>
 <translation id="5158275234811857234">ਕਵਰ</translation>
 <translation id="516076699907426116">ਜਾਰੀ ਰੱਖਣ ਲਈ, ਅਗਲਾ ਪਾਠ ਬਟਨ ਲੱਭਣ ਲਈ ਸਪਰਸ਼ ਰਾਹੀਂ ਪੜਚੋਲ ਕਰੋ। ਫਿਰ ਜਾਰੀ ਰੱਖਣ ਲਈ ਡਬਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5170206230005240598">ਬਰੇਲ ਲਿਪੀ ਸੁਰਖੀਆਂ ਚਾਲੂ</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Google ਵਿਸਤਰਿਤ ਨੈੱਟਵਰਕ ਲਿਖਤ-ਤੋਂ-ਬੋਲੀ ਐਕਸਟੈਂਸ਼ਨ</translation>
 <translation id="5783252477644995371">ਚਿਹਰਾ ਕੰਟਰੋਲ ਤੁਹਾਨੂੰ ਚਿਹਰੇ ਦੇ ਸੰਕੇਤ ਅਤੇ ਕਾਰਵਾਈਆਂ ਕਰਨ ਦੀ ਯੋਗਤਾ ਦੇ ਨਾਲ ਕਰਸਰ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਦਿੰਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਮੁਸਕਰਾਹਟ ਵਰਗੇ ਚਿਹਰੇ ਦੇ ਇਸ਼ਾਰਿਆਂ ਨਾਲ ਖੱਬੇ ਪਾਸੇ ਕਲਿੱਕ ਕਰਨਾ</translation>
 <translation id="5805940204952508776">ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
+<translation id="5807774529265708172">ਆਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="5819072574982403430">ਟ੍ਰੀ ਆਈਟਮ</translation>
 <translation id="5822819874379903994">ਗੂੜ੍ਹਾ ਫਿਰੋਜ਼ੀ</translation>
 <translation id="5824976764713185207">ਪੰਨੇ ਦੇ ਲੋਡ ਹੋਣ ਤੋਂ ਬਾਅਦ ਇਸਨੂੰ ਸਵੈਚਲਿਤ ਰੂਪ ਵਿੱਚ ਪੜ੍ਹੋ</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">ਟੈਬ ਸੂਚੀ</translation>
 <translation id="5866042630553435010">ਅੰਸ਼ਕ ਤੌਰ ਤੇ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲਗਾਇਆ</translation>
 <translation id="5866210856231860256">ਇਸ ਵਿਸ਼ੇ ਲਈ ਪਾਠ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵਾਸਤੇ Search + ਸੱਜਾ ਤੀਰ, ਜਾਂ Search + ਖੱਬਾ ਤੀਰ ਦਬਾਓ</translation>
+<translation id="5866236843389439313">ਆਪਣੇ ਮੂੰਹ ਦੇ ਖੱਬੇ ਕੋਨੇ ਨੂੰ ਖਿੱਚੋ</translation>
 <translation id="5867591286054666064">ਇਸ ਟਿਊਟੋਰੀਅਲ ਦੇ ਦੌਰਾਨ, ਕਿਸੇ ਕੁੰਜੀ ਦਾ ਨਾਮ ਸੁਣਨ ਲਈ ਉਸਨੂੰ ਦਬਾਓ।</translation>
 <translation id="5869546221129391014">ਗ੍ਰਿਡ</translation>
 <translation id="5876817486144482042">ਸਪੀਚ ਵੌਲਿਊਮ ਘਟਾਓ</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">ਮੌਜੂਦਾ ਤਾਰੀਖ</translation>
 <translation id="5926889058434275234">ਇਸ਼ਾਰਿਆਂ ਦੀ ਪੂਰੀ ਸੂਚੀ ਦੇਖਣ ਲਈ, ਮਦਦ ਕੇਂਦਰ 'ਤੇ ਜਾਓ।</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{ਬਰਾਬਰ}one{# ਬਰਾਬਰ ਦੇ ਚਿੰਨ੍ਹ}other{# ਬਰਾਬਰ ਦੇ ਚਿੰਨ੍ਹ}}</translation>
+<translation id="5947651424015173580">ਮਾਊਸ 'ਤੇ ਡਬਲ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5948123859135882163">ਢਾਂਚਾ ਅਤੇ ਅਰਥ ਵਿਗਿਆਨ ਵਿਚਾਲੇ ਗਣਿਤ ਸ਼ਬਦਾਵਲੀ ਦੀ ਵਿਆਖਿਆ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5955304353782037793">ਐਪ</translation>
 <translation id="5956928062748260866">ਡਾਇਲੌਗ</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{# ਆਈਟਮ ਨਾਲ}one{# ਆਈਟਮ ਨਾਲ}other{# ਆਈਟਮਾਂ ਨਾਲ}}</translation>
 <translation id="5981446804259161541">ਹਲਕਾ ਹਰਾ ਨੀਲਾ (ਸਿਆਨ)</translation>
 <translation id="5983179082906765664">ਨੈਵੀਗੇਸ਼ਨ ਗ੍ਰੈਨਿਊਲੈਰਿਟੀ ਵਧਾਓ</translation>
+<translation id="5988563937187882754">ਸੱਜੇ ਪਾਸੇ ਦੇਖੋ</translation>
 <translation id="5992285135956208197">ਗ੍ਰਾਫਿਕਸ ਦਸਤਾਵੇਜ਼</translation>
 <translation id="5999630716831179808">ਵੌਇਸਿਜ</translation>
 <translation id="6006050241733874051">ਫ਼ਾਰਮ</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ਕੋਈ ਅਗਲਾ ਕੋਂਬੋ ਬਾਕਸ ਨਹੀਂ</translation>
+<translation id="7715455358521357192">ਸੱਜੀ ਅੱਖ ਨੂੰ ਥੋੜ੍ਹਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>
 <translation id="7731785449856576010">ਕੋਈ ਅਗਲਾ ਮੀਡੀਆ ਵਿਜੇਟ ਨਹੀਂ</translation>
 <translation id="7735498529470878067">ਸਪਰਸ਼ ਰਾਹੀਂ ਪੜਚੋਲ ਕਰਨਾ ਤੁਹਾਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਇਸ ਗੱਲ ਦਾ ਅਹਿਸਾਸ ਕਰਵਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ ਕਿ ਸਕ੍ਰੀਨ 'ਤੇ ਕੀ ਹੈ।</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">ਪਿਛਲਾ ਸ਼ਬਦ</translation>
 <translation id="7846634333498149051">ਕੀ-ਬੋਰਡ</translation>
 <translation id="7851816175263618915">ਕੁਝ ਵਿਸ਼ਰਾਮ ਚਿੰਨ੍ਹ</translation>
+<translation id="7860802890538098598">ਆਪਣੇ ਮੂੰਹ ਦੇ ਸੱਜੇ ਕੋਨੇ ਨੂੰ ਖਿੱਚੋ</translation>
 <translation id="7871691770940645922">ਵਰਚੁਅਲ ਬ੍ਰੇਲ ਡਿਸਪਲੇ</translation>
 <translation id="7882421473871500483">ਭੂਰਾ</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ਉਕਤੀ}one{# ਉਕਤੀਆਂ}other{# ਉਕਤੀਆਂ}}</translation>
+<translation id="8017004049696748317">ਡਿਕਟੇਸ਼ਨ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="8017588669690167134">ਬੋਲੀ ਬੰਦ ਕਰੋ</translation>
 <translation id="801990297710781303">ਪਗ ਟਿੱਪਣੀ</translation>
 <translation id="8028833145828956995">ਤੁਸੀਂ ਟੱਚਸਕ੍ਰੀਨ ਨਾਲ ChromeVox ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">ਸੁਰਮਈ ਸਲੇਟੀ</translation>
 <translation id="8121539003537428024">ਸਾਰੇ ਇਵੈਂਟ ਫਿਲਟਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8123975449645947908">ਪਿੱਛੇ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
+<translation id="8126355825906412872">ਮੁਸਕਾਨ</translation>
 <translation id="8126386426083591964">ਕੋਈ ਪਿਛਲਾ ਪੱਧਰ 5 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> ਦਾ ਡਾਊਨਲੋਡ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8129445297241948503">ਉੱਪਰ ਕੋਈ ਸੈੱਲ ਨਹੀਂ</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">ਵਿਸ਼ੇਸ਼ਕ ਕੁੰਜੀਆਂ</translation>
 <translation id="8943282376843390568">ਪੀਲਾ-ਹਰਾ</translation>
 <translation id="8944511129464116546">ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਨਿਸ਼ਾਨ ਲਗਾਇਆ ਗਿਆ</translation>
+<translation id="8945050808870279132">ਆਪਣਾ ਨੱਕ ਸਿਕੋੜੋ</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">ਕੋਈ ਪਿਛਲਾ ਰੇਡੀਓ ਬਟਨ ਨਹੀਂ</translation>
 <translation id="8970172509886453271">ਕੋਈ ਪਿਛਲਾ ਭਾਗ ਨਹੀਂ</translation>

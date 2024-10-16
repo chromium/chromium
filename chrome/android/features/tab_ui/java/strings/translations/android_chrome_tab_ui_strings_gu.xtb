@@ -58,19 +58,16 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ટૅબના ગ્રૂપના રંગનું આઇકન</translation>
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CHANGED" /> બદલ્યા}one{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CHANGED" /> બદલ્યા}other{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યા, <ph name="ANY_CHANGED" /> બદલ્યા}}</translation>
-<translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3547352561153509682">આનાથી <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ થઈ જશે</translation>
 <translation id="3613492231657284463">નિષ્ક્રિય ટૅબ સંવાદ છુપાવો</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">શેર શીટ પ્રીવ્યૂનો થંબનેલ.</translation>
 <translation id="381219490185664296">શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?</translation>
-<translation id="3882834874697329510">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થાય ત્યારે અલર્ટ મેળવવા માટે, સેટિંગમાં જઈને નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ટૅબનું ગ્રૂપ બનાવો}one{ટૅબનું ગ્રૂપ બનાવો}other{ટૅબનું ગ્રૂપ બનાવો}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> નિષ્ક્રિય ટૅબ}one{<ph name="TABS_COUNT_MANY" /> નિષ્ક્રિય ટૅબ}other{<ph name="TABS_COUNT_MANY" /> નિષ્ક્રિય ટૅબ}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> ખોલો</translation>
-<translation id="3996880007329611795">નોટિફિકેશન મેળવો</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> દિવસ પહેલાં બનાવ્યું}one{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં બનાવ્યું}other{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં બનાવ્યું}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="4139634748112164403">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે</translation>
@@ -115,7 +112,6 @@
 <translation id="5627941783489838464">ટૅબ સંબંધી કોઈ અપડેટ નથી</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ટૅબને રિસ્ટોર કરો}one{ટૅબને રિસ્ટોર કરો}other{ટૅબને રિસ્ટોર કરો}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeમાંથી <ph name="TABS_COUNT_ONE" /> લિંક}one{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}other{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}}</translation>
-<translation id="575494663145460764">કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટની સુવિધા જોઈએ છે?</translation>
 <translation id="58326064309361797">ટૅબનું ગ્રૂપ બનાવવા માટે તેને ખેંચો</translation>
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>

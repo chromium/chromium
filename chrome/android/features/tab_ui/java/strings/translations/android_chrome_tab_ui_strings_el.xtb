@@ -58,19 +58,16 @@
 <translation id="3078350928901129212">Εικονίδιο χρώματος <ph name="COLOR_NAME" /> ομάδας καρτελών</translation>
 <translation id="3194464645767632461">αξιολόγηση</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, άλλαξαν <ph name="ANY_CHANGED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, άλλαξαν <ph name="ANY_CHANGED" />}}</translation>
-<translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3547352561153509682">Αυτή η ενέργεια θα διαγράψει την ομάδα από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Παράθυρο διαλόγου απόκρυψης ανενεργών καρτελών</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
 <translation id="381219490185664296">Να καταργηθεί η ομαδοποίηση της ομάδας καρτελών;</translation>
-<translation id="3882834874697329510">Για να λαμβάνετε μια ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα, ενεργοποιήστε τις ειδοποιήσεις στις Ρυθμίσεις.</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ομαδοποίηση καρτέλας}other{Ομαδοποίηση καρτελών}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ανενεργή καρτέλα}other{<ph name="TABS_COUNT_MANY" /> ανενεργές καρτέλες}}</translation>
 <translation id="3969565576924904454">Άνοιγμα <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Λήψη ειδοποιήσεων</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_DAYS_ONE" /> ημέρα}other{Δημιουργήθηκε πριν από <ph name="NUM_DAYS_MANY" /> ημέρες}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="4139634748112164403">Οι καρτέλες θα παραμείνουν ανοιχτές σε αυτή τη συσκευή, αλλά η ομάδα θα διαγραφεί οριστικά</translation>
@@ -115,7 +112,6 @@
 <translation id="5627941783489838464">Δεν υπάρχουν ενημερώσεις καρτελών</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Επαναφορά καρτέλας}other{Επαναφορά καρτελών}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
-<translation id="575494663145460764">Θέλετε να λαμβάνετε ειδοποιήσεις για πτώσεις τιμών;</translation>
 <translation id="58326064309361797">Σύρετε καρτέλες για να τις ομαδοποιήσετε.</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5972844218283131174">Αποεπιλογή όλων</translation>

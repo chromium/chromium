@@ -688,7 +688,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="3437677362970530951">Jeux sur le Play Store et d'autres plates-formes de jeux</translation>
 <translation id="3439896670700055005">Actualiser la page active sans tenir compte du contenu mis en cache</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
-<translation id="3443917186865471894">Personnaliser votre souris</translation>
+<translation id="3443917186865471894">Personnalisez votre souris</translation>
 <translation id="3444385531800624797">Chargement des résultats…</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
@@ -1589,6 +1589,7 @@ Aucun appareil connecté.</translation>
 <translation id="6352082849089527770">Réseaux inconnus</translation>
 <translation id="6359587239691116345">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Si vous refusez cette mise à jour, votre appareil risque de ne plus fonctionner correctement, et vous risquez de rencontrer des problèmes de sécurité et de performances.</translation>
 <translation id="6362833380917912748">Familiarisez-vous avec vos applis intégrées</translation>
+<translation id="6364386432014869981">Le pavé tactile intégré est activé</translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
 <translation id="6378515133128829137">Épingler la fenêtre à droite</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
@@ -1689,6 +1690,8 @@ Nouvelle installation</translation>
 <translation id="6682029141988159141">Coller le contenu du presse-papiers</translation>
 <translation id="6683022854667115063">Casque audio</translation>
 <translation id="6686023075541098243">Configurer l'affichage des notifications de votre téléphone</translation>
+<translation id="6688019813898140556">Échap 5 fois</translation>
+<translation id="6694462491298752106">Le pavé tactile intégré est désactivé</translation>
 <translation id="6694973220096431421">Rechercher dans Google Drive</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6697913454192220372">Ajouter un bureau</translation>

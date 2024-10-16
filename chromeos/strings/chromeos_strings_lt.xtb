@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Rodyklių klavišais perkelkite šį valdiklį į norimą žaidimo veiksmą. Norėdami padėti valdiklį, naudokite klavišą „Enter“. Jei norite atšaukti, naudokite klavišą „Escape“.</translation>
 <translation id="1175697296044146566">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidutiniškas (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1180621378971766337">jaukus</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1191518099344003522">APN įgalintas.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4594021849294327751">Sukurti transkribuotą tekstą</translation>
-<translation id="4602266091140407479">Mikrofonas</translation>
 <translation id="4607282946861182308">Negalima sukurti vaizdų. Bandykite kitą užklausą.</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
 <translation id="4623061655523261501">Įrašų pavadinimai sėkmingai sugeneruoti</translation>
@@ -1462,12 +1462,12 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8183975772394450380">paplūdimys</translation>
 <translation id="819278132617411009">Naudokite „Google“ DI, kad būtumėte produktyvesni</translation>
+<translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
 <translation id="8227119283605456246">Pridėtas failas</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
-<translation id="8236972776513018241">Transkribuotas tekstas</translation>
 <translation id="8238771987802558562">APN pasirinkimas</translation>
 <translation id="8246209727385807362">Nežinomas operatorius</translation>
 <translation id="8250926778281121244">rūdžių spalvos</translation>
@@ -1594,7 +1594,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8864415976656252616">Siūlomo turinio nėra. Peržiūrėkite svarbiausią pagalbos centro turinį.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>
-<translation id="8878117140814294155">Perjungti mikrofono nutildymą</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
 <translation id="8882789155418924367">pelėdos</translation>
 <translation id="8892443466059986410">Atšaukti šaukinio redagavimą</translation>

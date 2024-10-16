@@ -44,6 +44,7 @@
 <translation id="11743817593307477">화살표 키를 사용하여 이 컨트롤을 원하는 게임 액션으로 이동합니다. Enter 키를 사용하여 컨트롤을 배치합니다. 취소하려면 Esc 키를 누르세요.</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="1175951029573070619">평균(<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">일시중지</translation>
 <translation id="1180621378971766337">아늑한</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1191518099344003522">APN이 사용 설정되었습니다.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4594021849294327751">스크립트 만들기</translation>
-<translation id="4602266091140407479">마이크</translation>
 <translation id="4607282946861182308">이미지를 만들 수 없습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
 <translation id="4623061655523261501">녹화 이름이 생성됨</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">해변</translation>
 <translation id="819278132617411009">Google AI를 사용하여 생산성 높이기</translation>
+<translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
-<translation id="8236972776513018241">스크립트</translation>
 <translation id="8238771987802558562">APN 선택</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>
 <translation id="8250926778281121244">말린 장미빛</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">추천 콘텐츠가 없습니다. 상위 도움말 콘텐츠를 참고하세요.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">태블릿 기기입니다.</translation>
-<translation id="8878117140814294155">마이크 음소거 전환</translation>
 <translation id="8881098542468797602">테스트 성공</translation>
 <translation id="8882789155418924367">올빼미</translation>
 <translation id="8892443466059986410">바로가기 수정 취소</translation>

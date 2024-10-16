@@ -44,6 +44,7 @@
 <translation id="11743817593307477">‏استخدِم مفاتيح الأسهم لنقل عنصر التحكّم هذا إلى الإجراء الذي تريده في اللعبة. استخدِم مفتاح Enter لوضع عنصر التحكّم. واستخدِم مفتاح Esc للإلغاء.</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">إشارة متوسطة (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1180621378971766337">مريح</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1191518099344003522">‏تم تفعيل اسم نقطة الوصول (APN).</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4594021849294327751">إنشاء نص</translation>
-<translation id="4602266091140407479">الميكروفون</translation>
 <translation id="4607282946861182308">يتعذّر إنشاء صور استنادًا إلى الطلب الذي أدخلته. جرِّب طلبًا آخر.</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
 <translation id="4623061655523261501">تمّ إنشاء أسماء التسجيلات بنجاح</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">شاطئ</translation>
 <translation id="819278132617411009">‏استخدام تكنولوجيات الذكاء الاصطناعي من Google لتعزيز إنتاجيتك</translation>
+<translation id="8200772114523450471">استئناف</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
-<translation id="8236972776513018241">نص التسجيل</translation>
 <translation id="8238771987802558562">‏اختيار اسم نقطة وصول (APN)</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
 <translation id="8250926778281121244">بني محمرّ</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">ما مِن محتوًى مقترَح. يمكنك الاطّلاع على أهم مقالات المحتوى المساعِد ذات الصلة.</translation>
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>
-<translation id="8878117140814294155">إيقاف أو تفعيل كتم صوت الميكروفون</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
 <translation id="8882789155418924367">بوم</translation>
 <translation id="8892443466059986410">إلغاء تعديل الاختصارات</translation>

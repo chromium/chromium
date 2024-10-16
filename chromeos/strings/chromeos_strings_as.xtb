@@ -44,6 +44,7 @@
 <translation id="11743817593307477">আপুনি বিচৰা গে’মৰ কাৰ্যটোলৈ এই নিয়ন্ত্ৰণটো স্থানান্তৰ কৰিবলৈ এৰ’ কীসমূহ ব্যৱহাৰ কৰক। নিয়ন্ত্ৰণ প্ৰয়োগ কৰিবলৈ এণ্টাৰ কীটো ব্যৱহাৰ কৰক। বাতিল কৰিবলৈ এস্কে’প কীটো ব্যৱহাৰ কৰক।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
 <translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1180621378971766337">আৰামদায়ক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1191518099344003522">এপিএন সক্ষম কৰা হৈছে।</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4594021849294327751">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰক</translation>
-<translation id="4602266091140407479">মাইক</translation>
 <translation id="4607282946861182308">ইয়াৰ প্ৰতিচ্ছবি সৃষ্টি কৰিব নোৱাৰি। আন এটা প্ৰম্প্‌ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="4623061655523261501">ৰেকৰ্ডিঙৰ নাম সফলভাৱে সৃষ্টি কৰা হৈছে</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">সমুদ্ৰতীৰ</translation>
 <translation id="819278132617411009">অধিক উৎপাদনশীল হ’বলৈ Google AI ব্যৱহাৰ কৰক</translation>
+<translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8226628635270268143">আপোনাৰ প্ৰিয় ফট’ আৰু এলবামসমূহ বাছনি কৰক</translation>
 <translation id="8227119283605456246">ফাইল সংলগ্ন কৰক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
-<translation id="8236972776513018241">ট্ৰান্সক্ৰিপ্ট</translation>
 <translation id="8238771987802558562">কোনো এপিএন বাছনি কৰক</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
 <translation id="8250926778281121244">মামৰ</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">পৰামৰ্শ হিচাপে আগবঢ়োৱা কোনো সমল নাই। সহায় বিষয়ক সৰ্বোত্তম সমল চাওক।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
-<translation id="8878117140814294155">মাইক্ৰ’ফ’নত মিউট কৰাটো ট’গল কৰক</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
 <translation id="8882789155418924367">ফেঁচা</translation>
 <translation id="8892443466059986410">শ্বৰ্টকাট সম্পাদনা বাতিল কৰক</translation>

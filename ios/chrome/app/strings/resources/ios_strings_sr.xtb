@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">1. ред за адресу</translation>
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
 <translation id="1554477036522844996">Нови прозор</translation>
+<translation id="1558391695376153246">Затвори картице без архив.</translation>
 <translation id="1571780780926010134">Картице без архивирања</translation>
 <translation id="1580715474678097352">Увек будите заштићени од опасних веб-сајтова</translation>
 <translation id="1580783302095112590">Имејл је послата.</translation>
@@ -411,6 +412,7 @@
 <translation id="288655811176831528">Затвори картицу</translation>
 <translation id="2888631381369839306">Обавештења о праћењу цена су укључена</translation>
 <translation id="288902476966286676">Враћено пошиљаоцу</translation>
+<translation id="2894757982205307093">Нова картица у групи</translation>
 <translation id="2905479111267140204">Број лозинки које користите више пута и које могу да угрозе безбедност је<ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
 <translation id="2918688092312652908">Означи као непрочитано</translation>
@@ -445,7 +447,6 @@
 Погледајте упутства претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="3080525922482950719">Можете да сачувате странице да бисте их читали касније или офлајн</translation>
 <translation id="3081338492074632642">Проверите да ли се лозинка коју чувате подудара са лозинком за <ph name="WEBSITE" /></translation>
-<translation id="30842332047348094">Кредитне картице</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="309710370695886264">Имате 1 лозинку коју користите за више налога. Решите проблем одмах да бисте били безбедни.</translation>
 <translation id="3102139268911534961">Искористите све предности мобилног прегледача који знате и волите на iPhone-у.</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3861908220442487587">Ова адреса је сачувана само на овом уређају. Да бисте је користили на другим уређајима, преместите је на Google налог, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Прегледајте комплетан URL</translation>
+<translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3876833929577368454">Питај ме сваки пут</translation>
 <translation id="3885587018298784481">Придружите се групи за породицу</translation>
 <translation id="3888863481921783344">То ће се користити да би вам се приказивале особе које можете да позовете на догађај.</translation>
@@ -1103,6 +1105,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6227126502342367214">Претрага помоћу камере Објектива</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6232329973559504466">Претрага без архивирања</translation>
+<translation id="6234310016144827337">Проверите везу и пробајте поново</translation>
 <translation id="6234438496206735891">Приказивање преузимања</translation>
 <translation id="6236952928980352967">Врати упозорење</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
@@ -1538,7 +1541,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> налога</translation>
 <translation id="8161614462829037225">Откључај помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Дужина</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и још 1}one{За {website_1}, {website_2} и још {more_count}}few{За {website_1}, {website_2} и још {more_count}}other{За {website_1}, {website_2} и још {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинку</translation>
@@ -1634,6 +1636,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8609743333007776886">Додај ${url} у обележиваче</translation>
 <translation id="8620640915598389714">Измени</translation>
 <translation id="8625706492572042370">Измените почетни екран</translation>
+<translation id="8633025649649592204">Недавна активност</translation>
 <translation id="8636825310635137004">Да би вам картице биле доступне на другим уређајима, укључите синхронизацију.</translation>
 <translation id="8637431369725868556">Заштитите се од опасних сајтова.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема угрожених лозинки}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>

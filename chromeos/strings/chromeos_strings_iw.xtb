@@ -44,6 +44,7 @@
 <translation id="11743817593307477">‏אפשר להשתמש במקשי החיצים כדי להעביר את הרכיב האינטראקטיבי הזה לפעולת המשחק הרצויה. מציבים את הרכיב באמצעות מקש Enter. כדי לבטל, אפשר להשתמש במקש Escape.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ממוצע (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">השהיה</translation>
 <translation id="1180621378971766337">חמים</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1191518099344003522">‏ה-APN מופעל.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4594021849294327751">יצירת תמליל</translation>
-<translation id="4602266091140407479">מיקרופון</translation>
 <translation id="4607282946861182308">לא ניתן ליצור תמונות של מה שביקשת. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
 <translation id="4623061655523261501">שמות ההקלטות נוצרו בהצלחה</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">חוף</translation>
 <translation id="819278132617411009">‏אפשר להשתמש ב-AI מבית Google כדי לשפר את הפרודוקטיביות</translation>
+<translation id="8200772114523450471">חידוש</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
-<translation id="8236972776513018241">תמליל</translation>
 <translation id="8238771987802558562">‏בחירת APN</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
 <translation id="8250926778281121244">חלודה</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">אין הצעות לתוכן. להצגת תוכן עזרה מוביל.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
-<translation id="8878117140814294155">השתקה או ביטול ההשתקה של המיקרופון</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
 <translation id="8882789155418924367">ינשופים</translation>
 <translation id="8892443466059986410">ביטול העריכה של קיצור הדרך</translation>

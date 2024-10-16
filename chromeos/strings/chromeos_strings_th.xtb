@@ -44,6 +44,7 @@
 <translation id="11743817593307477">ใช้ปุ่มลูกศรเพื่อย้ายตัวควบคุมนี้ไปยังการดำเนินการในเกมที่ต้องการ ใช้ปุ่ม Enter เพื่อวางตัวควบคุม ใช้ปุ่ม Escape เพื่อยกเลิก</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">ปานกลาง (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1180621378971766337">อบอุ่น</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1191518099344003522">เปิดใช้ APN แล้ว</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4594021849294327751">สร้างข้อความถอดเสียง</translation>
-<translation id="4602266091140407479">ไมค์</translation>
 <translation id="4607282946861182308">สร้างรูปภาพจากพรอมต์นี้ไม่ได้ โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
 <translation id="4623061655523261501">สร้างชื่อการบันทึกเรียบร้อยแล้ว</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ชายหาด</translation>
 <translation id="819278132617411009">ใช้ AI ของ Google เพื่อทำงานอย่างมีประสิทธิภาพมากขึ้น</translation>
+<translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
 <translation id="8227119283605456246">แนบไฟล์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
-<translation id="8236972776513018241">ข้อความถอดเสียง</translation>
 <translation id="8238771987802558562">เลือก APN</translation>
 <translation id="8246209727385807362">ผู้ให้บริการที่ไม่รู้จัก</translation>
 <translation id="8250926778281121244">สนิม</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">ไม่มีเนื้อหาที่แนะนำ ดูเนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">อุปกรณ์เป็นแท็บเล็ต</translation>
-<translation id="8878117140814294155">เปิด/ปิดเสียงไมโครโฟน</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8882789155418924367">นกฮูก</translation>
 <translation id="8892443466059986410">ยกเลิกการแก้ไขทางลัด</translation>

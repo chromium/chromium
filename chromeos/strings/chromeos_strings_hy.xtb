@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Այս կարգավորումը սլաքներով ստեղների միջոցով տեղափոխեք ձեզ անհրաժեշտ գործողություն խաղում։ Enter կոճակի օգնությամբ զետեղեք կարգավորումը։ Չեղարկելու համար օգտագործեք Esc ստեղնը։</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1175951029573070619">Միջին (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Դադար</translation>
 <translation id="1180621378971766337">հարմարավետ</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1191518099344003522">APN-ը միացված է։</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
 <translation id="4594021849294327751">Ստեղծել գրադարձում</translation>
-<translation id="4602266091140407479">Խոսափող</translation>
 <translation id="4607282946861182308">Այս հարցումով հնարավոր չէ պատկեր ստեղծել։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
 <translation id="4623061655523261501">Ձայնագրությունների անվանումները ստեղծվեցին</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">լողափ</translation>
 <translation id="819278132617411009">Օգտագործեք Google AI-ը՝ ավելի արդյունավետ լինելու համար</translation>
+<translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
-<translation id="8236972776513018241">Տեքստային տարբերակ</translation>
 <translation id="8238771987802558562">Ընտրեք APN</translation>
 <translation id="8246209727385807362">Անհայտ օպերատոր</translation>
 <translation id="8250926778281121244">ժանգագույն</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
-<translation id="8878117140814294155">Միացնել կամ անջատել խոսափողը</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8882789155418924367">բվեր</translation>
 <translation id="8892443466059986410">Չեղարկել դյուրանցման փոփոխումը</translation>

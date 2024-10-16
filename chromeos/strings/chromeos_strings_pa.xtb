@@ -44,6 +44,7 @@
 <translation id="11743817593307477">ਇਸ ਕੰਟਰੋਲ ਨੂੰ ਆਪਣੀ ਮਨਪਸੰਦ ਗੇਮ ਕਾਰਵਾਈ ਵਿੱਚ ਲਿਜਾਉਣ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ। ਕੰਟਰੋਲ ਨੂੰ ਨਿਰਧਾਰਿਤ ਥਾਂ 'ਤੇ ਲਿਜਾਉਣ ਲਈ Enter ਵਰਤੋ। ਰੱਦ ਕਰਨ ਲਈ Escape ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="1175951029573070619">ਔਸਤ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">ਰੋਕੋ</translation>
 <translation id="1180621378971766337">ਕੋਜ਼ੀ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1191518099344003522">APN ਚਾਲੂ ਹੈ।</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">ਸਾਰੇ ਹੋਸਟਾਂ ਨੂੰ ਹੱਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="4594021849294327751">ਪ੍ਰਤੀਲਿਪੀ ਬਣਾਓ</translation>
-<translation id="4602266091140407479">ਮਾਈਕ</translation>
 <translation id="4607282946861182308">ਇਸਦੇ ਚਿੱਤਰ ਨਹੀਂ ਬਣਾ ਸਕਦੇ। ਕੋਈ ਹੋਰ ਉਤਪ੍ਰੇਰਕ ਅਜ਼ਮਾਓ।</translation>
 <translation id="4609350030397390689">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="4623061655523261501">ਰਿਕਾਰਡਿੰਗ ਨਾਮ ਸਫਲਤਾਪੂਰਵਕ ਸਿਰਜੇ ਗਏ</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8183975772394450380">ਬੀਚ</translation>
 <translation id="819278132617411009">ਜ਼ਿਆਦਾ ਬਿਹਤਰ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਕਰਨ ਲਈ Google AI ਵਰਤੋ</translation>
+<translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">ਫ਼ਾਇਦੇ</translation>
 <translation id="8226628635270268143">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਫ਼ੋਟੋਆਂ ਅਤੇ ਐਲਬਮਾਂ ਚੁਣੋ</translation>
 <translation id="8227119283605456246">ਫ਼ਾਈਲ ਨੱਥੀ ਕਰੋ</translation>
 <translation id="8230672074305416752">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
-<translation id="8236972776513018241">ਪ੍ਰਤੀਲਿਪੀ</translation>
 <translation id="8238771987802558562">ਕੋਈ APN ਚੁਣੋ</translation>
 <translation id="8246209727385807362">ਅਗਿਆਤ ਕੈਰੀਅਰ</translation>
 <translation id="8250926778281121244">ਜੰਗਾਲ ਰੰਗਾ</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">ਕੋਈ ਸੁਝਾਈ ਗਈ ਸਮੱਗਰੀ ਨਹੀਂ। ਪ੍ਰਮੁੱਖ ਮਦਦ ਸਮੱਗਰੀ ਦੇਖੋ।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ਡੀਵਾਈਸ ਇੱਕ ਟੈਬਲੈੱਟ ਹੈ।</translation>
-<translation id="8878117140814294155">ਮਾਈਕ੍ਰੋਫ਼ੋਨ 'ਤੇ ਮਿਊਟ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="8881098542468797602">ਟੈਸਟ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="8882789155418924367">ਉੱਲੂ</translation>
 <translation id="8892443466059986410">ਸ਼ਾਰਟਕੱਟ ਸੰਪਾਦਨ ਨੂੰ ਰੱਦ ਕਰੋ</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Usa as teclas de frecha para mover este control á acción do xogo que queiras. Utiliza a tecla Intro para colocalo. Utiliza a tecla Escape para cancelalo.</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pausar</translation>
 <translation id="1180621378971766337">agradable</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1191518099344003522">O APN está activado.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4594021849294327751">Crear transcrición</translation>
-<translation id="4602266091140407479">Micrófono</translation>
 <translation id="4607282946861182308">Non se puideron crear imaxes disto. Proba con outra solicitude.</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
 <translation id="4623061655523261501">Nomes da gravación xerados</translation>
@@ -1462,12 +1462,12 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Usa a IA de Google para ser unha persoa máis produtiva</translation>
+<translation id="8200772114523450471">Retomar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
-<translation id="8236972776513018241">Transcrición</translation>
 <translation id="8238771987802558562">Escoller un APN</translation>
 <translation id="8246209727385807362">Operador descoñecido</translation>
 <translation id="8250926778281121244">óxido</translation>
@@ -1594,7 +1594,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8864415976656252616">Non hai contido suxerido. Consulta o contido de axuda destacado.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é unha tableta.</translation>
-<translation id="8878117140814294155">Silenciar ou activar micrófono</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
 <translation id="8882789155418924367">mouchos</translation>
 <translation id="8892443466059986410">Cancelar a edición do atallo</translation>

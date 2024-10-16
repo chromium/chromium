@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Gebruik de pijltoetsen om dit bedieningselement naar de gewenste game-actie te verplaatsen. Druk op Enter om het bedieningselement te plaatsen. Druk op Escape om te annuleren.</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1180621378971766337">knus</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1191518099344003522">APN staat aan.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4594021849294327751">Transcript maken</translation>
-<translation id="4602266091140407479">Microfoon</translation>
 <translation id="4607282946861182308">Kan geen afbeeldingen hiervan maken. Probeer een andere prompt.</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
 <translation id="4623061655523261501">Namen voor opnamen gegenereerd</translation>
@@ -1462,12 +1462,12 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="819278132617411009">AI van Google gebruiken om productiever te zijn</translation>
+<translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8226628635270268143">Kies je favoriete foto's en albums</translation>
 <translation id="8227119283605456246">Bestand bijvoegen</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
-<translation id="8236972776513018241">Transcript</translation>
 <translation id="8238771987802558562">Een APN kiezen</translation>
 <translation id="8246209727385807362">Onbekende provider</translation>
 <translation id="8250926778281121244">roestkleurig</translation>
@@ -1594,7 +1594,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8864415976656252616">Geen voorgestelde content. Bekijk de belangrijkste Help-content.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Apparaat is een tablet.</translation>
-<translation id="8878117140814294155">Geluid aan-/uitzetten voor microfoon</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>
 <translation id="8882789155418924367">uilen</translation>
 <translation id="8892443466059986410">Bewerken van snelkoppeling annuleren</translation>

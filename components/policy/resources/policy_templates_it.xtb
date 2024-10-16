@@ -2431,7 +2431,6 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti possono 
       Quando questa norma è impostata su false o non è configurata, le icone sono visibili.</translation>
 <translation id="2744751866269053547">Registra gestori protocolli</translation>
 <translation id="2744980433176488921">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene il tasto di modifica Maiusc</translation>
-<translation id="2745150813292162313">Consenti il partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="2746016768603629042">Questa norma è obsoleta; utilizza invece DefaultJavaScriptSetting.
 
       Può essere utilizzata per disattivare JavaScript in <ph name="PRODUCT_NAME" />.
@@ -2476,7 +2475,6 @@ Se questo criterio viene disattivato, gli utenti non possono aggiungere account 
 L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
-<translation id="2786117913267907931">Non consentire alle origini di usare Direct Sockets.</translation>
 <translation id="2787173078141616821">Segnala informazioni sullo stato di Android</translation>
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
@@ -2490,19 +2488,6 @@ Se non viene configurato, si applica il criterio <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2801065672151277034">Impostazioni di gestione dei certificati</translation>
 <translation id="2801155097555584385">Imposta il valore personalizzato espresso in percentuale raggiunto il quale la batteria avvia la ricarica</translation>
 <translation id="2801378553855965587">Disattiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
-<translation id="2804159858652849094">Questo criterio controlla un'etichetta personalizzata utilizzata per identificare chi ha gestito un profilo o un browser.
-
-Questa etichetta verrà mostrata nella barra degli strumenti.
-
-Se il criterio viene configurato a livello di browser, tutti i profili avranno questa etichetta nella barra degli strumenti.
-
-Se il criterio viene impostato a livello di profilo, solo quel profilo avrà questa etichetta.
-
-A differenza di altri, quando impostato a livello di profilo, questo criterio ha la precedenza su un criterio impostato a livello di browser.
-
-L'etichetta personalizzata non verrà tradotta.
-
-Tieni presente che questo criterio non ha alcun effetto se il criterio <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> viene impostato su <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (valore 1).</translation>
 <translation id="2805707493867224476">Consenti la visualizzazione di popup in tutti i siti</translation>
 <translation id="2806804577787377637">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
 <translation id="2815701930753942156">Questo criterio specifica un elenco di intervalli settimanali durante i quali il dispositivo <ph name="PRODUCT_OS_NAME" /> non può essere utilizzato. Eventuali sessioni in corso verranno chiuse e l'accesso verrà bloccato.
@@ -3688,11 +3673,6 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
 <translation id="3712861436661566358">Applica separazione dei profili</translation>
 <translation id="3719826155360621982">Home page</translation>
 <translation id="3724039569609354541">Usa il comportamento predefinito quando determini se i siti web possono effettuare richieste agli endpoint di rete</translation>
-<translation id="372668389978450673">Se questo criterio viene impostato su vero o se non viene configurato, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> consentono l'aggiunta di una nuova persona da Gestione utenti.
-
-      Se viene impostato su falso, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'aggiunta di una nuova persona da Gestione utenti.
-
-      Nota: se questo criterio non viene configurato o se viene impostato su vero, ma <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> viene impostato su falso, <ph name="LACROS_NAME" /> non consente l'aggiunta di una nuova persona da Gestione utenti.</translation>
 <translation id="3727476641336727380">A meno che <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> non sia impostato su Disattivato, la mancata configurazione o l'impostazione del criterio <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> su Attivato consente i wakelock dello schermo per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock dello schermo tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
       Se il criterio viene impostato su Disattivato, le richieste di wakelock dello schermo vengono retrocesse a richieste di wakelock del sistema.</translation>
@@ -4099,13 +4079,6 @@ Entrambi hanno lo stesso effetto sul comportamento del browser.</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
 <translation id="4030152268425532846">Disattiva l'esclusione dell'accesso automatico</translation>
-<translation id="4039065751874009354">Questo criterio consente di disattivare temporaneamente due correzioni correlate al comportamento della finestra di dialogo di conferma mostrata dall'evento beforeunload.
-Se questo criterio viene attivato, verrà usato il nuovo comportamento corretto. Se questo criterio viene disattivato, verrà usato il vecchio comportamento precedente. Se questo criterio non viene configurato, verrà usato il comportamento predefinito.
-Questo criterio è una soluzione temporanea e verrà rimosso a breve.
-
-Nuovo comportamento corretto: in "beforeunload", la chiamata di "event.preventDefault()" attiverà la finestra di dialogo di conferma. L'impostazione della stringa vuota per "event.returnValue" non attiverà la finestra di dialogo di conferma.
-
-Vecchio comportamento precedente: in "beforeunload", la chiamata di "event.preventDefault()" non attiverà la finestra di dialogo di conferma. L'impostazione della stringa vuota per "event.returnValue" attiverà la finestra di dialogo di conferma.</translation>
 <translation id="4043796890723386527">Impedisci agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
@@ -4736,17 +4709,6 @@ Un dispositivo è considerato gestito utilizza una versione aziendale del sistem
 
       Se il criterio non è impostato, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
 <translation id="4549695018986780856">Manifest v2 abilitato</translation>
-<translation id="4552929684628662264">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
-Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
-
-La configurazione del criterio consente di elencare i pattern URL che specificano i siti per cui è bloccato l'utilizzo di DirectSockets.
-Potrebbero essere inclusi app di Chrome, app web isolate e kiosk web; l'API non è mai disponibile sul web aperto.
-
-Se il criterio non viene configurato, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato.
-
-I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
 <translation id="4554991346503872538">Non offrire mai la traduzione</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
@@ -5320,13 +5282,6 @@ La configurazione del criterio consente di controllare la presentazione dei cont
           Se questo criterio viene impostato, nel campo "Nome utente di Kerberos", a destra, viene visualizzato il dominio precompilato. Se l'utente inserisce il proprio nome utente, questo verrà concatenato con il dominio precompilato. Se il valore inserito dall'utente contiene "@", il dominio precompilato non viene visualizzato e non influisce sul valore.
 
           Se questo criterio non viene impostato, non vengono mostrate informazioni aggiuntive e la creazione del ticket funziona come di consueto.</translation>
-<translation id="4955566229684195326">Questa impostazione consente agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" />.
-
-      In modo simile ai criteri <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> e <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, se questo criterio viene impostato su falso o se non viene configurato, l'utente non può creare o usare profili secondari né utilizzare la modalità ospite. Gli eventuali profili secondari creati in precedenza non sono disponibili.
-
-      Se questo criterio viene impostato su vero, l'utente può creare e usare profili secondari e utilizzare la modalità ospite.
-
-      Nota: se questo criterio viene impostato su vero, ma il criterio <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> viene impostato su falso, l'utente non può creare profili secondari. Lo stesso vale per <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> e la modalità ospite.</translation>
 <translation id="4958911425563967203">Consente di impostare un elenco di pattern URL per i siti che specifica i siti per i quali
 le ottimizzazioni JavaScript avanzate sono attivate.
 
@@ -5819,7 +5774,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: 
 <translation id="5321624917465764266">Se il criterio viene impostato su Attivato o se non viene configurato, la cronologia di navigazione e quella dei download possono essere eliminate in Chrome e gli utenti non possono modificare questa impostazione.
 
 Se il criterio viene impostato su Disattivato, la cronologia di navigazione e quella dei download non possono essere eliminate. Non è garantita la memorizzazione della cronologia di navigazione e di quella dei download, anche se questo criterio viene disattivato. Gli utenti potrebbero essere in grado di modificare o eliminare direttamente i file dei database delle cronologie e il browser stesso potrebbe far scadere o archiviare una o tutte le voci delle cronologie in qualsiasi momento.</translation>
-<translation id="5321859912083346284">Non consentire la previsione di compilazione automatica.</translation>
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="5323271643727095577">Non mostrare la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Mostra la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
 <translation id="5324430722441910403">Impostazioni ricerca sui siti</translation>
@@ -6317,7 +6271,6 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
       Se il criterio viene impostato su True, gli avvisi relativi al ritiro verranno nascosti.
       Se il criterio viene impostato su False o non viene impostato, gli avvisi relativi al ritiro verranno mostrati.</translation>
 <translation id="5659776687676755342">Attiva il suono della batteria in esaurimento</translation>
-<translation id="5660228672907979869">Blocca l'attivazione del partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="5660950553460381588">Imposta come predefinita la creazione di passkey nel portachiavi iCloud quando possibile.</translation>
 <translation id="5666457529647159548">Consenti agli utenti di gestire i certificati client installati.</translation>
 <translation id="5670249935663090320">Se il criterio viene attivato o se non viene configurato, si attiva <ph name="PRODUCT_NAME" /> e gli utenti possono avviarlo dal menu delle app, dai menu contestuali delle pagine, dai controlli multimediali nei siti web compatibili con Google Cast e (se presente) dall'icona Trasmetti nella barra degli strumenti.
@@ -6388,7 +6341,6 @@ Il criterio riguarda i flussi di autenticazione di accesso e della schermata di 
 <translation id="5722577409367087850">Carica l'estensione</translation>
 <translation id="5728154254076636808">Consente la creazione di copie di roaming per i dati dei profili <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">La password Kerberos. Il segnaposto <ph name="PASSWORD_PLACEHOLDER" /> viene sostituito dalla password di accesso.</translation>
-<translation id="573183812760497142">Blocca il partizionamento dello spazio di archiviazione di terze parti per queste origini</translation>
 <translation id="5732972008943405952">Importa i dati della compilazione automatica dei moduli dal browser predefinito alla prima esecuzione</translation>
 <translation id="5733040281451845496">Se il criterio viene impostato su Attivato, i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni iniziano soltanto dopo il rilevamento della prima attività dell'utente in una sessione.
 
@@ -7593,7 +7545,6 @@ Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuot
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questo criterio.</translation>
 <translation id="6584122839583172231">Le impostazioni di F12 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
-<translation id="658537215958747575">Consenti a origini idonee di utilizzare Direct Sockets</translation>
 <translation id="6588634282328239769">Visualizza l'URL completo</translation>
 <translation id="6589049539706330510">Attiva il supporto</translation>
 <translation id="6593025196187527239">Se il criterio viene impostato su True o se non viene configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su False, gli utenti non affiliati non possono utilizzare ARC.
@@ -7878,11 +7829,6 @@ Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph na
 Se il criterio viene attivato o se non viene configurato, all'utente è consentito salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> dal menu contestuale. Se il criterio viene disattivato, gli utenti non vedono l'opzione nel menu contestuale.
 Questo criterio non impedisce agli utenti di salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> utilizzando altri metodi diversi dal menu contestuale.</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
-<translation id="6828729771894228555">Consente di impostare un elenco di pattern URL che specificano origini di primo livello (l'URL nella barra degli indirizzi della scheda) che bloccano il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine).
-          Se questo criterio non viene configurato o se non esiste un'origine di primo livello corrispondente, verrà utilizzato il valore del criterio <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
-          Per informazioni dettagliate sui pattern validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-          Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
-          Per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti, visita la pagina https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Questo criterio consente di controllare il recente refactoring delle API Graphics3D nel plug-in PPAPI.
 
 La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
@@ -7948,17 +7894,6 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
 <translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
-<translation id="6870288354334274313">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
-Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
-
-Questo criterio consente di elencare i pattern URL che specificano i siti autorizzati a utilizzare l'API Direct Sockets.
-Potrebbero essere inclusi app di Chrome, app web isolate e kiosk web; l'API non è mai disponibile sul web aperto.
-
-Se il criterio non viene configurato, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato.
-
-I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881397131210596522">Se il criterio viene impostato su 2, ai siti verrà automaticamente impedito di utilizzare l'API WebPrinting.
 
@@ -8015,11 +7950,6 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLIC
 Se il criterio viene impostato su Disabled o se non viene configurato, verrà applicato il comportamento predefinito di blocco di queste richieste.</translation>
 <translation id="6915524162137327111">Visualizzazione delle etichette di gestione per 30 secondi</translation>
 <translation id="6919205861950516688">Non consentire Organizza schede.</translation>
-<translation id="6919819553978815392">Se il criterio viene impostato su vero o se non viene configurato, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> abilitano gli accessi come ospite. Gli accessi come ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono nella modalità di navigazione in incognito.
-
-      Se viene impostato su falso, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'avvio dei profili ospite.
-
-      Nota: se questo criterio non viene configurato o se viene impostato su vero, ma <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> viene impostato su falso, <ph name="LACROS_NAME" /> non consente l'avvio dei profili ospite.</translation>
 <translation id="692096803256767290">Esegui il rollback del sistema operativo alla versione target</translation>
 <translation id="6921241119085515674">Consenti il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Consenti ai dispositivi di eseguire macchine virtuali su ChromeOS</translation>
@@ -9207,15 +9137,6 @@ Se questo criterio viene impostato su "Etichetta il profilo come Lavoro (0)", ve
 Se questo criterio viene impostato su "Etichetta il profilo come Scuola (1)", verrà usata l'etichetta "Scuola".
 
 Se configurato, il criterio <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> sostituirà questo criterio.</translation>
-<translation id="7852952453329293282">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
-Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
-
-Se il criterio viene impostato su 1, le origini idonee possono usare Direct Sockets.
-Sono inclusi app di Chrome, app web isolate e kiosk web; l'API non è mai disponibile sul web aperto.
-
-Se il criterio viene impostato su 2, le origini non possono usare Direct Sockets.
-
-Se non viene configurato, è consentito usare Direct Sockets.</translation>
 <translation id="7853140303943875314">Attiva l'esclusione dell'accesso automatico</translation>
 <translation id="7854187834842629068">Disattiva la dettatura nella schermata di accesso</translation>
 <translation id="7858352166858826505">Impostazioni per il modello di base locale di GenAI</translation>
@@ -9676,10 +9597,6 @@ Questo criterio viene applicato alla modalità di navigazione in incognito. Ciò
 <translation id="8250048892729838843">Questo criterio è stato ritirato. Se il criterio viene attivato o se non viene configurato, il dispositivo potrà ricevere i controlli di reporting granulare.
       Se viene disattivato, i dispositivi registrati non riceveranno i controlli di reporting granulare.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
-<translation id="8254792295762772851">Se questo criterio non viene configurato o se viene impostato su <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valore 0), accanto all'avatar della barra degli strumenti verrà visualizzata l'etichetta Lavoro o Scuola.
-Queste etichette vengono mostrate solo se l'account a cui è stato eseguito l'accesso è gestito.
-
-Se il criterio viene impostato su <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (valore 1), accanto all'avatar della barra degli strumenti verrà visualizzata l'etichetta Lavoro o Scuola per 30 secondi dopo l'apertura del profilo.</translation>
 <translation id="8256006033157034334">Questo criterio è deprecato e non è supportato. Utilizza il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 
@@ -9883,10 +9800,6 @@ I certificati devono essere codificati in base64.</translation>
 <translation id="838870586332499308">Attiva roaming dati</translation>
 <translation id="8392478748777481636">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Solo criteri piattaforma</translation>
-<translation id="8394518861160238324">Il partizionamento dello spazio di archiviazione di terze parti è attivo per impostazione predefinita per alcuni utenti a partire dalla versione M113, ma può essere disattivato tramite il flag di Chrome.
-          Se questo criterio viene impostato su <ph name="ALLOW_PARTITIONING_VALUE" /> o se non viene configurato, il partizionamento dello spazio di archiviazione di terze parti potrebbe essere attivato.
-          Se questo criterio viene impostato su <ph name="BLOCK_PARTITIONING_VALUE" />, non è possibile attivare il partizionamento dello spazio di archiviazione di terze parti.
-          Per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti, visita la pagina https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Timeout di inattività della schermata di blocco utente del salvaschermo.</translation>
 <translation id="8395749934754392549">Consente di gestire le impostazioni relative al container Android (ARC) e alle app Android.</translation>
 <translation id="8398952282584132331">Attiva Schermata sulla privacy</translation>
@@ -10727,19 +10640,6 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
       Questa norma viene applicata soltanto per gli utenti che si sono autenticati tramite SAML.
 
       Il valore della norma deve essere specificato in secondi.</translation>
-<translation id="9015526159640436408">L'URL di un'immagine che verrà utilizzata come badge aziendale per il profilo. L'URL deve indirizzare a un'immagine.
-
-Questo badge verrà mostrato nella barra degli strumenti.
-
-Se il criterio viene configurato a livello di browser, tutti i profili avranno questo logo nella barra degli strumenti.
-
-Se il criterio viene impostato a livello di profilo, solo quel profilo avrà questo logo.
-
-Se il criterio non viene configurato, verrà mostrata un'icona predefinita a forma di edificio.
-
-Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine, verrà visualizzata un'icona predefinita a forma di edificio.
-
-A differenza di altri, quando impostato a livello di profilo, questo criterio ha la precedenza su un criterio impostato a livello di browser.</translation>
 <translation id="9015578113567730893">Frequenza di raccolta dei dati di telemetria audio in millisecondi.</translation>
 <translation id="9015759770696099204">Le impostazioni F11/F12 sono disabilitate</translation>
 <translation id="9015952763003753868">Fai in modo che <ph name="ACAM_HEADER_NAME" /> abbia una corrispondenza in <ph name="CORS" /> per la conformità alle specifiche preflight</translation>

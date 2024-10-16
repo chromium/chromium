@@ -44,6 +44,7 @@
 <translation id="11743817593307477">A nyílbillentyűkkel a kívánt játékművelethez mozgathatja ezt a vezérlőt. A vezérlő elhelyezéséhez használja az Enter billentyűt. A megszakításhoz használja az Escape billentyűt.</translation>
 <translation id="1175697296044146566">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli.</translation>
 <translation id="1175951029573070619">Átlagos (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Szünet</translation>
 <translation id="1180621378971766337">barátságos</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1191518099344003522">Az APN engedélyezve van.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Nem sikerült az összes gazdagép feloldása</translation>
 <translation id="4593212453765072419">Proxyhitelesítés szükséges</translation>
 <translation id="4594021849294327751">Átirat létrehozása</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Nem lehet képeket létrehozni erről. Próbálkozzon egy másik üzenettel.</translation>
 <translation id="4609350030397390689">Billentyűzet fényerejének csökkentése</translation>
 <translation id="4623061655523261501">Sikerült a felvételnevek generálása</translation>
@@ -1462,12 +1462,12 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">tengerpart</translation>
 <translation id="819278132617411009">A Google AI használatával hatékonyabb lehet</translation>
+<translation id="8200772114523450471">Folytatás</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
 <translation id="8227119283605456246">Fájl csatolása</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
-<translation id="8236972776513018241">Átirat</translation>
 <translation id="8238771987802558562">Válasszon APN-t</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
 <translation id="8250926778281121244">rozsdaszínű</translation>
@@ -1594,7 +1594,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8864415976656252616">Nincsenek javasolt tartalmak. Megtekintheti a legnépszerűbb súgótartalmakat.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Az eszköz egy táblagép.</translation>
-<translation id="8878117140814294155">Mikrofon némítása vagy némításának feloldása</translation>
 <translation id="8881098542468797602">Sikeres tesztelés</translation>
 <translation id="8882789155418924367">baglyok</translation>
 <translation id="8892443466059986410">Gyorsparancs szerkesztésének visszavonása</translation>

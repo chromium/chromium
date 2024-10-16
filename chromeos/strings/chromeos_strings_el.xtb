@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Χρησιμοποιήστε τα πλήκτρα βέλους για να μετακινήσετε αυτό το στοιχείο ελέγχου στην ενέργεια παιχνιδιού που θέλετε. Χρησιμοποιήστε το πλήκτρο enter για να τοποθετήσετε το στοιχείο ελέγχου. Χρησιμοποιήστε το πλήκτρο escape για ακύρωση.</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Μέτριο (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Παύση</translation>
 <translation id="1180621378971766337">φιλόξενο</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1191518099344003522">Το APN είναι ενεργοποιημένο.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
 <translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4594021849294327751">Δημιουργία μεταγραφής</translation>
-<translation id="4602266091140407479">Μικρόφωνο</translation>
 <translation id="4607282946861182308">Δεν είναι δυνατή η δημιουργία εικόνων αυτού του στοιχείου. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="4623061655523261501">Τα ονόματα εγγραφών δημιουργήθηκαν με επιτυχία</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">παραλία</translation>
 <translation id="819278132617411009">Χρησιμοποιήστε το Google AI για να γίνετε πιο παραγωγικοί</translation>
+<translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
-<translation id="8236972776513018241">Μεταγραφή</translation>
 <translation id="8238771987802558562">Επιλέξτε APN</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
 <translation id="8250926778281121244">κεραμιδί</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Δεν υπάρχει προτεινόμενο περιεχόμενο. Ανατρέξτε στο κορυφαίο περιεχόμενο βοήθειας.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
-<translation id="8878117140814294155">Εναλλαγή σίγασης του μικροφώνου</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
 <translation id="8882789155418924367">κουκουβάγιες</translation>
 <translation id="8892443466059986410">Ακύρωση επεξεργασίας συντόμευσης</translation>

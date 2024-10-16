@@ -44,6 +44,7 @@
 <translation id="11743817593307477">ଆପଣ ଚାହୁଁଥିବା ଗେମ ଆକ୍ସନକୁ ଏହି ନିୟନ୍ତ୍ରଣ ମୁଭ କରିବାକୁ ତୀର କୀ'ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ। ନିୟନ୍ତ୍ରଣ ରଖିବାକୁ ଏଣ୍ଟର କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ। ବାତିଲ କରିବା ପାଇଁ ଏସକେପ କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1175951029573070619">ସାଧାରଣ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1180621378971766337">ଆରାମଦାୟକ</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1191518099344003522">APNକୁ ସକ୍ଷମ କରାଯାଇଛି।</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
-<translation id="4602266091140407479">ମାଇକ</translation>
 <translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4623061655523261501">ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ସଫଳତାର ସହ ଜେନେରେଟ ହୋଇଛି</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8183975772394450380">ବେଳାଭୂମି</translation>
 <translation id="819278132617411009">ଅଧିକ ପ୍ରଡକ୍ଟିଭ ହେବା ପାଇଁ Google AI ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
-<translation id="8236972776513018241">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ</translation>
 <translation id="8238771987802558562">ଏକ APN ବାଛନ୍ତୁ</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>
 <translation id="8250926778281121244">କଳଙ୍କି</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">କୌଣସି ପ୍ରସ୍ତାବିତ ବିଷୟବସ୍ତୁ ନାହିଁ। ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ଡିଭାଇସଟି ଏକ ଟାବଲେଟ ଅଟେ।</translation>
-<translation id="8878117140814294155">ମାଇକ୍ରୋଫୋନରେ ମ୍ୟୁଟକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>
 <translation id="8882789155418924367">ପେଚା</translation>
 <translation id="8892443466059986410">ସର୍ଟକଟ ଏଡିଟିଂକୁ ବାତିଲ କରନ୍ତୁ</translation>

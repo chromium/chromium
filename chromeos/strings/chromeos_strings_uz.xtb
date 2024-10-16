@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Bu boshqaruvni oʻyin amaliga joylashda strelka tugmalaridan foydalaning. Boshqaruvni joylash uchun Enter tugmasini bosing. Bekor qilish uchun Escape tugmasini bosing.</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="1175951029573070619">Oʻrtacha (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pauza</translation>
 <translation id="1180621378971766337">shinam</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1191518099344003522">APN yoniq.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Hech qaysi host aniqlanmadi</translation>
 <translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
 <translation id="4594021849294327751">Transkripsiya yaratish</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Buning rasmlarini yaratish imkonsiz. Boshqa soʻrov yuboring.</translation>
 <translation id="4609350030397390689">Klaviatura yorqinligi pasaytirish</translation>
 <translation id="4623061655523261501">Yozuv nomlari yaratildi</translation>
@@ -1462,12 +1462,12 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">sohil</translation>
 <translation id="819278132617411009">Google AI yordamida unundorlikni oshiring</translation>
+<translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
 <translation id="8227119283605456246">Fayl biriktirish</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
-<translation id="8236972776513018241">Transkripsiya</translation>
 <translation id="8238771987802558562">APN tanlash</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
 <translation id="8250926778281121244">zang</translation>
@@ -1594,7 +1594,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8864415976656252616">Tavsiya etilgan kontent topilmadi. Eng sara yordam kontenti bilan tanishing.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Qurilma — planshet</translation>
-<translation id="8878117140814294155">Mikrofonni yoqish yoki oʻchirish</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
 <translation id="8882789155418924367">boyqushlar</translation>
 <translation id="8892443466059986410">Tahrirlashni bekor qilish</translation>

@@ -142,7 +142,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1420408895951708260">Aktibatu/Desaktibatu Gaueko argia. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1435537621343861112">Ezin da hasi diktaketa. Mikrofonoa desaktibatuta daukazu.</translation>
-<translation id="1445031758921122223">Deskargatu dira aurpegi bidezko kontrolaren fitxategiak</translation>
+<translation id="1445031758921122223">Deskargatu dira aurpegi-keinuen bidez kontrolatzeko eginbidearen fitxategiak</translation>
 <translation id="1447907279406111651">Orain ⋅ Amaiera: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Gailuaren wifi-guneak</translation>
 <translation id="1455242230282523554">Erakutsi hizkuntza-ezarpenak</translation>
@@ -1136,7 +1136,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4889868803215848840">Eman iritzia iradokizunak hobetzeko (aukerakoa):</translation>
 <translation id="4890187583552566966">Administratzaileak desgaitu egin du Google-ren Laguntzailea.</translation>
 <translation id="4890408602550914571">Ziurtatu telefonoa hurbil dagoela eta Bluetootha aktibatuta daukala.</translation>
-<translation id="4892981359753171125">Aurpegi bidezko kontrola</translation>
+<translation id="4892981359753171125">Aurpegi-keinuen bidez kontrolatzea</translation>
 <translation id="4895488851634969361">Bateria beteta dago.</translation>
 <translation id="4902797682482387055">Kontzentratzeko iradokitako zeregina</translation>
 <translation id="490375751687810070">Bertikala</translation>
@@ -1287,7 +1287,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Joan fitxa honetara</translation>
 <translation id="5363835273551457276">Mikrofonoaren soinua proba dezakezu. Geldiarazteko, itxi panela.</translation>
 <translation id="5364693579536176785">biltegiratzeko tokia</translation>
-<translation id="5369573834963677938">Gailuaren beste erabiltzaileek aurpegi bidezko kontrola erabili ahal izango dute</translation>
+<translation id="5369573834963677938">Gailuaren beste erabiltzaileek aurpegi-keinuen bidez kontrolatzeko eginbidea erabili ahal izango dute</translation>
 <translation id="5369717264580061086">Aurreikusi fitxategia Fitxategiak aplikazioan</translation>
 <translation id="5377367976106153749">Kamera erabiltzeko baimena aktibatu nahi duzu?</translation>
 <translation id="5378450298115733949">Gehiago</translation>
@@ -1486,7 +1486,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6020147141355393792">Konfiguratu telefonoko jakinarazpenak eta aplikazioak ikusteko aukera</translation>
 <translation id="6022924867608035986">Garbitu bilaketa-koadroko testua</translation>
 <translation id="602472752137106327">Erakutsi lan-eremu guztietan dauden leihoak, aukera-botoia hautatuta dago</translation>
-<translation id="6024768346262692989">Ezin izan dira deskargatu aurpegi bidezko kontrolaren fitxategiak</translation>
+<translation id="6024768346262692989">Ezin izan dira deskargatu aurpegi-keinuen bidez kontrolatzeko eginbidearen fitxategiak</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="6027518778343897451">Egun honetan ez dago gertaerarik: <ph name="CURRENT_MONTH_DAY" />. Arakatzailean Google Calendar irekitzeko, sakatu Sartu.</translation>
 <translation id="6030495522958826102">Pantailaren beheko ezkerreko izkinara eraman da menua.</translation>
@@ -1590,6 +1590,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6352082849089527770">Sare ezezagunak</translation>
 <translation id="6359587239691116345">Lortu azken eginbideak eta segurtasun-hobekuntzak. Eguneratzea baztertzen baduzu, baliteke gailuak behar bezala funtzionatzeari uztea eta segurtasun- eta errendimendu-arazoak izatea.</translation>
 <translation id="6362833380917912748">Ezagutu aplikazio integratuak</translation>
+<translation id="6364386432014869981">Ukipen-panel integratua aktibatuta dago</translation>
 <translation id="6376931439017688372">Aktibatuta dago Bluetootha</translation>
 <translation id="6378515133128829137">Ainguratu leihoa eskuinean</translation>
 <translation id="6381109794406942707">Gailua desblokeatzeko, idatzi PINa.</translation>
@@ -1690,6 +1691,8 @@ Berriki instalatu da</translation>
 <translation id="6682029141988159141">Itsatsi arbeleko edukia</translation>
 <translation id="6683022854667115063">Entzungailuak</translation>
 <translation id="6686023075541098243">Konfiguratu telefonoko jakinarazpenak ikusteko aukera</translation>
+<translation id="6688019813898140556">Ihes tekla 5 aldiz</translation>
+<translation id="6694462491298752106">Ukipen-panel integratua desgaituta dago</translation>
 <translation id="6694973220096431421">Bilatu Google Drive-n</translation>
 <translation id="6696025732084565524">Bereiz daitekeen teklatuak ezinbesteko eguneratze bat behar du</translation>
 <translation id="6697913454192220372">Gehitu lan-eremu bat</translation>
@@ -2068,7 +2071,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7982878511129296052">Desaktibatzen…</translation>
 <translation id="7984197416080286869">Saiakera gehiegi egin dira hatz-markarekin</translation>
-<translation id="798779949890829624">Administratzaileak kudeatzen du ezarpena</translation>
+<translation id="798779949890829624">Administratzaileak ezarpen hau kudeatzen du</translation>
 <translation id="7989206653429884947">Maiz irekia</translation>
 <translation id="799296642788192631">Fitxategi garrantzitsuak aingura ditzakezu. Ainguratzeko, pasatu erakuslea elementu baten gainetik edo ireki Fitxategiak eta egin klik eskuineko botoiarekin elementu batean.</translation>
 <translation id="7994370417837006925">Saio bat baino gehiago hasteko eginbidea</translation>
@@ -2118,7 +2121,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="8149413265954228307">Erakutsi Bluetootharen ezarpenak. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Ixteko, sakatu Ktrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatikoki betea</translation>
-<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="8155628902202578800">Ireki <ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> erabiltzen</translation>
 <translation id="8168435359814927499">Edukia</translation>

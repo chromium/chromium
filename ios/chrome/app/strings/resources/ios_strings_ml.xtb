@@ -126,6 +126,7 @@
 <translation id="1540800554400757039">വിലാസം 1</translation>
 <translation id="1545749641540134597">QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="1554477036522844996">പുതിയ വിന്‍ഡോ</translation>
+<translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
 <translation id="1571780780926010134">അദൃശ്യ ടാബുകൾ</translation>
 <translation id="1580715474678097352">അപകടകരമായ വെബ്‌സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷിതമായി തുടരുക</translation>
 <translation id="1580783302095112590">മെയിൽ അയച്ചു.</translation>
@@ -411,6 +412,7 @@
 <translation id="288655811176831528">ടാബ് അവസാനിപ്പിക്കുക</translation>
 <translation id="2888631381369839306">നിരക്ക് ട്രാക്കിംഗ് അറിയിപ്പുകൾ ഓണാക്കി</translation>
 <translation id="288902476966286676">അയച്ചയാൾക്ക് റിട്ടേൺ ചെയ്യുക</translation>
+<translation id="2894757982205307093">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="2905479111267140204">നിങ്ങളുടെ സുരക്ഷിതത്വം അപകടത്തിലാക്കിയേക്കാവുന്ന തരത്തിൽ, നിങ്ങൾക്ക് ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന <ph name="NUMBER_OF_PASSWORDS" /> പാസ്‌വേഡുകളുണ്ട്.</translation>
 <translation id="291754862089661335">ഈ ഫ്രെയിമിൽ QR കോഡോ ബാർ‌കോഡോ സ്ഥാപിക്കുക</translation>
 <translation id="2918688092312652908">'വായിക്കാത്തവ' എന്ന് അടയാളപ്പെടുത്തുക</translation>
@@ -445,7 +447,6 @@
 ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="3080525922482950719">പിന്നീട് അല്ലെങ്കിൽ ഓഫ്‌ലൈനിൽ വായിക്കുന്നതിന് നിങ്ങൾക്ക് പേജുകൾ സംരക്ഷിക്കാനാകും</translation>
 <translation id="3081338492074632642">നിങ്ങൾ സംരക്ഷിക്കുന്ന പാസ്‌വേഡ്, <ph name="WEBSITE" />-നുള്ള പാസ്‌വേഡുമായി പൊരുത്തപ്പെടുന്നു എന്ന് ഉറപ്പാക്കുക</translation>
-<translation id="30842332047348094">ക്രെഡിറ്റ് കാർഡുകൾ</translation>
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="309710370695886264">നിങ്ങൾക്ക് ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന ഒരു പാസ്‌വേഡുണ്ട്. സുരക്ഷിതരായി നിലനിൽക്കാൻ ഇപ്പോൾ അത് പരിഹരിക്കുക.</translation>
 <translation id="3102139268911534961">നിങ്ങൾക്ക് അറിയാവുന്നതും പ്രിയപ്പെട്ടതുമായ മൊബൈൽ ബ്രൗസർ ഇനി നിങ്ങളുടെ iPhone-ൽ നേടൂ.</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3861908220442487587">ഈ വിലാസം ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, <ph name="USER_EMAIL" /> എന്ന നിങ്ങളുടെ Google Account-ലേക്ക് ഇത് നീക്കുക.</translation>
 <translation id="3868495844258915202">പൂർണ്ണ URL കാണിക്കുക</translation>
+<translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="3876833929577368454">എല്ലായ്‌പ്പോഴും എന്നോട് ചോദിക്കുക</translation>
 <translation id="3885587018298784481">ഒരു കുടുംബ ഗ്രൂപ്പിൽ ചേരുക</translation>
 <translation id="3888863481921783344">നിങ്ങളുടെ ഇവന്റിലേക്ക് ക്ഷണിക്കപ്പെടാൻ സാധ്യതയുള്ള ആളുകളെ കാണിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">Lens ക്യാമറ ഉപയോഗിച്ചുള്ള തിരയൽ</translation>
 <translation id="6231782223312638214">നിര്‍‌ദ്ദേശിച്ചത്</translation>
 <translation id="6232329973559504466">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
+<translation id="6234310016144827337">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="6234438496206735891">ഡൗൺലോഡുകൾ കാണിക്കുക</translation>
 <translation id="6236952928980352967">മുന്നറിയിപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -1538,7 +1541,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="8173034266693057059">നീളം</translation>
-<translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} എന്നതിന്}=2{{website_2}, {website_1} എന്നിവയ്ക്ക്}=3{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റൊരെണ്ണത്തിനും}other{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റ് {more_count} എണ്ണത്തിനും}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">പാസ്‌വേഡ് ചേർക്കുക</translation>
@@ -1634,6 +1636,7 @@
 <translation id="8609743333007776886">${url}, ബുക്ക്‌മാർക്കുകളിലേക്ക് ചേർക്കുക</translation>
 <translation id="8620640915598389714">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="8625706492572042370">ഹോം സ്‌ക്രീൻ എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="8633025649649592204">സമീപകാല ആക്റ്റിവിറ്റി</translation>
 <translation id="8636825310635137004">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="8637431369725868556">അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷ നേടുക.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡുകൾ}}</translation>

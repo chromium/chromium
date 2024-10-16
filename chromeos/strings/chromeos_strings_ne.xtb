@@ -44,6 +44,7 @@
 <translation id="11743817593307477">आफूले चाहेको गेम खेल्नका निम्ति यो कन्ट्रोल सार्न एरो की प्रयोग गर्नुहोस्। कन्ट्रोललाई आफूले चाहेको स्थानमा लैजान इन्टर की प्रयोग गर्नुहोस्। यसलाई रद्द गर्न इस्केप की प्रयोग गर्नुहोस्।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
 <translation id="1175951029573070619">औसत (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1180621378971766337">आरामदायी</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1191518099344003522">APN अन गरिएको छ।</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">सबै होस्टहरूको समस्या समाधान गर्न सकिएन</translation>
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4594021849294327751">ट्रान्सक्रिप्ट बनाउनुहोस्</translation>
-<translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">यो प्रम्प्टअनुसारका फोटोहरू बनाउन सकिएन। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="4609350030397390689">किबोर्डको चमक घटाउने की</translation>
 <translation id="4623061655523261501">रेकर्डिङका नाम सिर्जना गरिए</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8183975772394450380">समुद्र किनारा</translation>
 <translation id="819278132617411009">अझ बढी उत्पादनशील हुन Google AI प्रयोग गर्नुहोस्</translation>
+<translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
-<translation id="8236972776513018241">ट्रान्स्क्रिप्ट</translation>
 <translation id="8238771987802558562">कुनै APN छनौट गर्नुहोस्</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
 <translation id="8250926778281121244">रस्ट</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">सिफारिस गरिएको सामग्री छैन। मद्दतसम्बन्धी मुख्य सामग्री हेर्नुहोस्।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>
-<translation id="8878117140814294155">माइक्रोफोनमा म्युट गर्ने विकल्प टगल गर्नुहोस्</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
 <translation id="8882789155418924367">लाटोकोसेरोहरू</translation>
 <translation id="8892443466059986410">सर्टकट सम्पादन गर्ने कार्य रद्द गर्नुहोस्</translation>

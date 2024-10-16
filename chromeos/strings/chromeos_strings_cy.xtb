@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Defnyddiwch y bysellau saeth i symud y rheolydd hwn i'r weithred gêm rydych ei eisiau. Defnyddiwch y fysell Enter i osod y rheolydd. Defnyddiwch y fysell Escape i ganslo.</translation>
 <translation id="1175697296044146566">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Cymedrol <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1178581264944972037">Seibio</translation>
 <translation id="1180621378971766337">clyd</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1191518099344003522">Mae APN wedi'i alluogi.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Wedi methu â datrys yr holl westeiwyr</translation>
 <translation id="4593212453765072419">Mae angen dilysu dirprwy weinydd</translation>
 <translation id="4594021849294327751">Creu trawsgrifiad</translation>
-<translation id="4602266091140407479">Meic</translation>
 <translation id="4607282946861182308">Methu â chreu lluniau o hyn. Rhowch gynnig ar anogwr arall.</translation>
 <translation id="4609350030397390689">Disgleirdeb y bysellfwrdd i lawr</translation>
 <translation id="4623061655523261501">Recordio enwau a gynhyrchwyd yn llwyddiannus</translation>
@@ -1462,12 +1462,12 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">traeth</translation>
 <translation id="819278132617411009">Defnyddio Google AI i fod yn fwy cynhyrchiol</translation>
+<translation id="8200772114523450471">Parhau</translation>
 <translation id="8206859287963243715">Symudol</translation>
 <translation id="8208861521865154048">Manteision</translation>
 <translation id="8226628635270268143">Dewiswch eich hoff luniau ac albymau</translation>
 <translation id="8227119283605456246">Atodi ffeil</translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
-<translation id="8236972776513018241">Trawsgrifiad</translation>
 <translation id="8238771987802558562">Dewis APN</translation>
 <translation id="8246209727385807362">Cludwr anhysbys</translation>
 <translation id="8250926778281121244">rhwd</translation>
@@ -1594,7 +1594,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8864415976656252616">Dim cynnwys a awgrymir. Gweld y cynnwys cymorth gorau.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Mae'r ddyfais yn llechen.</translation>
-<translation id="8878117140814294155">Toglo distewi ar meicroffon</translation>
 <translation id="8881098542468797602">Llwyddodd y prawf</translation>
 <translation id="8882789155418924367">tylluanod</translation>
 <translation id="8892443466059986410">Canslo golygu llwybr byr</translation>

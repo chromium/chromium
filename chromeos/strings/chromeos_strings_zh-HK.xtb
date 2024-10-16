@@ -44,6 +44,7 @@
 <translation id="11743817593307477">用箭咀掣將呢個控制項移去需要嘅遊戲操作。㩒 Enter 掣就可以放控制項，㩒 Esc 制就可以取消。</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">暫停</translation>
 <translation id="1180621378971766337">舒適</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">啟用咗 APN。</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄文字</translation>
-<translation id="4602266091140407479">麥克風</translation>
 <translation id="4607282946861182308">無法製作相應的圖像，請嘗試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤校暗亮度</translation>
 <translation id="4623061655523261501">已順利生成錄製名稱</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8183975772394450380">海灘</translation>
 <translation id="819278132617411009">使用 Google AI 提升生產力</translation>
+<translation id="8200772114523450471">繼續</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
 <translation id="8226628635270268143">選擇喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
-<translation id="8236972776513018241">轉錄文字</translation>
 <translation id="8238771987802558562">選取 APN</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
 <translation id="8250926778281121244">鐵銹色</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">沒有建議內容。請查看熱門說明內容。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型係平板電腦。</translation>
-<translation id="8878117140814294155">麥克風靜音開關</translation>
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8882789155418924367">貓頭鷹</translation>
 <translation id="8892443466059986410">取消編輯快速鍵</translation>

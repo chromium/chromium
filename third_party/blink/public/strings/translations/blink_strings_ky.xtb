@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Кадыресе</translation>
 <translation id="1591562245178063882">Үстүбүздөгү ай</translation>
 <translation id="1637811476055996098">Файлдарды тандаңыз</translation>
-<translation id="1680090928918677457">Камераны иштетүү</translation>
 <translation id="1729654308190250600">Бош эмес электрондук почта дарегин киргизиңиз.</translation>
 <translation id="1758486001363313524">Башка…</translation>
 <translation id="1921819250265091946">кк</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Бул текстти <ph name="MAX_CHARACTERS" /> белгиге же андан кыскараак кылып кыскартыңыз (учурда <ph name="CURRENT_LENGTH" /> белги турат).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-трек</translation>
-<translation id="2353297238722298836">Камера менен микрофонду колдонууга уруксат берилди</translation>
 <translation id="2507943997699731163">Бул талааны толтуруңуз.</translation>
 <translation id="2613802280814924224">Жарактуу маани киргизиңиз. Кыйла жарактуу маани: <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2746543609216772311">Маани <ph name="MINIMUM_DATE_OR_TIME" /> же андан жаңыраак болушу керек.</translation>
 <translation id="2761667185364618470">Уланткыңыз келсе бул кутуну белгилеңиз.</translation>
 <translation id="2908441821576996758">Электрондук почта даректеринин тизмесин үтүр менен бөлүп киргизиңиз.</translation>
-<translation id="2940013921954129954">Так дарекке уруксат берилет</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Мб</translation>
 <translation id="3075154866155599887">Жарактуу маанини киргизиңиз. Талаа толук эмес же күнү жараксыз.</translation>
 <translation id="310520048233152454">URL жазыңыз.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Бул текстти <ph name="MIN_CHARACTERS" /> белгиге же андан көбүрөөк кылып узартыңыз (учурда <ph name="CURRENT_LENGTH" /> белги турат).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' дегенден кийинки бөлүктө '<ph name="INVALIDCHARACTER" />' символу камтылбашы керек.</translation>
 <translation id="3846214748874656680">Толук экран режиминен чыгуу</translation>
-<translation id="4031179711345676612">Микрофонду колдонууга уруксат берилди</translation>
 <translation id="4360991593054037559">Жарактуу маанини киргизиңиз. Эң жакын жарактуу эки маани <ph name="VALID_VALUE_LOW" /> жана <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Чоо-жайлары</translation>
-<translation id="4663373278480897665">Камераны колдонууга уруксат берилди</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' дегенден кийинки бөлүктө '<ph name="INVALIDCHARACTER" />' символу болбошу керек.</translation>
 <translation id="4718048029184481307">Сүрөт ичиндеги сүрөт режиминде ойнотулууда</translation>
 <translation id="4812940957355064477">Номер киргизиңиз.</translation>
-<translation id="49269513399674318">Микрофонду иштетүү</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> тандалды</translation>
 <translation id="4992066212339426712">Үнүн чыгаруу</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' дегенден кийинки бөлүгүн киргизиңиз. '<ph name="INVALIDADDRESS" />' толук эмес.</translation>
 <translation id="5164977714490026579">Маани <ph name="MINIMUM" /> чоңураак же барабар болушу керек.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
-<translation id="5239623327352565343">Жайгашкан жери аныктоого уруксат берилди</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' дегенден кийинки бөлүктү киргизиңиз. '<ph name="INVALIDADDRESS" />' толук болбой калды.</translation>
 <translation id="5334352251556557839">Аудио ойнотулбай жатат.</translation>
 <translation id="537648784377940524">Минималдуу күн (<ph name="MIN_DATE_OR_TIME" />) Максималдуу күндөн мурда болушу керек (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Ойнотуу сапаты начар</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6820355525329141109">Плагин жүктөлбөй койду.</translation>
-<translation id="688706781007114099">Жайгашкан жерди аныктоо</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Бул текстти <ph name="MIN_CHARACTERS" /> белгиге же андан көбүрөөк кылып узартыңыз (учурда 1 белги турат).</translation>
 <translation id="709897737746224366">Суралган форматка туураланыз.</translation>
-<translation id="7134810312945846184">Камера менен микрофонду иштетүү</translation>
 <translation id="7263440858009898357">Тизмедеги нерсени тандап алыңыз.</translation>
 <translation id="7364796246159120393">Файл тандоо</translation>
 <translation id="739024184232394898">Башка…</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Маани <ph name="MINIMUM_TIME" /> – <ph name="MAXIMUM_TIME" /> ортосунда болушу керек.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> файл</translation>
 <translation id="8451268428117625855">Файл тандаңыз.</translation>
-<translation id="8533587060884335451">Турган жерим боюнча</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Жаңы сапка көчүрүү</translation>
 <translation id="8750798805984357768">Булардын бирин тандаңыз.</translation>

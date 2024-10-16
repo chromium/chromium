@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Gebruik pylsleutels om hierdie kontrole te skuif na die speletjiehandeling wat jy wil hê. Gebruik die Enter-sleutel om die kontrole te plaas. Gebruik die Escape-sleutel om te kanselleer.</translation>
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Laat wag</translation>
 <translation id="1180621378971766337">knus</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1191518099344003522">APN is geaktiveer.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4594021849294327751">Skep transkripsie</translation>
-<translation id="4602266091140407479">Mikrofoon</translation>
 <translation id="4607282946861182308">Kan nie prente hiervan skep nie. Probeer ’n ander porboodskap.</translation>
 <translation id="4609350030397390689">Verlaag sleutelbordhelderheid</translation>
 <translation id="4623061655523261501">Name vir opnames is suksesvol gegenereer</translation>
@@ -1462,12 +1462,12 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="819278132617411009">Gebruik Google AI om meer produktief te wees</translation>
+<translation id="8200772114523450471">Hervat</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
 <translation id="8227119283605456246">Heg lêer aan</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
-<translation id="8236972776513018241">Transkripsie</translation>
 <translation id="8238771987802558562">Kies ’n APN</translation>
 <translation id="8246209727385807362">Onbekende diensverskaffer</translation>
 <translation id="8250926778281121244">roes</translation>
@@ -1594,7 +1594,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8864415976656252616">Geen voorgestelde inhoud nie. Sien beste hulpinhoud.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Toestel is 'n tablet.</translation>
-<translation id="8878117140814294155">Wissel demp op mikrofoon</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
 <translation id="8882789155418924367">uile</translation>
 <translation id="8892443466059986410">Kanselleer kortpadredigering</translation>

@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">कर्न्फ्लावर निलो</translation>
 <translation id="1246424317317450637">बोल्ड</translation>
 <translation id="1251750620252348585">अर्को चरण</translation>
+<translation id="1264956950255940376">बायाँ आँखा आधा चिम्लनुहोस्</translation>
 <translation id="1268366246392928616">अघिल्लो कुनै पनि गणितीय अभिव्यक्ति छैन</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1284576163386164372">तपाईं जुनसुकै बेला चार औँलाले ट्याप गरी मेनुहरू खोलेर ट्युटोरियलहरू हेर्न सक्नुहुन्छ। त्यसपछि “ChromeVox” खण्डमा रहेको ट्युटोरियल अन गर्नुहोस्।</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">टच ओरियन्टेसन</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, मेनु आइटम रेडियो बटनको चयन रद्द गरिएको छ।</translation>
 <translation id="1325946044405407859">फुस्रो</translation>
+<translation id="1328928545650070438">आँखीभौँ तलतिर सार्नुहोस्</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> को <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">वर्ण र शब्द एको</translation>
 <translation id="1334570596456017464">सबस्क्रिप्ट</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">सुझाव</translation>
 <translation id="1354356357730355833">कपी गर्नुहोस्</translation>
 <translation id="1360699455582016846">राउटिङ साँचो <ph name="ROUTING_KEY_NUMBER" /> भन्दा तलको वस्तुमा क्लिक गर्नुहोस्</translation>
+<translation id="1365650529628379165">आँखीभौँ माथितिर सार्नुहोस्</translation>
 <translation id="1376703628032300005">कर्सर सारेर अर्को वर्णमा लगियोस्</translation>
 <translation id="1377925789329510816">यो अन्तिम शीर्षक हो। पहिलो शीर्षकमा जान खोज+H थिच्नुहोस् वा यस पृष्ठको दोस्रो शीर्षकमा जान खोज+सिफ्ट+H थिच्नुहोस्।</translation>
 <translation id="138218114945450791">हल्का निलो</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">लिङ्क</translation>
 <translation id="1727806147743597030">फुट</translation>
 <translation id="1730447754326314349">ChromeVox को ट्युटोरियलमा स्वागत छ। यो ट्युटोरियलबाट जुनसुकै बेला बाहिरिन किबोर्डको सिरानको बायाँ कुनातिर रहेको Escape की थिच्नुहोस्। ChromeVox अफ गर्न Control तथा Alt की होल्ड गरी Z की थिच्नुहोस्। तपाईं तयार भएपछि अर्को पाठमा जान स्पेसबार की थिच्नुहोस्।</translation>
+<translation id="1735957571918073979">दुवै आँखा झिम्क्याउनुहोस्</translation>
 <translation id="174268867904053074">अर्को ग्राफिक</translation>
 <translation id="1756785467854861272">गाढा म्याग्नेटा</translation>
 <translation id="1758693804775271377">यो विषयसँग सम्बन्धित पाठहरू ब्राउज गर्न एउटा औँलाले बायाँ वा दायाँतिर स्वाइप गर्नुहोस्</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="1781173782405573156">पास थ्रु कुञ्जी</translation>
 <translation id="1787176709638001873">पासवर्ड सम्पादन पाठ</translation>
+<translation id="1795438342141780114">कर्सर रिसेट गरी स्क्रिनको मध्य भागमा ल्याउनुहोस्</translation>
 <translation id="180203835522132923">Search + O, त्यसपछि W</translation>
 <translation id="1810107444790159527">सूची बक्स</translation>
 <translation id="1812527064848182527">ल्यान्डस्केप</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">अर्को वस्तु</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox का मेनुहरूमा ब्रेल आदेशहरू देखाउनुहोस्</translation>
+<translation id="1999763610967697511">ड्र्याग एन्ड ड्रप गर्नुहोस्</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{बायाँ ब्र्याकेट}other{# बायाँ ब्र्याकेटहरू}}</translation>
 <translation id="2009187674653301682">सुपरस्क्रिप्ट होइन</translation>
 <translation id="2010555995361223825">ChromeVox मेनुहरू</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">गलत हिज्जे छाड्दै</translation>
 <translation id="2267945578749931355">अर्को वर्ण</translation>
 <translation id="2278490101488436824">तीन औँलाले बायाँ स्वाइप गर्नुहोस्</translation>
+<translation id="228059581448666199">माउसमा लेफ्ट क्लिक गर्नुहोस्</translation>
 <translation id="2303873575703885770">कुनै वस्तु अन गर्नुहोस्</translation>
 <translation id="2305942658236913680">अर्को कुनै पनि शीर्षक छैन</translation>
 <translation id="2311237334957139798">ग्र्यानुलारिटीमा अघिल्लोमा जानुहोस्</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">अघिल्लो कुनै पनि ARIA स्थलचिन्ह छैन</translation>
 <translation id="2843814945404750166">गाढा ओलिभ हरियो</translation>
 <translation id="2843837985843789981">अघिल्लो समूह</translation>
+<translation id="2849035674501872372">खोज्नुहोस्</translation>
+<translation id="2860710618359053450">च्यापु दायाँतिर सार्नुहोस्</translation>
 <translation id="2864481629947106776">अधिल्लो लिङ्क</translation>
 <translation id="2867808975387772810">ग्रन्थसूची</translation>
 <translation id="2873259058405069099">तालिकाको सुरुमा जानुहोस्</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">नेभिगेसन</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ स्पेस}other{ # स्पेसहरू}}</translation>
 <translation id="3179119189286472195">लिंक छैन</translation>
+<translation id="3180990259147710757">च्यापु बायाँतिर सार्नुहोस्</translation>
 <translation id="320041337977930740">प्रदर्शनको शैली परिवर्तन गरी इन्टरलिभ पार्नुहोस्</translation>
 <translation id="3206698050650195442">ट्युटोरियलबाट बाहिरिनुहोस्</translation>
 <translation id="3208346789712025453">अर्को कुनै पनि नियन्त्रण छैन</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{ प्लस}other{ # प्लस संकेतहरू}}</translation>
 <translation id="338583716107319301">विभाजक</translation>
 <translation id="3389259863310851658">अधिल्लो फारम फाँट</translation>
+<translation id="3390740059150071453">बायाँतिर हेर्नुहोस्</translation>
 <translation id="3393605254399152980">आफूले छोएको वस्तुको प्रतिक्रिया सुन्न एक औँलाले ड्र्याग गर्नुहोस्</translation>
 <translation id="3406283310380167331">फारमहरूको सूची देखाउनुहोस्</translation>
 <translation id="3407726812456125464">चयन गरिएको टेक्स्ट सुन्नुहोस्</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">अघिल्लो वस्तु</translation>
 <translation id="4099274309791143834">सबमेनुको साथमा</translation>
 <translation id="4101527861445851766">एउटा चिन्ह मार्फत चयन गरिएको जाँच बाकस</translation>
+<translation id="410225014223200513">आफ्नो ओठले गोलाकार बनाउनुहोस्</translation>
 <translation id="4115378294792113321">म्याग्नेटा</translation>
 <translation id="4116415223832267137">चेतावनी</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{ दाँया कोष्ठक}other{ # दाँया कोष्ठकहरू}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">स्टिल जस्तो निलो</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4255016471934258618">आफ्नो मुख पूरा खोल्नुहोस्</translation>
 <translation id="4259220820964911921">फेस कन्ट्रोल अन गर्ने हो?</translation>
 <translation id="4271220233568730077">अर्को गणित</translation>
 <translation id="4275397969489577657">घटनाका स्ट्रिमसम्बन्धी लगइनहरू सक्षम पार्नुहोस्</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">सिएना</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ डट}=3{ इलिप्सिस}other{ # डटहरू}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> टाइप गर्नुहोस्</translation>
+<translation id="4360738659108163902">माउसमा राइट क्लिक गर्नुहोस्</translation>
 <translation id="4372435075475052704">मिनेट:<ph name="X" /></translation>
 <translation id="4372705107434148843">बोली रोक्नुहोस्</translation>
 <translation id="4376316291247992553">ग्राफिकलाई ब्रेलको रूपमा हेर्नुहोस्</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">फिक्का टर्कोइस</translation>
 <translation id="4826415162591436065">अगाडि जानुहोस्</translation>
 <translation id="4827410568042294688">चयन नगरिएका</translation>
+<translation id="483262387981411190">फेस कन्ट्रोल पज वा सुचारु गर्नुहोस्</translation>
+<translation id="4835598628985424375">ओठ जोडेर मुख चुच्चो पार्नुहोस्</translation>
 <translation id="4838490795649708173">चार औँलाले ट्याप गर्नुहोस्</translation>
 <translation id="4839925464551908214">अघिल्लो पङ्क्तिमा जानुहोस्</translation>
 <translation id="4841614409681890122">गाढा गुलाफी</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">अघिल्लो कुनै पनि मिडिया विजेट छैन</translation>
 <translation id="4855927945655956315">अत्यावश्यक की: Control</translation>
+<translation id="485806788160414322">मिडिया प्ले वा पज गर्नुहोस्</translation>
 <translation id="4862744964787595316">बोल्ड होइन</translation>
 <translation id="4865995900839719272">कर्सर सारेर अघिल्लो हरफमा लगियोस्</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">मध्यम स्लेट मिश्रित निलो</translation>
 <translation id="5140016802771803559">रेबेका बैजनी</translation>
 <translation id="5142101052131610456">सबै पाठहरू</translation>
+<translation id="514387318601895731">तलतिर हेर्नुहोस्</translation>
 <translation id="5158275234811857234">आवरण</translation>
 <translation id="516076699907426116">तपाईं जारी राख्न चाहनुहुन्छ भने अर्को पाठको बटन भेट्टाउन छोएर अन्वेषण गर्नुहोस्। त्यसपछि जारी राख्न डबल ट्याप गर्नुहोस्।</translation>
 <translation id="5170206230005240598">ब्रेली लिपिका क्याप्सनहरू सक्षम पारिए</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Google Enhanced Network को टेक्स्ट-टू-स्पिच एक्स्टेन्सन</translation>
 <translation id="5783252477644995371">तपाईं फेस कन्ट्रोल प्रयोग गरी फेसियल जेस्चरका सहायताले कर्सर नियन्त्रण गर्न र अन्य विभिन्न कार्यहरू गर्न सक्नुहुन्छ। उदाहरणका लागि तपाईं मुस्कुराउने जेस्चर प्रयोग गरी बायाँ क्लिक गर्न सक्नुहुन्छ</translation>
 <translation id="5805940204952508776">दुई औँलाले ट्याप गर्नुहोस्</translation>
+<translation id="5807774529265708172">अनस्क्रिन किबोर्ड देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="5819072574982403430">रूख वस्तु</translation>
 <translation id="5822819874379903994">डार्क टर्कोइस</translation>
 <translation id="5824976764713185207">पृष्ठ लोड भइसकेपछि उक्त पृष्ठ स्वतः पढ्नुहोस्</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">ट्याब सूची</translation>
 <translation id="5866042630553435010">आंशीक जाँच गरिएको</translation>
 <translation id="5866210856231860256">यो विषयका पाठहरू ब्राउज गर्न Search + दायाँ एरो की वा Search + बायाँ एरो की थिच्नुहोस्</translation>
+<translation id="5866236843389439313">आफ्नो मुखको बायाँ कुना तन्काउनुहोस्</translation>
 <translation id="5867591286054666064">यस ट्युटोरियलको अवधिमा जुनसुकै कुञ्जीको नाम सुन्न त्यस कुञ्जीलाई थिच्नुहोस्।</translation>
 <translation id="5869546221129391014">ग्रिड</translation>
 <translation id="5876817486144482042">बोलीको भोल्युम घटाउनुहोस्</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">आजको मिति</translation>
 <translation id="5926889058434275234">इसाराको पूर्ण सूची हेर्न मद्दत केन्द्रमा जानुहोस्।</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{बराबर}other{# बराबर चिन्ह}}</translation>
+<translation id="5947651424015173580">माउसमा डबल क्लिक गर्नुहोस्</translation>
 <translation id="5948123859135882163">संरचनात्मक र अर्थ जनक बीच को गणित अभिव्यक्तिहरूको व्याख्या टगल गर्नुहोस्</translation>
 <translation id="5955304353782037793">एप</translation>
 <translation id="5956928062748260866">संवाद</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{# वस्तुसहित}other{# वस्तुहरूसहित}}</translation>
 <translation id="5981446804259161541">हल्का सायन</translation>
 <translation id="5983179082906765664">नेभिगेसन विघटन वृद्धि गर्नुहोस्</translation>
+<translation id="5988563937187882754">दायाँतिर हेर्नुहोस्</translation>
 <translation id="5992285135956208197">सचित्र कागजात</translation>
 <translation id="5999630716831179808">स्वरहरू</translation>
 <translation id="6006050241733874051">फारम</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">अर्को कुनै पनि कम्बो बक्स छैन</translation>
+<translation id="7715455358521357192">दायाँ आँखा आधा चिम्लनुहोस्</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7731785449856576010">अर्को कुनै पनि मिडिया विजेट छैन</translation>
 <translation id="7735498529470878067">तपाईंले छोएर अन्वेषण गर्नुभयो भने तपाईं स्क्रिनमा भएका कुराबारे तुरुन्तै थाहा पाउन सक्नुहुन्छ।</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">पछिल्लो शब्द</translation>
 <translation id="7846634333498149051">किबोर्ड</translation>
 <translation id="7851816175263618915">केही चिन्ह</translation>
+<translation id="7860802890538098598">आफ्नो मुखको दायाँ कुना तन्काउनुहोस्</translation>
 <translation id="7871691770940645922">भर्चुअल ब्रेल प्रदर्शन</translation>
 <translation id="7882421473871500483">खैरो</translation>
 <translation id="78826985582142166">एसएलडीआर</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">बृद्धि</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{कोट}other{# कोटहरू}}</translation>
+<translation id="8017004049696748317">स्पिच-टु-टेक्स्ट अन वा अफ गर्नुहोस्</translation>
 <translation id="8017588669690167134">बोली निष्क्रिय पार्नुहोस्</translation>
 <translation id="801990297710781303">फुटनोट</translation>
 <translation id="8028833145828956995">तपाईं टचस्क्रिनमार्फत ChromeVox प्रयोग गर्न सक्नुहुन्छ</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">स्लेट जस्तो खैरो</translation>
 <translation id="8121539003537428024">कार्यक्रमसम्बन्धी सबै फिल्टरहरू सक्षम पार्नुहोस्</translation>
 <translation id="8123975449645947908">पछाडितिर स्क्रोल गर्नुहोस्</translation>
+<translation id="8126355825906412872">मुस्कुराउनुहोस्</translation>
 <translation id="8126386426083591964">अघिल्लो कुनै पनि लेभल ५ शीर्षक छैन</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> डाउनलोड रोकियो</translation>
 <translation id="8129445297241948503">माथि कुनै पनि कक्ष छैन</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">मोडिफायर कीहरू</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8944511129464116546">आंशिक रूपमा चिन्ह लगाइएको</translation>
+<translation id="8945050808870279132">आफ्नो नाक खुम्च्याउनुहोस्</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">अघिल्लो कुनै पनि रेडियो बटन छैन</translation>
 <translation id="8970172509886453271">अघिल्लो कुनै पनि खण्ड छैन</translation>

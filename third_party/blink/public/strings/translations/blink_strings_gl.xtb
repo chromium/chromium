@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Este mes</translation>
 <translation id="1637811476055996098">Seleccionar ficheiros</translation>
-<translation id="1680090928918677457">Usar cámara</translation>
 <translation id="1729654308190250600">Introduce un enderezo de correo electrónico que non estea baleiro.</translation>
 <translation id="1758486001363313524">Outras...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Acurta este texto a <ph name="MAX_CHARACTERS" /> caracteres como máximo (actualmente estás utilizando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Permítense a cámara e o micrófono</translation>
 <translation id="2507943997699731163">Completa este campo.</translation>
 <translation id="2613802280814924224">Introduce un valor válido. O valor válido máis próximo é <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2746543609216772311">O valor debe ser <ph name="MINIMUM_DATE_OR_TIME" /> ou posterior.</translation>
 <translation id="2761667185364618470">Marca esta caixa se queres continuar.</translation>
 <translation id="2908441821576996758">Introduce unha lista de enderezos de correo electrónico separados por comas.</translation>
-<translation id="2940013921954129954">Localización precisa permitida</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Insire un valor válido. O campo está incompleto ou contén unha data non válida.</translation>
 <translation id="310520048233152454">Introduce un URL.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Amplía este texto a <ph name="MIN_CHARACTERS" /> caracteres ou máis. Actualmente estás utilizando <ph name="CURRENT_LENGTH" /> caracteres.</translation>
 <translation id="383465348367842624">O texto seguido do signo "<ph name="ATSIGN" />" non debe conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Saír da pantalla completa</translation>
-<translation id="4031179711345676612">Permítese o micrófono</translation>
 <translation id="4360991593054037559">Introduce un valor válido. Os dous valores válidos máis próximos son <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalles</translation>
-<translation id="4663373278480897665">Permítese a cámara</translation>
 <translation id="4664250907885839816">A parte que vai a continuación de "<ph name="ATSIGN" />" non debe conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproducindo no modo de pantalla superposta</translation>
 <translation id="4812940957355064477">Introduce un número.</translation>
-<translation id="49269513399674318">Usar micrófono</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seleccionados</translation>
 <translation id="4992066212339426712">Activar o son</translation>
 <translation id="49969490063480558">Introduce texto despois de "<ph name="ATSIGN" />". O enderezo electrónico "<ph name="INVALIDADDRESS" />" está incompleto.</translation>
 <translation id="5164977714490026579">O valor debe ser maior ou igual a <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5239623327352565343">O acceso á localización está permitido</translation>
 <translation id="5307600278924710095">Introduce algo seguido de "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" está incompleto.</translation>
 <translation id="5334352251556557839">Non se puido reproducir o contido multimedia.</translation>
 <translation id="537648784377940524">O valor da data mínima (<ph name="MIN_DATE_OR_TIME" />) debe ser anterior á máxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Mala calidade de reprodución</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6820355525329141109">Non se puido cargar o plugin.</translation>
-<translation id="688706781007114099">Usar localización</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Amplía este texto a <ph name="MIN_CHARACTERS" /> caracteres ou máis. Actualmente estás utilizando 1 carácter.</translation>
 <translation id="709897737746224366">Utiliza un formato que coincida co solicitado.</translation>
-<translation id="7134810312945846184">Usar micrófono e cámara</translation>
 <translation id="7263440858009898357">Selecciona un elemento da lista.</translation>
 <translation id="7364796246159120393">Seleccionar ficheiro</translation>
 <translation id="739024184232394898">Outras...</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">O valor debe estar comprendido entre estas horas: <ph name="MINIMUM_TIME" /> e <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ficheiros</translation>
 <translation id="8451268428117625855">Selecciona un ficheiro.</translation>
-<translation id="8533587060884335451">Usar situación exacta</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Axuste de liña</translation>
 <translation id="8750798805984357768">Selecciona unha destas opcións.</translation>

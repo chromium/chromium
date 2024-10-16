@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Звычайны</translation>
 <translation id="1591562245178063882">Гэты месяц</translation>
 <translation id="1637811476055996098">Выбраць файлы</translation>
-<translation id="1680090928918677457">Выкарыстоўваць камеру</translation>
 <translation id="1729654308190250600">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1758486001363313524">Іншая...</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Паменшыце колькасць сімвалаў у гэтым тэксце значэння, не большага за <ph name="MAX_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трэк <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Камера і мікрафон дазволены</translation>
 <translation id="2507943997699731163">Запоўніце гэта поле.</translation>
 <translation id="2613802280814924224">Увядзіце дапушчальнае значэнне. Найбліжэйшае дапушчальнае значэнне: <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2746543609216772311">Час павінен быць указаны не ранейшы, чым <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Каб працягнуць, пастаўце птушку ў гэтым полі.</translation>
 <translation id="2908441821576996758">Увядзіце раздзелены коскамі спіс адрасоў электроннай пошты.</translation>
-<translation id="2940013921954129954">Доступ да дакладнага месцазнаходжання дазволены</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Увядзіце дапушчальнае значэнне. Поле не запоўнена, або ўказана няправільная дата.</translation>
 <translation id="310520048233152454">Увядзіце URL-адрас.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">У частцы перад "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
-<translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
-<translation id="4663373278480897665">Камера дазволена</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>
 <translation id="4812940957355064477">Увядзіце лік.</translation>
-<translation id="49269513399674318">Выкарыстоўваць мікрафон</translation>
 <translation id="4975562563186953947">Выбрана: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
 <translation id="49969490063480558">Увядзіце частку пасля сімвала "<ph name="ATSIGN" />". Адрас "<ph name="INVALIDADDRESS" />" – няпоўны.</translation>
 <translation id="5164977714490026579">Значэнне павінна быць большым або роўным <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
-<translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
 <translation id="5307600278924710095">Адрас "<ph name="INVALIDADDRESS" />" – няпоўны. Увядзіце частку перад сімвалам "<ph name="ATSIGN" />".</translation>
 <translation id="5334352251556557839">Не ўдалося прайграць мультымедыйны файл.</translation>
 <translation id="537648784377940524">Мінімальная дата (<ph name="MIN_DATE_OR_TIME" />) павінна быць ранейшая за максімальную (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Кепская якасць прайгравання</translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6820355525329141109">Не ўдалося загрузіць убудову.</translation>
-<translation id="688706781007114099">Выкарыстоўваць геалакацыю</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас 1 сімвал).</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
-<translation id="7134810312945846184">Выкарыстоўваць мікрафон і камеру</translation>
 <translation id="7263440858009898357">Выберыце пункт са спіса</translation>
 <translation id="7364796246159120393">Выбраць файл</translation>
 <translation id="739024184232394898">Іншыя...</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Значэнне павінна быць у дыяпазоне паміж <ph name="MINIMUM_TIME" /> і <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423">Файлаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Выберыце файл.</translation>
-<translation id="8533587060884335451">Улічваць маё месцазнаходжанне</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пераносіць радкі</translation>
 <translation id="8750798805984357768">Выберыце адзін з варыянтаў.</translation>

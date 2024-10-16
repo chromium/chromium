@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Бул башкаруу элементин каалаган оюн аракетине жылдыруу үчүн жебе баскычтарын колдонуңуз. Башкаруу элементин жайгаштыруу үчүн Enter баскычын колдонуңуз. Жокко чыгаруу үчүн Escape баскычын колдонуңуз.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат.</translation>
 <translation id="1175951029573070619">Орточо (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1180621378971766337">жайлуу</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1191518099344003522">APN иштетилди.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4594021849294327751">Транскрипт түзүү</translation>
-<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Анын сүрөттөрү түзүлбөй жатат. Башка сурамды колдонуп көрүңүз.</translation>
 <translation id="4609350030397390689">Баскычтоптун жарыктыгын азайтуу</translation>
 <translation id="4623061655523261501">Жаздыруу аттары ийгиликтүү түзүлдү</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жээк</translation>
 <translation id="819278132617411009">Майнаптуу иштөө үчүн Google'дун жасалма интеллектин колдонуңуз</translation>
+<translation id="8200772114523450471">Улантуу</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Сүйүктүү сүрөттөр менен альбомдорду тандоо</translation>
 <translation id="8227119283605456246">Файл тиркөө</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
-<translation id="8236972776513018241">Транскрипция</translation>
 <translation id="8238771987802558562">APN'ди тандоо</translation>
 <translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
 <translation id="8250926778281121244">дат</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Эч нерсе табылган жок. Пайдалуу материалдарды караңыз.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Түзмөк — планшет.</translation>
-<translation id="8878117140814294155">Микрофондун үнүн өчүрүү/күйгүзүү</translation>
 <translation id="8881098542468797602">Ийгиликтүү сыналды</translation>
 <translation id="8882789155418924367">үкүлөр</translation>
 <translation id="8892443466059986410">Ыкчам баскычты түзөтүүнү токтотуу</translation>

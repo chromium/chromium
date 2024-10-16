@@ -58,19 +58,16 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="3078350928901129212">Ícone <ph name="COLOR_NAME" /> do grupo de guias</translation>
 <translation id="3194464645767632461">nota</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> guia adicionada, <ph name="ANY_CHANGED" /> modificada(s)}one{<ph name="MANY_ADDED" /> guia adicionada, <ph name="ANY_CHANGED" /> modificada(s)}other{<ph name="MANY_ADDED" /> guias adicionadas, <ph name="ANY_CHANGED" /> modificada(s)}}</translation>
-<translation id="3291470810748040983">Você receberá um alerta quando houver um preço menor em uma guia aberta</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="3547352561153509682">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ocultar caixa de diálogo de guias inativas</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura da página de compartilhamento.</translation>
 <translation id="381219490185664296">Desfazer grupo de guias?</translation>
-<translation id="3882834874697329510">Para receber um alerta quando houver um preço menor em uma guia aberta, ative as notificações nas configurações.</translation>
 <translation id="3940195383040445971">Monitorar preço nas guias</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar guia}one{Agrupar guia}other{Agrupar guias}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia inativa}one{<ph name="TABS_COUNT_MANY" /> guia inativa}other{<ph name="TABS_COUNT_MANY" /> guias inativas}}</translation>
 <translation id="3969565576924904454">Abrir <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Criado há <ph name="NUM_DAYS_ONE" /> dia}one{Criado há <ph name="NUM_DAYS_MANY" /> dia}other{Criado há <ph name="NUM_DAYS_MANY" /> dias}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="4139634748112164403">As guias vão continuar abertas neste dispositivo, mas o grupo será excluído permanentemente</translation>
@@ -115,7 +112,6 @@ Se você sair, vai perder imediatamente o acesso ao grupo de guias <ph name="TIT
 <translation id="5627941783489838464">Nenhuma atualização de guias</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar guia}one{Restaurar guia}other{Restaurar guias}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}one{<ph name="TABS_COUNT_MANY" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
-<translation id="575494663145460764">Receber alertas de reduções no preço?</translation>
 <translation id="58326064309361797">Arraste as guias para agrupá-las</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>

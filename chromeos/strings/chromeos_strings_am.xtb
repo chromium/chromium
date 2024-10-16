@@ -44,6 +44,7 @@
 <translation id="11743817593307477">ይህንን መቆጣጠሪያ ወደሚፈልጉት የጨዋታ እርምጃ ለመውሰድ የቀስት ቁልፎችን ይጠቀሙ። መቆጣጠሪያውን ለማስቀመጥ የአስገባ ቁልፉን ይጠቀሙ። ለመሰረዝ የዝለል ቁልፉን ይጠቀሙ።</translation>
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
 <translation id="1175951029573070619">መካከለኛ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1180621378971766337">ምቹ</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1191518099344003522">ኤፒኤን ነቅቷል።</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4594021849294327751">ጽሁፍ ግልባጭ ፍጠር</translation>
-<translation id="4602266091140407479">ማይክሮፎን</translation>
 <translation id="4607282946861182308">የዚህን ምስል መፍጠር አልተቻለም። ሌላ ጥያቄ ይሞክሩ።</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
 <translation id="4623061655523261501">የመቅጃ ስሞች በተሳካ ሁኔታ መንጭተዋል</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8183975772394450380">የባህር ዳርቻ</translation>
 <translation id="819278132617411009">የበለጠ ውጤታማ ለመሆን Google ሰው ሠራሽ አስተውሎት ይጠቀሙ</translation>
+<translation id="8200772114523450471">ከቆመበት ቀጥል</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
 <translation id="8226628635270268143">የእርስዎን ተወዳጅ ፎቶዎች እና አልበሞች ይምረጡ</translation>
 <translation id="8227119283605456246">ፋይል አያይዝ</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
-<translation id="8236972776513018241">የጽሁፍ ግልባጭ</translation>
 <translation id="8238771987802558562">ኤፒኤን ይምረጡ</translation>
 <translation id="8246209727385807362">የማይታወቅ አገልግሎት አቅራቢ</translation>
 <translation id="8250926778281121244">ዝገት</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">ምንም በአስተያየት የተጠቆመ ይዘት የለም። ከፍተኛውን የእገዛ ይዘት ይመልከቱ።</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">መሣሪያ ጡባዊ ነው።</translation>
-<translation id="8878117140814294155">ማይክሮፎን ላይ ድምጸ-ከል አድርግን ይቀያይሩ</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>
 <translation id="8882789155418924367">ጉጉቶች</translation>
 <translation id="8892443466059986410">የአቋራጭ ማርትዕን ሰርዝ</translation>

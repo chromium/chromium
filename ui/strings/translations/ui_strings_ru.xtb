@@ -224,6 +224,7 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек.}one{# сек.}few{# сек.}many{# сек.}other{# сек.}}</translation>
 <translation id="9059834730836941392">Свернуть уведомление</translation>
 <translation id="9170848237812810038">&amp;Отменить</translation>
+<translation id="9195990613383871904">Завтра</translation>
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="944069440740578670">Непрочитанные уведомления</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 секунду назад}one{# секунду назад}few{# секунды назад}many{# секунд назад}other{# секунды назад}}</translation>

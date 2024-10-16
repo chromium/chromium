@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Sebenzisa okhiye bomcibisholo ukuze uhambise lolu lawulo kusenzo segeyimu osifunayo. Sebenzisa ukhiye othi enter ukuze ufake ulawulo. Sebenzisa ukhiye we-escape ukuze ukhansele.</translation>
 <translation id="1175697296044146566">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Ngokusesilinganisweni (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Misa isikhashana</translation>
 <translation id="1180621378971766337">thokomele</translation>
 <translation id="1181037720776840403">Susa</translation>
 <translation id="1191518099344003522">I-APN ivuliwe.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Yehlulekile ukulungisa bonke abasingathi</translation>
 <translation id="4593212453765072419">Kudingeka ukuqinisekisa kommeleli</translation>
 <translation id="4594021849294327751">Sungula okulotshiweyo</translation>
-<translation id="4602266091140407479">Imakrofoni</translation>
 <translation id="4607282946861182308">Ayikwazi ukusungula imifanekiso yalokhu. Zama omunye umyalelo.</translation>
 <translation id="4609350030397390689">Ukugqama kwekhibhodi kuphansi</translation>
 <translation id="4623061655523261501">Amagama okurekhoda akhiqizwe ngokuphumelelayo</translation>
@@ -1462,12 +1462,12 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8179976553408161302">Faka</translation>
 <translation id="8183975772394450380">ibhishi</translation>
 <translation id="819278132617411009">Sebenzisa iGoogle AI ukuze ukhiqize kakhudlwana</translation>
+<translation id="8200772114523450471">Qala futhi</translation>
 <translation id="8206859287963243715">Iselula</translation>
 <translation id="8208861521865154048">Izinzuzo</translation>
 <translation id="8226628635270268143">Khetha izithombe zakho eziyintandokazi kanye nama-albhamu</translation>
 <translation id="8227119283605456246">Namathisela ifayela</translation>
 <translation id="8230672074305416752">Yehlulekile ukuqhweba umasango wenethiwekhi yokuzenzakalelayo</translation>
-<translation id="8236972776513018241">Okulotshiweyo</translation>
 <translation id="8238771987802558562">Khetha i-APN</translation>
 <translation id="8246209727385807362">Inkampani yenethiwekhi engaziwa</translation>
 <translation id="8250926778281121244">ukugqwala</translation>
@@ -1594,7 +1594,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8864415976656252616">Akukho okuqukethwe okuphakanyisiwe. Bona okuqukethwe kosizo oluphezulu.</translation>
 <translation id="8868741746785112895">I-GUID</translation>
 <translation id="8876270629542503161">Idivayisi iyithebulethi.</translation>
-<translation id="8878117140814294155">Guqula ukuthulisa kumakrofoni</translation>
 <translation id="8881098542468797602">Ukuhlola kuphumelele</translation>
 <translation id="8882789155418924367">izikhova</translation>
 <translation id="8892443466059986410">Khansela ukuhlela okunqamulelayo</translation>

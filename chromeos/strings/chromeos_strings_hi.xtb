@@ -44,6 +44,7 @@
 <translation id="11743817593307477">इस कंट्रोल को अपनी पसंद के गेम ऐक्शन पर ले जाने के लिए, ऐरो बटन का इस्तेमाल करें. कंट्रोल को, तय की गई जगह पर ले जाने के लिए Enter बटन का इस्तेमाल करें. इसे रद्द करने के लिए, Escape बटन का इस्तेमाल करें.</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="1175951029573070619">सिग्नल ठीक-ठाक है (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">रोकें</translation>
 <translation id="1180621378971766337">कोज़ी</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1191518099344003522">एपीएन चालू है.</translation>
@@ -460,7 +461,7 @@
 <translation id="3283504360622356314">{0,plural, =1{फ़ाइल में बदलाव करें}one{फ़ाइल में बदलाव करें}other{फ़ाइलों में बदलाव करें}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />गीगाहर्ट्ज़</translation>
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
-<translation id="3294437725009624529">अतिथि</translation>
+<translation id="3294437725009624529">मेहमान</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
 <translation id="3305294846493618482">पूरा यूआरएल देखें</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">सभी होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक है</translation>
 <translation id="4594021849294327751">ट्रांसक्रिप्ट बनाएं</translation>
-<translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">इसकी इमेज नहीं बनाई जा सकतीं. किसी अन्य इमेज का निर्देश देकर देखें.</translation>
 <translation id="4609350030397390689">कीबोर्ड की रोशनी कम करने वाला बटन</translation>
 <translation id="4623061655523261501">रिकॉर्डिंग के नाम जनरेट हो गए हैं</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">समुद्र तट</translation>
 <translation id="819278132617411009">अपनी प्रॉडक्टिविटी बढ़ाने के लिए, Google के एआई का इस्तेमाल करें</translation>
+<translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
 <translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
-<translation id="8236972776513018241">ट्रांसक्रिप्ट</translation>
 <translation id="8238771987802558562">कोई एपीएन चुनें</translation>
 <translation id="8246209727385807362">अज्ञात वाहक</translation>
 <translation id="8250926778281121244">रस्ट</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">कोई कॉन्टेंट नहीं सुझाया गया. सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट देखें.</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
-<translation id="8878117140814294155">म्यूट बटन को टॉगल करके, माइक्रोफ़ोन को चालू या बंद करें</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
 <translation id="8882789155418924367">उल्लू</translation>
 <translation id="8892443466059986410">शॉर्टकट में बदलाव करना रद्द करें</translation>

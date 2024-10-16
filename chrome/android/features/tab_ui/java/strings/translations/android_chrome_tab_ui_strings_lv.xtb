@@ -58,19 +58,16 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="3078350928901129212">Ciļņu grupas ikonas krāsa ir <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> cilne pievienota; mainītas: <ph name="ANY_CHANGED" />}zero{<ph name="MANY_ADDED" /> cilnes pievienotas; mainītas: <ph name="ANY_CHANGED" />}one{<ph name="MANY_ADDED" /> cilne pievienota; mainītas: <ph name="ANY_CHANGED" />}other{<ph name="MANY_ADDED" /> cilnes pievienotas; mainītas: <ph name="ANY_CHANGED" />}}</translation>
-<translation id="3291470810748040983">Jūs saņemsiet brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena.</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3547352561153509682">Tādējādi grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="3613492231657284463">Paslēpt neaktīvo ciļņu dialoglodziņu</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Kopīgošanas sīktēls</translation>
 <translation id="381219490185664296">Vai atcelt grupēšanu ciļņu grupā?</translation>
-<translation id="3882834874697329510">Lai saņemtu brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena, ieslēdziet paziņojumu saņemšanu sadaļā Iestatījumi.</translation>
 <translation id="3940195383040445971">Cenu izsekošana cilnēs</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Pievienot cilni grupai}zero{Grupēt cilnes}one{Grupēt cilnes}other{Grupēt cilnes}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktīva cilne}zero{<ph name="TABS_COUNT_MANY" /> neaktīvu ciļņu}one{<ph name="TABS_COUNT_MANY" /> neaktīva cilne}other{<ph name="TABS_COUNT_MANY" /> neaktīvas cilnes}}</translation>
 <translation id="3969565576924904454">Atvērt grupu <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Saņemt paziņojumus</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Izveidota pirms <ph name="NUM_DAYS_ONE" /> dienas}zero{Izveidota pirms <ph name="NUM_DAYS_MANY" /> dienām}one{Izveidota pirms <ph name="NUM_DAYS_MANY" /> dienas}other{Izveidota pirms <ph name="NUM_DAYS_MANY" /> dienām}}</translation>
 <translation id="4133493477912226187">Šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="4139634748112164403">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks neatgriezeniski dzēsta</translation>
@@ -115,7 +112,6 @@ Ja pametīsiet grupu, jūs nekavējoties zaudēsiet piekļuvi ciļņu grupai “
 <translation id="5627941783489838464">Nav ciļņu atjauninājumu</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Atjaunot cilni}zero{Atjaunot cilnes}one{Atjaunot cilnes}other{Atjaunot cilnes}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> saite no pārlūka Chrome}zero{<ph name="TABS_COUNT_MANY" /> saišu no pārlūka Chrome}one{<ph name="TABS_COUNT_MANY" /> saite no pārlūka Chrome}other{<ph name="TABS_COUNT_MANY" /> saites no pārlūka Chrome}}</translation>
-<translation id="575494663145460764">Vai saņemt brīdinājumus par cenu kritumu?</translation>
 <translation id="58326064309361797">Velciet cilnes, lai tās sagrupētu</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5972844218283131174">Noņemt visu atlasi</translation>

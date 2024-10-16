@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Каб перамясціць гэты элемент кіравання да патрэбнага дзеяння ў гульні, выкарыстоўвайце клавішы са стрэлкамі. Каб зрабіць выбар, націсніце клавішу Enter. Каб скасаваць выбар, націсніце клавішу Escape.</translation>
 <translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">Сярэдні (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1180621378971766337">утульны</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1191518099344003522">Пункт доступу ўключаны.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4594021849294327751">Ствараць расшыфроўку</translation>
-<translation id="4602266091140407479">Мікрафон</translation>
 <translation id="4607282946861182308">Не ўдалося стварыць патрэбныя відарысы. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
 <translation id="4623061655523261501">Назвы запісаў створаны</translation>
@@ -1460,12 +1460,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Выкарыстоўвайце штучны інтэлект ад Google для больш эфектыўнай працы</translation>
+<translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>
 <translation id="8227119283605456246">Далучыць файл</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
-<translation id="8236972776513018241">Расшыфроўка</translation>
 <translation id="8238771987802558562">Выберыце APN</translation>
 <translation id="8246209727385807362">Невядомы аператар</translation>
 <translation id="8250926778281121244">іржава-карычневы</translation>
@@ -1592,7 +1592,6 @@
 <translation id="8864415976656252616">Няма прапанавага змесціва. Азнаёмцеся з папулярным даведачным змесцівам.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Гэта планшэт.</translation>
-<translation id="8878117140814294155">Уключэнне і выключэнне гуку мікрафона</translation>
 <translation id="8881098542468797602">Праверка пройдзена</translation>
 <translation id="8882789155418924367">совы</translation>
 <translation id="8892443466059986410">Не змяняць спалучэнне клавіш</translation>

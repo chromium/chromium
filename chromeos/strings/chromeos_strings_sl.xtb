@@ -44,6 +44,7 @@
 <translation id="11743817593307477">S puščičnimi tipkami ta kontrolnik premaknite na želeno dejanje v igri. S tipko Enter postavite kontrolnik. Če želite preklicati, uporabite tipko Escape.</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Povprečna (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Prekini</translation>
 <translation id="1180621378971766337">prijetno</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1191518099344003522">APN je omogočen.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
 <translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4594021849294327751">Ustvari prepis</translation>
-<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Slik tega ni mogoče ustvariti. Poskusite uporabiti drug poziv.</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
 <translation id="4623061655523261501">Imena posnetkov so bila uspešno ustvarjena</translation>
@@ -1462,12 +1462,12 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
 <translation id="819278132617411009">Uporabite Googlovo umetno inteligenco za doseganje večje storilnosti</translation>
+<translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>
 <translation id="8227119283605456246">Prilaganje datoteke</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
-<translation id="8236972776513018241">Prepis</translation>
 <translation id="8238771987802558562">Izbira APN-ja</translation>
 <translation id="8246209727385807362">Neznani operater</translation>
 <translation id="8250926778281121244">rjasta</translation>
@@ -1594,7 +1594,6 @@
 <translation id="8864415976656252616">Ni predlagane vsebine. Oglejte si najbolj priljubljeno vsebino s pomočjo.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Naprava je tablični računalnik.</translation>
-<translation id="8878117140814294155">Izklop/vklop zvoka mikrofona</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
 <translation id="8882789155418924367">sove</translation>
 <translation id="8892443466059986410">Prekliči urejanje bližnjice</translation>

@@ -44,6 +44,7 @@
 <translation id="11743817593307477">Siirrä tämä ohjain haluamaasi pelitoimintoon nuolinäppäimillä. Aseta ohjain painamalla Enter. Peru painamalla Esc-näppäintä.</translation>
 <translation id="1175697296044146566">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Keskitasoa (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Tauko</translation>
 <translation id="1180621378971766337">viihtyisä</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1191518099344003522">APN on käytössä.</translation>
@@ -717,7 +718,6 @@
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4594021849294327751">Luo transkriptio</translation>
-<translation id="4602266091140407479">Mikrofoni</translation>
 <translation id="4607282946861182308">Tästä ei voi luoda kuvia. Kokeile toista kehotetta.</translation>
 <translation id="4609350030397390689">Vähennä näppäimistön kirkkautta</translation>
 <translation id="4623061655523261501">Tallennuksen nimet luotu</translation>
@@ -1462,12 +1462,12 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ranta</translation>
 <translation id="819278132617411009">Käytä Google tekoälyä tuottavuuden tehostamiseen</translation>
+<translation id="8200772114523450471">Jatka</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
 <translation id="8227119283605456246">Liitä tiedosto</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
-<translation id="8236972776513018241">Transkriptio</translation>
 <translation id="8238771987802558562">Valitse APN</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
 <translation id="8250926778281121244">ruoste</translation>
@@ -1594,7 +1594,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8864415976656252616">Ei sisältöehdotuksia. Katso suosituin ohjesisältö.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Laite on tabletti.</translation>
-<translation id="8878117140814294155">Mikrofonin mykistys päälle tai pois päältä</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>
 <translation id="8882789155418924367">pöllöt</translation>
 <translation id="8892443466059986410">Peru pikanäppäimen muokkaus</translation>
