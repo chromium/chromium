@@ -415,9 +415,9 @@ chromium-metrics-reviews@google.com.
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
-    Measures the runtime of the `gfx::PNGCodec::Decode(..., SkBitmap* bitmap)`
-    API. Logged every time the API is called. Primarily used to evaluate the
-    go/rusty-png-ui-gfx-decoder project.
+    Measures the runtime of the variant of `gfx::PNGCodec::Decode()` that
+    returns an `SkBitmap`. Logged every time the API is called. Primarily used
+    to evaluate the go/rusty-png-ui-gfx-decoder project.
 
     The metric is reported for only clients with high-resolution clocks (i.e.
     excludes a small percentage of Windows users population - see the
