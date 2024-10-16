@@ -6,6 +6,7 @@
 
 #include "base/task/current_thread.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -978,9 +979,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       user_annotations_entries;
   EXPECT_CALL(import_form_callback, Run)
       .WillOnce(SaveArg<1>(&user_annotations_entries));
+  base::HistogramTester histogram_tester;
   manager_->MaybeImportForm(
       std::make_unique<autofill::FormStructure>(autofill::FormData()),
       import_form_callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      "UserAnnotations.ImportSkipReason",
+      AutofillPredictionImprovementsManager::ImportSkipReason::kUrl, 1);
   EXPECT_TRUE(user_annotations_entries.empty());
 }
 

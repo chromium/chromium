@@ -30,6 +30,16 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="UserAnnotations.ImportSkipReason"
+    enum="UserAnnotationsImportSkipReason" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records if any of the heuristics prevent importing a form. Also records 0 if
+    an attempt to import the form was made.
+  </summary>
+</histogram>
+
 <histogram name="UserAnnotations.RemoveAllEntries.Result"
     enum="UserAnnotationsExecutionResult" expires_after="M135">
   <owner>rajendrant@chromium.org</owner>

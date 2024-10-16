@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -157,6 +158,11 @@ std::vector<autofill::Suggestion> CreateErrorSuggestions() {
 std::vector<autofill::Suggestion> CreateNoInfoSuggestions() {
   return CreateErrorOrNoInfoSuggestions(
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_NO_INFO_POPUP_MAIN_TEXT);
+}
+
+void LogImportSkipReason(
+    AutofillPredictionImprovementsManager::ImportSkipReason reason) {
+  base::UmaHistogramEnumeration("UserAnnotations.ImportSkipReason", reason);
 }
 
 }  // namespace
@@ -648,24 +654,24 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   // Apply the filter rules to mark potentially sensitive values.
   FilterSensitiveValues(*form.get());
 
-  bool skip_import = false;
-
+  ImportSkipReason skip_reason = ImportSkipReason::kNone;
   if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     // `autofill::prefs::kAutofillPredictionImprovementsEnabled` is disabled.
-    skip_import = true;
+    skip_reason = ImportSkipReason::kPrefDisabled;
   } else if (!annotation_service) {
     // The import is skipped because the annotation service is not available.
-    skip_import = true;
+    skip_reason = ImportSkipReason::kUserAnnotationsServiceNotAvailable;
   } else if (!annotation_service->ShouldAddFormSubmissionForURL(
                  form->source_url())) {
     // The import is disabled because the origin criteria is not fulfilled.
-    skip_import = true;
+    skip_reason = ImportSkipReason::kUrl;
   } else if (!IsFormEligibleForImportByFieldCriteria(*form.get())) {
     // The form does not contain enough values that can be imported.
-    skip_import = true;
+    skip_reason = ImportSkipReason::kFormNotEligible;
   }
 
-  if (skip_import) {
+  if (skip_reason != ImportSkipReason::kNone) {
+    LogImportSkipReason(skip_reason);
     std::move(callback).Run(std::move(form),
                             /*to_be_upserted_entries=*/{},
                             /*prompt_acceptance_callback=*/base::DoNothing());
@@ -694,6 +700,7 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {
+    LogImportSkipReason(ImportSkipReason::kNone);
     user_annotations_service->AddFormSubmission(
         url, title, std::move(ax_tree_update), std::move(form),
         std::move(callback));
