@@ -2321,9 +2321,9 @@ TEST_F(PasswordAutofillManagerTest,
 
   // Since a passkey is selected, the popup will be updated:
   EXPECT_TRUE(updatedSuggestions[0].is_loading);
-  EXPECT_FALSE(updatedSuggestions[0].is_acceptable);
+  EXPECT_FALSE(updatedSuggestions[0].IsAcceptable());
   EXPECT_TRUE(updatedSuggestions[1].apply_deactivated_style);
-  EXPECT_FALSE(updatedSuggestions[1].is_acceptable);
+  EXPECT_FALSE(updatedSuggestions[1].IsAcceptable());
 
   // Show suggestions again.
   EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
@@ -2336,9 +2336,9 @@ TEST_F(PasswordAutofillManagerTest,
 
   // Verify that the loading state persisted.
   EXPECT_TRUE(open_args.suggestions[0].is_loading);
-  EXPECT_FALSE(open_args.suggestions[0].is_acceptable);
+  EXPECT_FALSE(open_args.suggestions[0].IsAcceptable());
   EXPECT_TRUE(open_args.suggestions[1].apply_deactivated_style);
-  EXPECT_FALSE(open_args.suggestions[1].is_acceptable);
+  EXPECT_FALSE(open_args.suggestions[1].IsAcceptable());
 
   // After calling hide callback the loading state is not persisted anymore:
   EXPECT_CALL(autofill_client, HideAutofillSuggestions);
@@ -2353,9 +2353,9 @@ TEST_F(PasswordAutofillManagerTest,
       /*typed_username=*/u"", ShowWebAuthnCredentials(true), gfx::RectF());
 
   EXPECT_FALSE(open_args.suggestions[0].is_loading);
-  EXPECT_TRUE(open_args.suggestions[0].is_acceptable);
+  EXPECT_TRUE(open_args.suggestions[0].IsAcceptable());
   EXPECT_FALSE(open_args.suggestions[1].apply_deactivated_style);
-  EXPECT_TRUE(open_args.suggestions[1].is_acceptable);
+  EXPECT_TRUE(open_args.suggestions[1].IsAcceptable());
 }
 
 TEST_F(PasswordAutofillManagerTest,

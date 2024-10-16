@@ -297,7 +297,7 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
       // TODO(crbug.com/40274514): Keep new behaviour where the max
       // popup size cannot be exceeded once clean up happens.
       const bool should_apply_new_popup_max_width = ShouldApplyNewPopupMaxWidth(
-          suggestion.type, suggestion.is_acceptable);
+          suggestion.type, suggestion.IsAcceptable());
       int shrink_formatted_label_by =
           should_apply_new_popup_max_width ? label_row.size() : 1;
       FormatLabel(
@@ -506,7 +506,7 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
 
   FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  suggestion.type, suggestion.is_acceptable)));
+                  suggestion.type, suggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
@@ -529,7 +529,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   FormatLabel(*main_text_label, kSuggestion.main_text,
               FillingProduct::kAutocomplete,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  kSuggestion.type, kSuggestion.is_acceptable)));
+                  kSuggestion.type, kSuggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       CreateMinorTextLabel(kSuggestion),
@@ -590,7 +590,7 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
   FormatLabel(*main_text_label, kSuggestion.main_text,
               FillingProduct::kPlusAddresses,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  kSuggestion.type, kSuggestion.is_acceptable)));
+                  kSuggestion.type, kSuggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       CreateMinorTextLabel(kSuggestion),

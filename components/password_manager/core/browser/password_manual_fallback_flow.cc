@@ -195,7 +195,7 @@ void PasswordManualFallbackFlow::OnSuggestionsHidden() {}
 void PasswordManualFallbackFlow::DidSelectSuggestion(
     const Suggestion& suggestion) {
   CHECK(SupportsSuggestionType(suggestion.type));
-  if (!suggestion.is_acceptable) {
+  if (!suggestion.IsAcceptable()) {
     return;
   }
   switch (suggestion.type) {
@@ -232,7 +232,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
   CHECK(SupportsSuggestionType(suggestion.type));
-  if (!suggestion.is_acceptable) {
+  if (!suggestion.IsAcceptable()) {
     return;
   }
   const PasswordForm* const form = password_form_cache_->GetPasswordForm(

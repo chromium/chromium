@@ -47,6 +47,7 @@ using testing::IsEmpty;
 using testing::Matcher;
 using testing::NiceMock;
 using testing::Not;
+using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -107,7 +108,7 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(
       Field(
           "labels", &Suggestion::labels,
           ElementsAre(ElementsAre(autofill::Suggestion::Text(username_label)))),
-      Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable),
+      Property(&Suggestion::IsAcceptable, is_acceptable),
       Field("custom_icon", &Suggestion::custom_icon, custom_icon),
       Field("payload", &Suggestion::payload, payload));
 }

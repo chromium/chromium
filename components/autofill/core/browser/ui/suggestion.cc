@@ -169,6 +169,10 @@ Suggestion& Suggestion::operator=(Suggestion&& other) = default;
 
 Suggestion::~Suggestion() = default;
 
+bool Suggestion::IsAcceptable() const {
+  return is_acceptable;
+}
+
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kAccount:

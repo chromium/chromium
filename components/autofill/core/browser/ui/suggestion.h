@@ -410,7 +410,8 @@ struct Suggestion {
   std::optional<FieldType> field_by_field_filling_type_used;
 
   // Whether the user is able to preview the suggestion by hovering on it or
-  // accept it by clicking on it.
+  // accept it by clicking on it. For reading value use `isAcceptable()` as this
+  // field is being removed (crbug.com/373323920).
   bool is_acceptable = true;
 
   // How the suggestion should be handled by the filtration logic, see the enum
@@ -430,6 +431,12 @@ struct Suggestion {
   // contained cells.
   bool highlight_on_select = true;
 #endif
+
+  // Returns whether the user is able to preview the suggestion by hovering on
+  // it or accept it by clicking on it.
+  // This is a helper function that should be favored over `is_acceptable`, as
+  // the field is being removed (crbug.com/373323920).
+  bool IsAcceptable() const;
 };
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);

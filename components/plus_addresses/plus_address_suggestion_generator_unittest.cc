@@ -250,7 +250,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, LoadingStateProperties) {
   PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
       /*is_loading=*/true, inline_suggestion);
   EXPECT_TRUE(inline_suggestion.is_loading);
-  EXPECT_FALSE(inline_suggestion.is_acceptable);
+  EXPECT_FALSE(inline_suggestion.IsAcceptable());
   EXPECT_FALSE(inline_suggestion.GetPayload<Suggestion::PlusAddressPayload>()
                    .offer_refresh);
 
@@ -259,7 +259,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, LoadingStateProperties) {
   EXPECT_FALSE(inline_suggestion.is_loading);
   EXPECT_TRUE(inline_suggestion.GetPayload<Suggestion::PlusAddressPayload>()
                   .offer_refresh);
-  EXPECT_TRUE(inline_suggestion.is_acceptable);
+  EXPECT_TRUE(inline_suggestion.IsAcceptable());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

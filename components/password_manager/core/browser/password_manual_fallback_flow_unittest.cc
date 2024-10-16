@@ -55,6 +55,7 @@ using testing::ElementsAre;
 using testing::Field;
 using testing::Matcher;
 using testing::NiceMock;
+using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
 using testing::Test;
@@ -71,7 +72,7 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(SuggestionType type,
                                                    bool is_acceptable) {
   return AllOf(
       Field("type", &Suggestion::type, type),
-      Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable));
+      Property(&Suggestion::IsAcceptable, is_acceptable));
 }
 
 Suggestion::PasswordSuggestionDetails CreateTestPasswordDetails() {

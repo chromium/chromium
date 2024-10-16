@@ -44,6 +44,7 @@ namespace {
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
+using testing::Property;
 
 #if !BUILDFLAG(IS_IOS)
 constexpr AutofillSuggestionTriggerSource kDefaultTriggerSource =
@@ -1579,28 +1580,28 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"Address 123"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false),
+                Property(&Suggestion::IsAcceptable, false),
                 Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Johnas Dhonas",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"New York"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false),
+                Property(&Suggestion::IsAcceptable, false),
                 Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Other Address 33",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"Old City"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false),
+                Property(&Suggestion::IsAcceptable, false),
                 Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Munich",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"munich@gmail.com"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false),
+                Property(&Suggestion::IsAcceptable, false),
                 Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"other@gmail.com",
@@ -1608,7 +1609,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                 EqualLabels(std::vector<std::vector<Suggestion::Text>>{
                     {Suggestion::Text(u"")}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false),
+                Property(&Suggestion::IsAcceptable, false),
                 Field(&Suggestion::icon, Suggestion::Icon::kLocation))));
 }
 
@@ -1632,7 +1633,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                                          Suggestion::Text::IsPrimary(true))),
                   EqualLabels({{u"ミク初音"}}),
                   Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                  Field(&Suggestion::is_acceptable, false))));
+                  Property(&Suggestion::IsAcceptable, false))));
 }
 
 // This test checks that the resulting string of
@@ -1656,7 +1657,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                 Suggestion::Text(u"صاحب", Suggestion::Text::IsPrimary(true))),
           EqualLabels({{u"الملكي"}}),
           Field(&Suggestion::type, SuggestionType::kAddressEntry),
-          Field(&Suggestion::is_acceptable, false))));
+          Property(&Suggestion::IsAcceptable, false))));
 }
 
 // This test checks that the resulting string of
@@ -1679,7 +1680,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                                          Suggestion::Text::IsPrimary(true))),
                   EqualLabels({{u"57 ปาร์คเวนเชอร์"}}),
                   Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                  Field(&Suggestion::is_acceptable, false))));
+                  Property(&Suggestion::IsAcceptable, false))));
 }
 
 // Tests that a non-address field suggestion has all the profile fields as
@@ -1784,9 +1785,9 @@ TEST_F(AddressSuggestionGeneratorTest,
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kAddressEntry);
   // This is the check which actually verifies that the suggestion looks the
-  // same as the ones for an unclassified field (such a suggestion has
-  // `is_acceptable` as false).
-  EXPECT_EQ(suggestions[0].is_acceptable, false);
+  // same as the ones for an unclassified field (such a suggestion
+  // `IsAcceptable()` returns false).
+  EXPECT_EQ(suggestions[0].IsAcceptable(), false);
   EXPECT_THAT(suggestions, ContainsAddressFooterSuggestions());
 }
 
@@ -1888,7 +1889,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].main_text.value, u"Developer tools");
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCode);
   EXPECT_EQ(suggestions[0].children.size(), 3u);
-  EXPECT_FALSE(suggestions[0].is_acceptable);
+  EXPECT_FALSE(suggestions[0].IsAcceptable());
 
   // The suggestion should have 3 children:
   // 1. Gives users feedback about what the children suggestions mean.

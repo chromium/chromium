@@ -1742,7 +1742,7 @@ TEST_F(BrowserAutofillManagerTest,
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           // The field is classified, therefore the suggestion can be accepted.
           return suggestion.type == SuggestionType::kAddressEntry
-                     ? suggestion.is_acceptable
+                     ? suggestion.IsAcceptable()
                      : (suggestion.type == SuggestionType::kSeparator ||
                         suggestion.type == SuggestionType::kManageAddress);
         }));
@@ -1756,7 +1756,7 @@ TEST_F(BrowserAutofillManagerTest,
           // The field is not of type address, therefore the suggestion cannot
           // be acceptable.
           return suggestion.type == SuggestionType::kCreditCardEntry
-                     ? !suggestion.is_acceptable
+                     ? !suggestion.IsAcceptable()
                      : (suggestion.type == SuggestionType::kSeparator ||
                         suggestion.type == SuggestionType::kManageCreditCard);
         }));

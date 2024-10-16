@@ -578,7 +578,7 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   suggestion.type = SuggestionType::kVirtualCreditCardEntry;
   // If a virtual card is non-acceptable, it needs to be displayed in
   // grayed-out style.
-  suggestion.apply_deactivated_style = !suggestion.is_acceptable;
+  suggestion.apply_deactivated_style = !suggestion.IsAcceptable();
   suggestion.feature_for_iph =
       suggestion.apply_deactivated_style &&
               base::FeatureList::IsEnabled(
@@ -604,7 +604,7 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableVirtualCardMetadata)) {
     suggestion.minor_text.value = suggestion.main_text.value;
-    if (suggestion.is_acceptable) {
+    if (suggestion.IsAcceptable()) {
       suggestion.main_text.value = virtual_card_label;
     } else {
       suggestion.main_text.value = virtual_card_disabled_label;
@@ -658,7 +658,7 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
         suggestion.labels.push_back({*benefit_label});
       }
     }
-    if (suggestion.is_acceptable) {
+    if (suggestion.IsAcceptable()) {
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
     } else {

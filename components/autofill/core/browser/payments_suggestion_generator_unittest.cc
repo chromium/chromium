@@ -723,9 +723,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   // This is the check which actually verifies that the suggestion looks the
-  // same as the ones for an unclassified field (such a suggestion has
-  // `is_acceptable` as false).
-  EXPECT_EQ(suggestions[0].is_acceptable, false);
+  // same as the ones for an unclassified field (`IsAcceptable()` returns false)
+  EXPECT_EQ(suggestions[0].IsAcceptable(), false);
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 
@@ -740,7 +739,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(suggestions[0].is_acceptable, false);
+  EXPECT_EQ(suggestions[0].IsAcceptable(), false);
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
@@ -1676,7 +1675,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                   /*obfuscation_length=*/4, u"1111"));
   }
 #endif
-  EXPECT_EQ(virtual_card_name_field_suggestion.is_acceptable, true);
+  EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(), true);
   EXPECT_EQ(virtual_card_name_field_suggestion.feature_for_iph,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   if (!keyboard_accessory_enabled()) {
@@ -1726,7 +1725,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                   /*obfuscation_length=*/4, u"1111"));
   }
 #endif
-  EXPECT_EQ(virtual_card_number_field_suggestion.is_acceptable, true);
+  EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(), true);
   EXPECT_EQ(virtual_card_number_field_suggestion.feature_for_iph,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   if (keyboard_accessory_enabled()) {
@@ -1832,7 +1831,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   // Only the name is displayed on the first line.
   EXPECT_EQ(server_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(server_card_suggestion.is_acceptable, false);
+  EXPECT_EQ(server_card_suggestion.IsAcceptable(), false);
   // For Desktop, split the first line and populate the card name and
   // the last 4 digits separately.
   EXPECT_EQ(server_card_suggestion.main_text.value, u"Visa");
@@ -1863,7 +1862,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Only the name is displayed on the first line.
   EXPECT_EQ(enrolled_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_EQ(enrolled_card_suggestion.is_acceptable, true);
+  EXPECT_EQ(enrolled_card_suggestion.IsAcceptable(), true);
   EXPECT_EQ(enrolled_card_suggestion.acceptance_a11y_announcement,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY));
@@ -2324,8 +2323,8 @@ TEST_P(
                                         /*virtual_card_option=*/true,
                                         /*card_linked_offer_available=*/false);
 
-  // `is_acceptable` is false only when merchant has opted out of VCN.
-  EXPECT_EQ(virtual_card_name_field_suggestion.is_acceptable,
+  // `.IsAcceptable()` returns false only when merchant has opted out of VCN.
+  EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(),
             !is_merchant_opted_out());
 
   // `apply_deactivated_style` is true only when merchant has opted out of VCN.
@@ -2367,9 +2366,9 @@ TEST_P(
                                         /*virtual_card_option=*/true,
                                         /*card_linked_offer_available=*/false);
 
-  // `is_acceptable` is false only when flag is enabled and merchant has opted
-  // out of VCN.
-  EXPECT_EQ(virtual_card_number_field_suggestion.is_acceptable,
+  // `IsAcceptable()` returns false only when flag is enabled and merchant has
+  // opted out of VCN.
+  EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(),
             !is_merchant_opted_out());
   // `apply_deactivated_style` is true only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_number_field_suggestion.apply_deactivated_style,

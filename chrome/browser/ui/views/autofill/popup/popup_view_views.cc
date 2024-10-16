@@ -142,7 +142,7 @@ bool CanShowRootPopup(AutofillSuggestionController& controller) {
 // when hovering the content area. This is used for manual fallback
 // suggestions.
 bool ContentCellShouldOpenSubPopupSuggestion(const Suggestion& suggestion) {
-  return !suggestion.is_acceptable && !suggestion.apply_deactivated_style &&
+  return !suggestion.IsAcceptable() && !suggestion.apply_deactivated_style &&
          !suggestion.children.empty();
 }
 
