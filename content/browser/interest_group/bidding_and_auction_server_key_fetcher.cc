@@ -17,6 +17,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -61,6 +62,18 @@ constexpr net::NetworkTrafficAnnotationTag
     comments:
       ""
     )");
+
+const struct {
+  const char* origin;
+  const char* key_url;
+} kDefaultKeys[] = {
+    {kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+     kBiddingAndAuctionGCPCoordinatorKeyURL},
+    {kBiddingAndAuctionGCPCoordinatorOrigin,
+     kBiddingAndAuctionGCPCoordinatorKeyURL},
+    {kBiddingAndAuctionAWSCoordinatorOrigin,
+     kBiddingAndAuctionAWSCoordinatorKeyURL},
+};
 }  // namespace
 
 BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::
@@ -77,6 +90,17 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     InterestGroupManagerImpl* manager,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
     : loader_factory_(std::move(loader_factory)), manager_(manager) {
+  for (const auto& key_config : kDefaultKeys) {
+    url::Origin coordinator = url::Origin::Create(GURL(key_config.origin));
+    DCHECK_EQ(coordinator.scheme(), url::kHttpsScheme);
+    PerCoordinatorFetcherState state;
+    state.key_url = GURL(key_config.key_url);
+    if (!state.key_url.is_valid()) {
+      continue;
+    }
+    fetcher_state_map_.insert_or_assign(std::move(coordinator),
+                                        std::move(state));
+  }
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
     std::string config =
@@ -95,6 +119,10 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
 
           PerCoordinatorFetcherState state;
           state.key_url = GURL(kv.second.GetString());
+          if (!state.key_url.is_valid()) {
+            fetcher_state_map_.erase(coordinator);
+            continue;
+          }
           fetcher_state_map_.insert_or_assign(std::move(coordinator),
                                               std::move(state));
         }

@@ -49,6 +49,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -551,6 +552,16 @@ class NetworkResponder {
     const auto signals_it = signals_map_.find(params->url_request.url.path());
     if (signals_it != signals_map_.end()) {
       signals_it->second.Run(params);
+      return true;
+    }
+
+    // Check if it's a Bidding and Auction Server key request. These can be
+    // triggered by the Prefetch feature when JoinAdInterestGroup is called
+    // It's safe to just fail them.
+    if (params->url_request.url.path() ==
+        GURL(kBiddingAndAuctionGCPCoordinatorKeyURL).path()) {
+      params->client->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return true;
     }
 

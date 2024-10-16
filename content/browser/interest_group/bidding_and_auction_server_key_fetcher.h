@@ -26,8 +26,18 @@ class SimpleURLLoader;
 namespace content {
 class InterestGroupManagerImpl;
 
-constexpr char kDefaultBiddingAndAuctionGCPCoordinatorOrigin[] =
+inline constexpr char kDefaultBiddingAndAuctionGCPCoordinatorOrigin[] =
     "https://publickeyservice.gcp.privacysandboxservices.com";
+inline constexpr char kBiddingAndAuctionGCPCoordinatorOrigin[] =
+    "https://publickeyservice.pa.gcp.privacysandboxservices.com";
+inline constexpr char kBiddingAndAuctionGCPCoordinatorKeyURL[] =
+    "https://publickeyservice.pa.gcp.privacysandboxservices.com/.well-known/"
+    "protected-auction/v1/public-keys";
+inline constexpr char kBiddingAndAuctionAWSCoordinatorOrigin[] =
+    "https://publickeyservice.pa.aws.privacysandboxservices.com";
+inline constexpr char kBiddingAndAuctionAWSCoordinatorKeyURL[] =
+    "https://publickeyservice.pa.aws.privacysandboxservices.com/.well-known/"
+    "protected-auction/v1/public-keys";
 
 struct BiddingAndAuctionServerKey {
   std::string key;  // bytes containing the key.
