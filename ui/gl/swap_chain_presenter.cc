@@ -583,8 +583,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     HRESULT hr =
         d3d11_device_->CreateTexture2D(&desc, nullptr, &staging_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Creating D3D11 video staging texture failed: " << std::hex
-                  << hr;
+      DLOG(ERROR) << "Creating D3D11 video staging texture failed: 0x"
+                  << std::hex << hr;
       DisableDirectCompositionOverlays();
       return nullptr;
     }
@@ -592,7 +592,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     staging_texture_size_ = texture_size;
     hr = SetDebugName(staging_texture_.Get(), "SwapChainPresenter_Staging");
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
+      DLOG(ERROR) << "Failed to label D3D11 texture: 0x" << std::hex << hr;
     }
   }
 
@@ -606,7 +606,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
   HRESULT hr =
       context->Map(staging_texture_.Get(), 0, map_type, 0, &mapped_resource);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Mapping D3D11 video staging texture failed: " << std::hex
+    DLOG(ERROR) << "Mapping D3D11 video staging texture failed: 0x" << std::hex
                 << hr;
     return nullptr;
   }
@@ -653,15 +653,15 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     desc.CPUAccessFlags = 0;
     hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &copy_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Creating D3D11 video upload texture failed: " << std::hex
-                  << hr;
+      DLOG(ERROR) << "Creating D3D11 video upload texture failed: 0x"
+                  << std::hex << hr;
       DisableDirectCompositionOverlays();
       return nullptr;
     }
     DCHECK(copy_texture_);
     hr = SetDebugName(copy_texture_.Get(), "SwapChainPresenter_Copy");
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
+      DLOG(ERROR) << "Failed to label D3D11 texture: 0x" << std::hex << hr;
     }
   }
   TRACE_EVENT0("gpu", "SwapChainPresenter::UploadVideoImages::CopyResource");
@@ -1862,13 +1862,13 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device1;
     HRESULT hr = dcomp_device_.As(&dcomp_device1);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to get DCOMP device. hr=" << hr;
+      DLOG(ERROR) << "Failed to get DCOMP device. hr=0x" << std::hex << hr;
       return false;
     }
 
     hr = dcomp_device1->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to create DCOMP surface. hr=" << hr;
+      DLOG(ERROR) << "Failed to create DCOMP surface. hr=0x" << std::hex << hr;
       return false;
     }
 
@@ -1951,7 +1951,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     // best effort.
     HRESULT hr = swap_chain3->SetColorSpace1(swap_dxgi_color_space);
     if (FAILED(hr)) {
-      DLOG(ERROR) << " SetColorSpace1 failed with error: " << hr;
+      DLOG(ERROR) << " SetColorSpace1 failed with error: 0x" << std::hex << hr;
     }
     context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
                                                  output_dxgi_color_space);
@@ -2353,7 +2353,7 @@ void SwapChainPresenter::SetSwapChainPresentDuration() {
       HRESULT hr = swap_chain_media->CheckPresentDurationSupport(
           duration_100ns, &smaller_duration, &larger_duration);
       if (FAILED(hr)) {
-        DLOG(ERROR) << "CheckPresentDurationSupport failed with error "
+        DLOG(ERROR) << "CheckPresentDurationSupport failed with error 0x"
                     << std::hex << hr;
         return;
       }
@@ -2371,7 +2371,8 @@ void SwapChainPresenter::SetSwapChainPresentDuration() {
     }
     HRESULT hr = swap_chain_media->SetPresentDuration(requested_duration);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "SetPresentDuration failed with error " << std::hex << hr;
+      DLOG(ERROR) << "SetPresentDuration failed with error 0x" << std::hex
+                  << hr;
     }
   }
 }
