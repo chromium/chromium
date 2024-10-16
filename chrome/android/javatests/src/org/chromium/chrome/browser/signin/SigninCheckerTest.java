@@ -27,11 +27,11 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /**
  * This class tests the sign-in checks done at Chrome start-up or when accounts change on device.

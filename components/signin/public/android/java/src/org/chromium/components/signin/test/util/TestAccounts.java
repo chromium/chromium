@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.test.util.browser.signin;
+package org.chromium.components.signin.test.util;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+
+import androidx.appcompat.content.res.AppCompatResources;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /**
  * This class provides tests accounts to be used for signing in tests.
@@ -24,7 +29,7 @@ public class TestAccounts {
                             "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
                     .fullName("Test1 Full")
                     .givenName("Test1 Given")
-                    .accountImage(AccountManagerTestRule.createAvatar())
+                    .accountImage(createAvatar())
                     .build();
 
     /* Use ACCOUNT2 when signing in or adding a default adult user to the device as a secondary user.*/
@@ -33,22 +38,39 @@ public class TestAccounts {
                             "test2@gmail.com", FakeAccountManagerFacade.toGaiaId("test2@gmail.com"))
                     .fullName("Test2 Full")
                     .givenName("Test2 Given")
-                    .accountImage(AccountManagerTestRule.createAvatar())
+                    .accountImage(createAvatar())
                     .build();
 
     /* Use CHILD_ACCOUNT when you need a supervised user signed in */
     public static final AccountInfo CHILD_ACCOUNT =
             new AccountInfo.Builder(
-                            AccountManagerTestRule.generateChildEmail(ACCOUNT1.getEmail()),
+                            FakeAccountManagerFacade.generateChildEmail(ACCOUNT1.getEmail()),
                             FakeAccountManagerFacade.toGaiaId(
-                                    AccountManagerTestRule.generateChildEmail(ACCOUNT1.getEmail())))
+                                    FakeAccountManagerFacade.generateChildEmail(
+                                            ACCOUNT1.getEmail())))
                     .fullName("Test1 Full")
                     .givenName("Test1 Given")
-                    .accountImage(AccountManagerTestRule.createAvatar())
+                    .accountImage(createAvatar())
                     .accountCapabilities(
                             new AccountCapabilitiesBuilder()
                                     .setIsSubjectToParentalControls(true)
                                     .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
                                     .build())
                     .build();
+
+    /** Returns an avatar image created from test resource. */
+    private static Bitmap createAvatar() {
+        Drawable drawable =
+                AppCompatResources.getDrawable(
+                        ContextUtils.getApplicationContext(), R.drawable.test_profile_picture);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
 }

@@ -30,8 +30,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Tests for {@link ChildAccountStatusSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
