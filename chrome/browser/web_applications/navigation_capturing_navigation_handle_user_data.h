@@ -45,6 +45,16 @@ enum class NavigationHandlingInitialResult {
   kMaxValue = kNotHandledByNavigationHandling
 };
 
+// Stores the initial behavior of navigation capturing with respect to launch
+// handlers when triggered via left clicks creating a new top level browsing
+// context.
+enum class InitialNavigationCapturedBehavior {
+  kNotHandled = 0,
+  kNavigatedExisting = 1,
+  kNavigatedNew = 2,
+  kMaxValue = kNavigatedNew
+};
+
 // Information that will be used to make decisions regarding redirection.
 // Includes:
 // 1. The app_id of the source app browser if the navigation was triggered from
@@ -64,6 +74,8 @@ struct NavigationCapturingRedirectionInfo {
       NavigationHandlingInitialResult::kBrowserTab;
   std::optional<webapps::AppId> first_navigation_app_id;
   WindowOpenDisposition disposition = WindowOpenDisposition::UNKNOWN;
+  InitialNavigationCapturedBehavior effective_launch_handling_mode =
+      InitialNavigationCapturedBehavior::kNotHandled;
 };
 
 // Data that is tied to the NavigationHandle. Used in the

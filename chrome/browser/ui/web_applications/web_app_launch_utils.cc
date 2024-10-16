@@ -1271,6 +1271,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
     // Navigate existing.
     if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
       if (existing_browser_and_tab) {
+        redirection_info.effective_launch_handling_mode =
+            InitialNavigationCapturedBehavior::kNavigatedExisting;
         return {.browser_tab_override =
                     std::make_optional<std::tuple<Browser*, int>>(
                         {existing_browser_and_tab->first,
@@ -1285,6 +1287,9 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
     // Navigate new.
     CHECK(client_mode == LaunchHandler::ClientMode::kNavigateNew);
+    redirection_info.effective_launch_handling_mode =
+        InitialNavigationCapturedBehavior::kNavigatedNew;
+
     if (app_display_mode == blink::mojom::DisplayMode::kBrowser) {
       return {.redirection_info = redirection_info};
     }

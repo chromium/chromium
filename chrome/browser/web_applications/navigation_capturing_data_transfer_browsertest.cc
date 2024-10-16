@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace web_app {
@@ -107,13 +108,15 @@ class NavigationCapturingDataTransferBrowserTest
     return embedded_test_server()->GetURL(kDestinationPageScopeB);
   }
 
-  webapps::AppId InstallTestWebApp(const GURL& start_url) {
+  webapps::AppId InstallTestWebApp(
+      const GURL& start_url,
+      blink::mojom::ManifestLaunchHandler_ClientMode client_mode =
+          blink::mojom::ManifestLaunchHandler_ClientMode::kAuto) {
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app_info->launch_handler = blink::Manifest::LaunchHandler(
-        blink::mojom::ManifestLaunchHandler_ClientMode::kAuto);
+    web_app_info->launch_handler = blink::Manifest::LaunchHandler(client_mode);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id = web_app::test::InstallWebApp(
@@ -197,6 +200,44 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
             redirection_info.disposition);
   EXPECT_TRUE(redirection_info.first_navigation_app_id.has_value());
   EXPECT_EQ(app_id, *redirection_info.first_navigation_app_id);
+  EXPECT_EQ(InitialNavigationCapturedBehavior::kNavigatedNew,
+            redirection_info.effective_launch_handling_mode);
+
+  // Post navigation, the WebContentsUserData instances should be cleaned up.
+  EXPECT_THAT(GetForwarderForWebContents(
+                  app_browser->tab_strip_model()->GetActiveWebContents()),
+              testing::IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
+                       LeftClickNavigateExistingOpensNavigateNew) {
+  const webapps::AppId app_id = InstallTestWebApp(
+      GetDestinationUrl(),
+      blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting);
+
+  content::WebContents* contents = OpenStartPageInTab();
+  ASSERT_NE(nullptr, contents);
+  NavigationCompletionAwaiter nav_awaiter(contents);
+
+  Browser* app_browser = TriggerNavigationCapturingNewAppWindow(
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
+  nav_awaiter.AwaitNavigationCompletion();
+  ASSERT_NE(nullptr, app_browser);
+  ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
+
+  NavigationCapturingRedirectionInfo redirection_info =
+      *nav_awaiter.GetRedirectionInfoForNavigation();
+
+  // Triggered from a tab and not an app window.
+  EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
+  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowNavigationCaptured,
+            redirection_info.initial_nav_handling_result);
+  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            redirection_info.disposition);
+  EXPECT_TRUE(redirection_info.first_navigation_app_id.has_value());
+  EXPECT_EQ(app_id, *redirection_info.first_navigation_app_id);
+  EXPECT_EQ(InitialNavigationCapturedBehavior::kNavigatedNew,
+            redirection_info.effective_launch_handling_mode);
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(
