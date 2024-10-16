@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -241,9 +243,16 @@ static void JNI_PrivacySandboxBridge_RecordActivityType(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jint activity_type) {
-  GetPrivacySandboxService(j_profile)->RecordActivityType(
-      static_cast<PrivacySandboxService::PrivacySandboxStorageActivityType>(
-          activity_type));
+  privacy_sandbox::PrivacySandboxActivityTypesService*
+      privacy_sandbox_activity_types_service =
+          PrivacySandboxActivityTypesFactory::GetForProfile(
+              Profile::FromJavaObject(j_profile));
+  if (!privacy_sandbox_activity_types_service) {
+    return;
+  }
+  privacy_sandbox_activity_types_service->RecordActivityType(
+      static_cast<privacy_sandbox::PrivacySandboxActivityTypesService::
+                      PrivacySandboxStorageActivityType>(activity_type));
 }
 
 static jboolean

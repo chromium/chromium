@@ -5987,6 +5987,10 @@ test("unit_tests") {
     ]
   }
 
+  if (is_android) {
+    sources += [ "../browser/privacy_sandbox/privacy_sandbox_activity_types_service_unittest.cc" ]
+  }
+
   if (is_linux) {
     sources += [ "../browser/metrics/pressure/pressure_metrics_unittest.cc" ]
   }
