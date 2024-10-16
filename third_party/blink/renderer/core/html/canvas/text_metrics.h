@@ -146,11 +146,6 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   // Cache of ShapeResults that is lazily created the first time it's needed.
   HeapVector<RunWithOffset> runs_with_offset_;
   bool shaping_needed_ = false;
-
-  // Cache of the character positions before which it is safe to break without
-  // splitting any clusters.
-  HeapVector<Member<TextCluster>> minimal_clusters_;
-  bool minimal_clusters_ready = true;
 };
 
 }  // namespace blink

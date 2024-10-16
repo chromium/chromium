@@ -2020,6 +2020,37 @@
               () => tm.getTextClusters(text.length, text.length + 1) );
     }
 
+- name: 2d.text.measure.text-clusters-position.tentative
+  desc: >-
+    Test that TextMetrics::getTextClusters() returns clusters that are
+    positioned according to the target align and baseline passed as options.
+  size: [500, 500]
+  test_type: promise
+  fonts:
+  - CanvasTest
+  code: |
+    {{ load_font }}
+    ctx.font = '40px CanvasTest';
+    const text = 'E';
+
+    // Origin for all the measurements is placed at the top left corner.
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    let tm = ctx.measureText(text);
+
+    // X position.
+    @assert Math.abs(tm.getTextClusters({align: 'left'})[0].x) === 0;
+    @assert tm.getTextClusters({align: 'center'})[0].x === 20;
+    @assert tm.getTextClusters({align: 'right'})[0].x === 40;
+
+    // Y position.
+    @assert Math.abs(tm.getTextClusters({baseline: 'top'})[0].y) === 0;
+    @assert tm.getTextClusters({baseline: 'middle'})[0].y === 20;
+    @assert tm.getTextClusters({baseline: 'bottom'})[0].y === 40;
+    @assert tm.getTextClusters({baseline: 'alphabetic'})[0].y === 30;
+  variants:
+  - *load-font-variant-definition
+
 - name: 2d.text.drawing.style.absolute.spacing
   desc: Testing letter spacing and word spacing with absolute length
   code: |

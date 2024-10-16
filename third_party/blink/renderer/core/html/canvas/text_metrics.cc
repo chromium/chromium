@@ -75,7 +75,6 @@ void TextMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(baselines_);
   visitor->Trace(font_);
   visitor->Trace(runs_with_offset_);
-  visitor->Trace(minimal_clusters_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -122,8 +121,6 @@ void TextMetrics::Update(const Font& font,
     // lazily created the first time they are required.
     shaping_needed_ = true;
   }
-  minimal_clusters_.clear();
-  minimal_clusters_ready = false;
 
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
@@ -442,7 +439,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     uint32_t end,
     const TextClusterOptions* options,
     ExceptionState* exception_state) {
-  HeapVector<Member<TextCluster>> clusters_for_range;
+  HeapVector<Member<TextCluster>> minimal_clusters, clusters_for_range;
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
   if (start >= text_.length() || end > text_.length()) {
@@ -454,72 +451,66 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     return clusters_for_range;
   }
 
-  if (!minimal_clusters_ready) {
-    ShapeTextIfNeeded();
-
-    TextAlign cluster_text_align;
-    TextBaseline cluster_text_baseline;
-    if (options == nullptr || !options->hasAlign() ||
-        !ParseTextAlign(options->align(), cluster_text_align)) {
-      cluster_text_align = ctx_text_align_;
-    }
-    if (options == nullptr || !options->hasBaseline() ||
-        !ParseTextBaseline(options->baseline(), cluster_text_baseline)) {
-      cluster_text_baseline = ctx_text_baseline_;
-    }
-
-    for (const auto& run_with_offset : runs_with_offset_) {
-      HeapVector<TextClusterCallbackContext> clusters_for_run;
-
-      run_with_offset.shape_result_->ForEachGraphemeClusters(
-          StringView(run_with_offset.text_), run_with_offset.x_position_, 0,
-          run_with_offset.num_characters_, 0,
-          [](void* context, unsigned character_index, float total_advance,
-             unsigned graphemes_in_cluster, float cluster_advance,
-             CanvasRotationInVertical rotation) {
-            auto* clusters =
-                static_cast<HeapVector<TextClusterCallbackContext>*>(context);
-            TextClusterCallbackContext cluster = {
-                .start_index_ = character_index,
-                .x_position_ = total_advance,
-                .width_ = cluster_advance};
-            clusters->push_back(cluster);
-          },
-          &clusters_for_run);
-
-      std::sort(clusters_for_run.begin(), clusters_for_run.end(),
-                [](TextClusterCallbackContext a, TextClusterCallbackContext b) {
-                  return a.start_index_ < b.start_index_;
-                });
-
-      for (wtf_size_t i = 0; i < clusters_for_run.size(); i++) {
-        TextCluster* text_cluster;
-        if (i + 1 < clusters_for_run.size()) {
-          text_cluster =
-              TextCluster::Create(text_, clusters_for_run[i].x_position_, 0,
-                                  clusters_for_run[i].start_index_,
-                                  clusters_for_run[i + 1].start_index_,
-                                  cluster_text_align, cluster_text_baseline,
-                                  *this);
-        } else {
-          text_cluster = TextCluster::Create(
-              text_, clusters_for_run[i].x_position_, 0,
-              clusters_for_run[i].start_index_, run_with_offset.num_characters_,
-              cluster_text_align, cluster_text_baseline, *this);
-        }
-        text_cluster->OffsetCharacters(run_with_offset.character_offset_);
-        text_cluster->OffsetPosition(
-            getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
-                              direction_),
-            getTextBaselineDelta(baseline_y, cluster_text_baseline,
-                                 *font_.PrimaryFont()));
-        text_cluster->OffsetPosition(-text_align_dx_, 0);
-        minimal_clusters_.push_back(text_cluster);
-      }
-    }
-    minimal_clusters_ready = true;
+  TextAlign cluster_text_align;
+  TextBaseline cluster_text_baseline;
+  if (options == nullptr || !options->hasAlign() ||
+      !ParseTextAlign(options->align(), cluster_text_align)) {
+    cluster_text_align = ctx_text_align_;
   }
-  for (const auto& cluster : minimal_clusters_) {
+  if (options == nullptr || !options->hasBaseline() ||
+      !ParseTextBaseline(options->baseline(), cluster_text_baseline)) {
+    cluster_text_baseline = ctx_text_baseline_;
+  }
+
+  for (const auto& run_with_offset : runs_with_offset_) {
+    HeapVector<TextClusterCallbackContext> clusters_for_run;
+
+    run_with_offset.shape_result_->ForEachGraphemeClusters(
+        StringView(run_with_offset.text_), run_with_offset.x_position_, 0,
+        run_with_offset.num_characters_, 0,
+        [](void* context, unsigned character_index, float total_advance,
+           unsigned graphemes_in_cluster, float cluster_advance,
+           CanvasRotationInVertical rotation) {
+          auto* clusters =
+              static_cast<HeapVector<TextClusterCallbackContext>*>(context);
+          TextClusterCallbackContext cluster = {.start_index_ = character_index,
+                                                .x_position_ = total_advance,
+                                                .width_ = cluster_advance};
+          clusters->push_back(cluster);
+        },
+        &clusters_for_run);
+
+    std::sort(clusters_for_run.begin(), clusters_for_run.end(),
+              [](TextClusterCallbackContext a, TextClusterCallbackContext b) {
+                return a.start_index_ < b.start_index_;
+              });
+
+    for (wtf_size_t i = 0; i < clusters_for_run.size(); i++) {
+      TextCluster* text_cluster;
+      if (i + 1 < clusters_for_run.size()) {
+        text_cluster = TextCluster::Create(
+            text_, clusters_for_run[i].x_position_, 0,
+            clusters_for_run[i].start_index_,
+            clusters_for_run[i + 1].start_index_, cluster_text_align,
+            cluster_text_baseline, *this);
+      } else {
+        text_cluster = TextCluster::Create(
+            text_, clusters_for_run[i].x_position_, 0,
+            clusters_for_run[i].start_index_, run_with_offset.num_characters_,
+            cluster_text_align, cluster_text_baseline, *this);
+      }
+      text_cluster->OffsetCharacters(run_with_offset.character_offset_);
+      text_cluster->OffsetPosition(
+          getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
+                            direction_),
+          getTextBaselineDelta(baseline_y, cluster_text_baseline,
+                               *font_.PrimaryFont()));
+      text_cluster->OffsetPosition(-text_align_dx_, 0);
+      minimal_clusters.push_back(text_cluster);
+    }
+  }
+
+  for (const auto& cluster : minimal_clusters) {
     if (cluster->end() <= start or end <= cluster->begin()) {
       continue;
     }
