@@ -1,11 +1,11 @@
-    <style include="settings-shared md-select">
+    <style include="settings-shared md-select cr-spinner-style">
       .description {
         align-items: center;
         display: flex;
         margin-top: 16px;
       }
 
-      paper-spinner-lite {
+      .spinner {
         margin: 0 8px;
       }
 
@@ -89,12 +89,9 @@
         </div>
       </div>
       <div slot="button-container">
-        <paper-spinner-lite
-            active="[[hasImportStatus_(
-                importStatusEnum_.IN_PROGRESS, importStatus_)]]"
-            hidden="[[hasImportStatus_(
-                importStatusEnum_.SUCCEEDED, importStatus_)]]">
-        </paper-spinner-lite>
+        <div class="spinner" hidden$="[[!hasImportStatus_(
+            importStatusEnum_.IN_PROGRESS, importStatus_)]]">
+        </div>
         <cr-button id="cancel" class="cancel-button"
             hidden="[[hasImportStatus_(
                 importStatusEnum_.SUCCEEDED, importStatus_)]]"

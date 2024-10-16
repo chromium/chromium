@@ -717,12 +717,12 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cancelButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.cancel-button');
     assertTrue(!!cancelButton);
-    const spinner = element.shadowRoot!.querySelector('paper-spinner-lite');
+    const spinner = element.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);
 
     assertTrue(element.$.clearButton.disabled);
     assertFalse(cancelButton.disabled);
-    assertFalse(spinner.active);
+    assertFalse(isVisible(spinner));
 
     // Changing the dropdown selection does not persist its value to the pref.
     dropdownMenu.$.dropdownMenu.value = TimePeriod.LAST_WEEK.toString();
@@ -737,7 +737,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     assertFalse(element.$.clearButton.disabled);
     assertFalse(cancelButton.disabled);
-    assertFalse(spinner.active);
+    assertFalse(isVisible(spinner));
 
     // Confirming the deletion persists the dropdown selection to the pref,
     // records the time period in metrics, and sends it for clearing.
@@ -770,7 +770,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
     assertTrue(cancelButton.disabled);
     assertTrue(element.$.clearButton.disabled);
-    assertTrue(spinner.active);
+    assertTrue(isVisible(spinner));
 
     // Simulate signal from browser indicating that clearing has
     // completed.
@@ -785,7 +785,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertFalse(element.$.clearBrowsingDataDialog.open);
     assertFalse(cancelButton.disabled);
     assertFalse(element.$.clearButton.disabled);
-    assertFalse(spinner.active);
+    assertFalse(isVisible(spinner));
     assertFalse(!!element.shadowRoot!.querySelector('#historyNotice'));
     assertFalse(!!element.shadowRoot!.querySelector('#passwordsNotice'));
   }

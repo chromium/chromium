@@ -9,6 +9,7 @@ import type {BrowserProfile, ImportDataBrowserProxy, SettingsCheckboxElement, Se
 import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -176,18 +177,18 @@ suite('ImportDataDialog', function() {
     assertFalse(dialog.$.cancel.hidden);
     assertTrue(dialog.$.cancel.disabled);
     assertTrue(dialog.$.done.hidden);
-    const spinner = dialog.shadowRoot!.querySelector('paper-spinner-lite')!;
-    assertTrue(spinner.active);
-    assertFalse(spinner.hidden);
+    const spinner = dialog.shadowRoot!.querySelector('.spinner');
+    assertTrue(!!spinner);
+    assertTrue(isVisible(spinner));
   }
 
   function assertSucceededButtons() {
     assertTrue(dialog.$.import.hidden);
     assertTrue(dialog.$.cancel.hidden);
     assertFalse(dialog.$.done.hidden);
-    const spinner = dialog.shadowRoot!.querySelector('paper-spinner-lite')!;
-    assertFalse(spinner.active);
-    assertTrue(spinner.hidden);
+    const spinner = dialog.shadowRoot!.querySelector('.spinner');
+    assertTrue(!!spinner);
+    assertFalse(isVisible(spinner));
   }
 
   function simulateImportStatusChange(status: ImportDataStatus) {

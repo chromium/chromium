@@ -12,7 +12,6 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
@@ -86,21 +85,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
         value: '',
       },
 
-      /** If true shows an active spinner at the end of the subpage header. */
-      showSpinner: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Title (i.e., tooltip) to be displayed on the spinner. If |showSpinner|
-       * is false, this field has no effect.
-       */
-      spinnerTitle: {
-        type: String,
-        value: '',
-      },
-
       /**
        * Whether we should hide the "close" button to get to the previous page.
        */
@@ -141,8 +125,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   learnMoreUrl: string;
   searchLabel: string;
   searchTerm: string;
-  showSpinner: boolean;
-  spinnerTitle: string;
   hideCloseButton: boolean;
   associatedControl: HTMLElement|null;
   preserveSearchTerm: boolean;
