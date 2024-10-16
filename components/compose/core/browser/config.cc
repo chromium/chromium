@@ -22,6 +22,18 @@ Config& GetMutableConfig() {
   return *s_config;
 }
 
+unsigned int GetFieldTrialParamByFeatureAsUnsignedInt(
+    const base::Feature& feature,
+    const std::string& param_name,
+    unsigned int default_value) {
+  int value_as_int = base::GetFieldTrialParamByFeatureAsInt(
+      feature, param_name, static_cast<int>(default_value));
+  if (value_as_int < 0) {
+    return 0;
+  }
+  return static_cast<unsigned int>(value_as_int);
+}
+
 }  // namespace
 
 const Config& GetComposeConfig() {
@@ -37,24 +49,24 @@ void ResetConfigForTesting() {
 }
 
 Config::Config() {
-  input_min_words = base::GetFieldTrialParamByFeatureAsInt(
+  input_min_words = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kComposeInputParams, "min_words", input_min_words);
 
-  input_max_words = base::GetFieldTrialParamByFeatureAsInt(
+  input_max_words = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kComposeInputParams, "max_words", input_max_words);
 
-  input_max_chars = base::GetFieldTrialParamByFeatureAsInt(
+  input_max_chars = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kComposeInputParams, "max_chars", input_max_chars);
 
-  inner_text_max_bytes = base::GetFieldTrialParamByFeatureAsInt(
+  inner_text_max_bytes = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kComposeInnerText, "inner_text_max_bytes",
       inner_text_max_bytes);
 
-  trimmed_inner_text_max_chars = base::GetFieldTrialParamByFeatureAsInt(
+  trimmed_inner_text_max_chars = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kComposeInnerText, "trimmed_inner_text_max_chars",
       trimmed_inner_text_max_chars);
 
-  trimmed_inner_text_header_length = base::GetFieldTrialParamByFeatureAsInt(
+  trimmed_inner_text_header_length = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kComposeInnerText, "trimmed_inner_text_header_length",
       trimmed_inner_text_header_length);
 
@@ -128,7 +140,7 @@ Config::Config() {
       features::kEnableComposeSelectionNudge, "selection_nudge_once_per_focus",
       selection_nudge_once_per_focus);
 
-  nudge_field_change_event_max = base::GetFieldTrialParamByFeatureAsInt(
+  nudge_field_change_event_max = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kEnableComposeProactiveNudge, "nudge_field_change_event_max",
       nudge_field_change_event_max);
 
