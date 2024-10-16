@@ -36,7 +36,9 @@ import org.chromium.components.crash.browser.ProcessExitReasonFromSystem;
 import org.chromium.components.crash.browser.ProcessExitReasonFromSystem.ExitReason;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -114,6 +116,40 @@ public class TrackExitReasonsOfInterestTest {
         assertEquals("Process id should be stored in file", pid, data.mPid);
         assertEquals("Time should be stored in file", timeMillis, data.mTimeMillis);
         assertEquals("State should be stored in file", state, data.mState);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testWriteLargeThenSmallData() throws IOException, FileNotFoundException {
+        List<AppStateData> largeDataList = new ArrayList<>();
+        for (int i = 1; i <= TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE; i++) {
+            largeDataList.add(new AppStateData(i, i, AppState.STARTUP));
+        }
+        TrackExitReasonsOfInterest.writeData(largeDataList, null);
+
+        assertEquals(
+                TrackExitReasonsOfInterest.MAX_DATA_LIST_SIZE,
+                TrackExitReasonsOfInterest.readData().size());
+        int largeFileSize =
+                FileUtils.readStream(new FileInputStream(TrackExitReasonsOfInterest.getFile()))
+                        .length;
+
+        List<AppStateData> smallDataList = List.of(new AppStateData(42, 42, AppState.FOREGROUND));
+        TrackExitReasonsOfInterest.writeData(smallDataList, null);
+
+        assertEquals(1, TrackExitReasonsOfInterest.readData().size());
+        int smallFileSize =
+                FileUtils.readStream(new FileInputStream(TrackExitReasonsOfInterest.getFile()))
+                        .length;
+
+        assertTrue(
+                "Large file size ("
+                        + largeFileSize
+                        + ") should be larger than small file size ("
+                        + smallFileSize
+                        + ")",
+                largeFileSize > smallFileSize);
     }
 
     @Test

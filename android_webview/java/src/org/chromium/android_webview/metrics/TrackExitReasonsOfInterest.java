@@ -102,30 +102,6 @@ public class TrackExitReasonsOfInterest {
         return systemReason;
     }
 
-    private static Supplier<Integer> getStartupStateSupplier() {
-        return StartupStateSupplier.getInstance()::getAppState;
-    }
-
-    /** Supplier class for AppState.STARTUP */
-    private static class StartupStateSupplier {
-        private StartupStateSupplier() {}
-
-        private static class LazyHolder {
-            static final StartupStateSupplier sInstance = new StartupStateSupplier();
-        }
-
-        /**
-         * @return the singleton StartupStateSupplier.
-         */
-        public static StartupStateSupplier getInstance() {
-            return LazyHolder.sInstance;
-        }
-
-        public int getAppState() {
-            return AppState.STARTUP;
-        }
-    }
-
     /** Data class for holding app state and related details. */
     public static class AppStateData {
         // The process id.
@@ -173,7 +149,6 @@ public class TrackExitReasonsOfInterest {
             }
         } catch (IOException e) {
             // File does not exist or the file read failed.
-            Log.i(TAG, "Failed to read file.");
         } catch (JSONException e) {
             Log.i(TAG, "Failed to parse JSON from file.");
         }
@@ -210,7 +185,6 @@ public class TrackExitReasonsOfInterest {
      * Reads the previous app state data from file, appends the current state, and writes it back.
      */
     private static boolean appendCurrentState(Callback<Boolean> resultCallback) {
-
         List<AppStateData> oldDataList = readData();
         List<AppStateData> newDataList = new ArrayList<>();
         for (int i = 0; i < oldDataList.size() && i < MAX_DATA_LIST_SIZE - 1; i++) {
@@ -230,9 +204,9 @@ public class TrackExitReasonsOfInterest {
      * @param data The data to write
      * @return whether the data was written successfully
      */
-    private static boolean writeData(
-            List<AppStateData> dataList, Callback<Boolean> resultCallback) {
-        try (FileOutputStream writer = new FileOutputStream(getFile(), /* append= */ false)) {
+    @VisibleForTesting
+    public static boolean writeData(List<AppStateData> dataList, Callback<Boolean> resultCallback) {
+        try (FileOutputStream writer = new FileOutputStream(getFile())) {
             JSONObject jsonRoot = new JSONObject();
             jsonRoot.put(KEY_VERSION, FILE_VERSION);
 
@@ -287,7 +261,10 @@ public class TrackExitReasonsOfInterest {
     public static void startTrackingStartup(Callback<Boolean> resultCallback) {
         sTaskRunner.execute(
                 () -> {
-                    setStateSupplier(getStartupStateSupplier());
+                    setStateSupplier(
+                            () -> {
+                                return AppState.STARTUP;
+                            });
                     appendCurrentState(resultCallback);
                 });
     }
