@@ -10176,10 +10176,12 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(ash::switches::kEolResetDismissedPrefs)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
     {"enable-preferences-account-storage",
      flag_descriptions::kEnablePreferencesAccountStorageName,
-     flag_descriptions::kEnablePreferencesAccountStorageDescription, kOsAll,
+     flag_descriptions::kEnablePreferencesAccountStorageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(syncer::kEnablePreferencesAccountStorage)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"experimental-web-app-storage-partition-isolation",

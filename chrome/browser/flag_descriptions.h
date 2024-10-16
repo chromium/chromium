@@ -982,8 +982,10 @@ extern const char kEnableBubbleCornerRadiusUpdateDescription[];
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char

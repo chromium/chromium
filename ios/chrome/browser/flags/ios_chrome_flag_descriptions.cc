@@ -425,12 +425,6 @@ const char kEnableiPadFeedGhostCardsName[] = "Enable ghost cards on iPad feeds";
 const char kEnableiPadFeedGhostCardsDescription[] =
     "Enables ghost cards placeholder when feed is loading on iPads.";
 
-const char kEnablePreferencesAccountStorageName[] =
-    "Enable the account data storage for preferences for syncing users";
-const char kEnablePreferencesAccountStorageDescription[] =
-    "Enables storing preferences in a second, Gaia-account-scoped storage for "
-    "syncing users";
-
 const char kEnableReadingListAccountStorageName[] =
     "Enable Reading List Account Storage";
 const char kEnableReadingListAccountStorageDescription[] =

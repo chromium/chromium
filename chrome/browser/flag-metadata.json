@@ -3795,7 +3795,7 @@
   {
     "name": "enable-preferences-account-storage",
     "owners": [ "ankushkush@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 136
   },
   {
     "name": "enable-prevent-close",
