@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.DELEGATE;
-import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.NORMAL_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_ICON_VISIBLE;
@@ -21,8 +20,6 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.content.Context;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -73,7 +70,7 @@ public class PlusAddressCreationCoordinator {
         mMediator.updateProposedPlusAddress(plusAddress);
     }
 
-    public void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+    public void showError(PlusAddressCreationErrorStateInfo errorStateInfo) {
         mMediator.showError(errorStateInfo);
     }
 
@@ -119,7 +116,6 @@ public class PlusAddressCreationCoordinator {
                 .with(CONFIRM_BUTTON_ENABLED, false)
                 .with(CONFIRM_BUTTON_VISIBLE, true)
                 .with(CANCEL_BUTTON_VISIBLE, showOnboardingNotice)
-                .with(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE, false)
                 .with(LOADING_INDICATOR_VISIBLE, false)
                 .build();
     }

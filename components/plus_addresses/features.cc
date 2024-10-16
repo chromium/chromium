@@ -29,12 +29,6 @@ BASE_FEATURE(kPlusAddressAndroidEnhancedLoadingStatesEnabled,
              "PlusAddressAndroidEnhancedLoadingStatesEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, mobile plus address creation bottom sheet shows enhanced UI for
-// different error states.
-BASE_FEATURE(kPlusAddressAndroidErrorStatesEnabled,
-             "PlusAddressAndroidErrorStatesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the user is shown the GMS core plus address management activity
 // instead of the web page in a Chrome custom tab.
 BASE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage,

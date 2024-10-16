@@ -99,14 +99,6 @@ found in the LICENSE file.
     </LinearLayout>
 
     <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/plus_address_modal_error_report"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:breakStrategy="simple"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
-    <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/plus_address_first_time_use_notice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

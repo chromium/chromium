@@ -38,10 +38,6 @@ class PlusAddressCreationProperties {
     static final WritableBooleanPropertyKey LOADING_INDICATOR_VISIBLE =
             new WritableBooleanPropertyKey("loading_indicator_visible");
 
-    // TODO: crbug.com/354881207 - Remove once enhanced error handling is launched.
-    static final WritableBooleanPropertyKey LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE =
-            new WritableBooleanPropertyKey("legacy_error_reporting_instruction_visible");
-
     static final WritableObjectPropertyKey<PlusAddressCreationErrorStateInfo> ERROR_STATE_INFO =
             new WritableObjectPropertyKey<>("error_state_info");
 
@@ -59,7 +55,6 @@ class PlusAddressCreationProperties {
         CONFIRM_BUTTON_VISIBLE,
         CANCEL_BUTTON_VISIBLE,
         LOADING_INDICATOR_VISIBLE,
-        LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE,
         ERROR_STATE_INFO,
     };
 

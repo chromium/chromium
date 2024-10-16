@@ -18,7 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -45,9 +46,7 @@ public class PlusAddressCreationViewBridgeTest {
                     /* proposedPlusAddressPlaceholder= */ "placeholder",
                     /* confirmText= */ "ok",
                     /* cancelText= */ "cancel",
-                    /* errorReportInstruction= */ "error! <link>test link</link>",
-                    /* learnMoreUrl= */ new GURL("learn.more.com"),
-                    /* errorReportUrl= */ new GURL("bug.com"));
+                    /* learnMoreUrl= */ new GURL("learn.more.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final boolean REFRESH_SUPPORTED = true;
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
@@ -58,6 +57,7 @@ public class PlusAddressCreationViewBridgeTest {
                     "Ok",
                     "Cancel");
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
     @Mock private PlusAddressCreationViewBridge.Natives mBridgeNatives;
@@ -72,7 +72,6 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mTabModel = new MockTabModel(mProfile, null);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(

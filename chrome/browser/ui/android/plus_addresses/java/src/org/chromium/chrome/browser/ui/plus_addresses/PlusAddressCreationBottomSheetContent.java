@@ -59,8 +59,6 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     final TextView mProposedPlusAddress;
     // The clickable icon used to refresh the suggested plus address.
     final ImageView mRefreshIcon;
-    // Legacy error reporting instruction.
-    final TextViewWithClickableSpans mPlusAddressErrorReportView;
     // The button to confirm the proposed plus address.
     final Button mPlusAddressConfirmButton;
     // The button to cancel the plus address creation dialog. Only visible on
@@ -117,10 +115,6 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
                 });
         mProposedPlusAddress = mContentView.findViewById(R.id.proposed_plus_address);
         mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
-
-        mPlusAddressErrorReportView =
-                mContentView.findViewById(R.id.plus_address_modal_error_report);
-        mPlusAddressErrorReportView.setMovementMethod(LinkMovementMethod.getInstance());
 
         mRefreshIcon = mContentView.findViewById(R.id.refresh_plus_address_icon);
 
@@ -237,24 +231,6 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     /** Sets the delegate listening for actions the user performs on this bottom sheet. */
     void setDelegate(PlusAddressCreationDelegate delegate) {
         mDelegate = delegate;
-    }
-
-    void setLegacyErrorReportingInstructionVisible(boolean visible) {
-        mProposedPlusAddressContainer.setVisibility(visible ? View.GONE : View.VISIBLE);
-        mPlusAddressErrorReportView.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    void setLegacyErrorReportingInstruction(String intruction, GURL errorReportUrl) {
-        NoUnderlineClickableSpan errorReportLink =
-                new NoUnderlineClickableSpan(
-                        mContext,
-                        v -> {
-                            mDelegate.openUrl(errorReportUrl);
-                        });
-        SpannableString errorReportString =
-                SpanApplier.applySpans(
-                        intruction, new SpanApplier.SpanInfo("<link>", "</link>", errorReportLink));
-        mPlusAddressErrorReportView.setText(errorReportString);
     }
 
     void setLoadingIndicatorVisible(boolean visible) {

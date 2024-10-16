@@ -72,18 +72,13 @@ ScopedJavaLocalRef<jobject> GetNormatStateUiInfo(
       IDS_PLUS_ADDRESS_BOTTOMSHEET_PROPOSED_PLUS_ADDRESS_PLACEHOLDER_ANDROID);
   std::u16string plus_address_modal_ok =
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID);
-  std::u16string error_report_instruction = l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID);
 
   GURL learn_more_url = GURL(features::kPlusAddressLearnMoreUrl.Get());
-
-  GURL error_report_url = GURL(features::kPlusAddressErrorReportUrl.Get());
 
   return Java_PlusAddressCreationNormalStateInfo_Constructor(
       env, title, formatted_description, formatted_notice,
       proposed_plus_address_placeholder, plus_address_modal_ok,
-      plus_address_modal_cancel, error_report_instruction, learn_more_url,
-      error_report_url);
+      plus_address_modal_cancel, learn_more_url);
 }
 
 }  // namespace
@@ -195,13 +190,10 @@ void PlusAddressCreationViewAndroid::ShowError(
     return;
   }
   ScopedJavaLocalRef<jobject> error_info_java_object;
-  if (base::FeatureList::IsEnabled(
-          features::kPlusAddressAndroidErrorStatesEnabled)) {
-    error_info_java_object = Java_PlusAddressCreationErrorStateInfo_Constructor(
-        base::android::AttachCurrentThread(),
-        base::to_underlying(error_info.error_type), error_info.title,
-        error_info.description, error_info.ok_text, error_info.cancel_text);
-  }
+  error_info_java_object = Java_PlusAddressCreationErrorStateInfo_Constructor(
+      base::android::AttachCurrentThread(),
+      base::to_underlying(error_info.error_type), error_info.title,
+      error_info.description, error_info.ok_text, error_info.cancel_text);
   Java_PlusAddressCreationViewBridge_showError(
       base::android::AttachCurrentThread(), java_object_,
       error_info_java_object);

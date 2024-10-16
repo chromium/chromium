@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -102,7 +101,6 @@ public class PlusAddressCreationRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =
@@ -134,9 +132,7 @@ public class PlusAddressCreationRenderTest {
                                             "Plus address placeholder",
                                             "Accept",
                                             "Cancel",
-                                            "Report an error <link>link</link>.",
-                                            new GURL("https://help.google.com"),
-                                            new GURL("https://error.google.com")),
+                                            new GURL("https://help.google.com")),
                                     refreshSupported);
                     mCoordinator.requestShowContent();
                 });
@@ -209,23 +205,6 @@ public class PlusAddressCreationRenderTest {
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
         mRenderTestRule.render(
                 bottomSheetView, "show_bottom_sheet_with_error_ui_redesign_and_refresh");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testLegacyErrorScreen() throws IOException {
-        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
-        runOnUiThreadBlocking(
-                () -> {
-                    mCoordinator.showError(/* errorStateInfo= */ null);
-                });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-
-        View bottomSheetView =
-                mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
-        mRenderTestRule.render(
-                bottomSheetView, "plus_address_bottom_sheet_error_shown_with_redesign");
     }
 
     @Test

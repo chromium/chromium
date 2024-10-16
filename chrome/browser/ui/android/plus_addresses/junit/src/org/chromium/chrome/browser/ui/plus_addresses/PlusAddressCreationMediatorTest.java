@@ -54,9 +54,7 @@ public final class PlusAddressCreationMediatorTest {
                     /* proposedPlusAddressPlaceholder= */ "placeholder",
                     /* confirmText= */ "ok",
                     /* cancelText= */ "cancel",
-                    /* errorReportInstruction= */ "error! <link>test link</link>",
-                    /* learnMoreUrl= */ new GURL("learn.more.com"),
-                    /* errorReportUrl= */ new GURL("bug.com"));
+                    /* learnMoreUrl= */ new GURL("learn.more.com"));
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
     private static final String PLUS_ADDRESS = "foo@bar.com";
