@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
@@ -283,36 +284,36 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       bool play_normally = true;
       res = false;
       HDC hdc = context->hdc;
-      std::unique_ptr<SkBitmap> bitmap;
+      SkBitmap bitmap;
       if (bmih->biCompression == BI_JPEG) {
         if (!DIBFormatNativelySupported(hdc, CHECKJPEGFORMAT, bits,
                                         bmih->biSizeImage)) {
           play_normally = false;
-          bitmap = gfx::JPEGCodec::Decode(bits, bmih->biSizeImage);
-          DCHECK(bitmap);
-          DCHECK(!bitmap->isNull());
+          // SAFETY: This interfaces with a system-generated metafile.
+          bitmap = gfx::JPEGCodec::Decode(
+              UNSAFE_BUFFERS(base::span(bits, bmih->biSizeImage)));
+          DCHECK(!bitmap.isNull());
         }
       } else if (bmih->biCompression == BI_PNG) {
         if (!DIBFormatNativelySupported(hdc, CHECKPNGFORMAT, bits,
                                         bmih->biSizeImage)) {
           play_normally = false;
-          bitmap = std::make_unique<SkBitmap>();
-          bool png_ok =
-              gfx::PNGCodec::Decode(bits, bmih->biSizeImage, &*bitmap);
-          DCHECK(png_ok);
-          DCHECK(!bitmap->isNull());
+          // SAFETY: This interfaces with a system-generated metafile.
+          bitmap = gfx::PNGCodec::Decode(
+              UNSAFE_BUFFERS(base::span(bits, bmih->biSizeImage)));
+          DCHECK(!bitmap.isNull());
         }
       }
       if (play_normally) {
         res = Play(context);
       } else {
         const uint32_t* pixels =
-            static_cast<const uint32_t*>(bitmap->getPixels());
+            static_cast<const uint32_t*>(bitmap.getPixels());
         if (!pixels) {
           NOTREACHED();
         }
         BITMAPINFOHEADER bmi = {0};
-        skia::CreateBitmapHeaderForN32SkBitmap(*bitmap, &bmi);
+        skia::CreateBitmapHeaderForN32SkBitmap(bitmap, &bmi);
         res =
             (0 != StretchDIBits(hdc, sdib_record->xDest, sdib_record->yDest,
                                 sdib_record->cxDest, sdib_record->cyDest,
