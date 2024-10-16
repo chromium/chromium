@@ -13,11 +13,6 @@ struct ShareKitServiceConfiguration;
 namespace ios::provider {
 
 // Creates a new instance of ShareKitService.
-// TODO(crbug.com/372843860): Remove this constructor.
-std::unique_ptr<ShareKitService> CreateShareKitService(
-    const ShareKitServiceConfiguration& configuration);
-
-// Creates a new instance of ShareKitService.
 std::unique_ptr<ShareKitService> CreateShareKitService(
     std::unique_ptr<ShareKitServiceConfiguration> configuration);
 

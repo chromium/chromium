@@ -25,11 +25,6 @@ class ChromiumShareKitService final : public ShareKitService {
 namespace ios::provider {
 
 std::unique_ptr<ShareKitService> CreateShareKitService(
-    const ShareKitServiceConfiguration& configuration) {
-  return std::make_unique<ChromiumShareKitService>();
-}
-
-std::unique_ptr<ShareKitService> CreateShareKitService(
     std::unique_ptr<ShareKitServiceConfiguration> configuration) {
   return std::make_unique<ChromiumShareKitService>();
 }

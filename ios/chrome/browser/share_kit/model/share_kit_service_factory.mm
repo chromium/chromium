@@ -56,12 +56,12 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
   FaviconLoader* favicon_loader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
-  // TODO(crbug.com/372843860): Move `configuration` to unique_ptr.
-  ShareKitServiceConfiguration configuration(
-      IdentityManagerFactory::GetForProfile(profile),
-      AuthenticationServiceFactory::GetForProfile(profile),
-      data_sharing::DataSharingServiceFactory::GetForProfile(profile),
-      std::make_unique<TabGroupFaviconsGridConfigurator>(sync_service,
-                                                         favicon_loader));
-  return ios::provider::CreateShareKitService(configuration);
+  std::unique_ptr<ShareKitServiceConfiguration> configuration =
+      std::make_unique<ShareKitServiceConfiguration>(
+          IdentityManagerFactory::GetForProfile(profile),
+          AuthenticationServiceFactory::GetForProfile(profile),
+          data_sharing::DataSharingServiceFactory::GetForProfile(profile),
+          std::make_unique<TabGroupFaviconsGridConfigurator>(sync_service,
+                                                             favicon_loader));
+  return ios::provider::CreateShareKitService(std::move(configuration));
 }
