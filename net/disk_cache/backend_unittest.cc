@@ -202,6 +202,10 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
   void BackendDeadOpenNextEntry();
   void BackendIteratorConcurrentDoom();
   void BackendValidateMigrated();
+
+  void Test2GiBLimit(net::CacheType type,
+                     net::BackendType backend_type,
+                     bool expect_limit);
 };
 
 void DiskCacheBackendTest::CreateKeyAndCheck(disk_cache::Backend* cache,
@@ -1118,22 +1122,29 @@ void DiskCacheBackendTest::BackendSetSize() {
   EXPECT_EQ(net::ERR_FAILED,
             WriteData(entry, 1, 0, buffer.get(), cache_size / 5, false))
       << "file size above the limit";
+  entry->Close();
 
   // By doubling the total size, we make this file cacheable.
+  ResetCaches();
   SetMaxSize(cache_size * 2);
+  InitCache();
+  ASSERT_THAT(CreateEntry(first, &entry), IsOk());
   EXPECT_EQ(cache_size / 5,
             WriteData(entry, 1, 0, buffer.get(), cache_size / 5, false));
-
-  // Let's fill up the cache!.
-  SetMaxSize(cache_size * 10);
-  EXPECT_EQ(cache_size * 3 / 4,
-            WriteData(entry, 0, 0, buffer.get(), cache_size * 3 / 4, false));
   entry->Close();
-  FlushQueueForTest();
 
+  // Let's fill up the cache to about 95%, in 5% chunks.
+  ResetCaches();
   SetMaxSize(cache_size);
+  InitCache();
 
-  // The cache is 95% full.
+  for (int i = 0; i < (95 / 5); ++i) {
+    ASSERT_THAT(CreateEntry(base::NumberToString(i), &entry), IsOk());
+
+    EXPECT_EQ(cache_size / 20,
+              WriteData(entry, 0, 0, buffer.get(), cache_size / 20, false));
+    entry->Close();
+  }
 
   ASSERT_THAT(CreateEntry(second, &entry), IsOk());
   EXPECT_EQ(cache_size / 10,
@@ -1145,11 +1156,13 @@ void DiskCacheBackendTest::BackendSetSize() {
             WriteData(entry2, 0, 0, buffer.get(), cache_size / 10, false));
   entry2->Close();  // This will trigger the cache trim.
 
-  EXPECT_NE(net::OK, OpenEntry(first, &entry2));
+  // Entry "0" is old and should have been evicted.
+  EXPECT_NE(net::OK, OpenEntry("0", &entry2));
 
   FlushQueueForTest();  // Make sure that we are done trimming the cache.
   FlushQueueForTest();  // We may have posted two tasks to evict stuff.
 
+  // "second" is fairly new so should still be around.
   entry->Close();
   ASSERT_THAT(OpenEntry(second, &entry), IsOk());
   EXPECT_EQ(cache_size / 10, entry->GetDataSize(0));
@@ -1528,7 +1541,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry() {
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buffer.get(), kSize, false));
 
   EXPECT_EQ(2, cache_->GetEntryCount());
-  SetMaxSize(kSize);
+  cache_impl_->SetMaxSize(kSize);
   entry->Close();  // Trim the cache.
   FlushQueueForTest();
 
@@ -1588,7 +1601,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry2() {
 
   FlushQueueForTest();
   EXPECT_EQ(33, cache_->GetEntryCount());
-  SetMaxSize(kSize);
+  cache_impl_->SetMaxSize(kSize);
 
   // For the new eviction code, all corrupt entries are on the second list so
   // they are not going away that easy.
@@ -4554,36 +4567,60 @@ TEST_F(DiskCacheBackendTest, InMemorySparseDoom) {
   DoomAllEntries();
 }
 
-TEST_F(DiskCacheBackendTest, BlockFileMaxSizeLimit) {
-  InitCache();
+void DiskCacheBackendTest::Test2GiBLimit(net::CacheType type,
+                                         net::BackendType backend_type,
+                                         bool expect_limit) {
+  TestBackendResultCompletionCallback cb;
+  ASSERT_TRUE(CleanupCacheDir());
+  // We'll either create something of a different backend or have failed
+  // creation.
+  DisableIntegrityCheck();
 
   int64_t size = std::numeric_limits<int32_t>::max();
-  SetMaxSize(size, true /* should_succeed */);
+
+  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
+      type, backend_type,
+      /*file_operations=*/nullptr, cache_path_, size,
+      disk_cache::ResetHandling::kNeverReset, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  ASSERT_THAT(rv.net_error, IsOk());
+  EXPECT_TRUE(rv.backend);
+  rv.backend.reset();
 
   size += 1;
-  SetMaxSize(size, false /* should_succeed */);
+  rv = disk_cache::CreateCacheBackend(
+      type, backend_type,
+      /*file_operations=*/nullptr, cache_path_, size,
+      disk_cache::ResetHandling::kNeverReset, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  if (expect_limit) {
+    EXPECT_NE(rv.net_error, net::OK);
+    EXPECT_FALSE(rv.backend);
+  } else {
+    ASSERT_THAT(rv.net_error, IsOk());
+    EXPECT_TRUE(rv.backend);
+    rv.backend.reset();
+  }
 }
 
+// Disabled on android since this test requires cache creator to create
+// blockfile caches.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DiskCacheBackendTest, BlockFileMaxSizeLimit) {
+  // Note: blockfile actually has trouble before 2GiB as well.
+  Test2GiBLimit(net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
+                /*expect_limit=*/true);
+}
+#endif
+
 TEST_F(DiskCacheBackendTest, InMemoryMaxSizeLimit) {
-  SetMemoryOnlyMode();
-  InitCache();
-
-  int64_t size = std::numeric_limits<int32_t>::max();
-  SetMaxSize(size, true /* should_succeed */);
-
-  size += 1;
-  SetMaxSize(size, false /* should_succeed */);
+  Test2GiBLimit(net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT,
+                /*expect_limit=*/true);
 }
 
 TEST_F(DiskCacheBackendTest, SimpleMaxSizeLimit) {
-  SetSimpleCacheMode();
-  InitCache();
-
-  int64_t size = std::numeric_limits<int32_t>::max();
-  SetMaxSize(size, true /* should_succeed */);
-
-  size += 1;
-  SetMaxSize(size, true /* should_succeed */);
+  Test2GiBLimit(net::DISK_CACHE, net::CACHE_BACKEND_SIMPLE,
+                /*expect_limit=*/false);
 }
 
 void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
@@ -5054,7 +5091,7 @@ TEST_F(DiskCacheBackendTest, BlockFileDelayedWriteFailureRecovery) {
 
   // Setting the size limit artificially low injects a failure on writing back
   // data buffered above.
-  SetMaxSize(4096);
+  cache_impl_->SetMaxSize(4096);
 
   // This causes SparseControl to close the child entry corresponding to
   // low portion of offset space, triggering the writeback --- which fails

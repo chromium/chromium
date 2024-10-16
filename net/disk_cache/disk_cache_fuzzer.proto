@@ -42,7 +42,6 @@ message FuzzCommands {
 
 message FuzzCommand {
   oneof fuzz_command_oneof {
-    SetMaxSize set_max_size = 87;
     CreateEntry create_entry = 1;
     OpenEntry open_entry = 2;
     OpenOrCreateEntry open_or_create_entry = 345;
@@ -78,6 +77,8 @@ message FuzzCommand {
 
     // TODO(mpdenton) FlushWorkerPoolForTesting
   }
+
+  reserved 87;  // previously set_max_size member of the oneof.
 }
 
 message SetMaxSize {

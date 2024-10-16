@@ -56,9 +56,6 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   // Performs general initialization for this current instance of the cache.
   bool Init();
 
-  // Sets the maximum size for the total amount of data stored by this instance.
-  bool SetMaxSize(int64_t max_bytes);
-
   // Returns the maximum size for a file to reside on the cache.
   int64_t MaxFileSize() const override;
 
@@ -130,6 +127,9 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
 
   using EntryMap =
       std::unordered_map<std::string, raw_ptr<MemEntryImpl, CtnExperimental>>;
+
+  // Sets the maximum size for the total amount of data stored by this instance.
+  bool SetMaxSize(int64_t max_bytes);
 
   // Deletes entries from the cache until the current size is below the limit.
   void EvictIfNeeded();

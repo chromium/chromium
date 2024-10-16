@@ -82,9 +82,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   // Finishes initialization. Always asynchronous.
   void Init(CompletionOnceCallback completion_callback);
 
-  // Sets the maximum size for the total amount of data stored by this instance.
-  bool SetMaxSize(int64_t max_bytes);
-
   // Returns the maximum file size permitted in this backend.
   int64_t MaxFileSize() const override;
 
