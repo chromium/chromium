@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -69,7 +70,7 @@ std::string TabInfoCollector::ImageGenerator::StringifyImage(
                                  web_ui_->GetDeviceScaleFactor());
 }
 
-TabInfoCollector::TabInfoCollector(content::WebUI* web_ui) {
+TabInfoCollector::TabInfoCollector(content::WebUI* web_ui) : web_ui_(web_ui) {
   image_generator_ = std::make_unique<ImageGenerator>(web_ui);
 }
 
@@ -79,6 +80,26 @@ TabInfoCollector::TabInfoCollector(
 TabInfoCollector::~TabInfoCollector() = default;
 
 void TabInfoCollector::GetWindowTabInfo(GetWindowsTabsListCallback callback) {
+  if (ash::boca_util::IsConsumer()) {
+    GetWindowTabInfoForTarget(
+        web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
+        std::move(callback));
+    return;
+  }
+  GetWindowTabInfoForAllBrowserWindows(std::move(callback));
+}
+
+void TabInfoCollector::GetWindowTabInfoForTarget(
+    aura::Window* target_window,
+    GetWindowsTabsListCallback callback) {
+  auto* delegate = Shell::Get()->tab_strip_delegate();
+  std::vector<std::vector<ash::TabInfo>> windows = {
+      delegate->GetTabsListForWindow(target_window)};
+  std::move(callback).Run(AshToPageWindows(windows));
+}
+
+void TabInfoCollector::GetWindowTabInfoForAllBrowserWindows(
+    GetWindowsTabsListCallback callback) {
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);

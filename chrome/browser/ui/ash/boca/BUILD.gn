@@ -62,6 +62,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",

@@ -44,16 +44,26 @@ class TabInfoCollector {
   TabInfoCollector(const TabInfoCollector&) = delete;
   TabInfoCollector& operator=(const TabInfoCollector&) = delete;
   ~TabInfoCollector();
+
+  // Fetches window tab info based on current boca role.
   void GetWindowTabInfo(GetWindowsTabsListCallback callback);
 
- private:
-  raw_ptr<content::WebUI> web_ui_;
-  std::unique_ptr<ImageGenerator> image_generator_;
+  // Fetches window tab info for provided `target_window`.
+  void GetWindowTabInfoForTarget(aura::Window* target_window,
+                                 GetWindowsTabsListCallback callback);
 
+  // Fetches window tab info for all browser windows.
+  void GetWindowTabInfoForAllBrowserWindows(
+      GetWindowsTabsListCallback callback);
+
+ private:
   mojom::TabInfoPtr AshToPageTabInfo(ash::TabInfo tab);
   void SortWindowList(std::vector<std::vector<ash::TabInfo>>& windows_list);
   std::vector<mojom::WindowPtr> AshToPageWindows(
       std::vector<std::vector<ash::TabInfo>> windows);
+
+  raw_ptr<content::WebUI> web_ui_;
+  std::unique_ptr<ImageGenerator> image_generator_;
 };
 
 }  // namespace ash::boca
