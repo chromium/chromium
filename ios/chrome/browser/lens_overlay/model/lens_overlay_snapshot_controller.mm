@@ -9,6 +9,7 @@
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/model/snapshot_cover_view_controller.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -23,6 +24,8 @@ CGFloat const kNumberOfRowsForInfill = 5;
 size_t const kBytesPerPixel = 4;
 
 }  // namespace
+
+#pragma mark - Image Processing Helpers
 
 // A color is considered dominant if it represents more than 50% of the total
 // pixels.
@@ -130,135 +133,32 @@ UIImage* ImageCroppedToFirstRows(UIImage* image, int numberOfRows) {
                                               image.CGImage, croppingRect)];
 }
 
-LensOverlaySnapshotController::LensOverlaySnapshotController(
-    SnapshotTabHelper* snapshot_tab_helper,
-    FullscreenController* fullscreen_controller,
-    bool is_bottom_omnibox)
-    : snapshot_tab_helper_(snapshot_tab_helper),
-      fullscreen_controller_(fullscreen_controller),
-      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      is_bottom_omnibox_(is_bottom_omnibox) {}
+// Creates a new window that displays a static image of the original window.
+UIWindow* CreateMirrorWindowFromBaseWindow(
+    UIWindow* window,
+    base::OnceClosure windowShownCallback) {
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:window.bounds.size];
+  UIImage* windowSnapshot =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        [window drawViewHierarchyInRect:window.bounds afterScreenUpdates:NO];
+      }];
 
-LensOverlaySnapshotController::~LensOverlaySnapshotController() {
-  FinalizeCapturing();
+  UIWindow* mirrorWindow =
+      [[UIWindow alloc] initWithWindowScene:window.windowScene];
+  mirrorWindow.rootViewController = [[SnapshotCoverViewController alloc]
+      initWithImage:windowSnapshot
+      onFirstAppear:base::CallbackToBlock(std::move(windowShownCallback))];
+
+  return mirrorWindow;
 }
 
-void LensOverlaySnapshotController::CaptureFullscreenSnapshot(
-    CGSize expected_window_size,
-    SnapshotCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pending_snapshot_callbacks_.push_back(std::move(callback));
-
-  // If there is a capture in progress wait for it to complete.
-  if (is_capturing_) {
-    return;
-  }
-
-  // All the steps should be synchronized on the same sequence as the one that
-  // initiated the capture.
-  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-
-  BeginCapturing();
-  expected_window_size_ = expected_window_size;
-
-  // When the omnibox is positioned at the top, the infill is evenly distributed
-  // on top and bottom, removing the need to enter fullscreen mode."
-  if (!is_bottom_omnibox_) {
-    OnFullscreenStateSettled();
-    return;
-  }
-
-  // If fullscreen is already enabled directly take the screenshot.
-  bool is_already_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
-  if (is_already_fullscreen) {
-    OnFullscreenStateSettled();
-    return;
-  }
-
-  // Register as observer and request fullscreen.
-  fullscreen_controller_->AddObserver(this);
-  if (fullscreen_controller_->IsEnabled()) {
-    // Enter fullscreen and rely on the update from the fullscreen controller.
-    fullscreen_controller_->EnterFullscreen();
-  } else {
-    // Fullscreen could not be requested, likely because the content is too
-    // small to enlarge the view. Go straight to fetching a screenshot.
-    OnFullscreenStateSettled();
-  }
-}
-
-void LensOverlaySnapshotController::FullscreenDidAnimate(
-    FullscreenController* controller,
-    FullscreenAnimatorStyle style) {
-  DCHECK(controller == this->fullscreen_controller_);
-
-  // Progress of 0.0 means that the toolbar is completely hidden.
-  bool is_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
-  if (!is_fullscreen) {
-    return;
-  }
-
-  task_tracker_.PostTask(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LensOverlaySnapshotController::OnFullscreenStateSettled,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-// The inset amount of the content relative to the device screen when the
-// snapshot is taken.
-UIEdgeInsets
-LensOverlaySnapshotController::GetContentInsetsOnSnapshotCapture() {
-  if (!is_bottom_omnibox_ || is_NTP_) {
-    return fullscreen_controller_->GetMaxViewportInsets();
-  }
-
-  return fullscreen_controller_->IsEnabled()
-             ? fullscreen_controller_->GetMinViewportInsets()
-             : fullscreen_controller_->GetMaxViewportInsets();
-}
-
-UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
-  // The NTP does not require snapshot insetting.
-  if (is_NTP_) {
-    return UIEdgeInsetsZero;
-  }
-
-  // If the fullscreen mode is achieved by adjusting the size of the scroll
-  // view, the WebState view is already positioned correctly within the viewable
-  // area and doesn't require any further adjustments.
-  //
-  // Note: In practice, this condition is true only when fullscreen smooth
-  // scrolling of the default view port is disabled.
-  if (fullscreen_controller_->ResizesScrollView()) {
-    return UIEdgeInsetsZero;
-  }
-
-  // If the fullscreen mode is implemented using content insets, the WebState
-  // view needs to be adjusted inwards by the viewport insets.
-  return GetContentInsetsOnSnapshotCapture();
-}
-
-// Fullscreen has got to a steady state, either by already being in a fullscreen
-// state, completing an animation or being unable to change state.
-// Regardless, a screenshot is taken when such state is reached.
-void LensOverlaySnapshotController::OnFullscreenStateSettled() {
-  if (!is_capturing_) {
-    return;
-  }
-
-  base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
-      base::BindOnce(&LensOverlaySnapshotController::OnRawSnapshotCaptured,
-                     weak_ptr_factory_.GetWeakPtr());
-
-  auto callbackOnWorkingSequence = base::BindPostTask(
-      task_runner_.get(), std::move(snapshotCapturedCallback));
-
-  // TODO(crbug.com/365732763): Replace call to `UpdateSnapshotWithCallback`
-  // once the new API method is exposed.
-  snapshot_tab_helper_->UpdateSnapshotWithCallback(
-      base::CallbackToBlock(std::move(callbackOnWorkingSequence)));
-}
-
+// Extends the top and bottom edges of the raw snapshot to match the window
+// dimensions.
+//
+// The top edge is filled with the most prominent color found at the top of the
+// original snapshot. The bottom edge is extended using the background color of
+// the UI elements.
 void PreprocessSnapshot(UIImage* snapshot,
                         CGSize expected_snapshot_size,
                         UIEdgeInsets viewport_insets,
@@ -315,14 +215,198 @@ void PreprocessSnapshot(UIImage* snapshot,
   std::move(callback).Run(rescaledSnapshot);
 }
 
-void LensOverlaySnapshotController::OnRawSnapshotCaptured(UIImage* snapshot) {
+#pragma mark - LensOverlaySnapshotController
+
+LensOverlaySnapshotController::LensOverlaySnapshotController(
+    SnapshotTabHelper* snapshot_tab_helper,
+    FullscreenController* fullscreen_controller,
+    UIWindow* window,
+    bool is_bottom_omnibox)
+    : snapshot_tab_helper_(snapshot_tab_helper),
+      fullscreen_controller_(fullscreen_controller),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      base_window_(window),
+      is_bottom_omnibox_(is_bottom_omnibox) {}
+
+LensOverlaySnapshotController::~LensOverlaySnapshotController() {
+  FinalizeCapturing();
+  pending_snapshot_callbacks_.clear();
+}
+
+void LensOverlaySnapshotController::CaptureFullscreenSnapshot(
+    SnapshotCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_snapshot_callbacks_.push_back(std::move(callback));
+
+  // If there is a capture in progress wait for it to complete.
+  if (is_capturing_) {
+    return;
+  }
+
+  // All the steps should be synchronized on the same sequence as the one that
+  // initiated the capture.
+  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+
+  BeginCapturing();
+  expected_window_size_ = base_window_.bounds.size;
+
+  // When the omnibox is positioned at the top, the infill is evenly distributed
+  // on top and bottom, removing the need to enter fullscreen mode."
+  if (!is_bottom_omnibox_) {
+    ShowStaticSnapshotOfBaseWindowIfNeeded();
+    return;
+  }
+
+  // If fullscreen is already enabled directly take the screenshot.
+  bool is_already_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
+  if (is_already_fullscreen) {
+    ShowStaticSnapshotOfBaseWindowIfNeeded();
+    return;
+  }
+
+  // Register as observer and request fullscreen.
+  fullscreen_controller_->AddObserver(this);
+  if (fullscreen_controller_->IsEnabled()) {
+    // Enter fullscreen and rely on the update from the fullscreen controller.
+    fullscreen_controller_->EnterFullscreen();
+  } else {
+    // Fullscreen could not be requested, likely because the content is too
+    // small to enlarge the view. Go straight to fetching a screenshot.
+    ShowStaticSnapshotOfBaseWindowIfNeeded();
+  }
+}
+
+void LensOverlaySnapshotController::FullscreenDidAnimate(
+    FullscreenController* controller,
+    FullscreenAnimatorStyle style) {
+  DCHECK(controller == this->fullscreen_controller_);
+
+  // Progress of 0.0 means that the toolbar is completely hidden.
+  bool is_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
+  if (!is_fullscreen) {
+    return;
+  }
+
+  task_tracker_.PostTask(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&LensOverlaySnapshotController::
+                         ShowStaticSnapshotOfBaseWindowIfNeeded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+// The inset amount of the content relative to the device screen when the
+// snapshot is taken.
+UIEdgeInsets
+LensOverlaySnapshotController::GetContentInsetsOnSnapshotCapture() {
+  if (!is_bottom_omnibox_ || is_NTP_) {
+    return fullscreen_controller_->GetMaxViewportInsets();
+  }
+
+  return fullscreen_controller_->IsEnabled()
+             ? fullscreen_controller_->GetMinViewportInsets()
+             : fullscreen_controller_->GetMaxViewportInsets();
+}
+
+UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
+  // The NTP does not require snapshot insetting.
+  if (is_NTP_) {
+    return UIEdgeInsetsZero;
+  }
+
+  // If the fullscreen mode is achieved by adjusting the size of the scroll
+  // view, the WebState view is already positioned correctly within the viewable
+  // area and doesn't require any further adjustments.
+  //
+  // Note: In practice, this condition is true only when fullscreen smooth
+  // scrolling of the default view port is disabled.
+  if (fullscreen_controller_->ResizesScrollView()) {
+    return UIEdgeInsetsZero;
+  }
+
+  // If the fullscreen mode is implemented using content insets, the WebState
+  // view needs to be adjusted inwards by the viewport insets.
+  return GetContentInsetsOnSnapshotCapture();
+}
+
+bool LensOverlaySnapshotController::ShouldShowStaticSnapshot() {
+  if (is_NTP_ || is_pdf_document_) {
+    return false;
+  }
+  return true;
+}
+
+// Fullscreen has got to a steady state, either by already being in a fullscreen
+// state, completing an animation or being unable to change state.
+// Regardless, a screenshot can be taken when such state is reached. In
+// preparation for the snapshotting flow, show a static image in a separate
+// window to avoid the visual flickering caused by hdiing the original window.
+void LensOverlaySnapshotController::ShowStaticSnapshotOfBaseWindowIfNeeded() {
   if (!is_capturing_) {
     return;
   }
 
-  base::OnceCallback<void(UIImage*)> snapshotCapturedCallback = base::BindOnce(
-      &LensOverlaySnapshotController::OnSnapshotPreprocessComplete,
-      weak_ptr_factory_.GetWeakPtr());
+  if (!ShouldShowStaticSnapshot()) {
+    StartSnapshotFlow();
+    return;
+  }
+
+  base::OnceClosure snapshotCapturedCallback =
+      base::BindOnce(&LensOverlaySnapshotController::StartSnapshotFlow,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  auto callbackOnWorkingSequence = base::BindPostTask(
+      task_runner_.get(), std::move(snapshotCapturedCallback));
+
+  // To have videos appear in snapshot, the window which contains the content
+  // has to be momentarily hidden during the capturing process.
+  //
+  // To prevent the screen from briefly going black when the window is hidden
+  // during capture, a temporary 'mirror' window is displayed. This mirror
+  // window shows a still image of the original window, preventing any
+  // visual flickering.
+  //
+  // This workaround is based on WebKit's internal snapshotting mechanism.
+  mirror_window_ = CreateMirrorWindowFromBaseWindow(
+      base_window_, std::move(callbackOnWorkingSequence));
+  mirror_window_.windowLevel = base_window_.windowLevel + 1;
+  mirror_window_.hidden = NO;
+}
+
+void LensOverlaySnapshotController::StartSnapshotFlow() {
+  if (!is_capturing_) {
+    return;
+  }
+
+  base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
+      base::BindOnce(&LensOverlaySnapshotController::ProcessRawSnapshot,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  auto callbackOnWorkingSequence = base::BindPostTask(
+      task_runner_.get(), std::move(snapshotCapturedCallback));
+
+  if (ShouldShowStaticSnapshot()) {
+    base_window_.hidden = YES;
+  }
+
+  // TODO(crbug.com/365732763): Replace call to `UpdateSnapshotWithCallback`
+  // once the new API method is exposed.
+  snapshot_tab_helper_->UpdateSnapshotWithCallback(
+      base::CallbackToBlock(std::move(callbackOnWorkingSequence)));
+}
+
+void LensOverlaySnapshotController::ProcessRawSnapshot(UIImage* snapshot) {
+  if (!is_capturing_) {
+    return;
+  }
+
+  if (ShouldShowStaticSnapshot()) {
+    base_window_.hidden = NO;
+    mirror_window_.windowLevel = base_window_.windowLevel - 1;
+  }
+
+  base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
+      base::BindOnce(&LensOverlaySnapshotController::NotifySnapshotComplete,
+                     weak_ptr_factory_.GetWeakPtr());
   auto callbackOnInitialSequence = base::BindPostTask(
       task_runner_.get(), std::move(snapshotCapturedCallback));
 
@@ -347,19 +431,28 @@ void LensOverlaySnapshotController::OnRawSnapshotCaptured(UIImage* snapshot) {
   backgroundRunner->PostTask(FROM_HERE, std::move(preprocessCallback));
 }
 
-void LensOverlaySnapshotController::OnSnapshotPreprocessComplete(
-    UIImage* snapshot) {
+void LensOverlaySnapshotController::NotifySnapshotComplete(UIImage* snapshot) {
+  FinalizeCapturing();
+
   // Consume and clear the pending callbacks storage.
+  std::vector<SnapshotCallback> pending_snapshot_callbacks_copy;
   for (auto& callback : pending_snapshot_callbacks_) {
+    pending_snapshot_callbacks_copy.push_back(std::move(callback));
+  }
+  pending_snapshot_callbacks_.clear();
+
+  for (auto& callback : pending_snapshot_callbacks_copy) {
     std::move(callback).Run(snapshot);
   }
+}
 
-  FinalizeCapturing();
+void LensOverlaySnapshotController::ReleaseAuxiliaryWindows() {
+  mirror_window_ = nil;
 }
 
 void LensOverlaySnapshotController::CancelOngoingCaptures() {
   task_tracker_.TryCancelAll();
-  OnSnapshotPreprocessComplete(nil);
+  NotifySnapshotComplete(nil);
 }
 
 void LensOverlaySnapshotController::BeginCapturing() {
@@ -371,7 +464,6 @@ void LensOverlaySnapshotController::BeginCapturing() {
 
 void LensOverlaySnapshotController::FinalizeCapturing() {
   fullscreen_controller_->RemoveObserver(this);
-  pending_snapshot_callbacks_.clear();
   is_capturing_ = false;
   if (delegate_) {
     delegate_->OnSnapshotCaptureEnd();

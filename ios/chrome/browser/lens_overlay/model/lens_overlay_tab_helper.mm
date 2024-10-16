@@ -12,6 +12,13 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
+namespace {
+
+// MIME type of PDF.
+const char kMimeTypePDF[] = "application/pdf";
+
+}  // namespace
+
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   CHECK(IsLensOverlayAvailable());
@@ -33,6 +40,8 @@ void LensOverlayTabHelper::DidStartNavigation(
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(web_state_);
     bool is_NTP = NTPHelper && NTPHelper->IsActive();
+    bool is_pdf = web_state_->GetContentsMimeType() == kMimeTypePDF;
+    snapshot_controller_->SetIsPDFDocument(is_pdf);
     snapshot_controller_->SetIsNTP(is_NTP);
   }
 }
@@ -102,6 +111,8 @@ void LensOverlayTabHelper::SetSnapshotController(
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(web_state_);
     bool is_NTP = NTPHelper && NTPHelper->IsActive();
+    bool is_pdf = web_state_->GetContentsMimeType() == kMimeTypePDF;
+    snapshot_controller_->SetIsPDFDocument(is_pdf);
     snapshot_controller_->SetIsNTP(is_NTP);
   }
 }
@@ -117,14 +128,18 @@ void LensOverlayTabHelper::OnSnapshotCaptureEnd() {
 }
 
 void LensOverlayTabHelper::CaptureFullscreenSnapshot(
-    CGSize expected_window_size,
     SnapshotCallback callback) {
   DCHECK(snapshot_controller_);
   if (snapshot_controller_) {
-    snapshot_controller_->CaptureFullscreenSnapshot(expected_window_size,
-                                                    std::move(callback));
+    snapshot_controller_->CaptureFullscreenSnapshot(std::move(callback));
   } else {
     std::move(callback).Run(nil);
+  }
+}
+
+void LensOverlayTabHelper::ReleaseSnapshotAuxiliaryWindows() {
+  if (snapshot_controller_) {
+    snapshot_controller_->ReleaseAuxiliaryWindows();
   }
 }
 

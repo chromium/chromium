@@ -387,6 +387,12 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   } else if (self.isResultsBottomSheetOpen) {
     [self showResultsBottomSheet];
   }
+
+  // The auxiliary window should be retained until the container is confirmed
+  // presented to avoid visual flickering when swapping back the main window.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+  }
 }
 
 - (void)presentConsentFlow {
@@ -1003,19 +1009,19 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 
   CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
 
-  _associatedTabHelper->SetSnapshotController(
-      std::make_unique<LensOverlaySnapshotController>(
-          SnapshotTabHelper::FromWebState(activeWebState),
-          FullscreenController::FromBrowser(browser),
-          IsCurrentLayoutBottomOmnibox(browser)));
-
   UIWindow* sceneWindow = self.browser->GetSceneState().window;
   if (!sceneWindow) {
     completion(nil);
     return;
   }
-  _associatedTabHelper->CaptureFullscreenSnapshot(sceneWindow.bounds.size,
-                                                  base::BindOnce(completion));
+
+  _associatedTabHelper->SetSnapshotController(
+      std::make_unique<LensOverlaySnapshotController>(
+          SnapshotTabHelper::FromWebState(activeWebState),
+          FullscreenController::FromBrowser(browser), sceneWindow,
+          IsCurrentLayoutBottomOmnibox(browser)));
+
+  _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }
 
 - (void)lowMemoryWarningReceived {
