@@ -410,11 +410,6 @@ void ReadingListModelImpl::SetReadStatusIfExists(const GURL& url, bool read) {
     observer.ReadingListDidMoveEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
   }
-
-  if (read) {
-    base::UmaHistogramEnumeration("ReadingList.MarkEntryRead",
-                                  GetStorageStateForUma());
-  }
 }
 
 void ReadingListModelImpl::SetEntryTitleIfExists(const GURL& url,

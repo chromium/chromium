@@ -7582,17 +7582,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReadingList.MarkEntryRead" enum="ReadingListStorageState"
-    expires_after="2024-10-20">
-  <owner>mastiz@chromium.org</owner>
-  <owner>mmrashad@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    When a reading list entry is marked as read, records in which storage this
-    happened.
-  </summary>
-</histogram>
-
 <histogram name="ReadingList.OfflineVersionDisplayed" enum="Boolean"
     expires_after="2025-03-11">
   <owner>gambard@chromium.org</owner>
