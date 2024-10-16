@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Màu lam hoa ngô</translation>
 <translation id="1246424317317450637">In đậm</translation>
 <translation id="1251750620252348585">Tiêu đề cấp 6 tiếp theo</translation>
+<translation id="1264956950255940376">Liếc mắt trái</translation>
 <translation id="1268366246392928616">Không có biểu thức toán học nào trước đó</translation>
 <translation id="1275718070701477396">Đã chọn</translation>
 <translation id="1284576163386164372">Bạn có thể mở các trình đơn để xem tài liệu hướng dẫn bất cứ lúc nào bằng cách nhấn bằng 4 ngón tay. Sau đó, hãy kích hoạt tài liệu hướng dẫn trong phần “ChromeVox”.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Hướng chạm</translation>
 <translation id="1325363694295259631">Đã bỏ chọn nút chọn cho mục trong trình đơn <ph name="NAME" /></translation>
 <translation id="1325946044405407859">Màu nâu vàng</translation>
+<translation id="1328928545650070438">Hạ thấp lông mày</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">nói ký tự và từ</translation>
 <translation id="1334570596456017464">Chỉ số dưới</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Mẹo</translation>
 <translation id="1354356357730355833">sao chép</translation>
 <translation id="1360699455582016846">Hãy nhấp vào mục bên dưới phím định tuyến <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Nhướn lông mày</translation>
 <translation id="1376703628032300005">chuyển đến ký tự tiếp theo</translation>
 <translation id="1377925789329510816">Đây là tiêu đề cuối cùng. Nhấn Search+H để bao gồm tiêu đề đầu tiên hoặc Search+Shift+H để chuyển tới tiêu đề thứ hai trên trang này.</translation>
 <translation id="138218114945450791">Xanh lam nhạt</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Liên kết</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Chào mừng bạn đến với tài liệu hướng dẫn về ChromeVox. Để thoát khỏi hướng dẫn này bất cứ lúc nào, hãy nhấn phím Escape ở góc trên cùng bên trái bàn phím. Để tắt ChromeVox, hãy giữ tổ hợp phím Control và Alt rồi nhấn phím Z. Khi bạn đã sẵn sàng, hãy dùng phím cách để chuyển sang bài học tiếp theo.</translation>
+<translation id="1735957571918073979">Nhắm cả hai mắt</translation>
 <translation id="174268867904053074">Hình tiếp theo</translation>
 <translation id="1756785467854861272">Màu đỏ tía đậm</translation>
 <translation id="1758693804775271377">Dùng một ngón tay vuốt sang trái hoặc sang phải để duyệt xem các bài học về chủ đề này</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Cuộn sang phải</translation>
 <translation id="1781173782405573156">Phím truyền qua</translation>
 <translation id="1787176709638001873">Văn bản chỉnh sửa mật khẩu</translation>
+<translation id="1795438342141780114">Đặt lại con trỏ về vị trí chính giữa</translation>
 <translation id="180203835522132923">Nhấn tổ hợp phím Tìm kiếm + O, sau đó nhấn W</translation>
 <translation id="1810107444790159527">Hộp danh sách</translation>
 <translation id="1812527064848182527">ngang</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Đối tượng tiếp theo</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Hiển thị các lệnh chữ nổi trong trình đơn của ChromeVox</translation>
+<translation id="1999763610967697511">Kéo và thả</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{dấu mở ngoặc vuông}other{# dấu mở ngoặc vuông}}</translation>
 <translation id="2009187674653301682">Không phải chỉ số trên</translation>
 <translation id="2010555995361223825">Menu ChromeVox</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Rời khỏi từ sai chính tả</translation>
 <translation id="2267945578749931355">Ký tự tiếp theo</translation>
 <translation id="2278490101488436824">Vuốt sang trái bằng ba ngón tay</translation>
+<translation id="228059581448666199">Nhấp chuột trái</translation>
 <translation id="2303873575703885770">Kích hoạt một mục</translation>
 <translation id="2305942658236913680">Không có tiêu đề nào tiếp theo</translation>
 <translation id="2311237334957139798">Chuyển về độ chi tiết trước đó</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Không có mốc ARIA nào trước đó</translation>
 <translation id="2843814945404750166">Màu xanh ô liu đậm</translation>
 <translation id="2843837985843789981">Nhóm trước</translation>
+<translation id="2849035674501872372">Tra cứu</translation>
+<translation id="2860710618359053450">Di chuyển hàm sang phải</translation>
 <translation id="2864481629947106776">Liên kết trước</translation>
 <translation id="2867808975387772810">Danh mục</translation>
 <translation id="2873259058405069099">Đi tới đầu bảng</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Điều hướng</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{dấu cách}other{# dấu cách}}</translation>
 <translation id="3179119189286472195">Không phải phần tử liên kết</translation>
+<translation id="3180990259147710757">Di chuyển hàm sang trái</translation>
 <translation id="320041337977930740">Thay đổi kiểu hiển thị thành đan xen</translation>
 <translation id="3206698050650195442">Thoát khỏi hướng dẫn</translation>
 <translation id="3208346789712025453">Không có tùy chọn kiểm soát nào tiếp theo</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{dấu cộng}other{# dấu cộng}}</translation>
 <translation id="338583716107319301">Dấu phân tách</translation>
 <translation id="3389259863310851658">Trường biểu mẫu trước</translation>
+<translation id="3390740059150071453">Nhìn sang trái</translation>
 <translation id="3393605254399152980">Kéo một ngón tay để nghe nội dung mà bạn chạm vào</translation>
 <translation id="3406283310380167331">Hiển thị danh sách biểu mẫu</translation>
 <translation id="3407726812456125464">Đọc to phần văn bản đã chọn</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Đối tượng trước</translation>
 <translation id="4099274309791143834">có menu con</translation>
 <translation id="4101527861445851766">Hộp kiểm đã chọn</translation>
+<translation id="410225014223200513">Tạo hình tròn bằng môi</translation>
 <translation id="4115378294792113321">Đỏ thẫm</translation>
 <translation id="4116415223832267137">Thông báo</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{dấu đóng ngoặc nhọn}other{# dấu đóng ngoặc nhọn}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Màu xanh thép</translation>
 <translation id="4253168017788158739">Lưu ý</translation>
 <translation id="4254798249533888099">Cây</translation>
+<translation id="4255016471934258618">Há miệng thật to</translation>
 <translation id="4259220820964911921">Bật tính năng điều khiển bằng khuôn mặt?</translation>
 <translation id="4271220233568730077">Biểu thức toán tiếp theo</translation>
 <translation id="4275397969489577657">Bật ghi nhật ký luồng sự kiện</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Màu hung đỏ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{dấu chấm}=3{dấu chấm lửng}other{# dấu chấm}}</translation>
 <translation id="4352022650330571548">nhập <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">Nhấp chuột phải</translation>
 <translation id="4372435075475052704">tối thiểu:<ph name="X" /></translation>
 <translation id="4372705107434148843">Dừng giọng nói</translation>
 <translation id="4376316291247992553">Xem đồ thị dưới dạng chữ nổi</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Màu ngọc lam nhạt</translation>
 <translation id="4826415162591436065">Điều hướng tiến lên</translation>
 <translation id="4827410568042294688">đã bỏ chọn</translation>
+<translation id="483262387981411190">Tạm dừng hoặc tiếp tục điều khiển bằng khuôn mặt</translation>
+<translation id="4835598628985424375">Ngập môi lại bằng cách mím chặt môi</translation>
 <translation id="4838490795649708173">Nhấn bằng bốn ngón tay</translation>
 <translation id="4839925464551908214">Chuyển đến hàng trước</translation>
 <translation id="4841614409681890122">Màu hồng đậm</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Không có tiện ích nghe nhìn nào trước đó</translation>
 <translation id="4855927945655956315">Các phím cơ bản: Control</translation>
+<translation id="485806788160414322">Phát hoặc tạm dừng nội dung nghe nhìn</translation>
 <translation id="4862744964787595316">Không in đậm</translation>
 <translation id="4865995900839719272">chuyển về dòng trước</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Màu lam xám đen hài hòa</translation>
 <translation id="5140016802771803559">Màu tím Rebecca</translation>
 <translation id="5142101052131610456">Tất cả bài học</translation>
+<translation id="514387318601895731">Nhìn xuống</translation>
 <translation id="5158275234811857234">Trang bìa</translation>
 <translation id="516076699907426116">Để tiếp tục, hãy dùng tính năng khám phá bằng cách chạm để tìm nút Bài học tiếp theo. Sau đó, hãy nhấn đúp để tiếp tục.</translation>
 <translation id="5170206230005240598">Đã bật phụ đề chữ nổi</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Tiện ích chuyển văn bản sang lời nói trên Mạng nâng cao của Google</translation>
 <translation id="5783252477644995371">Tính năng điều khiển bằng khuôn mặt cho phép bạn điều khiển con trỏ theo hướng của khuôn mặt và thực hiện các thao tác bằng nét mặt như cười để nhấp chuột trái</translation>
 <translation id="5805940204952508776">Nhấn bằng hai ngón tay</translation>
+<translation id="5807774529265708172">Hiện hoặc ẩn bàn phím ảo</translation>
 <translation id="5819072574982403430">Mục cây</translation>
 <translation id="5822819874379903994">Màu ngọc lam đậm</translation>
 <translation id="5824976764713185207">Tự động đọc trang sau khi tải xong</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Danh sách thẻ</translation>
 <translation id="5866042630553435010">Đã kiểm tra một phần</translation>
 <translation id="5866210856231860256">Nhấn tổ hợp phím Tìm kiếm + Mũi tên phải, hoặc tổ hợp phím Tìm kiếm + Mũi tên trái để duyệt xem các bài học về chủ đề này</translation>
+<translation id="5866236843389439313">Kéo căng khoé miệng bên trái</translation>
 <translation id="5867591286054666064">Trong hướng dẫn này, hãy nhấn phím bất kỳ để nghe tên phím.</translation>
 <translation id="5869546221129391014">Lưới</translation>
 <translation id="5876817486144482042">Giảm âm lượng giọng nói</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Ngày hiện tại</translation>
 <translation id="5926889058434275234">Để biết danh sách đầy đủ các cử chỉ, hãy truy cập vào trung tâm trợ giúp.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{dấu bằng}other{# dấu bằng}}</translation>
+<translation id="5947651424015173580">Nhấp đúp chuột</translation>
 <translation id="5948123859135882163">Chuyển đổi diễn giải biểu thức toán học giữa cấu trúc và ngữ nghĩa</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Hộp thoại</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{có # mục}other{có # mục}}</translation>
 <translation id="5981446804259161541">Màu lục lam nhạt</translation>
 <translation id="5983179082906765664">Tăng mức độ chi tiết của điều hướng</translation>
+<translation id="5988563937187882754">Nhìn sang phải</translation>
 <translation id="5992285135956208197">Tài liệu đồ họa</translation>
 <translation id="5999630716831179808">Giọng nói</translation>
 <translation id="6006050241733874051">Biểu mẫu</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Không có hộp kết hợp nào tiếp theo</translation>
+<translation id="7715455358521357192">Liếc mắt phải</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7731785449856576010">Không có tiện ích nghe nhìn nào tiếp theo</translation>
 <translation id="7735498529470878067">Tính năng Khám phá bằng cách chạm có thể giúp bạn nhanh chóng nắm được nội dung trên màn hình.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">Từ trước</translation>
 <translation id="7846634333498149051">Bàn phím</translation>
 <translation id="7851816175263618915">Một số dấu câu</translation>
+<translation id="7860802890538098598">Kéo căng khoé miệng bên phải</translation>
 <translation id="7871691770940645922">Màn hình chữ nổi Braille ảo</translation>
 <translation id="7882421473871500483">Nâu</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">Tăng dần</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{dấu ngoặc kép}other{# dấu ngoặc kép}}</translation>
+<translation id="8017004049696748317">Bắt đầu hoặc dừng nhập bằng giọng nói</translation>
 <translation id="8017588669690167134">Tắt giọng nói</translation>
 <translation id="801990297710781303">Chú thích cuối trang</translation>
 <translation id="8028833145828956995">Bạn có thể sử dụng ChromeVox với màn hình cảm ứng</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">Màu xám đen</translation>
 <translation id="8121539003537428024">Bật tất cả bộ lọc sự kiện</translation>
 <translation id="8123975449645947908">Cuộn lùi</translation>
+<translation id="8126355825906412872">Mỉm cười</translation>
 <translation id="8126386426083591964">Không có tiêu đề cấp 5 nào trước đó</translation>
 <translation id="812886159861361726">Đã dừng tải <ph name="FILE_NAME" /> xuống</translation>
 <translation id="8129445297241948503">Không có ô nào phía trên</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">Phím bổ trợ</translation>
 <translation id="8943282376843390568">Vàng chanh</translation>
 <translation id="8944511129464116546">đã chọn một phần</translation>
+<translation id="8945050808870279132">Nhăn mũi</translation>
 <translation id="8946628535652548639">h<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Không có nút chọn nào trước đó</translation>
 <translation id="8970172509886453271">Không có phần nào trước đó</translation>

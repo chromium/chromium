@@ -74,7 +74,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1953553007165777902">Po shkarkohet... Kanë mbetur edhe <ph name="MINUTE" /> minuta</translation>
 <translation id="1982647487457769627">Chrome funksionon në të gjitha platformat për të të dhënë një përvojë të njohur, pavarësisht pajisjes</translation>
-<translation id="19955905961160405">Kërko për ato që janë në ekranin tënd me "Lenten e Google"</translation>
 <translation id="2001586581944147178">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chrome përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk mbështetet më. Chrome rekomandon që ta heqësh atë.}other{Këto shtesa nuk mbështeten më. Chrome rekomandon që t'i heqësh ato.}}</translation>
 <translation id="2018528049276128029">Secili profil duhet të zotërojë informacionin e vet të Chrome, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
@@ -191,6 +190,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
 <translation id="3169523567916669830">Gjatë provave, mund të shikosh dhe të heqësh temat e interesit, të cilat sajtet i përdorin për të të shfaqur reklama. Chrome përllogarit interesat e tua bazuar në historikun më të fundit të shfletimit.</translation>
 <translation id="3196187562065225381">Chrome e bllokoi këtë shkarkim sepse skedari është i rrezikshëm</translation>
+<translation id="3222857603094643834">Kërko çdo gjë në këtë faqe me "Lenten e Google"</translation>
 <translation id="3226612997184048185">Nëse i ruan faqeshënuesit e tu vetëm në "Llogarinë tënde të Google", mund t'i monitorosh çmimet e produkteve në Chrome dhe të marrësh njoftime kur të ulet çmimi</translation>
 <translation id="3234642784688107085">Provo veçoritë e reja nga IA-ja për të krijuar tema, për të marrë ndihmë për të shkruar dhe për të qëndruar i organizuar</translation>
 <translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>

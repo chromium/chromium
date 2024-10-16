@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Salli Chrome-kirjautuminen</translation>
 <translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
 <translation id="1982647487457769627">Chrome toimii eri alustoilla ja tarjoaa tutun käyttökokemuksen laitteesta riippumatta</translation>
-<translation id="19955905961160405">Hae näytöllä olevaa sisältöä Google Lensilla</translation>
 <translation id="2001586581944147178">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chrome käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei enää tueta. Chrome suosittelee poistamaan sen.}other{Näitä laajennuksia ei enää tueta. Chrome suosittelee poistamaan ne.}}</translation>
 <translation id="2018528049276128029">Jokainen profiili sisältää omat Chrome-tietonsa, esim. kirjanmerkit, historian ja salasanat</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Kaikki kielet</translation>
 <translation id="3169523567916669830">Kokeilujen aikana voit katsella ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chrome arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>
 <translation id="3196187562065225381">Chrome on estänyt tämän latauksen, koska tiedosto on haitallinen</translation>
+<translation id="3222857603094643834">Hae mitä tahansa tältä sivulta Google Lensilla</translation>
 <translation id="3226612997184048185">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromessa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="3234642784688107085">Kokeile uusia tekoälyominaisuuksia, niin voit luoda teemoja, saada apua kirjoittamiseen ja pitää asiat järjestyksessä</translation>
 <translation id="3245429137663807393">Jos jaat myös Chromen käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>

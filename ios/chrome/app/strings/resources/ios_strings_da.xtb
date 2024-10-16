@@ -411,6 +411,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="288655811176831528">Luk fane</translation>
 <translation id="2888631381369839306">Notifikationer om prissporing er aktiveret</translation>
 <translation id="288902476966286676">Returneres til afsender</translation>
+<translation id="2894757982205307093">Ny fane i gruppe</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> genbrugte adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
 <translation id="291754862089661335">Placer QR-kode eller stregkode i denne ramme</translation>
 <translation id="2918688092312652908">Markér som ulæst</translation>
@@ -590,6 +591,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861908220442487587">Denne adresse gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du flytte den til din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Vis hele webadressen</translation>
+<translation id="3875783148670536197">Vis mig hvordan</translation>
 <translation id="3876833929577368454">Spørg mig hver gang</translation>
 <translation id="3885587018298784481">Bliv medlem af en familiegruppe</translation>
 <translation id="3888863481921783344">Dette bruges til at vise dig mulige gæster til din begivenhed.</translation>
@@ -1103,6 +1105,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6227126502342367214">Lens-kamerasøgning</translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
+<translation id="6234310016144827337">Tjek din forbindelse, og prøv igen</translation>
 <translation id="6234438496206735891">Vis downloads</translation>
 <translation id="6236952928980352967">Gendan advarsel</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
@@ -1634,6 +1637,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8609743333007776886">Tilføj ${url} som bogmærke</translation>
 <translation id="8620640915598389714">Rediger</translation>
 <translation id="8625706492572042370">Rediger hjemmeskærm</translation>
+<translation id="8633025649649592204">Seneste aktivitet</translation>
 <translation id="8636825310635137004">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder.</translation>
 <translation id="8637431369725868556">Bliv beskyttet mod farlige websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ingen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
@@ -1772,6 +1776,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9183733013282108610">Søgning i inkognitotilstand</translation>
 <translation id="9186762474139509529">Start logføring</translation>
 <translation id="9191031968346938109">Føj til…</translation>
+<translation id="9196007736149429065">Denne fil kunne ikke åbnes</translation>
 <translation id="9200875785104711666">For <ph name="TIME" /> d. siden</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Flyt adresselinjen fra toppen til bunden af skærmen for at få en tilpasset browseroplevelse.</translation>

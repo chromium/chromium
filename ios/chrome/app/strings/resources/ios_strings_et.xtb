@@ -411,6 +411,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="288655811176831528">Sule vaheleht</translation>
 <translation id="2888631381369839306">Hinnajälgimise märguanded on sisse lülitatud</translation>
 <translation id="288902476966286676">Tagastage saatjale</translation>
+<translation id="2894757982205307093">Uus vaheleht grupis</translation>
 <translation id="2905479111267140204">Teil on <ph name="NUMBER_OF_PASSWORDS" /> korduvalt kasutatud parooli, mis võivad teie turvalisuse ohtu seada.</translation>
 <translation id="291754862089661335">Paigutage QR-kood või ribakood sellesse kaadrisse</translation>
 <translation id="2918688092312652908">Märgi mitteloetuks</translation>
@@ -590,6 +591,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861908220442487587">See aadress salvestatakse vaid sellesse seadmesse. Kui soovite seda teistes seadmetes kasutada, teisaldage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="3868495844258915202">Kuva kogu URL</translation>
+<translation id="3875783148670536197">Kuva juhised</translation>
 <translation id="3876833929577368454">Küsi iga kord</translation>
 <translation id="3885587018298784481">Liituge peregrupiga</translation>
 <translation id="3888863481921783344">Seda kasutatakse teile nende kontaktide näitamiseks, keda soovite võib-olla sündmusele kutsuda.</translation>
@@ -1103,6 +1105,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6227126502342367214">Lensi kaameraotsing</translation>
 <translation id="6231782223312638214">Soovitatud</translation>
 <translation id="6232329973559504466">Inkognito režiimis otsing</translation>
+<translation id="6234310016144827337">Kontrollige ühendust ja proovige uuesti</translation>
 <translation id="6234438496206735891">Kuva allalaadimised</translation>
 <translation id="6236952928980352967">Taasta hoiatus</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
@@ -1634,6 +1637,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8609743333007776886">Lisa ${url} järjehoidjatesse</translation>
 <translation id="8620640915598389714">Muuda</translation>
 <translation id="8625706492572042370">Muuda avakuva</translation>
+<translation id="8633025649649592204">Hiljutised toimingud</translation>
 <translation id="8636825310635137004">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse.</translation>
 <translation id="8637431369725868556">Kaitske end ohtlike veebisaitide eest.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ohustatud paroole pole}=1{{COUNT} ohustatud parool}other{{COUNT} ohustatud parooli}}</translation>

@@ -74,7 +74,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
 <translation id="1953553007165777902">Descargando... Minutos restantes: <ph name="MINUTE" />.</translation>
 <translation id="1982647487457769627">Chrome funciona en distintas plataformas para ofrecerte una experiencia familiar en cualquier dispositivo</translation>
-<translation id="19955905961160405">Busca lo que aparece en tu pantalla con Google Lens</translation>
 <translation id="2001586581944147178">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. Chrome usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no se admite. Chrome te recomienda que la elimines.}other{Estas extensiones ya no se admiten. Chrome te recomienda que las elimines.}}</translation>
 <translation id="2018528049276128029">Cada perfil almacena su propia información de Chrome, como los marcadores, el historial, las contraseñas y mucho más.</translation>
@@ -191,6 +190,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3169523567916669830">Durante las pruebas, puedes ver y eliminar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses según tu historial de navegación reciente.</translation>
 <translation id="3196187562065225381">Chrome ha bloqueado esta descarga porque el archivo es peligroso</translation>
+<translation id="3222857603094643834">Busca cualquier cosa en esta página con Google Lens</translation>
 <translation id="3226612997184048185">Si también guardas los marcadores en tu cuenta de Google, puedes hacer un seguimiento de los precios de los productos en Chrome y recibir una notificación cuando bajen</translation>
 <translation id="3234642784688107085">Prueba las nuevas funciones de la IA para crear temas, organizarte y obtener ayuda para escribir</translation>
 <translation id="3245429137663807393">Si también compartes informes de uso de Chrome, esos informes incluirán las URLs que visites.</translation>
@@ -582,7 +582,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8019103195866286235">El desarrollador de esta extensión ha anulado su publicación y la extensión podría no ser segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="8040768861829554732">Una extensión quiere que inicies sesión en Chrome</translation>
 <translation id="80471789339884597">Gracias por realizar la instalación. Debes reiniciar todos tus navegadores para poder usar <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8064015041956107954">Puedes abrir los marcadores, el modo lectura y más desde el menú de Chrome situado en la parte superior derecha</translation>
+<translation id="8064015041956107954">Puedes abrir los marcadores, el modo Lectura y más desde el menú de Chrome situado en la parte superior derecha</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">No se ha podido realizar la instalación porque tu ordenador no cumple los requisitos mínimos de hardware.</translation>
@@ -592,7 +592,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando la cámara y el micrófono.</translation>
-<translation id="8257796129973882597">Puedes abrir los marcadores, el modo lectura y más desde el menú de Chrome</translation>
+<translation id="8257796129973882597">Puedes abrir los marcadores, el modo Lectura y más desde el menú de Chrome</translation>
 <translation id="8267953129876836456">Chrome ha encontrado algunas recomendaciones de seguridad para que las revises</translation>
 <translation id="8270775718612349140">Certificados gestionados por Chrome</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>

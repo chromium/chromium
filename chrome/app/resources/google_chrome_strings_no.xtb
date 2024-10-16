@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1953553007165777902">Laster ned … <ph name="MINUTE" /> minutt(er) igjen</translation>
 <translation id="1982647487457769627">Chrome fungerer på flere plattformer for å gi deg en kjent opplevelse uansett enhet</translation>
-<translation id="19955905961160405">Bruk Google Lens til å søke etter det som er på skjermen.</translation>
 <translation id="2001586581944147178">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chrome bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen støttes ikke lenger. Chrome anbefaler at du fjerner den.}other{Disse utvidelsene støttes ikke lenger. Chrome anbefaler at du fjerner dem.}}</translation>
 <translation id="2018528049276128029">Hver profil har sin egen Chrome-informasjon, som bokmerker, logg, passord med mer</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Alle språk</translation>
 <translation id="3169523567916669830">Underveis i prøveprosjektene kan du se og fjerne interesseemnene som nettsteder bruker for å vise deg annonser. Chrome anslår interessene dine basert på den nylige nettleserloggen din.</translation>
 <translation id="3196187562065225381">Chrome har blokkert denne nedlastingen fordi filen er farlig</translation>
+<translation id="3222857603094643834">Søk etter hva som helst på denne siden med Google Lens</translation>
 <translation id="3226612997184048185">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chrome og bli varslet om avslag</translation>
 <translation id="3234642784688107085">Prøv nye AI-funksjoner for å opprette temaer, få skrivehjelp og holde orden</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>

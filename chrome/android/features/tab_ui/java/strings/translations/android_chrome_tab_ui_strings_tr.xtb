@@ -58,19 +58,16 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> sekme grubu renk simgesi</translation>
 <translation id="3194464645767632461">puan</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi, <ph name="ANY_CHANGED" /> sekme değiştirildi}other{<ph name="MANY_ADDED" /> sekme eklendi, <ph name="ANY_CHANGED" /> sekme değiştirildi}}</translation>
-<translation id="3291470810748040983">Açık bir sekmede daha düşük fiyat varsa uyarı alırsınız</translation>
 <translation id="3328308545011660196">Öneri: <ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="3547352561153509682">Bu işlem, grubun <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinmesini sağlar</translation>
 <translation id="3613492231657284463">Etkin olmayan sekmeleri gizle iletişim kutusu</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Paylaşım sayfası önizlemesinin küçük resmi.</translation>
 <translation id="381219490185664296">Sekme grubu iptal edilsin mi?</translation>
-<translation id="3882834874697329510">Açık bir sekmede daha düşük fiyat olduğunda uyarı almak için Ayarlar'da bildirimleri açın.</translation>
 <translation id="3940195383040445971">Sekmelerde fiyatları takip et</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Sekmeyi grupla}other{Sekmeleri grupla}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> etkin olmayan sekme}other{<ph name="TABS_COUNT_MANY" /> etkin olmayan sekme}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> grubunu aç</translation>
-<translation id="3996880007329611795">Haberdar olun</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> gün önce oluşturuldu}other{<ph name="NUM_DAYS_MANY" /> gün önce oluşturuldu}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="4139634748112164403">Sekmeler bu cihazda açık kalır ancak grup kalıcı olarak silinir</translation>
@@ -115,7 +112,6 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="5627941783489838464">Sekme güncellemesi yok</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Sekmeyi geri yükle}other{Sekmeleri geri yükle}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> bağlantı}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> bağlantı}}</translation>
-<translation id="575494663145460764">Fiyat düşüşü uyarıları alınsın mı?</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>

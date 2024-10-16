@@ -2379,7 +2379,6 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
       Lorsque cette règle est définie sur "False", ou si elle n'est pas configurée, les icônes sont visibles.</translation>
 <translation id="2744751866269053547">Inscrire des gestionnaires de protocoles</translation>
 <translation id="2744980433176488921">Les paramètres F11/F12 utilisent le raccourci qui contient la touche de modification Maj</translation>
-<translation id="2745150813292162313">Autoriser l'activation du partitionnement pour le stockage tiers</translation>
 <translation id="2746016768603629042">Cette règle est obsolète. Veuillez plutôt utiliser la règle "DefaultJavaScriptSetting".
 
       Vous pouvez utiliser cette règle pour désactiver JavaScript dans <ph name="PRODUCT_NAME" />.
@@ -2424,7 +2423,6 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de com
 Définir "command_line" empêche le chargement de l'extension à partir de la ligne de commande.</translation>
 <translation id="2780840673734667062">Ne pas permettre la connexion avec d'autres comptes Google</translation>
 <translation id="2784880732336446591">Effacer les données de navigation en fin de session</translation>
-<translation id="2786117913267907931">Ne pas autoriser les origines à utiliser Direct Sockets</translation>
 <translation id="2787173078141616821">Transmettre des informations sur l'état d'Android</translation>
 <translation id="2787774054174244402">Si vous définissez cette règle sur "True", les utilisateurs ne peuvent pas modifier les fichiers stockés sur les périphériques de stockage externes.
 
@@ -2438,19 +2436,6 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2801065672151277034">Paramètres de gestion des certificats</translation>
 <translation id="2801155097555584385">Personnaliser le pourcentage auquel la batterie doit commencer à être rechargée</translation>
 <translation id="2801378553855965587">Désactiver l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
-<translation id="2804159858652849094">Cette règle permet de définir un libellé personnalisé servant à identifier la personne qui gère un profil ou un navigateur.
-
-Ce libellé s'affichera dans la barre d'outils.
-
-Si cette règle est définie au niveau du navigateur, tous les profils afficheront ce libellé dans la barre d'outils.
-
-Si cette règle est définie au niveau du profil, seul ce profil aura ce libellé.
-
-Contrairement aux autres règles, celle-ci définie au niveau du profil prévaut sur une règle définie au niveau du navigateur.
-
-Le libellé personnalisé ne sera pas traduit.
-
-Notez que cette règle n'aura aucun effet si la règle <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> est définie sur <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (valeur 1).</translation>
 <translation id="2805707493867224476">Autoriser tous les sites à afficher des fenêtres pop-up</translation>
 <translation id="2806804577787377637">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> à la place.</translation>
 <translation id="2815701930753942156">Cette règle permet de spécifier une liste d'intervalles hebdomadaires pendant lesquels l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas être utilisé. Toutes les sessions en cours seront fermées, et la connexion sera bloquée.
@@ -3626,11 +3611,6 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
 <translation id="3712861436661566358">Activer la séparation des profils</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="3724039569609354541">Utiliser le comportement par défaut pour déterminer si des sites Web peuvent envoyer des requêtes aux points de terminaison du réseau</translation>
-<translation id="372668389978450673">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
-
-      Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
-
-      Remarque : Si cette règle n'est pas configurée ou si elle est définie sur "true", et que la règle <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> est définie sur "false", <ph name="LACROS_NAME" /> n'autorise pas l'ajout d'une personne depuis le gestionnaire d'utilisateurs.</translation>
 <translation id="3727476641336727380">Si la règle "<ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" />" est activée ou qu'elle n'est pas configurée, les wakelocks forçant l'activation de l'écran pour la gestion de l'alimentation sont autorisés (sauf si la règle "<ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" />" est désactivée). Des extensions peuvent demander des wakelocks de ce type par le biais de l'API d'extension de gestion de l'alimentation et par les applications ARC.
 
       Si cette règle est désactivée, les demandes de wakelocks forçant l'activation de l'écran sont rétrogradées en demandes de wakelocks système.</translation>
@@ -4036,13 +4016,6 @@ Ces deux règles ont le même effet sur le comportement du navigateur.</translat
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
 <translation id="4030152268425532846">Désactiver l'annulation de la connexion automatique</translation>
-<translation id="4039065751874009354">Cette règle permet de désactiver temporairement deux correctifs associés concernant le comportement de la boîte de dialogue de confirmation affichée par l'événement beforeunload.
-Si cette règle est activée, le nouveau comportement approprié est utilisé. Lorsque cette règle est désactivée, l'ancien comportement est utilisé. Si cette règle n'est pas définie, le comportement par défaut est utilisé.
-Cette règle est une solution temporaire et sera bientôt supprimée.
-
-Nouveau comportement approprié : dans "beforeunload", appeler event.preventDefault() déclenche la boîte de dialogue de confirmation. Définir event.returnValue sur la chaîne vide ne déclenche pas la boîte de dialogue de confirmation.
-
-Ancien comportement : dans "beforeunload", appeler event.preventDefault() ne déclenche pas la boîte de dialogue de confirmation. Définir event.returnValue sur la chaîne vide déclenche la boîte de dialogue de confirmation.</translation>
 <translation id="4043796890723386527">Empêcher les utilisateurs de créer et d'utiliser des profils secondaires, et d'utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Détecter les fenêtres recouvertes</translation>
 <translation id="4052529125939620019">Charger l'extension du composant CryptoToken au démarrage</translation>
@@ -4662,17 +4635,6 @@ Un appareil est considéré comme géré s'il utilise une version d'entreprise d
 
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4549695018986780856">Manifest V2 est activé</translation>
-<translation id="4552929684628662264">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
-Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
-
-Cette règle permet de dresser la liste des formats d'URL indiquant les sites non autorisés à utiliser Direct Sockets.
-Il peut s'agir d'applications Chrome, d'applications Web isolées ou de kiosques Web. L'API n'est jamais disponible sur le Web ouvert.
-
-Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
-
-Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est indiqué dans les deux règles.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
@@ -5258,13 +5220,6 @@ Cette règle permet de contrôler la présentation de contenus promotionnels, y 
           Si cette règle est définie, le champ "Nom d'utilisateur Kerberos" affiche le domaine prérempli à sa droite. Si l'utilisateur saisit son nom d'utilisateur, il sera concaténé avec le domaine prérempli. Si la saisie de l'utilisateur contient "@", le domaine prérempli ne s'affiche pas et n'a aucune incidence sur la saisie.
 
           Si cette règle n'est pas configurée, aucune information supplémentaire n'est affichée, et la création de la demande conserve son fonctionnement normal.</translation>
-<translation id="4955566229684195326">Ce paramètre autorise les utilisateurs à créer et utiliser des profils secondaires, et à utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" />.
-
-      Comme pour <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> et <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, si cette règle est définie sur "false" ou si elle n'est pas définie, les utilisateurs ne peuvent pas créer ni utiliser de profils secondaires, ni utiliser le mode Invité. Les éventuels profils secondaires déjà créés seront indisponibles.
-
-      Si cette règle est définie sur "true", les utilisateurs peuvent créer et utiliser des profils secondaires, et utiliser le mode Invité.
-
-      Remarque : Si elle est définie sur "true", mais que la règle <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> est définie sur "false", les utilisateurs ne peuvent pas créer de profils secondaires. Il en va de même pour <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> et le mode Invité.</translation>
 <translation id="4958911425563967203">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont activées.
 
 Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
@@ -5745,7 +5700,6 @@ Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/
 <translation id="5321624917465764266">Si cette règle est activée ou n'est pas configurée, les historiques de navigation et de téléchargements peuvent être supprimés dans Chrome, sans que les utilisateurs puissent modifier ce paramètre.
 
 Si cette règle est désactivée, ces deux historiques ne peuvent pas être supprimés. Même si cette règle est désactivée, cela ne garantit pas que ces historiques soient conservés. En effet, les utilisateurs peuvent modifier ou supprimer directement les fichiers de ces historiques. De même, le navigateur peut arriver à expiration ou archiver l'historique partiellement ou intégralement à tout moment.</translation>
-<translation id="5321859912083346284">Ne pas autoriser la prédiction de saisie automatique.</translation>
 <translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="5323271643727095577">Ne pas afficher de boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Afficher la boîte de dialogue d'annulation quand beforeunload event.returnValue est la chaîne vide de l'événement beforeunload.</translation>
 <translation id="5324430722441910403">Paramètres de recherche sur site</translation>
@@ -6244,7 +6198,6 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
       Si cette règle est définie sur "True", les avertissements d'abandon seront masqués.
       Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements d'abandon seront affichés.</translation>
 <translation id="5659776687676755342">Activer le son de batterie faible</translation>
-<translation id="5660228672907979869">Empêcher l'activation du partitionnement pour le stockage tiers</translation>
 <translation id="5660950553460381588">Si possible, créer les clés d'accès dans le trousseau iCloud par défaut.</translation>
 <translation id="5666457529647159548">Autoriser les utilisateurs à gérer les certificats client installés.</translation>
 <translation id="5670249935663090320">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> est activé. Les utilisateurs pourront le lancer depuis le menu de l'application, les menus contextuels des pages, les commandes multimédias sur les sites Web compatibles Cast et l'icône Cast de la barre d'outils (si elle est affichée).
@@ -6315,7 +6268,6 @@ Cette règle concerne à la fois les flux d'authentification à la connexion et 
 <translation id="5722577409367087850">Charger l'extension</translation>
 <translation id="5728154254076636808">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mot de passe Kerberos. L'espace réservé <ph name="PASSWORD_PLACEHOLDER" /> est remplacé par le mot de passe de connexion.</translation>
-<translation id="573183812760497142">Bloquer le partitionnement du stockage tiers pour ces origines</translation>
 <translation id="5732972008943405952">Importer les données de saisie automatique du navigateur par défaut à la première exécution</translation>
 <translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
 
@@ -7487,7 +7439,6 @@ Remarque : Le cache est vidé à la suite d'un redémarrage et d'une déconnexi
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Notez toutefois que le format "*", qui correspond à n'importe quelle URL, n'est pas pris en charge par cette règle.</translation>
 <translation id="6584122839583172231">Les paramètres F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="6584541828182430328">Désactiver l'affichage de l'alerte plein écran</translation>
-<translation id="658537215958747575">Autoriser les origines éligibles à utiliser Direct Sockets</translation>
 <translation id="6588634282328239769">Afficher l'URL complète</translation>
 <translation id="6589049539706330510">Activer la prise en charge</translation>
 <translation id="6593025196187527239">Si cette règle est définie sur "True" ou n'est pas définie, les utilisateurs peuvent utiliser ARC, sauf si celui-ci est désactivé par un autre moyen. Si elle est définie sur "False", les utilisateurs non affiliés ne peuvent pas utiliser ARC.
@@ -7767,11 +7718,6 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> à partir du menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir cette option dans le menu contextuel.
 Elle ne les empêche pas d'enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> par d'autres moyens que le menu contextuel.</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
-<translation id="6828729771894228555">Permet de définir une liste de formats d'URL indiquant des origines de premier niveau (URL dans la barre d'adresse de l'onglet) qui bloquent le partitionnement du stockage tiers (partitionnement du stockage iFrame multi-origine).
-          Si cette règle n'est pas configurée ou si une origine de premier niveau ne correspond pas, la valeur de <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> est utilisée.
-          Pour en savoir plus sur les formats valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-          Notez que les formats que vous répertoriez ici sont traités comme des origines, et non comme des URL. Vous ne devez donc pas spécifier de chemin d'accès.
-          Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Cette règle contrôle la refactorisation récente des API Graphics3D dans le plug-in PPAPI.
 
 La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
@@ -7837,17 +7783,6 @@ Si la règle est définie sur "false" ou si elle n'est pas configurée, cette di
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
-<translation id="6870288354334274313">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
-Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
-
-Cette règle permet de dresser la liste des formats d'URL indiquant les sites autorisés à utiliser l'API Direct Sockets.
-Il peut s'agir d'applications Chrome, d'applications Web isolées ou de kiosques Web. L'API n'est jamais disponible sur le Web ouvert.
-
-Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
-
-Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est indiqué dans les deux règles.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6878757724611298427">Autoriser les utilisateurs à se servir d'applis Android sur des appareils non affiliés</translation>
 <translation id="6881397131210596522">Si cette règle est définie sur "2", cela empêche automatiquement les sites d'utiliser l'API WebPrinting.
 
@@ -7904,11 +7839,6 @@ Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLI
 Si la règle est désactivée ou n'est pas configurée, le comportement par défaut s'applique et ces requêtes sont bloquées.</translation>
 <translation id="6915524162137327111">Afficher les libellés de gestion pendant 30 secondes</translation>
 <translation id="6919205861950516688">Ne pas autoriser l'organiseur d'onglets.</translation>
-<translation id="6919819553978815392">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent les connexions en mode Invité. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
-
-      Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'utilisation de profils Invité.
-
-      Remarque : Si cette règle n'est pas configurée ou si elle est définie sur "true", et que la règle <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> est définie sur "false", <ph name="LACROS_NAME" /> n'autorise pas l'utilisation de profils Invité.</translation>
 <translation id="692096803256767290">Effectuer un rollback de l'OS vers la version cible</translation>
 <translation id="6921241119085515674">Autoriser le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Autoriser les appareils à exécuter des machines virtuelles sur Chrome OS</translation>
@@ -9086,15 +9016,6 @@ Si cette règle est définie sur "Ajouter le libellé 'Professionnel' au profil 
 Si cette règle est définie sur "Ajouter le libellé 'Scolaire' au profil (1)", le libellé "Scolaire" est utilisé.
 
 Cette règle sera remplacée par la règle <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> si celle-ci est configurée.</translation>
-<translation id="7852952453329293282">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
-Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
-
-Si cette règle est définie sur "1", les origines éligibles peuvent utiliser Direct Sockets.
-Il s'agit entre autres d'applications Chrome, d'applications Web isolées ou de kiosques Web. L'API n'est jamais disponible sur le Web ouvert.
-
-Si cette règle est définie sur "2", les origines ne peuvent pas utiliser Direct Sockets.
-
-Si cette règle n'est pas configurée, Direct Sockets peut être utilisée.</translation>
 <translation id="7853140303943875314">Activer l'annulation de la connexion automatique</translation>
 <translation id="7854187834842629068">Désactiver la dictée sur l'écran de connexion</translation>
 <translation id="7858352166858826505">Paramètres du modèle de fondation local de l'IA générative</translation>
@@ -9553,10 +9474,6 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
 <translation id="8250048892729838843">Cette règle est obsolète. Si cette règle est activée ou qu'elle n'est pas configurée, l'appareil peut recevoir des contrôles de rapports précis.
       Si cette règle est désactivée, les appareils enregistrés ne reçoivent pas de contrôles de rapports précis.</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
-<translation id="8254792295762772851">Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valeur 0), un libellé "Professionnel" ou "Scolaire" s'affiche à côté de l'avatar de la barre d'outils.
-Ces libellés ne s'affichent que si le compte connecté est géré.
-
-Si vous définissez cette valeur sur <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (valeur 1), un libellé "Professionnel" ou "Scolaire" s'affiche à côté de l'avatar de la barre d'outils pendant 30 secondes après l'ouverture du profil.</translation>
 <translation id="8256006033157034334">Cette règle est obsolète et incompatible, veuillez utiliser la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> à la place.</translation>
 <translation id="8256688113167012935">Définit quel nom de compte s'affiche sur l'écran de connexion de <ph name="PRODUCT_OS_NAME" /> pour le compte local de l'appareil correspondant.
 
@@ -9760,10 +9677,6 @@ Les certificats doivent être encodés en base64.</translation>
 <translation id="838870586332499308">Activer l'itinérance des données</translation>
 <translation id="8392478748777481636">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
-<translation id="8394518861160238324">Le partitionnement du stockage tiers est activé par défaut pour certains utilisateurs à partir de M113, mais peut être désactivé via le flag Chrome.
-          Si cette règle est définie sur <ph name="ALLOW_PARTITIONING_VALUE" /> ou n'est pas configurée, le partitionnement du stockage tiers peut être activé.
-          Si cette règle est définie sur <ph name="BLOCK_PARTITIONING_VALUE" />, le partitionnement du stockage tiers ne peut pas être activé.
-          Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="8395749934754392549">Contrôle les paramètres du conteneur Android (ARC) et des applications Android.</translation>
 <translation id="8398952282584132331">Activer l'écran de confidentialité</translation>
@@ -10592,19 +10505,6 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
       Cette règle n'affecte que les utilisateurs qui se sont authentifiés via SAML.
 
       La valeur doit être indiquée en secondes.</translation>
-<translation id="9015526159640436408">URL d'une image qui servira de badge Enterprise pour le profil. L'URL doit renvoyer vers une image.
-
-Ce badge s'affichera dans la barre d'outils.
-
-Si cette règle est définie au niveau du navigateur, tous les profils afficheront ce logo dans la barre d'outils.
-
-Si cette règle est définie au niveau du profil, seul ce profil aura ce logo.
-
-Si cette règle n'est pas configurée, une icône par défaut représentant un bâtiment s'affichera.
-
-Si une erreur se produit lors de la tentative d'obtention et d'affichage de l'image, une icône par défaut représentant un bâtiment s'affichera.
-
-Contrairement aux autres règles, si celle-ci est définie au niveau du profil, elle est prioritaire sur une règle définie au niveau du navigateur.</translation>
 <translation id="9015578113567730893">Fréquence de collecte par télémétrie audio en millisecondes.</translation>
 <translation id="9015759770696099204">Les paramètres F11/F12 sont désactivés</translation>
 <translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>

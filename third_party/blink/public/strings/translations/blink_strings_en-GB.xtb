@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">This month</translation>
 <translation id="1637811476055996098">Choose files</translation>
-<translation id="1680090928918677457">Use camera</translation>
 <translation id="1729654308190250600">Please enter a non-empty email address.</translation>
 <translation id="1758486001363313524">Other...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Please shorten this text to <ph name="MAX_CHARACTERS" /> characters or less (you are currently using <ph name="CURRENT_LENGTH" /> characters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Camera and microphone allowed</translation>
 <translation id="2507943997699731163">Please fill in this field.</translation>
 <translation id="2613802280814924224">Please enter a valid value. The nearest valid value is <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2746543609216772311">Value must be <ph name="MINIMUM_DATE_OR_TIME" /> or later.</translation>
 <translation id="2761667185364618470">Please tick this box if you want to proceed.</translation>
 <translation id="2908441821576996758">Please enter a comma-separated list of email addresses.</translation>
-<translation id="2940013921954129954">Precise location allowed</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Please enter a valid value. The field is incomplete or has an invalid date.</translation>
 <translation id="310520048233152454">Please enter a URL.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Please lengthen this text to <ph name="MIN_CHARACTERS" /> characters or more (you are currently using <ph name="CURRENT_LENGTH" /> characters).</translation>
 <translation id="383465348367842624">A part followed by '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Exit full screen</translation>
-<translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4360991593054037559">Please enter a valid value. The two nearest valid values are <ph name="VALID_VALUE_LOW" /> and <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Details</translation>
-<translation id="4663373278480897665">Camera allowed</translation>
 <translation id="4664250907885839816">A part following '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Playing in picture-in-picture</translation>
 <translation id="4812940957355064477">Please enter a number.</translation>
-<translation id="49269513399674318">Use microphone</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> selected</translation>
 <translation id="4992066212339426712">Unmute</translation>
 <translation id="49969490063480558">Please enter a part following '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is incomplete.</translation>
 <translation id="5164977714490026579">Value must be greater than or equal to <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5239623327352565343">Location allowed</translation>
 <translation id="5307600278924710095">Please enter a part followed by '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is incomplete.</translation>
 <translation id="5334352251556557839">Unable to play media.</translation>
 <translation id="537648784377940524">Minimum date (<ph name="MIN_DATE_OR_TIME" />) must come before maximum date (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Poor playback quality</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6820355525329141109">Couldn't load plug-in.</translation>
-<translation id="688706781007114099">Use location</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Please lengthen this text to <ph name="MIN_CHARACTERS" /> characters or more (you are currently using 1 character).</translation>
 <translation id="709897737746224366">Please match the format requested.</translation>
-<translation id="7134810312945846184">Use microphone and camera</translation>
 <translation id="7263440858009898357">Please select an item in the list.</translation>
 <translation id="7364796246159120393">Choose file</translation>
 <translation id="739024184232394898">Other...</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Value must be between <ph name="MINIMUM_TIME" /> and <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> files</translation>
 <translation id="8451268428117625855">Please select a file.</translation>
-<translation id="8533587060884335451">Use precise location</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Line wrap</translation>
 <translation id="8750798805984357768">Please select one of these options.</translation>

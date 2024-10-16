@@ -411,6 +411,7 @@
 <translation id="288655811176831528">ট্যাব বন্ধ করুন</translation>
 <translation id="2888631381369839306">প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি চালু করা আছে</translation>
 <translation id="288902476966286676">প্রেরকে ফেরত পাঠিয়ে দিন</translation>
+<translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="2905479111267140204">আপনার <ph name="NUMBER_OF_PASSWORDS" />টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে এবং এগুলি আপনার সুরক্ষাকে ঝুঁকির মুখে ফেলতে পারে।</translation>
 <translation id="291754862089661335">এই ফ্রেমের মধ্যে QR কোড বা বারকোড স্থাপন করুন</translation>
 <translation id="2918688092312652908">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861908220442487587">এই ঠিকানা শুধুমাত্র এই ডিভাইসে সেভ করা আছে। এটি আপনার অন্য ডিভাইসে ব্যবহার করতে, নিজের Google অ্যাকাউন্ট, <ph name="USER_EMAIL" />-এ সরান</translation>
 <translation id="3868495844258915202">সম্পূর্ণ URL দেখুন</translation>
+<translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="3876833929577368454">আমাকে প্রত্যেকবার জিজ্ঞাসা করুন</translation>
 <translation id="3885587018298784481">ফ্যামিলি গ্রুপে যোগ দিন</translation>
 <translation id="3888863481921783344">এটি আপনার ইভেন্টে সম্ভাব্য আমন্ত্রিতদের দেখানোর জন্য ব্যবহার করা হবে।</translation>
@@ -1104,6 +1106,7 @@
 <translation id="6227126502342367214">Lens-এ ক্যামেরা সার্চ</translation>
 <translation id="6231782223312638214">সুপারিশকৃত</translation>
 <translation id="6232329973559504466">ছদ্মবেশী সার্চ</translation>
+<translation id="6234310016144827337">আপনার কানেকশন চেক করে আবার চেষ্টা করে দেখুন</translation>
 <translation id="6234438496206735891">ডাউনলোড দেখুন</translation>
 <translation id="6236952928980352967">রিস্টোর করা সংক্রান্ত সতর্কতা</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
@@ -1635,6 +1638,7 @@
 <translation id="8609743333007776886">বুকমার্কে ${url} যোগ করুন</translation>
 <translation id="8620640915598389714">সম্পাদনা করুন</translation>
 <translation id="8625706492572042370">হোম স্ক্রিন এডিট করুন</translation>
+<translation id="8633025649649592204">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="8637431369725868556">বিপজ্জনক সাইট থেকে সুরক্ষা পান।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}}</translation>
@@ -1773,6 +1777,7 @@
 <translation id="9183733013282108610">ছদ্মবেশী মোডে সার্চ</translation>
 <translation id="9186762474139509529">লগ করা শুরু করুন</translation>
 <translation id="9191031968346938109">এতে যোগ করুন…</translation>
+<translation id="9196007736149429065">এই ফাইল খোলা যায়নি</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> দিন আগে</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">কাস্টমাইজ করা ব্রাউজিং অভিজ্ঞতা পেতে আপনার অ্যাড্রেস বার উপর থেকে নিচে পরিবর্তন করুন।</translation>

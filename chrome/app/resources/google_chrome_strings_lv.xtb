@@ -72,7 +72,6 @@
 <translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
 <translation id="1953553007165777902">Notiek lejupielāde... Atlikušais laiks: <ph name="MINUTE" /> minūte(-es).</translation>
 <translation id="1982647487457769627">Pārlūks Chrome darbojas dažādās platformās, lai sniegtu jums ierastās iespējas neatkarīgi no ierīces.</translation>
-<translation id="19955905961160405">Ekrānā redzamā satura meklēšana, izmantojot Google Lens</translation>
 <translation id="2001586581944147178">Neļaujiet personām, kurām ir piekļuve jūsu interneta datplūsmai, viegli skatīt jūsu apmeklētās vietnes. Chrome izmanto drošu savienojumu, lai meklētu vietnes IP adresi sistēmā DNS (domēnu nosaukumu sistēmā).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Šis paplašinājums vairs netiek atbalstīts. Chrome iesaka to noņemt.}zero{Šie paplašinājumi vairs netiek atbalstīti. Chrome iesaka tos noņemt.}one{Šie paplašinājumi vairs netiek atbalstīti. Chrome iesaka tos noņemt.}other{Šie paplašinājumi vairs netiek atbalstīti. Chrome iesaka tos noņemt.}}</translation>
 <translation id="2018528049276128029">Katrā profilā tiek glabāta attiecīgā Chrome profila informācija, piemēram, grāmatzīmes, vēsture, paroles un citi dati.</translation>
@@ -189,6 +188,7 @@
 <translation id="3161522574479303604">Visas valodas</translation>
 <translation id="3169523567916669830">Izmēģinājuma laikā varat skatīt un noņemt interešu tēmas, kas vietnēs tika izmantotas reklāmu rādīšanai. Pārlūkā Chrome tiek aptuveni noteiktas jūsu intereses, ņemot vērā neseno pārlūkošanas vēsturi.</translation>
 <translation id="3196187562065225381">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo fails ir bīstams.</translation>
+<translation id="3222857603094643834">Meklējiet informāciju par jebkādu tēmu šajā lapā, izmantojot Google Lens</translation>
 <translation id="3226612997184048185">Ja saglabāsiet grāmatzīmes arī Google kontā, varēsiet izsekot produktu cenām pārlūkā Chrome un saņemt paziņojumus par cenu kritumiem.</translation>
 <translation id="3234642784688107085">Izmēģiniet jaunās MI funkcijas, lai izveidotu motīvus, saņemtu palīdzību rakstīšanā un strukturētu darbu.</translation>
 <translation id="3245429137663807393">Ja kopīgojat arī Chrome lietojuma pārskatus, šajos pārskatos tiek iekļauti jūsu apmeklētie vietrāži URL.</translation>

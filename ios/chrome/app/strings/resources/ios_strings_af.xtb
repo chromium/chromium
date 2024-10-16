@@ -411,6 +411,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="288655811176831528">Maak oortjie toe</translation>
 <translation id="2888631381369839306">Prysnasporingkennisgewings is aangeskakel</translation>
 <translation id="288902476966286676">Stuur terug na stuurder</translation>
+<translation id="2894757982205307093">Nuwe oortjie in groep</translation>
 <translation id="2905479111267140204">Jy het <ph name="NUMBER_OF_PASSWORDS" /> hergebruikte wagwoorde wat jou sekuriteit in gevaar kan stel.</translation>
 <translation id="291754862089661335">Plaas QR- of strepieskode in hierdie raam</translation>
 <translation id="2918688092312652908">Merk as ongelees</translation>
@@ -590,6 +591,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3861908220442487587">Hierdie adres word net op hierdie toestel gestoor. Skuif dit na jou Google-rekening, <ph name="USER_EMAIL" />, toe om dit op jou ander toestelle te gebruik.</translation>
 <translation id="3868495844258915202">Wys volle URL</translation>
+<translation id="3875783148670536197">Wys my hoe</translation>
 <translation id="3876833929577368454">Vra my elke keer</translation>
 <translation id="3885587018298784481">Sluit by ’n gesinsgroep aan</translation>
 <translation id="3888863481921783344">Dit sal gebruik word om vir jou moontlike genooides na jou geleentheid te wys.</translation>
@@ -1103,6 +1105,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6227126502342367214">Lens-kamerasoektog</translation>
 <translation id="6231782223312638214">Voorgestelde</translation>
 <translation id="6232329973559504466">Incognito-soektog</translation>
+<translation id="6234310016144827337">Gaan jou verbinding na en probeer weer</translation>
 <translation id="6234438496206735891">Wys aflaaie</translation>
 <translation id="6236952928980352967">Stel waarskuwing terug</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
@@ -1634,6 +1637,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8609743333007776886">Voeg ${url} by boekmerke</translation>
 <translation id="8620640915598389714">Redigeer</translation>
 <translation id="8625706492572042370">Wysig tuisskerm</translation>
+<translation id="8633025649649592204">Onlangse aktiwiteit</translation>
 <translation id="8636825310635137004">Skakel sinkronisering aan om jou oortjies van jou ander toestelle af te kry.</translation>
 <translation id="8637431369725868556">Kry beskerming teen gevaarlike werwe.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{{COUNT} gekompromitteerde wagwoord}other{{COUNT} gekompromitteerde wagwoorde}}</translation>
@@ -1772,6 +1776,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9183733013282108610">Incognito-soektog</translation>
 <translation id="9186762474139509529">Begin loginskrywing</translation>
 <translation id="9191031968346938109">Voeg by …</translation>
+<translation id="9196007736149429065">Hiedie lêer kon nie oopgemaak word nie</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d. gelede</translation>
 <translation id="9203116392574189331">Oorgee</translation>
 <translation id="9203951165704618409">Wissel jou adresbalk van bo na onder vir ’n gepasmaakte blaai-ervaring.</translation>

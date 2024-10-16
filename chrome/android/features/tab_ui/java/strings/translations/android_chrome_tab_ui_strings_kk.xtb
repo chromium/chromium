@@ -58,19 +58,16 @@
 <translation id="3078350928901129212">Қойындылар тобының <ph name="COLOR_NAME" /> түсті белгішесі</translation>
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды, <ph name="ANY_CHANGED" /> өзгертілді.}other{<ph name="MANY_ADDED" /> қойынды қосылды, <ph name="ANY_CHANGED" /> өзгертілді.}}</translation>
-<translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3547352561153509682">Бұл жағдайда топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
 <translation id="3613492231657284463">"Әрекетсіз қойындылар" диалогтік терезесін жасыру</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Алғы көрінісі бар нобай.</translation>
 <translation id="381219490185664296">Қойындылар тобын тарату қажет пе?</translation>
-<translation id="3882834874697329510">Ашық қойындыда төмен баға болған кезде, хабарландыру алу үшін "Параметрлер" бөлімінен хабарландыруларды қосыңыз.</translation>
 <translation id="3940195383040445971">Бағаны қойындыларда бақылау</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Қойындыны жаңа топқа енгізу}other{Қойындыларды жаңа топқа енгізу}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> әрекетсіз қойынды}other{<ph name="TABS_COUNT_MANY" /> әрекетсіз қойынды}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> тобын ашу</translation>
-<translation id="3996880007329611795">Хабарландыру алу</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> күн бұрын жасалды.}other{<ph name="NUM_DAYS_MANY" /> күн бұрын жасалды.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="4139634748112164403">Қойындылар осы құрылғыда ашық қалады, бірақ топ біржола жойылады.</translation>
@@ -115,7 +112,6 @@
 <translation id="5627941783489838464">Қойындыларда өзгеріс жоқ.</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Қойындыны қалпына келтіру}other{Қойындыларды қалпына келтіру}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-нан <ph name="TABS_COUNT_ONE" /> сілтеме}other{Chrome-нан <ph name="TABS_COUNT_MANY" /> сілтеме}}</translation>
-<translation id="575494663145460764">Бағаның төмендеуі туралы хабарландыру келсін бе?</translation>
 <translation id="58326064309361797">Қойындыларды топтастыру үшін оларды сүйреңіз.</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5972844218283131174">Барлығын алып тастау</translation>

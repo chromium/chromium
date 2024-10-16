@@ -595,7 +595,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="142765311413773645">Licenca za aplikaciju <ph name="APP_NAME" /> je istekla</translation>
 <translation id="1428373049397869723">Podržane datoteke možete otvarati i uređivati pomoću ove aplikacije u pretraživaču ili drugim aplikacijama. Za upravljanje datotekama koje mogu otvoriti aplikaciju prema zadanim postavkama <ph name="BEGIN_LINK" />saznajte kako postaviti zadane aplikacije na uređaju<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Spremili ste bilješku za zaporku na ovoj web-lokaciji. Da biste je pregledali, odaberite upravljanje zaporkama na traci za pretraživanje i adresnoj traci.</translation>
-<translation id="1428770807407000502">Želite li isključiti sinkronizaciju?</translation>
 <translation id="1429300045468813835">Sve je izbrisano</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1431188203598586230">Zadnje ažuriranje softvera</translation>
@@ -2644,7 +2643,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2844809857160214557">Pregled zadataka ispisa i upravljanje njima</translation>
 <translation id="2845276301195220700">Više radnji za Google kalendar</translation>
 <translation id="2845382757467349449">Uvijek prikaži traku oznake</translation>
-<translation id="2845751331501453107">Hoće li se oglas koji vam se prikazuje dok pregledavate personalizirati ovisi o toj postavci, <ph name="BEGIN_LINK1" />oglasima koje predlažu web-lokacije<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />postavkama kolačića<ph name="LINK_END2" /> i o tome personalizira li web-lokacija koju pregledavate oglase</translation>
 <translation id="284581348330507117">Izradite jedinstvene zaporke</translation>
 <translation id="284884486564166077">Pretražujte slike pomoću Objektiva</translation>
 <translation id="2849035674501872372">Potražiti</translation>
@@ -3005,6 +3003,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3108957152224931571">Boja isticanja</translation>
 <translation id="3109206895301430738">Spremljeno u grupe kartica</translation>
 <translation id="3109724472072898302">Sažeto</translation>
+<translation id="310979712355504754">Izbriši sve</translation>
 <translation id="3112292765614504292">Veličina aplikacije: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Ne dopuštaj web-lokacijama uređivanje datoteka ili mapa na uređaju</translation>
 <translation id="3113970906450647715">Gumb je otkvačen</translation>
@@ -3080,7 +3079,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3177914167275935955">Vaš uređaj uključuje Nadogradnju za Chrome za obrazovanje, no vaše korisničko ime nije povezano s računom za Google for Education. Izradite račun za Google for Education na sekundarnom uređaju na stranici g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Font teksta</translation>
 <translation id="3180284704187420717">Spremanje oznaka, zaporki i drugih podataka uz sinkronizaciju</translation>
-<translation id="3180716079618904608">Nabavite aplikacije i igre</translation>
 <translation id="3180990259147710757">Pomicanje čeljusti ulijevo</translation>
 <translation id="3181954750937456830">Sigurno pregledavanje (štiti vas i vaš uređaj od opasnih web-lokacija)</translation>
 <translation id="3182749001423093222">Provjera pravopisa</translation>
@@ -3224,7 +3222,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="328571385944182268">Spremiti zaporke?</translation>
 <translation id="3289668031376215426">Automatsko veliko početno slovo</translation>
 <translation id="3289856944988573801">Da biste provjerili ima li ažuriranja, upotrijebite Ethernet ili Wi-Fi.</translation>
-<translation id="3289886661311231677">Možete blokirati teme za koje ne želite da se dijele s web-lokacijama. Chrome također automatski briše vaše teme starije od četiri tjedna.</translation>
 <translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti proširenja i informacija o sustavu radi lakšeg otkrivanja novih prijetnji</translation>
 <translation id="3293181007446299124">Vaša povijest pregledavanja ostaje privatna na vašem uređaju, a izvješća se šalju s odgodom radi zaštite vašeg identiteta</translation>
 <translation id="329324683265785818">Reprodukcija/pauza, tipkovni prečac k</translation>
@@ -4544,6 +4541,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4231141543165771749">Zatvori kontrole za videoigre</translation>
 <translation id="4231231258999726714">Postavljanje Steama za Chromebook</translation>
 <translation id="4232375817808480934">Konfigurirajte Kerberos</translation>
+<translation id="4232376164796433044">Zaporke i autom. popunjavanje</translation>
 <translation id="4232484478444192782">Vaš Android telefon pobrinut će se za vas. Vaš Wi-Fi i zaporka prenose se.</translation>
 <translation id="423327101839111402">Ukloni grupu <ph name="NAME" /></translation>
 <translation id="4233739489690259993">Chromebook više ne prima sigurnosna i softverska ažuriranja. Nadogradite uređaj kako biste dobili najnovije sigurnosne zaštite i nove značajke. Primjenjuju se uvjeti ponude.</translation>
@@ -5578,7 +5576,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4992869834339068470">Pomozite poboljšati značajke i izvedbu ChromeOS-a. Podaci se sažimaju iz više izvora i vrlo su zaštićeni.</translation>
 <translation id="4994426888044765950">Ako dulje pritisnete tipku, njezin će se znak ponoviti</translation>
 <translation id="4994754230098574403">Postavljanje</translation>
-<translation id="4995293419989417004">Saznajte više o temama oglasa</translation>
 <translation id="4995676741161760215">Uključeno, omogućeno je proširenje</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nije pronađen nijedan <ph name="VM_TYPE" /> VM}=1{Pronađen je jedan <ph name="VM_TYPE" /> VM: <ph name="VM_NAME_LIST" />}one{Pronađen je {NUM_VMS} <ph name="VM_TYPE" /> VM: <ph name="VM_NAME_LIST" />}few{Pronađena su {NUM_VMS} <ph name="VM_TYPE" /> VM-a: <ph name="VM_NAME_LIST" />}other{Pronađeno je {NUM_VMS} <ph name="VM_TYPE" /> VM-ova: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Nema internetske veze.</translation>
@@ -6905,7 +6902,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5976780232488408272">Pomoć pri pisanju</translation>
 <translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5978277834170881274">&amp;Koristi osnovnu provjeru pravopisa</translation>
-<translation id="5978493744931296692">Vaš administrator onemogućio je druge profile</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Ponovo ste uključili jedno potencijalno štetno proširenje}one{Ponovo ste uključili {NUM_EXTENSIONS} potencijalno štetno proširenje}few{Ponovo ste uključili {NUM_EXTENSIONS} potencijalno štetna proširenja}other{Ponovo ste uključili {NUM_EXTENSIONS} potencijalno štetnih proširenja}}</translation>
 <translation id="5979353814339191480">Opcija se primjenjuje na Chromebookove s podatkovnim paketom ili hardverskim ključem za mobilnu mrežu ili prilikom modemskog povezivanja s prijenosnom žarišnom točkom</translation>
@@ -7860,6 +7856,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6691936601825168937">&amp;Proslijedi</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{Jedna stranica}one{Broj stranica: {COUNT}}few{Broj stranica: {COUNT}}other{Broj stranica: {COUNT}}}</translation>
 <translation id="6693820805264897502">zamjena postojećih zaporki</translation>
+<translation id="6694462491298752106">Ugrađena dodirna podloga je onemogućena</translation>
 <translation id="6694634756612002311">Upravljanje dijeljenjem</translation>
 <translation id="6697172646384837537">Odaberite gdje će se uvesti vaše zaporke</translation>
 <translation id="6697492270171225480">Prikaži prijedloge za slične stranice kada se stranica ne može pronaći</translation>
@@ -8517,7 +8514,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7166815366658507447">Žarišna točka omogućena</translation>
 <translation id="7167327771183668296">Automatski klikovi</translation>
 <translation id="7167486101654761064">&amp;Uvijek otvori ovu vrstu datoteka</translation>
-<translation id="716775164025088943">Vaše se oznake, povijest, zaporke i ostalo više neće sinkronizirati.</translation>
 <translation id="716810439572026343">Preuzimanje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Najmanja veličina fonta</translation>
 <translation id="7169122689956315694">Uključite obavijest kad je uređaj u blizini</translation>
@@ -8659,7 +8655,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7273894023751806510">Uvijek blokirajte operatera <ph name="HOST" /> kako ne bi kontrolirao i reprogramirao vaše uređaje s MIDI-jem</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> do kraja</translation>
 <translation id="727595954130325265">Kupite odmah</translation>
-<translation id="7276100255011548441">Chrome automatski briše teme starije od 4 tjedna. Kako nastavljate s pregledavanjem, tema se može ponovo pojaviti na popisu. Možete i blokirati teme za koje ne želite da ih Chrome dijeli s web-lokacijama. Saznajte više o <ph name="BEGIN_LINK" />upravljanju zaštitom privatnosti u online oglašavanju u Chrome<ph name="END_LINK" />.</translation>
 <translation id="7278164481614262110">Izrada tema pomoću umjetne inteligencije</translation>
 <translation id="727952162645687754">Pogreška preuzimanja</translation>
 <translation id="7280649757394340890">Postavke glasa za pretvaranje teksta u govor</translation>

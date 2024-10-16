@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Permitir o início de sessão no Chrome</translation>
 <translation id="1953553007165777902">A transferir… Falta(m) <ph name="MINUTE" /> minuto(s)</translation>
 <translation id="1982647487457769627">O Chrome funciona em várias plataformas para lhe oferecer uma experiência familiar, independentemente do dispositivo</translation>
-<translation id="19955905961160405">Pesquise o conteúdo apresentado no ecrã com o Google Lens</translation>
 <translation id="2001586581944147178">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O Chrome usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Esta extensão já não é suportada. O Chrome recomenda que a remova.}other{Estas extensões já não são suportadas. O Chrome recomenda que as remova.}}</translation>
 <translation id="2018528049276128029">Cada perfil possui as suas próprias informações do Chrome, como marcadores, histórico, palavras-passe e muito mais.</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Todos os idiomas</translation>
 <translation id="3169523567916669830">Durante as avaliações, pode ver e remover tópicos de interesse que os sites usam para lhe mostrar anúncios. O Chrome estima os seus interesses com base no seu histórico de navegação recente.</translation>
 <translation id="3196187562065225381">O Chrome bloqueou esta transferência porque o ficheiro é perigoso</translation>
+<translation id="3222857603094643834">Pesquise qualquer conteúdo nesta página com o Google Lens</translation>
 <translation id="3226612997184048185">Se também guardar os marcadores na sua Conta Google, pode monitorizar os preços dos produtos no Chrome e receber uma notificação quando o preço descer.</translation>
 <translation id="3234642784688107085">Experimente as novas funcionalidades de IA para criar temas, obter ajuda com a escrita e manter a organização</translation>
 <translation id="3245429137663807393">Se também partilhar relatórios de utilização do Chrome, esses relatórios incluem os URLs que visita</translation>

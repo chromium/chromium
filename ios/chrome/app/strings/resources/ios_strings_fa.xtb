@@ -411,6 +411,7 @@
 <translation id="288655811176831528">بستن برگه</translation>
 <translation id="2888631381369839306">اعلان‌های «پیگیری قیمت» روشن شد</translation>
 <translation id="288902476966286676">برگرداندن به فرستنده</translation>
+<translation id="2894757982205307093">برگه جدید در گروه</translation>
 <translation id="2905479111267140204"><ph name="NUMBER_OF_PASSWORDS" /> گذرواژه دوباره‌استفاده‌شده دارید که می‌تواند امنیت شما را به‌خطر بیندازد.</translation>
 <translation id="291754862089661335">رمزینه پاسخ‌سریع یا بارکد را در این قاب قرار دهید</translation>
 <translation id="2918688092312652908">علامت‌گذاری به‌عنوان خوانده‌نشده</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861908220442487587">‏این نشانی فقط در این دستگاه ذخیره شده است. برای استفاده از این نشانی در دستگاه‌های دیگر، آن را به «حساب Google» (<ph name="USER_EMAIL" />) منتقل کنید.</translation>
 <translation id="3868495844258915202">نمایش نشانی وب کامل</translation>
+<translation id="3875783148670536197">نمایش روش انجام کار</translation>
 <translation id="3876833929577368454">هربار از من سؤال شود</translation>
 <translation id="3885587018298784481">پیوستن به گروه خانواده</translation>
 <translation id="3888863481921783344">از این دسترسی برای نمایش دعوت‌شوندگان بالقوه به رویدادتان استفاده می‌شود.</translation>
@@ -1103,6 +1105,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6227126502342367214">جستجوی دوربینی «لنز»</translation>
 <translation id="6231782223312638214">پیشنهادی</translation>
 <translation id="6232329973559504466">جستجوی ناشناس</translation>
+<translation id="6234310016144827337">اتصالتان را بررسی و دوباره امتحان کنید</translation>
 <translation id="6234438496206735891">نمایش بارگیری‌ها</translation>
 <translation id="6236952928980352967">بازیابی هشدار</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
@@ -1634,6 +1637,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8609743333007776886">‏افزودن ${url} به نشانک‌ها</translation>
 <translation id="8620640915598389714">ویرایش</translation>
 <translation id="8625706492572042370">ویرایش صفحه اصلی</translation>
+<translation id="8633025649649592204">فعالیت اخیر</translation>
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
 <translation id="8637431369725868556">از خودتان دربرابر سایت‌های خطرناک محافظت کنید.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>

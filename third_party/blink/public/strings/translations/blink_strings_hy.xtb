@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Սովորական</translation>
 <translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1637811476055996098">Ընտրել ֆայլեր</translation>
-<translation id="1680090928918677457">Օգտագործել տեսախցիկը</translation>
 <translation id="1729654308190250600">Էլփոստի հասցեի տողը չպետք է դատարկ լինի:</translation>
 <translation id="1758486001363313524">Այլ…</translation>
 <translation id="1921819250265091946">օօ</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Տեսախցիկի ու խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="2507943997699731163">Խնդրում ենք լրացնել այս դաշտը:</translation>
 <translation id="2613802280814924224">Մուտքագրեք ճիշտ արժեք: Ամենամոտ ճիշտ արժեքը <ph name="VALID_VALUE" />-ն է:</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2746543609216772311">Արժեքը պետք է լինի <ph name="MINIMUM_DATE_OR_TIME" /> կամ ավելի ուշ ժամանակի:</translation>
 <translation id="2761667185364618470">Նշեք այս վանդակը, եթե ուզում եք շարունակել:</translation>
 <translation id="2908441821576996758">Մուտքագրեք էլփոստի հասցեների ստորակետներով բաժանված ցանկը:</translation>
-<translation id="2940013921954129954">Ճշգրիտ տեղադրությունը թույլատրված է</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ՄԲ</translation>
 <translation id="3075154866155599887">Մուտքագրեք ճիշտ արժեք: Դաշտը թերի է կամ ամսաթիվը ճիշտ չէ:</translation>
 <translation id="310520048233152454">Մուտքագրեք URL:</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Ընդլայնեք այս տեքստը մինչև <ph name="MIN_CHARACTERS" /> կամ ավելի գրանշան (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="383465348367842624">«<ph name="ATSIGN" />»-ին հետևող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
-<translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
-<translation id="4663373278480897665">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="4664250907885839816">«<ph name="ATSIGN" />»-ին հաջորդող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="4718048029184481307">Նվագարկվում է «նկար նկարի մեջ» ռեժիմում</translation>
 <translation id="4812940957355064477">Մուտքագրեք համար:</translation>
-<translation id="49269513399674318">Օգտագործել խոսափողը</translation>
 <translation id="4975562563186953947">Ընտրված է՝ <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Միացնել ձայնը</translation>
 <translation id="49969490063480558">Մուտքագրեք «<ph name="ATSIGN" />» նշանին հաջորդող մասը: «<ph name="INVALIDADDRESS" />» հասցեն թերի է:</translation>
 <translation id="5164977714490026579">Արժեքը պետք է լինի մեծ կամ հավասար <ph name="MINIMUM" />-ին:</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ՊԲ</translation>
-<translation id="5239623327352565343">Տեղադրության տվյալների օգտագործումը թույլատրված է</translation>
 <translation id="5307600278924710095">Մուտքագրեք «<ph name="ATSIGN" />»-ին հաջորդող մասը: «<ph name="INVALIDADDRESS" />»-ը թերի է:</translation>
 <translation id="5334352251556557839">Չհաջողվեց նվագարկել մեդիա ֆայլը:</translation>
 <translation id="537648784377940524">Նվազագույն ամսաթիվը (<ph name="MIN_DATE_OR_TIME" />) պետք է լինի առավելագույն ամսաթվից առաջ (<ph name="MAX_DATE_OR_TIME" />)։</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Նվագարկման վատ որակ</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6820355525329141109">Չհաջողվեց բեռնել փլագինը:</translation>
-<translation id="688706781007114099">Օգտագործել տեղորոշումը</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
-<translation id="7134810312945846184">Օգտագործել խոսափողը և տեսախցիկը</translation>
 <translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>
 <translation id="7364796246159120393">Ընտրել ֆայլ</translation>
 <translation id="739024184232394898">Այլ…</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Արժեքը պետք է լինի <ph name="MINIMUM_TIME" /> – <ph name="MAXIMUM_TIME" /> միջակայքում։</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ֆայլ</translation>
 <translation id="8451268428117625855">Ընտրեք ֆայլ:</translation>
-<translation id="8533587060884335451">Օգտագործել ճշգրիտ վայրը</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Տողադարձ</translation>
 <translation id="8750798805984357768">Ընտրեք այս տարբերակներից մեկը:</translation>

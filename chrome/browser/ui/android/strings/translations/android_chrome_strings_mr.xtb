@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">आपोआप भाषांतर करा</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />गोपनीयता धोरण<ph name="END_LINK3" /> देखील लागू होते.</translation>
 <translation id="3080525922482950719">तुम्‍ही नंतर किंवा ऑफलाइन वाचण्यासाठी पेज सेव्‍ह करू शकता</translation>
-<translation id="3087218211037573995">फक्त या डिव्हाइसवर सेव्ह केलेले काही पासवर्ड लवकरच काम करणे थांबवतील. हे पासवर्ड तुम्ही Google Password Manager वर हलवू शकता.</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Chrome आणि <ph name="CHROME_CHANNEL" /> यांसाठी तुमच्या सेव्ह केलेल्या पासवर्डच्या सूची मर्ज केल्या गेल्या. तुम्ही तरीही तुमचे सेव्ह केलेले पासवर्ड दोन्ही अ‍ॅप्सवर ऑटोफिल करू शकता.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
-<translation id="4620032614425803188">ऑटोफिल सेवा</translation>
 <translation id="4624065194742029982">Chrome चा गुप्त मोड</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{एक धोक्यात असलेला पासवर्ड}other{# धोक्यात असलेले पासवर्ड}}</translation>
@@ -1512,11 +1510,9 @@
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
 <translation id="7846296061357476882">Google सेवा</translation>
 <translation id="784934925303690534">वेळ वर्गवारी</translation>
-<translation id="7850687713580657633">Google Play सेवा उपलब्ध नसल्यामुळे पासवर्ड लवकरच काम करणे थांबवतील. Google Password Manager मध्ये सेव्ह केलेले पासवर्ड वापरण्यासाठी, दुसरे डिव्हाइस वापरून साइन इन करा किंवा passwords.google.com वर जा.</translation>
 <translation id="7851858861565204677">इतर डिव्हाइसेस</translation>
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7859988229622350291">कधीही भाषांतर करू नका</translation>
-<translation id="7864208933699511058">तुम्ही ब्राउझ करत असताना, तुम्ही पाहत असलेली जाहिरात पर्सनलाइझ केलेली आहे की नाही ते हे सेटिंग, <ph name="BEGIN_LINK_1" />साइटने सुचवलेल्या जाहिराती<ph name="END_LINK_1" />, तुमची <ph name="BEGIN_LINK_2" />कुकी सेटिंग्ज<ph name="END_LINK_2" /> आणि तुम्ही पाहत असलेली साइट जाहिराती पर्सनलाइझ करते की नाही त्यावर अवलंबून असते.</translation>
 <translation id="7866213166286285359">पेज येथे भाषांतरित करा</translation>
 <translation id="78707286264420418">तुमच्या डिव्हाइसशी कनेक्ट करण्यासाठी <ph name="PRODUCT_NAME" /> ला जवळपासची डिव्हाइस या परवानगीची आवश्यकता आहे</translation>
 <translation id="7875915731392087153">ईमेल तयार करा</translation>

@@ -87,7 +87,6 @@
 <translation id="244264527810019436">Funktioner på visse websites fungerer muligvis ikke i inkognitotilstand</translation>
 <translation id="2442870161001914531">Anmod altid om computerversion</translation>
 <translation id="2469312991797799607">Denne handling sletter alle data og cookies for <ph name="ORIGIN" /> og alle websites i denne gruppe</translation>
-<translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2490684707762498678">Administreret af <ph name="APP_NAME" /></translation>
@@ -143,6 +142,7 @@
 <translation id="3242646949159196181">Når dette er slået til, kan websites afspille lyd. Når dette er slået fra, kan websites ikke afspille lyd.</translation>
 <translation id="3273479183583863618">Prisfald på faner</translation>
 <translation id="3277252321222022663">Tillad, at websites kan få adgang til sensorer (anbefales)</translation>
+<translation id="327891165872793509">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Giv relaterede websites tilladelse til at se din aktivitet i gruppen</translation>
 <translation id="3295019059349372795">Kapitel 11: Den vidunderlige smaragdby i Oz</translation>
 <translation id="3295602654194328831">Skjul oplysninger</translation>

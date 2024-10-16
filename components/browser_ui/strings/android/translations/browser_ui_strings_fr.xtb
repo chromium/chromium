@@ -87,7 +87,6 @@
 <translation id="244264527810019436">Il est possible que les fonctionnalités de certains sites ne soient pas opérationnelles en mode navigation privée</translation>
 <translation id="2442870161001914531">Toujours demander la version pour ordinateur</translation>
 <translation id="2469312991797799607">L'ensemble des données et cookies de <ph name="ORIGIN" /> et de tous les sites qui en dépendent seront supprimés</translation>
-<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2490684707762498678">Géré par <ph name="APP_NAME" /></translation>
@@ -143,6 +142,7 @@
 <translation id="3242646949159196181">Lorsque cette option est activée, le son des sites est activé. Lorsqu'elle est désactivée, le son des sites est désactivé.</translation>
 <translation id="3273479183583863618">Baisses de prix dans les onglets</translation>
 <translation id="3277252321222022663">Autoriser les sites à accéder à vos capteurs (recommandé)</translation>
+<translation id="327891165872793509">Chrome empêche la plupart des sites d'utiliser des cookies tiers pour vous suivre lorsque vous naviguez. Accédez aux paramètres pour <ph name="BEGIN_LINK" />gérer l'accès aux cookies tiers<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Autoriser les sites associés à voir votre activité dans le groupe</translation>
 <translation id="3295019059349372795">Chapitre 11 : La merveilleuse cité d'émeraude</translation>
 <translation id="3295602654194328831">Masquer les informations</translation>

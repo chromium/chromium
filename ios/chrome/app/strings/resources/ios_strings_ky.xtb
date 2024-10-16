@@ -411,6 +411,7 @@
 <translation id="288655811176831528">Өтмөктү жабуу</translation>
 <translation id="2888631381369839306">Бааларга көз салуу билдирмелери күйгүзүлдү</translation>
 <translation id="288902476966286676">Жөнөтүүчүгө кайтаруу</translation>
+<translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
 <translation id="2905479111267140204">Коопсуздугуңузду тобокелге салуучу <ph name="NUMBER_OF_PASSWORDS" /> кайра колдонулган сырсөзүңүз бар.</translation>
 <translation id="291754862089661335">QR кодду же штрих кодду бул алкакка жайгаштырыңыз</translation>
 <translation id="2918688092312652908">Окула элек деп белгилөө</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3861908220442487587">Бул дарек ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузга (<ph name="USER_EMAIL" />) жылдырыңыз</translation>
 <translation id="3868495844258915202">Толук URL дарегин көрсөтүү</translation>
+<translation id="3875783148670536197">Кантип?</translation>
 <translation id="3876833929577368454">Ар дайым сурала берсин</translation>
 <translation id="3885587018298784481">Үй-бүлөлүк топко кошулуу</translation>
 <translation id="3888863481921783344">Бул иш-чараңызга чакырыла турган адамдарды көрсөтүү үчүн колдонулат.</translation>
@@ -1103,6 +1105,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6227126502342367214">Lens аркылуу издөө</translation>
 <translation id="6231782223312638214">Сунушталат</translation>
 <translation id="6232329973559504466">Жашыруун издөө</translation>
+<translation id="6234310016144827337">Интернетти текшерип, кайталап көрүңүз</translation>
 <translation id="6234438496206735891">Жүктөлүп алынгандарды көрсөтүү</translation>
 <translation id="6236952928980352967">Эскертүүнү калыбына келтирүү</translation>
 <translation id="6247557882553405851">Google Сырсөздөрдү башкаргыч</translation>
@@ -1634,6 +1637,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8609743333007776886">${url} дарегин кыстармаларга кошуу</translation>
 <translation id="8620640915598389714">Түзөтүү</translation>
 <translation id="8625706492572042370">Башкы экранды түзөтүү</translation>
+<translation id="8633025649649592204">Соңку аракеттер</translation>
 <translation id="8636825310635137004">Өтмөктөрүңүздү башка түзмөктөрүңүздөн алуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="8637431369725868556">Кооптуу сайттардан коргонуңуз.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Уурдалган сырсөздөр жок}=1{{COUNT} уурдалган сырсөз бар}other{{COUNT} уурдалган сырсөз бар}}</translation>

@@ -593,7 +593,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="142765311413773645"><ph name="APP_NAME" />-licentie is verlopen</translation>
 <translation id="1428373049397869723">Je kunt ondersteunde bestanden openen en bewerken met deze app vanuit de Finder of andere apps. <ph name="BEGIN_LINK" />Bekijk hoe je standaard-apps instelt op je apparaat<ph name="END_LINK" /> om te bepalen welke bestanden standaard worden geopend in deze app.</translation>
 <translation id="1428657116642077141">Je hebt een notitie voor een wachtwoord op deze site opgeslagen. Als je de notitie wilt bekijken, selecteer je in de zoek- en adresbalk de optie Je wachtwoorden beheren.</translation>
-<translation id="1428770807407000502">Synchronisatie uitzetten?</translation>
 <translation id="1429300045468813835">Alles is gewist</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1431188203598586230">Laatste software-update</translation>
@@ -2641,7 +2640,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2844809857160214557">Afdruktaken bekijken en beheren</translation>
 <translation id="2845276301195220700">Meer acties voor Google Agenda</translation>
 <translation id="2845382757467349449">Bookmarkbalk altijd tonen</translation>
-<translation id="2845751331501453107">Of een advertentie wordt gepersonaliseerd terwijl je browst, is afhankelijk van deze instelling, <ph name="BEGIN_LINK1" />door sites voorgestelde advertenties<ph name="LINK_END1" />, je <ph name="BEGIN_LINK2" />cookie-instellingen<ph name="LINK_END2" /> en of de site die je bekijkt advertenties personaliseert</translation>
 <translation id="284581348330507117">Maak unieke wachtwoorden</translation>
 <translation id="284884486564166077">Een afbeelding zoeken met Lens</translation>
 <translation id="2849035674501872372">Omhoog kijken</translation>
@@ -3002,6 +3000,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3108957152224931571">Markeringskleur</translation>
 <translation id="3109206895301430738">Opgeslagen tabbladgroepen</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
+<translation id="310979712355504754">Alles verwijderen</translation>
 <translation id="3112292765614504292">App-grootte: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Niet toestaan dat sites bestanden of mappen op je apparaat bewerken</translation>
 <translation id="3113970906450647715">Knop losgemaakt</translation>
@@ -3077,7 +3076,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3177914167275935955">Je apparaat bevat een Chrome Education Upgrade, maar je gebruikersnaam is niet gekoppeld aan een Google for Education-account. Ga op een secundair apparaat naar g.co/workspace/edusignup om een Google for Education-account te maken.</translation>
 <translation id="3179982752812949580">Lettertype</translation>
 <translation id="3180284704187420717">Sla je bookmarks, wachtwoorden en meer op met synchronisatie</translation>
-<translation id="3180716079618904608">Apps en games downloaden</translation>
 <translation id="3180990259147710757">Je kaak naar links bewegen</translation>
 <translation id="3181954750937456830">Safe Browsing (hiermee worden jij en je apparaat beschermd tegen gevaarlijke sites)</translation>
 <translation id="3182749001423093222">Spellingcontrole</translation>
@@ -3220,7 +3218,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="328571385944182268">Je wachtwoorden opslaan?</translation>
 <translation id="3289668031376215426">Automatisch hoofdlettergebruik</translation>
 <translation id="3289856944988573801">Gebruik ethernet of wifi om op updates te controleren.</translation>
-<translation id="3289886661311231677">Je kunt onderwerpen blokkeren die je niet wilt delen met sites. Chrome verwijdert ook automatisch onderwerpen die ouder zijn dan 4 weken.</translation>
 <translation id="3290249595466894471">Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen vinden</translation>
 <translation id="3293181007446299124">Je browsegeschiedenis blijft privé op je apparaat en rapporten worden met vertraging verstuurd om je identiteit te beschermen</translation>
 <translation id="329324683265785818">Afspelen/onderbreken, sneltoets k</translation>
@@ -4539,6 +4536,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4231141543165771749">Gamebediening sluiten</translation>
 <translation id="4231231258999726714">Steam voor Chromebook instellen</translation>
 <translation id="4232375817808480934">Kerberos configureren</translation>
+<translation id="4232376164796433044">Wachtwoorden en automatisch invullen</translation>
 <translation id="4232484478444192782">Je Android-telefoon staat voor je klaar. Je wifi en wachtwoord worden overgezet.</translation>
 <translation id="423327101839111402">Groep <ph name="NAME" /> verwijderen</translation>
 <translation id="4233739489690259993">Je Chromebook krijgt geen beveiligings- en software-updates meer. Upgrade je apparaat voor de nieuwste beveiliging en nieuwe functies. Er zijn voorwaarden van toepassing.</translation>
@@ -5573,7 +5571,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4992869834339068470">Help de functies en prestaties van ChromeOS te verbeteren. Gegevens worden verzameld en goed beveiligd.</translation>
 <translation id="4994426888044765950">Als je een toets ingedrukt houdt, wordt het teken van de toets herhaald</translation>
 <translation id="4994754230098574403">Instellen</translation>
-<translation id="4995293419989417004">Meer informatie over advertentieonderwerpen</translation>
 <translation id="4995676741161760215">Aan, extensie staat aan</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Geen <ph name="VM_TYPE" />-VM's gevonden}=1{1 <ph name="VM_TYPE" />-VM gevonden: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" />-VM's gevonden: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Geen internetverbinding.</translation>
@@ -6900,7 +6897,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5976780232488408272">Hulp bij het schrijven</translation>
 <translation id="5977976211062815271">Op dit apparaat</translation>
 <translation id="5978277834170881274">Standaard spellingcontrole gebruiken</translation>
-<translation id="5978493744931296692">Je beheerder heeft andere profielen uitgezet</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Je hebt 1 potentieel schadelijke extensie weer aangezet}other{Je hebt {NUM_EXTENSIONS} potentieel schadelijke extensies weer aangezet}}</translation>
 <translation id="5979353814339191480">Deze optie is van toepassing op Chromebooks met een dongle voor een data-abonnement of een mobiel netwerk, of bij tethering naar een draagbare hotspot</translation>
@@ -7851,6 +7847,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6691936601825168937">&amp;Vooruit</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pagina}other{{COUNT} pagina's}}</translation>
 <translation id="6693820805264897502">bestaande wachtwoorden vervangen</translation>
+<translation id="6694462491298752106">Ingebouwde touchpad staat uit</translation>
 <translation id="6694634756612002311">Delen beheren</translation>
 <translation id="6697172646384837537">Selecteer waar je je wachtwoorden wilt importeren.</translation>
 <translation id="6697492270171225480">Suggesties voor vergelijkbare pagina's geven wanneer een pagina niet wordt gevonden</translation>
@@ -8508,7 +8505,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7166815366658507447">Hotspot staat aan</translation>
 <translation id="7167327771183668296">Automatische klikken</translation>
 <translation id="7167486101654761064">&amp;Altijd bestanden van dit type openen</translation>
-<translation id="716775164025088943">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd.</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> downloaden</translation>
 <translation id="7168109975831002660">Minimum lettergrootte</translation>
 <translation id="7169122689956315694">Melding aanzetten als apparaten in de buurt zijn</translation>
@@ -8650,7 +8646,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7273894023751806510">Altijd voorkomen dat <ph name="HOST" /> je MIDI-apparaten bedient en herprogrammeert</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="727595954130325265">Nu winkelen</translation>
-<translation id="7276100255011548441">Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Terwijl je browst, kan een onderwerp weer op de lijst komen te staan. Je kunt ook onderwerpen blokkeren als je niet wilt dat Chrome deze met sites deelt. Vind meer informatie over <ph name="BEGIN_LINK" />hoe je de advertentieprivacy in Chrome beheert<ph name="END_LINK" />.</translation>
 <translation id="7278164481614262110">Thema's maken met AI</translation>
 <translation id="727952162645687754">Downloadfout</translation>
 <translation id="7280649757394340890">Spraakinstellingen voor tekst-naar-spraak</translation>

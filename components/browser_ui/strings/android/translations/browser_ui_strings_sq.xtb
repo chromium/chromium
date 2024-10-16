@@ -87,7 +87,6 @@
 <translation id="244264527810019436">Veçoritë në disa sajte mund të mos funksionojnë në "Modalitetin 'e fshehtë'"</translation>
 <translation id="2442870161001914531">Kërko gjithmonë sajtin për desktop</translation>
 <translation id="2469312991797799607">Ky veprim do të fshijë të gjitha të dhënat dhe kukit për <ph name="ORIGIN" /> dhe të gjitha sajtet nën të</translation>
-<translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2490684707762498678">Menaxhuar nga <ph name="APP_NAME" /></translation>
@@ -143,6 +142,7 @@
 <translation id="3242646949159196181">Kur cilësimi është aktiv, sajtet mund të luajnë tinguj. Kur cilësimi është joaktiv, sajtet nuk mund të luajnë tinguj.</translation>
 <translation id="3273479183583863618">Uljet e çmimeve në skeda</translation>
 <translation id="3277252321222022663">Lejoju faqeve të të hapin sensorët (rekomandohet)</translation>
+<translation id="327891165872793509">Chrome e kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Lejo që sajtet e lidhura të shikojnë aktivitetin tënd te grupi</translation>
 <translation id="3295019059349372795">Kapitulli 11: Qyteti i mrekullueshëm i smeraldtë i Ozit</translation>
 <translation id="3295602654194328831">Fshih informacionin</translation>
@@ -449,7 +449,7 @@
 <translation id="7835852323729233924">Po luan media</translation>
 <translation id="783819812427904514">Aktivizo zërin e videos</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
-<translation id="7881140103901777395">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë.\n\nVizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
+<translation id="7881140103901777395">Chrome e kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë.\n\nVizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="789180354981963912">Blloko kukit e palëve të treta në modalitetin "e fshehtë"</translation>
 <translation id="7940722705963108451">Më kujto</translation>

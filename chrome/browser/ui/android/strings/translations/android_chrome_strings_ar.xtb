@@ -456,7 +456,6 @@
 <translation id="3070005020161560471">لغات أريد ترجمتها تلقائيًا</translation>
 <translation id="3072980200212375806">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />، علمًا بأنّ <ph name="BEGIN_LINK3" />سياسة الخصوصية<ph name="END_LINK3" /> تسري أيضًا.</translation>
 <translation id="3080525922482950719">يمكنك حفظ صفحات لقرائتها لاحقًا أو بلا إنترنت.</translation>
-<translation id="3087218211037573995">‏ستفقد قريبًا إمكانية الوصول إلى بعض كلمات المرور المحفوظة على هذا الجهاز فقط. يمكنك نقل كلمات المرور هذه إلى "مدير كلمات المرور في Google".</translation>
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="3091010850649238832">عرض محتوى الحافظة</translation>
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
@@ -760,7 +759,6 @@
 <translation id="4609429330876432068">‏تم دمج قوائم كلمات المرور المحفوظة في Chrome مع "<ph name="CHROME_CHANNEL" />". وسيظل بإمكانك ملء جميع كلمات المرور المحفوظة تلقائيًا في كلا التطبيقين.</translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
-<translation id="4620032614425803188">خدمات الملء التلقائي</translation>
 <translation id="4624065194742029982">‏وضع التصفّح المتخفي في Chrome</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{هناك كلمة مرور واحدة محتمَل تعرّضها للاختراق.}zero{هناك # كلمة مرور محتمَل تعرّضها للاختراق.}two{هناك كلمتا مرور محتمَل تعرّضهما للاختراق.}few{هناك # كلمات مرور محتمَل تعرّضها للاختراق.}many{هناك # كلمة مرور محتمَل تعرّضها للاختراق.}other{هناك # كلمة مرور محتمَل تعرّضها للاختراق.}}</translation>
@@ -1515,11 +1513,9 @@
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="7846296061357476882">‏خدمات Google</translation>
 <translation id="784934925303690534">النطاق الزمني</translation>
-<translation id="7850687713580657633">‏ستفقد قريبًا إمكانية الوصول إلى كلمات المرور بسبب عدم توفّر "خدمات Google Play". لاستخدام كلمات المرور المحفوظة في "مدير كلمات المرور في Google"، سجِّل الدخول باستخدام جهاز آخر أو انتقِل إلى passwords.google.com.</translation>
 <translation id="7851858861565204677">أجهزة أخرى</translation>
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
-<translation id="7864208933699511058">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد وعلى <ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصّص الإعلانات.</translation>
 <translation id="7866213166286285359">يمكنك ترجمة الصفحات هنا.</translation>
 <translation id="78707286264420418">يجب تفعيل الإذن "الأجهزة المجاورة" ليتمكّن <ph name="PRODUCT_NAME" /> من الاتصال بجهازك.</translation>
 <translation id="7875915731392087153">إنشاء رسالة إلكترونية</translation>

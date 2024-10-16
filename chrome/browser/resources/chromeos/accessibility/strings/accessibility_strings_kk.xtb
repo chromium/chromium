@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Гүлкекіре көк</translation>
 <translation id="1246424317317450637">Жуан</translation>
 <translation id="1251750620252348585">Келесі 6-деңгей тақырыбы</translation>
+<translation id="1264956950255940376">Сол көзіңізді сығырайтыңыз.</translation>
 <translation id="1268366246392928616">Алдыңғы математикалық өрнек жоқ.</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1284576163386164372">Мәзірлерді төрт саусақпен түрту арқылы ашып, оқулықтарды кез келген уақытта көруіңізге болады. Бұдан кейін "ChromeVox" бөлімінен оқулықты белсендіріңіз.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Түрту қимылы</translation>
 <translation id="1325363694295259631"><ph name="NAME" /> мәзір элементінің ауыстырып қосқышы таңдаудан алынып тасталған</translation>
 <translation id="1325946044405407859">Қоңырқай</translation>
+<translation id="1328928545650070438">Қасыңызды түсіріңіз.</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ішінен <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">таңба және сөз жаңғырығы</translation>
 <translation id="1334570596456017464">Төменгі индекс</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Кеңес</translation>
 <translation id="1354356357730355833">көшір</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> бағыттау пернесінің астындағы элементті басыңыз.</translation>
+<translation id="1365650529628379165">Қасыңызды көтеріңіз.</translation>
 <translation id="1376703628032300005">келесі таңбаға өту</translation>
 <translation id="1377925789329510816">Бұл – соңғы тақырып. Біріншісіне өту үшін "Search+H" пернелерін басыңыз. Ал осы беттегі екінші тақырыпқа өту үшін "Search+Shift+H" пернелерін басыңыз.</translation>
 <translation id="138218114945450791">Ашық көк</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Сілтеме</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">ChromeVox оқулығына қош келдіңіз. Осы оқулықтан кез келген уақытта шығу үшін пернетақтаның жоғарғы сол жақ бұрышындағы Esc пернесін басыңыз. ChromeVox оқулығын өшіру үшін Ctrl және Alt пернелерін басып тұрып, Z пернесін басыңыз. Дайын болған кезде, келесі сабаққа өту үшін бос орын пернесін басыңыз.</translation>
+<translation id="1735957571918073979">Көзіңізді жыпылықтатыңыз.</translation>
 <translation id="174268867904053074">Келесі график</translation>
 <translation id="1756785467854861272">Қошқыл күрең</translation>
 <translation id="1758693804775271377">Осы тақырыптың сабақтарын шолу үшін бір саусақпен солға не оңға сырғытыңыз.</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Оңға айналдыру</translation>
 <translation id="1781173782405573156">Тікелей өту пернесі</translation>
 <translation id="1787176709638001873">Құпия сөзді енгізетін өріс</translation>
+<translation id="1795438342141780114">Курсорды ортаға келтіру</translation>
 <translation id="180203835522132923">Search + O, одан кейін W</translation>
 <translation id="1810107444790159527">Тізім терезесі</translation>
 <translation id="1812527064848182527">альбомдық</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Келесі нысан</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox мәзірлерінде Брайль пәрмендерін көрсету</translation>
+<translation id="1999763610967697511">Сүйреп қою</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{сол жақ тік жақша}other{# сол жақ тік жақша}}</translation>
 <translation id="2009187674653301682">Жоғарғы индекс емес</translation>
 <translation id="2010555995361223825">ChromeVox мәзірлері</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Орфографиялық қате түзетілмеді.</translation>
 <translation id="2267945578749931355">Келесі таңба</translation>
 <translation id="2278490101488436824">Үш саусағыңызбен солға сырғытыңыз</translation>
+<translation id="228059581448666199">Тінтуірдің сол жақ түймесін басу</translation>
 <translation id="2303873575703885770">Элементті белсендіру</translation>
 <translation id="2305942658236913680">Келесі тақырып жоқ.</translation>
 <translation id="2311237334957139798">Алдыңғы элементке жылжу</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Алдыңғы ARIA көрнекті белгісі жоқ.</translation>
 <translation id="2843814945404750166">Қошқыл қою жасыл</translation>
 <translation id="2843837985843789981">Алдыңғы топ</translation>
+<translation id="2849035674501872372">Іздеу</translation>
+<translation id="2860710618359053450">Иегіңізді оңға қисайтыңыз.</translation>
 <translation id="2864481629947106776">Алдыңғы сілтеме</translation>
 <translation id="2867808975387772810">Пайдаланылған әдебиеттер</translation>
 <translation id="2873259058405069099">Кестенің басына өту</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Навигация</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{бос орын}other{# бос орын}}</translation>
 <translation id="3179119189286472195">Сілтеме емес</translation>
+<translation id="3180990259147710757">Иегіңізді солға қисайтыңыз.</translation>
 <translation id="320041337977930740">Дисплейді кезектесіп ашылатын етіп өзгерту</translation>
 <translation id="3206698050650195442">Оқулықтан шығу</translation>
 <translation id="3208346789712025453">Келесі басқару элементі жоқ.</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{плюс}other{# плюс белгісі}}</translation>
 <translation id="338583716107319301">Бөлгіш</translation>
 <translation id="3389259863310851658">Алдыңғы нысан өрісі</translation>
+<translation id="3390740059150071453">Сол жаққа қараңыз.</translation>
 <translation id="3393605254399152980">Дауыстап оқылуы үшін, бір саусағыңызбен сырғытыңыз</translation>
 <translation id="3406283310380167331">Нысандар тізімін көрсету</translation>
 <translation id="3407726812456125464">Таңдалған мәтінді тыңдау</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Алдыңғы нысан</translation>
 <translation id="4099274309791143834">ішкі мәзірі бар</translation>
 <translation id="4101527861445851766">Белгіленген құсбелгі ұясы</translation>
+<translation id="410225014223200513">Ерніңізді дөңгелектеңіз.</translation>
 <translation id="4115378294792113321">Күлгін</translation>
 <translation id="4116415223832267137">Ескерту</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{оң жақ мүсінді жақша}other{# оң жақ мүсінді жақша}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Сұрғылт көк</translation>
 <translation id="4253168017788158739">Ескертпе</translation>
 <translation id="4254798249533888099">Ағаш</translation>
+<translation id="4255016471934258618">Аузыңызды кеңірек ашыңыз.</translation>
 <translation id="4259220820964911921">Бет-әлпетімен басқару функциясын қосу қажет пе?</translation>
 <translation id="4271220233568730077">Келесі математикалық өрнек</translation>
 <translation id="4275397969489577657">Іс-шара трансляциялау журналын қосу</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Сарғыш қызыл</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{нүкте}=3{көп нүкте}other{# нүкте}}</translation>
 <translation id="4352022650330571548">"<ph name="PHRASE" />" деп тер</translation>
+<translation id="4360738659108163902">Тінтуірдің оң жақ түймесін басу</translation>
 <translation id="4372435075475052704">мин:<ph name="X" /></translation>
 <translation id="4372705107434148843">Сөйлеуді тоқтату</translation>
 <translation id="4376316291247992553">Графикалық элементтерді Брайль шрифті ретінде көру</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Бозғылт көк</translation>
 <translation id="4826415162591436065">Алға өту</translation>
 <translation id="4827410568042294688">таңдалмаған</translation>
+<translation id="483262387981411190">"Бет-әлпетімен басқару" функциясын кідірту не жалғастыру</translation>
+<translation id="4835598628985424375">Ерніңізді дүрдитіңіз.</translation>
 <translation id="4838490795649708173">Төрт саусағыңызбен түртіңіз</translation>
 <translation id="4839925464551908214">Алдыңғы жолға өту</translation>
 <translation id="4841614409681890122">Қою алқызыл</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Алдыңғы медиа виджеті жоқ.</translation>
 <translation id="4855927945655956315">Негізгі пернелер: Ctrl</translation>
+<translation id="485806788160414322">Медиафайлды ойнату немесе кідірту</translation>
 <translation id="4862744964787595316">Жуан емес</translation>
 <translation id="4865995900839719272">алдыңғы жолға өту</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Орташа сұрқай көк</translation>
 <translation id="5140016802771803559">Қою күлгін</translation>
 <translation id="5142101052131610456">Барлық сабақтар</translation>
+<translation id="514387318601895731">Төмен қараңыз.</translation>
 <translation id="5158275234811857234">Мұқаба</translation>
 <translation id="516076699907426116">"Келесі сабақ" түймесін табу үшін түртілген элементтерді дыбыстаңыз. Сосын жалғастыру үшін екі рет түртіңіз.</translation>
 <translation id="5170206230005240598">Брайль жазулары қосылған.</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Google Enhanced Network қызметінің мәтінді дыбыстау кеңейтімі</translation>
 <translation id="5783252477644995371">Бет-әлпетімен басқару функциясы бетті қимылдату арқылы курсорды жылжытуға және жымию сияқты бет қимылдарымен тінтуірдің сол жақ түймесін басу секілді әрекеттерді орындауға мүмкіндік береді.</translation>
 <translation id="5805940204952508776">Екі саусағыңызбен түртіңіз</translation>
+<translation id="5807774529265708172">Экрандағы пернетақтаны көрсету не жасыру</translation>
 <translation id="5819072574982403430">Тармақты құрылым элементі</translation>
 <translation id="5822819874379903994">Қою көгілдір</translation>
 <translation id="5824976764713185207">Жүктеліп болғаннан кейін, бетті автоматты түрде оқу</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Қойындылар тізімі</translation>
 <translation id="5866042630553435010">Ішінара тексерілді</translation>
 <translation id="5866210856231860256">Осы тақырыптың сабақтары арасында өту үшін "Іздеу + оң жаққа бағыттауыш" немесе "Іздеу + сол жаққа бағыттауыш" пернелерін басыңыз.</translation>
+<translation id="5866236843389439313">Солға қарай езу тартыңыз.</translation>
 <translation id="5867591286054666064">Осы оқулықпен танысу кезінде қандай да бір перненің атауын білу үшін оны басыңыз.</translation>
 <translation id="5869546221129391014">Тор</translation>
 <translation id="5876817486144482042">Дауыс деңгейін төмендету</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Ағымдағы күн</translation>
 <translation id="5926889058434275234">Қимылдардың толық тізімін көру үшін Анықтамалық орталыққа жүгініңіз.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{тең}other{# теңдік белгісі}}</translation>
+<translation id="5947651424015173580">Тінтуірдің сол жақ түймесін екі рет басу</translation>
 <translation id="5948123859135882163">Құрылымдық және семантикалық арасында математикалық өрнектердің түсіндірмесін ауыстырып қосу</translation>
 <translation id="5955304353782037793">қолданба</translation>
 <translation id="5956928062748260866">Диалог</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{# элементі бар}other{# элементі бар}}</translation>
 <translation id="5981446804259161541">Ашық көк жасыл</translation>
 <translation id="5983179082906765664">Навигация грануляциясын арттыру</translation>
+<translation id="5988563937187882754">Оң жаққа қараңыз.</translation>
 <translation id="5992285135956208197">Графикалық құжат</translation>
 <translation id="5999630716831179808">Дауыстар</translation>
 <translation id="6006050241733874051">Пішін</translation>
@@ -972,6 +994,7 @@
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Келесі мәтінді-тізімді өріс жоқ.</translation>
+<translation id="7715455358521357192">Оң көзіңізді сығырайтыңыз.</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
 <translation id="7731785449856576010">Келесі медиа виджеті жоқ.</translation>
 <translation id="7735498529470878067">Түртілген элементтерді дыбыстау экранда не орналасқанын жылдам түсінуіңізге көмектеседі.</translation>
@@ -989,6 +1012,7 @@
 <translation id="7839679365527550018">Алдыңғы сөз</translation>
 <translation id="7846634333498149051">Пернетақта</translation>
 <translation id="7851816175263618915">Кейбір тыныс белгілері</translation>
+<translation id="7860802890538098598">Оңға қарай езу тартыңыз.</translation>
 <translation id="7871691770940645922">Виртуалдық Браиль дисплейі</translation>
 <translation id="7882421473871500483">Қоңыр</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1008,6 +1032,7 @@
 <translation id="8004512796067398576">Арту</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{дәйексөз}other{# дәйексөз}}</translation>
+<translation id="8017004049696748317">"Мәтінді дауыспен енгізу" функциясын қосу не өшіру</translation>
 <translation id="8017588669690167134">Дауыстап оқуды өшіру</translation>
 <translation id="801990297710781303">Төменгі түсіндірме</translation>
 <translation id="8028833145828956995">ChromeVox бетін сенсорлық экранмен пайдалана аласыз.</translation>
@@ -1026,6 +1051,7 @@
 <translation id="8098587210054821856">Көкшіл сұр</translation>
 <translation id="8121539003537428024">Барлық іс-шара сүзгілерін іске қосу</translation>
 <translation id="8123975449645947908">Артқа айналдыру</translation>
+<translation id="8126355825906412872">Жымиыңыз.</translation>
 <translation id="8126386426083591964">Алдыңғы 5-деңгей тақырыбы жоқ.</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> файлын жүктеп алу тоқтатылды</translation>
 <translation id="8129445297241948503">Жоғарыда ұяшық жоқ.</translation>
@@ -1130,6 +1156,7 @@
 <translation id="8940925288729953902">Өзгерткіш пернелер</translation>
 <translation id="8943282376843390568">Сарғылт жасыл</translation>
 <translation id="8944511129464116546">ішінара белгіленді</translation>
+<translation id="8945050808870279132">Мұрныңызды тыжырайтыңыз.</translation>
 <translation id="8946628535652548639"><ph name="TABLECELLROWINDEX" />-ж., <ph name="TABLECELLCOLUMNINDEX" />-б.</translation>
 <translation id="8952400011684167587">Алдыңғы ауыстырып қосқыш жоқ.</translation>
 <translation id="8970172509886453271">Алдыңғы бөлім жоқ.</translation>

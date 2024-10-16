@@ -593,7 +593,6 @@
 <translation id="142765311413773645">Лицензът за <ph name="APP_NAME" /> е изтекъл</translation>
 <translation id="1428373049397869723">От Finder или други приложения можете да отваряте и редактирате поддържани файлове с това приложение. За да контролирате кои файлове да се отварят с него по подразбиране, <ph name="BEGIN_LINK" />научете как да зададете стандартни приложения на устройството си<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Запазихте бележка за парола на този сайт. За да я прегледате, изберете опцията за управление на паролите в лентата за търсене и адресната лента.</translation>
-<translation id="1428770807407000502">Да се изключи ли синхронизирането?</translation>
 <translation id="1429300045468813835">Всичко бе изчистено</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1431188203598586230">Последна софтуерна актуализация</translation>
@@ -2650,7 +2649,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2844809857160214557">Преглеждайте и управлявайте заданията за отпечатване</translation>
 <translation id="2845276301195220700">Още действия за Google Календар</translation>
 <translation id="2845382757467349449">Непрекъснато показване на лентата на отметките</translation>
-<translation id="2845751331501453107">Рекламите, които виждате по време на сърфиране, могат да бъдат персонализирани. Това зависи от тази настройка, <ph name="BEGIN_LINK1" />предложените от сайтовете реклами<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />настройките ви за „бисквитките“<ph name="LINK_END2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите</translation>
 <translation id="284581348330507117">Създайте уникални пароли</translation>
 <translation id="284884486564166077">Търсене на което и да е изображение с Обектив</translation>
 <translation id="2849035674501872372">Търсене</translation>
@@ -3011,6 +3009,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3108957152224931571">Цвят за открояване</translation>
 <translation id="3109206895301430738">Запазени групи раздели</translation>
 <translation id="3109724472072898302">Свито</translation>
+<translation id="310979712355504754">Изтриване на всички</translation>
 <translation id="3112292765614504292">Размер на приложението: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Да не се разрешава на сайтовете да редактират файлове и папки на устройството ви</translation>
 <translation id="3113970906450647715">Бутонът е освободен</translation>
@@ -3086,7 +3085,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3177914167275935955">Устройството ви включва Chrome Education Upgrade, но потребителското ви име не е свързано с профил в Google for Education. Създайте такъв, като посетите g.co/workspace/edusignup от алтернативно устройство.</translation>
 <translation id="3179982752812949580">Шрифт на текста</translation>
 <translation id="3180284704187420717">Запазвайте своите отметки, пароли и др. с функцията за синхронизиране</translation>
-<translation id="3180716079618904608">Изтегляне на приложения и игри</translation>
 <translation id="3180990259147710757">Преместване на челюстта наляво</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
 <translation id="3182749001423093222">Проверка на правописа</translation>
@@ -3231,7 +3229,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="328571385944182268">Да се запазят ли паролите ви?</translation>
 <translation id="3289668031376215426">Автоматично поставяне на главни букви</translation>
 <translation id="3289856944988573801">За да проверите за актуализации, моля, използвайте Ethernet или Wi-Fi.</translation>
-<translation id="3289886661311231677">Можете да блокирате темите, които не искате да се споделят със сайтовете. Също така Chrome автоматично изтрива темите, по-стари от 4 седмици.</translation>
 <translation id="3290249595466894471">Също така се изпраща малка извадка от страници, изтеглени файлове, активност на разширенията и системна информация, за да се подпомогне откриването на нови заплахи</translation>
 <translation id="3293181007446299124">Историята ви на сърфиране остава частна на устройството ви, а отчетите се изпращат със закъснение, за да защитим самоличността ви.</translation>
 <translation id="329324683265785818">Пускане/поставяне на пауза, активира се с клавиш k на клавиатурата</translation>
@@ -4552,6 +4549,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4231141543165771749">Затваряне на игровите контроли</translation>
 <translation id="4231231258999726714">Steam за Chromebook се настройва</translation>
 <translation id="4232375817808480934">Конфигуриране на Kerberos</translation>
+<translation id="4232376164796433044">Пароли и автоматично попълване</translation>
 <translation id="4232484478444192782">Можете да разчитате на телефона си с Android. Wi-Fi мрежата и паролата ви се прехвърлят.</translation>
 <translation id="423327101839111402">Премахване на групата „<ph name="NAME" />“</translation>
 <translation id="4233739489690259993">Вашият Chromebook вече не получава актуализации за сигурност и софтуерни актуализации. Надстройте устройството си за достъп до най-новите функции за сигурност и софтуер. В сила са условията за офертата.</translation>
@@ -5587,7 +5585,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4992869834339068470">Помогнете за подобряването на функциите и ефективността на ChromeOS. Данните са обобщени и много добре защитени.</translation>
 <translation id="4994426888044765950">Ако задържите даден клавиш, съответният знак ще се повтаря</translation>
 <translation id="4994754230098574403">Настройва се</translation>
-<translation id="4995293419989417004">Научете повече за рекламните теми</translation>
 <translation id="4995676741161760215">Включено, разширението е активирано</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Няма намерени виртуални машини от тип <ph name="VM_TYPE" />}=1{Намерена е 1 виртуална машина от тип <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Намерени са {NUM_VMS} виртуални машини от тип <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Няма връзка с интернет.</translation>
@@ -6919,7 +6916,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5976780232488408272">Получаване на помощ при писане</translation>
 <translation id="5977976211062815271">На това устройство</translation>
 <translation id="5978277834170881274">&amp;Използване на основната проверка на правописа</translation>
-<translation id="5978493744931296692">Администраторът ви е деактивирал другите потребителски профили</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Включихте 1 потенциално опасно разширение}other{Включихте {NUM_EXTENSIONS} потенциално опасни разширения}}</translation>
 <translation id="5979353814339191480">Тази опция се отнася за устройства Chromebook с план за данни или адаптер за връзка с мобилна мрежа, или връзка с тетъринг към преносима точка за достъп</translation>
@@ -7870,6 +7866,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6691936601825168937">&amp;Препращане</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}other{{COUNT} страници}}</translation>
 <translation id="6693820805264897502">замени съществуващите пароли</translation>
+<translation id="6694462491298752106">Вграденият сензорен панел е деактивиран</translation>
 <translation id="6694634756612002311">Управление на споделянето</translation>
 <translation id="6697172646384837537">Изберете къде да импортирате паролите си</translation>
 <translation id="6697492270171225480">Показване на предложения за подобни страници, когато дадена страница не може да бъде намерена</translation>
@@ -8527,7 +8524,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7166815366658507447">Точката за достъп е активирана</translation>
 <translation id="7167327771183668296">Автоматични кликвания</translation>
 <translation id="7167486101654761064">&amp;Файловете от този тип да се отварят винаги</translation>
-<translation id="716775164025088943">Отметките, историята, паролите ви и други данни вече няма да се синхронизират.</translation>
 <translation id="716810439572026343">„<ph name="FILE_NAME" />“ се изтегля</translation>
 <translation id="7168109975831002660">Минимален размер на шрифта</translation>
 <translation id="7169122689956315694">Включване на известията от устройства в близост</translation>
@@ -8669,7 +8665,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7273894023751806510">Контролирането и препрограмирането на MIDI устройствата ви да са забранени винаги за <ph name="HOST" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до зареждането</translation>
 <translation id="727595954130325265">Купете сега</translation>
-<translation id="7276100255011548441">Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Имате възможност също да блокирате темите, които не искате Chrome да споделя със сайтовете. Научете повече за <ph name="BEGIN_LINK" />управлението на поверителността при рекламите в Chrome<ph name="END_LINK" />.</translation>
 <translation id="7278164481614262110">Създаване на теми с AI</translation>
 <translation id="727952162645687754">Грешка при изтеглянето</translation>
 <translation id="7280649757394340890">Настройки за гласовете за синтезиран говор</translation>

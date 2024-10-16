@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">கார்ன்ஃபிளார் புளூ</translation>
 <translation id="1246424317317450637">தடித்த</translation>
 <translation id="1251750620252348585">அடுத்த 6 ஆம் படிநிலை தலைப்பு</translation>
+<translation id="1264956950255940376">இடது கண்ணைச் சுருக்குதல்</translation>
 <translation id="1268366246392928616">முந்தைய கணிதக் கோவை எதுவும் இல்லை</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1284576163386164372">நான்கு விரல்களால் தட்டி மெனுக்களைத் திறப்பதன் மூலம் பயிற்சிகளை எப்போது வேண்டுமானாலும் பார்க்கலாம். அதன்பிறகு, ”ChromeVox” பிரிவின் கீழ் உள்ள பயிற்சியைச் செயல்படுத்தவும்.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">தொட்டு அணுகுதலுக்கான பயிற்சி</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, மெனு விருப்பம் ரேடியோ பட்டன் தேர்வுநீக்கப்பட்டுள்ளது</translation>
 <translation id="1325946044405407859">டான்</translation>
+<translation id="1328928545650070438">புருவங்களைக் கீழிறக்குதல்</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> / <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">எழுத்து மற்றும் சொல் எதிரொலி</translation>
 <translation id="1334570596456017464">சப்ஸ்கிரிப்ட்</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">உதவிக்குறிப்பு</translation>
 <translation id="1354356357730355833">நகலெடுக்கும்</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> ரூட்டிங் விசைக்குக் கீழுள்ள உருப்படியைக் கிளிக் செய்யவும்</translation>
+<translation id="1365650529628379165">புருவங்களை உயர்த்துதல்</translation>
 <translation id="1376703628032300005">அடுத்த எழுத்துக்குச் செல்</translation>
 <translation id="1377925789329510816">இது கடைசி தலைப்பாகும். முதல் தலைப்பிற்குச் செல்ல, தேடல்+Hஐ ஒன்றாக அழுத்தவும் அல்லது இந்தப் பக்கத்தில் உள்ள இரண்டாவது தலைப்பிற்குச் செல்ல, தேடல்+Shift+Hஐ ஒன்றாக அழுத்தவும்.</translation>
 <translation id="138218114945450791">வெளிர் நீலம்</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">இணைப்பு</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">ChromeVox பயிற்சிக்கு வரவேற்கிறோம். கீபோர்டின் மேல் இடது மூலையில் உள்ள Escape விசையை அழுத்தி எப்போது வேண்டுமானாலும் இந்தப் பயிற்சியில் இருந்து வெளியேறலாம். ChromeVoxஸை முடக்க, Ctrl + Alt விசைகளை அழுத்திப் பிடித்துக்கொண்டே Z விசையை அழுத்தவும். அடுத்த பாடத்திற்குச் செல்ல, spacebar விசையைப் பயன்படுத்தவும்.</translation>
+<translation id="1735957571918073979">இரண்டு கண்களையும் சிமிட்டுதல்</translation>
 <translation id="174268867904053074">அடுத்த கிராஃபிக்</translation>
 <translation id="1756785467854861272">டார்க் மெஜந்தா</translation>
 <translation id="1758693804775271377">இந்தத் தலைப்பிற்கான பாடங்களைத் தேட, விரலால் இடது/வலதுபுறம் ஸ்வைப் செய்யவும்</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">வலப்புறம் செல்</translation>
 <translation id="1781173782405573156">பாஸ் த்ரூ விசை</translation>
 <translation id="1787176709638001873">கடவுச்சொல் திருத்த உரை</translation>
+<translation id="1795438342141780114">கர்சரை மீண்டும் மையத்திற்குக் கொண்டுவருதல்</translation>
 <translation id="180203835522132923">Search + O, அதன் பின்னர் W</translation>
 <translation id="1810107444790159527">பட்டியல் பெட்டி</translation>
 <translation id="1812527064848182527">லேண்ட்ஸ்கேப்</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">அடுத்த பொருள்</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox மெனுக்களில் பிரெய்ல் கட்டளைகளைக் காட்டு</translation>
+<translation id="1999763610967697511">இழுத்து விடும்</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{இடது அடைப்புக்குறி}other{# இடது அடைப்புக்குறிகள்}}</translation>
 <translation id="2009187674653301682">சூப்பர்ஸ்கிரிப்ட் அல்ல</translation>
 <translation id="2010555995361223825">ChromeVox மெனுக்கள்</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">எழுத்துப் பிழையைத் தவிர்த்துச் செல்கிறீர்கள்</translation>
 <translation id="2267945578749931355">அடுத்த எழுத்து</translation>
 <translation id="2278490101488436824">மூன்று விரல்களை இடதுபுறமாக ஸ்வைப் செய்யவும்</translation>
+<translation id="228059581448666199">மவுஸை இடது கிளிக் செய்தல்</translation>
 <translation id="2303873575703885770">பாட விருப்பத்தைச் செயல்படுத்துதல்</translation>
 <translation id="2305942658236913680">அடுத்த தலைப்பு எதுவும் இல்லை</translation>
 <translation id="2311237334957139798">விவர நிலையில் முந்தையதற்கு நகரும்</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">முந்தைய ARIA லேண்ட்மார்க் எதுவும் இல்லை</translation>
 <translation id="2843814945404750166">டார்க் ஆலிவ் க்ரீன்</translation>
 <translation id="2843837985843789981">முந்தைய குழு</translation>
+<translation id="2849035674501872372">தேடுக</translation>
+<translation id="2860710618359053450">தாடையை வலதுபுறம் நகர்த்துதல்</translation>
 <translation id="2864481629947106776">முந்தைய இணைப்பு</translation>
 <translation id="2867808975387772810">நூல்விவர அட்டவணை</translation>
 <translation id="2873259058405069099">அட்டவணையின் தொடக்கத்திற்குச் செல்</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">வழிச்செலுத்தல்</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{இடைவெளி}other{# இடைவெளிகள்}}</translation>
 <translation id="3179119189286472195">இணைப்பு அல்ல</translation>
+<translation id="3180990259147710757">தாடையை இடதுபுறம் நகர்த்துதல்</translation>
 <translation id="320041337977930740">தற்போதைய காட்சி நடை: ஒன்றின் மேல் ஒன்று</translation>
 <translation id="3206698050650195442">பயிற்சியிலிருந்து வெளியேறு</translation>
 <translation id="3208346789712025453">அடுத்த கட்டுப்பாடு எதுவும் இல்லை</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{கூட்டல் குறி}other{# கூட்டல் குறிகள்}}</translation>
 <translation id="338583716107319301">பிரிப்பான்</translation>
 <translation id="3389259863310851658">முந்தைய வடிவப் புலம்</translation>
+<translation id="3390740059150071453">இடதுபுறம் பார்த்தல்</translation>
 <translation id="3393605254399152980">நீங்கள் தொடுவதைப் பேச்சுவடிவில் கேட்க, ஒரு விரலை இழுக்கவும்</translation>
 <translation id="3406283310380167331">படிவங்கள் பட்டியலைக் காட்டு</translation>
 <translation id="3407726812456125464">தேர்ந்தெடுத்த வார்த்தைகளை வாசி</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">முந்தைய பொருள்</translation>
 <translation id="4099274309791143834">துணைமெனுவுடன்</translation>
 <translation id="4101527861445851766">தேர்வுசெய்த செக்பாக்ஸ்</translation>
+<translation id="410225014223200513">உதடுகளை வட்ட வடிவத்தில் குவித்தல்</translation>
 <translation id="4115378294792113321">மெஜந்தா</translation>
 <translation id="4116415223832267137">விழிப்பூட்டல்</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{வலது பிறை அடைப்புக்குறி}other{# வலது பிறை அடைப்புக்குறிகள்}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">ஸ்டீல் புளூ</translation>
 <translation id="4253168017788158739">குறிப்பு</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4255016471934258618">வாயை அகலமாகத் திறத்தல்</translation>
 <translation id="4259220820964911921">‘முக பாவனை’ அம்சத்தை இயக்க வேண்டுமா?</translation>
 <translation id="4271220233568730077">அடுத்த கணிதம்</translation>
 <translation id="4275397969489577657">நிகழ்வு வரிசைப் பதிவிடலை இயக்கு</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">சியன்னா</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{புள்ளி}=3{முப்புள்ளி}other{# புள்ளிகள்}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> என டைப் செய்க</translation>
+<translation id="4360738659108163902">மவுஸை வலது கிளிக் செய்தல்</translation>
 <translation id="4372435075475052704">குறை.:<ph name="X" /></translation>
 <translation id="4372705107434148843">பேசுவதை நிறுத்தும்</translation>
 <translation id="4376316291247992553">பிரெய்லி காட்சியில் கிராஃபிக்கைக் காட்டும்</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">பேல் டெர்க்காய்ஸ்</translation>
 <translation id="4826415162591436065">முன்னோக்கிச் செல்</translation>
 <translation id="4827410568042294688">தேர்ந்தெடுக்கப்படவில்லை</translation>
+<translation id="483262387981411190">முக பாவனை அம்சத்தை இடைநிறுத்துதல் அல்லது தொடங்குதல்</translation>
+<translation id="4835598628985424375">உதடுகளை ஒன்றாக அழுத்திக் குவித்தல்</translation>
 <translation id="4838490795649708173">நான்கு விரல்களால் தட்டவும்</translation>
 <translation id="4839925464551908214">முந்தைய வரிசைக்குச் செல்லும்</translation>
 <translation id="4841614409681890122">டீப் பிங்க்</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">முந்தைய ஊடக விட்ஜெட் எதுவும் இல்லை</translation>
 <translation id="4855927945655956315">முக்கியமான விசைகள்: Ctrl</translation>
+<translation id="485806788160414322">மீடியாவைப் பிளே செய்/இடைநிறுத்து</translation>
 <translation id="4862744964787595316">தடிமன் அல்ல</translation>
 <translation id="4865995900839719272">முந்தைய வரிசைக்குச் செல்</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">மீடியம் சிலேட்டு புளூ</translation>
 <translation id="5140016802771803559">ரிபெக்கா பர்ப்பிள்</translation>
 <translation id="5142101052131610456">அனைத்துப் பாடங்களும்</translation>
+<translation id="514387318601895731">கீழே பார்த்தல்</translation>
 <translation id="5158275234811857234">அட்டை</translation>
 <translation id="516076699907426116">தொடர, 'தொட்டு அறிக' அம்சத்தின் மூலம் ‘அடுத்த பாடம்’ பட்டனைக் கண்டறியவும். அதன்பிறகு, இருமுறை தட்டித் தொடரவும்.</translation>
 <translation id="5170206230005240598">பிரெய்ல் வசனங்கள் இயக்கப்பட்டுள்ளது</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Googleளின் மேம்பட்ட நெட்வொர்க் 'எழுத்திலிருந்து பேச்சு நீட்டிப்பு'</translation>
 <translation id="5783252477644995371">முகத்தின் மூலமான கர்சர் கட்டுப்பாட்டையும், செயல்களைச் செய்யும் திறனையும் ‘முக பாவனை’ அம்சம் உங்களுக்கு வழங்கும். உதாரணமாக, சிரிப்பது போன்ற முக பாவனையின் மூலம் இடது கிளிக் செய்யலாம்.</translation>
 <translation id="5805940204952508776">இரண்டு விரல்களால் தட்டவும்</translation>
+<translation id="5807774529265708172">ஸ்கிரீன் கீபோர்டைக் காட்டுதல் அல்லது மறைத்தல்</translation>
 <translation id="5819072574982403430">ட்ரீ உருப்படி</translation>
 <translation id="5822819874379903994">டார்க் டெர்க்காய்ஸ்</translation>
 <translation id="5824976764713185207">பக்கம் ஏற்றப்பட்டதும், அதைத் தானாகவே வாசி</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">தாவல் பட்டியல்</translation>
 <translation id="5866042630553435010">பகுதியளவு சரிபார்க்கப்பட்டது</translation>
 <translation id="5866210856231860256">இந்தத் தலைப்பில் உள்ள பாடங்களைத் தேட, Search + வலது அம்புக்குறி அல்லது Search + இடது அம்புக்குறி விசைகளை அழுத்துங்கள்</translation>
+<translation id="5866236843389439313">வாயின் இடது ஓரத்தை விரிவாக்குதல்</translation>
 <translation id="5867591286054666064">பயிற்சியின் போது, ஏதாவது விசையின் பெயரைக் கேட்க, அதனை அழுத்தவும்.</translation>
 <translation id="5869546221129391014">கட்டம்</translation>
 <translation id="5876817486144482042">பேச்சு ஒலியளவைக் குறை</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">தற்போதைய தேதி</translation>
 <translation id="5926889058434275234">சைகைகளின் முழுப் பட்டியலையும் பார்க்க, உதவி மையத்திற்குச் செல்லவும்.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{சமக்குறி}other{# சமக்குறிகள்}}</translation>
+<translation id="5947651424015173580">மவுஸை இருமுறை கிளிக் செய்தல்</translation>
 <translation id="5948123859135882163">அமைப்பு மற்றும் பொருள்விளக்கத்திற்கு இடையே கணிதக் கோவைகளின் விளக்கத்தை நிலைமாற்றவும்</translation>
 <translation id="5955304353782037793">ஆப்ஸ்</translation>
 <translation id="5956928062748260866">உரையாடல்</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{# உருப்படியுடன்}other{# உருப்படிகளுடன்}}</translation>
 <translation id="5981446804259161541">லைட் சையன்</translation>
 <translation id="5983179082906765664">வழிசெலுத்தும் நுணுக்கத்தை அதிகரி</translation>
+<translation id="5988563937187882754">வலதுபுறம் பார்த்தல்</translation>
 <translation id="5992285135956208197">கிராஃபிக்ஸ் ஆவணம்</translation>
 <translation id="5999630716831179808">குரல்கள்</translation>
 <translation id="6006050241733874051">படிவம்</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">அடுத்த உரை &amp; பட்டியல் பெட்டி எதுவும் இல்லை</translation>
+<translation id="7715455358521357192">வலது கண்ணைச் சுருக்குதல்</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
 <translation id="7731785449856576010">அடுத்த ஊடக விட்ஜெட் எதுவும் இல்லை</translation>
 <translation id="7735498529470878067">'தொட்டு அறிக' அம்சத்தின் மூலம் திரையில் உள்ளவற்றை விரைவாக அறிந்துகொள்ளலாம்.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">முந்தைய வார்த்தை</translation>
 <translation id="7846634333498149051">கீபோர்டு</translation>
 <translation id="7851816175263618915">சில நிறுத்தற்குறிகள் இருக்கலாம்</translation>
+<translation id="7860802890538098598">வாயின் வலது ஓரத்தை விரிவாக்குதல்</translation>
 <translation id="7871691770940645922">விர்ச்சுவல் பிரெய்ல் காட்சி</translation>
 <translation id="7882421473871500483">பழுப்பு</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">அதிகரி</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{மேற்கோள்}other{# மேற்கோள்கள்}}</translation>
+<translation id="8017004049696748317">சொல்வதை எழுதும் வசதியைத் தொடங்குதல் அல்லது நிறுத்துதல்</translation>
 <translation id="8017588669690167134">பேச்சை முடக்கும்</translation>
 <translation id="801990297710781303">அடிக்குறிப்பு</translation>
 <translation id="8028833145828956995">டச்ஸ்கிரீன் மூலம் ChromeVoxஸைப் பயன்படுத்தலாம்</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">சிலேட் கிரே</translation>
 <translation id="8121539003537428024">அனைத்து நிகழ்வு வடிப்பான்களையும் இயக்கு</translation>
 <translation id="8123975449645947908">பின்னே செல்</translation>
+<translation id="8126355825906412872">சிரித்தல்</translation>
 <translation id="8126386426083591964">முந்தைய 5ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> ஃபைலின் பதிவிறக்கம் நிறுத்தப்பட்டது</translation>
 <translation id="8129445297241948503">மேலே கலம் எதுவும் இல்லை</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">மாற்றி விசைகள்</translation>
 <translation id="8943282376843390568">சுண்ணாம்பு நிறம்</translation>
 <translation id="8944511129464116546">கலந்து தேர்ந்தெடுக்கப்பட்டது</translation>
+<translation id="8945050808870279132">மூக்கைச் சுருக்குதல்</translation>
 <translation id="8946628535652548639"><ph name="TABLECELLROWINDEX" />வரி.<ph name="TABLECELLCOLUMNINDEX" />நெடு.</translation>
 <translation id="8952400011684167587">முந்தைய ரேடியோ பட்டன் எதுவும் இல்லை</translation>
 <translation id="8970172509886453271">முந்தைய பிரிவு எதுவும் இல்லை</translation>

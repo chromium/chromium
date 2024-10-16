@@ -597,7 +597,6 @@
 <translation id="142765311413773645">انتهت صلاحية ترخيص <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">‏يمكنك فتح الملفات المتوافقة وتعديلها باستخدام هذا التطبيق من تطبيق Finder أو من تطبيقات أخرى. للتحكّم في الملفات التي تفتح هذا التطبيق تلقائيًا، <ph name="BEGIN_LINK" />تعرَّف على كيفية تحديد التطبيقات التلقائية على جهازك<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">لقد حفظت ملاحظة بشأن كلمة مرور على هذا الموقع الإلكتروني. لعرضها، اختَر "إدارة كلمات المرور" في شريط البحث أو شريط العناوين.</translation>
-<translation id="1428770807407000502">هل تريد إيقاف المزامنة؟</translation>
 <translation id="1429300045468813835">تم محو الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1431188203598586230">التحديث الأخير للبرامج
@@ -2646,7 +2645,6 @@
 <translation id="2844809857160214557">عرض مهام الطباعة وإدارتها</translation>
 <translation id="2845276301195220700">‏مزيد من الإجراءات في "تقويم Google"</translation>
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
-<translation id="2845751331501453107">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد وعلى <ph name="BEGIN_LINK1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصِّص الإعلانات.</translation>
 <translation id="284581348330507117">يجب إنشاء كلمات مرور فريدة</translation>
 <translation id="284884486564166077">‏البحث عن أي صورة باستخدام "عدسة Google"</translation>
 <translation id="2849035674501872372">بحث</translation>
@@ -3007,6 +3005,7 @@
 <translation id="3108957152224931571">لون التمييز</translation>
 <translation id="3109206895301430738">مجموعات علامات التبويب المحفوظة</translation>
 <translation id="3109724472072898302">مصغّر</translation>
+<translation id="310979712355504754">حذف الكل</translation>
 <translation id="3112292765614504292">حجم التطبيق: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">عدم السماح للمواقع الإلكترونية بتعديل الملفات أو المجلدات على جهازك</translation>
 <translation id="3113970906450647715">تمّت إزالة تثبيت الزر</translation>
@@ -3082,7 +3081,6 @@
 <translation id="3177914167275935955">‏يتضمّن جهازك "ترقية Chrome Education"، ولكن اسم المستخدم الخاص بك غير مرتبط بحساب على Google for Education. يُرجى إنشاء حساب على Google for Education بالانتقال إلى g.co/workspace/edusignup على جهاز ثانوي.</translation>
 <translation id="3179982752812949580">خط النص</translation>
 <translation id="3180284704187420717">يمكنك حفظ إشاراتك المرجعية وكلمات المرور وغيرها باستخدام ميزة المزامنة.</translation>
-<translation id="3180716079618904608">الحصول على التطبيقات والألعاب</translation>
 <translation id="3180990259147710757">تحريك الفك إلى اليسار</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3182749001423093222">التدقيق الإملائي</translation>
@@ -3227,7 +3225,6 @@
 <translation id="328571385944182268">هل تريد حفظ كلمات المرور؟</translation>
 <translation id="3289668031376215426">الكتابة بالأحرف الكبيرة تلقائيًا</translation>
 <translation id="3289856944988573801">‏للتحقق من وجود تحديثات، يُرجى استخدام شبكة Ethernet أو Wi-Fi.</translation>
-<translation id="3289886661311231677">‏يمكنك حظر المواضيع التي لا تريد مشاركتها مع المواقع الإلكترونية. يحذف Chrome أيضًا تلقائيًا من القائمة المواضيع التي مر عليها أكثر من 4 أسابيع.</translation>
 <translation id="3290249595466894471">يُرسِل هذا الوضع أيضًا عددًا قليلاً من الصفحات وعمليات التنزيل وأنشطة الإضافات ومعلومات النظام للمساعدة في اكتشاف التهديدات الجديدة.</translation>
 <translation id="3293181007446299124">يتم الحفاظ على خصوصية سجلّ التصفُّح في جهازك ويتم تأخير إرسال التقارير بهدف حماية هويتك.</translation>
 <translation id="329324683265785818">‏اختصار لوحة المفاتيح المخصّص للتشغيل/الإيقاف المؤقت: k</translation>
@@ -4545,6 +4542,7 @@
 <translation id="4231141543165771749">إغلاق عناصر التحكم في اللعبة</translation>
 <translation id="4231231258999726714">‏جارٍ إعداد تطبيق "Steam لأجهزة Chromebook"</translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
+<translation id="4232376164796433044">كلمات المرور والملء التلقائي</translation>
 <translation id="4232484478444192782">‏بيانات اعتماد شبكة Wi-Fi محفوظة على هاتف Android الخاص بك. يجري نقل بيانات الشبكة وكلمة مرورها إلى جهازك.</translation>
 <translation id="423327101839111402">إزالة المجموعة "<ph name="NAME" />"</translation>
 <translation id="4233739489690259993">‏لم تعُد تحديثات الأمان والبرامج متوفّرة لجهازك. عليك ترقية جهاز Chromebook للحصول على تحديثات الأمان والميزات الجديدة. تنطبق شروط العرض.</translation>
@@ -5580,7 +5578,6 @@
 <translation id="4992869834339068470">‏المساعدة على تحسين ميزات ChromeOS وأدائه يتم تجميع البيانات وحمايتها بدرجة عالية.</translation>
 <translation id="4994426888044765950">عند الضغط مع الاستمرار على مفتاح معيّن، سيتم تكرار الحرف الذي يكتبه هذا المفتاح.</translation>
 <translation id="4994754230098574403">الإعداد</translation>
-<translation id="4995293419989417004">مزيد من المعلومات حول مواضيع الإعلانات</translation>
 <translation id="4995676741161760215">تفعيل. تم تفعيل الإضافة.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏لم يتم العثور على أجهزة افتراضية (VM) من نوع <ph name="VM_TYPE" />.}=1{‏تم العثور على جهاز افتراضي (VM) واحد من نوع <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />.}two{‏تم العثور على جهازَين افتراضيّين (VM) ({NUM_VMS}) من نوع <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />.}few{‏تم العثور على {NUM_VMS} أجهزة افتراضية (VM) من نوع <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />.}many{‏تم العثور على {NUM_VMS} جهازًا افتراضيًا (VM) من نوع <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />.}other{‏تم العثور على {NUM_VMS} جهاز افتراضي (VM) من نوع <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />.}}</translation>
 <translation id="4997086284911172121">لا يتوفر اتصال بالإنترنت.</translation>
@@ -6911,7 +6908,6 @@
 <translation id="5976780232488408272">الحصول على مساعدة في الكتابة</translation>
 <translation id="5977976211062815271">على هذا الجهاز</translation>
 <translation id="5978277834170881274">واستخدام التدقيق الإملائي الأساسي</translation>
-<translation id="5978493744931296692">أوقَف المشرف الملفات الشخصية الأخرى.</translation>
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{أعَدت تشغيل إضافة واحدة يُحتمل أن تكون ضارة.}zero{أعَدت تشغيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}two{أعَدت تشغيل إضافتَين ({NUM_EXTENSIONS}) يُحتمل أن تكونا ضارتَين.}few{أعَدت تشغيل {NUM_EXTENSIONS} إضافات يُحتمل أن تكون ضارة.}many{أعَدت تشغيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}other{أعَدت تشغيل {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة.}}</translation>
 <translation id="5979353814339191480">‏ينطبق هذا الخيار على أجهزة Chromebook التي تستخدم خطة بيانات أو جهاز دونغل يوفّر إمكانية الوصول إلى شبكة الجوّال أو عند التوصيل بنقطة اتصال محمولة.</translation>
@@ -7870,6 +7866,7 @@
 <translation id="6691936601825168937">إعا&amp;دة توجيه</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{صفحة واحدة}zero{{COUNT} صفحة}two{صفحتان ({COUNT})}few{{COUNT} صفحات}many{{COUNT} صفحة}other{{COUNT} صفحة}}</translation>
 <translation id="6693820805264897502">استبدال كلمات المرور الحالية</translation>
+<translation id="6694462491298752106">لوحة اللمس المُدمَجة غير مفعَّلة</translation>
 <translation id="6694634756612002311">إدارة المشاركة</translation>
 <translation id="6697172646384837537">اختيار مكان استيراد كلمات المرور</translation>
 <translation id="6697492270171225480">عرض اقتراحات للصفحات المشابهة عند تعذّر العثور على صفحة</translation>
@@ -8528,7 +8525,6 @@
 <translation id="7166815366658507447">نقطة الاتصال مفعَّلة.</translation>
 <translation id="7167327771183668296">النقر التلقائي</translation>
 <translation id="7167486101654761064">فت&amp;ح هذا النوع من الملفّات دائمًا</translation>
-<translation id="716775164025088943">لن تتم مزامنة الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بعد الآن.</translation>
 <translation id="716810439572026343">جارٍ تنزيل <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">الحد الأدنى لحجم الخط</translation>
 <translation id="7169122689956315694">تفعيل الإشعارات عندما تكون الأجهزة قريبة</translation>
@@ -8670,7 +8666,6 @@
 <translation id="7273894023751806510">‏حظر <ph name="HOST" /> دائمًا من التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> حتى الاكتمال</translation>
 <translation id="727595954130325265">التسوّق الآن</translation>
-<translation id="7276100255011548441">‏يحذف Chrome تلقائيًا المواضيع التي يمرّ أكثر من 4 أسابيع على إضافتها إلى قائمة "مواضيع الإعلانات". ومع استمرارك في التصفّح، قد يُضاف موضوع إلى القائمة مجددًا. يمكنك أيضًا حظر المواضيع التي لا تريد أن يشاركها Chrome مع المواقع الإلكترونية. مزيد من المعلومات حول <ph name="BEGIN_LINK" />إدارة الخصوصية في عرض الإعلانات في Chrome<ph name="END_LINK" /></translation>
 <translation id="7278164481614262110">‏إنشاء مظاهر باستخدام الذكاء الاصطناعي (AI)</translation>
 <translation id="727952162645687754">خطأ في التنزيل</translation>
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>

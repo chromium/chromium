@@ -2379,7 +2379,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
       Ist diese Richtlinie auf "false" gesetzt oder nicht konfiguriert, sind die Symbole sichtbar.</translation>
 <translation id="2744751866269053547">Protokoll-Handler registrieren</translation>
 <translation id="2744980433176488921">In den Einstellungen von F11/F12 wird die Tastenkombination verwendet, die den Umschalttaste-Modifikator enthält</translation>
-<translation id="2745150813292162313">Aktivieren der Drittanbieter-Speicherpartitionierung zulassen.</translation>
 <translation id="2746016768603629042">Diese Richtlinie wurde eingestellt. Als Ersatz kann die Richtlinie „DefaultJavaScriptSetting“ verwendet werden.
 
       Hiermit kann JavaScript in <ph name="PRODUCT_NAME" /> deaktiviert werden.
@@ -2424,7 +2423,6 @@ Ist die Richtlinie deaktiviert, können Nutzer keine Kerberos-Konten hinzufügen
 Wenn du „command_line“ festlegst, wird das Laden von Erweiterungen über die Befehlszeile blockiert.</translation>
 <translation id="2780840673734667062">Anmeldung mit zusätzlichen Google-Konten deaktivieren</translation>
 <translation id="2784880732336446591">Browserdaten beim Beenden löschen</translation>
-<translation id="2786117913267907931">Ursprüngen nicht erlauben, Direct Sockets zu verwenden</translation>
 <translation id="2787173078141616821">Informationen zum Status von Android senden</translation>
 <translation id="2787774054174244402">Wenn die Richtlinie auf "True" festgelegt ist, können Nutzer nicht auf externe Speichergeräte schreiben.
 
@@ -2438,19 +2436,6 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLI
 <translation id="2801065672151277034">Zertifikatverwaltungseinstellungen</translation>
 <translation id="2801155097555584385">Den Akkuladestand (%) für benutzerdefiniertes Starten des Ladevorgangs festlegen</translation>
 <translation id="2801378553855965587">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration deaktiviert.</translation>
-<translation id="2804159858652849094">Über diese Richtlinie wird ein benutzerdefiniertes Label konfiguriert, mit dem identifiziert werden kann, wer ein Profil oder einen Browser verwaltet hat.
-
-Das Label wird auf der Symbolleiste angezeigt.
-
-Wenn diese Richtlinie auf Browserebene konfiguriert ist, wird das Label in allen Profilen auf der Symbolleiste angezeigt.
-
-Wenn die Richtlinie auf Profilebene konfiguriert ist, wird das Label nur in diesem Profil angezeigt.
-
-Im Gegensatz zu anderen Richtlinien hat die auf Profilebene konfigurierte Richtlinie hier Vorrang vor einer auf Browserebene konfigurierten Richtlinie.
-
-Das benutzerdefinierte Label wird nicht übersetzt.
-
-Hinweis: Diese Richtlinie hat keine Auswirkungen, wenn die Richtlinie „<ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />“ auf „<ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" />“ (Wert 1) festgelegt ist.</translation>
 <translation id="2805707493867224476">Anzeige von Pop-ups für alle Websites zulassen</translation>
 <translation id="2806804577787377637">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />“.</translation>
 <translation id="2815701930753942156">Durch diese Richtlinie wird eine Liste von wöchentlichen Intervallen festgelegt, in denen das <ph name="PRODUCT_OS_NAME" />‑Gerät nicht verwendet werden kann. Alle laufenden Sitzungen werden geschlossen und die Anmeldung wird vorübergehend blockiert.
@@ -3629,11 +3614,6 @@ Informationen zu Einschränkungen für <ph name="PRIVATE_NETWORK_ACCESS" /> find
 <translation id="3712861436661566358">Profiltrennung erzwingen</translation>
 <translation id="3719826155360621982">Startseite</translation>
 <translation id="3724039569609354541">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an Netzwerkendpunkte senden können</translation>
-<translation id="372668389978450673">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, können neue Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
-
-      Ist sie auf „falsch“ gesetzt, können keine neuen Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
-
-      Hinweis: Ist die Richtlinie nicht konfiguriert oder auf „wahr“ gesetzt, „<ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" />“ aber auf „falsch“, können in <ph name="LACROS_NAME" /> keine neuen Nutzer über die Nutzerverwaltung hinzugefügt werden.</translation>
 <translation id="3727476641336727380">Es sei denn, für „<ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" />“ ist „Deaktiviert“ festgelegt, dann sind durch das Aktivieren oder Nichtkonfigurieren von „<ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" />“ Bildschirm-Wakelocks für die Energieverwaltung zulässig. Bildschirm-Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
 
       Ist diese Richtlinie deaktiviert, werden Bildschirm-Wakelock-Anfragen auf den Status von System-Wakelocks zurückgestuft.</translation>
@@ -4040,13 +4020,6 @@ Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
 <translation id="4030152268425532846">Umgehung der automatischen Anmeldung deaktivieren</translation>
-<translation id="4039065751874009354">Diese Richtlinie bietet vorübergehend die Möglichkeit, zwei zusammenhängende Korrekturen für das Verhalten des Bestätigungsdialogfelds, das vom „beforeunload“-Ereignis angezeigt wird, zu deaktivieren.
-Wenn die Richtlinie aktiviert ist, wird das neue und korrekte Verhalten verwendet. Ist sie deaktiviert, kommt das alte Verhalten zum Einsatz. Wenn die Richtlinie nicht konfiguriert ist, wird das Standardverhalten verwendet.
-Diese Richtlinie ist eine vorübergehende Behelfslösung und wird bald entfernt.
-
-Neues und korrektes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefault()“ erfolgt, wird das Bestätigungsdialogfeld ausgelöst. Wird „event.returnValue“ auf den leeren String festgelegt, erfolgt keine Auslösung des Bestätigungsdialogfelds.
-
-Altes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefault()“ erfolgt, wird das Bestätigungsdialogfeld nicht ausgelöst. Wird „event.returnValue“ auf den leeren String festgelegt, erfolgt eine Auslösung des Bestätigungsdialogfelds.</translation>
 <translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4051723201852944592">Fenster-Okklusion aktivieren</translation>
 <translation id="4052529125939620019">Komponentenerweiterung „CryptoToken“ beim Start laden</translation>
@@ -4663,17 +4636,6 @@ Ein Gerät gilt als verwaltet, wenn eine Unternehmensversion des Betriebssystems
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer beliebige auf dem System installierte Plug-ins deaktivieren.</translation>
 <translation id="4549695018986780856">Manifest V2 ist aktiviert</translation>
-<translation id="4552929684628662264">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, die Direct Sockets nicht verwenden dürfen.
-Dazu können Chrome-Apps, isolierte Web-Apps und Web-Kioske gehören. Die API ist niemals im offenen Web verfügbar.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4554651132977135445">Loopback-Verarbeitungsmodus der Nutzerrichtlinien</translation>
 <translation id="4554991346503872538">Nie Übersetzung anbieten</translation>
 <translation id="4555850956567117258">Remote-Bescheinigung (Remote Attestation) für den Nutzer aktivieren</translation>
@@ -5258,13 +5220,6 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
           Wenn diese Richtlinie konfiguriert ist, wird rechts im Feld „Kerberos-Nutzername“ die vorausgefüllte Domain angezeigt. Gibt der Nutzer seinen Nutzernamen ein, wird er mit der vorausgefüllten Domain verkettet. Falls die Eingabe des Nutzers „@“ enthält, wird die vorausgefüllte Domain nicht angezeigt und hat keine Auswirkungen auf die Eingabe.
 
           Ist diese Richtlinie nicht konfiguriert, werden keine zusätzlichen Informationen angezeigt und das Ticket lässt sich wie gewohnt erstellen.</translation>
-<translation id="4955566229684195326">Mit dieser Richtlinie können Nutzer sekundäre Profile erstellen und verwenden sowie den Gastmodus im <ph name="LACROS_NAME" />-Browser nutzen.
-
-      Wenn sie auf „falsch“ gesetzt oder nicht konfiguriert ist, können Nutzer ähnlich wie bei „<ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" />“ und „<ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />“ keine sekundären Profile erstellen oder verwenden und auch den Gastmodus nicht nutzen. Zuvor erstellte sekundäre Profile, falls vorhanden, sind dann nicht verfügbar.
-
-      Wird die Richtlinie auf „wahr“ gesetzt, können Nutzer sekundäre Profile erstellen und verwenden sowie den Gastmodus nutzen.
-
-      Hinweis: Ist die Richtlinie auf „wahr“ gesetzt, „<ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" />“ aber auf „falsch“, können Nutzer keine sekundären Profile erstellen. Dasselbe gilt für „<ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />“ und den Gastmodus.</translation>
 <translation id="4958911425563967203">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen aktiviert werden.
 
 Ausführliche Informationen zu gültigen Website-URL‑Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
@@ -5745,7 +5700,6 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 <translation id="5321624917465764266">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können der Browser‑ und der Downloadverlauf in Chrome gelöscht werden und Nutzer können diese Einstellung nicht ändern.
 
 Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf nicht gelöscht werden. Dies bedeutet jedoch nicht unbedingt, dass die Verläufe erhalten bleiben. Möglicherweise sind Nutzer berechtigt, die Dateien der Verlaufsdatenbanken direkt zu bearbeiten oder zu löschen. Außerdem kann der Browser jederzeit selbst einige oder alle Verlaufselemente archivieren oder nach deren Ablaufdatum löschen.</translation>
-<translation id="5321859912083346284">Autofill-Vorschläge nicht zulassen.</translation>
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
@@ -6240,7 +6194,6 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
       Wenn diese Richtlinie auf "true" gesetzt wird, werden die Warnungen zu veralteten Funktionen ausgeblendet.
       Wenn diese Richtlinie auf "false" oder gesetzt oder nicht konfiguriert wird, werden die Warnungen zu veralteten Funktionen angezeigt.</translation>
 <translation id="5659776687676755342">Ton bei niedrigem Akkustand aktivieren</translation>
-<translation id="5660228672907979869">Aktivierung der Drittanbieter-Speicherpartitionierung verhindern.</translation>
 <translation id="5660950553460381588">Wenn möglich, Passkeys standardmäßig im iCloud-Schlüsselbund erstellen.</translation>
 <translation id="5666457529647159548">Nutzern erlauben, installierte Clientzertifikate zu verwalten.</translation>
 <translation id="5670249935663090320">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
@@ -6311,7 +6264,6 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
 <translation id="5722577409367087850">Erweiterung laden</translation>
 <translation id="5728154254076636808">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren</translation>
 <translation id="5729308727912841256">Kerberos-Passwort. Der Platzhalter „<ph name="PASSWORD_PLACEHOLDER" />“ wird durch das Anmeldepasswort ersetzt.</translation>
-<translation id="573183812760497142">Drittanbieter-Speicherpartitionierung für diese Ursprünge blockieren</translation>
 <translation id="5732972008943405952">Bei erstmaliger Ausführung Autofill-Formulardaten aus Standardbrowser importieren</translation>
 <translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.
 
@@ -7475,7 +7427,6 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="6584122839583172231">In den Einstellungen von F12 wird die Tastenkombination verwendet, die den Strg- und den Umschalttaste-Modifikator enthält</translation>
 <translation id="6584541828182430328">Anzeige von Vollbild-Warnung deaktivieren</translation>
-<translation id="658537215958747575">Geeigneten Ursprüngen erlauben, Direct Sockets zu verwenden</translation>
 <translation id="6588634282328239769">Vollständige URL anzeigen</translation>
 <translation id="6589049539706330510">Unterstützung aktivieren</translation>
 <translation id="6593025196187527239">Wird die Richtlinie auf „True“ festgelegt oder keine Einstellung gewählt, können Nutzer ARC verwenden, es sei denn, die Funktion wurde an anderer Stelle deaktiviert. Wenn die Richtlinie auf „False“ festgelegt ist, können nicht verbundene Nutzer ARC nicht verwenden.
@@ -7754,11 +7705,6 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, dürfen Nutzer Bilder über das Kontextmenü in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> speichern. Ist die Richtlinie deaktiviert, können Nutzer die Option im Kontextmenü nicht sehen.
 Diese Richtlinie hindert Nutzer nicht daran, andere Möglichkeiten als das Kontextmenü zum Speichern von Bildern in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> zu nutzen.</translation>
 <translation id="6823711520976094072">Wenn du einen Wert unter 1 MB oder gar keinen Wert festlegst, verwendet <ph name="PRODUCT_OS_NAME" /> beim Installieren durch mehrere Nutzer auf demselben Gerät die Standardgröße von 256 MiB zum Speichern von Apps und Erweiterungen im Cache. Hierdurch wird ein nochmaliges Herunterladen für jeden Nutzer vermieden.</translation>
-<translation id="6828729771894228555">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, die die oberste Ebene (URL in der Adressleiste des Tabs) von Ursprüngen angeben, für die die Drittanbieter-Speicherpartitionierung (Partitionierung des ursprungsübergreifenden iFrame-Speichers) blockiert werden soll.
-          Wenn diese Richtlinie nicht konfiguriert ist oder der Ursprung auf oberster Ebene nicht übereinstimmt, wird der Wert von <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> verwendet.
-          Genaue Informationen zu gültigen Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-          Beachte, dass die Muster, die du hier aufführst, als Ursprünge und nicht als URLs behandelt werden. Gib deshalb keinen Pfad an.
-          Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Mit dieser Richtlinie wird die aktuelle Refaktorierung für Graphics3D-APIs im PPAPI-Plug‑in gesteuert.
 
 Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
@@ -7825,17 +7771,6 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
-<translation id="6870288354334274313">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, die die Direct Sockets API verwenden dürfen.
-Dazu können Chrome-Apps, isolierte Web-Apps und Web-Kioske gehören. Die API ist niemals im offenen Web verfügbar.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="6878757724611298427">Nutzern erlauben, Android-Apps auf nicht verbundenen Geräten zu verwenden</translation>
 <translation id="6881397131210596522">Wenn die Richtlinie auf „2“ gesetzt ist, wird die Verwendung der WebPrinting API automatisch blockiert.
 
@@ -7892,11 +7827,6 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardverhalten zum Blockieren solcher Anfragen.</translation>
 <translation id="6915524162137327111">Verwaltungslabels 30 Sekunden lang anzeigen lassen</translation>
 <translation id="6919205861950516688">„Tabs organisieren“ nicht zulassen.</translation>
-<translation id="6919819553978815392">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen alle Fenster im Inkognitomodus geöffnet werden.
-
-      Ist die Richtlinie auf „falsch“ gesetzt, sind keine Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich.
-
-      Hinweis: Ist die Richtlinie nicht konfiguriert oder auf „wahr“ gesetzt, „<ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" />“ aber auf „falsch“, sind in <ph name="LACROS_NAME" /> keine Gastanmeldungen möglich.</translation>
 <translation id="692096803256767290">Rollback des Betriebssystems auf die Zielversion durchführen</translation>
 <translation id="6921241119085515674"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> zulassen</translation>
 <translation id="6921544339867564740">Geräten die Ausführung von virtuellen Maschinen unter Chrome OS erlauben</translation>
@@ -9070,15 +9000,6 @@ Wenn diese Richtlinie auf „Profil als ,Arbeit‘ (0) kennzeichnen“ festgele
 Wenn diese Richtlinie auf „Profil als ,Schule‘ (1) kennzeichnen“ festgelegt ist, wird das Label „Schule“ verwendet.
 
 Diese Richtlinie wird durch die Richtlinie „<ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" />“ überschrieben, wenn diese konfiguriert ist.</translation>
-<translation id="7852952453329293282">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Wenn die Richtlinie auf „1“ gesetzt ist, können geeignete Ursprünge Direct Sockets verwenden.
-Dazu gehören Chrome-Apps, isolierte Web-Apps und Web-Kioske. Die API ist niemals im offenen Web verfügbar.
-
-Wenn die Richtlinie auf „2“ gesetzt ist, können Ursprünge Direct Sockets nicht verwenden.
-
-Ist sie nicht konfiguriert, wird Direct Sockets zugelassen.</translation>
 <translation id="7853140303943875314">Umgehung der automatischen Anmeldung aktivieren</translation>
 <translation id="7854187834842629068">„Spracheingabe“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="7858352166858826505">Einstellungen für lokales Foundation Model für generative KI</translation>
@@ -9531,10 +9452,6 @@ Diese Richtlinie wird auf den Inkognitomodus angewendet. Das bedeutet, dass der 
 <translation id="8250048892729838843">Diese Richtlinie ist veraltet. Wenn die Richtlinie aktiviert oder nicht konfiguriert wird, darf das Gerät Steuerelemente für detailliertes Reporting erhalten.
       Wird die Richtlinie deaktiviert, dürfen angemeldete Geräte keine Steuerelemente für detailliertes Reporting erhalten.</translation>
 <translation id="82530263956734297">Aus der Sperrliste auszuschließende Erweiterungs-IDs</translation>
-<translation id="8254792295762772851">Wenn du diese Richtlinie nicht konfigurierst oder sie auf <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (Wert 0) setzt, wird neben dem Avatar der Symbolleiste das Label „Arbeit“ oder „Schule“ angezeigt.
-Diese Labels werden nur angezeigt, wenn das angemeldete Konto verwaltet wird.
-
-Wenn du die Richtlinie auf <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (Wert 1) setzt, wird nach dem Öffnen des Profils 30 Sekunden lang das Label „Arbeit“ oder „Schule“ neben dem Avatar der Symbolleiste angezeigt.</translation>
 <translation id="8256006033157034334">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />“.</translation>
 <translation id="8256688113167012935">Gibt an, welchen Kontonamen <ph name="PRODUCT_OS_NAME" /> für das entsprechende lokale Gerätekonto auf der Anmeldeseite anzeigt.
 
@@ -9742,10 +9659,6 @@ Zertifikate müssen mit Base64 codiert sein.</translation>
 <translation id="838870586332499308">Daten-Roaming aktivieren</translation>
 <translation id="8392478748777481636">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="8393850527597048037">Nur Plattform</translation>
-<translation id="8394518861160238324">Die Drittanbieter-Speicherpartitionierung ist für einige Nutzer ab M113 standardmäßig aktiviert, kann aber per Chrome-Flag deaktiviert werden.
-          Wenn diese Richtlinie auf <ph name="ALLOW_PARTITIONING_VALUE" /> gesetzt oder nicht konfiguriert ist, kann die Drittanbieter-Speicherpartitionierung aktiviert werden.
-          Ist sie auf <ph name="BLOCK_PARTITIONING_VALUE" /> gesetzt, kann die Drittanbieter-Speicherpartitionierung nicht aktiviert werden.
-          Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>
 <translation id="8395749934754392549">Legt die Einstellungen für den Android-Container (ARC) und Android-Apps fest.</translation>
 <translation id="8398952282584132331">Datenschutzbildschirm aktivieren</translation>
@@ -10577,19 +10490,6 @@ Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werde
       Diese Richtlinie betrifft nur Nutzer, die sich über SAML authentifizieren.
 
       Der Wert sollte in Sekunden angegeben werden.</translation>
-<translation id="9015526159640436408">Eine URL zu einem Bild, das als Unternehmenslogo für das Profil verwendet wird. Die URL muss auf ein Bild verweisen.
-
-Dieses Logo wird in der Symbolleiste angezeigt.
-
-Wenn diese Richtlinie auf Browserebene konfiguriert ist, zeigen alle Profile dieses Logo in der Symbolleiste an.
-
-Wenn diese Richtlinie auf Profilebene konfiguriert ist, wird das Logo nur für dieses Profil angezeigt.
-
-Ist die Richtlinie nicht konfiguriert, wird ein standardmäßiges Gebäudesymbol angezeigt.
-
-Wenn beim Versuch, das Bild abzurufen und anzuzeigen, ein Fehler auftritt, wird ebenfalls ein standardmäßiges Gebäudesymbol angezeigt.
-
-Im Gegensatz zu anderen Richtlinien hat hier die Richtlinie, wenn sie auf Profilebene konfiguriert ist, Vorrang vor auf Browserebene konfigurierten Richtlinien.</translation>
 <translation id="9015578113567730893">Häufigkeit der Erhebung der Audiotelemetrie in Millisekunden.</translation>
 <translation id="9015759770696099204">Einstellungen von F11/F12 sind deaktiviert</translation>
 <translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>

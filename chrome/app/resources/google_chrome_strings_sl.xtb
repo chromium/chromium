@@ -74,7 +74,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
 <translation id="1953553007165777902">Prenašanje … Še <ph name="MINUTE" /> min.</translation>
 <translation id="1982647487457769627">Chrome deluje v več okoljih in vam tako zagotavlja znano izkušnjo ne glede na napravo</translation>
-<translation id="19955905961160405">Iščite po vsebini zaslona z Googlom Lens</translation>
 <translation id="2001586581944147178">Ljudem z dostopom do vašega internetnega prometa otežite ogled spletnih mest, ki jih obiskujete. Chrome uporablja varno povezavo za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni več podprta. Chrome priporoča, da jo odstranite.}one{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}two{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}few{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}other{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}}</translation>
 <translation id="2018528049276128029">Vsak profil ima svoje podatke v Chromu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
@@ -191,6 +190,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3161522574479303604">Vsi jeziki</translation>
 <translation id="3169523567916669830">Med temi preizkusi lahko vidite ali odstranite teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chrome oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
 <translation id="3196187562065225381">Chrome je blokiral ta prenos, ker je datoteka nevarna</translation>
+<translation id="3222857603094643834">Z Googlom Lens poiščite kar koli na tej strani</translation>
 <translation id="3226612997184048185">Če v računu Google shranite tudi zaznamke, lahko v Chromu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="3234642784688107085">Preizkusite nove funkcije umetne inteligence in ustvarite teme, prejmite pomoč pri pisanju in ostanite organizirani</translation>
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>

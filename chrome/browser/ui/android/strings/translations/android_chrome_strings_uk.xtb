@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">Мови, з яких потрібно автоматично перекладати</translation>
 <translation id="3072980200212375806">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Політика конфіденційності<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Зберігайте сторінки, щоб читати їх пізніше або в режимі офлайн</translation>
-<translation id="3087218211037573995">Деякі паролі, збережені лише на цьому пристрої, незабаром припинять працювати. Ви можете перемістити їх у Google Менеджер паролів.</translation>
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3091010850649238832">Показати вміст буфера обміну</translation>
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Ваші списки збережених паролів для Chrome і <ph name="CHROME_CHANNEL" /> було об’єднано. Ви можете автоматично вводити всі збережені паролі в обох додатках.</translation>
 <translation id="4616150815774728855">Відкрити файл <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Підтвердити особу</translation>
-<translation id="4620032614425803188">Сервіси автозаповнення</translation>
 <translation id="4624065194742029982">Анонімний режим у Chrome</translation>
 <translation id="4634124774493850572">Прийняти пароль</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 зламаний пароль}one{# зламаний пароль}few{# зламані паролі}many{# зламаних паролів}other{# зламаного пароля}}</translation>
@@ -1484,6 +1482,7 @@
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7709918231054955894">Переглядайте всі свої вкладки</translation>
 <translation id="7733878270780732638">На пристрої недостатньо місця.</translation>
+<translation id="7746817319925672889">Незабаром Google Менеджер паролів припинить працювати на цьому пристрої</translation>
 <translation id="774876555279732384">Сервісами автозаповнення також можна керувати в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Необов’язково</translation>
 <translation id="7762668264895820836">Карта SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1514,7 +1513,6 @@
 <translation id="7851858861565204677">Інші пристрої</translation>
 <translation id="7853202427316060426">Активність</translation>
 <translation id="7859988229622350291">Мови, з яких не потрібно перекладати</translation>
-<translation id="7864208933699511058">Персоналізація реклами залежить від цього параметра, <ph name="BEGIN_LINK_1" />пропонованих сайтами оголошень<ph name="END_LINK_1" /> і <ph name="BEGIN_LINK_2" />налаштувань файлів cookie<ph name="END_LINK_2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте.</translation>
 <translation id="7866213166286285359">Натисніть тут, щоб відобразити перемикач "Перекласти сторінки"</translation>
 <translation id="78707286264420418">Щоб підключитися до вашого пристрою, <ph name="PRODUCT_NAME" /> потребує доступу до пристроїв поблизу</translation>
 <translation id="7875915731392087153">Створити електронну адресу</translation>

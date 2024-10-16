@@ -223,6 +223,7 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}one{# s}two{# s}few{# s}other{# s}}</translation>
 <translation id="9059834730836941392">Strni obvestilo</translation>
 <translation id="9170848237812810038">&amp;Razveljavi</translation>
+<translation id="9195990613383871904">Jutri</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="944069440740578670">Neprebrana obvestila</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{pred 1 sekundo}one{pred # sekundo}two{pred # sekundama}few{pred # sekundami}other{pred # sekundami}}</translation>

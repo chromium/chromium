@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Cornflower blue</translation>
 <translation id="1246424317317450637">Bold</translation>
 <translation id="1251750620252348585">Next level 6 heading</translation>
+<translation id="1264956950255940376">Squint left eye</translation>
 <translation id="1268366246392928616">No previous maths expression</translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1284576163386164372">You can always view tutorials by opening the menus with a four-finger tap. Then activate the tutorial under the 'ChromeVox' section.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Touch orientation</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menu item radio button unselected</translation>
 <translation id="1325946044405407859">Tan</translation>
+<translation id="1328928545650070438">Lower eyebrows</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> of <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">character and word echo</translation>
 <translation id="1334570596456017464">Subscript</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">copy</translation>
 <translation id="1360699455582016846">Click the item under routing key <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Raise eyebrows</translation>
 <translation id="1376703628032300005">move to the next character</translation>
 <translation id="1377925789329510816">This is the last heading. Press Search+H to wrap to the first heading, or Search+Shift+H to go to the second heading on this page.</translation>
 <translation id="138218114945450791">Light blue</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Welcome to the ChromeVox tutorial. To exit this tutorial at any time, press the escape key on the top-left corner of the keyboard. To turn off ChromeVox, hold Control &amp; Alt, and press Z. When you're ready, use the spacebar to move to the next lesson.</translation>
+<translation id="1735957571918073979">Blink both eyes</translation>
 <translation id="174268867904053074">Next graphic</translation>
 <translation id="1756785467854861272">Dark magenta</translation>
 <translation id="1758693804775271377">Swipe left or right with one finger to browse lessons for this topic</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1781173782405573156">Pass through key</translation>
 <translation id="1787176709638001873">Password edit text</translation>
+<translation id="1795438342141780114">Reset cursor to centre</translation>
 <translation id="180203835522132923">Search + O, then W</translation>
 <translation id="1810107444790159527">List box</translation>
 <translation id="1812527064848182527">landscape</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Next Object</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Show braille commands in the ChromeVox menus</translation>
+<translation id="1999763610967697511">Drag and drop</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{left bracket}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Not superscript</translation>
 <translation id="2010555995361223825">ChromeVox menus</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Leaving misspelled</translation>
 <translation id="2267945578749931355">Next Character</translation>
 <translation id="2278490101488436824">Swipe three fingers left</translation>
+<translation id="228059581448666199">Left-click the mouse</translation>
 <translation id="2303873575703885770">Activate an item</translation>
 <translation id="2305942658236913680">No next heading</translation>
 <translation id="2311237334957139798">Move to previous at granularity</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">No previous ARIA landmark</translation>
 <translation id="2843814945404750166">Dark Olive Green</translation>
 <translation id="2843837985843789981">Previous group</translation>
+<translation id="2849035674501872372">Look up</translation>
+<translation id="2860710618359053450">Shift jaw right</translation>
 <translation id="2864481629947106776">Previous link</translation>
 <translation id="2867808975387772810">Bibliography</translation>
 <translation id="2873259058405069099">Go to beginning of table</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Navigation</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{space}other{# spaces}}</translation>
 <translation id="3179119189286472195">Not link</translation>
+<translation id="3180990259147710757">Shift jaw left</translation>
 <translation id="320041337977930740">Change display style to interleave</translation>
 <translation id="3206698050650195442">Exit tutorial</translation>
 <translation id="3208346789712025453">No next control</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{plus}other{# plus signs}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Previous form field</translation>
+<translation id="3390740059150071453">Look left</translation>
 <translation id="3393605254399152980">Drag one finger to hear what you touch</translation>
 <translation id="3406283310380167331">Show forms list</translation>
 <translation id="3407726812456125464">Listen to selected text</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Previous Object</translation>
 <translation id="4099274309791143834">with submenu</translation>
 <translation id="4101527861445851766">A ticked tick box</translation>
+<translation id="410225014223200513">Make a circle with your lips</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alert</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{right brace}other{# right braces}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Steel Blue</translation>
 <translation id="4253168017788158739">Note</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4255016471934258618">Open your mouth wide</translation>
 <translation id="4259220820964911921">Enable face control?</translation>
 <translation id="4271220233568730077">Next math</translation>
 <translation id="4275397969489577657">Enable event stream logging</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{dot}=3{ellipsis}other{# dots}}</translation>
 <translation id="4352022650330571548">type <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">Right-click the mouse</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Stop speech</translation>
 <translation id="4376316291247992553">View Graphic As Braille</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Pale Turquoise</translation>
 <translation id="4826415162591436065">Navigate forward</translation>
 <translation id="4827410568042294688">unselected</translation>
+<translation id="483262387981411190">Pause or resume face control</translation>
+<translation id="4835598628985424375">Pucker by squeezing lips together</translation>
 <translation id="4838490795649708173">Tap with four fingers</translation>
 <translation id="4839925464551908214">Go to the previous row</translation>
 <translation id="4841614409681890122">Deep Pink</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">No previous media widget</translation>
 <translation id="4855927945655956315">Essential keys: Control</translation>
+<translation id="485806788160414322">Play or pause media</translation>
 <translation id="4862744964787595316">Not bold</translation>
 <translation id="4865995900839719272">move to the previous line</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Medium Slate Blue</translation>
 <translation id="5140016802771803559">Rebecca Purple</translation>
 <translation id="5142101052131610456">All lessons</translation>
+<translation id="514387318601895731">Look down</translation>
 <translation id="5158275234811857234">Cover</translation>
 <translation id="516076699907426116">To continue, explore by touch to find the Next lesson button. Then double-tap to continue.</translation>
 <translation id="5170206230005240598">Braille captions enabled</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Google enhanced network text-to-speech extension</translation>
 <translation id="5783252477644995371">Face control gives you cursor control with face pointing and the ability to perform actions, such as left clicking with facial gestures like smile</translation>
 <translation id="5805940204952508776">Tap with two fingers</translation>
+<translation id="5807774529265708172">Show or hide on-screen keyboard</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
 <translation id="5824976764713185207">Automatically read page after it finishes loading</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5866042630553435010">Partially checked</translation>
 <translation id="5866210856231860256">Press Search + right arrow or Search + left arrow to browse lessons for this topic</translation>
+<translation id="5866236843389439313">Stretch left corner of your mouth</translation>
 <translation id="5867591286054666064">During this tutorial, press any key to hear its name.</translation>
 <translation id="5869546221129391014">Grid</translation>
 <translation id="5876817486144482042">Decrease speech volume</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Current date</translation>
 <translation id="5926889058434275234">For a full list of gestures, visit the Help Centre.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{equal}other{# equal signs}}</translation>
+<translation id="5947651424015173580">Double-click the mouse</translation>
 <translation id="5948123859135882163">Toggle interpretation of math expressions between structural and semantic</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialogue</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{with # item}other{with # items}}</translation>
 <translation id="5981446804259161541">Light Cyan</translation>
 <translation id="5983179082906765664">Increase navigation granularity</translation>
+<translation id="5988563937187882754">Look right</translation>
 <translation id="5992285135956208197">Graphics document</translation>
 <translation id="5999630716831179808">Voices</translation>
 <translation id="6006050241733874051">Form</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">None</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">No next combo box</translation>
+<translation id="7715455358521357192">Squint right eye</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7731785449856576010">No next media widget</translation>
 <translation id="7735498529470878067">Exploring by touch can help you quickly get a sense of what's on the screen.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">Previous Word</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7851816175263618915">Some punctuation</translation>
+<translation id="7860802890538098598">Stretch the right corner of your mouth</translation>
 <translation id="7871691770940645922">Virtual Braille Display</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">Increment</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{quote}other{# quotes}}</translation>
+<translation id="8017004049696748317">Start or stop dictation</translation>
 <translation id="8017588669690167134">Speech off</translation>
 <translation id="801990297710781303">Footnote</translation>
 <translation id="8028833145828956995">You can use ChromeVox with the touchscreen</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">Slate grey</translation>
 <translation id="8121539003537428024">Enable all event filters</translation>
 <translation id="8123975449645947908">Scroll backwards</translation>
+<translation id="8126355825906412872">Smile</translation>
 <translation id="8126386426083591964">No previous level 5 heading</translation>
 <translation id="812886159861361726">Download stopped <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No cell above</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">Modifier Keys</translation>
 <translation id="8943282376843390568">Lime</translation>
 <translation id="8944511129464116546">partially ticked</translation>
+<translation id="8945050808870279132">Wrinkle your nose</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">No previous radio button</translation>
 <translation id="8970172509886453271">No previous section</translation>

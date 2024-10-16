@@ -593,7 +593,6 @@
 <translation id="142765311413773645"><ph name="APP_NAME" /> 라이선스 만료됨</translation>
 <translation id="1428373049397869723">Finder 앱 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">이 사이트에 비밀번호 메모를 저장했습니다. 확인하려면 검색 및 주소 표시줄에서 비밀번호 관리를 선택하세요.</translation>
-<translation id="1428770807407000502">동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1429300045468813835">모두 삭제됨</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1431188203598586230">마지막 소프트웨어 업데이트</translation>
@@ -2656,7 +2655,6 @@
 <translation id="2844809857160214557">인쇄 작업 보기 및 관리</translation>
 <translation id="2845276301195220700">Google Calendar 관련 작업 더보기</translation>
 <translation id="2845382757467349449">북마크바 항상 표시</translation>
-<translation id="2845751331501453107">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK1" />사이트 추천 광고<ph name="LINK_END1" />, 나의 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
 <translation id="284581348330507117">사용한 적이 없는 비밀번호를 만드세요.</translation>
 <translation id="284884486564166077">렌즈로 이미지 검색</translation>
 <translation id="2849035674501872372">찾기</translation>
@@ -3017,6 +3015,7 @@
 <translation id="3108957152224931571">강조 색상</translation>
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
+<translation id="310979712355504754">모두 삭제</translation>
 <translation id="3112292765614504292">앱 크기: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
 <translation id="3113970906450647715">버튼이 고정 해제되었습니다</translation>
@@ -3092,7 +3091,6 @@
 <translation id="3177914167275935955">기기에 Chrome Education 업그레이드가 있지만 사용자 이름이 Google for Education 계정과 연결되어 있지 않습니다. 보조 기기에서 g.co/workspace/edusignup을 방문하여 Google for Education 계정을 만드세요.</translation>
 <translation id="3179982752812949580">텍스트 글꼴</translation>
 <translation id="3180284704187420717">동기화를 통해 북마크, 비밀번호 등을 저장하세요</translation>
-<translation id="3180716079618904608">앱 및 게임 다운로드</translation>
 <translation id="3180990259147710757">턱을 왼쪽으로 움직이기</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3182749001423093222">맞춤법 검사</translation>
@@ -3237,7 +3235,6 @@
 <translation id="328571385944182268">비밀번호를 저장하시겠습니까?</translation>
 <translation id="3289668031376215426">자동 대문자화</translation>
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
-<translation id="3289886661311231677">사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다. 또한 Chrome에서는 4주 이상된 주제를 자동으로 삭제합니다.</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
 <translation id="329324683265785818">재생/일시중지, 단축키 k</translation>
@@ -4555,6 +4552,7 @@
 <translation id="4231141543165771749">게임 컨트롤 닫기</translation>
 <translation id="4231231258999726714">Chromebook용 Steam 설정</translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
+<translation id="4232376164796433044">비밀번호 및 자동 완성</translation>
 <translation id="4232484478444192782">Android 스마트폰을 통해 Wi-Fi 및 비밀번호가 안전하게 전송되고 있습니다</translation>
 <translation id="423327101839111402">그룹 <ph name="NAME" /> 삭제</translation>
 <translation id="4233739489690259993">더 이상 Chromebook에 보안 및 소프트웨어 업데이트가 적용되지 않습니다. 최신 보안과 새로운 기능을 이용하려면 기기를 업그레이드하세요. 혜택 약관이 적용됩니다.</translation>
@@ -5591,7 +5589,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4992869834339068470">ChromeOS의 기능 및 성능 개선에 참여하세요. 데이터는 집계되며 엄격하게 보호됩니다.</translation>
 <translation id="4994426888044765950">키를 길게 누르면 키 문자가 반복되어 입력됩니다.</translation>
 <translation id="4994754230098574403">설정 중입니다.</translation>
-<translation id="4995293419989417004">광고 주제에 관해 자세히 알아보기</translation>
 <translation id="4995676741161760215">켜짐, 확장 프로그램 사용 설정됨</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM 없음}=1{<ph name="VM_TYPE" /> VM 1개 발견됨: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS}개 발견됨: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">인터넷에 연결되지 않았습니다.</translation>
@@ -6922,7 +6919,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5976780232488408272">글쓰기 관련 도움받기</translation>
 <translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5978277834170881274">기본 맞춤법 검사 사용(&amp;U)</translation>
-<translation id="5978493744931296692">관리자가 다른 프로필을 사용 중지했습니다.</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}}</translation>
 <translation id="5979353814339191480">이 옵션은 데이터 요금제 또는 모바일 네트워크 동글을 사용하거나 휴대용 핫스팟에 테더링된 Chromebook에 적용됩니다.</translation>
@@ -7873,6 +7869,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6691936601825168937">앞으로(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{페이지 1쪽}other{페이지 {COUNT}쪽}}</translation>
 <translation id="6693820805264897502">기존 비밀번호 대체</translation>
+<translation id="6694462491298752106">내장 터치패드가 사용 중지되었습니다</translation>
 <translation id="6694634756612002311">공유 관리</translation>
 <translation id="6697172646384837537">비밀번호를 가져와 저장할 위치 선택</translation>
 <translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
@@ -8530,7 +8527,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7166815366658507447">핫스팟 사용 설정됨</translation>
 <translation id="7167327771183668296">자동 클릭</translation>
 <translation id="7167486101654761064">해당 유형의 파일 항상 열기(&amp;A)</translation>
-<translation id="716775164025088943">북마크, 방문 기록, 비밀번호 등이 더 이상 동기화되지 않습니다.</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> 다운로드 중</translation>
 <translation id="7168109975831002660">최소 글꼴 크기</translation>
 <translation id="7169122689956315694">기기가 주변에 있을 때 알림 켜기</translation>
@@ -8672,7 +8668,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7273894023751806510"><ph name="HOST" />에서 MIDI 기기를 제어하고 다시 프로그래밍하지 못하도록 항상 차단</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 충전 완료까지 <ph name="TIME" /> 남음</translation>
 <translation id="727595954130325265">지금 구매</translation>
-<translation id="7276100255011548441">Chrome은 4주 이상 된 주제를 자동 삭제합니다. 인터넷 사용에 따라 특정 주제가 목록에 다시 표시될 수 있습니다. 또는 사용자가 Chrome에서 사이트와 공유하지 않았으면 하는 주제를 차단할 수 있습니다. <ph name="BEGIN_LINK" />Chrome에서 광고 개인 정보 보호 관리<ph name="END_LINK" />에 대해 자세히 알아보세요.</translation>
 <translation id="7278164481614262110">AI로 테마 만들기</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
 <translation id="7280649757394340890">TTS 음성 설정</translation>

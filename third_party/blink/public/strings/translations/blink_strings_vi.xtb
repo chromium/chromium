@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Bình thường</translation>
 <translation id="1591562245178063882">Tháng này</translation>
 <translation id="1637811476055996098">Chọn tệp</translation>
-<translation id="1680090928918677457">Sử dụng camera</translation>
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Hãy cắt ngắn văn bản này thành <ph name="MAX_CHARACTERS" /> ký tự hoặc ít hơn (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="2247351761944213033">Tuần <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Bản nhạc <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
 <translation id="2507943997699731163">Vui lòng điền vào trường này.</translation>
 <translation id="2613802280814924224">Vui lòng nhập giá trị hợp lệ. Giá trị hợp lệ gần nhất là <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2746543609216772311">Giá trị phải là <ph name="MINIMUM_DATE_OR_TIME" /> hoặc muộn hơn.</translation>
 <translation id="2761667185364618470">Vui lòng chọn hộp kiểm này nếu bạn muốn tiếp tục.</translation>
 <translation id="2908441821576996758">Vui lòng nhập danh sách địa chỉ email được phân cách bằng dấu phẩy.</translation>
-<translation id="2940013921954129954">Được phép truy cập thông tin vị trí chính xác</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Vui lòng nhập một giá trị hợp lệ. Trường không hoàn chỉnh hoặc có giá trị không hợp lệ.</translation>
 <translation id="310520048233152454">Vui lòng nhập URL.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Hãy kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="383465348367842624">Phần đứng trước '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
-<translation id="4031179711345676612">Cho phép micrô</translation>
 <translation id="4360991593054037559">Vui lòng nhập giá trị hợp lệ. Hai giá trị hợp lệ gần nhất là <ph name="VALID_VALUE_LOW" /> và <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
-<translation id="4663373278480897665">Cho phép máy ảnh</translation>
 <translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Đang phát ở chế độ hình trong hình</translation>
 <translation id="4812940957355064477">Vui lòng nhập một số.</translation>
-<translation id="49269513399674318">Sử dụng micrô</translation>
 <translation id="4975562563186953947">Đã chọn <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Bật âm thanh</translation>
 <translation id="49969490063480558">Vui lòng nhập phần đứng sau '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
 <translation id="5164977714490026579">Giá trị phải lớn hơn hoặc bằng <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5239623327352565343">Cho phép truy cập thông tin vị trí</translation>
 <translation id="5307600278924710095">Vui lòng nhập phần đứng trước '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
 <translation id="5334352251556557839">Không thể phát nội dung đa phương tiện.</translation>
 <translation id="537648784377940524">Ngày tối thiểu (<ph name="MIN_DATE_OR_TIME" />) phải trước ngày tối đa (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Chất lượng phát kém</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6820355525329141109">Không thể tải plugin.</translation>
-<translation id="688706781007114099">Sử dụng thông tin vị trí</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Vui lòng kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng 1 ký tự).</translation>
 <translation id="709897737746224366">Vui lòng khớp với định dạng được yêu cầu.</translation>
-<translation id="7134810312945846184">Sử dụng micrô và camera</translation>
 <translation id="7263440858009898357">Vui lòng chọn một mục trong danh sách.</translation>
 <translation id="7364796246159120393">Chọn tệp</translation>
 <translation id="739024184232394898">Khác...</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Giá trị phải nằm trong khoảng từ <ph name="MINIMUM_TIME" /> đến <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> tệp</translation>
 <translation id="8451268428117625855">Vui lòng chọn một tệp.</translation>
-<translation id="8533587060884335451">Sử dụng vị trí chính xác</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Tự ngắt dòng</translation>
 <translation id="8750798805984357768">Vui lòng chọn một trong các tùy chọn sau.</translation>

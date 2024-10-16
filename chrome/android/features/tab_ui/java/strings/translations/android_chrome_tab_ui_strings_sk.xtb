@@ -58,19 +58,16 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="3078350928901129212">Farebná ikona skupiny kariet: <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> karta bola pridaná, zmenené: <ph name="ANY_CHANGED" />}few{<ph name="MANY_ADDED" /> karty boli pridané, zmenené: <ph name="ANY_CHANGED" />}many{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed}other{<ph name="MANY_ADDED" /> kariet bolo pridaných, zmenené: <ph name="ANY_CHANGED" />}}</translation>
-<translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="3547352561153509682">Týmto odstránite skupinu zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Skryť dialógové okno neaktívnych kariet</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniat. zdieľ. ukážky tab.</translation>
 <translation id="381219490185664296">Chcete zrušiť zoskupenie kariet v skupine?</translation>
-<translation id="3882834874697329510">Ak chcete dostať upozornenie, keď sa na otvorenej karte zníži cena, zapnite upozornenia v Nastaveniach.</translation>
 <translation id="3940195383040445971">Sledovať ceny na kartách</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Zoskupiť kartu}few{Zoskupiť karty}many{Zoskupiť karty}other{Zoskupiť karty}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktívna karta}few{<ph name="TABS_COUNT_MANY" /> neaktívne karty}many{<ph name="TABS_COUNT_MANY" /> inactive tabs}other{<ph name="TABS_COUNT_MANY" /> neaktívnych kariet}}</translation>
 <translation id="3969565576924904454">Otvoriť <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Dostávať upozornenia</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Vytvorená pred <ph name="NUM_DAYS_ONE" /> dňom}few{Vytvorená pred <ph name="NUM_DAYS_MANY" /> dňami}many{Vytvorená pred <ph name="NUM_DAYS_MANY" /> dňa}other{Vytvorená pred <ph name="NUM_DAYS_MANY" /> dňami}}</translation>
 <translation id="4133493477912226187">Zdá sa, že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="4139634748112164403">Karty zostanú v tomto zariadení otvorené, ale skupina bude natrvalo odstránená</translation>
@@ -115,7 +112,6 @@ Ak ju opustíte, okamžite stratíte prístup k skupine kariet <ph name="TITLE_
 <translation id="5627941783489838464">Žiadne aktualizácie kariet</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Obnoviť kartu}few{Obnoviť karty}many{Restore tabs}other{Obnoviť karty}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> odkaz z Chromu}few{<ph name="TABS_COUNT_MANY" /> odkazy z Chromu}many{<ph name="TABS_COUNT_MANY" /> links from Chrome}other{<ph name="TABS_COUNT_MANY" /> odkazov z Chromu}}</translation>
-<translation id="575494663145460764">Chcete dostávať upozornenia na poklesy cien?</translation>
 <translation id="58326064309361797">Karty zoskupíte presunutím</translation>
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5972844218283131174">Zrušiť výber všetkého</translation>

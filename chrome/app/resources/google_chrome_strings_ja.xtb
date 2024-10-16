@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1953553007165777902">ダウンロードしています... 残り <ph name="MINUTE" /> 分です</translation>
 <translation id="1982647487457769627">Chrome は複数のプラットフォームで動作し、どのデバイスでも同じ環境で使用できます</translation>
-<translation id="19955905961160405">Google レンズで画面上のコンテンツを検索</translation>
 <translation id="2001586581944147178">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chrome では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{この拡張機能のサポートは終了しました。削除することをおすすめします。}other{これらの拡張機能のサポートは終了しました。削除することをおすすめします。}}</translation>
 <translation id="2018528049276128029">Chrome の情報（ブックマーク、履歴、パスワードなど）はプロファイルごとに分けて保持されます</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">すべての言語</translation>
 <translation id="3169523567916669830">テスト期間中、サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="3196187562065225381">危険なファイルであるため、このダウンロードは Chrome でブロックされました</translation>
+<translation id="3222857603094643834">Google レンズでこのページの内容を検索</translation>
 <translation id="3226612997184048185">ブックマークを Google アカウントにも保存している場合は、Chrome で商品価格をトラッキングして、値下げがあったときに通知を受け取ることができます</translation>
 <translation id="3234642784688107085">テーマや文章の作成、情報の整理に役立つ新しい AI 機能をお試しください</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>

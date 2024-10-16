@@ -58,19 +58,16 @@
 <translation id="3078350928901129212">Значок кольору "<ph name="COLOR_NAME" />" для групи вкладок</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> вкладку додано, <ph name="ANY_CHANGED" /> змінено}one{<ph name="MANY_ADDED" /> вкладку додано, <ph name="ANY_CHANGED" /> змінено}few{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CHANGED" /> змінено}many{<ph name="MANY_ADDED" /> вкладок додано, <ph name="ANY_CHANGED" /> змінено}other{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CHANGED" /> змінено}}</translation>
-<translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3547352561153509682">Групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Сховати вікно "Неактивні вкладки"</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Зменш. зобр. для перегляду екрана поширення.</translation>
 <translation id="381219490185664296">Розгрупувати вкладки?</translation>
-<translation id="3882834874697329510">Увімкніть їх у налаштуваннях, щоб дізнаватися, коли на відкритій вкладці знижуватиметься ціна.</translation>
 <translation id="3940195383040445971">Відстежувати ціни на вкладках</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Додати вкладку в групу}one{Згрупувати вкладки}few{Згрупувати вкладки}many{Згрупувати вкладки}other{Згрупувати вкладки}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна вкладка}one{<ph name="TABS_COUNT_MANY" /> неактивна вкладка}few{<ph name="TABS_COUNT_MANY" /> неактивні вкладки}many{<ph name="TABS_COUNT_MANY" /> неактивних вкладок}other{<ph name="TABS_COUNT_MANY" /> неактивної вкладки}}</translation>
 <translation id="3969565576924904454">Відкрити групу "<ph name="TITLE_OF_GROUP" />"</translation>
-<translation id="3996880007329611795">Отримувати сповіщення</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Створено <ph name="NUM_DAYS_ONE" /> день тому}one{Створено <ph name="NUM_DAYS_MANY" /> день тому}few{Створено <ph name="NUM_DAYS_MANY" /> дні тому}many{Створено <ph name="NUM_DAYS_MANY" /> днів тому}other{Створено <ph name="NUM_DAYS_MANY" /> дня тому}}</translation>
 <translation id="4133493477912226187">Схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="4139634748112164403">Вкладки залишатимуться відкритими на цьому пристрої, однак групу буде видалено назавжди</translation>
@@ -115,7 +112,6 @@
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Відновити вкладку}one{Відновити вкладки}few{Відновити вкладки}many{Відновити вкладки}other{Відновити вкладки}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> посилання з Chrome}one{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}few{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}many{<ph name="TABS_COUNT_MANY" /> посилань із Chrome}other{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}}</translation>
-<translation id="575494663145460764">Хочете отримувати сповіщення про зниження цін?</translation>
 <translation id="58326064309361797">Перетягуйте вкладки, щоб групувати їх</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5972844218283131174">Не вибирати нічого</translation>

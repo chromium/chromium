@@ -411,6 +411,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="288655811176831528">Mbylle skedën</translation>
 <translation id="2888631381369839306">Njoftimet për monitorimin e çmimeve janë aktivizuar</translation>
 <translation id="288902476966286676">Ktheje te dërguesi</translation>
+<translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2905479111267140204">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të ripërdorura që mund ta rrezikojnë sigurinë tënde.</translation>
 <translation id="291754862089661335">Pozicionoje kodin QR ose barkodin në këtë kornizë</translation>
 <translation id="2918688092312652908">Shëno si të palexuar</translation>
@@ -590,6 +591,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3861908220442487587">Kjo adresë ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, zhvendose atë në "Llogarinë tënde të Google", <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Shfaq URL-në e plotë</translation>
+<translation id="3875783148670536197">Më trego mënyrën</translation>
 <translation id="3876833929577368454">Më pyet çdo herë</translation>
 <translation id="3885587018298784481">Bashkohu në një grup familjeje</translation>
 <translation id="3888863481921783344">Kjo do të përdoret për të të shfaqur të ftuarit e mundshëm në ngjarjen tënde.</translation>
@@ -1103,6 +1105,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6227126502342367214">Kërkimi me kamerën e "Lentes"</translation>
 <translation id="6231782223312638214">Sugjerimet</translation>
 <translation id="6232329973559504466">Kërkimi "i fshehtë"</translation>
+<translation id="6234310016144827337">Kontrollo lidhjen tënde dhe provo përsëri</translation>
 <translation id="6234438496206735891">Shfaq shkarkimet</translation>
 <translation id="6236952928980352967">Restauro paralajmërimin</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
@@ -1634,6 +1637,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8609743333007776886">Shto ${url} te faqeshënuesit</translation>
 <translation id="8620640915598389714">Redakto</translation>
 <translation id="8625706492572042370">Modifiko ekranin bazë</translation>
+<translation id="8633025649649592204">Aktiviteti i fundit</translation>
 <translation id="8636825310635137004">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo sinkronizimin.</translation>
 <translation id="8637431369725868556">Merr mbrojtjen nga sajtet e rrezikshme.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
@@ -1772,6 +1776,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9183733013282108610">Kërkimi "I fshehtë"</translation>
 <translation id="9186762474139509529">Fillo regjistrimin</translation>
 <translation id="9191031968346938109">Shto në…</translation>
+<translation id="9196007736149429065">Ky skedar nuk mund të hapej</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ditë më parë</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Kaloje shiritin e adresave nga kreu në fund të ekranit për një përvojë të personalizuar të shfletimit.</translation>

@@ -87,7 +87,6 @@
 <translation id="244264527810019436">Features on some sites may not work in Incognito mode</translation>
 <translation id="2442870161001914531">Always request desktop site</translation>
 <translation id="2469312991797799607">This action will clear all data and cookies for <ph name="ORIGIN" /> and all sites under it</translation>
-<translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2490684707762498678">Managed by <ph name="APP_NAME" /></translation>
@@ -143,6 +142,7 @@
 <translation id="3242646949159196181">When on, sites can play sound. When off, sites can't play sound.</translation>
 <translation id="3273479183583863618">Price drops on tabs</translation>
 <translation id="3277252321222022663">Allow sites to access sensors (recommended)</translation>
+<translation id="327891165872793509">Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
 <translation id="3295019059349372795">Chapter 11: The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">Hide info</translation>

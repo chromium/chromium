@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。您也必须遵守<ph name="BEGIN_LINK3" />隐私权政策<ph name="END_LINK3" />。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
-<translation id="3087218211037573995">一些仅保存在此设备上的密码即将失效。您可以将这些密码移至 Google 密码管理工具。</translation>
 <translation id="3087734570205094154">底部</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">您在 Chrome 和 <ph name="CHROME_CHANNEL" />中保存的密码的列表已合并。您仍可在这两个应用内自动填充所有已保存的密码。</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
-<translation id="4620032614425803188">自动填充服务</translation>
 <translation id="4624065194742029982">Chrome 无痕模式</translation>
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
@@ -1510,11 +1508,9 @@
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784934925303690534">时间范围</translation>
-<translation id="7850687713580657633">由于未安装 Google Play 服务，密码即将失效。如需使用保存在 Google 密码管理工具中的密码，请使用其他设备登录，或前往 passwords.google.com。</translation>
 <translation id="7851858861565204677">来自其他设备的同步</translation>
 <translation id="7853202427316060426">活动</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
-<translation id="7864208933699511058">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK_1" />网站建议的广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="7866213166286285359">翻译此处显示的网页</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> 需要“附近的设备”权限，才能连接到您的设备</translation>
 <translation id="7875915731392087153">创建电子邮件</translation>

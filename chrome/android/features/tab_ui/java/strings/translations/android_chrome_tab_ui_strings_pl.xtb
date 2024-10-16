@@ -58,19 +58,16 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona koloru grupy kart</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę, zmieniono <ph name="ANY_CHANGED" />}few{Dodano <ph name="MANY_ADDED" /> karty, zmieniono <ph name="ANY_CHANGED" />}many{Dodano <ph name="MANY_ADDED" /> kart, zmieniono <ph name="ANY_CHANGED" />}other{Dodano <ph name="MANY_ADDED" /> karty, zmieniono <ph name="ANY_CHANGED" />}}</translation>
-<translation id="3291470810748040983">Otrzymasz alert, gdy cena na otwartej karcie będzie niższa</translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="3547352561153509682">Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ukryj okno Nieaktywne karty</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura podglądu arkusza udostępniania.</translation>
 <translation id="381219490185664296">Rozgrupować grupę kart?</translation>
-<translation id="3882834874697329510">Aby otrzymywać alert, gdy na otwartej karcie cena będzie niższa, włącz powiadomienia w ustawieniach.</translation>
 <translation id="3940195383040445971">Monitoruj ceny na kartach</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nieaktywna karta}few{<ph name="TABS_COUNT_MANY" /> nieaktywne karty}many{<ph name="TABS_COUNT_MANY" /> nieaktywnych kart}other{<ph name="TABS_COUNT_MANY" /> nieaktywnej karty}}</translation>
 <translation id="3969565576924904454">Otwórz: <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Powiadamiaj mnie</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Utworzono <ph name="NUM_DAYS_ONE" /> dzień temu}few{Utworzono <ph name="NUM_DAYS_MANY" /> dni temu}many{Utworzono <ph name="NUM_DAYS_MANY" /> dni temu}other{Utworzono <ph name="NUM_DAYS_MANY" /> dnia temu}}</translation>
 <translation id="4133493477912226187">Liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="4139634748112164403">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie trwale usunięta</translation>
@@ -115,7 +112,6 @@ Jeśli opuścisz grupę, natychmiast utracisz dostęp do grupy kart „<ph name=
 <translation id="5627941783489838464">Brak aktualizacji kart</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Przywróć kartę}few{Przywróć karty}many{Przywróć karty}other{Przywróć karty}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link z Chrome}few{<ph name="TABS_COUNT_MANY" /> linki z Chrome}many{<ph name="TABS_COUNT_MANY" /> linków z Chrome}other{<ph name="TABS_COUNT_MANY" /> linku z Chrome}}</translation>
-<translation id="575494663145460764">Chcesz otrzymywać alerty o obniżkach cen?</translation>
 <translation id="58326064309361797">Przeciągaj karty, by je grupować</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>

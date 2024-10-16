@@ -411,6 +411,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2888631381369839306">Price tracking notifications turned on</translation>
 <translation id="288902476966286676">Return to sender</translation>
+<translation id="2894757982205307093">New tab in group</translation>
 <translation id="2905479111267140204">You have <ph name="NUMBER_OF_PASSWORDS" /> reused passwords that could put your security at risk.</translation>
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2918688092312652908">Mark as unread</translation>
@@ -590,6 +591,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861908220442487587">This address is only saved on this device. To use it on your other devices, move it to your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Show full URL</translation>
+<translation id="3875783148670536197">Show me how</translation>
 <translation id="3876833929577368454">Ask me every time</translation>
 <translation id="3885587018298784481">Join a family group</translation>
 <translation id="3888863481921783344">This will be used to show you possible invitees to your event.</translation>
@@ -1103,6 +1105,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6227126502342367214">Lens camera search</translation>
 <translation id="6231782223312638214">Suggested</translation>
 <translation id="6232329973559504466">Incognito search</translation>
+<translation id="6234310016144827337">Check your connection and try again</translation>
 <translation id="6234438496206735891">Show downloads</translation>
 <translation id="6236952928980352967">Restore warning</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -1634,6 +1637,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8609743333007776886">Add ${url} to bookmarks</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8625706492572042370">Edit Home screen</translation>
+<translation id="8633025649649592204">Recent activity</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
@@ -1772,6 +1776,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9183733013282108610">Incognito search</translation>
 <translation id="9186762474139509529">Start logging</translation>
 <translation id="9191031968346938109">Add to…</translation>
+<translation id="9196007736149429065">This file couldn't be opened</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Switch your address bar from the top to the bottom for a customised browsing experience.</translation>

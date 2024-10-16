@@ -593,7 +593,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="142765311413773645">La licencia de <ph name="APP_NAME" /> ha caducado</translation>
 <translation id="1428373049397869723">Puedes abrir y editar archivos compatibles con esta aplicación desde Finder u otras aplicaciones. Para controlar qué archivos se abren con esta aplicación de forma predeterminada, <ph name="BEGIN_LINK" />consulta cómo establecer aplicaciones predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Has guardado una nota sobre una contraseña de este sitio. Para verla, selecciona Administra tus contraseñas en la barra de búsqueda y direcciones.</translation>
-<translation id="1428770807407000502">¿Desactivar sincronización?</translation>
 <translation id="1429300045468813835">Se han borrado todas las entradas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Última actualización de software</translation>
@@ -2642,7 +2641,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2844809857160214557">Visualiza y gestiona trabajos de impresión</translation>
 <translation id="2845276301195220700">Más acciones para Google Calendar</translation>
 <translation id="2845382757467349449">Mostrar siempre la barra de marcadores</translation>
-<translation id="2845751331501453107">Mientras navegas, la personalización de los anuncios que ves depende de esta opción, de los <ph name="BEGIN_LINK1" />anuncios sugeridos por el sitio<ph name="LINK_END1" />, de la <ph name="BEGIN_LINK2" />configuración de las cookies<ph name="LINK_END2" /> y de si el sitio que estás viendo personaliza los anuncios.</translation>
 <translation id="284581348330507117">Crea contraseñas únicas</translation>
 <translation id="284884486564166077">Busca cualquier imagen con Lens</translation>
 <translation id="2849035674501872372">Buscar</translation>
@@ -3003,6 +3001,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3108957152224931571">Color de resaltado</translation>
 <translation id="3109206895301430738">Grupos de pestañas guardados</translation>
 <translation id="3109724472072898302">Contraído</translation>
+<translation id="310979712355504754">Eliminar todos</translation>
 <translation id="3112292765614504292">Tamaño de la aplicación: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">No permitir que los sitios editen archivos ni carpetas de tu dispositivo</translation>
 <translation id="3113970906450647715">Botón desfijado</translation>
@@ -3078,7 +3077,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3177914167275935955">Tu dispositivo incluye una Licencia de Chrome Education, pero tu nombre de usuario no está asociado a una cuenta de Google for Education. Crea una cuenta de Google for Education en g.co/workspace/edusignup con un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Fuente del texto</translation>
 <translation id="3180284704187420717">Guarda tus marcadores, contraseñas y más con la sincronización</translation>
-<translation id="3180716079618904608">Obtener aplicaciones y juegos</translation>
 <translation id="3180990259147710757">Mover la mandíbula hacia la izquierda</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
 <translation id="3182749001423093222">Revisión ortográfica</translation>
@@ -3223,7 +3221,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
-<translation id="3289886661311231677">Puedes bloquear los temas que no quieras que se compartan con los sitios. Chrome también elimina automáticamente los temas con una antigüedad superior a 4 semanas.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, actividad de extensiones e información del sistema para ayudar a detectar nuevas amenazas.</translation>
 <translation id="3293181007446299124">Tu historial de navegación se conservará en tu dispositivo y será privado, y los informes se enviarán con retraso para proteger tu identidad.</translation>
 <translation id="329324683265785818">Reproducir/pausar, combinación de teclas: K</translation>
@@ -4542,6 +4539,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4231141543165771749">Cerrar controles del juego</translation>
 <translation id="4231231258999726714">Configurando Steam para Chromebook</translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
+<translation id="4232376164796433044">Contraseñas y Autocompletar</translation>
 <translation id="4232484478444192782">Tu teléfono Android tiene lo que necesitas. Tu red Wi-Fi y tu contraseña se están transfiriendo.</translation>
 <translation id="423327101839111402">Eliminar grupo <ph name="NAME" /></translation>
 <translation id="4233739489690259993">Tu Chromebook ya no recibe actualizaciones de seguridad ni de software. Cambia de dispositivo para disfrutar de las últimas novedades en seguridad y de nuevas funciones. Oferta sujeta a condiciones.</translation>
@@ -5576,7 +5574,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4992869834339068470">Ayuda a mejorar las funciones y el rendimiento de ChromeOS. Los datos se agregan y están muy protegidos.</translation>
 <translation id="4994426888044765950">Si mantienes pulsada una tecla, se repetirá el carácter de la tecla</translation>
 <translation id="4994754230098574403">Se está configurando</translation>
-<translation id="4995293419989417004">Más información sobre los temas de anuncios</translation>
 <translation id="4995676741161760215">Activado, extensión habilitada</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No se ha encontrado ninguna máquina virtual <ph name="VM_TYPE" />}=1{Se ha encontrado 1 máquina virtual <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Se han encontrado {NUM_VMS} máquinas virtuales <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Sin conexión a Internet.</translation>
@@ -5669,6 +5666,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5071295820492622726">Volver a las descargas recientes</translation>
 <translation id="5071892329440114717">Mostrar detalles de la protección estándar</translation>
+<translation id="5072303130033714629">Herramienta Transferencia de contenido</translation>
 <translation id="5072500507106264618">Solo los servicios del sistema pueden usar tu ubicación</translation>
 <translation id="5072836811783999860">Mostrar marcadores administrados</translation>
 <translation id="5072900412896857127">Los Términos del Servicio de Google Play no se pueden cargar. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
@@ -6620,6 +6618,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5780940414249100901">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo/a, sino para aumentar la estabilidad de las aplicaciones y del sistema, y realizar otras mejoras. Algunos datos agregados también ayudarán a las aplicaciones y los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este <ph name="BEGIN_LINK1" />ajuste<ph name="END_LINK1" />. Si la opción Actividad en la Web y en Aplicaciones adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo/a. <ph name="BEGIN_LINK2" />Más información sobre las métricas<ph name="BEGIN_LINK2_END" />Más información<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
+<translation id="5781120434102258025">Transfiere los datos de tu cuenta de centro educativo a tu cuenta personal</translation>
 <translation id="5781865261247219930">Enviar comandos a <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="57838592816432529">Silenciar</translation>
@@ -6904,7 +6903,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5976780232488408272">Obtener ayuda para escribir</translation>
 <translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar la revisión ortográfica básica</translation>
-<translation id="5978493744931296692">Tu administrador ha inhabilitado otros perfiles</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Has vuelto a activar 1 extensión potencialmente dañina}other{Has vuelto a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
 <translation id="5979353814339191480">Esta opción se aplica a los Chromebooks con un plan de datos o un adaptador de red móvil, o si compartes conexión con un punto de acceso portátil</translation>
@@ -7855,6 +7853,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6691936601825168937">&amp;Reenviar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}other{{COUNT} páginas}}</translation>
 <translation id="6693820805264897502">reemplazar contraseñas</translation>
+<translation id="6694462491298752106">El panel táctil integrado está inhabilitado</translation>
 <translation id="6694634756612002311">Gestionar uso compartido</translation>
 <translation id="6697172646384837537">Selecciona dónde importar las contraseñas</translation>
 <translation id="6697492270171225480">Mostrar sugerencias de páginas similares cuando no se encuentre una página</translation>
@@ -8512,7 +8511,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7166815366658507447">Punto de acceso habilitado</translation>
 <translation id="7167327771183668296">Clics automáticos</translation>
 <translation id="7167486101654761064">&amp;Abrir siempre archivos de este tipo</translation>
-<translation id="716775164025088943">Tus marcadores, historial, contraseñas y más dejarán de sincronizarse.</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño mínimo de fuente</translation>
 <translation id="7169122689956315694">Activar notificación cuando haya dispositivos cerca</translation>
@@ -8654,7 +8652,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7273894023751806510">Impedir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
 <translation id="727595954130325265">Ver ahora</translation>
-<translation id="7276100255011548441">Chrome elimina automáticamente los temas con una antigüedad superior a 4 semanas. Cuando continúes navegando, es posible que vuelva a aparecer un tema en la lista. También puedes bloquear los temas que no quieras que Chrome comparta con los sitios. Consulta más información sobre cómo <ph name="BEGIN_LINK" />gestionar la privacidad en la publicidad en Chrome<ph name="END_LINK" />.</translation>
 <translation id="7278164481614262110">Crear temas con IA</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280649757394340890">Ajustes de voz de conversión de texto a voz</translation>
@@ -11272,6 +11269,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para disfrutar de la mejor experiencia posible, instala <ph name="DEVICE_OS" /> en tu disco interno. También puedes instalarlo más adelante desde la pantalla de inicio de sesión.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si no puedes instalarlo ahora, tienes la opción de ejecutarlo desde un USB para probarlo. De este modo, conservarás tu SO y tus datos actuales, pero es posible que encuentres limitaciones de almacenamiento y rendimiento.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Personalizar barra de herramientas</translation>
+<translation id="9120800848981545750">Descarga Chrome para iOS y accede a tus pestañas, marcadores y contraseñas en tu teléfono.</translation>
 <translation id="9121814364785106365">Abrir como pestaña fija</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Cerrar pestaña y eliminar grupo?}=1{¿Cerrar pestaña y eliminar grupo?}other{¿Cerrar pestañas y eliminar grupos?}}</translation>
 <translation id="9122788874051694311">¿Guardar esta llave de acceso fuera de Incógnito?</translation>

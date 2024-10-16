@@ -58,19 +58,16 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="3078350928901129212">Biểu tượng màu của nhóm thẻ: <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã thay đổi <ph name="ANY_CHANGED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, thay đổi <ph name="ANY_CHANGED" /> thẻ}}</translation>
-<translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3547352561153509682">Thao tác này sẽ xoá nhóm khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ẩn hộp thoại các thẻ không hoạt động</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Hình thu nhỏ để xem trước trang tính chia sẻ.</translation>
 <translation id="381219490185664296">Bạn muốn huỷ nhóm thẻ?</translation>
-<translation id="3882834874697329510">Để nhận thông báo khi có ưu đãi giảm giá trong một thẻ đang mở, hãy bật thông báo trong phần Cài đặt.</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Nhóm thẻ}other{Nhóm các thẻ}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> thẻ không hoạt động}other{<ph name="TABS_COUNT_MANY" /> thẻ không hoạt động}}</translation>
 <translation id="3969565576924904454">Mở <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Nhận thông báo</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Tạo <ph name="NUM_DAYS_ONE" /> ngày trước}other{Tạo <ph name="NUM_DAYS_MANY" /> ngày trước}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="4139634748112164403">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá vĩnh viễn</translation>
@@ -115,7 +112,6 @@ Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm t
 <translation id="5627941783489838464">Không có thông tin cập nhật về thẻ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Khôi phục thẻ}other{Khôi phục các thẻ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> đường liên kết từ Chrome}other{<ph name="TABS_COUNT_MANY" /> đường liên kết từ Chrome}}</translation>
-<translation id="575494663145460764">Nhận thông báo khi có mặt hàng giảm giá?</translation>
 <translation id="58326064309361797">Kéo các thẻ để nhóm lại với nhau</translation>
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>

@@ -411,6 +411,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="288655811176831528">Loka flipa</translation>
 <translation id="2888631381369839306">Kveikt er á tilkynningum fyrir verðrakningu</translation>
 <translation id="288902476966286676">Endursenda til sendanda</translation>
+<translation id="2894757982205307093">Nýr flipi í hópi</translation>
 <translation id="2905479111267140204">Þú ert með <ph name="NUMBER_OF_PASSWORDS" /> endurnýtt aðgangsorð sem gætu stefnt öryggi þínu í hættu.</translation>
 <translation id="291754862089661335">Staðsettu QR-kóða eða strikamerkið innan rammans</translation>
 <translation id="2918688092312652908">Merkja sem ólesið</translation>
@@ -590,6 +591,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3861908220442487587">Þetta heimilisfang er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu færa það á Google-reikninginn þinn, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Sjá alla vefslóðina</translation>
+<translation id="3875783148670536197">Fá leiðbeiningar</translation>
 <translation id="3876833929577368454">Spyrja í hvert skipti</translation>
 <translation id="3885587018298784481">Tengstu fjölskylduhópi</translation>
 <translation id="3888863481921783344">Þetta verður notað til að sýna þér hugsanlega boðsgesti á viðburðinn þinn.</translation>
@@ -1103,6 +1105,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6227126502342367214">Myndavélarleit Linsu</translation>
 <translation id="6231782223312638214">Tillögur</translation>
 <translation id="6232329973559504466">Leit í huliðsstillingu</translation>
+<translation id="6234310016144827337">Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="6234438496206735891">Sýna niðurhal</translation>
 <translation id="6236952928980352967">Endurheimta viðvörun</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
@@ -1634,6 +1637,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8609743333007776886">Bæta ${url} við bókamerki</translation>
 <translation id="8620640915598389714">Breyta</translation>
 <translation id="8625706492572042370">Breyta heimaskjá</translation>
+<translation id="8633025649649592204">Nýleg virkni</translation>
 <translation id="8636825310635137004">Kveiktu á samstillingu til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="8637431369725868556">Verðu þig fyrir hættulegum vefsvæðum.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Engin aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>

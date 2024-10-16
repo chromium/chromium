@@ -411,6 +411,7 @@
 <translation id="288655811176831528">टॅब बंद करा</translation>
 <translation id="2888631381369839306">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन सुरू केली आहेत</translation>
 <translation id="288902476966286676">पाठवणाऱ्याकडे परत पाठवा</translation>
+<translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
 <translation id="2905479111267140204">तुमच्याकडे ज्यांमुळे तुमची सुरक्षा धोक्यात येऊ शकते असे पुन्हा वापरलेले <ph name="NUMBER_OF_PASSWORDS" /> पासवर्ड आहेत.</translation>
 <translation id="291754862089661335">QR कोड किंवा बारकोडची या फ्रेममध्‍ये स्थिती निर्धारित करा</translation>
 <translation id="2918688092312652908">न वाचलेली म्हणून मार्क करा</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3861908220442487587">हा पत्ता फक्त या डिव्हाइसमध्ये सेव्ह केला आहे. तुमच्या डिव्हाइसवर वापरण्यासाठी, तो तुमच्या <ph name="USER_EMAIL" /> या Google खाते वर हलवा</translation>
 <translation id="3868495844258915202">संपूर्ण URL दाखवा</translation>
+<translation id="3875783148670536197">मला कसे ते दाखवा</translation>
 <translation id="3876833929577368454">प्रत्येक वेळी मला विचारा</translation>
 <translation id="3885587018298784481">कुटुंब गटामध्ये सामील व्हा</translation>
 <translation id="3888863481921783344">हे तुम्हाला तुमच्या इव्हेंटसाठी संभाव्य निमंत्रितांना दाखवण्यासाठी वापरले जाईल.</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">Lens मधील कॅमेरा वापरून शोध</translation>
 <translation id="6231782223312638214">सूचित</translation>
 <translation id="6232329973559504466">गुप्त शोध</translation>
+<translation id="6234310016144827337">तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="6234438496206735891">डाउनलोड दाखवा</translation>
 <translation id="6236952928980352967">चेतावणी रिस्टोअर करा</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -1635,6 +1638,7 @@
 <translation id="8609743333007776886">बुकमार्कमध्ये ${URL} जोडा</translation>
 <translation id="8620640915598389714">संपादित करा</translation>
 <translation id="8625706492572042370">होम स्क्रीन संपादित करा</translation>
+<translation id="8633025649649592204">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8637431369725868556">धोकादायक साइटपासून संरक्षण मिळवा.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>

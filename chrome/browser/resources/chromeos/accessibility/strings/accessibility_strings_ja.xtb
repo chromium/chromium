@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">コーンフラワー ブルー</translation>
 <translation id="1246424317317450637">太字</translation>
 <translation id="1251750620252348585">次のレベル 6 見出し</translation>
+<translation id="1264956950255940376">左目を細める</translation>
 <translation id="1268366246392928616">前の数式はありません</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1284576163386164372">チュートリアルは後からいつでも確認できます。4 本の指でタップしてメニューを開き、[ChromeVox] セクションでチュートリアルを起動してください。</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">タップ操作の向き</translation>
 <translation id="1325363694295259631"><ph name="NAME" />、選択されていないメニュー項目のラジオボタン</translation>
 <translation id="1325946044405407859">タン</translation>
+<translation id="1328928545650070438">両眉を下げる</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> 分 の <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">文字と単語の読み上げ</translation>
 <translation id="1334570596456017464">下付き文字</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">ヒント</translation>
 <translation id="1354356357730355833">コピー</translation>
 <translation id="1360699455582016846">ルーティング キー <ph name="ROUTING_KEY_NUMBER" /> の下のアイテムをクリックします</translation>
+<translation id="1365650529628379165">両眉を上げる</translation>
 <translation id="1376703628032300005">次の文字に移動</translation>
 <translation id="1377925789329510816">これは最後の見出しです。このページの最初の見出しに移動するには検索+H キーを押します。2 番目の見出しに移動するには検索+Shift+H キーを押します。</translation>
 <translation id="138218114945450791">ライトブルー</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">リンク</translation>
 <translation id="1727806147743597030">フッター</translation>
 <translation id="1730447754326314349">ChromeVox チュートリアルへようこそ。このチュートリアルは、キーボードの左上隅にある Esc キーを押すといつでも終了できます。ChromeVox を無効にするには、Ctrl+Alt+Z キーを押します。準備ができたら、Space キーで次のレッスンに進んでください。</translation>
+<translation id="1735957571918073979">両目で瞬きする</translation>
 <translation id="174268867904053074">次の図</translation>
 <translation id="1756785467854861272">ダークマゼンタ</translation>
 <translation id="1758693804775271377">このトピックのレッスンを閲覧するには、1 本の指で左右にスワイプします</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">右にスクロール</translation>
 <translation id="1781173782405573156">パススルー キー</translation>
 <translation id="1787176709638001873">パスワード テキスト編集</translation>
+<translation id="1795438342141780114">カーソルを中央にリセットする</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
 <translation id="1810107444790159527">リスト ボックス</translation>
 <translation id="1812527064848182527">横向き</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">次のオブジェクト</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox メニューに点字コマンドを表示する</translation>
+<translation id="1999763610967697511">ドラッグ＆ドロップ</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{左角かっこ}other{# 個の左角かっこ}}</translation>
 <translation id="2009187674653301682">上付き文字オフ</translation>
 <translation id="2010555995361223825">ChromeVox メニュー</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">スペルミスが残っています</translation>
 <translation id="2267945578749931355">次の文字</translation>
 <translation id="2278490101488436824">3 本の指で左にスワイプします</translation>
+<translation id="228059581448666199">マウスを左クリックする</translation>
 <translation id="2303873575703885770">アイテムを有効にする</translation>
 <translation id="2305942658236913680">次の見出しはありません</translation>
 <translation id="2311237334957139798">前の詳細レベルに移動します</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">前の ARIA ランドマークはありません</translation>
 <translation id="2843814945404750166">ダーク オリーブ グリーン</translation>
 <translation id="2843837985843789981">前のグループ</translation>
+<translation id="2849035674501872372">調べる</translation>
+<translation id="2860710618359053450">あごを右に動かす</translation>
 <translation id="2864481629947106776">前のリンク</translation>
 <translation id="2867808975387772810">参考文献</translation>
 <translation id="2873259058405069099">表の先頭に移動</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">ナビゲーション</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{スペース}other{# 個のスペース}}</translation>
 <translation id="3179119189286472195">リンクオフ</translation>
+<translation id="3180990259147710757">あごを左に動かす</translation>
 <translation id="320041337977930740">表示スタイルを交互表示に変更する</translation>
 <translation id="3206698050650195442">チュートリアルを終了</translation>
 <translation id="3208346789712025453">次のコントロールはありません</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{プラス}other{# 個のプラス記号}}</translation>
 <translation id="338583716107319301">セパレータ</translation>
 <translation id="3389259863310851658">前のフォーム フィールド</translation>
+<translation id="3390740059150071453">左を見る</translation>
 <translation id="3393605254399152980">テキストを読み上げるには 1 本の指でドラッグします</translation>
 <translation id="3406283310380167331">フォーム リストを表示</translation>
 <translation id="3407726812456125464">選択したテキストの音声を聞きます</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">前のオブジェクト</translation>
 <translation id="4099274309791143834">サブメニューあり</translation>
 <translation id="4101527861445851766">チェックボックスがオン</translation>
+<translation id="410225014223200513">唇を丸くすぼめる</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="4116415223832267137">アラート</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{右中かっこ}other{# 個の右中かっこ}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">スチールブルー</translation>
 <translation id="4253168017788158739">メモ</translation>
 <translation id="4254798249533888099">ツリー</translation>
+<translation id="4255016471934258618">口を大きく開く</translation>
 <translation id="4259220820964911921">フェイス コントロールを有効にしますか？</translation>
 <translation id="4271220233568730077">次の数式</translation>
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">シエンナ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ドット}=3{三点リーダー}other{# 個のドット}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> を入力</translation>
+<translation id="4360738659108163902">マウスを右クリックする</translation>
 <translation id="4372435075475052704">最小: <ph name="X" /></translation>
 <translation id="4372705107434148843">読み上げの停止</translation>
 <translation id="4376316291247992553">画像を点字パターンで表示します</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">ペール ターコイズ</translation>
 <translation id="4826415162591436065">順方向にナビゲート</translation>
 <translation id="4827410568042294688">選択していません</translation>
+<translation id="483262387981411190">顔コントロールを一時停止または再開する</translation>
+<translation id="4835598628985424375">唇をくっつけてすぼめる</translation>
 <translation id="4838490795649708173">4 本の指でタップします</translation>
 <translation id="4839925464551908214">前の行に移動します</translation>
 <translation id="4841614409681890122">ディープピンク</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">タイマー</translation>
 <translation id="4854380505292502090">前のメディア ウィジェットはありません</translation>
 <translation id="4855927945655956315">必須キー: Ctrl</translation>
+<translation id="485806788160414322">メディアを再生または一時停止する</translation>
 <translation id="4862744964787595316">太字オフ</translation>
 <translation id="4865995900839719272">前の行に移動</translation>
 <translation id="4866956062845190338">メニュー項目のラジオボタン</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">ミディアム スレートブルー</translation>
 <translation id="5140016802771803559">レベッカ パープル</translation>
 <translation id="5142101052131610456">すべてのレッスン</translation>
+<translation id="514387318601895731">下を見る</translation>
 <translation id="5158275234811857234">表紙</translation>
 <translation id="516076699907426116">次に進むには、タッチガイドで [次のレッスン] ボタンを探して、ダブルタップしてください。</translation>
 <translation id="5170206230005240598">点字表示が有効になっています</translation>
@@ -713,6 +731,7 @@
 <translation id="5776001898637896684">Google Enhanced Network テキスト読み上げ拡張機能</translation>
 <translation id="5783252477644995371">フェイス コントロールでは、顔の向きでカーソルを操作したり、笑顔などの顔の動きで左クリックといった操作を行ったりできます</translation>
 <translation id="5805940204952508776">2 本の指でタップします</translation>
+<translation id="5807774529265708172">画面キーボードを表示または非表示にする</translation>
 <translation id="5819072574982403430">ツリー項目</translation>
 <translation id="5822819874379903994">ダーク ターコイズ</translation>
 <translation id="5824976764713185207">ページの読み込み後、自動的に読み上げを開始する</translation>
@@ -724,6 +743,7 @@
 <translation id="5851548754964597211">タブ リスト</translation>
 <translation id="5866042630553435010">一部オン</translation>
 <translation id="5866210856231860256">このトピックのレッスンを確認するには、検索+右矢印キーまたは検索+左矢印キーを押してください</translation>
+<translation id="5866236843389439313">左の口角を上げる</translation>
 <translation id="5867591286054666064">このチュートリアルでは、キーを押すとその名前が読み上げられます。</translation>
 <translation id="5869546221129391014">グリッド</translation>
 <translation id="5876817486144482042">読み上げの音量を下げる</translation>
@@ -738,6 +758,7 @@
 <translation id="5923780477617566089">現在の日付</translation>
 <translation id="5926889058434275234">操作の完全なリストは、ヘルプセンターでご覧いただけます。</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{等号}other{# 個の等号}}</translation>
+<translation id="5947651424015173580">マウスをダブルクリックする</translation>
 <translation id="5948123859135882163">数式の解釈を、構文と意味の間で切り替えます</translation>
 <translation id="5955304353782037793">アプリ</translation>
 <translation id="5956928062748260866">ダイアログ</translation>
@@ -746,6 +767,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{（# 個のアイテム）}other{（# 個のアイテム）}}</translation>
 <translation id="5981446804259161541">ライトシアン</translation>
 <translation id="5983179082906765664">一度に移動する単位を小さくする</translation>
+<translation id="5988563937187882754">右を見る</translation>
 <translation id="5992285135956208197">図形ドキュメント</translation>
 <translation id="5999630716831179808">音声</translation>
 <translation id="6006050241733874051">フォーム</translation>
@@ -972,6 +994,7 @@
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701196182766842984">リストの予測入力</translation>
 <translation id="7714340021005120797">次のコンボボックスはありません</translation>
+<translation id="7715455358521357192">右目を細める</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7731785449856576010">次のメディア ウィジェットはありません</translation>
 <translation id="7735498529470878067">タッチガイドを使うと、画面上に何があるかをすばやく把握できます。</translation>
@@ -989,6 +1012,7 @@
 <translation id="7839679365527550018">前の単語</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7851816175263618915">一部の句読点を読み上げます</translation>
+<translation id="7860802890538098598">右の口角を上げる</translation>
 <translation id="7871691770940645922">仮想点字ディスプレイ</translation>
 <translation id="7882421473871500483">茶</translation>
 <translation id="78826985582142166">スライダ</translation>
@@ -1008,6 +1032,7 @@
 <translation id="8004512796067398576">増やす</translation>
 <translation id="8007540374018858731">見出し 3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{引用符}other{# 個の引用符}}</translation>
+<translation id="8017004049696748317">音声入力を開始または停止する</translation>
 <translation id="8017588669690167134">読み上げを無効にします</translation>
 <translation id="801990297710781303">脚注</translation>
 <translation id="8028833145828956995">タッチスクリーンで ChromeVox を使用できます</translation>
@@ -1026,6 +1051,7 @@
 <translation id="8098587210054821856">スレートグレー</translation>
 <translation id="8121539003537428024">すべてのイベント フィルタを有効にする</translation>
 <translation id="8123975449645947908">後方スクロール</translation>
+<translation id="8126355825906412872">笑う</translation>
 <translation id="8126386426083591964">前のレベル 5 の見出しはありません</translation>
 <translation id="812886159861361726"><ph name="FILE_NAME" /> のダウンロードを停止しました</translation>
 <translation id="8129445297241948503">上にセルはありません</translation>
@@ -1130,6 +1156,7 @@
 <translation id="8940925288729953902">修飾キー</translation>
 <translation id="8943282376843390568">ライム</translation>
 <translation id="8944511129464116546">一部オン</translation>
+<translation id="8945050808870279132">鼻にしわを寄せる</translation>
 <translation id="8946628535652548639">行<ph name="TABLECELLROWINDEX" />列<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">前のラジオボタンはありません</translation>
 <translation id="8970172509886453271">前のセクションはありません</translation>

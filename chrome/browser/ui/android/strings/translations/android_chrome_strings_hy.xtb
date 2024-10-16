@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Կիրառվում է նաև <ph name="BEGIN_LINK3" />Գաղտնիության քաղաքականությունը<ph name="END_LINK3" />։</translation>
 <translation id="3080525922482950719">Դուք կարող եք պահել էջերը՝ ավելի ուշ կամ անցանց ռեժիմում կարդալու համար</translation>
-<translation id="3087218211037573995">Որոշ գաղտնաբառեր, որոնք պահվել են միայն այս սարքում, շուտով այլևս չեն աշխատի։ Դուք կարող եք տեղափոխել այս գաղտնաբառերը Google գաղտնաբառերի կառավարիչ։</translation>
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Պահված գաղտնաբառերի ձեր ցանկերը Chrome-ի և <ph name="CHROME_CHANNEL" />-ի համար միավորվել են։ Դուք նախկինի պես կարող եք ինքնալրացնել ձեր բոլոր պահված գաղտնաբառերը երկու հավելվածներում։</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
-<translation id="4620032614425803188">Ինքնալրացման ծառայություններ</translation>
 <translation id="4624065194742029982">Chrome ինկոգնիտո</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ}one{# կոտրված գաղտնաբառ}other{# կոտրված գաղտնաբառ}}</translation>
@@ -1484,6 +1482,7 @@
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7709918231054955894">Դիտեք ձեր բոլոր ներդիրները</translation>
 <translation id="7733878270780732638">Սարքում բավականաչափ տարածք չկա։</translation>
+<translation id="7746817319925672889">Google գաղտնաբառերի կառավարիչը շուտով այլևս չի աշխատի այս սարքում</translation>
 <translation id="774876555279732384">Ինքնալրացման ծառայությունները նաև կարելի է կառավարել <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7759809451544302770">Կամընտիր</translation>
 <translation id="7762668264895820836">SD քարտ <ph name="SD_CARD_NUMBER" /></translation>
@@ -1514,7 +1513,6 @@
 <translation id="7851858861565204677">Այլ սարքեր</translation>
 <translation id="7853202427316060426">Գործողություններ</translation>
 <translation id="7859988229622350291">Երբեք չթարգմանել</translation>
-<translation id="7864208933699511058">Գովազդի անհատականացումը կախված է այս կարգավորումից, <ph name="BEGIN_LINK_1" />կայքերի կողմից առաջարկվող գովազդներից<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />քուքիների կարգավորումներից<ph name="END_LINK_2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք։</translation>
 <translation id="7866213166286285359">Թարգմանեք էջերն այստեղ</translation>
 <translation id="78707286264420418">Ձեր սարքին միանալու համար <ph name="PRODUCT_NAME" />-ին մոտակա սարքերը գտնելու թույլտվություն է հարկավոր</translation>
 <translation id="7875915731392087153">Ստեղծեք նամակ</translation>

@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="3080525922482950719">പിന്നീട് അല്ലെങ്കിൽ ഓഫ്‌ലൈനിൽ വായിക്കുന്നതിന് നിങ്ങൾക്ക് പേജുകൾ സംരക്ഷിക്കാനാകും</translation>
-<translation id="3087218211037573995">ഈ ഉപകരണത്തിൽ മാത്രം സംരക്ഷിച്ചിട്ടുള്ള ചില പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. നിങ്ങൾക്ക് ഈ പാസ്‌വേഡുകൾ Google Password Manager-ലേക്ക് നീക്കാനാകും.</translation>
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3091010850649238832">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ കാണിക്കുക</translation>
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Chrome, <ph name="CHROME_CHANNEL" /> എന്നിവയ്ക്കുള്ള നിങ്ങളുടെ, സംരക്ഷിച്ച പാസ്‌വേഡുകളുടെ ലിസ്‌റ്റുകൾ ലയിപ്പിച്ചു. നിങ്ങൾക്ക് തുടർന്നും രണ്ട് ആപ്പുകളിലും നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളെല്ലാം സ്വയമേവ പൂരിപ്പിക്കാനാകും.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> തുറക്കുക</translation>
 <translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
-<translation id="4620032614425803188">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങൾ</translation>
 <translation id="4624065194742029982">Chrome അദൃശ്യ മോഡ്</translation>
 <translation id="4634124774493850572">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ}}</translation>
@@ -1512,11 +1510,9 @@
 <translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7846296061357476882">Google സേവനങ്ങൾ</translation>
 <translation id="784934925303690534">സമയ ശ്രേണി</translation>
-<translation id="7850687713580657633">Google Play സേവനങ്ങൾ ലഭ്യമല്ലാത്തതിനാൽ, പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. Google Password Manager-ൽ സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ ഉപയോഗിക്കാൻ, മറ്റൊരു ഉപകരണം ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക അല്ലെങ്കിൽ passwords.google.com എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="7851858861565204677">മറ്റ് ഉപകരണങ്ങൾ</translation>
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
-<translation id="7864208933699511058">ബ്രൗസ് ചെയ്യുന്നതിനനുസരിച്ച് നിങ്ങൾ കാണുന്ന പരസ്യം വ്യക്തിപരമാക്കിയതാണോ എന്നത് ഈ ക്രമീകരണം, <ph name="BEGIN_LINK_1" />സൈറ്റ് നിർദ്ദേശിച്ച പരസ്യങ്ങൾ<ph name="END_LINK_1" />, നിങ്ങളുടെ <ph name="BEGIN_LINK_2" />കുക്കി ക്രമീകരണം<ph name="END_LINK_2" />, നിങ്ങൾ കാണുന്ന സൈറ്റ് പരസ്യങ്ങൾ വ്യക്തിപരമാക്കുന്നുണ്ടോ എന്നിവയെ ആശ്രയിച്ചിരിക്കും.</translation>
 <translation id="7866213166286285359">ഇവിടെ പേജുകൾ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="78707286264420418">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്യാൻ <ph name="PRODUCT_NAME" /> എന്നതിന് സമീപമുള്ള ഉപകരണങ്ങൾക്കുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="7875915731392087153">ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>

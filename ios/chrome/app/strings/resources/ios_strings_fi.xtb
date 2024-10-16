@@ -411,6 +411,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="288655811176831528">Sulje välilehti</translation>
 <translation id="2888631381369839306">Hintaseurantailmoitukset ovat päällä</translation>
 <translation id="288902476966286676">Palauta lähettäjälle</translation>
+<translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2905479111267140204">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> uudelleenkäytettyä salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
 <translation id="2918688092312652908">Merkitse lukemattomaksi</translation>
@@ -590,6 +591,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861908220442487587">Osoite tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, siirrä se Google-tilillesi (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">Näytä täysi URL-osoite</translation>
+<translation id="3875783148670536197">Näytä miten</translation>
 <translation id="3876833929577368454">Kysy aina </translation>
 <translation id="3885587018298784481">Liity perheryhmään</translation>
 <translation id="3888863481921783344">Sinulle näytetään mahdollisia osallistujia tapahtumaan.</translation>
@@ -1103,6 +1105,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6227126502342367214">Lens-kamerahaku</translation>
 <translation id="6231782223312638214">Ehdotukset</translation>
 <translation id="6232329973559504466">Incognito-haku</translation>
+<translation id="6234310016144827337">Tarkista yhteys ja yritä uudelleen</translation>
 <translation id="6234438496206735891">Näytä lataukset</translation>
 <translation id="6236952928980352967">Palauta varoitus</translation>
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
@@ -1634,6 +1637,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8609743333007776886">Lisää ${url} kirjanmerkkeihin</translation>
 <translation id="8620640915598389714">Muokkaa</translation>
 <translation id="8625706492572042370">Aloitusnäytön muokkaaminen</translation>
+<translation id="8633025649649592204">Uusimmat tapahtumat</translation>
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
 <translation id="8637431369725868556">Suojaudu vaarallisilta sivustoilta.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ei vaarantuneita salasanoja}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>

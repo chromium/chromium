@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Standard</translation>
 <translation id="1591562245178063882">Ce mois</translation>
 <translation id="1637811476055996098">Sélect. fichiers</translation>
-<translation id="1680090928918677457">Utiliser l'appareil photo</translation>
 <translation id="1729654308190250600">Veuillez saisir une adresse e-mail dans le champ correspondant.</translation>
 <translation id="1758486001363313524">Autre…</translation>
 <translation id="1921819250265091946">jj</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Veuillez réduire ce texte à <ph name="MAX_CHARACTERS" /> caractères maximum (il compte actuellement <ph name="CURRENT_LENGTH" /> caractères).</translation>
 <translation id="2247351761944213033">Semaine <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Piste <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Caméra et micro autorisés</translation>
 <translation id="2507943997699731163">Veuillez renseigner ce champ.</translation>
 <translation id="2613802280814924224">Veuillez saisir une valeur valide. La valeur valide la plus proche est "<ph name="VALID_VALUE" />".</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2746543609216772311">La date ou l'heure doit être égale ou postérieure à "<ph name="MINIMUM_DATE_OR_TIME" />".</translation>
 <translation id="2761667185364618470">Veuillez cocher cette case si vous souhaitez continuer.</translation>
 <translation id="2908441821576996758">Veuillez saisir une liste d'adresses e-mail séparées par une virgule.</translation>
-<translation id="2940013921954129954">Position exacte autorisée</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Mo</translation>
 <translation id="3075154866155599887">Veuillez saisir une valeur valide. Le champ n'est pas complet ou contient une date non valide.</translation>
 <translation id="310520048233152454">Veuillez saisir une URL.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Veuillez allonger ce texte pour qu'il comporte au moins <ph name="MIN_CHARACTERS" /> caractères. Il en compte actuellement <ph name="CURRENT_LENGTH" />.</translation>
 <translation id="383465348367842624">La partie suivie du symbole "<ph name="ATSIGN" />" ne doit pas contenir le caractère "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Quitter le mode plein écran</translation>
-<translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4360991593054037559">Veuillez saisir une valeur valide. Les deux valeurs valides les plus proches sont "<ph name="VALID_VALUE_LOW" />" et "<ph name="VALID_VALUE_HIGHER" />".</translation>
 <translation id="4522570452068850558">Détails</translation>
-<translation id="4663373278480897665">Caméra autorisée</translation>
 <translation id="4664250907885839816">La partie précédée du symbole "<ph name="ATSIGN" />" ne doit pas contenir le caractère "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Lecture en mode Picture-in-picture</translation>
 <translation id="4812940957355064477">Veuillez saisir un nombre.</translation>
-<translation id="49269513399674318">Utiliser le micro</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> élément(s) sélectionné(s)</translation>
 <translation id="4992066212339426712">Réactiver le son</translation>
 <translation id="49969490063480558">Veuillez saisir la partie manquante après le symbole "<ph name="ATSIGN" />". L'adresse "<ph name="INVALIDADDRESS" />" est incomplète.</translation>
 <translation id="5164977714490026579">Cette valeur doit être supérieure ou égale à <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
-<translation id="5239623327352565343">Position autorisée</translation>
 <translation id="5307600278924710095">Veuillez saisir la partie manquante avant le caractère "<ph name="ATSIGN" />". L'adresse "<ph name="INVALIDADDRESS" />" est incomplète.</translation>
 <translation id="5334352251556557839">Impossible de lire les contenus multimédias.</translation>
 <translation id="537648784377940524">La date minimale (<ph name="MIN_DATE_OR_TIME" />) doit être antérieure à la date maximale (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Mauvaise qualité de lecture</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6820355525329141109">Impossible de charger le plug-in.</translation>
-<translation id="688706781007114099">Utiliser la position</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Veuillez allonger ce texte pour qu'il comporte au moins <ph name="MIN_CHARACTERS" /> caractères. Il en compte actuellement un seul.</translation>
 <translation id="709897737746224366">Veuillez respecter le format requis.</translation>
-<translation id="7134810312945846184">Utiliser le micro et l'appareil photo</translation>
 <translation id="7263440858009898357">Sélectionnez un élément dans la liste.</translation>
 <translation id="7364796246159120393">Choisir un fichier</translation>
 <translation id="739024184232394898">Autre…</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Cette valeur doit être comprise entre <ph name="MINIMUM_TIME" /> et <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fichiers</translation>
 <translation id="8451268428117625855">Veuillez sélectionner un fichier.</translation>
-<translation id="8533587060884335451">Utiliser la position exacte</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Renvoi à la ligne automatique</translation>
 <translation id="8750798805984357768">Veuillez sélectionner l'une de ces options.</translation>

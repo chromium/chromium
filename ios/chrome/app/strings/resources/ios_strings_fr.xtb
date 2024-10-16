@@ -411,6 +411,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
 <translation id="288902476966286676">Retour à l'expéditeur</translation>
+<translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés qui peuvent compromettre votre sécurité.</translation>
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
 <translation id="2918688092312652908">Marquer comme non lu</translation>
@@ -590,6 +591,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, déplacez-la vers votre compte Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">Afficher l'URL complète</translation>
+<translation id="3875783148670536197">Démonstration</translation>
 <translation id="3876833929577368454">Me demander à chaque fois</translation>
 <translation id="3885587018298784481">Rejoindre un groupe familial</translation>
 <translation id="3888863481921783344">Cela permettra d'afficher les participants potentiels à votre événement.</translation>
@@ -1103,6 +1105,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6227126502342367214">Recherche Lens avec l'appareil photo</translation>
 <translation id="6231782223312638214">Suggestions</translation>
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
+<translation id="6234310016144827337">Vérifiez la connexion, puis réessayez</translation>
 <translation id="6234438496206735891">Afficher les téléchargements</translation>
 <translation id="6236952928980352967">Restaurer l'avertissement</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -1634,6 +1637,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8609743333007776886">Ajouter ${url} aux favoris</translation>
 <translation id="8620640915598389714">Modifier</translation>
 <translation id="8625706492572042370">Modifier l'écran d'accueil</translation>
+<translation id="8633025649649592204">Activité récente</translation>
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="8637431369725868556">Protégez-vous contre les sites dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
@@ -1772,6 +1776,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9183733013282108610">Recherche en navigation privée</translation>
 <translation id="9186762474139509529">Démarrer la journalisation</translation>
 <translation id="9191031968346938109">Ajouter à…</translation>
+<translation id="9196007736149429065">Impossible d'ouvrir ce fichier</translation>
 <translation id="9200875785104711666">Il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Déplacez la barre d'adresse du haut vers le bas pour une expérience de navigation personnalisée.</translation>

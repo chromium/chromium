@@ -161,7 +161,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1277711244058668002">Pulsante Mi piace, premi Invio per inviare un feedback che indica che ti piace questo suggerimento</translation>
 <translation id="127777513559587977">Talk show TV</translation>
 <translation id="1281476433249504884">Fascicolatore 1</translation>
-<translation id="1281536351321444151">Per compilare automaticamente questo IBAN la prossima volta, salvalo nel tuo Account Google.</translation>
 <translation id="1282358575813748144">Imbarcazioni e natanti</translation>
 <translation id="1283977499362032052">Curriculum e portfolio</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
@@ -360,6 +359,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1622966923835127638">Finanza aziendale</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
+<translation id="1629390138158333592">Cerca nel Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{L'apertura di questo file è bloccata dal criterio dell'amministratore}other{L'apertura di # file è bloccata dal criterio dell'amministratore}}</translation>
 <translation id="1633941398432788136">Pianificazione eventi</translation>
 <translation id="1634828734222219955">Totale</translation>
@@ -564,7 +564,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2009942480257059311">Pulsante Crea evento, attiva per creare rapidamente un nuovo evento in Google Calendar</translation>
 <translation id="201174227998721785">Gestisci le autorizzazioni e i dati memorizzati sui siti nelle impostazioni di Chrome</translation>
-<translation id="2012276282211112603">Al momento non ci sono argomenti da mostrare</translation>
 <translation id="2018769312928511665">Tessuto (patinato)</translation>
 <translation id="2021333772895814435">Questo criterio disattiva automaticamente la sincronizzazione tra più dispositivi per: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 in</translation>
@@ -675,7 +674,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2187317261103489799">Rileva (predefinita)</translation>
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
-<translation id="2197398642355049178">I tuoi argomenti</translation>
 <translation id="2200678913752027654">Pulsante Non mi piace, premi Invio per aprire un modulo per inviare un feedback dettagliato sul motivo per cui non ti piace questo suggerimento</translation>
 <translation id="2202627062836089804">parte posteriore della carta</translation>
 <translation id="2204482073374652408">Aggiornamento completato.</translation>
@@ -1040,6 +1038,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2915068235268646559">Arresto anomalo dalle ore <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Pittura</translation>
 <translation id="2916038427272391327">Chiudi altri programmi</translation>
+<translation id="2918484639460781603">Passa alle impostazioni</translation>
 <translation id="2919185931486062599">Caccia e tiro</translation>
 <translation id="2922350208395188000">Il certificato del server non può essere verificato.</translation>
 <translation id="2922792708490674">{0,plural, =1{Download del file bloccato}other{Download di <ph name="FILE_COUNT" /> file bloccato}}</translation>
@@ -1119,7 +1118,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="305162504811187366">Cronologia di Chrome Remote Desktop, inclusi timestamp, host e ID sessione client</translation>
 <translation id="3052868890529250114">In genere ti connetti ai siti in modo sicuro, ma questa volta Chrome non ha potuto usare una connessione sicura. Un malintenzionato potrebbe tentare di intercettare o modificare la connessione di rete. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> in meno su <ph name="PRODUCT_NAME" /></translation>
-<translation id="3054512251683174387">Chrome elimina automaticamente gli argomenti risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un argomento potrebbe riapparire nell'elenco. In alternativa, puoi bloccare gli argomenti che non vuoi che Chrome condivida con i siti. Scopri di più sulla gestione della privacy per gli annunci in Chrome.</translation>
 <translation id="3061707000357573562">Servizio di applicazione patch</translation>
 <translation id="3062655045399308513">Elimina dati di navigazione…</translation>
 <translation id="306573536155379004">Gioco iniziato.</translation>
@@ -1407,7 +1405,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3566021033012934673">La connessione non è privata</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3566649245868131295">Offerte di lavoro nel settore sanitario e medico</translation>
-<translation id="3566681680543111735">Copia stringa di variazioni</translation>
 <translation id="3567778190852720481">Impossibile effettuare la registrazione con l'account aziendale (l'account aziendale non è idoneo).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">Accedi al sito web per visualizzare informazioni, risorse o servizi forniti dall'attività</translation>
@@ -1641,7 +1638,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> è bloccato</translation>
 <translation id="3975852104434126461">Auto e motori</translation>
-<translation id="3983340834939868135">Passkey di "<ph name="VENDOR_NAME" />"</translation>
 <translation id="3984581365661308170">Busta #11</translation>
 <translation id="398470910934384994">Uccelli</translation>
 <translation id="3985750352229496475">Gestisci indirizzi…</translation>
@@ -1762,7 +1758,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4196861286325780578">&amp;Ripeti spostamento</translation>
 <translation id="4199637363739172710">Orologi</translation>
-<translation id="4202218894997543208">Argomenti che hai bloccato</translation>
 <translation id="4202554117186904723">Quinto rullo</translation>
 <translation id="4203769790323223880">Fotocamera non consentita</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controllare le configurazioni del firewall e antivirus<ph name="END_LINK" /></translation>
@@ -1887,7 +1882,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="437040971055499437">Si è verificato un evento di sicurezza</translation>
 <translation id="4371591986692297148">Non attivo</translation>
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
-<translation id="4375864595697821259">Aggiungi un elemento se vuoi che venga inserito nel gruppo di argomenti da cui Chrome può scegliere quando stima i tuoi interessi.</translation>
 <translation id="437620492464254965">Porte e finestre</translation>
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>
 <translation id="4378154925671717803">Telefono</translation>
@@ -2012,7 +2006,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4663373278480897665">Videocamera consentita</translation>
 <translation id="466561305373967878">Giochi da tavolo</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4669856024297417878">Chrome rileva gli argomenti di interesse in base alla cronologia di navigazione delle ultime settimane.</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
 <translation id="4671339777629075741">Busta DL</translation>
 <translation id="467662567472608290">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza contiene errori. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
@@ -2273,6 +2266,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5127934926273826089">Fiori</translation>
 <translation id="5129094684098010260">Carta salvata solo sul dispositivo</translation>
 <translation id="5129534298163637277">Finestra di dialogo di conferma</translation>
+<translation id="5129662217315786329">Polacco</translation>
 <translation id="5135404736266831032">Gestisci indirizzi…</translation>
 <translation id="5136841603454277753">Inserisci il codice corretto</translation>
 <translation id="5137761395480718572">Questa app richiede l'autorizzazione per installare le credenziali Wi-Fi. Dopo la configurazione, il tuo <ph name="DEVICE_TYPE" /> si connetterà automaticamente alle reti Wi-Fi partecipanti. Per rimuovere queste credenziali, disinstalla l'app. <ph name="LEARN_MORE" /></translation>
@@ -3055,6 +3049,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6568793038316600992">Pulsante Gestisci metodi di pagamento, attiva per gestire i tuoi pagamenti e i dati delle carte di credito nelle impostazioni di Chrome</translation>
 <translation id="6569060085658103619">È visualizzata la pagina di un'estensione</translation>
 <translation id="6573200754375280815">Perforatura doppia a destra</translation>
+<translation id="6574762126505704998">Riempi</translation>
 <translation id="6577792494180292262">Venture capital</translation>
 <translation id="6578434528542148658">ID estensione non valido.</translation>
 <translation id="6579858392010591435">Vacanze ed eventi stagionali</translation>
@@ -3134,7 +3129,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6710648923880003133">Suggerisci password efficace</translation>
 <translation id="671076103358959139">Token di registrazione:</translation>
 <translation id="6711464428925977395">Si è verificato un problema con il server proxy oppure l'indirizzo non è corretto.</translation>
-<translation id="6711700233707023861">Stringa di variazioni copiata negli appunti</translation>
 <translation id="6716039223770814796">Confronta <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elementi</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vorrebbe creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera</translation>
 <translation id="6717692133381953670">Scheda inviata da <ph name="DEVICE_NAME" /></translation>
@@ -3475,7 +3469,6 @@ Ulteriori dettagli:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gestori dei pagamenti</translation>
 <translation id="7366594738862061263">Scopri di più su come Chrome protegge le tue password</translation>
-<translation id="7367985555340314048">Gli argomenti di interesse si basano sulla tua recente cronologia di navigazione e sono utilizzati dai siti per mostrarti annunci personalizzati</translation>
 <translation id="7372526636730851647">Foto (patinata)</translation>
 <translation id="7372973238305370288">risultato della ricerca</translation>
 <translation id="7374461526650987610">Gestori di protocollo</translation>
@@ -3773,7 +3766,6 @@ Ulteriori dettagli:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nessuna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Sport universitari</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">Dopodiché, un sito che visiti può chiedere a Chrome i tuoi argomenti per personalizzare gli annunci che ti vengono mostrati. Chrome condivide fino a 3 argomenti e protegge la cronologia di navigazione e l'identità.</translation>
 <translation id="7860345425589240791">Inserisci la nuova data di scadenza e il CVC indicati sulla <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vuoi uscire dal sito?</translation>
 <translation id="7865448901209910068">Massima velocità</translation>
@@ -4061,7 +4053,6 @@ Ulteriori dettagli:
 <translation id="8381674639488873545">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Schermo intero automatico</translation>
 <translation id="838307841291975086">Station wagon</translation>
-<translation id="8388286357548915205">Utilizza per tutti gli ospiti</translation>
 <translation id="8389532092404711541">In genere <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Veicoli ad alte prestazioni e personalizzati</translation>
 <translation id="8390725133630534698">La possibilità di condivisione da <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /> è stata bloccata da un criterio dell'amministratore</translation>
@@ -4285,7 +4276,6 @@ Ulteriori dettagli:
 <translation id="8806062468703310719">Fornitori di servizi di telefonia</translation>
 <translation id="8806696968588872703">Plastica (satinata)</translation>
 <translation id="8807160976559152894">Taglia dopo ciascuna pagina</translation>
-<translation id="8809203544698246977">Gli argomenti bloccati vengono mostrati qui</translation>
 <translation id="8811470563853401328">Vuoi salvare l'indirizzo nell'account?</translation>
 <translation id="8811725516933141693">Digita @gemini per usare Gemini</translation>
 <translation id="8813277370772331957">Ricordamelo dopo</translation>
@@ -4399,6 +4389,7 @@ Ulteriori dettagli:
 <translation id="9036306139374661733">Vuoi consentire l'accesso al microfono?</translation>
 <translation id="9038649477754266430">Utilizza un servizio di previsione per velocizzare il caricamento delle pagine</translation>
 <translation id="9039213469156557790">Inoltre, questa pagina include altre risorse che non sono sicure. Tali risorse possono essere visualizzate da altri durante il transito dei dati e possono essere modificate da un utente malintenzionato al fine di modificare il comportamento della pagina.</translation>
+<translation id="9040341831873780534">Leggi i termini qui</translation>
 <translation id="9042617223719777575">Capacità elevata</translation>
 <translation id="9042827002460091668">Controlla la connessione a Internet e riprova</translation>
 <translation id="9044359186343685026">Usa Touch ID</translation>

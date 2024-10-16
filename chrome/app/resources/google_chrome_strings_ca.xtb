@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1953553007165777902">S'està baixant... Queden <ph name="MINUTE" /> minuts</translation>
 <translation id="1982647487457769627">Chrome funciona en diverses plataformes per oferir-te l'experiència que ja coneixes independentment del dispositiu que facis servir</translation>
-<translation id="19955905961160405">Cerca el que es mostra en pantalla amb Google Lens</translation>
 <translation id="2001586581944147178">Dificulta que les persones amb accés al teu trànsit d'Internet vegin els llocs web que visites. Chrome utilitza una connexió segura per cercar l'adreça IP d'un lloc web al sistema de noms de domini (DNS).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Aquesta extensió ja no s'admet. Chrome et recomana que la suprimeixis.}other{Aquestes extensions ja no s'admeten. Chrome et recomana que les suprimeixis.}}</translation>
 <translation id="2018528049276128029">Cada perfil conserva la seva informació de Chrome pròpia, com ara les adreces d'interès, l'historial, les contrasenyes i més</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Tots els idiomes</translation>
 <translation id="3169523567916669830">Durant les proves, pots veure i suprimir els temes d'interès que els llocs web utilitzen per mostrar-te anuncis. Chrome estima els teus interessos basant-se en l'historial de navegació recent.</translation>
 <translation id="3196187562065225381">Chrome ha bloquejat aquesta baixada perquè el fitxer és perillós</translation>
+<translation id="3222857603094643834">Cerca qualsevol cosa en aquesta pàgina amb Google Lens</translation>
 <translation id="3226612997184048185">Si també deses les teves adreces d'interès al teu Compte de Google, pots fer un seguiment dels preus dels productes a Chrome i rebre una notificació quan baixi el preu</translation>
 <translation id="3234642784688107085">Prova les noves funcions d'IA per crear temes, obtenir ajuda per escriure i mantenir l'organització</translation>
 <translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
@@ -637,7 +637,7 @@
 <translation id="8823341990149967727">Chrome no està actualitzat</translation>
 <translation id="8825634023950448068">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. Si Chrome s'equivoca o no vols veure determinats anuncis, pots suprimir un interès.</translation>
 <translation id="8834965163890861871">Google Chrome està provant d'editar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
-<translation id="8843389967774722327">Chrome afegeix regularment funcions noves que t'ajuden a fer coses</translation>
+<translation id="8843389967774722327">Chrome afegeix regularment funcions noves que t'ajuden a enllestir tasques</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome et recomana que la suprimeixis.}other{Chrome et recomana que les suprimeixis.}}</translation>
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>
 <translation id="8877608230252444082">Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos.</translation>

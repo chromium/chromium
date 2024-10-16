@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Arrunta</translation>
 <translation id="1591562245178063882">Oraingo hilabetea</translation>
 <translation id="1637811476055996098">Aukeratu fitxategiak</translation>
-<translation id="1680090928918677457">Erabili kamera</translation>
 <translation id="1729654308190250600">Idatzi helbide elektronikoa.</translation>
 <translation id="1758486001363313524">Beste batzuk…</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">Laburtu testua <ph name="MAX_CHARACTERS" /> karakteretara edo gutxiagora (<ph name="CURRENT_LENGTH" /> erabiltzen ari zara).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. astea, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pista</translation>
-<translation id="2353297238722298836">Kamera eta mikrofonoa erabil daitezke</translation>
 <translation id="2507943997699731163">Bete eremu hau.</translation>
 <translation id="2613802280814924224">Idatzi balio duen balio bat. Idatzi duzunetik gertuen duzuna <ph name="VALID_VALUE" /> da.</translation>
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="2746543609216772311">Balioak <ph name="MINIMUM_DATE_OR_TIME" /> edo geroago izan behar du.</translation>
 <translation id="2761667185364618470">Jarraitu nahi baduzu, hautatu koadro hau.</translation>
 <translation id="2908441821576996758">Idatzi helbide elektronikoak komaz bereizita.</translation>
-<translation id="2940013921954129954">Kokapen zehatza erabil daiteke</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Idatzi balio duen balio bat. Eremua ez dago osorik edo balio ez duen data dauka.</translation>
 <translation id="310520048233152454">Idatzi URLa.</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (<ph name="CURRENT_LENGTH" /> karaktere erabiltzen ari zara).</translation>
 <translation id="383465348367842624">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" idatzi.</translation>
 <translation id="3846214748874656680">Irten pantaila osotik</translation>
-<translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4360991593054037559">Idatzi balio egoki bat. <ph name="VALID_VALUE_LOW" /> eta <ph name="VALID_VALUE_HIGHER" /> dira gertuen dauden bi balio egokiak.</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
-<translation id="4663373278480897665">Kamera erabil daiteke</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" ikurra ezarri.</translation>
 <translation id="4718048029184481307">Pantaila txiki gainjarrian erreproduzitzen</translation>
 <translation id="4812940957355064477">Idatzi zenbaki bat.</translation>
-<translation id="49269513399674318">Erabili mikrofonoa</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> hautatuta</translation>
 <translation id="4992066212339426712">Aktibatu audioa</translation>
 <translation id="49969490063480558">Idatzi testua "<ph name="ATSIGN" />" ikurraren ondoren. "<ph name="INVALIDADDRESS" />" ez dago osorik.</translation>
 <translation id="5164977714490026579">Balioak <ph name="MINIMUM" /> edo gehiago izan behar du.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5239623327352565343">Eman da kokapena erabiltzeko baimena</translation>
 <translation id="5307600278924710095">Idatzi zati bat eta, ondoren, "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" ez dago osorik.</translation>
 <translation id="5334352251556557839">Ezin da erreproduzitu multimedia-edukia.</translation>
 <translation id="537648784377940524">Gutxieneko datak (<ph name="MIN_DATE_OR_TIME" />) gehienekoaren aurrekoa izan behar du (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">Erreprodukzio-kalitate txarra</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6820355525329141109">Ezin izan da kargatu plugina.</translation>
-<translation id="688706781007114099">Erabili kokapena</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (1 karaktere erabiltzen ari zara).</translation>
 <translation id="709897737746224366">Erabili eskatutako formatua.</translation>
-<translation id="7134810312945846184">Erabili mikrofonoa eta kamera</translation>
 <translation id="7263440858009898357">Hautatu zerrendako elementu bat.</translation>
 <translation id="7364796246159120393">Aukeratu fitxategia</translation>
 <translation id="739024184232394898">Beste bat…</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">Balioak <ph name="MINIMUM_TIME" /> eta <ph name="MAXIMUM_TIME" /> artekoa izan behar du.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fitxategi</translation>
 <translation id="8451268428117625855">Hautatu fitxategi bat.</translation>
-<translation id="8533587060884335451">Erabili kokapen zehatza</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Lerro-doitzea</translation>
 <translation id="8750798805984357768">Hautatu aukera hauetako batzuk.</translation>

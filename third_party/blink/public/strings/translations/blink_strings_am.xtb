@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">መደበኛ</translation>
 <translation id="1591562245178063882">በዚህ ወር</translation>
 <translation id="1637811476055996098">ፋይሎችን ይምረጡ</translation>
-<translation id="1680090928918677457">ካሜራ ይጠቀሙ</translation>
 <translation id="1729654308190250600">እባክዎ ባዶ ያልሆነ የኢሜይል አድራሻ ያስገቡ።</translation>
 <translation id="1758486001363313524">ሌላ...</translation>
 <translation id="1921819250265091946">ቀቀ</translation>
@@ -21,14 +20,12 @@
 <translation id="2226276347425096477">እባክዎ ይህ ጽሁፍ ወደ <ph name="MAX_CHARACTERS" /> ወይም ከዚያ በታች ቁምፊዎች ያሳጥሩት (በአሁኑ ጊዜ <ph name="CURRENT_LENGTH" /> ቁምፊዎችን እየተጠቀሙ ነዎት)።</translation>
 <translation id="2247351761944213033">ሳምንት <ph name="WEEKNUMBER" />፣ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ትራክ <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">ካሜራ እና ማይክሮፎን ይፈቀዳሉ</translation>
 <translation id="2507943997699731163">እባክዎ ይህን መስክ ይሙሉት።</translation>
 <translation id="2613802280814924224">እባክዎ የሚሰራ ዋጋ ያስገቡ። የሚቀርበው ዋጋ <ph name="VALID_VALUE" /> ነው።</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2746543609216772311">ዋጋ <ph name="MINIMUM_DATE_OR_TIME" /> ወይም ከዚያ በኋላ መሆን አለበት።</translation>
 <translation id="2761667185364618470">ለመቀጠል ከፈለጉ እባክዎ ይህ ሳጥን ላይ ምልክት ያድርጉ።</translation>
 <translation id="2908441821576996758">እባክዎ በኮማ የተለዩ የኢሜይል አድራሻዎች ዝርዝር ያስገቡ።</translation>
-<translation id="2940013921954129954">ትክክለኛ አካባቢ ተፈቅዷል</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ሜባ</translation>
 <translation id="3075154866155599887">እባክዎ የሚሰራ ዋጋ ያስገቡ። መስኩ ያልተጠናቀቀ ነው ወይም ልክ ያልሆነ ቀን አለው።</translation>
 <translation id="310520048233152454">እባክዎ አንድ ዩአርኤል ያስገቡ።</translation>
@@ -40,21 +37,17 @@
 <translation id="3822383571486410024">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ቁምፊዎች ወይም ከዚያ በላይ ያራዝሙት (አሁን እየተጠቀሙ ያሉት <ph name="CURRENT_LENGTH" />ቁምፊዎችን ነው)።</translation>
 <translation id="383465348367842624">ከ«<ph name="ATSIGN" />» በፊት የሚመጣ ክፍል የ«<ph name="INVALIDCHARACTER" />» ምልክት መያዝ የለበትም።</translation>
 <translation id="3846214748874656680">ከሙሉ ማያገጽ ውጣ</translation>
-<translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
 <translation id="4360991593054037559">እባክዎ የሚሰራ ዋጋ ያስገቡ። ሁለቱ የሚቀርቡ ዋጋዎች <ph name="VALID_VALUE_LOW" /> እና <ph name="VALID_VALUE_HIGHER" /> ናቸው።</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
-<translation id="4663373278480897665">ካሜራ ተፈቅዷል</translation>
 <translation id="4664250907885839816">ከ«<ph name="ATSIGN" />» በኋላ የሚመጣ ክፍል የ«<ph name="INVALIDCHARACTER" />» ምልክት መያዝ የለበትም።</translation>
 <translation id="4718048029184481307">በሥዕል-ውስጥ-ሥዕልን በማጫወት ላይ</translation>
 <translation id="4812940957355064477">እባክዎ ቁጥር ያስገቡ።</translation>
-<translation id="49269513399674318">ማይክፎሮን ይጠቀሙ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ተመርጠዋል</translation>
 <translation id="4992066212339426712">ድምጸ-ከል አንሳ</translation>
 <translation id="49969490063480558">እባክዎ ከ«<ph name="ATSIGN" />» በኋላ አንድ ክፍል ያስገቡ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
 <translation id="5164977714490026579">ዋጋ ከ<ph name="MINIMUM" /> የሚበልጥ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ፔታ</translation>
-<translation id="5239623327352565343">አካባቢ ይፈቀዳል</translation>
 <translation id="5307600278924710095">እባክዎ አንድ ክፍል ያስገቡና «<ph name="ATSIGN" />»ን ያስከትሉ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
 <translation id="5334352251556557839">ሚዲያን ማጫወት አልተቻለም።</translation>
 <translation id="537648784377940524">አነስተኛው ቀን (<ph name="MIN_DATE_OR_TIME" />) ከከፍተኛው ቀን (<ph name="MAX_DATE_OR_TIME" />) በፊት መምጣት አለበት።</translation>
@@ -78,11 +71,9 @@
 <translation id="6709570249143506788">ደካማ የመልሶ ማጫወት ጥራት</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6820355525329141109">ተሰኪን መጫን አልተቻለም።</translation>
-<translation id="688706781007114099">አካባቢን ተጠቀም</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>
-<translation id="7134810312945846184">ማይክሮፎን እና ካሜራ ይጠቀሙ</translation>
 <translation id="7263440858009898357">እባክዎ በዝርዝሩ ውስጥ አንድ ንጥል ይምረጡ።</translation>
 <translation id="7364796246159120393">ፋይል ምረጥ</translation>
 <translation id="739024184232394898">ሌላ...</translation>
@@ -100,7 +91,6 @@
 <translation id="839593075537728968">እሴት በ<ph name="MINIMUM_TIME" /> እና <ph name="MAXIMUM_TIME" /> መካከል መሆን አለበት።</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ፋይሎች</translation>
 <translation id="8451268428117625855">እባክዎ ፋይል ይምረጡ።</translation>
-<translation id="8533587060884335451">ትክክለኛ አካባቢ ተጠቀም</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">የመስመር መጠቅለያ</translation>
 <translation id="8750798805984357768">እባክዎ ከእነዚህ አማራጮች ውስጥ አንዱን ይምረጡ።</translation>

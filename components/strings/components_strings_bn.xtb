@@ -161,7 +161,6 @@
 <translation id="1277711244058668002">পছন্দ বোতাম, আপনি কেন এই সাজেশন পছন্দ করলেন, সেই সম্পর্কে মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="127777513559587977">টিভিতে টক শো</translation>
 <translation id="1281476433249504884">স্ট্যাকার ১</translation>
-<translation id="1281536351321444151">এই IBAN পরবর্তী সময় অটোফিল করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন</translation>
 <translation id="1282358575813748144">বোট ও ওয়াটারক্রাফ্ট</translation>
 <translation id="1283977499362032052">রেজুমে ও পোর্টফোলিও</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
@@ -360,6 +359,7 @@
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622966923835127638">ব্যবসায় ফাইন্যান্স</translation>
 <translation id="1623104350909869708">এই পৃষ্ঠাটিকে অতিরিক্ত কথোপকথন তৈরি করা থেকে বাধা দিন</translation>
+<translation id="1629390138158333592">ওয়েবে খুঁজুন</translation>
 <translation id="1633137413609266904">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল খোলার সুবিধা ব্লক করা হয়েছে}one{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই #টি ফাইল খোলার সুবিধা ব্লক করা হয়েছে}other{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই #টি ফাইল খোলার সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="1633941398432788136">ইভেন্ট প্ল্যানিং</translation>
 <translation id="1634828734222219955">মোট</translation>
@@ -565,7 +565,6 @@
 <translation id="2004697686368036666">কিছু সাইটের ফিচার কাজ নাও করতে পারে</translation>
 <translation id="2009942480257059311">'ইভেন্ট তৈরি করুন' বোতাম, Google Calendar-এ চটপট নতুন ইভেন্ট তৈরি করতে এটি চালু করুন</translation>
 <translation id="201174227998721785">Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করুন</translation>
-<translation id="2012276282211112603">এই মুহূর্তে, দেখানোর মতো কোনও বিষয় নেই</translation>
 <translation id="2018769312928511665">ফ্যাব্রিক (গ্লসি)</translation>
 <translation id="2021333772895814435">এই নীতি, ডিভাইস জুড়ে এটির জন্য সিঙ্ক করা অটোমেটিক বন্ধ করে দেয়: <ph name="ACTION_LIST" />।</translation>
 <translation id="202224654587969958">১২ x ১৯ ইঞ্চি</translation>
@@ -676,7 +675,6 @@
 <translation id="2187317261103489799">শনাক্ত করুন (ডিফল্ট)</translation>
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
-<translation id="2197398642355049178">আপনার বিষয়</translation>
 <translation id="2200678913752027654">অপছন্দ বোতাম, আপনি কেন এই সাজেশন অপছন্দ করলেন, সেই সম্পর্কে বিস্তারিত মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="2202627062836089804">আপনার কার্ডের পিছনের দিক</translation>
 <translation id="2204482073374652408">আপডেট প্রসেস সম্পূর্ণ হয়েছে!</translation>
@@ -1041,6 +1039,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />-এ হওয়া ক্র্যাশ</translation>
 <translation id="2915496182262110498">পেন্টিং</translation>
 <translation id="2916038427272391327">অন্যান্য প্রোগ্রামগুলি বন্ধ করুন</translation>
+<translation id="2918484639460781603">সেটিংসে যান</translation>
 <translation id="2919185931486062599">শিকার ও শুটিং</translation>
 <translation id="2922350208395188000">সার্ভারের সার্টিফিকেট চেক করা যাবে না৷</translation>
 <translation id="2922792708490674">{0,plural, =1{ফাইল ডাউনলোড করা যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল ডাউনলোড করা যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল ডাউনলোড করা যাবে না}}</translation>
@@ -1120,7 +1119,6 @@
 <translation id="305162504811187366">টাইমস্ট্যাম্প, হোস্ট এবং ক্লায়েন্ট সেশন আইডি সহ Chrome রিমোট ডেস্কটপ ইতিহাস</translation>
 <translation id="3052868890529250114">সাধারণত আপনি এই সাইট নিরাপদে কানেক্ট করেন, তবে এখন Chrome কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার হয়ত আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে চাইছে বা সেটি পরিবর্তন করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
-<translation id="3054512251683174387">৪ সপ্তাহের বেশি পুরনো বিষয় Chrome অটোমেটিক মুছে দেয়। আপনি ব্রাউজ করার সাথে সাথে, তালিকায় একই বিষয় আবার দেখানো হতে পারে। অথবা আপনি এমন বিষয়গুলিকে ব্লক করতে পারবেন যেগুলি আপনি Chrome-এ শেয়ার করতে চান না। Chrome-এ আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা সম্পর্কে আরও জানুন।</translation>
 <translation id="3061707000357573562">প্যাচ পরিষেবা</translation>
 <translation id="3062655045399308513">ব্রাউজ করা ডেটা মুছে দিন...</translation>
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
@@ -1411,7 +1409,6 @@
 <translation id="3566021033012934673">আপনার সংযোগ ব্যক্তিগত নয়</translation>
 <translation id="3566336457819493938">২১৫ x ৩১৫ মিমি</translation>
 <translation id="3566649245868131295">স্বাস্থ্য ও চিকিৎসা সংক্রান্ত চাকরি</translation>
-<translation id="3566681680543111735">ভেরিয়েশন স্ট্রিং কপি করুন</translation>
 <translation id="3567778190852720481">এন্টারপ্রাইজ অ্যাকাউন্ট দিয়ে এনরোল করা যাচ্ছে না (এন্টারপ্রাইজ অ্যাকাউন্টকে এখানে অনুমতি দেওয়া হয়নি)।</translation>
 <translation id="3567901620846335314">১০০ x ১৫০ মিমি</translation>
 <translation id="3568886473829759308">তথ্য, রিসোর্স অথবা ব্যবসার পরিষেবা প্রদান দেখতে ওয়েবসাইট অ্যাক্সেস করুন।</translation>
@@ -1645,7 +1642,6 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> অবরুদ্ধ হয়ে রয়েছে</translation>
 <translation id="3975852104434126461">অটোমোটিভ শিল্প</translation>
-<translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" থেকে পাসকী</translation>
 <translation id="3984581365661308170">এনভেলপ #১১</translation>
 <translation id="398470910934384994">পাখি</translation>
 <translation id="3985750352229496475">ঠিকানাগুলি ম্যানেজ করুন...</translation>
@@ -1766,7 +1762,6 @@
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4196861286325780578">&amp;সরানোর কাজটি আবার করুন</translation>
 <translation id="4199637363739172710">ঘড়ি</translation>
-<translation id="4202218894997543208">যে বিষয়গুলি আপনি ব্লক করেছেন</translation>
 <translation id="4202554117186904723">Fifth Roll</translation>
 <translation id="4203769790323223880">ক্যামেরা ব্যবহারের অনুমতি নেই</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ফায়ারওয়াল এবং অ্যান্টিভাইরাস কনফিগারেশন পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
@@ -1891,7 +1886,6 @@
 <translation id="437040971055499437">নিরাপত্তা সংক্রান্ত ঘটনা ঘটেছে</translation>
 <translation id="4371591986692297148">চালু নেই</translation>
 <translation id="4372948949327679948">প্রত্যাশিত <ph name="VALUE_TYPE" /> মান৷</translation>
-<translation id="4375864595697821259">আপনি চাইলে নিজের বিষয়ের সংকলনে আবার একটি বিষয় যোগ করতে পারবেন এবং Chrome আপনার পছন্দ অনুমান করার সময় সেখান থেকে বেছে নিতে পারবে</translation>
 <translation id="437620492464254965">দরজা ও জানলা</translation>
 <translation id="4377125064752653719">আপনি <ph name="DOMAIN" />-এ পৌঁছানোর প্রচেষ্টা করেছেন, তবে সার্ভারটি যে সার্টিফিকেটটি উপস্থাপন করেছে সেটির জারিকর্তা সেটিকে প্রত্যাহার করেছে৷ এর অর্থ হ'ল সার্ভারটি যে সুরক্ষা প্রমানপত্র উপস্থাপন করেছে তা কোনওমতেই বিশ্বাসযোগ্য নয়৷ হতে পারে আপনি একজন আক্রমণকারীর সাথে যোগাযোগ করছেন৷</translation>
 <translation id="4378154925671717803">ফোন</translation>
@@ -2016,7 +2010,6 @@
 <translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="466561305373967878">বোর্ড গেম</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4669856024297417878">Chrome গত কয়েক সপ্তাহের আপনার ব্রাউজিং ইতিহাসের উপর ভিত্তি করে আপনার পছন্দগুলি সম্পর্কে ধারণা তৈরি করে।</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
 <translation id="4671339777629075741">এনভেলপ DL</translation>
 <translation id="467662567472608290">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেটে কিছু ত্রুটি আছে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
@@ -2277,6 +2270,7 @@
 <translation id="5127934926273826089">ফুল</translation>
 <translation id="5129094684098010260">শুধুমাত্র ডিভাইসে কার্ড সেভ করা হয়েছে</translation>
 <translation id="5129534298163637277">কনফার্মেশন ডায়ালগ</translation>
+<translation id="5129662217315786329">পোলিশ</translation>
 <translation id="5135404736266831032">ঠিকানাগুলি পরিচালনা করুন...</translation>
 <translation id="5136841603454277753">সঠিক কোড লিখুন</translation>
 <translation id="5137761395480718572">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন। <ph name="LEARN_MORE" /></translation>
@@ -3059,6 +3053,7 @@
 <translation id="6568793038316600992">'পেমেন্ট পদ্ধতি ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="6569060085658103619">আপনি একটি এক্সটেনশন পৃষ্ঠা দেখছেন</translation>
 <translation id="6573200754375280815">ডানদিকে ডুয়াল পাঞ্চ</translation>
+<translation id="6574762126505704998">পূরণ করুন</translation>
 <translation id="6577792494180292262">ঝুঁকিপূর্ণ উদ্যোগের মূলধন</translation>
 <translation id="6578434528542148658">ভুল এক্সটেনশন আইডি।</translation>
 <translation id="6579858392010591435">ছুটির দিন ও সিজনাল ইভেন্ট</translation>
@@ -3138,7 +3133,6 @@
 <translation id="6710648923880003133">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন</translation>
 <translation id="671076103358959139">নথিভুক্ত করার জন্য টোকেন:</translation>
 <translation id="6711464428925977395">প্রক্সী সার্ভারের কোনো সমস্যা হয়েছে, অথবা ঠিকানাটি ভুল।</translation>
-<translation id="6711700233707023861">ক্লিপবোর্ডে ভেরিয়েশন স্ট্রিং কপি করা হয়েছে</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" />-এর 'তুলনা' করুন · <ph name="ITEMS" />টি আইটেম</translation>
 <translation id="6716672519412350405"><ph name="URL" /> আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চাইছে</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> থেকে ট্যাব পাঠানো হয়েছে</translation>
@@ -3479,7 +3473,6 @@
 <translation id="7366117520888504990">১৯৮ x ২৭৫ মিমি</translation>
 <translation id="7366362069757178916">পেমেন্ট হ্যান্ডলার</translation>
 <translation id="7366594738862061263">Chrome কীভাবে পাসওয়ার্ড সুরক্ষিত রাখে সেই বিষয়ে জানুন</translation>
-<translation id="7367985555340314048">আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে পছন্দের বিষয়গুলি বেছে নেওয়া হয় এবং আপনাকে পছন্দমতো বিজ্ঞাপন দেখানোর জন্য সাইটগুলি এই ডেটা ব্যবহার করে</translation>
 <translation id="7372526636730851647">ফটো (গ্লসি)</translation>
 <translation id="7372973238305370288">ফলাফল খুঁজুন</translation>
 <translation id="7374461526650987610">প্রোটোকল পরিচালনাকারী</translation>
@@ -3777,7 +3770,6 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{একটিও নয়}=1{১টি অ্যাপ (<ph name="EXAMPLE_APP_1" />)}=2{২টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">কলেজের খেলাধূলা</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">পরে, আপনি কোনও সাইটে গেলে, আপনাকে পছন্দমতো বিজ্ঞাপন দেখানোর জন্য, সেই সাইট Chrome-কে আপনার বিষয় শেয়ার করতে বলতে পারে। Chrome, আপনার ব্রাউজিং ইতিহাস এবং পরিচিতি সুরক্ষিত রেখে সর্বাধিক ৩টি বিষয় শেয়ার করে।</translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />-এ মেয়াদ শেষের নতুন তারিখ এবং CVC লিখুন</translation>
 <translation id="7862185352068345852">সাইট ছেড়ে যাবেন?</translation>
 <translation id="7865448901209910068">সর্বোচ্চ গতি</translation>
@@ -4065,7 +4057,6 @@
 <translation id="8381674639488873545">এই চার্জ এককালীন হতে পারে বা তার পুনরাবৃত্তি হতে পারে এবং তা স্পষ্ট করে বোঝা নাও যেতে পারে। <ph name="BEGIN_LINK" />তবুও দেখান<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">অটোমেটিক ফুল-স্ক্রিন</translation>
 <translation id="838307841291975086">স্টেশন ওয়াগন</translation>
-<translation id="8388286357548915205">সব গেস্টের জন্য ব্যবহার করুন</translation>
 <translation id="8389532092404711541">সাধারণত <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">কাস্টম ও দ্রুতগামী যানবাহন</translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> থেকে <ph name="VM_NAME" />-এ শেয়ার করা অ্যাডমিনিস্ট্রেটর পলিসির মাধ্যমে ব্লক করা হয়েছে</translation>
@@ -4288,7 +4279,6 @@
 <translation id="8806062468703310719">ফোন পরিষেবা প্রদানকারী</translation>
 <translation id="8806696968588872703">প্লাস্টিক (স্যাটিন)</translation>
 <translation id="8807160976559152894">প্রতিটি পৃষ্ঠার পর ট্রিম করুন</translation>
-<translation id="8809203544698246977">ব্লক করা বিষয়গুলি এখানে দেখা যাবে</translation>
 <translation id="8811470563853401328">অ্যাকাউন্টে ঠিকানা সেভ করবেন?</translation>
 <translation id="8811725516933141693">Gemini-র সাথে চ্যাট করতে @gemini টাইপ করুন</translation>
 <translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
@@ -4402,6 +4392,7 @@
 <translation id="9036306139374661733">মাইক্রোফোন অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="9038649477754266430">পৃষ্ঠা আরও দ্রুত লোড করার জন্য কোনো পূর্বাভাষ পরিষেবা ব্যবহার করুন</translation>
 <translation id="9039213469156557790">উপরন্তু, এই পৃষ্ঠাতে অন্যান্য সংস্থান অন্তর্ভুক্ত রয়েছে যা নিরাপদ নয়৷ এই সংস্থানগুলি ট্রানজিটের সময় অন্যরা দেখতে পাবে এবং পৃষ্ঠাটির আচরণ পরিবর্তন করার জন্য কোনো আক্রমণকারী এর পরিবর্তন করতে পারেন৷</translation>
+<translation id="9040341831873780534">এখানে শর্তাবলী দেখুন</translation>
 <translation id="9042617223719777575">অধিক ক্ষমতা সম্পন্ন</translation>
 <translation id="9042827002460091668">ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন</translation>
 <translation id="9044359186343685026">টাচ আইডি ব্যবহার করুন</translation>

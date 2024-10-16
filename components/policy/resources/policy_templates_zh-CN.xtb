@@ -2369,7 +2369,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       此政策设为 false 或未配置时，相应的图标会显示出来。</translation>
 <translation id="2744751866269053547">注册协议处理程序</translation>
 <translation id="2744980433176488921">F11/F12 设置使用包含 Shift 辅助键的快捷键</translation>
-<translation id="2745150813292162313">允许启用第三方存储分区。</translation>
 <translation id="2746016768603629042">此策略已弃用，请改用 DefaultJavaScriptSetting。
 
       可用于在 <ph name="PRODUCT_NAME" />中停用 JavaScript。
@@ -2413,7 +2412,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 设置“command_line”将禁止从命令行加载扩展程序。</translation>
 <translation id="2780840673734667062">禁止使用其他 Google 账号登录</translation>
 <translation id="2784880732336446591">退出时清除浏览数据</translation>
-<translation id="2786117913267907931">不允许源使用 Direct Sockets</translation>
 <translation id="2787173078141616821">报告有关 Android 状态的信息</translation>
 <translation id="2787774054174244402">如果此政策设为 True，用户将无法向外部存储设备写入内容。
 
@@ -2427,19 +2425,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2801065672151277034">证书管理设置</translation>
 <translation id="2801155097555584385">设定电池充电自定义开始充电值（以百分比表示）</translation>
 <translation id="2801378553855965587">停用 <ph name="GOOGLE_CALENDAR_NAME" />集成。</translation>
-<translation id="2804159858652849094">此政策可控制用于标识资料或浏览器管理者身份的自定义标签。
-
-此标签将显示在工具栏中。
-
-如果在浏览器级别设置此政策，则所有资料都会在工具栏中显示此标签。
-
-如果在资料级别设置此政策，则只有该资料会显示此标签。
-
-与其他政策不同，在资料级别设置的此政策将优先于在浏览器级别设置的政策。
-
-系统不会翻译该自定义标签。
-
-请注意，如果 <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> 政策设为 <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" />（值为 1），此政策将不会产生任何影响。</translation>
 <translation id="2805707493867224476">允许所有网站显示弹出式窗口</translation>
 <translation id="2806804577787377637">此政策已被弃用且不再受支持，请改用 <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />。</translation>
 <translation id="2815701930753942156">此政策指定了一系列每周时段，在这些时段无法使用 <ph name="PRODUCT_OS_NAME" /> 设备。所有正在进行的会话都将关闭，登录将被阻止。
@@ -3611,11 +3596,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3712861436661566358">强制执行资料分离</translation>
 <translation id="3719826155360621982">首页</translation>
 <translation id="3724039569609354541">在确定网站能否向网络端点发送请求时使用默认行为</translation>
-<translation id="372668389978450673">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许从用户管理器中添加新用户。
-
-      如果此政策设为 false，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会禁止从用户管理器中添加新用户。
-
-      请注意：如果此政策设为 true 或未配置，但 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 设为 false，<ph name="LACROS_NAME" /> 将会禁止从用户管理器中添加新用户。</translation>
 <translation id="3727476641336727380">如果 <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> 已启用或未设置，系统会允许使用屏幕唤醒锁定进行电源管理，除非 <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> 已停用。扩展程序可通过 Power Management Extension API 和 ARC 应用来请求屏幕唤醒锁定。
 
       如果此政策已停用，系统会将屏幕唤醒锁定请求降级为系统唤醒锁定请求。</translation>
@@ -4021,13 +4001,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
-<translation id="4039065751874009354">此政策是一项临时的选择停用机制，针对由 beforeunload 事件显示的确认对话框的行为提供了两个相关修复方案。
-如果已启用此政策，系统将使用新的正确行为。如果已停用此政策，系统将使用旧行为。如果未设置此政策，系统将使用默认行为。
-此政策是一种临时的变通方案，很快就会被移除。
-
-新的正确行为：在 beforeunload 中，调用 event.preventDefault() 会触发确认对话框。将 event.returnValue 设置为空字符串不会触发确认对话框。
-
-旧行为：在 beforeunload 中，调用 event.preventDefault() 不会触发确认对话框。将 event.returnValue 设置为空字符串会触发确认对话框。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4051723201852944592">启用窗口遮挡</translation>
 <translation id="4052529125939620019">在浏览器启动时加载 CryptoToken 组件扩展程序</translation>
@@ -4644,17 +4617,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果未设置此政策，则用户可以停用系统中安装的任何插件。</translation>
 <translation id="4549695018986780856">启用 Manifest V2</translation>
-<translation id="4552929684628662264">Direct Sockets API 允许使用 TCP 和 UDP 与任意端点进行通信。
-如需了解详情，请参阅 https://github.com/WICG/direct-sockets。
-
-通过设置此政策，您可以罗列一些网址格式，从而指定禁止哪些网站使用 DirectSockets。
-这可能包括 Chrome 应用、独立式 Web 应用 (IWA) 和网络自助服务终端；此 API 永远无法在开放网络中使用。
-
-如果您未设置此政策，那么，倘若 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站。
-
-网址格式不得与 <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任何一项政策。
-
-如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4554651132977135445">用户政策环回处理模式</translation>
 <translation id="4554991346503872538">一律不提供翻译</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
@@ -5218,13 +5180,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
           如果此政策已设置，“Kerberos 用户名”字段会在右侧显示预填充的域名。如果用户输入用户名，系统会将该用户名与预填充的域名串联起来。如果用户输入的内容包含“@”，系统不会显示预填充的域名，输入的内容也不会受到影响。
 
           如果此政策未设置，系统不会显示任何其他信息，用户也可照常创建票据。</translation>
-<translation id="4955566229684195326">此设置允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式。
-
-      与 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 和 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 这两项政策类似，如果此政策设为 false 或未设置，用户将无法创建或使用次级个人资料，也无法使用访客模式。以前创建的次级个人资料（若有）将会不可用。
-
-      如果此政策设为 true，用户将能够创建和使用次级个人资料以及使用访客模式。
-
-      请注意，如果此政策设为 true 但 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 设为 false，用户将无法创建次级个人资料。同理，如果此政策设为 true 但 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 设为 false，用户将无法使用访客模式。</translation>
 <translation id="4958911425563967203">让您能够设置一系列网站网址格式，从而指定要为哪些网站启用高级 JavaScript 优化功能。
 
 如需详细了解有效网站网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。
@@ -5704,7 +5659,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5321624917465764266">如果此政策已启用或未设置，系统将可以删除 Chrome 中的浏览器历史记录和下载记录，并且用户无法更改此设置。
 
 如果此政策已停用，系统将无法删除浏览器历史记录和下载记录。即使此政策停用，浏览和下载记录也不一定会保留。用户可能能够直接修改或删除历史记录数据库文件，而且浏览器本身也可能会随时将任意或所有历史记录项设为失效或进行归档。</translation>
-<translation id="5321859912083346284">不允许使用自动填充预测功能。</translation>
 <translation id="5323200200131319468">在登录屏幕上启用语音反馈</translation>
 <translation id="5323271643727095577">针对 beforeunload 事件调用 event.preventDefault() 时不显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，显示取消对话框。</translation>
 <translation id="5324430722441910403">网站搜索设置</translation>
@@ -6196,7 +6150,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策设为 True，系统会隐藏弃用警告。
       如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
 <translation id="5659776687676755342">启用电量不足提示音</translation>
-<translation id="5660228672907979869">禁止启用第三方存储分区。</translation>
 <translation id="5660950553460381588">默认尽可能在 iCloud 钥匙串中创建通行密钥。</translation>
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
 <translation id="5670249935663090320">如果此政策已启用或未设置，系统将会开启 <ph name="PRODUCT_NAME" /> 以供用户从以下位置启动：应用菜单、页面上下文菜单、支持 Cast 的网站上的媒体控件，以及（如果显示的话）Cast 工具栏图标。
@@ -6267,7 +6220,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5722577409367087850">加载该扩展程序</translation>
 <translation id="5728154254076636808">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本</translation>
 <translation id="5729308727912841256">Kerberos 密码。占位符 <ph name="PASSWORD_PLACEHOLDER" /> 会被登录密码取代。</translation>
-<translation id="573183812760497142">禁止这些源使用第三方存储分区</translation>
 <translation id="5732972008943405952">首次运行时，从默认浏览器导入自动填充表单数据</translation>
 <translation id="5733040281451845496">如果此政策已启用，仅当在会话内察觉到首项用户活动后，系统才会开始应用电源管理延迟时间和会话时长限制。
 
@@ -7430,7 +7382,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。但请注意，此政策不支持与任何网址匹配的“*”格式。</translation>
 <translation id="6584122839583172231">F12 设置使用包含 Ctrl 和 Shift 辅助键的快捷键</translation>
 <translation id="6584541828182430328">停用“显示全屏提醒”功能</translation>
-<translation id="658537215958747575">允许符合条件的源使用 Direct Sockets</translation>
 <translation id="6588634282328239769">显示完整网址</translation>
 <translation id="6589049539706330510">启用支持</translation>
 <translation id="6593025196187527239">除非已通过其他方式关闭 ARC，否则当此政策设为 True 或未设置时，用户可以使用 ARC。如果此政策设为 False，系统将禁止非关联用户使用 ARC。
@@ -7710,11 +7661,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已启用或未设置，用户将可以通过上下文菜单将图片保存到 <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />。如果此政策已停用，用户将无法在上下文菜单中看到此选项。
 此政策不会阻止用户使用上下文菜单之外的其他方式将图片保存到 <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
-<translation id="6828729771894228555">让您能够设置一个网址格式列表，以指定要禁止哪些顶级（标签页地址栏中的网址）源使用第三方存储分区（跨源 iframe 存储分区）。
-          如果此政策未设置或顶级源不匹配，系统将会使用 <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> 的值。
-          如需详细了解有效的格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。
-          请注意，您在此处列出的格式会被系统视为源（而非网址），因此您不应指定路径。
-          如需详细了解第三方存储分区，请访问 https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/。</translation>
 <translation id="6829632070341067746">此政策用于控制 PPAPI 插件中 Graphics3D API 的近期重构。
 
 迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
@@ -7780,17 +7726,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
 <translation id="6866755486434471318">允许 <ph name="PEPPER_NAME" /> 使用共享图片进行视频解码。</translation>
-<translation id="6870288354334274313">Direct Sockets API 允许使用 TCP 和 UDP 与任意端点进行通信。
-如需了解详情，请参阅 https://github.com/WICG/direct-sockets。
-
-通过设置此政策，您可以罗列一些网址格式，从而指定允许哪些网站使用 Direct Sockets API。
-这可能包括 Chrome 应用、独立式 Web 应用 (IWA) 和网络自助服务终端；此 API 永远无法在开放网络中使用。
-
-如果您未设置此政策，那么，倘若 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站。
-
-网址格式不得与 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任何一项政策。
-
-如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="6878757724611298427">允许用户在非关联设备上使用 Android 应用</translation>
 <translation id="6881397131210596522">如果此政策设为 2，系统会自动禁止网站使用 WebPrinting API。
 
@@ -7847,11 +7782,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已停用或未设置，系统将会应用默认行为（即，屏蔽这类请求）。</translation>
 <translation id="6915524162137327111">显示管理标签 30 秒</translation>
 <translation id="6919205861950516688">不允许使用标签页整理工具。</translation>
-<translation id="6919819553978815392">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许以访客身份登录。访客身份是一类 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料登录后，所有窗口均会处于无痕模式。
-
-      如果此政策设为 false，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会禁止启用访客个人资料。
-
-      请注意：如果此政策设为 true 或未配置，但 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 设为 false，<ph name="LACROS_NAME" /> 将会禁止启用访客个人资料。</translation>
 <translation id="692096803256767290">将 OS 回滚到目标版本</translation>
 <translation id="6921241119085515674">允许 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 和 <ph name="MICROSOFT_365_NAME" /> 使用<ph name="CLOUD_UPLOAD_NAME" />流程</translation>
 <translation id="6921544339867564740">允许设备在 Chrome 操作系统中运行虚拟机</translation>
@@ -9023,15 +8953,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策设为“将个人资料标记为学校 (1)”，系统将使用“学校”标签。
 
 如果已设置 <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> 政策，则它将覆盖上述政策。</translation>
-<translation id="7852952453329293282">Direct Sockets API 允许使用 TCP 和 UDP 与任意端点进行通信。
-如需了解详情，请参阅 https://github.com/WICG/direct-sockets。
-
-如果此政策设为 1，系统会允许符合条件的源使用 Direct Sockets。
-这包括 Chrome 应用、独立式 Web 应用 (IWA) 和网络自助服务终端；此 API 永远无法在开放网络中使用。
-
-如果此政策设为 2，系统会禁止源使用 Direct Sockets。
-
-如果未设置，系统会允许使用 Direct Sockets。</translation>
 <translation id="7853140303943875314">允许取消自动登录</translation>
 <translation id="7854187834842629068">禁止在登录屏幕上输入语音</translation>
 <translation id="7858352166858826505">生成式 AI 本地基础模型的设置</translation>
@@ -9484,10 +9405,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8250048892729838843">此政策已被弃用。如果此政策已启用或未设置，系统便会允许设备接收精细报告控件的报告。
       如果此政策已停用，已注册的设备将不会接收精细报告控件的报告。</translation>
 <translation id="82530263956734297">要从屏蔽名单中排除的扩展程序 ID</translation>
-<translation id="8254792295762772851">如果您未设置此政策或将其设为 <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" />（值为 0），工具栏头像旁边会显示“工作”或“学校”标签。
-只有当已登录的账号为受管理的账号时，系统才会显示这些标签。
-
-如果此政策设为 <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" />（值为 1），在您打开个人资料后，工具栏头像旁边会显示“工作”或“学校”标签，并持续 30 秒。</translation>
 <translation id="8256006033157034334">此政策已被弃用且不再受支持，请改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" />在登录屏幕上为相应的设备本地账号显示的账号名。
 
@@ -9686,10 +9603,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="838870586332499308">启用数据漫游</translation>
 <translation id="8392478748777481636">此政策已被弃用且不再受支持，请改用“<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />”政策。</translation>
 <translation id="8393850527597048037">仅限平台</translation>
-<translation id="8394518861160238324">从 M113 开始，会为某些用户默认启用第三方存储分区，但可以通过 Chrome flag 停用该功能。
-          如果此政策设为 <ph name="ALLOW_PARTITIONING_VALUE" /> 或未设置，第三方存储分区可以启用。
-          如果此政策设为 <ph name="BLOCK_PARTITIONING_VALUE" />，第三方存储分区无法启用。
-          如需详细了解第三方存储分区，请访问 https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/。</translation>
 <translation id="8395350646076131800">用户锁定屏幕屏保闲置状态超时时限。</translation>
 <translation id="8395749934754392549">控制 Android 容器 (ARC) 和 Android 应用的设置。</translation>
 <translation id="8398952282584132331">启用隐私保护屏</translation>
@@ -10517,19 +10430,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       此政策仅影响使用 SAML 验证身份的用户。
 
       此政策的值应以秒为单位。</translation>
-<translation id="9015526159640436408">指向特定图片的网址，该图片将用作资料的企业徽章。该网址必须指向图片。
-
-此徽章将显示在工具栏中。
-
-如果在浏览器级别设置此政策，则所有资料都会在工具栏中显示此徽标。
-
-如果在资料级别设置此政策，只有该资料会显示此徽标。
-
-如果未设置此政策，系统会显示默认建筑物图标。
-
-如果尝试获取和显示该图片时出错，系统会显示默认建筑物图标。
-
-与其他政策不同，在资料级别设置的此政策将优先于在浏览器级别设置的政策。</translation>
 <translation id="9015578113567730893">音频遥测收集时间间隔（以毫秒为单位）。</translation>
 <translation id="9015759770696099204">F11/F12 设置已停用</translation>
 <translation id="9015952763003753868">使 <ph name="CORS" /> 预检请求中的 <ph name="ACAM_HEADER_NAME" /> 匹配合乎规范</translation>

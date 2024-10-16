@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Можете да запазвате страници за четене по-късно или офлайн</translation>
-<translation id="3087218211037573995">Някои пароли, запазени само на това устройство, скоро ще спрат да работят. Можете да преместите тези пароли в Google Мениджър на пароли.</translation>
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Списъците ви със запазени пароли за Chrome и <ph name="CHROME_CHANNEL" /> бяха обединени. Пак можете да попълвате автоматично всичките си запазени пароли и в двете приложения.</translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
-<translation id="4620032614425803188">Услуги за автоматично попълване</translation>
 <translation id="4624065194742029982">Режим „инкогнито“ на Chrome</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компрометирана парола}other{# компрометирани пароли}}</translation>
@@ -1512,11 +1510,9 @@
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Период от време</translation>
-<translation id="7850687713580657633">Паролите скоро ще спрат да работят, защото услугите за Google Play не са налице. За да използвате паролите, запазени в Google Мениджър на пароли, влезте в профила си на друго устройство или отворете passwords.google.com.</translation>
 <translation id="7851858861565204677">Други устройства</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
-<translation id="7864208933699511058">Рекламите, които виждате по време на сърфиране, могат да бъдат персонализирани. Това зависи от тази настройка, <ph name="BEGIN_LINK_1" />предложените от сайтовете реклами<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />настройките ви за „бисквитките“<ph name="END_LINK_2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите.</translation>
 <translation id="7866213166286285359">Превеждайте страници тук</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> се нуждае от разрешението за устройства в близост, за да се свърже с устройството ви</translation>
 <translation id="7875915731392087153">Създайте имейл</translation>

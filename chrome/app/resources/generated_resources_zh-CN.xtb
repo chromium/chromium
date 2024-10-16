@@ -593,7 +593,6 @@
 <translation id="142765311413773645"><ph name="APP_NAME" /> 的许可已过期</translation>
 <translation id="1428373049397869723">您可以在“Finder”或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认打开此应用，请<ph name="BEGIN_LINK" />了解如何在设备上设置默认应用<ph name="END_LINK" />。</translation>
 <translation id="1428657116642077141">您在这个网站上保存了与密码相关的备注。如需查看该备注，请在搜索栏和地址栏中选择“管理您的密码”。</translation>
-<translation id="1428770807407000502">关闭同步功能？</translation>
 <translation id="1429300045468813835">已全部清除</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
@@ -2633,7 +2632,6 @@
 <translation id="2844809857160214557">查看和管理打印任务</translation>
 <translation id="2845276301195220700">可对 Google 日历执行的更多操作</translation>
 <translation id="2845382757467349449">总是显示书签栏</translation>
-<translation id="2845751331501453107">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK1" />网站建议的广告<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
 <translation id="284884486564166077">使用智能镜头搜索任意图片</translation>
 <translation id="2849035674501872372">查找</translation>
@@ -2994,6 +2992,7 @@
 <translation id="3108957152224931571">突出显示颜色</translation>
 <translation id="3109206895301430738">已保存的标签页分组</translation>
 <translation id="3109724472072898302">已收起</translation>
+<translation id="310979712355504754">全部删除</translation>
 <translation id="3112292765614504292">应用大小：<ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3113970906450647715">按钮已取消固定</translation>
@@ -3069,7 +3068,6 @@
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 账号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 账号。</translation>
 <translation id="3179982752812949580">文本字体</translation>
 <translation id="3180284704187420717">借助同步功能保存您的书签、密码等数据</translation>
-<translation id="3180716079618904608">获取应用和游戏</translation>
 <translation id="3180990259147710757">将下巴向左移动</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3182749001423093222">拼写检查</translation>
@@ -3212,7 +3210,6 @@
 <translation id="328571385944182268">保存您的密码？</translation>
 <translation id="3289668031376215426">自动大写</translation>
 <translation id="3289856944988573801">要检查是否有更新，请使用以太网或 WLAN。</translation>
-<translation id="3289886661311231677">您可以屏蔽不想与网站分享的主题。Chrome 还会自动删除保留时长超过 4 周的主题。</translation>
 <translation id="3290249595466894471">还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
 <translation id="3293181007446299124">您的浏览记录会私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
 <translation id="329324683265785818">播放/暂停，键盘快捷键为 K 键</translation>
@@ -4531,6 +4528,7 @@
 <translation id="4231141543165771749">关闭游戏控制器</translation>
 <translation id="4231231258999726714">正在设置 Steam for Chromebook</translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
+<translation id="4232376164796433044">密码和自动填充</translation>
 <translation id="4232484478444192782">Android 手机可协助您完成操作。系统正在传输您的 Wi-Fi 凭据和密码。</translation>
 <translation id="423327101839111402">移除分组“<ph name="NAME" />”</translation>
 <translation id="4233739489690259993">您的 Chromebook 将不会再收到安全更新和软件更新。要想获得最新安全功能和新功能，请升级您的设备。须遵守相关优惠条款。</translation>
@@ -5565,7 +5563,6 @@
 <translation id="4992869834339068470">帮助改进 ChromeOS 的功能和性能。数据将经过汇总并受到严密保护。</translation>
 <translation id="4994426888044765950">如果您按住某个键，系统会重复输入该键对应的字符</translation>
 <translation id="4994754230098574403">正在设置</translation>
-<translation id="4995293419989417004">详细了解广告主题</translation>
 <translation id="4995676741161760215">开启，扩展程序已启用</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虚拟机}=1{找到了 1 个 <ph name="VM_TYPE" /> 虚拟机：<ph name="VM_NAME_LIST" />}other{找到了 {NUM_VMS} 个 <ph name="VM_TYPE" /> 虚拟机：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">未连接到互联网。</translation>
@@ -6892,7 +6889,6 @@
 <translation id="5976780232488408272">获取写作帮助</translation>
 <translation id="5977976211062815271">在这部设备上</translation>
 <translation id="5978277834170881274">使用基本拼写检查(&amp;U)</translation>
-<translation id="5978493744931296692">您的管理员已停用其他个人资料</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
 <translation id="5979353814339191480">此选项适用于以下类型的 Chromebook：具有流量套餐或移动网络加密狗，或者已通过“网络共享”功能连接到便携式热点</translation>
@@ -7843,6 +7839,7 @@
 <translation id="6691936601825168937">前进(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 页}other{{COUNT} 页}}</translation>
 <translation id="6693820805264897502">替换现有密码</translation>
+<translation id="6694462491298752106">内置触控板已停用</translation>
 <translation id="6694634756612002311">管理共享设置</translation>
 <translation id="6697172646384837537">选择所需的密码导入位置</translation>
 <translation id="6697492270171225480">找不到相应网页时，显示有关类似网页的建议</translation>
@@ -8500,7 +8497,6 @@
 <translation id="7166815366658507447">已启用热点</translation>
 <translation id="7167327771183668296">自动点击</translation>
 <translation id="7167486101654761064">总是打开此类文件(&amp;A)</translation>
-<translation id="716775164025088943">您的书签、历史记录、密码和其他设置将不再保持同步。</translation>
 <translation id="716810439572026343">正在下载 <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">最小字号</translation>
 <translation id="7169122689956315694">附近有其他设备时开启通知</translation>
@@ -8642,7 +8638,6 @@
 <translation id="7273894023751806510">始终禁止 <ph name="HOST" /> 控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 还需 <ph name="TIME" />充满</translation>
 <translation id="727595954130325265">立即抢购</translation>
-<translation id="7276100255011548441">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
 <translation id="7278164481614262110">利用 AI 创建主题</translation>
 <translation id="727952162645687754">下载错误</translation>
 <translation id="7280649757394340890">文字转语音的语音设置</translation>

@@ -161,7 +161,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1277711244058668002">Botón Me gusta. Pulsa Intro para indicar que te gusta esta sugerencia.</translation>
 <translation id="127777513559587977">Programas de entrevistas en televisión</translation>
 <translation id="1281476433249504884">Apilador 1</translation>
-<translation id="1281536351321444151">Para que el campo del IBAN se autocomplete la próxima vez, guárdalo en tu cuenta de Google</translation>
 <translation id="1282358575813748144">Barcos y embarcaciones</translation>
 <translation id="1283977499362032052">Currículos y porfolios</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
@@ -360,6 +359,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622966923835127638">Economía empresarial</translation>
 <translation id="1623104350909869708">Evitar que esta página cree cuadros de diálogo adicionales</translation>
+<translation id="1629390138158333592">Buscar en la Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{La política del administrador ha bloqueado la opción de abrir este archivo}other{La política del administrador ha bloqueado la opción de abrir # archivos}}</translation>
 <translation id="1633941398432788136">Planificación de eventos</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -564,7 +564,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2004697686368036666">Es posible que las funciones de algunos sitios no funcionen</translation>
 <translation id="2009942480257059311">Botón Crear evento: actívalo para crear un nuevo evento en Google Calendar rápidamente</translation>
 <translation id="201174227998721785">Gestiona permisos y datos almacenados en sitios en la configuración de Chrome</translation>
-<translation id="2012276282211112603">No hay temas que mostrar en este momento</translation>
 <translation id="2018769312928511665">Tela (brillante)</translation>
 <translation id="2021333772895814435">Esta política inhabilita automáticamente la sincronización en todos los dispositivos de los siguientes elementos: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12x19 pulgadas</translation>
@@ -675,7 +674,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2187317261103489799">Detectar (predeterminado)</translation>
 <translation id="2188375229972301266">Perforado múltiple en la parte inferior</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
-<translation id="2197398642355049178">Tus temas</translation>
 <translation id="2200678913752027654">Botón No me gusta. Pulsa Intro para abrir un formulario y enviar comentarios detallados sobre por qué no te gusta esta sugerencia.</translation>
 <translation id="2202627062836089804">reverso de tu tarjeta</translation>
 <translation id="2204482073374652408">La actualización ha finalizado.</translation>
@@ -1040,6 +1038,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2915068235268646559">Fallo registrado el <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Pintura</translation>
 <translation id="2916038427272391327">Cierra otros programas</translation>
+<translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2919185931486062599">Caza y tiro</translation>
 <translation id="2922350208395188000">No es posible comprobar el certificado del servidor.</translation>
 <translation id="2922792708490674">{0,plural, =1{No se ha podido descargar el archivo}other{No se han podido descargar <ph name="FILE_COUNT" /> archivos}}</translation>
@@ -1119,7 +1118,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="305162504811187366">Historial de Escritorio Remoto de Chrome, incluidas las marcas de tiempo, los hosts y los IDs de sesión del cliente</translation>
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
-<translation id="3054512251683174387">Chrome elimina automáticamente los temas con una antigüedad superior a 4 semanas. Cuando continúes navegando, es posible que vuelva a aparecer un tema en la lista. También puedes bloquear los temas que no quieras que Chrome comparta con los sitios. Consulta más información sobre cómo gestionar la privacidad en la publicidad en Chrome.</translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
 <translation id="306573536155379004">Juego iniciado.</translation>
@@ -1410,7 +1408,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3566021033012934673">La conexión no es privada</translation>
 <translation id="3566336457819493938">215x315 mm</translation>
 <translation id="3566649245868131295">Trabajos en el sector médico y sanitario</translation>
-<translation id="3566681680543111735">Copiar cadena de variaciones</translation>
 <translation id="3567778190852720481">No te puedes registrar con la cuenta de empresa (la cuenta de empresa no reúne los requisitos).</translation>
 <translation id="3567901620846335314">100x150 mm</translation>
 <translation id="3568886473829759308">Accede al sitio web para ver información, recursos o servicios que ofrece la empresa.</translation>
@@ -1644,7 +1641,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">La página <ph name="HOST_NAME" /> está bloqueada</translation>
 <translation id="3975852104434126461">Industria automovilística</translation>
-<translation id="3983340834939868135">Llave de acceso de <ph name="VENDOR_NAME" /></translation>
 <translation id="3984581365661308170">Sobre n.º 11</translation>
 <translation id="398470910934384994">Aves</translation>
 <translation id="3985750352229496475">Gestionar direcciones...</translation>
@@ -1765,7 +1761,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4196861286325780578">&amp;Rehacer movimiento</translation>
 <translation id="4199637363739172710">Relojes de pulsera</translation>
-<translation id="4202218894997543208">Temas que has bloqueado</translation>
 <translation id="4202554117186904723">Quinto rollo</translation>
 <translation id="4203769790323223880">Cámara no permitida</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar la configuración del cortafuegos y del antivirus<ph name="END_LINK" /></translation>
@@ -1890,7 +1885,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="437040971055499437">Se ha producido una actividad relacionada con la seguridad</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4372948949327679948">Se esperaba un valor <ph name="VALUE_TYPE" />.</translation>
-<translation id="4375864595697821259">Vuelve a añadir un elemento si quieres incluirlo en los temas entre los que Chrome puede elegir para estimar tus intereses.</translation>
 <translation id="437620492464254965">Puertas y ventanas</translation>
 <translation id="4377125064752653719">Has intentado acceder a <ph name="DOMAIN" />, pero el emisor ha revocado el certificado mostrado por el servidor, lo que significa que las credenciales de seguridad presentadas por el servidor no son de confianza. Es posible que hayas accedido a la página de un atacante.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -2015,7 +2009,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4663373278480897665">Cámara permitida</translation>
 <translation id="466561305373967878">Juegos de mesa</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4669856024297417878">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación de las últimas semanas.</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
 <translation id="4671339777629075741">Sobre DL</translation>
 <translation id="467662567472608290">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, su certificado de seguridad contiene errores. El problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
@@ -2276,6 +2269,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5129094684098010260">Tarjeta guardada solo en el dispositivo</translation>
 <translation id="5129534298163637277">Cuadro de diálogo de confirmación</translation>
+<translation id="5129662217315786329">Polaco</translation>
 <translation id="5135404736266831032">Gestiona tus direcciones...</translation>
 <translation id="5136841603454277753">Escribe el código correcto</translation>
 <translation id="5137761395480718572">Esta aplicación solicita permiso para instalar credenciales de Wi‐Fi. Después, tu <ph name="DEVICE_TYPE" /> se conectará automáticamente a las redes Wi-Fi configuradas. Para quitar estas credenciales, desinstala la aplicación. <ph name="LEARN_MORE" /></translation>
@@ -3059,6 +3053,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6568793038316600992">Botón Gestionar métodos de pago: actívalo para gestionar tus pagos y la información de tu tarjeta de crédito en la configuración de Chrome</translation>
 <translation id="6569060085658103619">Estas viendo la página de una extensión</translation>
 <translation id="6573200754375280815">Perforado doble en la parte derecha</translation>
+<translation id="6574762126505704998">Rellenar</translation>
 <translation id="6577792494180292262">Capital de riesgo</translation>
 <translation id="6578434528542148658">El ID de la extensión no es válido.</translation>
 <translation id="6579858392010591435">Vacaciones y eventos de temporada</translation>
@@ -3138,7 +3133,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6710648923880003133">Sugerir contraseña segura</translation>
 <translation id="671076103358959139">Token de registro:</translation>
 <translation id="6711464428925977395">Se ha producido un error con el servidor proxy o la dirección es incorrecta.</translation>
-<translation id="6711700233707023861">Cadena de variaciones copiada al portapapeles</translation>
 <translation id="6716039223770814796">Comparar <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elementos</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quiere crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
 <translation id="6717692133381953670">Pestaña enviada desde <ph name="DEVICE_NAME" /></translation>
@@ -3479,7 +3473,6 @@ Más información:
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">Controladores de pago</translation>
 <translation id="7366594738862061263">Consulta más información sobre cómo protege Chrome tus contraseñas.</translation>
-<translation id="7367985555340314048">Los temas de interés se basan en tu historial de navegación reciente, y los sitios web los usan para mostrarte anuncios personalizados.</translation>
 <translation id="7372526636730851647">Foto (brillante)</translation>
 <translation id="7372973238305370288">resultado de búsqueda</translation>
 <translation id="7374461526650987610">Controladores de protocolos</translation>
@@ -3777,7 +3770,6 @@ Más información:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicaciones (<ph name="EXAMPLE_APP_1" /> y <ph name="EXAMPLE_APP_2" />)}other{# aplicaciones (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Deportes universitarios</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="7857116075376571629">Después, un sitio que visites puede pedirle a Chrome tus temas para personalizar los anuncios que veas. Chrome comparte hasta 3 temas, pero protege tu historial de navegación y tu identidad.</translation>
 <translation id="7860345425589240791">Introduce la nueva fecha de vencimiento y el nuevo CVC que aparecen en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">¿Quieres salir del sitio web?</translation>
 <translation id="7865448901209910068">Mejor velocidad</translation>
@@ -4065,7 +4057,6 @@ Más información:
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Pantalla completa automática</translation>
 <translation id="838307841291975086">Rancheras</translation>
-<translation id="8388286357548915205">Usar para todos los invitados</translation>
 <translation id="8389532092404711541">Normalmente <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehículos personalizados y de alto rendimiento</translation>
 <translation id="8390725133630534698">La política del administrador no permite compartir entre <ph name="ORIGIN_NAME" /> y <ph name="VM_NAME" />.</translation>
@@ -4288,7 +4279,6 @@ Más información:
 <translation id="8806062468703310719">Proveedores de servicios telefónicos</translation>
 <translation id="8806696968588872703">Plástico (satinado)</translation>
 <translation id="8807160976559152894">Recortar después de cada página</translation>
-<translation id="8809203544698246977">Los temas bloqueados aparecen aquí</translation>
 <translation id="8811470563853401328">¿Guardar dirección en la cuenta?</translation>
 <translation id="8811725516933141693">Escribe @gemini para chatear con Gemini</translation>
 <translation id="8813277370772331957">Recordar más tarde</translation>
@@ -4402,6 +4392,7 @@ Más información:
 <translation id="9036306139374661733">¿Permitir micrófono?</translation>
 <translation id="9038649477754266430">Utilizar un servicio de predicciones para que las páginas se carguen más rápido</translation>
 <translation id="9039213469156557790">Además, esta página incluye otros recursos que no son seguros. Otros usuarios pueden acceder a estos recursos mientras están en circulación y un atacante puede modificarlos para cambiar el comportamiento de la página.</translation>
+<translation id="9040341831873780534">Consulta los términos aquí</translation>
 <translation id="9042617223719777575">Gran capacidad</translation>
 <translation id="9042827002460091668">Comprueba tu conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9044359186343685026">Usar Touch ID</translation>

@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Васильковый</translation>
 <translation id="1246424317317450637">Полужирный</translation>
 <translation id="1251750620252348585">Перейти к следующему заголовку шестого уровня</translation>
+<translation id="1264956950255940376">Прищурить левый глаз</translation>
 <translation id="1268366246392928616">Предыдущего математического выражения нет</translation>
 <translation id="1275718070701477396">Выбрано</translation>
 <translation id="1284576163386164372">Чтобы посмотреть руководства в другое время, откройте меню, нажав на экран четырьмя пальцами, и активируйте руководство в разделе ChromeVox.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Ориентация касания</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, переключатель пункта меню не выбран</translation>
 <translation id="1325946044405407859">Дубильная кора</translation>
+<translation id="1328928545650070438">Опустить брови</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> из <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">Озвучивание символов и слов.</translation>
 <translation id="1334570596456017464">Подстрочный</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Совет</translation>
 <translation id="1354356357730355833">копировать</translation>
 <translation id="1360699455582016846">Нажать на объект под клавишей перемещения <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Поднять брови</translation>
 <translation id="1376703628032300005">Перейти к следующему символу</translation>
 <translation id="1377925789329510816">Это последний заголовок. Чтобы вернуться к первому заголовку, нажмите SEARCH + Р. Чтобы перейти ко второму заголовку на этой странице, нажмите SEARCH + SHIFT + Р.</translation>
 <translation id="138218114945450791">Голубой</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Ссылка</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Добро пожаловать в руководство по ChromeVox! Вы можете в любой момент выйти из него, нажав клавишу Esc в левом верхнем углу клавиатуры. Чтобы отключить ChromeVox, нажмите Z, удерживая клавиши Ctrl и Alt. Чтобы перейти к следующему уроку, используйте пробел.</translation>
+<translation id="1735957571918073979">Моргнуть двумя глазами</translation>
 <translation id="174268867904053074">Перейти к следующей диаграмме</translation>
 <translation id="1756785467854861272">Темная маджента</translation>
 <translation id="1758693804775271377">Чтобы просматривать уроки по этой теме, проводите по экрану пальцем влево или вправо</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Вправо</translation>
 <translation id="1781173782405573156">Пропустить нажатие</translation>
 <translation id="1787176709638001873">Поле для ввода пароля</translation>
+<translation id="1795438342141780114">Переместить курсор в центр экрана</translation>
 <translation id="180203835522132923">Поиск + O, затем W</translation>
 <translation id="1810107444790159527">Список</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Перейти к следующему элементу</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Показывать команды Брайля в меню ChromeVox</translation>
+<translation id="1999763610967697511">Перетаскивание</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{открывающая квадратная скобка}one{# открывающая квадратная скобка}few{# открывающие квадратные скобки}many{# открывающих квадратных скобок}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Не надстрочный</translation>
 <translation id="2010555995361223825">Меню ChromeVox</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Выделение орфографической ошибки снято</translation>
 <translation id="2267945578749931355">Перейти к следующему символу</translation>
 <translation id="2278490101488436824">Проведите тремя пальцами влево</translation>
+<translation id="228059581448666199">Нажать левой кнопкой мыши</translation>
 <translation id="2303873575703885770">Активация элемента</translation>
 <translation id="2305942658236913680">Следующего заголовка нет</translation>
 <translation id="2311237334957139798">Перейти к предыдущему уровню детализации</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Предыдущей метки ARIA нет</translation>
 <translation id="2843814945404750166">Темный оливково-зеленый</translation>
 <translation id="2843837985843789981">Перейти к предыдущей группе</translation>
+<translation id="2849035674501872372">Найти</translation>
+<translation id="2860710618359053450">Сместить губы вправо</translation>
 <translation id="2864481629947106776">Перейти к предыдущей ссылке</translation>
 <translation id="2867808975387772810">Библиография</translation>
 <translation id="2873259058405069099">Перейти к началу таблицы</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Навигация</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{пробел}one{# пробел}few{# пробела}many{# пробелов}other{# spaces}}</translation>
 <translation id="3179119189286472195">Текст без ссылки</translation>
+<translation id="3180990259147710757">Сместить губы влево</translation>
 <translation id="320041337977930740">Изменить стиль дисплея на чередующийся</translation>
 <translation id="3206698050650195442">Выйти</translation>
 <translation id="3208346789712025453">Следующего элемента управления нет</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{знак плюс}one{# знак плюс}few{# знака плюс}many{# знаков плюс}other{# plus signs}}</translation>
 <translation id="338583716107319301">Разделитель</translation>
 <translation id="3389259863310851658">Перейти к предыдущему полю формы</translation>
+<translation id="3390740059150071453">Посмотреть налево</translation>
 <translation id="3393605254399152980">Проведите пальцем по экрану, чтобы включить озвучивание текста.</translation>
 <translation id="3406283310380167331">Показать список форм</translation>
 <translation id="3407726812456125464">Озвучить выбранный текст</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">К предыдущему элементу</translation>
 <translation id="4099274309791143834">есть подменю</translation>
 <translation id="4101527861445851766">Установленный флажок</translation>
+<translation id="410225014223200513">Сложить губы буквой "О"</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
 <translation id="4116415223832267137">Оповещение</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{закрывающая фигурная скобка}one{# закрывающая фигурная скобка}few{# закрывающие фигурные скобки}many{# закрывающих фигурных скобок}other{# right braces}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Стальной синий</translation>
 <translation id="4253168017788158739">Примечание</translation>
 <translation id="4254798249533888099">Дерево</translation>
+<translation id="4255016471934258618">Широко открыть рот</translation>
 <translation id="4259220820964911921">Включить функцию "Отслеживание лица"?</translation>
 <translation id="4271220233568730077">Перейти к следующему математическому выражению</translation>
 <translation id="4275397969489577657">Включить ведение журнала событий</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Сиена</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{точка}=3{многоточие}one{# точка}few{# точки}many{# точек}other{# dots}}</translation>
 <translation id="4352022650330571548">ввести "<ph name="PHRASE" />"</translation>
+<translation id="4360738659108163902">Нажать правой кнопкой мыши</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Отключить озвучивание</translation>
 <translation id="4376316291247992553">Преобразовать графические элементы в шрифт Брайля</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Бледно-бирюзовый</translation>
 <translation id="4826415162591436065">Перейти к следующему элементу</translation>
 <translation id="4827410568042294688">Выделение отменено.</translation>
+<translation id="483262387981411190">Приостановить или возобновить отслеживание лица</translation>
+<translation id="4835598628985424375">Сложить губы трубочкой</translation>
 <translation id="4838490795649708173">Коснитесь четырьмя пальцами</translation>
 <translation id="4839925464551908214">Перейти к предыдущей строке</translation>
 <translation id="4841614409681890122">Насыщенный розовый</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Предыдущего виджета мультимедиа нет</translation>
 <translation id="4855927945655956315">Основные клавиши: Ctrl</translation>
+<translation id="485806788160414322">Начать или приостановить воспроизведение</translation>
 <translation id="4862744964787595316">Не полужирный</translation>
 <translation id="4865995900839719272">Перейти к предыдущей строке</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Умеренный аспидно-синий</translation>
 <translation id="5140016802771803559">Пурпурный Ребекки</translation>
 <translation id="5142101052131610456">Все уроки</translation>
+<translation id="514387318601895731">Посмотреть вниз</translation>
 <translation id="5158275234811857234">Обложка</translation>
 <translation id="516076699907426116">Попробуйте изучить экран касанием и найти кнопку "Следующий урок". Нажмите ее два раза, чтобы продолжить.</translation>
 <translation id="5170206230005240598">Титры шрифтом Брайля включены</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Расширение для синтеза речи в сервисе Google Enhanced Network</translation>
 <translation id="5783252477644995371">С функцией "Отслеживание лица" вы можете передвигать курсор, поворачивая голову, и выполнять другие действия, такие как нажатие на левую кнопку мыши, используя мимические жесты, например улыбку.</translation>
 <translation id="5805940204952508776">Коснитесь двумя пальцами</translation>
+<translation id="5807774529265708172">Показать или скрыть экранную клавиатуру</translation>
 <translation id="5819072574982403430">Элемент дерева</translation>
 <translation id="5822819874379903994">Темно-бирюзовый</translation>
 <translation id="5824976764713185207">Автоматически читать страницу после загрузки</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Список вкладок</translation>
 <translation id="5866042630553435010">Частично отмечено</translation>
 <translation id="5866210856231860256">Чтобы просматривать уроки по этой теме, используйте комбинации клавиш Поиск + Стрелка вправо и Поиск + Стрелка влево</translation>
+<translation id="5866236843389439313">Улыбнуться левым уголком рта</translation>
 <translation id="5867591286054666064">При изучении руководства вы можете нажать любую клавишу и услышать ее название.</translation>
 <translation id="5869546221129391014">Сетка</translation>
 <translation id="5876817486144482042">Уменьшить громкость речи</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Текущая дата</translation>
 <translation id="5926889058434275234">С полным списком жестов можно ознакомиться в Справочном центре.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{знак равенства}one{# знак равенства}few{# знака равенства}many{# знаков равенства}other{# equal signs}}</translation>
+<translation id="5947651424015173580">Дважды нажать кнопкой мыши</translation>
 <translation id="5948123859135882163">Переключение между структурным и семантическим методами интерпретации математических выражений</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Диалоговое окно</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{с # элементом}one{с # элементом}few{с # элементами}many{с # элементами}other{с # элемента}}</translation>
 <translation id="5981446804259161541">Светлый циан</translation>
 <translation id="5983179082906765664">Увеличить точность навигации</translation>
+<translation id="5988563937187882754">Посмотреть направо</translation>
 <translation id="5992285135956208197">Графический документ</translation>
 <translation id="5999630716831179808">Голоса</translation>
 <translation id="6006050241733874051">Форма</translation>
@@ -972,6 +994,7 @@
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Следующего поля со списком нет</translation>
+<translation id="7715455358521357192">Прищурить правый глаз</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7731785449856576010">Следующего виджета мультимедиа нет</translation>
 <translation id="7735498529470878067">Изучение касанием поможет быстро узнать, что есть на экране.</translation>
@@ -989,6 +1012,7 @@
 <translation id="7839679365527550018">К предыдущему слову</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7851816175263618915">Некоторые знаки препинания.</translation>
+<translation id="7860802890538098598">Улыбнуться правым уголком рта</translation>
 <translation id="7871691770940645922">Виртуальный брайлевский дисплей</translation>
 <translation id="7882421473871500483">Коричневый</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1008,6 +1032,7 @@
 <translation id="8004512796067398576">Увеличить</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{кавычка}one{# кавычка}few{# кавычки}many{# кавычек}other{# quotes}}</translation>
+<translation id="8017004049696748317">Начать или остановить голосовой ввод</translation>
 <translation id="8017588669690167134">Выключить озвучивание действий</translation>
 <translation id="801990297710781303">Сноска</translation>
 <translation id="8028833145828956995">ChromeVox можно использовать на сенсорном экране.</translation>
@@ -1026,6 +1051,7 @@
 <translation id="8098587210054821856">Аспидно-серый</translation>
 <translation id="8121539003537428024">Включить все фильтры событий</translation>
 <translation id="8123975449645947908">Прокрутить назад</translation>
+<translation id="8126355825906412872">Улыбнуться</translation>
 <translation id="8126386426083591964">Предыдущего заголовка пятого уровня нет</translation>
 <translation id="812886159861361726">Скачивание файла <ph name="FILE_NAME" /> остановлено</translation>
 <translation id="8129445297241948503">Ячейки выше нет</translation>
@@ -1130,6 +1156,7 @@
 <translation id="8940925288729953902">Клавиши-модификаторы</translation>
 <translation id="8943282376843390568">Лаймовый</translation>
 <translation id="8944511129464116546">не все флажки установлены</translation>
+<translation id="8945050808870279132">Наморщить нос</translation>
 <translation id="8946628535652548639">стр<ph name="TABLECELLROWINDEX" />стлб<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Предыдущего переключателя нет</translation>
 <translation id="8970172509886453271">Предыдущего раздела нет</translation>

@@ -411,6 +411,7 @@
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2888631381369839306">價格追蹤通知已開啟</translation>
 <translation id="288902476966286676">退回給寄件者</translation>
+<translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 個重用密碼，可能導致安全風險。</translation>
 <translation id="291754862089661335">將二維條碼或條碼放置此頁框中</translation>
 <translation id="2918688092312652908">標示為未讀</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861908220442487587">此地址只儲存在此裝置上。如要在其他裝置上使用地址，請將地址移動到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
+<translation id="3875783148670536197">顯示方法</translation>
 <translation id="3876833929577368454">每次都詢問我</translation>
 <translation id="3885587018298784481">加入家庭群組</translation>
 <translation id="3888863481921783344">系統會透過此操作，向您顯示可能受邀出席活動的人。</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">「智能鏡頭」相機搜尋功能</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
+<translation id="6234310016144827337">請檢查你的連線，然後再試一次</translation>
 <translation id="6234438496206735891">顯示下載內容</translation>
 <translation id="6236952928980352967">取消忽略警告</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
@@ -1634,6 +1637,7 @@
 <translation id="8609743333007776886">將 ${url} 新增至書籤</translation>
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8625706492572042370">編輯主畫面</translation>
+<translation id="8633025649649592204">近期活動</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8637431369725868556">防範危險網站。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{沒有被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>

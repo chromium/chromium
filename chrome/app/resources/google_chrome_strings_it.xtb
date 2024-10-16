@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1982647487457769627">Chrome funziona su più piattaforme per offrirti un'esperienza conosciuta su qualsiasi dispositivo</translation>
-<translation id="19955905961160405">Cerca quello che c'è sullo schermo con Google Lens</translation>
 <translation id="2001586581944147178">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. Chrome utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Questa estensione non è più supportata. Chrome consiglia di rimuoverla.}other{Queste estensioni non sono più supportate. Chrome consiglia di rimuoverle.}}</translation>
 <translation id="2018528049276128029">Ogni profilo dispone delle proprie informazioni di Chrome, come preferiti, cronologia, password e altro</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Tutte le lingue</translation>
 <translation id="3169523567916669830">Durante le prove, puoi vedere e rimuovere argomenti di interesse che i siti hanno usato per mostrarti annunci. Chrome stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="3196187562065225381">Chrome ha bloccato questo download perché il file è pericoloso</translation>
+<translation id="3222857603094643834">Cerca ciò che vuoi su questa pagina con Google Lens</translation>
 <translation id="3226612997184048185">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chrome e ricevere notifiche quando il prezzo scende</translation>
 <translation id="3234642784688107085">Prova le nuove funzionalità di AI per creare temi, ricevere assistenza per la scrittura e mantenere l'organizzazione</translation>
 <translation id="3245429137663807393">Se condividi anche report sull'utilizzo di Chrome, tali report includono gli URL visitati</translation>

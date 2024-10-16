@@ -411,6 +411,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="288655811176831528">Pechar pestana</translation>
 <translation id="2888631381369839306">Activáronse as notificacións de seguimento de prezos</translation>
 <translation id="288902476966286676">Devolver aos remitente</translation>
+<translation id="2894757982205307093">Nova pestana no grupo</translation>
 <translation id="2905479111267140204">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais reutilizados que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="291754862089661335">Coloca o código QR ou o código de barras neste marco</translation>
 <translation id="2918688092312652908">Marcar como elemento non lido</translation>
@@ -590,6 +591,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861908220442487587">Este enderezo só está gardado neste dispositivo. Para usalo noutros, móveo á túa Conta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
+<translation id="3875783148670536197">Ver como facelo</translation>
 <translation id="3876833929577368454">Preguntar sempre</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
 <translation id="3888863481921783344">Usarase para mostrarche posibles invitados ao teu evento.</translation>
@@ -1103,6 +1105,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6227126502342367214">Busca mediante a cámara de Lens</translation>
 <translation id="6231782223312638214">Suxerido</translation>
 <translation id="6232329973559504466">Busca do modo de incógnito</translation>
+<translation id="6234310016144827337">Comproba a túa conexión e téntao de novo</translation>
 <translation id="6234438496206735891">Mostrar descargas</translation>
 <translation id="6236952928980352967">Restaurar advertencia</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
@@ -1634,6 +1637,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8609743333007776886">Engade ${url} aos marcadores</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8625706492572042370">Editar a pantalla de inicio</translation>
+<translation id="8633025649649592204">Actividade recente</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="8637431369725868556">Protéxete contra os sitios perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>

@@ -58,19 +58,16 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="3078350928901129212">Farveikon for fanegruppen <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">bedømmelse</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane blev tilføjet, og <ph name="ANY_CHANGED" /> blev ændret}one{<ph name="MANY_ADDED" /> fane blev tilføjet, og <ph name="ANY_CHANGED" /> blev ændret}other{<ph name="MANY_ADDED" /> faner blev tilføjet, og <ph name="ANY_CHANGED" /> blev ændret}}</translation>
-<translation id="3291470810748040983">Du får en notifikation, når der er en lavere pris på en åben fane</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="3547352561153509682">Dette sletter gruppen fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Skjul dialogboksen for inaktive faner</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniature med forhåndsvisning af deleark.</translation>
 <translation id="381219490185664296">Vil du ophæve grupperingen af fanegruppen?</translation>
-<translation id="3882834874697329510">Slå notifikationer til i indstillingerne for at få en underretning, når der er en lavere pris på en åben fane.</translation>
 <translation id="3940195383040445971">Følg prisudvikling på faner</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Gruppér fane}one{Gruppér fane}other{Gruppér faner}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktiv fane}one{<ph name="TABS_COUNT_MANY" /> inaktiv fane}other{<ph name="TABS_COUNT_MANY" /> inaktive faner}}</translation>
 <translation id="3969565576924904454">Åbn <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">Få besked</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Oprettet for <ph name="NUM_DAYS_ONE" /> dag siden}one{Oprettet for <ph name="NUM_DAYS_MANY" /> dag siden}other{Oprettet for <ph name="NUM_DAYS_MANY" /> dage siden}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="4139634748112164403">Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent</translation>
@@ -115,7 +112,6 @@ Hvis du forlader gruppen, mister du øjeblikkeligt adgangen til fanegruppen "<ph
 <translation id="5627941783489838464">Ingen faneopdateringer</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Gendan fane}one{Gendan fane}other{Gendan faner}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}one{<ph name="TABS_COUNT_MANY" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> links fra Chrome}}</translation>
-<translation id="575494663145460764">Vil du have underretninger om prisfald?</translation>
 <translation id="58326064309361797">Træk og slip faner for at gruppere dem</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>

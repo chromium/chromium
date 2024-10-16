@@ -411,6 +411,7 @@
 <translation id="288655811176831528">Закрыть вкладку</translation>
 <translation id="2888631381369839306">Уведомления об изменении цен включены.</translation>
 <translation id="288902476966286676">Возвращено</translation>
+<translation id="2894757982205307093">Добавить новую вкладку в группу</translation>
 <translation id="2905479111267140204">Повторяющихся паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
 <translation id="291754862089661335">Поместите QR-код или штрихкод в эту рамку</translation>
 <translation id="2918688092312652908">Отметить как непрочитанное</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Название</translation>
 <translation id="3861908220442487587">Этот адрес сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, переместите его в свой аккаунт Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3868495844258915202">Показать URL полностью</translation>
+<translation id="3875783148670536197">Показать</translation>
 <translation id="3876833929577368454">Спрашивать каждый раз</translation>
 <translation id="3885587018298784481">Вступите в семейную группу</translation>
 <translation id="3888863481921783344">Эти данные будут использоваться для показа пользователей, которых можно пригласить на мероприятие.</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">Поиск через Объектив</translation>
 <translation id="6231782223312638214">Рекомендуется</translation>
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
+<translation id="6234310016144827337">Проверьте подключение и повторите попытку.</translation>
 <translation id="6234438496206735891">Показать скачанные файлы</translation>
 <translation id="6236952928980352967">Восстановить предупреждение</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
@@ -1634,6 +1637,7 @@
 <translation id="8609743333007776886">Добавить ${url} в закладки</translation>
 <translation id="8620640915598389714">Изменить</translation>
 <translation id="8625706492572042370">Измените экран "Домой"</translation>
+<translation id="8633025649649592204">Последние действия</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8637431369725868556">Защитите себя от опасных сайтов.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нет раскрытых паролей}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>

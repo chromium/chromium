@@ -593,7 +593,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="142765311413773645">Caducou a licenza de <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">Podes abrir e editar ficheiros compatibles con esta aplicación desde Finder ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Gardaches unha nota dun contrasinal neste sitio. Para vela, na barra de busca e de enderezos selecciona a opción Xestionar os teus contrasinais.</translation>
-<translation id="1428770807407000502">Queres desactivar a sincronización?</translation>
 <translation id="1429300045468813835">Borráronse todas as entradas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Actualización de software final</translation>
@@ -2640,7 +2639,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2844809857160214557">Accede aos traballos de impresión e xestiónaos</translation>
 <translation id="2845276301195220700">Máis acción para Google Calendar</translation>
 <translation id="2845382757467349449">Mostrar sempre a barra de marcadores</translation>
-<translation id="2845751331501453107">A medida que navegues pola Web, os anuncios que vexas personalizaranse en función desta opción de configuración, da opción <ph name="BEGIN_LINK1" />Anuncios suxeridos do sitio<ph name="LINK_END1" />, da <ph name="BEGIN_LINK2" />configuración de cookies<ph name="LINK_END2" /> e de se o sitio que esteas visitando personaliza os anuncios.</translation>
 <translation id="284581348330507117">Crea contrasinais únicos</translation>
 <translation id="284884486564166077">Busca calquera imaxe con Lens</translation>
 <translation id="2849035674501872372">Levanta a mirada</translation>
@@ -3001,6 +2999,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3108957152224931571">Cor de realzado</translation>
 <translation id="3109206895301430738">Grupos de pestanas gardados</translation>
 <translation id="3109724472072898302">Contraído</translation>
+<translation id="310979712355504754">Eliminar todo</translation>
 <translation id="3112292765614504292">Tamaño da aplicación: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Non permitir que os sitios editen ficheiros nin cartafoles do teu dispositivo</translation>
 <translation id="3113970906450647715">Deixouse de fixar o botón</translation>
@@ -3076,7 +3075,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3177914167275935955">O teu dispositivo inclúe unha licenza Chrome Education Upgrade, pero o teu nome de usuario non está asociado a unha conta de Google for Education. Crea unha conta de Google for Education visitando g.co/workspace/edusignup desde un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
 <translation id="3180284704187420717">Garda os teus marcadores ou os contrasinais, entre outras cousas, grazas á sincronización</translation>
-<translation id="3180716079618904608">Instalar aplicacións e xogos</translation>
 <translation id="3180990259147710757">Mover a mandíbula cara á esquerda</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3182749001423093222">Corrector ortográfico</translation>
@@ -3221,7 +3219,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="328571385944182268">Queres gardar os teus contrasinais?</translation>
 <translation id="3289668031376215426">Usar maiúsculas automaticamente</translation>
 <translation id="3289856944988573801">Para consultar se hai actualizacións, utiliza unha Ethernet ou unha wifi.</translation>
-<translation id="3289886661311231677">Podes bloquear os temas que non queiras compartir cos sitios. Chrome tamén elimina automaticamente os temas que teñen máis de 4 semanas.</translation>
 <translation id="3290249595466894471">Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas</translation>
 <translation id="3293181007446299124">O teu historial de navegación mantense privado no dispositivo e os informes envíanse con atraso para protexer a túa identidade</translation>
 <translation id="329324683265785818">Atallo de teclado para reproducir ou pór en pausa: tecla K</translation>
@@ -4544,6 +4541,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4231141543165771749">Pechar controis de xogo</translation>
 <translation id="4231231258999726714">Configurando Steam para Chromebook</translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
+<translation id="4232376164796433044">Contrasinais e autocompletado</translation>
 <translation id="4232484478444192782">O teu teléfono Android ten todo o que precisas. A túa rede wifi e o teu contrasinal estanse transferindo.</translation>
 <translation id="423327101839111402">Quitar grupo <ph name="NAME" /></translation>
 <translation id="4233739489690259993">O teu Chromebook xa non vai recibir máis actualizacións de seguranza e software. Cámbiao por un dispositivo que conte coa seguranza e as funcións máis recentes. Oferta suxeita a condicións.</translation>
@@ -5579,7 +5577,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4992869834339068470">Axuda a mellorar as funcións e o rendemento de ChromeOS. Os datos están agregados e altamente protexidos.</translation>
 <translation id="4994426888044765950">Se mantés premida unha tecla, o carácter que contén repetirase</translation>
 <translation id="4994754230098574403">Configurando</translation>
-<translation id="4995293419989417004">Máis información sobre temas de anuncios</translation>
 <translation id="4995676741161760215">Activada. Extensión activada</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Non se atopou ningunha máquina virtual de <ph name="VM_TYPE" />}=1{Atopouse 1 máquina virtual de <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Atopáronse {NUM_VMS} máquinas virtuais de <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Non hai conexión a Internet.</translation>
@@ -6907,7 +6904,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5976780232488408272">Obter axuda para escribir</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar corrector ortográfico básico</translation>
-<translation id="5978493744931296692">O teu administrador desactivou outros perfís</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Activaches de novo 1 extensión potencialmente daniña}other{Activaches de novo {NUM_EXTENSIONS} extensións potencialmente daniñas}}</translation>
 <translation id="5979353814339191480">Esta opción aplícase aos Chromebook que teñen un plan de datos ou un dispositivo de rede de telefonía móbil conectado, ou cando se comparte a conexión cunha zona wifi portátil</translation>
@@ -7858,6 +7854,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6691936601825168937">&amp;Reenviar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 páxina}other{{COUNT} páxinas}}</translation>
 <translation id="6693820805264897502">substituír os contrasinais</translation>
+<translation id="6694462491298752106">O panel táctil integrado está desactivado</translation>
 <translation id="6694634756612002311">Xestionar uso compartido</translation>
 <translation id="6697172646384837537">Seleccionar onde queres importar os contrasinais</translation>
 <translation id="6697492270171225480">Mostrar suxestións de páxinas similares cando non se atope unha páxina</translation>
@@ -8514,7 +8511,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7166815366658507447">A zona wifi está activada</translation>
 <translation id="7167327771183668296">Clics automáticos</translation>
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
-<translation id="716775164025088943">Deixarán de sincronizarse os teus marcadores, o historial, os contrasinais e outros datos.</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño mínimo do tipo de letra</translation>
 <translation id="7169122689956315694">Activar notificacións cando haxa dispositivos nas proximidades</translation>
@@ -8656,7 +8652,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7273894023751806510">Impedir sempre que <ph name="HOST" /> controle e volva programar os teus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> %. <ph name="TIME" /> para completar a carga</translation>
 <translation id="727595954130325265">Comprar agora</translation>
-<translation id="7276100255011548441">Chrome elimina automaticamente os temas que leven máis de 4 semanas na lista. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios. Máis información sobre <ph name="BEGIN_LINK" />como xestionar a privacidade nos anuncios en Chrome<ph name="END_LINK" />.</translation>
 <translation id="7278164481614262110">Usa a IA para crear temas</translation>
 <translation id="727952162645687754">Erro de descarga</translation>
 <translation id="7280649757394340890">Configuración da conversión de texto a voz</translation>

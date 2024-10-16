@@ -161,7 +161,6 @@
 <translation id="1277711244058668002">좋아요 버튼, 이 추천이 마음에 든다는 의견을 제출하려면 Enter 키를 누르세요.</translation>
 <translation id="127777513559587977">TV 토크쇼</translation>
 <translation id="1281476433249504884">스태커 1</translation>
-<translation id="1281536351321444151">다음번에 이 IBAN을 자동 완성하려면 Google 계정에 저장하세요.</translation>
 <translation id="1282358575813748144">보트 및 선박</translation>
 <translation id="1283977499362032052">이력서 및 포트폴리오</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -360,6 +359,7 @@
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1622966923835127638">경영/금융</translation>
 <translation id="1623104350909869708">이 페이지가 추가적인 대화를 생성하지 않도록 차단</translation>
+<translation id="1629390138158333592">웹 검색</translation>
 <translation id="1633137413609266904">{0,plural, =1{관리자 정책에 의해 이 파일의 열기가 차단되었습니다.}other{관리자 정책에 의해 파일 #개의 열기가 차단되었습니다.}}</translation>
 <translation id="1633941398432788136">이벤트 계획</translation>
 <translation id="1634828734222219955">합계</translation>
@@ -564,7 +564,6 @@
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2009942480257059311">일정 만들기 버튼, Google Calendar에서 새 일정을 빠르게 만들려면 활성화하세요.</translation>
 <translation id="201174227998721785">Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
-<translation id="2012276282211112603">현재 표시할 주제 없음</translation>
 <translation id="2018769312928511665">패브릭(유광)</translation>
 <translation id="2021333772895814435">이 정책은 <ph name="ACTION_LIST" />의 기기 간 동기화를 자동으로 사용 중지합니다.</translation>
 <translation id="202224654587969958">12x19인치</translation>
@@ -675,7 +674,6 @@
 <translation id="2187317261103489799">감지(기본값)</translation>
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="2194856509914051091">고려사항</translation>
-<translation id="2197398642355049178">내 주제</translation>
 <translation id="2200678913752027654">싫어요 버튼, 양식을 열어 이 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요.</translation>
 <translation id="2202627062836089804">카드 뒷면</translation>
 <translation id="2204482073374652408">업데이트 완료됨</translation>
@@ -1040,6 +1038,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />에 비정상 종료 발생</translation>
 <translation id="2915496182262110498">회화</translation>
 <translation id="2916038427272391327">다른 프로그램 닫기</translation>
+<translation id="2918484639460781603">설정으로 이동</translation>
 <translation id="2919185931486062599">사냥 및 사격</translation>
 <translation id="2922350208395188000">서버 인증서를 확인할 수 없습니다.</translation>
 <translation id="2922792708490674">{0,plural, =1{파일 다운로드 차단됨}other{파일 <ph name="FILE_COUNT" />개의 다운로드 차단됨}}</translation>
@@ -1119,7 +1118,6 @@
 <translation id="305162504811187366">타임스탬프, 호스트, 클라이언트 세션 ID를 포함한 Chrome 원격 데스크톱 기록</translation>
 <translation id="3052868890529250114">일반적으로 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
-<translation id="3054512251683174387">Chrome은 4주 이상 된 주제를 자동 삭제합니다. 인터넷 사용에 따라 특정 주제가 목록에 다시 표시될 수 있습니다. 또는 사용자가 Chrome에서 사이트와 공유하지 않았으면 하는 주제를 차단할 수 있습니다. Chrome에서 광고 개인 정보 보호 관리에 대해 자세히 알아보세요.</translation>
 <translation id="3061707000357573562">서비스 패치</translation>
 <translation id="3062655045399308513">인터넷 사용 기록 삭제…</translation>
 <translation id="306573536155379004">게임이 시작되었습니다.</translation>
@@ -1410,7 +1408,6 @@
 <translation id="3566021033012934673">연결이 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="3566336457819493938">215x315mm</translation>
 <translation id="3566649245868131295">보건 및 의료직</translation>
-<translation id="3566681680543111735">변형 문자열 복사</translation>
 <translation id="3567778190852720481">회사 계정으로는 등록할 수 없습니다(회사 계정을 사용할 수 없음).</translation>
 <translation id="3567901620846335314">100x150mm</translation>
 <translation id="3568886473829759308">웹사이트에 액세스하여 비즈니스에서 제공하는 정보, 리소스 또는 서비스를 확인하세요</translation>
@@ -1644,7 +1641,6 @@
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3975852104434126461">자동차 산업</translation>
-<translation id="3983340834939868135">'<ph name="VENDOR_NAME" />'의 패스키</translation>
 <translation id="3984581365661308170">봉투 #11</translation>
 <translation id="398470910934384994">반려조</translation>
 <translation id="3985750352229496475">주소 관리...</translation>
@@ -1765,7 +1761,6 @@
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>
 <translation id="4199637363739172710">시계</translation>
-<translation id="4202218894997543208">차단한 주제</translation>
 <translation id="4202554117186904723">5번째 롤</translation>
 <translation id="4203769790323223880">카메라가 허용되지 않음</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />방화벽 및 바이러스 백신 소프트웨어 설정 확인<ph name="END_LINK" /></translation>
@@ -1890,7 +1885,6 @@
 <translation id="437040971055499437">보안 관련 활동 발생</translation>
 <translation id="4371591986692297148">비활성</translation>
 <translation id="4372948949327679948">예상 <ph name="VALUE_TYPE" /> 값입니다.</translation>
-<translation id="4375864595697821259">관심분야를 예측할 때 Chrome에서 선택할 수 있는 주제 풀에 원하는 항목을 다시 추가하세요.</translation>
 <translation id="437620492464254965">창호</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />에 접속하려 했으나 발행기관에서 서버가 전달한 인증서를 폐기했습니다. 이는 서버가 제시한 보안 자격증명 정보를 신뢰할 수 없음을 의미합니다. 사용자는 현재 공격자와 통신 중일 수도 있습니다.</translation>
 <translation id="4378154925671717803">전화기</translation>
@@ -2015,7 +2009,6 @@
 <translation id="4663373278480897665">카메라 허용됨</translation>
 <translation id="466561305373967878">보드게임</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4669856024297417878">Chrome은 지난 몇 주간의 방문 기록을 토대로 관심 있는 주제를 기록합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
 <translation id="4671339777629075741">봉투 DL</translation>
 <translation id="467662567472608290">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서에 오류가 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -2276,6 +2269,7 @@
 <translation id="5127934926273826089">꽃</translation>
 <translation id="5129094684098010260">카드가 기기에만 저장됨</translation>
 <translation id="5129534298163637277">확인 대화상자</translation>
+<translation id="5129662217315786329">폴란드어</translation>
 <translation id="5135404736266831032">주소 관리...</translation>
 <translation id="5136841603454277753">올바른 코드를 입력하세요.</translation>
 <translation id="5137761395480718572">이 앱에서 Wi-Fi 사용자 인증 정보를 설치할 권한을 요청합니다. 설정이 완료되면 <ph name="DEVICE_TYPE" /> 기기가 제휴 Wi-Fi 네트워크에 자동으로 연결됩니다. 이러한 사용자 인증 정보를 삭제하려면 앱을 제거하세요. <ph name="LEARN_MORE" /></translation>
@@ -3059,6 +3053,7 @@
 <translation id="6568793038316600992">결제 수단 관리 버튼, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 활성화하세요.</translation>
 <translation id="6569060085658103619">확장 프로그램 페이지를 보는 중</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
+<translation id="6574762126505704998">채우기</translation>
 <translation id="6577792494180292262">벤처 캐피탈</translation>
 <translation id="6578434528542148658">확장 프로그램 ID가 잘못되었습니다.</translation>
 <translation id="6579858392010591435">공휴일 및 시즌 이벤트</translation>
@@ -3138,7 +3133,6 @@
 <translation id="6710648923880003133">안전한 비밀번호 추천</translation>
 <translation id="671076103358959139">등록 토큰:</translation>
 <translation id="6711464428925977395">프록시 서버에 문제가 발생했거나 주소가 잘못되었습니다.</translation>
-<translation id="6711700233707023861">변형 문자열이 클립보드에 복사되었습니다.</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> 비교 · 항목 <ph name="ITEMS" />개</translation>
 <translation id="6716672519412350405"><ph name="URL" />에서 주변 환경의 3D 지도를 생성하고 카메라 위치를 추적하려고 합니다.</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" />에서 전송한 탭</translation>
@@ -3479,7 +3473,6 @@
 <translation id="7366117520888504990">198x275mm</translation>
 <translation id="7366362069757178916">결제 핸들러</translation>
 <translation id="7366594738862061263">Chrome에서 비밀번호를 보호하는 방법 알아보기</translation>
-<translation id="7367985555340314048">관심 주제는 사용자의 최근 방문 기록을 기반으로 하며 사이트에서 개인 맞춤 광고를 표시하는 데 사용됩니다.</translation>
 <translation id="7372526636730851647">사진(유광)</translation>
 <translation id="7372973238305370288">검색결과</translation>
 <translation id="7374461526650987610">프로토콜 핸들러</translation>
@@ -3776,7 +3769,6 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{없음}=1{앱 1개(<ph name="EXAMPLE_APP_1" />)}=2{앱 2개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{앱 #개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">대학 스포츠</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 주제를 Chrome에 요청할 수 있습니다. Chrome은 최대 3개의 주제를 공유하는 동시에 방문 기록과 ID를 보호합니다.</translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" />의 새 만료일과 CVC를 입력하세요.</translation>
 <translation id="7862185352068345852">사이트에서 나가시겠습니까?</translation>
 <translation id="7865448901209910068">최고 속도</translation>
@@ -4064,7 +4056,6 @@
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">자동 전체 화면</translation>
 <translation id="838307841291975086">스테이션 왜건</translation>
-<translation id="8388286357548915205">모든 게스트에 사용</translation>
 <translation id="8389532092404711541">보통 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">맞춤 제작 및 고성능 차량</translation>
 <translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>
@@ -4287,7 +4278,6 @@
 <translation id="8806062468703310719">전화 서비스 제공업체</translation>
 <translation id="8806696968588872703">플라스틱(새틴)</translation>
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
-<translation id="8809203544698246977">차단한 주제가 여기에 표시됩니다.</translation>
 <translation id="8811470563853401328">계정에 주소를 저장하시겠습니까?</translation>
 <translation id="8811725516933141693">@gemini를 입력하여 Gemini와 채팅하기</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
@@ -4401,6 +4391,7 @@
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>
 <translation id="9038649477754266430">빠른 페이지 로드를 위해 예상 검색어 서비스 사용</translation>
 <translation id="9039213469156557790">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 작동을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
+<translation id="9040341831873780534">여기에서 약관 보기</translation>
 <translation id="9042617223719777575">대용량</translation>
 <translation id="9042827002460091668">인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
 <translation id="9044359186343685026">Touch ID 사용</translation>

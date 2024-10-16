@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">Koringblommetjieblou</translation>
 <translation id="1246424317317450637">Vetdruk</translation>
 <translation id="1251750620252348585">Volgende vlak 6-opskrif.</translation>
+<translation id="1264956950255940376">Trek linkeroog skrefies</translation>
 <translation id="1268366246392928616">Geen vorige wiskunde-uitdrukking nie</translation>
 <translation id="1275718070701477396">Gekies</translation>
 <translation id="1284576163386164372">Jy kan tutoriale altyd bekyk deur die kieslyste met 'n viervingertik oop te maak. Aktiveer dan die tutoriaal onder die "ChromeVox"-afdeling.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Raakoriëntering</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, kieslysitemradioknoppie is ontmerk</translation>
 <translation id="1325946044405407859">Geelbruin</translation>
+<translation id="1328928545650070438">Laat sak wenkbroue</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> van <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">karakter- en woordeggo</translation>
 <translation id="1334570596456017464">Onderskrif</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Wenk</translation>
 <translation id="1354356357730355833">kopieer</translation>
 <translation id="1360699455582016846">Klik die item onder roeteersleutel <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Lig wenkbroue</translation>
 <translation id="1376703628032300005">gaan na die volgende karakter</translation>
 <translation id="1377925789329510816">Dit is die laaste opskrif. Druk Soek+H om na die eertse opskrif te spring, of Soek+Shift+H om na die tweede opskrif op hierdie bladsy te gaan.</translation>
 <translation id="138218114945450791">Ligblou</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Skakel</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Welkom by die ChromeVox-tutoriaal. Druk enige tyd die Escape-sleutel in die sleutelbord se hoek links bo om hierdie tutoriaal te verlaat. Hou Control en Alt in en druk Z om ChromeVox af te skakel. Gebruik die spasiebalk om na die volgende les toe te gaan wanneer jy gereed is.</translation>
+<translation id="1735957571918073979">Knip albei oë</translation>
 <translation id="174268867904053074">Volgende grafika</translation>
 <translation id="1756785467854861272">Donkermagenta</translation>
 <translation id="1758693804775271377">Swiep links of regs met een vinger om deur lesse vir hierdie onderwerp te blaai</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Rollees regs</translation>
 <translation id="1781173782405573156">Gaan-deur-sleutel</translation>
 <translation id="1787176709638001873">Wagwoord wysig teks</translation>
+<translation id="1795438342141780114">Stel skermpyltjie terug na middel</translation>
 <translation id="180203835522132923">Soek + O, dan W</translation>
 <translation id="1810107444790159527">Lyskassie</translation>
 <translation id="1812527064848182527">landskap</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Volgende voorwerp</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Wys braille-bevele in die ChromeVox-kieslyste</translation>
+<translation id="1999763610967697511">Sleep en los</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{linkerhakie}other{# linkerhakies}}</translation>
 <translation id="2009187674653301682">Nie boskrif nie</translation>
 <translation id="2010555995361223825">ChromeVox-kieslyste</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Verlaat tans spelfout</translation>
 <translation id="2267945578749931355">Volgende karakter</translation>
 <translation id="2278490101488436824">Swiep drie vingers na links</translation>
+<translation id="228059581448666199">Linksklik die muis</translation>
 <translation id="2303873575703885770">Aktiveer 'n item</translation>
 <translation id="2305942658236913680">Geen volgende opskrif nie</translation>
 <translation id="2311237334957139798">Beweeg na vorige by korrelrigheid</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Geen vorige ARIA-landmerk nie</translation>
 <translation id="2843814945404750166">Donker olyfgroen</translation>
 <translation id="2843837985843789981">Vorige groep</translation>
+<translation id="2849035674501872372">Kyk op</translation>
+<translation id="2860710618359053450">Beweeg kakebeen regs</translation>
 <translation id="2864481629947106776">Vorige skakel</translation>
 <translation id="2867808975387772810">Bibliografie</translation>
 <translation id="2873259058405069099">Gaan na begin van tabel</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Navigasie</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{spasie}other{# spasies}}</translation>
 <translation id="3179119189286472195">Nie skakel nie</translation>
+<translation id="3180990259147710757">Beweeg kakebeen links</translation>
 <translation id="320041337977930740">Verander vertoonstyl met interpaginering</translation>
 <translation id="3206698050650195442">Verlaat tutoriaal</translation>
 <translation id="3208346789712025453">Geen volgende kontrole nie</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{plus}other{# plustekens}}</translation>
 <translation id="338583716107319301">Skeier</translation>
 <translation id="3389259863310851658">Vorige vormveld</translation>
+<translation id="3390740059150071453">Kyk links</translation>
 <translation id="3393605254399152980">Sleep een vinger om te hoor wat jy raak</translation>
 <translation id="3406283310380167331">Wys vormslys</translation>
 <translation id="3407726812456125464">Luister na gekose teks</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Vorige voorwerp</translation>
 <translation id="4099274309791143834">met subkieslys</translation>
 <translation id="4101527861445851766">'n Gemerkte merkblokkie</translation>
+<translation id="410225014223200513">Maak ’n sirkel met jou lippe</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Opletberig</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{regterkrulhakie}other{# regterkrulhakies}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">Staalblou</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Boom</translation>
+<translation id="4255016471934258618">Maak jou mond wyd oop</translation>
 <translation id="4259220820964911921">Aktiveer gesigbeheer?</translation>
 <translation id="4271220233568730077">Volgende wiskunde</translation>
 <translation id="4275397969489577657">Aktiveer geleentheidstroomloginskrywings</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">Siënna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{kolletjie}=3{ellips}other{# kolletjies}}</translation>
 <translation id="4352022650330571548">tik <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">Regsklik die muis</translation>
 <translation id="4372435075475052704">minimum:<ph name="X" /></translation>
 <translation id="4372705107434148843">Stop spraak</translation>
 <translation id="4376316291247992553">Bekyk grafika in Braille</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">Ligturkoois</translation>
 <translation id="4826415162591436065">Navigeer vorentoe</translation>
 <translation id="4827410568042294688">ongekies</translation>
+<translation id="483262387981411190">Onderbreek of hervat gesigbeheer</translation>
+<translation id="4835598628985424375">Tuit deur jou lippe teen mekaar te druk</translation>
 <translation id="4838490795649708173">Tik met vier vingers</translation>
 <translation id="4839925464551908214">Gaan na die vorige ry</translation>
 <translation id="4841614409681890122">Dieppienk</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Geen vorige medialegstuk nie</translation>
 <translation id="4855927945655956315">Noodsaaklike sleutels: Control</translation>
+<translation id="485806788160414322">Speel of onderbreek media</translation>
 <translation id="4862744964787595316">Nie vetdruk nie</translation>
 <translation id="4865995900839719272">gaan na die vorige reël</translation>
 <translation id="4866956062845190338">radiokieslysitem</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">Medium leiblou</translation>
 <translation id="5140016802771803559">Rebekka-pers</translation>
 <translation id="5142101052131610456">Alle lesse</translation>
+<translation id="514387318601895731">Kyk af</translation>
 <translation id="5158275234811857234">Omslag</translation>
 <translation id="516076699907426116">Verken-met-aanraking om die knoppie vir die volgende les te kry as jy wil voortgaan. Dubbeltik dan om voort te gaan.</translation>
 <translation id="5170206230005240598">Braille-onderskrifte is geaktiveer</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Google Verbeterde Netwerk se teks-na-spraak-uitbreiding</translation>
 <translation id="5783252477644995371">Gesigbeheer gee jou skermpyltjiebeheer deur na jou gesig te wys en die vermoë om handelinge uit te voer, soos linksklik met gesiggebare soos glimlag</translation>
 <translation id="5805940204952508776">Tik met twee vingers</translation>
+<translation id="5807774529265708172">Wys of versteek skermsleutelbord</translation>
 <translation id="5819072574982403430">Boomitem</translation>
 <translation id="5822819874379903994">Donkerturkoois</translation>
 <translation id="5824976764713185207">Lees bladsy outomaties nadat dit klaar gelaai het</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Oortjielys</translation>
 <translation id="5866042630553435010">Deels gekontroleer</translation>
 <translation id="5866210856231860256">Druk Search + regspyl of Search + likspyl om deur lesse vir hierdie onderwerp te blaai</translation>
+<translation id="5866236843389439313">Strek linkerhoek van jou mond</translation>
 <translation id="5867591286054666064">Terwyl die tutoriaal aan die gang is, kan jy op enige sleutel druk om die naam daarvan te hoor.</translation>
 <translation id="5869546221129391014">Rooster</translation>
 <translation id="5876817486144482042">Verlaag spraakvolume</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Huidige datum</translation>
 <translation id="5926889058434275234">Besoek die hulpsentrum vir 'n lys gebare.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{gelyk aan}other{# gelyk aan-tekens}}</translation>
+<translation id="5947651424015173580">Dubbelklik die muis</translation>
 <translation id="5948123859135882163">Wissel interpretasie van wiskunde-uitdrukkings tussen struktureel en semanties</translation>
 <translation id="5955304353782037793">program</translation>
 <translation id="5956928062748260866">Dialoog</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{met # item}other{met # items}}</translation>
 <translation id="5981446804259161541">Ligte siaan</translation>
 <translation id="5983179082906765664">Verhoog navigasie-korrelrigheid</translation>
+<translation id="5988563937187882754">Kyk regs</translation>
 <translation id="5992285135956208197">Grafiese dokument</translation>
 <translation id="5999630716831179808">Stemme</translation>
 <translation id="6006050241733874051">Vorm</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701196182766842984">outolys</translation>
 <translation id="7714340021005120797">Geen volgende kombinasiekassie nie</translation>
+<translation id="7715455358521357192">Trek regteroog skrefies</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7731785449856576010">Geen volgende medialegstuk nie</translation>
 <translation id="7735498529470878067">Verken-met-aanraking kan jou help om vinnig 'n gevoel te kry van wat op die skerm is.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">Vorige woord</translation>
 <translation id="7846634333498149051">Sleutelbord</translation>
 <translation id="7851816175263618915">Leestekens</translation>
+<translation id="7860802890538098598">Strek regterhoek van jou mond</translation>
 <translation id="7871691770940645922">Virtuele Braille-skerm</translation>
 <translation id="7882421473871500483">Bruin</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">Inkrement</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{aanhaling}other{# aanhalings}}</translation>
+<translation id="8017004049696748317">Begin of eindig diktering</translation>
 <translation id="8017588669690167134">Spraak af</translation>
 <translation id="801990297710781303">Voetnoot</translation>
 <translation id="8028833145828956995">Jy kan ChromeVox met die raakskerm gebruik</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">Leigrys</translation>
 <translation id="8121539003537428024">Aktiveer alle geleentheidfilters</translation>
 <translation id="8123975449645947908">Rollees agteruit</translation>
+<translation id="8126355825906412872">Glimlag</translation>
 <translation id="8126386426083591964">Geen vorige vlak 5-opskrif nie</translation>
 <translation id="812886159861361726">Aflaai is gestaak <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Geen sel hierbo nie</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">Wysigersleutels</translation>
 <translation id="8943282376843390568">Lemmetjiegroen</translation>
 <translation id="8944511129464116546">gedeeltelik gemerk</translation>
+<translation id="8945050808870279132">Trek jou neus op ’n plooi</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Geen vorige radioknoppie nie</translation>
 <translation id="8970172509886453271">Geen vorige afdeling nie</translation>

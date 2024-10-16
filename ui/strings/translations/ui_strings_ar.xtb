@@ -224,6 +224,7 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{ثانية واحدة}zero{# ثانية}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
 <translation id="9059834730836941392">تصغير الإشعار</translation>
 <translation id="9170848237812810038">&amp;إلغاء</translation>
+<translation id="9195990613383871904">غدًا</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="944069440740578670">إشعارات غير مقروءة</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{قبل ثانية واحدة}zero{قبل # ثانية}two{قبل ثانيتَين}few{قبل # ثوانٍ}many{قبل # ثانية}other{قبل # ثانية}}</translation>

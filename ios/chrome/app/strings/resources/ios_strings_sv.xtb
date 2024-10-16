@@ -411,6 +411,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2888631381369839306">Aviseringar om prisbevakning har aktiverats</translation>
 <translation id="288902476966286676">Retur till avsändaren</translation>
+<translation id="2894757982205307093">Ny flik i grupp</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> återanvända lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="291754862089661335">Passa in QR-koden eller streckkoden i den här rutan</translation>
 <translation id="2918688092312652908">Markera som oläst</translation>
@@ -590,6 +591,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861908220442487587">Adressen sparas endast på den här enheten. Om du vill använda den på dina andra enheter flyttar du den till Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">Visa fullständig webbadress</translation>
+<translation id="3875783148670536197">Visa hur man gör</translation>
 <translation id="3876833929577368454">Fråga mig varje gång</translation>
 <translation id="3885587018298784481">Gå med i en familjegrupp</translation>
 <translation id="3888863481921783344">Detta används för att visa möjliga användare att bjuda in till händelser.</translation>
@@ -1103,6 +1105,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6227126502342367214">Kamerasökning med Lens</translation>
 <translation id="6231782223312638214">Förslag</translation>
 <translation id="6232329973559504466">Inkognitosökning</translation>
+<translation id="6234310016144827337">Kontrollera anslutningen och försök igen</translation>
 <translation id="6234438496206735891">Visa nedladdningar</translation>
 <translation id="6236952928980352967">Återställ varning</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
@@ -1634,6 +1637,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8609743333007776886">Lägg till ${url} i bokmärkena</translation>
 <translation id="8620640915598389714">Redigera</translation>
 <translation id="8625706492572042370">Ändra hemskärmen</translation>
+<translation id="8633025649649592204">Senaste aktiviteterna</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="8637431369725868556">Få skydd mot farliga webbplatser.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
@@ -1772,6 +1776,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9183733013282108610">Inkognitosökning</translation>
 <translation id="9186762474139509529">Starta loggning</translation>
 <translation id="9191031968346938109">Lägg till i …</translation>
+<translation id="9196007736149429065">Det gick inte att öppna filen</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d sedan</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Du kan anpassa surfupplevelsen genom att flytta adressfältet nederst på skärmen.</translation>

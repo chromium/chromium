@@ -52,6 +52,7 @@
 <translation id="1243477406442346359">метличиносиньо</translation>
 <translation id="1246424317317450637">Удебелен текст</translation>
 <translation id="1251750620252348585">Следващото заглавие от шесто ниво</translation>
+<translation id="1264956950255940376">Свиване на лявото око</translation>
 <translation id="1268366246392928616">Няма предишен математически израз</translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1284576163386164372">Винаги можете да преглеждате уроците, като отворите менютата чрез докосване с четири пръста и активирате съответния урок в секцията ChromeVox.</translation>
@@ -62,6 +63,7 @@
 <translation id="1315077335264761176">Ориентация при докосване</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, немаркиран бутон за избор на елемент от меню</translation>
 <translation id="1325946044405407859">бледокафяво</translation>
+<translation id="1328928545650070438">Спускане на вежди</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> от <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">ехо за знаците и думите</translation>
 <translation id="1334570596456017464">Долен индекс</translation>
@@ -70,6 +72,7 @@
 <translation id="1346059596910821859">Бакшиш</translation>
 <translation id="1354356357730355833">копиране</translation>
 <translation id="1360699455582016846">Кликване върху елемента под ключ за пренасочване <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Повдигане на вежди</translation>
 <translation id="1376703628032300005">преминаване към следващия знак</translation>
 <translation id="1377925789329510816">Това е последното заглавие. Натиснете клавиша „търсене“ + H, за да се върнете към първото, или „търсене“ + Shift + H, за да преминете към второто заглавие на тази страница.</translation>
 <translation id="138218114945450791">светлосиньо</translation>
@@ -124,6 +127,7 @@
 <translation id="1722567105086139392">Връзка</translation>
 <translation id="1727806147743597030">долен колонтитул</translation>
 <translation id="1730447754326314349">Добре дошли в урока за ChromeVox. Можете да излезете от него по всяко време, като натиснете клавиша Escape в горния ляв ъгъл на клавиатурата. За да изключите ChromeVox, задръжте клавишите Control и Alt и натиснете Z. Когато имате готовност, преминете към следващия урок чрез клавиша за интервал.</translation>
+<translation id="1735957571918073979">Мигане с двете очи</translation>
 <translation id="174268867904053074">Следващата графика</translation>
 <translation id="1756785467854861272">тъмнопурпурно</translation>
 <translation id="1758693804775271377">Прекарайте пръст наляво или надясно, за да разгледате уроците за тази тема</translation>
@@ -131,6 +135,7 @@
 <translation id="1771761307086386028">Превъртане надясно</translation>
 <translation id="1781173782405573156">Пропускане на клавиш</translation>
 <translation id="1787176709638001873">Поле за парола</translation>
+<translation id="1795438342141780114">Преместване на курсора в центъра</translation>
 <translation id="180203835522132923">Клавиш „търсене“ + O, след това W</translation>
 <translation id="1810107444790159527">Списъчно поле</translation>
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
@@ -152,6 +157,7 @@
 <translation id="1964135212174907577">Следващият обект</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Показване на брайлови команди в менютата на ChromeVox</translation>
+<translation id="1999763610967697511">Хващане и преместване с мишката</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{лява квадратна скоба}other{# леви квадратни скоби}}</translation>
 <translation id="2009187674653301682">Не е горен индекс</translation>
 <translation id="2010555995361223825">Менюта на ChromeVox</translation>
@@ -188,6 +194,7 @@
 <translation id="2267538686624070261">Напускате мястото с правописна грешка</translation>
 <translation id="2267945578749931355">Следващият знак</translation>
 <translation id="2278490101488436824">Прекарайте три пръста наляво</translation>
+<translation id="228059581448666199">Кликване с левия бутон на мишката</translation>
 <translation id="2303873575703885770">Активиране на елемент</translation>
 <translation id="2305942658236913680">Няма следващо заглавие</translation>
 <translation id="2311237334957139798">Преминаване към предишното ниво на детайлност</translation>
@@ -272,6 +279,8 @@
 <translation id="2843432675592278677">Няма предишна област за ARIA</translation>
 <translation id="2843814945404750166">маслинено тъмнозелено</translation>
 <translation id="2843837985843789981">Предишната група</translation>
+<translation id="2849035674501872372">Търсене</translation>
+<translation id="2860710618359053450">Преместване на челюстта надясно</translation>
 <translation id="2864481629947106776">Предишната връзка</translation>
 <translation id="2867808975387772810">Библиография</translation>
 <translation id="2873259058405069099">Към началото на таблицата</translation>
@@ -337,6 +346,7 @@
 <translation id="316542773973815724">Навигация</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{интервал}other{# интервала}}</translation>
 <translation id="3179119189286472195">Не е връзка</translation>
+<translation id="3180990259147710757">Преместване на челюстта наляво</translation>
 <translation id="320041337977930740">Преминаване към стила с наслагване</translation>
 <translation id="3206698050650195442">Изход от урока</translation>
 <translation id="3208346789712025453">Няма следваща контрола</translation>
@@ -372,6 +382,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{знак плюс}other{# знака плюс}}</translation>
 <translation id="338583716107319301">Разделител</translation>
 <translation id="3389259863310851658">Предишното поле във формуляра</translation>
+<translation id="3390740059150071453">Поглед наляво</translation>
 <translation id="3393605254399152980">Плъзнете с един пръст, за да чуете какво докосвате</translation>
 <translation id="3406283310380167331">Показване на списъка с формуляри</translation>
 <translation id="3407726812456125464">Слушане на избрания текст</translation>
@@ -471,6 +482,7 @@
 <translation id="409334809956508737">Предишният обект</translation>
 <translation id="4099274309791143834">с подменю</translation>
 <translation id="4101527861445851766">Квадратче с отметка</translation>
+<translation id="410225014223200513">Закръгляне на устните</translation>
 <translation id="4115378294792113321">пурпурно</translation>
 <translation id="4116415223832267137">Сигнал</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{дясна фигурна скоба}other{# десни фигурни скоби}}</translation>
@@ -498,6 +510,7 @@
 <translation id="4246217262268234757">стоманеносиньо</translation>
 <translation id="4253168017788158739">Забележка</translation>
 <translation id="4254798249533888099">Дърво</translation>
+<translation id="4255016471934258618">Широко отваряне на уста</translation>
 <translation id="4259220820964911921">Да се активира ли контролирането с лице?</translation>
 <translation id="4271220233568730077">Следващият математически израз</translation>
 <translation id="4275397969489577657">Активиране на записването в регистрационен файл за потоците на събития</translation>
@@ -509,6 +522,7 @@
 <translation id="4322625298640984693">сиена</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{точка}=3{многоточие}other{# точки}}</translation>
 <translation id="4352022650330571548">въвеждане на „<ph name="PHRASE" />“</translation>
+<translation id="4360738659108163902">Кликване с десния бутон на мишката</translation>
 <translation id="4372435075475052704">минимум: <ph name="X" /></translation>
 <translation id="4372705107434148843">Спиране на говора</translation>
 <translation id="4376316291247992553">Преглед на графиката като брайлов текст</translation>
@@ -566,6 +580,8 @@
 <translation id="4815668758102003883">бледотюркоазено</translation>
 <translation id="4826415162591436065">Навигация напред</translation>
 <translation id="4827410568042294688">отмяна на открояването</translation>
+<translation id="483262387981411190">Поставяне на пауза или възобновяване на контролирането с лице</translation>
+<translation id="4835598628985424375">Събиране на устните</translation>
 <translation id="4838490795649708173">Докоснете с четири пръста</translation>
 <translation id="4839925464551908214">Преминаване към предишния ред</translation>
 <translation id="4841614409681890122">наситено розово</translation>
@@ -574,6 +590,7 @@
 <translation id="4848993367330139335">таймер</translation>
 <translation id="4854380505292502090">Няма предишно приспособление за мултимедия</translation>
 <translation id="4855927945655956315">Основни клавиши: Control</translation>
+<translation id="485806788160414322">Пускане или поставяне на пауза на мултимедия</translation>
 <translation id="4862744964787595316">Неудебелен текст</translation>
 <translation id="4865995900839719272">преминаване на предишния ред</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +637,7 @@
 <translation id="5138912041966667164">среднонаситено шистовосиньо</translation>
 <translation id="5140016802771803559">тъмнолилаво</translation>
 <translation id="5142101052131610456">Всички уроци</translation>
+<translation id="514387318601895731">Поглед надолу</translation>
 <translation id="5158275234811857234">Корица</translation>
 <translation id="516076699907426116">За да продължите, посредством функцията за изследване чрез докосване намерете бутона „Следващ урок“, след което докоснете двукратно.</translation>
 <translation id="5170206230005240598">Брайловите надписи са активирани</translation>
@@ -714,6 +732,7 @@
 <translation id="5776001898637896684">Разширение на Google за подобрена мрежа за синтезиран говор</translation>
 <translation id="5783252477644995371">Контролирането с лице ви дава възможност да насочвате курсора с лице и да извършвате различни действия, като кликване с ляв бутон чрез мимика – например усмивка</translation>
 <translation id="5805940204952508776">Докоснете с два пръста</translation>
+<translation id="5807774529265708172">Показване или скриване на екранната клавиатура</translation>
 <translation id="5819072574982403430">Елемент от дърво</translation>
 <translation id="5822819874379903994">тъмнотюркоазено</translation>
 <translation id="5824976764713185207">Автоматично прочитане на страницата след приключване на зареждането ѝ</translation>
@@ -725,6 +744,7 @@
 <translation id="5851548754964597211">Списък с раздели</translation>
 <translation id="5866042630553435010">Частично отметнато</translation>
 <translation id="5866210856231860256">Натиснете клавиша „търсене“ + стрелката надясно или наляво, за да разгледате уроците за тази тема</translation>
+<translation id="5866236843389439313">Усмихване с левия край на устата</translation>
 <translation id="5867591286054666064">По време на този урок можете да натиснете който и да е клавиш, за да чуете името му.</translation>
 <translation id="5869546221129391014">Таблица</translation>
 <translation id="5876817486144482042">Намаляване на силата на звука на говора</translation>
@@ -739,6 +759,7 @@
 <translation id="5923780477617566089">Текуща дата</translation>
 <translation id="5926889058434275234">За пълния списък с жестовете посетете Помощния център.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{знак за равенство}other{# знака за равенство}}</translation>
+<translation id="5947651424015173580">Кликване два пъти с левия бутон на мишката</translation>
 <translation id="5948123859135882163">Превключвайте между структурно и семантично интерпретиране на математическите изрази</translation>
 <translation id="5955304353782037793">приложение</translation>
 <translation id="5956928062748260866">Диалогов прозорец</translation>
@@ -747,6 +768,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{с # елемент}other{с(ъс) # елемента}}</translation>
 <translation id="5981446804259161541">светъл циан</translation>
 <translation id="5983179082906765664">По-подробна навигация</translation>
+<translation id="5988563937187882754">Поглед надясно</translation>
 <translation id="5992285135956208197">Графичен документ</translation>
 <translation id="5999630716831179808">Гласове</translation>
 <translation id="6006050241733874051">Формуляр</translation>
@@ -973,6 +995,7 @@
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Няма следващо комбинирано поле</translation>
+<translation id="7715455358521357192">Свиване на дясното око</translation>
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7731785449856576010">Няма следващо приспособление за мултимедия</translation>
 <translation id="7735498529470878067">Функцията за изследване чрез докосване може да ви помогне бързо да добиете представа какво се показва на екрана.</translation>
@@ -990,6 +1013,7 @@
 <translation id="7839679365527550018">Предишната дума</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7851816175263618915">Някои препинателни знаци</translation>
+<translation id="7860802890538098598">Усмихване с десния край на устата</translation>
 <translation id="7871691770940645922">Виртуален брайлов дисплей</translation>
 <translation id="7882421473871500483">кафяво</translation>
 <translation id="78826985582142166">плъзгач</translation>
@@ -1009,6 +1033,7 @@
 <translation id="8004512796067398576">Увеличаване</translation>
 <translation id="8007540374018858731">заглавие от трето ниво</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{кавички}other{# кавички}}</translation>
+<translation id="8017004049696748317">Стартиране или спиране на диктуването</translation>
 <translation id="8017588669690167134">Функцията за реч е изключена</translation>
 <translation id="801990297710781303">Бележка под линия</translation>
 <translation id="8028833145828956995">Можете да използвате ChromeVox със сензорния екран</translation>
@@ -1027,6 +1052,7 @@
 <translation id="8098587210054821856">шистовосиво</translation>
 <translation id="8121539003537428024">Активиране на всички филтри за събития</translation>
 <translation id="8123975449645947908">Превъртане назад</translation>
+<translation id="8126355825906412872">Усмихване</translation>
 <translation id="8126386426083591964">Няма предишно заглавие от пето ниво</translation>
 <translation id="812886159861361726">Изтеглянето на <ph name="FILE_NAME" /> спря</translation>
 <translation id="8129445297241948503">Няма клетка отгоре</translation>
@@ -1131,6 +1157,7 @@
 <translation id="8940925288729953902">Модифициращи клавиши</translation>
 <translation id="8943282376843390568">лимоненозелено</translation>
 <translation id="8944511129464116546">частично отметнато</translation>
+<translation id="8945050808870279132">Набръчкване на носа</translation>
 <translation id="8946628535652548639">р <ph name="TABLECELLROWINDEX" />, к <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Няма предишен бутон за избор</translation>
 <translation id="8970172509886453271">Няма предишна секция</translation>

@@ -411,6 +411,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="288655811176831528">Tab schließen</translation>
 <translation id="2888631381369839306">Benachrichtigungen zum Preis-Tracking aktiviert</translation>
 <translation id="288902476966286676">Zurück an Absender</translation>
+<translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="2905479111267140204">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> wiederverwendete Passwörter, die deine Sicherheit gefährden könnten.</translation>
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2918688092312652908">Als ungelesen markieren</translation>
@@ -590,6 +591,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861908220442487587">Diese Adresse wird nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, verschiebe sie in dein Google-Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3868495844258915202">Vollständige URL anzeigen</translation>
+<translation id="3875783148670536197">Zeigen</translation>
 <translation id="3876833929577368454">Jedesmal fragen</translation>
 <translation id="3885587018298784481">Einer Familiengruppe beitreten</translation>
 <translation id="3888863481921783344">Dadurch werden dir Personen angezeigt, die du zu deinem Termin einladen kannst.</translation>
@@ -1103,6 +1105,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6227126502342367214">Lens-Kamerasuche</translation>
 <translation id="6231782223312638214">Vorgeschlagen</translation>
 <translation id="6232329973559504466">Inkognitosuche</translation>
+<translation id="6234310016144827337">Verbindung prüfen und noch einmal versuchen</translation>
 <translation id="6234438496206735891">Downloads anzeigen</translation>
 <translation id="6236952928980352967">Warnung wiederherstellen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
@@ -1634,6 +1637,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8609743333007776886">${url} zu Lesezeichen hinzufügen</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
 <translation id="8625706492572042370">Startbildschirm bearbeiten</translation>
+<translation id="8633025649649592204">Letzte Aktivität</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Keine kompromittierten Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
@@ -1772,6 +1776,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9183733013282108610">Inkognitosuche</translation>
 <translation id="9186762474139509529">Protokollierung starten</translation>
 <translation id="9191031968346938109">Hinzufügen zu…</translation>
+<translation id="9196007736149429065">Die Datei konnte nicht geöffnet werden</translation>
 <translation id="9200875785104711666">vor <ph name="TIME" /> Tg.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Verschiebe die Adressleiste von oben nach unten, um den Browser an deine Bedürfnisse anzupassen.</translation>

@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1953553007165777902">Downloader… Der er <ph name="MINUTE" /> minutter tilbage</translation>
 <translation id="1982647487457769627">Chrome fungerer på tværs af platforme, så du får en ensrettet oplevelse, uanset hvilken enhed du bruger</translation>
-<translation id="19955905961160405">Søg efter det, der vises på din skærm, med Google Lens</translation>
 <translation id="2001586581944147178">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chrome anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Denne udvidelse understøttes ikke længere. Chrome anbefaler, at du fjerner den.}one{Denne udvidelse understøttes ikke længere. Chrome anbefaler, at du fjerner den.}other{Disse udvidelser understøttes ikke længere. Chrome anbefaler, at du fjerner dem.}}</translation>
 <translation id="2018528049276128029">Hver profil har sine egne Chrome-oplysninger som f.eks. bogmærker, historik, adgangskoder m.m.</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Alle sprog</translation>
 <translation id="3169523567916669830">I løbet af prøveperioderne kan du se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome anslår dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="3196187562065225381">Chrome har blokeret denne download, fordi filen er skadelig</translation>
+<translation id="3222857603094643834">Søg efter hvad som helst på denne side via Google Lens</translation>
 <translation id="3226612997184048185">Hvis du også gemmer dine bogmærker på din Google-konto, kan du holde øje med produktpriser i Chrome og få besked, når prisen falder</translation>
 <translation id="3234642784688107085">Prøv nye AI-funktioner for at oprette temaer, få hjælp til at skrive og bevare overblikket</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>

@@ -70,7 +70,6 @@
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
 <translation id="1953553007165777902">Descargando… Minutos restantes: <ph name="MINUTE" /></translation>
 <translation id="1982647487457769627">Chrome funciona en todas las plataformas para brindarte una experiencia familiar sin importar el dispositivo</translation>
-<translation id="19955905961160405">Busca lo que se muestra en la pantalla con Google Lens</translation>
 <translation id="2001586581944147178">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. Chrome usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no es compatible. Chrome te recomienda quitarla.}other{Estas extensiones ya no son compatibles. Chrome te recomienda quitarlas.}}</translation>
 <translation id="2018528049276128029">Cada perfil conserva su propia información de Chrome, como los favoritos, el historial, las contraseñas y más.</translation>
@@ -187,6 +186,7 @@
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3169523567916669830">Durante las pruebas, puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses en función de tu historial de navegación reciente.</translation>
 <translation id="3196187562065225381">Chrome bloqueó esta descarga porque el archivo es peligroso</translation>
+<translation id="3222857603094643834">Busca lo que quieras en esta página con Google Lens</translation>
 <translation id="3226612997184048185">Si también guardas tus favoritos en tu Cuenta de Google, puedes realizar un seguimiento de precios de productos en Chrome y recibir notificaciones cuando haya reducciones de los precios</translation>
 <translation id="3234642784688107085">Prueba nuevas funciones de IA para crear temas, obtener ayuda con la escritura y mantener tu organización</translation>
 <translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URLs que visites</translation>

@@ -411,6 +411,7 @@
 <translation id="288655811176831528">Закрыць укладку</translation>
 <translation id="2888631381369839306">Апавяшчэнні для адсочвання цэн уключаны</translation>
 <translation id="288902476966286676">Вяртанне</translation>
+<translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
 <translation id="2905479111267140204">У вас ёсць ужытыя раней паролі (<ph name="NUMBER_OF_PASSWORDS" />), што можа паставіць пад пагрозу бяспеку.</translation>
 <translation id="291754862089661335">Змясціце QR-код або штрыхкод у гэтай рамцы</translation>
 <translation id="2918688092312652908">Пазначыць як непрачытанае</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3861908220442487587">Гэты адрас захоўваецца толькі на гэтай прыладзе. Каб выкарыстоўваць яго на іншых прыладах, перамясціце адрас у свой Уліковы запіс Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3868495844258915202">Паказаць увесь URL-адрас</translation>
+<translation id="3875783148670536197">Паказаць</translation>
 <translation id="3876833929577368454">Заўсёды запытваць</translation>
 <translation id="3885587018298784481">Далучэнне да сямейнай групы</translation>
 <translation id="3888863481921783344">Гэта інфармацыя будзе выкарыстоўвацца, каб паказваць вам людзей, якіх можна запрасіць прыняць удзел у падзеі.</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">Пошук з дапамогай камеры і Аб’ектыва</translation>
 <translation id="6231782223312638214">Прапанаваныя</translation>
 <translation id="6232329973559504466">Пошук у рэжыме інкогніта</translation>
+<translation id="6234310016144827337">Праверце падключэнне і паўтарыце спробу</translation>
 <translation id="6234438496206735891">Паказаць спампоўкі</translation>
 <translation id="6236952928980352967">Аднавіць папярэджанне</translation>
 <translation id="6247557882553405851">Менеджар пароляў Google</translation>
@@ -1634,6 +1637,7 @@
 <translation id="8609743333007776886">Дадаць у закладкі ${url}</translation>
 <translation id="8620640915598389714">Змяніць</translation>
 <translation id="8625706492572042370">Змяніце галоўны экран</translation>
+<translation id="8633025649649592204">Нядаўнія дзеянні</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="8637431369725868556">Абараніцеся ад небяспечных сайтаў.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>

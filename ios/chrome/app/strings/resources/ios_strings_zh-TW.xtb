@@ -411,6 +411,7 @@
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2888631381369839306">價格追蹤通知已開啟</translation>
 <translation id="288902476966286676">退回給寄件者</translation>
+<translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組密碼重複使用，可能導致安全性風險。</translation>
 <translation id="291754862089661335">將這個方框對準 QR 圖碼或條碼</translation>
 <translation id="2918688092312652908">標示為未閱讀</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861908220442487587">這個地址只會儲存在這部裝置上。如要在其他裝置上使用這項地址資訊，請將資訊移到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
+<translation id="3875783148670536197">顯示操作說明</translation>
 <translation id="3876833929577368454">每次都詢問我</translation>
 <translation id="3885587018298784481">加入家庭群組</translation>
 <translation id="3888863481921783344">系統會使用這些資料向你顯示活動的可能邀請對象。</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">智慧鏡頭相機搜尋功能</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
+<translation id="6234310016144827337">請檢查連線狀態，然後再試一次</translation>
 <translation id="6234438496206735891">顯示下載內容</translation>
 <translation id="6236952928980352967">取消忽略警告</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
@@ -1634,6 +1637,7 @@
 <translation id="8609743333007776886">將 ${url} 加入書籤</translation>
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8625706492572042370">編輯主畫面</translation>
+<translation id="8633025649649592204">近期活動</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
 <translation id="8637431369725868556">守護網頁瀏覽安全，有效防堵危險網站。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{沒有任何密碼外洩}=1{有 {COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
@@ -1772,6 +1776,7 @@
 <translation id="9183733013282108610">無痕搜尋</translation>
 <translation id="9186762474139509529">開始記錄</translation>
 <translation id="9191031968346938109">新增至…</translation>
+<translation id="9196007736149429065">無法開啟這個檔案</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">你可以將網址列從頂端移至底部，享受量身打造的瀏覽體驗。</translation>

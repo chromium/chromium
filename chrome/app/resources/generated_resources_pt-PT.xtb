@@ -593,7 +593,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="142765311413773645">A licença da app <ph name="APP_NAME" /> expirou</translation>
 <translation id="1428373049397869723">Pode abrir e editar ficheiros suportados com esta app a partir do Finder ou outras apps. Para controlar que ficheiros abrem esta app por predefinição, <ph name="BEGIN_LINK" />saiba como definir apps predefinidas no dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Guardou uma nota para uma palavra-passe neste site. Para as ver, selecione Gerir as suas palavras-passe na barra de endereço e pesquisa.</translation>
-<translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1429300045468813835">Tudo limpo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Atualização final do software</translation>
@@ -2641,7 +2640,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2844809857160214557">Veja e faça a gestão de tarefas de impressão.</translation>
 <translation id="2845276301195220700">Mais ações para o Calendário Google</translation>
 <translation id="2845382757467349449">Mostrar Sempre a Barra de Marcadores</translation>
-<translation id="2845751331501453107">À medida que navega, a personalização de um anúncio que lhe é mostrado depende desta definição, dos <ph name="BEGIN_LINK1" />anúncios sugeridos pelos sites<ph name="LINK_END1" />, das <ph name="BEGIN_LINK2" />definições de cookies<ph name="LINK_END2" /> e de se o site que está a ver personaliza os anúncios</translation>
 <translation id="284581348330507117">Crie palavras-passe únicas</translation>
 <translation id="284884486564166077">Pesquise qualquer imagem com o Lens</translation>
 <translation id="2849035674501872372">Olhe para cima</translation>
@@ -3003,6 +3001,7 @@ Quer pará-lo?</translation>
 <translation id="3108957152224931571">Cor de realce</translation>
 <translation id="3109206895301430738">Grupos de separadores guardados</translation>
 <translation id="3109724472072898302">Fechado</translation>
+<translation id="310979712355504754">Eliminar todos</translation>
 <translation id="3112292765614504292">Tamanho da app: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Não permitir que os sites editem ficheiros ou pastas no dispositivo</translation>
 <translation id="3113970906450647715">Botão desafixado</translation>
@@ -3078,7 +3077,6 @@ Quer pará-lo?</translation>
 <translation id="3177914167275935955">O seu dispositivo inclui uma Atualização do Chrome Education, mas o seu nome de utilizador não está associado a uma conta do Google for Education. Crie uma conta do Google for Education ao visitar g.co/workspace/edusignup num dispositivo secundário.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
 <translation id="3180284704187420717">Guarde os seus marcadores, palavras-passe e muito mais com a sincronização</translation>
-<translation id="3180716079618904608">Encontre apps e jogos</translation>
 <translation id="3180990259147710757">Mover o maxilar para a esquerda</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
 <translation id="3182749001423093222">Verificação ortográfica</translation>
@@ -3223,7 +3221,6 @@ Quer pará-lo?</translation>
 <translation id="328571385944182268">Quer guardar as suas palavras-passe?</translation>
 <translation id="3289668031376215426">Maiúsculas automáticas</translation>
 <translation id="3289856944988573801">Para verificar se existem atualizações, utilize Ethernet ou Wi-Fi.</translation>
-<translation id="3289886661311231677">Pode bloquear os tópicos que não quer partilhar com os sites. O Chrome também apaga automaticamente os tópicos com mais de 4 semanas.</translation>
 <translation id="3290249595466894471">Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças</translation>
 <translation id="3293181007446299124">O seu histórico de navegação é mantido no dispositivo e os relatórios são enviados com um atraso para proteger a sua identidade</translation>
 <translation id="329324683265785818">Tocar/pausar, atalho de teclado k</translation>
@@ -4543,6 +4540,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4231141543165771749">Fechar controlos de jogos</translation>
 <translation id="4231231258999726714">A configurar o Steam para o Chromebook</translation>
 <translation id="4232375817808480934">Configure o Kerberos</translation>
+<translation id="4232376164796433044">Palavras-passe/preench. autom.</translation>
 <translation id="4232484478444192782">O seu telemóvel Android tem tudo o que precisa. O Wi-Fi e a palavra-passe estão a ser transferidos.</translation>
 <translation id="423327101839111402">Remover grupo <ph name="NAME" /></translation>
 <translation id="4233739489690259993">O seu Chromebook já não está a receber atualizações de segurança e software. Atualize o seu dispositivo para obter novas funcionalidades e as funcionalidades de segurança mais recentes. Aplicam-se os termos da oferta.</translation>
@@ -5578,7 +5576,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4992869834339068470">Ajude a melhorar as funcionalidades e o desempenho do ChromeOS. Os dados são agregados e altamente protegidos.</translation>
 <translation id="4994426888044765950">Se mantiver uma tecla pressionada, o caráter da tecla vai ser repetido</translation>
 <translation id="4994754230098574403">A configurar…</translation>
-<translation id="4995293419989417004">Saber mais acerca dos tópicos de anúncios</translation>
 <translation id="4995676741161760215">Ativada, extensão ativada</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nenhuma VM <ph name="VM_TYPE" /> encontrada}=1{1 VM <ph name="VM_TYPE" /> encontrada: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} VMs <ph name="VM_TYPE" /> encontradas: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Sem ligação à Internet.</translation>
@@ -6910,7 +6907,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5976780232488408272">Obter ajuda na escrita</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978277834170881274">&amp;Utilizar a verificação ortográfica básica</translation>
-<translation id="5978493744931296692">O seu administrador desativou outros perfis</translation>
 <translation id="5979084224081478209">Rever palavras-passe</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Reativou 1 extensão potencialmente prejudicial.}other{Reativou {NUM_EXTENSIONS} extensões potencialmente prejudiciais.}}</translation>
 <translation id="5979353814339191480">Esta opção aplica-se a Chromebooks com um plano de dados ou um dongle de rede móvel ou ao estabelecer ligação (à Internet) via telemóvel a uma zona Wi-Fi portátil.</translation>
@@ -7861,6 +7857,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6691936601825168937">A&amp;vançar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}other{{COUNT} páginas}}</translation>
 <translation id="6693820805264897502">substituir palavras-passe existentes</translation>
+<translation id="6694462491298752106">O touchpad incorporado está desativado</translation>
 <translation id="6694634756612002311">Gerir partilha</translation>
 <translation id="6697172646384837537">Selecione para onde quer importar as suas palavras-passe</translation>
 <translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes se não for possível encontrar uma página</translation>
@@ -8518,7 +8515,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7166815366658507447">Zona Wi-Fi ativada</translation>
 <translation id="7167327771183668296">Cliques automáticos</translation>
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
-<translation id="716775164025088943">Os marcadores, o histórico, as palavras-passe e outros elementos já não vão ser sincronizados.</translation>
 <translation id="716810439572026343">A transferir <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamanho mínimo do tipo de letra</translation>
 <translation id="7169122689956315694">Ative as notificações quando existirem dispositivos nas proximidades</translation>
@@ -8660,7 +8656,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7273894023751806510">Impedir sempre que <ph name="HOST" /> controle e reprograme os seus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> até ficar completa</translation>
 <translation id="727595954130325265">Comprar agora</translation>
-<translation id="7276100255011548441">O Chrome elimina automaticamente os tópicos com mais de 4 semanas. Enquanto navega, um tópico pode voltar a ser apresentado na lista. Em alternativa, pode bloquear os tópicos que não quer que o Chrome partilhe com sites. Saiba mais sobre a <ph name="BEGIN_LINK" />gestão da privacidade dos anúncios no Chrome<ph name="END_LINK" />.</translation>
 <translation id="7278164481614262110">Criar temas com IA</translation>
 <translation id="727952162645687754">Erro de transferência</translation>
 <translation id="7280649757394340890">Definições de voz para a conversão de texto em voz</translation>

@@ -74,7 +74,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1919130412786645364">Omogući prijavu na Chrome</translation>
 <translation id="1953553007165777902">Preuzimanje… Preostalo je <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome radi na svim platformama da vam pruža poznato iskustvo bez obzira na uređaj</translation>
-<translation id="19955905961160405">Pretražite sadržaj ekrana putem Google Objektiva</translation>
 <translation id="2001586581944147178">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. Chrome koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistem naziva domena).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ta ekstenzija više nije podržana. Chrome vam preporučuje da je uklonite.}one{Te ekstenzije više nisu podržane. Chrome vam preporučuje da ih uklonite.}few{Te ekstenzije više nisu podržane. Chrome vam preporučuje da ih uklonite.}other{Te ekstenzije više nisu podržane. Chrome vam preporučuje da ih uklonite.}}</translation>
 <translation id="2018528049276128029">Svaki profil sadrži svoje Chrome informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
@@ -191,6 +190,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3161522574479303604">Svi jezici</translation>
 <translation id="3169523567916669830">Tokom probnih perioda možete vidjeti i uklanjati teme koje vas zanimaju, a koje web lokacije koriste da vam prikazuju oglase. Chrome procjenjuje vaša interesovanja na osnovu vaše nedavne historije pregledanja.</translation>
 <translation id="3196187562065225381">Chrome je blokirao ovo preuzimanje jer je fajl opasan</translation>
+<translation id="3222857603094643834">Pretražite bilo šta na ovoj stranici putem Google Objektiva</translation>
 <translation id="3226612997184048185">Ako sačuvate oznake i na svoj Google račun možete pratiti cijene proizvoda u Chromeu i primati obavještenja kada cijena padne</translation>
 <translation id="3234642784688107085">Isprobajte nove AI funkcije da kreirate teme, dobijete pomoć u pisanju i ostanete organizirani</translation>
 <translation id="3245429137663807393">Ako dijelite i izvještaje o korištenju Chromea, ti izvještaji uključuju URL-ove koje posjećujete</translation>
@@ -408,7 +408,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6060842547856900641">Otvori Objektiv</translation>
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
-<translation id="6075300983329039771">Organizacija, <ph name="MANAGER" />, zahtijeva da se prijavite u Chrome</translation>
+<translation id="6075300983329039771">Organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
 <translation id="6097822892606850415">Pišite s više samopouzdanja uz pomoć AI-ja</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>

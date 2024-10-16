@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />私隱權政策<ph name="END_LINK3" />》約束。</translation>
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
-<translation id="3087218211037573995">部分只儲存在此裝置的密碼即將停止運作。你可將這些密碼移至「Google 密碼管理工具」。</translation>
 <translation id="3087734570205094154">下方</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Chrome 和 <ph name="CHROME_CHANNEL" />的已儲存密碼清單已合併。你仍可在兩個應用程式中自動填入所有已儲存的密碼。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
-<translation id="4620032614425803188">自動填入服務</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
@@ -1512,11 +1510,9 @@
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784934925303690534">時間範圍</translation>
-<translation id="7850687713580657633">由於無法使用 Google Play 服務，密碼即將停止運作。如要使用儲存在「Google 密碼管理工具」的密碼，請改用其他裝置登入，或前往 passwords.google.com。</translation>
 <translation id="7851858861565204677">其他裝置</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7859988229622350291">永遠不要翻譯</translation>
-<translation id="7864208933699511058">瀏覽時是否看到個人化廣告，取決於此設定、<ph name="BEGIN_LINK_1" />網站建議的廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />、網站是否顯示個人化廣告。</translation>
 <translation id="7866213166286285359">翻譯這裡的頁面</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> 需要獲得附近的裝置權限，才能連線至您的裝置</translation>
 <translation id="7875915731392087153">建立電郵</translation>

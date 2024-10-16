@@ -594,7 +594,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="142765311413773645">Leyfi <ph name="APP_NAME" /> er útrunnið</translation>
 <translation id="1428373049397869723">Þú getur opnað og breytt studdum skrám með þessu forriti úr Finder eða öðrum forritum. Til að stýra því hvaða skrár opna þetta forrit sjálfkrafa skaltu <ph name="BEGIN_LINK" />kynna þér hvernig sjálfgefin forrit eru sett upp í tækinu þínu<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Þú vistaðir glósu um aðgangsorð á þessu vefsvæði. Til að skoða hana skaltu velja „stjórna aðgangsorðum“ í leitar- og veffangastikunni.</translation>
-<translation id="1428770807407000502">Slökkva á samstillingu?</translation>
 <translation id="1429300045468813835">Allt hreinsað</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1431188203598586230">Síðasta hugbúnaðaruppfærslan</translation>
@@ -2655,7 +2654,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2844809857160214557">Skoða og stjórna prentverkum</translation>
 <translation id="2845276301195220700">Fleiri aðgerðir fyrir Google-dagatal</translation>
 <translation id="2845382757467349449">Sýna alltaf bókamerkjastikuna</translation>
-<translation id="2845751331501453107">Hvort auglýsing sem birtist þér þegar þú skoðar vefsvæði er sérsniðin eða ekki veltur á þessari stillingu, <ph name="BEGIN_LINK1" />auglýsingatillögum vefsvæða<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />fótsporastillingum<ph name="LINK_END2" /> og hvort að vefsvæðið sem þú ert að skoða sérsníði auglýsingar</translation>
 <translation id="284581348330507117">Búðu til einkvæm aðgangsorð</translation>
 <translation id="284884486564166077">Leita á hvaða mynd sem er með Linsu</translation>
 <translation id="2849035674501872372">Horfðu upp</translation>
@@ -3016,6 +3014,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3108957152224931571">Yfirstrikunarlitur</translation>
 <translation id="3109206895301430738">Vistaðir flipahópar</translation>
 <translation id="3109724472072898302">Minnkað</translation>
+<translation id="310979712355504754">Eyða öllum</translation>
 <translation id="3112292765614504292">Stærð forrits <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Ekki leyfa vefsvæðum að breyta skrám eða möppum í tækinu</translation>
 <translation id="3113970906450647715">Hnappur losaður</translation>
@@ -3091,7 +3090,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3177914167275935955">Tækið þitt er með Chrome Education-uppfærslu en notandanafnið þitt er ekki tengt við Google for Education-reikning. Stofnaðu Google for Education-reikning með því að opna g.co/workspace/edusignup í öðru tæki.</translation>
 <translation id="3179982752812949580">Leturgerð texta</translation>
 <translation id="3180284704187420717">Vistaðu bókamerki, aðgangsorð og fleira með samstillingu</translation>
-<translation id="3180716079618904608">Sæktu forrit og leiki</translation>
 <translation id="3180990259147710757">Beindu vörunum til vinstri</translation>
 <translation id="3181954750937456830">Örugg vefnotkun (verndar þig og tækið þitt fyrir hættulegum vefsvæðum)</translation>
 <translation id="3182749001423093222">Villuleit</translation>
@@ -3236,7 +3234,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="328571385944182268">Vista aðgangsorðin þín?</translation>
 <translation id="3289668031376215426">Sjálfvirkir hástafir</translation>
 <translation id="3289856944988573801">Notaðu Ethernet-tengingu eða Wi-Fi til að leita að uppfærslum.</translation>
-<translation id="3289886661311231677">Þú getur sett umfjöllunarefni sem þú vilt ekki deila með vefsvæðum á bannlista. Chrome eyðir einnig sjálfkrafa umfjöllunarefnum sem eru eldri en 4 vikna.</translation>
 <translation id="3290249595466894471">Sendir einnig lítið brot af síðum, niðurhali, virkni viðbóta og kerfisupplýsingar til að auðvelda leit að nýjum ógnum</translation>
 <translation id="3293181007446299124">Aðeins þú getur séð vafraferilinn þinn í tækinu og sendingum skýrslna er seinkað til að vernda auðkenni þitt</translation>
 <translation id="329324683265785818">Spila / gera hlé, flýtilykillinn k</translation>
@@ -4556,6 +4553,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4231141543165771749">Loka leikjastýringum</translation>
 <translation id="4231231258999726714">Setur upp Steam fyrir Chromebook</translation>
 <translation id="4232375817808480934">Stilla Kerberos</translation>
+<translation id="4232376164796433044">Aðgangsorð og sjálfvirk útfylling</translation>
 <translation id="4232484478444192782">Android-síminn sér um þig. Verið er að flytja WiFi-netið og aðgangsorðin þín.</translation>
 <translation id="423327101839111402">Fjarlægja hóp <ph name="NAME" /></translation>
 <translation id="4233739489690259993">Chromebook-tölvan þín fær ekki öryggis- og hugbúnaðaruppfærslur lengur. Uppfærðu tækið til að fá nýjustu öryggisúrræðin og nýja eiginleika. Skilmálar tilboðs gilda.</translation>
@@ -5591,7 +5589,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4992869834339068470">Hjálpa til við að bæta eiginleika og afköst ChromeOS. Gögn eru samantekin og vel varin.</translation>
 <translation id="4994426888044765950">Ef þú heldur lykli inni verður stafur lykilsins endurtekinn</translation>
 <translation id="4994754230098574403">Setur upp</translation>
-<translation id="4995293419989417004">Nánar um umfjöllunarefni auglýsinga</translation>
 <translation id="4995676741161760215">Kveikt, viðbót er virk</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Engar <ph name="VM_TYPE" /> sýndarvélar fundust}=1{1 <ph name="VM_TYPE" /> sýndarvél fannst: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> sýndarvél fannst: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> sýndarvélar fundust: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Engin tenging við internetið.</translation>
@@ -6922,7 +6919,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5976780232488408272">Fáðu aðstoð við skrif</translation>
 <translation id="5977976211062815271">Í þessu tæki</translation>
 <translation id="5978277834170881274">&amp;Nota innbyggða ritvilluleit</translation>
-<translation id="5978493744931296692">Kerfisstjórinn þinn hefur gert aðra prófíla óvirka</translation>
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Þú virkjaðir aftur 1 viðbót sem er hugsanlega hættuleg}one{Þú virkjaðir aftur {NUM_EXTENSIONS} viðbót sem er hugsanlega hættuleg}other{Þú virkjaðir aftur {NUM_EXTENSIONS} viðbætur sem eru hugsanlega hættulegar}}</translation>
 <translation id="5979353814339191480">Þessi valmöguleiki á við Chromebook tölvur með gagnaáskrift eða netpung eða þegar tjóðrað er við færanlegan heitan reit</translation>
@@ -7875,6 +7871,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6691936601825168937">Á&amp;fram</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 síða}one{{COUNT} síða}other{{COUNT} síður}}</translation>
 <translation id="6693820805264897502">skipta núverandi aðgangsorðum út</translation>
+<translation id="6694462491298752106">Slökkt er á innbyggðum snertifleti</translation>
 <translation id="6694634756612002311">Stjórna deilingu</translation>
 <translation id="6697172646384837537">Veldu hvar þú vilt flytja aðgangsorðin inn</translation>
 <translation id="6697492270171225480">Birta tillögur að svipuðum síðum þegar síða finnst ekki</translation>
@@ -8531,7 +8528,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7166815366658507447">Kveikt á heitum reit</translation>
 <translation id="7167327771183668296">Sjálfvirkir smellir</translation>
 <translation id="7167486101654761064">Opna &amp;alltaf skrár af þessari tegund</translation>
-<translation id="716775164025088943">Bókamerki, ferill, aðgangsorð og fleira verður ekki lengur samstillt.</translation>
 <translation id="716810439572026343">Sækir <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Lágmarksleturstærð</translation>
 <translation id="7169122689956315694">Kveikja á tilkynningu þegar tæki eru nálæg</translation>
@@ -8673,7 +8669,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7273894023751806510">Aldrei leyfa <ph name="HOST" /> að stjórna og endurforrita MIDI-tækin þín.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> í fulla hleðslu</translation>
 <translation id="727595954130325265">Versla núna</translation>
-<translation id="7276100255011548441">Chrome eyðir umfjöllunarefnum sem eru eldri en 4 vikna sjálfkrafa. Þegar þú heldur áfram að vafra gæti umfjöllunarefni birst aftur á listanum. Þú getur einnig lokað á umfjöllunarefni sem þú vilt ekki að Chrome deili með vefsvæðum. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga í Chrome.<ph name="END_LINK" /></translation>
 <translation id="7278164481614262110">Búa til þemu með gervigreind</translation>
 <translation id="727952162645687754">Niðurhalsvilla</translation>
 <translation id="7280649757394340890">Raddstillingar talgervils</translation>

@@ -161,7 +161,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1277711244058668002">Tombol suka, tekan Enter untuk mengirim masukan bahwa Anda menyukai saran ini</translation>
 <translation id="127777513559587977">Acara Bincang-Bincang TV</translation>
 <translation id="1281476433249504884">Tempat kertas 1</translation>
-<translation id="1281536351321444151">Untuk mengisi otomatis IBAN ini di lain waktu, simpan di Akun Google Anda</translation>
 <translation id="1282358575813748144">Perahu &amp; Kendaraan Air</translation>
 <translation id="1283977499362032052">Riwayat Hidup &amp; Portofolio</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
@@ -360,6 +359,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Keuangan Bisnis</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
+<translation id="1629390138158333592">Telusuri web</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan file ini diblokir oleh kebijakan administrator}other{Pembukaan # file diblokir oleh kebijakan administrator}}</translation>
 <translation id="1633941398432788136">Perencanaan Acara</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -565,7 +565,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2009942480257059311">Tombol Buat acara, aktifkan untuk membuat acara baru di Google Kalender dengan cepat</translation>
 <translation id="201174227998721785">Kelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
-<translation id="2012276282211112603">Saat ini tidak ada topik untuk ditampilkan</translation>
 <translation id="2018769312928511665">Kain (Mengilap)</translation>
 <translation id="2021333772895814435">Kebijakan ini otomatis menonaktifkan sinkronisasi di seluruh perangkat untuk: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 inci (30 x 48 cm)</translation>
@@ -676,7 +675,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2187317261103489799">Deteksi (default)</translation>
 <translation id="2188375229972301266">Beberapa lubang di bawah</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
-<translation id="2197398642355049178">Topik Anda</translation>
 <translation id="2200678913752027654">Tombol tidak suka, tekan Enter untuk membuka formulir guna mengirim masukan mendetail tentang alasan Anda tidak menyukai saran ini</translation>
 <translation id="2202627062836089804">bagian belakang kartu Anda</translation>
 <translation id="2204482073374652408">Update selesai!</translation>
@@ -1041,6 +1039,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2915068235268646559">Error dari <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Melukis</translation>
 <translation id="2916038427272391327">Tutup program lain</translation>
+<translation id="2918484639460781603">Buka setelan</translation>
 <translation id="2919185931486062599">Berburu &amp; Menembak</translation>
 <translation id="2922350208395188000">Sertifikat server tidak dapat diperiksa.</translation>
 <translation id="2922792708490674">{0,plural, =1{File diblokir agar tidak dapat didownload}other{<ph name="FILE_COUNT" /> file diblokir agar tidak dapat didownload}}</translation>
@@ -1120,7 +1119,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3052868890529250114">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
-<translation id="3054512251683174387">Chrome akan otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Atau, Anda dapat memblokir topik yang tidak ingin Anda bagikan dari Chrome ke situs. Pelajari lebih lanjut cara mengelola privasi iklan Anda di Chrome.</translation>
 <translation id="3061707000357573562">Layanan Patch</translation>
 <translation id="3062655045399308513">Hapus Data Penjelajahan...</translation>
 <translation id="306573536155379004">Game dimulai.</translation>
@@ -1410,7 +1408,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3566021033012934673">Koneksi Anda tidak pribadi</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3566649245868131295">Pekerjaan di Bidang Kesehatan &amp; Medis</translation>
-<translation id="3566681680543111735">Salin string variasi</translation>
 <translation id="3567778190852720481">Tidak dapat mendaftar dengan akun perusahaan (akun perusahaan tidak memenuhi syarat).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">Akses situs untuk melihat informasi, referensi, atau layanan yang disediakan oleh bisnis.</translation>
@@ -1644,7 +1641,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> diblokir.</translation>
 <translation id="3975852104434126461">Industri Otomotif</translation>
-<translation id="3983340834939868135">Kunci sandi dari "<ph name="VENDOR_NAME" />"</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">Burung</translation>
 <translation id="3985750352229496475">Kelola Alamat ...</translation>
@@ -1765,7 +1761,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4196861286325780578">&amp;Ulangi pemindahan</translation>
 <translation id="4199637363739172710">Jam Tangan</translation>
-<translation id="4202218894997543208">Topik yang Anda blokir</translation>
 <translation id="4202554117186904723">Rol Kelima</translation>
 <translation id="4203769790323223880">Kamera tidak diizinkan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Periksa konfigurasi antivirus dan firewall<ph name="END_LINK" /></translation>
@@ -1890,7 +1885,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="437040971055499437">Terjadi peristiwa keamanan</translation>
 <translation id="4371591986692297148">Tidak aktif</translation>
 <translation id="4372948949327679948">Nilai <ph name="VALUE_TYPE" /> yang diharapkan.</translation>
-<translation id="4375864595697821259">Tambahkan item kembali jika Anda menginginkannya berada di kumpulan topik yang dapat dipilih Chrome saat memperkirakan minat Anda</translation>
 <translation id="437620492464254965">Pintu &amp; Jendela</translation>
 <translation id="4377125064752653719">Anda berusaha menjangkau <ph name="DOMAIN" />, tetapi sertifikat yang disajikan oleh server telah dibatalkan oleh penerbitnya. Artinya informasi rahasia keamanan yang disajikan tidak dapat dipercaya. Anda mungkin sedang berkomunikasi dengan penyerang.</translation>
 <translation id="4378154925671717803">Ponsel</translation>
@@ -2015,7 +2009,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4663373278480897665">Kamera diizinkan</translation>
 <translation id="466561305373967878">Permainan Papan</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4669856024297417878">Chrome mencatat topik yang diminati berdasarkan histori penjelajahan Anda dari beberapa minggu terakhir.</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4671339777629075741">Envelope DL</translation>
 <translation id="467662567472608290">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya berisi kesalahan. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
@@ -2276,6 +2269,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5127934926273826089">Bunga</translation>
 <translation id="5129094684098010260">Kartu hanya disimpan ke perangkat</translation>
 <translation id="5129534298163637277">Dialog konfirmasi</translation>
+<translation id="5129662217315786329">Polandia</translation>
 <translation id="5135404736266831032">Kelola alamat...</translation>
 <translation id="5136841603454277753">Masukkan kode yang benar</translation>
 <translation id="5137761395480718572">Aplikasi ini meminta izin untuk menginstal kredensial Wi-Fi. Setelah penyiapan, <ph name="DEVICE_TYPE" /> akan otomatis terhubung ke jaringan Wi-Fi yang berpartisipasi. Untuk menghapus kredensial ini, uninstal aplikasi. <ph name="LEARN_MORE" /></translation>
@@ -3059,6 +3053,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6568793038316600992">Tombol Kelola metode pembayaran, aktifkan untuk mengelola info pembayaran dan kartu kredit di setelan Chrome</translation>
 <translation id="6569060085658103619">Anda melihat halaman ekstensi</translation>
 <translation id="6573200754375280815">Dua lubang di kanan</translation>
+<translation id="6574762126505704998">Isi</translation>
 <translation id="6577792494180292262">Modal Ventura</translation>
 <translation id="6578434528542148658">ID ekstensi tidak valid.</translation>
 <translation id="6579858392010591435">Acara Liburan &amp; Musiman</translation>
@@ -3138,7 +3133,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6710648923880003133">Sarankan Sandi yang Kuat</translation>
 <translation id="671076103358959139">Token Pendaftaran:</translation>
 <translation id="6711464428925977395">Ada yang salah dengan server proxy, atau alamat tidak benar.</translation>
-<translation id="6711700233707023861">String variasi disalin ke papan klip</translation>
 <translation id="6716039223770814796">Bandingkan <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> item</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ingin membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="6717692133381953670">Tab dikirim dari <ph name="DEVICE_NAME" /></translation>
@@ -3477,7 +3471,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Pengendali pembayaran</translation>
 <translation id="7366594738862061263">Pelajari cara Chrome melindungi sandi Anda</translation>
-<translation id="7367985555340314048">Topik yang diminati didasarkan pada histori penjelajahan terbaru Anda dan digunakan oleh situs untuk menampilkan iklan yang dipersonalisasi kepada Anda</translation>
 <translation id="7372526636730851647">Foto (Mengilap)</translation>
 <translation id="7372973238305370288">hasil penelusuran</translation>
 <translation id="7374461526650987610">Penangan protokol</translation>
@@ -3775,7 +3768,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7844689747373518809">{COUNT,plural, =0{Tidak ada}=1{1 aplikasi (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikasi (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikasi (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Olahraga Kampus</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">Kemudian, situs yang Anda buka dapat meminta topik dari Chrome guna mempersonalisasi iklan yang Anda lihat. Chrome membagikan maksimal 3 topik sekaligus melindungi histori penjelajahan dan identitas Anda.</translation>
 <translation id="7860345425589240791">Masukkan tanggal habis masa berlaku dan CVC yang baru di <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Keluar dari situs?</translation>
 <translation id="7865448901209910068">Paling cepat</translation>
@@ -4063,7 +4055,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8381674639488873545">Tagihan ini dapat hanya satu kali atau berulang, dan mungkin tidak ditampilkan dengan jelas. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Layar penuh otomatis</translation>
 <translation id="838307841291975086">Mobil Station Wagon</translation>
-<translation id="8388286357548915205">Gunakan untuk semua tamu</translation>
 <translation id="8389532092404711541">Harga standar <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Kendaraan Modifikasi &amp; Performa Tinggi</translation>
 <translation id="8390725133630534698">Berbagi dari <ph name="ORIGIN_NAME" /> ke <ph name="VM_NAME" /> telah diblokir oleh kebijakan administrator</translation>
@@ -4284,7 +4275,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8806062468703310719">Penyedia Layanan Telepon</translation>
 <translation id="8806696968588872703">Plastik (Satin)</translation>
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
-<translation id="8809203544698246977">Topik yang diblokir akan muncul di sini</translation>
 <translation id="8811470563853401328">Simpan alamat di akun?</translation>
 <translation id="8811725516933141693">Ketik @gemini untuk Memulai percakapan dengan Gemini</translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
@@ -4398,6 +4388,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9036306139374661733">Izinkan mikrofon?</translation>
 <translation id="9038649477754266430">Gunakan layanan prediksi agar halaman dimuat dengan lebih cepat</translation>
 <translation id="9039213469156557790">Selain itu, halaman ini berisi sumber daya lainnya yang tidak aman. Sumber daya ini dapat dilihat oleh orang lain saat transit dan dapat dimodifikasi oleh penyerang untuk mengubah perilaku halaman.</translation>
+<translation id="9040341831873780534">Lihat persyaratan di sini</translation>
 <translation id="9042617223719777575">Kapasitas Besar</translation>
 <translation id="9042827002460091668">Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="9044359186343685026">Gunakan Touch ID</translation>

@@ -411,6 +411,7 @@
 <translation id="288655811176831528">关闭标签页</translation>
 <translation id="2888631381369839306">已开启价格跟踪通知</translation>
 <translation id="288902476966286676">退回给发件人</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2918688092312652908">标为未读</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">名称</translation>
 <translation id="3861908220442487587">该地址仅在此设备上保存。若要在其他设备上使用它，请将它迁移到您的 Google 账号 <ph name="USER_EMAIL" /></translation>
 <translation id="3868495844258915202">显示完整网址</translation>
+<translation id="3875783148670536197">操作步骤</translation>
 <translation id="3876833929577368454">每次都向我询问</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
 <translation id="3888863481921783344">这是为了向您显示有望邀请哪些人来参加您的活动。</translation>
@@ -1103,6 +1105,7 @@
 <translation id="6227126502342367214">智能镜头拍照搜索</translation>
 <translation id="6231782223312638214">建议</translation>
 <translation id="6232329973559504466">无痕搜索</translation>
+<translation id="6234310016144827337">请检查网络连接，然后重试</translation>
 <translation id="6234438496206735891">显示下载内容</translation>
 <translation id="6236952928980352967">恢复警告</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
@@ -1634,6 +1637,7 @@
 <translation id="8609743333007776886">将 ${url} 添加到书签</translation>
 <translation id="8620640915598389714">编辑</translation>
 <translation id="8625706492572042370">修改主屏幕</translation>
+<translation id="8633025649649592204">近期活动</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>

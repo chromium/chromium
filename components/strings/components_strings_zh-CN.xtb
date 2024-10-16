@@ -161,7 +161,6 @@
 <translation id="1277711244058668002">“我喜欢”按钮，按 Enter 键可提交您喜欢这条建议的反馈</translation>
 <translation id="127777513559587977">谈话类电视节目</translation>
 <translation id="1281476433249504884">堆叠出纸器 1</translation>
-<translation id="1281536351321444151">如需下次自动填充此 IBAN，请将其保存到您的 Google 账号中</translation>
 <translation id="1282358575813748144">船舶与水运工具</translation>
 <translation id="1283977499362032052">简历与作品集</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -360,6 +359,7 @@
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1622966923835127638">企业财务</translation>
 <translation id="1623104350909869708">阻止此页创建其他对话框</translation>
+<translation id="1629390138158333592">搜索网络</translation>
 <translation id="1633137413609266904">{0,plural, =1{管理员政策禁止打开这个文件}other{管理员政策禁止打开 # 个文件}}</translation>
 <translation id="1633941398432788136">活动策划</translation>
 <translation id="1634828734222219955">总计</translation>
@@ -564,7 +564,6 @@
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2009942480257059311">“创建活动”按钮，激活它即可在 Google 日历中快速创建新活动</translation>
 <translation id="201174227998721785">在 Chrome 设置中管理各网站的权限及存储的数据</translation>
-<translation id="2012276282211112603">暂无可显示的主题</translation>
 <translation id="2018769312928511665">织物（平滑）</translation>
 <translation id="2021333772895814435">此政策会针对以下操作自动停用跨设备同步功能：<ph name="ACTION_LIST" />。</translation>
 <translation id="202224654587969958">12 x 19 英寸</translation>
@@ -675,7 +674,6 @@
 <translation id="2187317261103489799">检测（默认）</translation>
 <translation id="2188375229972301266">多孔（底部）</translation>
 <translation id="2194856509914051091">注意事项</translation>
-<translation id="2197398642355049178">您的主题</translation>
 <translation id="2200678913752027654">“不喜欢”按钮，按 Enter 键可打开一个反馈表单，您可以在表单中详细说明不喜欢此建议的原因</translation>
 <translation id="2202627062836089804">卡背面</translation>
 <translation id="2204482073374652408">更新已完成！</translation>
@@ -1040,6 +1038,7 @@
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">绘画</translation>
 <translation id="2916038427272391327">关闭其他程序</translation>
+<translation id="2918484639460781603">转到“设置”</translation>
 <translation id="2919185931486062599">打猎与射击</translation>
 <translation id="2922350208395188000">无法核实服务器证书。</translation>
 <translation id="2922792708490674">{0,plural, =1{此文件已被禁止下载}other{<ph name="FILE_COUNT" /> 个文件已被禁止下载}}</translation>
@@ -1119,7 +1118,6 @@
 <translation id="305162504811187366">Chrome 远程桌面历史记录，包括时间戳、主机和客户端会话 ID</translation>
 <translation id="3052868890529250114">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
-<translation id="3054512251683174387">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何在 Chrome 中管理广告隐私权设置。</translation>
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="3062655045399308513">删除浏览数据…</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
@@ -1407,7 +1405,6 @@
 <translation id="3566021033012934673">您的连接不是私密连接</translation>
 <translation id="3566336457819493938">215 x 315 毫米</translation>
 <translation id="3566649245868131295">保健和医疗职位</translation>
-<translation id="3566681680543111735">复制变体字符串</translation>
 <translation id="3567778190852720481">无法通过企业账号注册（企业账号不符合条件）。</translation>
 <translation id="3567901620846335314">100 x 150 毫米</translation>
 <translation id="3568886473829759308">访问网站查看商家提供的信息、资源或服务。</translation>
@@ -1640,7 +1637,6 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3975852104434126461">汽车业</translation>
-<translation id="3983340834939868135">“<ph name="VENDOR_NAME" />”中的通行密钥</translation>
 <translation id="3984581365661308170">#11 信封</translation>
 <translation id="398470910934384994">养鸟/观鸟</translation>
 <translation id="3985750352229496475">管理地址…</translation>
@@ -1761,7 +1757,6 @@
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4196861286325780578">恢复移动(&amp;R)</translation>
 <translation id="4199637363739172710">手表</translation>
-<translation id="4202218894997543208">您已屏蔽的主题</translation>
 <translation id="4202554117186904723">第 5 卷</translation>
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
@@ -1886,7 +1881,6 @@
 <translation id="437040971055499437">发生了安全性事件</translation>
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
-<translation id="4375864595697821259">如果您想让 Chrome 在推测您的兴趣时可从主题列表中选择某个主题，请将此主题重新添加到列表中</translation>
 <translation id="437620492464254965">门窗</translation>
 <translation id="4377125064752653719">您尝试访问的是 <ph name="DOMAIN" />，但服务器出示的证书已被其颁发者吊销。这表明绝对不应该信任此服务器出示的安全凭据。您可能正在与攻击者进行通信。</translation>
 <translation id="4378154925671717803">电话</translation>
@@ -2011,7 +2005,6 @@
 <translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="466561305373967878">棋盘游戏</translation>
 <translation id="4668929960204016307">、</translation>
-<translation id="4669856024297417878">Chrome 会根据您在过去几周的浏览记录来推测您的兴趣主题。</translation>
 <translation id="4670064810192446073">虚拟现实</translation>
 <translation id="4671339777629075741">DL 信封</translation>
 <translation id="467662567472608290">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书有误。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -2272,6 +2265,7 @@
 <translation id="5127934926273826089">鲜花/礼品</translation>
 <translation id="5129094684098010260">卡只能保存到设备</translation>
 <translation id="5129534298163637277">确认对话框</translation>
+<translation id="5129662217315786329">波兰语</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5136841603454277753">请输入正确的验证码</translation>
 <translation id="5137761395480718572">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。<ph name="LEARN_MORE" /></translation>
@@ -3054,6 +3048,7 @@
 <translation id="6568793038316600992">“管理付款方式”按钮，激活它即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>
+<translation id="6574762126505704998">填充</translation>
 <translation id="6577792494180292262">风险投资</translation>
 <translation id="6578434528542148658">扩展程序 ID 无效。</translation>
 <translation id="6579858392010591435">假日和节庆活动</translation>
@@ -3133,7 +3128,6 @@
 <translation id="6710648923880003133">建议一个安全系数高的密码</translation>
 <translation id="671076103358959139">注册令牌：</translation>
 <translation id="6711464428925977395">代理服务器出现问题，或者地址有误。</translation>
-<translation id="6711700233707023861">已将变体字符串复制到剪贴板</translation>
 <translation id="6716039223770814796">比较“<ph name="COMPARE_SET_NAME" />” · <ph name="ITEMS" /> 项内容</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="6717692133381953670">从“<ph name="DEVICE_NAME" />”发送的标签页</translation>
@@ -3474,7 +3468,6 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">付款处理程序</translation>
 <translation id="7366594738862061263">了解 Chrome 如何保护您的密码</translation>
-<translation id="7367985555340314048">兴趣主题是系统根据您近期的浏览记录推测出来的，可供网站用以向您展示个性化广告</translation>
 <translation id="7372526636730851647">相纸（平滑）</translation>
 <translation id="7372973238305370288">搜索结果</translation>
 <translation id="7374461526650987610">协议处理程序</translation>
@@ -3772,7 +3765,6 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="785476343534277563">学院体育</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="7857116075376571629">之后，您访问的网站可请求 Chrome 提供您的主题，以便向您展示个性化广告。Chrome 可在保护您的浏览记录和身份信息的前提下分享最多 3 个主题。</translation>
 <translation id="7860345425589240791">请重新输入<ph name="SIDE_OF_CARD" />的失效日期和 CVC</translation>
 <translation id="7862185352068345852">离开此网站？</translation>
 <translation id="7865448901209910068">最快的速度</translation>
@@ -4060,7 +4052,6 @@
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">自动全屏</translation>
 <translation id="838307841291975086">旅行车</translation>
-<translation id="8388286357548915205">用于所有访客</translation>
 <translation id="8389532092404711541">一般价格为 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">定制车与高性能车</translation>
 <translation id="8390725133630534698">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容分享给 <ph name="VM_NAME" /></translation>
@@ -4284,7 +4275,6 @@
 <translation id="8806062468703310719">电话服务提供商</translation>
 <translation id="8806696968588872703">塑料（磨光）</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
-<translation id="8809203544698246977">已屏蔽的主题会显示在此处</translation>
 <translation id="8811470563853401328">是否将地址保存到账号？</translation>
 <translation id="8811725516933141693">输入 @gemini 即可与 Gemini 聊天</translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
@@ -4398,6 +4388,7 @@
 <translation id="9036306139374661733">允许使用麦克风？</translation>
 <translation id="9038649477754266430">使用联想查询服务更快速地加载网页</translation>
 <translation id="9039213469156557790">而且，此页中包含其他不安全的资源。他人能在这些资源传输过程中进行查看，而攻击者可以修改这些资源，从而改变此页的行为。</translation>
+<translation id="9040341831873780534">点击此处查看条款</translation>
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
 <translation id="9044359186343685026">使用触控 ID</translation>

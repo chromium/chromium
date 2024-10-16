@@ -411,6 +411,7 @@
 <translation id="288655811176831528">ٹیب بند کریں</translation>
 <translation id="2888631381369839306">قیمت کی ٹریکنگ کی اطلاعات آن ہیں</translation>
 <translation id="288902476966286676">پَارسَل ارسال کنندہ کو واپس کر دیا گیا</translation>
+<translation id="2894757982205307093">گروپ میں نیا ٹیب</translation>
 <translation id="2905479111267140204">آپ کے پاس <ph name="NUMBER_OF_PASSWORDS" /> دوبارہ استعمال کردہ پاس ورڈز ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔</translation>
 <translation id="291754862089661335">‏QR کوڈ کو اس فریم میں رکھیں</translation>
 <translation id="2918688092312652908">بغیر پڑھا ہوا کے بطور نشان زد کریں</translation>
@@ -590,6 +591,7 @@
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861908220442487587">‏یہ پتہ صرف اس آلے پر محفوظ ہوتا ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> پر منتقل کریں</translation>
 <translation id="3868495844258915202">‏مکمل URL دکھائیں</translation>
+<translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3876833929577368454">ہر بار مجھ سے پوچھیں</translation>
 <translation id="3885587018298784481">فیملی گروپ میں شامل ہوں</translation>
 <translation id="3888863481921783344">اس کا استعمال آپ کو آپ کے ایونٹ کے ممکنہ مدعو کنندگان دکھانے کے لیے کیا جائے گا۔</translation>
@@ -1103,6 +1105,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6227126502342367214">لینز کے کیمرے کے ذریعے تلاش</translation>
 <translation id="6231782223312638214">تجویز کردہ</translation>
 <translation id="6232329973559504466">پوشیدگی تلاش</translation>
+<translation id="6234310016144827337">اپنا کنکشن چیک کر کے دوبارہ کوشش کریں</translation>
 <translation id="6234438496206735891">ڈاؤن لوڈز دکھائیں</translation>
 <translation id="6236952928980352967">وارننگ بحال کریں</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
@@ -1634,6 +1637,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8609743333007776886">‏بُک مارکس میں ‎${url} شامل کریں</translation>
 <translation id="8620640915598389714">ترمیم کریں</translation>
 <translation id="8625706492572042370">ہوم اسکرین میں ترمیم کریں</translation>
+<translation id="8633025649649592204">حالیہ سرگرمی</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="8637431369725868556">خطرناک سائٹس سے تحفظ حاصل کریں۔</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>

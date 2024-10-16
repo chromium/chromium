@@ -454,7 +454,6 @@
 <translation id="3070005020161560471">ఆటోమేటిక్‌గా అనువదించాల్సినవి</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />గోప్యతా పాలసీ<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="3080525922482950719">తర్వాత చదవడానికి లేదా ఆఫ్‌లైన్‌లో చదవడానికి మీరు పేజీలను సేవ్ చేయవచ్చు</translation>
-<translation id="3087218211037573995">ఈ పరికరంలో మాత్రమే సేవ్ చేయబడిన కొన్ని పాస్‌వర్డ్‌లకు త్వరలో మీరు యాక్సెస్‌ను కోల్పోతారు. మీరు ఈ పాస్‌వర్డ్‌లను Google Password Managerకు తరలించవచ్చు.</translation>
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="3091010850649238832">క్లిప్ బోర్డ్ కంటెంట్‌లను చూపండి</translation>
 <translation id="3098745985164956033">మీ కోసం వివరణలను మెరుగుపరచడానికి కొన్ని ఇమేజ్‌లు Googleకు పంపబడ్డాయి</translation>
@@ -758,7 +757,6 @@
 <translation id="4609429330876432068">Chrome, <ph name="CHROME_CHANNEL" />‌కు సంబంధించి సేవ్ చేసిన మీ పాస్‌వర్డ్‌ల లిస్ట్‌లు విలీనమయ్యాయి. సేవ్ చేసిన మీ పాస్‌వర్డ్‌లన్నింటినీ ఇప్పటికీ మీరు రెండు యాప్‌లలోనూ ఆటోఫిల్ చేయవచ్చు.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
-<translation id="4620032614425803188">ఆటోఫిల్ సర్వీసులు</translation>
 <translation id="4624065194742029982">Chrome అజ్ఞాత మోడ్</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 చోరీకి గురైన పాస్‌వర్డ్}other{# చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
@@ -1510,11 +1508,9 @@
 <translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7846296061357476882">Google సర్వీస్‌లు</translation>
 <translation id="784934925303690534">సమయ పరిధి</translation>
-<translation id="7850687713580657633">ఈ పరికరంలో Google Play సర్వీసులు అందుబాటులో లేవు, కాబట్టి ఇక పాస్‌వర్డ్‌లను మీరు యాక్సెస్ చేయలేరు. Google Password Managerలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఉపయోగించడానికి, మరొక పరికరాన్ని ఉపయోగించి సైన్ ఇన్ చేయండి లేదా passwords.google.comకు వెళ్లండి.</translation>
 <translation id="7851858861565204677">ఇతర పరికరాలు</translation>
 <translation id="7853202427316060426">కార్యాచరణ</translation>
 <translation id="7859988229622350291">వీటిని ఎప్పటికీ అనువదించవద్దు</translation>
-<translation id="7864208933699511058">మీరు బ్రౌజ్ చేస్తున్నప్పుడు, మీకు కనిపించే యాడ్ ఈ సెట్టింగ్ ఆధారంగా, లేదా <ph name="BEGIN_LINK_1" />సైట్ సూచించిన యాడ్‌ల<ph name="END_LINK_1" /> ఆధారంగా, లేదా మీ <ph name="BEGIN_LINK_2" />కుక్కీ సెట్టింగ్‌ల<ph name="END_LINK_2" /> ఆధారంగా వ్యక్తిగతీకరించబడవచ్చు, అలాగే మీరు చూసే సైట్ యాడ్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="7866213166286285359">పేజీలను ఇక్కడ అనువదించండి</translation>
 <translation id="78707286264420418">మీ పరికరానికి కనెక్ట్ అవ్వడానికి <ph name="PRODUCT_NAME" />కు సమీపంలోని పరికరాల అనుమతి అవసరం</translation>
 <translation id="7875915731392087153">ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>

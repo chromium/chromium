@@ -58,19 +58,16 @@
 <translation id="3078350928901129212">រូបពណ៌​ក្រុមផ្ទាំង<ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">ការវាយតម្លៃដោយដាក់ផ្កាយ</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{បានបញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង}other{បានបញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង}}</translation>
-<translation id="3291470810748040983">អ្នកនឹងទទួលបាន​ការជូនដំណឹង នៅពេលមានតម្លៃទាបជាងមុននៅក្នុងផ្ទាំងដែលកំពុងបើក</translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="3547352561153509682">សកម្មភាពនេះនឹងលុបក្រុមចេញពីគ្រប់ឧបករណ៍ដែលបានចូលគណនីដោយប្រើ <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">ប្រអប់ "លាក់ផ្ទាំងអសកម្ម"</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">រូបក្របតំណាងការមើលសាកល្បងនៃបញ្ជីដែលបានចែករំលែក។</translation>
 <translation id="381219490185664296">បំបែក​ក្រុមផ្ទាំងឬ?</translation>
-<translation id="3882834874697329510">ដើម្បី​ទទួលបាន​ការជូនដំណឹង នៅពេល​មានតម្លៃទាបជាងមុន​នៅក្នុងផ្ទាំងដែល​កំពុងបើក សូមបើក​ការជូនដំណឹង​នៅក្នុងការកំណត់។</translation>
 <translation id="3940195383040445971">តាមដានតម្លៃនៅក្នុងផ្ទាំង</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ដាក់​​ផ្ទាំងជាក្រុម}other{ដាក់ផ្ទាំងជាក្រុម}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{ផ្ទាំង​អសកម្ម <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង​អសកម្ម <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="3969565576924904454">បើក <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="3996880007329611795">ទទួល​ការជូន​ដំណឹង</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{បានបង្កើត <ph name="NUM_DAYS_ONE" /> ថ្ងៃមុន}other{បានបង្កើត <ph name="NUM_DAYS_MANY" /> ថ្ងៃមុន}}</translation>
 <translation id="4133493477912226187">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="4139634748112164403">ផ្ទាំងនឹង​នៅតែ​បើកនៅលើ​ឧបករណ៍នេះ ប៉ុន្តែក្រុម​នឹងត្រូវ​បានលុប​ជាអចិន្ត្រៃយ៍</translation>
@@ -115,7 +112,6 @@
 <translation id="5627941783489838464">មិនមានការធ្វើបច្ចុប្បន្នភាពផ្ទាំងទេ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ស្ដារផ្ទាំង}other{ស្ដារផ្ទាំង}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{តំណ <ph name="TABS_COUNT_ONE" /> ពី Chrome}other{តំណ <ph name="TABS_COUNT_MANY" /> ពី Chrome}}</translation>
-<translation id="575494663145460764">ទទួលបានការជូនដំណឹងអំពីការធ្លាក់ថ្លៃឬ?</translation>
 <translation id="58326064309361797">អូសផ្ទាំង​នានា ដើម្បី​ដាក់ផ្ទាំង​ទាំងនោះ​ជាក្រុម</translation>
 <translation id="5901630391730855834">លឿង</translation>
 <translation id="5972844218283131174">ដកការជ្រើសរើសទាំងអស់</translation>
