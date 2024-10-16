@@ -231,6 +231,16 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
           pixels_and_percent);
     }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children.size(), 1u);
+      auto* number = DynamicTo<CalculationExpressionNumberNode>(*children[0]);
+      if (number) {
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(
+            1.0 / number->Value());
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          Children({std::move(children[0])}), op);
+    }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax: {
       DCHECK(children.size());
@@ -461,6 +471,11 @@ float CalculationExpressionOperationNode::Evaluate(
       float right = children_[1]->Evaluate(max_value, input);
       return left * right;
     }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children_.size(), 1u);
+      float denominator = children_[0]->Evaluate(max_value, input);
+      return 1.0 / denominator;
+    }
     case CalculationOperator::kMin: {
       DCHECK(!children_.empty());
       float minimum = children_[0]->Evaluate(max_value, input);
@@ -581,6 +596,11 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
       return CreateSimplified(
           Children({pixels_and_percent->Zoom(factor), number}), operator_);
     }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children_.size(), 1u);
+      return CreateSimplified(Children({children_[0]->Zoom(factor)}),
+                              operator_);
+    }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
       return CreateSimplified(
@@ -673,6 +693,14 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
         return ResultType::kPixelsAndPercent;
 
       return ResultType::kNumber;
+    }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children_.size(), 1u);
+      auto denominator_type = children_[0]->ResolvedResultType();
+      if (denominator_type == ResultType::kNumber) {
+        return ResultType::kNumber;
+      }
+      return ResultType::kInvalid;
     }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);

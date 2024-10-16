@@ -1187,7 +1187,7 @@
     {
       // crbug.com/359616070
       name: "CSSRelativeColorLateResolveAlways",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/365818844

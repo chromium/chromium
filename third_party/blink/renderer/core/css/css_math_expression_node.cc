@@ -1809,9 +1809,6 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     if (!number_side) {
       return CreateArithmeticOperation(left_side, right_side, op);
     }
-    if (number_side == left_side && op == CSSMathOperator::kDivide) {
-      return nullptr;
-    }
     const CSSMathExpressionNode* other_side =
         left_side == number_side ? right_side : left_side;
 
@@ -2325,12 +2322,11 @@ CSSMathExpressionOperation::ToCalculationExpression(
           CalculationOperator::kMultiply);
     case CSSMathOperator::kDivide:
       DCHECK_EQ(operands_.size(), 2u);
-      DCHECK_EQ(operands_[1]->Category(), kCalcNumber);
       return CalculationExpressionOperationNode::CreateSimplified(
-          CalculationExpressionOperationNode::Children(
-              {operands_[0]->ToCalculationExpression(length_resolver),
-               base::MakeRefCounted<CalculationExpressionNumberNode>(
-                   1.0 / operands_[1]->DoubleValue())}),
+          {operands_[0]->ToCalculationExpression(length_resolver),
+           CalculationExpressionOperationNode::CreateSimplified(
+               {operands_[1]->ToCalculationExpression(length_resolver)},
+               CalculationOperator::kInvert)},
           CalculationOperator::kMultiply);
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax: {
@@ -4347,6 +4343,13 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       return CSSMathExpressionOperation::CreateArithmeticOperation(
           Create(*children.front()), Create(*children.back()),
           CSSMathOperator::kMultiply);
+    }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children.size(), 1u);
+      return CSSMathExpressionOperation::CreateArithmeticOperation(
+          CSSMathExpressionNumericLiteral::Create(
+              1, CSSPrimitiveValue::UnitType::kNumber),
+          Create(*children.front()), CSSMathOperator::kDivide);
     }
     case CalculationOperator::kAdd:
     case CalculationOperator::kSubtract: {
