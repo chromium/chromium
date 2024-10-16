@@ -93,7 +93,8 @@ class BocaSessionManager
     // Notifies when session config updated for specific group.
     virtual void OnSessionCaptionConfigUpdated(
         const std::string& group_name,
-        const ::boca::CaptionsConfig& config);
+        const ::boca::CaptionsConfig& config,
+        const std::string& tachyon_group_id);
 
     // Notifies when local caption config updated.
     virtual void OnLocalCaptionConfigUpdated(

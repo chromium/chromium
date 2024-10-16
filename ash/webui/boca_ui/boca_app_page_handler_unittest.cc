@@ -1344,8 +1344,8 @@ TEST_F(BocaAppPageHandlerTest, OnSessionCaptionUpdatedSucceed) {
   base::test::TestFuture<mojom::SessionResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
-  boca_app_handler()->OnSessionCaptionConfigUpdated("any",
-                                                    ::boca::CaptionsConfig());
+  boca_app_handler()->OnSessionCaptionConfigUpdated(
+      "any", ::boca::CaptionsConfig(), std::string());
   auto result = future.Take();
   ASSERT_TRUE(result->is_config());
 }

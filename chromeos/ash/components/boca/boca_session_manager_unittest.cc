@@ -70,7 +70,8 @@ class MockObserver : public BocaSessionManager::Observer {
   MOCK_METHOD(void,
               OnSessionCaptionConfigUpdated,
               (const std::string& group_name,
-               const ::boca::CaptionsConfig& config),
+               const ::boca::CaptionsConfig& config,
+               const std::string& tachyon_group_id),
               (override));
   MOCK_METHOD(void,
               OnLocalCaptionConfigUpdated,
@@ -487,7 +488,7 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionCaptionUpdated) {
       }));
 
   EXPECT_CALL(*observer(),
-              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _))
+              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
       .Times(2);
 
   // Have updated two sessions.
@@ -513,7 +514,7 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionCaptionSame) {
       }));
 
   EXPECT_CALL(*observer(),
-              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _))
+              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
       .Times(0);
 
   // Have updated one session.
@@ -540,7 +541,7 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionConfigNameNotMatch) {
       }));
 
   EXPECT_CALL(*observer(),
-              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _))
+              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
       .Times(0);
 
   // Have updated one session.

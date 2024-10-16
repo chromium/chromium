@@ -48,7 +48,8 @@ void BocaSessionManager::Observer::OnBundleUpdated(
 
 void BocaSessionManager::Observer::OnSessionCaptionConfigUpdated(
     const std::string& group_name,
-    const ::boca::CaptionsConfig& config) {}
+    const ::boca::CaptionsConfig& config,
+    const std::string& tachyon_group_id) {}
 
 void BocaSessionManager::Observer::OnLocalCaptionConfigUpdated(
     const ::boca::CaptionsConfig& config) {}
@@ -260,8 +261,8 @@ void BocaSessionManager::NotifyCaptionConfigUpdate() {
   if (previous_session_caption_config.SerializeAsString() !=
       current_session_caption_config.SerializeAsString()) {
     for (auto& observer : observers_) {
-      observer.OnSessionCaptionConfigUpdated(kMainStudentGroupName,
-                                             current_session_caption_config);
+      observer.OnSessionCaptionConfigUpdated(
+          kMainStudentGroupName, current_session_caption_config, std::string());
     }
   }
 }

@@ -79,7 +79,8 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
   void OnSessionCaptionConfigUpdated(
       const std::string& group_name,
-      const ::boca::CaptionsConfig& config) override;
+      const ::boca::CaptionsConfig& config,
+      const std::string& tachyon_group_id) override;
   void OnSessionRosterUpdated(
       const std::string& group_name,
       const std::vector<::boca::UserIdentity>& consumers) override;

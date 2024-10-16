@@ -406,7 +406,8 @@ void BocaAppHandler::OnBundleUpdated(const ::boca::Bundle& bundle) {
 
 void BocaAppHandler::OnSessionCaptionConfigUpdated(
     const std::string& group_name,
-    const ::boca::CaptionsConfig& config) {
+    const ::boca::CaptionsConfig& config,
+    const std::string& tachyon_group_id) {
   UpdateSessionConfig();
 }
 
