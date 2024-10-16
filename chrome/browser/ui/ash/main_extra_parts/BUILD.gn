@@ -32,7 +32,6 @@ static_library("main_extra_parts") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_restore:app_restore",
-    "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/geolocation",
     "//chrome/browser/ash/growth",

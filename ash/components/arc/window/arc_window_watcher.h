@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_UTIL_ARC_WINDOW_WATCHER_H_
-#define CHROME_BROWSER_ASH_ARC_UTIL_ARC_WINDOW_WATCHER_H_
+#ifndef ASH_COMPONENTS_ARC_WINDOW_ARC_WINDOW_WATCHER_H_
+#define ASH_COMPONENTS_ARC_WINDOW_ARC_WINDOW_WATCHER_H_
 
 #include <vector>
 
+#include "ash/components/arc/arc_export.h"
 #include "base/observer_list.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -22,7 +23,7 @@ class Tracker;
 // ArcWindowWatcher provides live monitoring of Arc Windows.
 // It distills basic window transition events into consolidated
 // ARC-window and Android-task related events.
-class ArcWindowWatcher : public aura::EnvObserver {
+class ARC_EXPORT ArcWindowWatcher : public aura::EnvObserver {
  public:
   using TrackerList = std::vector<std::unique_ptr<Tracker>>;
   class ArcWindowCountObserver : public base::CheckedObserver {
@@ -97,4 +98,4 @@ class ArcWindowWatcher : public aura::EnvObserver {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_ARC_UTIL_ARC_WINDOW_WATCHER_H_
+#endif  // ASH_COMPONENTS_ARC_WINDOW_ARC_WINDOW_WATCHER_H_

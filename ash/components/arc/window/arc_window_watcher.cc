@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
+#include "ash/components/arc/window/arc_window_watcher.h"
 
 #include <algorithm>
 

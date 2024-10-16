@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/window/arc_window_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
@@ -32,7 +33,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
-#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"

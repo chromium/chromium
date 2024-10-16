@@ -44,7 +44,6 @@ static_library("ash") {
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/arc/wallpaper",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/boca",

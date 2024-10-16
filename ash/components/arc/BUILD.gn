@@ -109,6 +109,8 @@ static_library("arc") {
     "volume_mounter/arc_volume_mounter_bridge.h",
     "wake_lock/arc_wake_lock_bridge.cc",
     "wake_lock/arc_wake_lock_bridge.h",
+    "window/arc_window_watcher.cc",
+    "window/arc_window_watcher.h",
   ]
 
   public_deps = [
@@ -152,6 +154,7 @@ static_library("arc") {
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//components/device_event_log",
     "//components/exo",
