@@ -294,7 +294,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   input_ = input;
 
-  // Don't search the history database for on-focus inputs or lens searchboxes.
+  // Don't search the history database for on-focus inputs or Lens searchboxes.
   // On-focus inputs should only be used to warm up the suggest server; and Lens
   // searchboxes do not show suggestions from the history database.
   if (!input.IsZeroSuggest() &&
@@ -698,7 +698,7 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 }
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
-  bool query_is_private;
+  bool query_is_private = false;
   if (!IsQuerySuitableForSuggest(&query_is_private)) {
     StopSuggest();
     ClearAllResults();
@@ -755,14 +755,23 @@ void SearchProvider::CancelLoader(
 bool SearchProvider::IsQuerySuitableForSuggest(bool* query_is_private) const {
   *query_is_private = IsQueryPotentiallyPrivate();
 
-  // Don't run Suggest in incognito mode, if the engine doesn't support it, or
-  // if the user has disabled it.  Also don't send potentially private data
-  // to the default search provider.  (It's always okay to send explicit
-  // keyword input to a keyword suggest server, if any.)
+  // Don't make a suggest request if in incognito mode.
+  if (client()->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Don't make a suggest request if suggest is not enabled; unless for the Lens
+  // searchboxes which have their own privacy model.
+  if (!client()->SearchSuggestEnabled() &&
+      !omnibox::IsLensSearchbox(input_.current_page_classification())) {
+    return false;
+  }
+
+  // Don't send potentially private data to the default search provider. It's
+  // okay to send explicit keyword input to a keyword suggest server, if any.
   const TemplateURL* default_url = providers_.GetDefaultProviderURL();
   const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
-  return !client()->IsOffTheRecord() && client()->SearchSuggestEnabled() &&
-         ((default_url && !default_url->suggestions_url().empty() &&
+  return ((default_url && !default_url->suggestions_url().empty() &&
            !*query_is_private) ||
           (keyword_url && !keyword_url->suggestions_url().empty()));
 }
@@ -884,7 +893,6 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   if (template_url->suggestions_url() == template_url->url())
     return nullptr;
 
-  // Bail if the suggestion URL is invalid with the given replacements.
   TemplateURLRef::SearchTermsArgs search_term_args(input.text());
   search_term_args.input_type = input.type();
   search_term_args.cursor_position = input.cursor_position();
@@ -899,8 +907,6 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     search_term_args.prefetch_query_type =
         base::NumberToString(prefetch_data_.query_type);
   }
-  // Make sure the Lens suggest inputs are sent in the request, if
-  // available.
   search_term_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
 
@@ -911,8 +917,9 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   // the NTP URL, and the request eligiblility requirements are met.
   if (PageURLIsEligibleForSuggestRequest(input.current_url(),
                                          input.current_page_classification()) &&
-      CanSendSuggestRequestWithPageURL(input.current_url(), template_url,
-                                       search_terms_data, client())) {
+      CanSendSuggestRequestWithPageURL(
+          input.current_url(), input.current_page_classification(),
+          template_url, search_terms_data, client())) {
     search_term_args.current_page_url = input.current_url().spec();
   }
 

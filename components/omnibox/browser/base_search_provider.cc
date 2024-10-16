@@ -375,6 +375,7 @@ bool BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
 
 // static
 bool BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
+    metrics::OmniboxEventProto::PageClassification page_classification,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
@@ -392,8 +393,10 @@ bool BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
     return false;
   }
 
-  // Don't make a suggest request if suggest is not enabled.
-  if (!client->SearchSuggestEnabled()) {
+  // Don't make a suggest request if suggest is not enabled; unless for the Lens
+  // searchboxes.
+  if (!client->SearchSuggestEnabled() &&
+      !omnibox::IsLensSearchbox(page_classification)) {
     return false;
   }
 
@@ -411,19 +414,25 @@ bool BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
 // static
 bool BaseSearchProvider::CanSendSuggestRequestWithPageURL(
     const GURL& current_page_url,
+    metrics::OmniboxEventProto::PageClassification page_classification,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
-  if (!CanSendSuggestRequestWithoutPageURL(template_url, search_terms_data,
-                                           client)) {
+  if (!CanSendSuggestRequestWithoutPageURL(page_classification, template_url,
+                                           search_terms_data, client)) {
     return false;
   }
 
   // Forbid sending the current page URL to the suggest endpoint if personalized
   // URL data collection is off; unless the current page is the provider's
-  // Search Results Page.
-  return template_url->IsSearchURL(current_page_url, search_terms_data) ||
-         client->IsPersonalizedUrlDataCollectionActive();
+  // Search Results Page; or for the Lens searchboxes.
+  if (!client->IsPersonalizedUrlDataCollectionActive() &&
+      !template_url->IsSearchURL(current_page_url, search_terms_data) &&
+      !omnibox::IsLensSearchbox(page_classification)) {
+    return false;
+  }
+
+  return true;
 }
 
 void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {

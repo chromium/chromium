@@ -123,11 +123,14 @@ class BaseSearchProvider : public AutocompleteProvider {
   // * The suggest request is sent over HTTPS. This avoids leaking the current
   //   page URL or personal data in unencrypted network traffic.
   // * The user has suggest enabled in their settings.
+  //   * Or the request is being made from the Lens searchboxes which have their
+  //     own privacy model.
   // * The user is not in incognito mode. Incognito disables suggest entirely.
   // * The user's suggest provider is Google. We might want to allow other
   //   providers to see this data someday, but for now this has only been
   //   implemented for Google.
   static bool CanSendSuggestRequestWithoutPageURL(
+      metrics::OmniboxEventProto::PageClassification page_classification,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
       const AutocompleteProviderClient* client);
@@ -139,8 +142,11 @@ class BaseSearchProvider : public AutocompleteProvider {
   //     them associated with their Google account.
   //   * The current page URL is the Search Results Page. The suggest endpoint
   //     could have logged the page URL when the user accessed it.
+  //   * The request is being made from the Lens searchboxes which have their
+  //     own privacy model.
   static bool CanSendSuggestRequestWithPageURL(
       const GURL& current_page_url,
+      metrics::OmniboxEventProto::PageClassification page_classification,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
       const AutocompleteProviderClient* client);

@@ -474,26 +474,22 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     return eligible;
   };
 
-  // Benchmark test for HTTPS page URL on different origin as Suggest endpoint.
-  auto test_different_origin = [this]() {
+  // Benchmark test for Lens searchboxes.
+  auto test_lens = [this]() {
+    const auto& input = OnFocusInputForLens();
+    const auto [result_type, eligible] =
+        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL, result_type);
+    return eligible;
+  };
+
+  // Benchmark test for valid page URL.
+  auto test_other = [this]() {
     const auto& input = OnFocusInputForWeb();
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
-    // Requires personalized URL data collection to be active.
-    return eligible && client_->IsPersonalizedUrlDataCollectionActive();
-  };
-
-  // Benchmark test for HTTPS page URL on same origin as Suggest endpoint.
-  // Uses the same URL as the Suggest endpoint for the current page URL.
-  auto test_same_origin = [this](const TemplateURL* template_url) {
-    const auto& input = OnFocusInputForWeb(
-        template_url->GenerateSuggestionURL(SearchTermsData()).spec());
-    const auto [result_type, eligible] =
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
-    // Requires personalized URL data collection to be active.
-    return eligible && client_->IsPersonalizedUrlDataCollectionActive();
+    return eligible;
   };
 
   // Benchmark test for Search Results Page URL.
@@ -534,22 +530,21 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     EXPECT_TRUE(test_ntp());
   }
   {
+    // Zero-suggest request can be made from Lens searchboxes.
+    EXPECT_TRUE(test_lens());
+  }
+  {
     // Valid SRP URLs can be sent in the zero-suggest request.
     EXPECT_TRUE(test_srp(google_provider));
   }
   {
-    // Valid same-origin page URLs can be sent in the zero-suggest request.
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(test_same_origin(google_provider));
-  }
-  {
-    // Valid different-origin page URLs can be sent in the zero-suggest request.
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(test_different_origin());
+    // Valid page URLs can be sent in the zero-suggest request.
+    EXPECT_TRUE(test_other());
   }
 
   // Deactivate personalized URL data collection. This ensures that the page URL
-  // cannot be sent and zero-suggest is disallowed unless the URL is the SRP.
+  // cannot be sent and zero-suggest is disallowed unless the URL is the SRP or
+  // the request is being made from the Lens searchboxes.
   client_->set_is_personalized_url_data_collection_active(false);
 
   {
@@ -557,17 +552,16 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     EXPECT_TRUE(test_ntp());
   }
   {
+    // Zero-suggest request can be made from Lens searchboxes.
+    EXPECT_TRUE(test_lens());
+  }
+  {
     // Valid SRP URLs can be sent in the zero-suggest request.
     EXPECT_TRUE(test_srp(google_provider));
   }
   {
-    // Valid same-origin page URLs cannot be sent in the zero-suggest request.
-    EXPECT_FALSE(test_same_origin(google_provider));
-  }
-  {
-    // Valid different-origin page URLs cannot be sent in the zero-suggest
-    // request.
-    EXPECT_FALSE(test_different_origin());
+    // Valid page URLs cannot be sent in the zero-suggest request.
+    EXPECT_FALSE(test_other());
   }
 
   // Reactivate personalized URL data collection.
@@ -588,17 +582,16 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     EXPECT_FALSE(test_ntp());
   }
   {
+    // Zero-suggest request cannot be made from Lens searchboxes.
+    EXPECT_FALSE(test_lens());
+  }
+  {
     // Valid SRP URLs cannot be sent in the zero-suggest request.
     EXPECT_FALSE(test_srp(non_google_provider));
   }
   {
-    // Valid same origin page URLs cannot be sent in the zero-suggest request.
-    EXPECT_FALSE(test_same_origin(non_google_provider));
-  }
-  {
-    // Valid different origin page URLs cannot be sent in the zero-suggest
-    // request.
-    EXPECT_FALSE(test_different_origin());
+    // Valid page URLs cannot be sent in the zero-suggest request.
+    EXPECT_FALSE(test_other());
   }
 
   // Change the default search provider back to Google.

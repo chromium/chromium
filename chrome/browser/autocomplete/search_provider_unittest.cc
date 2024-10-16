@@ -249,6 +249,10 @@ class BaseSearchProviderTest : public testing::Test,
         RemoteSuggestionsServiceFactory::GetInstance(),
         base::BindRepeating(&BuildRemoteSuggestionsServiceWithURLLoader,
                             &test_url_loader_factory_));
+    profile_builder.AddTestingFactory(
+        AutocompleteClassifierFactory::GetInstance(),
+        base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
+
     profile_ = profile_builder.Build();
   }
 
@@ -397,10 +401,6 @@ void BaseSearchProviderTest::CustomizableSetUp(
   // has been processed on the history thread. Block until history processes all
   // requests to ensure the InMemoryDatabase is the state we expect it.
   profile_->BlockUntilHistoryProcessesPendingRequests();
-
-  AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile_.get(),
-      base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
 
   client_ = std::make_unique<TestAutocompleteProviderClient>(
       profile_.get(), &test_url_loader_factory_);
@@ -3481,43 +3481,53 @@ TEST_F(SearchProviderTest, ParseDeletionUrl) {
 // Tests that all conditions must be met to send the current page URL in the
 // suggest requests.
 TEST_F(SearchProviderTest, CanSendRequestWithURL) {
-  // Benchmark test for HTTPS page URL on different origin as Suggest endpoint.
-  // Requires personalized URL data collection to be active.
-  auto test_different_origin = [](TemplateURL* template_url,
-                                  AutocompleteProviderClient* client,
-                                  SearchProvider* provider) {
+  // Invalid page URL - invalid URL.
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+      GURL("badpageurl"), metrics::OmniboxEventProto::OTHER));
+
+  // Invalid page URL - non-HTTP(S) URL.
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+      GURL("ftp://www.google.com/search?q=foo"),
+      metrics::OmniboxEventProto::OTHER));
+
+  // Invalid page classification - New Tab Page.
+  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+      GURL("https://www.google.com/search?q=foo"),
+      metrics::OmniboxEventProto::NTP_REALBOX));
+
+  // Benchmark test with valid page URL from the Lens searchboxes.
+  auto test_lens = [](TemplateURL* template_url,
+                      AutocompleteProviderClient* client) {
+    return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+               GURL("https://www.example.com?q=foo"),
+               metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) &&
+           BaseSearchProvider::CanSendSuggestRequestWithPageURL(
+               GURL("https://www.example.com?q=foo"),
+               metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX, template_url,
+               SearchTermsData(), client);
+  };
+
+  // Benchmark test with valid page URL from the omnibox.
+  auto test_other = [](TemplateURL* template_url,
+                       AutocompleteProviderClient* client) {
     return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
                GURL("https://www.example.com?q=foo"),
                metrics::OmniboxEventProto::OTHER) &&
            BaseSearchProvider::CanSendSuggestRequestWithPageURL(
-               GURL("https://www.example.com?q=foo"), template_url,
+               GURL("https://www.example.com?q=foo"),
+               metrics::OmniboxEventProto::OTHER, template_url,
                SearchTermsData(), client);
   };
 
-  // Benchmark test for HTTPS page URL on same origin as Suggest endpoint.
-  // Uses the same URL as the Suggest endpoint for the current page URL.
-  // Requires personalized URL data collection to be active.
-  auto test_same_origin = [](TemplateURL* template_url,
-                             AutocompleteProviderClient* client,
-                             SearchProvider* provider) {
-    return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-               template_url->GenerateSuggestionURL(SearchTermsData()),
-               metrics::OmniboxEventProto::OTHER) &&
-           BaseSearchProvider::CanSendSuggestRequestWithPageURL(
-               template_url->GenerateSuggestionURL(SearchTermsData()),
-               template_url, SearchTermsData(), client);
-  };
-
-  // Benchmark test for Search Results Page URL.
-  // Does not require personalized URL data collection to be active.
+  // Benchmark test with Search Results Page URL from the omnibox.
   auto test_srp = [](TemplateURL* template_url,
-                     AutocompleteProviderClient* client,
-                     SearchProvider* provider) {
+                     AutocompleteProviderClient* client) {
     return BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
                template_url->GenerateSearchURL(SearchTermsData()),
                metrics::OmniboxEventProto::SRP_ZPS_PREFETCH) &&
            BaseSearchProvider::CanSendSuggestRequestWithPageURL(
-               template_url->GenerateSearchURL(SearchTermsData()), template_url,
+               template_url->GenerateSearchURL(SearchTermsData()),
+               metrics::OmniboxEventProto::SRP_ZPS_PREFETCH, template_url,
                SearchTermsData(), client);
   };
 
@@ -3541,83 +3551,54 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
   // 4) The suggest endpoint URL is a valid HTTPS URL.
   // 5) Suggest is not disabled.
   // 6) The user is not in incognito mode.
-  EXPECT_TRUE(test_different_origin(&google_template_url, client_.get(),
-                                    provider_.get()));
-  EXPECT_TRUE(
-      test_same_origin(&google_template_url, client_.get(), provider_.get()));
-  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
-
-  // Invalid page URL - invalid URL.
-  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-      GURL("badpageurl"), metrics::OmniboxEventProto::OTHER));
-
-  // Invalid page URL - non-HTTP(S) URL.
-  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-      GURL("ftp://www.google.com/search?q=foo"),
-      metrics::OmniboxEventProto::OTHER));
-
-  // Invalid page classification - New Tab Page.
-  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-      GURL("https://www.google.com/search?q=foo"),
-      metrics::OmniboxEventProto::NTP_REALBOX));
-
-  // Invalid page classification - New Tab Page.
-  EXPECT_FALSE(BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-      GURL("https://www.google.com/search?q=foo"),
-      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS));
+  EXPECT_TRUE(test_lens(&google_template_url, client_.get()));
+  EXPECT_TRUE(test_other(&google_template_url, client_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get()));
 
   // Disable Suggest.
   profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
 
-  // These tests should otherwise succeed.
-  EXPECT_FALSE(test_different_origin(&google_template_url, client_.get(),
-                                     provider_.get()));
-  EXPECT_FALSE(
-      test_same_origin(&google_template_url, client_.get(), provider_.get()));
-  EXPECT_FALSE(test_srp(&google_template_url, client_.get(), provider_.get()));
+  // Does not require Suggest to be enabled.
+  EXPECT_TRUE(test_lens(&google_template_url, client_.get()));
+  // Requires Suggest to be enabled.
+  EXPECT_FALSE(test_other(&google_template_url, client_.get()));
+  // Requires Suggest to be enabled.
+  EXPECT_FALSE(test_srp(&google_template_url, client_.get()));
 
   // Re-enable Suggest.
   profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
 
   // Ensure the state is properly reset.
-  EXPECT_TRUE(test_different_origin(&google_template_url, client_.get(),
-                                    provider_.get()));
-  EXPECT_TRUE(
-      test_same_origin(&google_template_url, client_.get(), provider_.get()));
-  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_TRUE(test_lens(&google_template_url, client_.get()));
+  EXPECT_TRUE(test_other(&google_template_url, client_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get()));
 
   // Disable personalized URL data collection.
   client_->set_is_personalized_url_data_collection_active(false);
 
-  // Personalized URL data collection is not active. Test that we cannot send
-  // the page URL unless it is the Search Results Page.
-  EXPECT_FALSE(test_different_origin(&google_template_url, client_.get(),
-                                     provider_.get()));
-  EXPECT_FALSE(
-      test_same_origin(&google_template_url, client_.get(), provider_.get()));
-  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+  // Does not require personalized URL data collection to be enabled.
+  EXPECT_TRUE(test_lens(&google_template_url, client_.get()));
+  // Requires personalized URL data collection to be enabled.
+  EXPECT_FALSE(test_other(&google_template_url, client_.get()));
+  // Does not require personalized URL data collection to be enabled.
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get()));
 
   // Re-enable personalized URL data collection.
   client_->set_is_personalized_url_data_collection_active(true);
 
   // Ensure the state is properly reset.
-  EXPECT_TRUE(test_different_origin(&google_template_url, client_.get(),
-                                    provider_.get()));
-  EXPECT_TRUE(
-      test_same_origin(&google_template_url, client_.get(), provider_.get()));
-  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_TRUE(test_lens(&google_template_url, client_.get()));
+  EXPECT_TRUE(test_other(&google_template_url, client_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get()));
 
   // Incognito profile.
   ChromeAutocompleteProviderClient incognito_client(
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  // These tests should otherwise succeed.
-  EXPECT_FALSE(test_different_origin(&google_template_url, &incognito_client,
-                                     provider_.get()));
-  EXPECT_FALSE(test_same_origin(&google_template_url, &incognito_client,
-                                provider_.get()));
-  EXPECT_FALSE(
-      test_srp(&google_template_url, &incognito_client, provider_.get()));
+  // Don't make Suggest requests in incognito mode.
+  EXPECT_FALSE(test_lens(&google_template_url, &incognito_client));
+  EXPECT_FALSE(test_other(&google_template_url, &incognito_client));
+  EXPECT_FALSE(test_srp(&google_template_url, &incognito_client));
 
   // Create a non-Google search provider.
   TemplateURLData non_google_template_url_data;
@@ -3628,13 +3609,10 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
       "https://www.non-google.com/suggest?q={searchTerms}";
   TemplateURL non_google_template_url(non_google_template_url_data);
 
-  // These tests should otherwise succeed.
-  EXPECT_FALSE(test_different_origin(&non_google_template_url, client_.get(),
-                                     provider_.get()));
-  EXPECT_FALSE(test_same_origin(&non_google_template_url, client_.get(),
-                                provider_.get()));
-  EXPECT_FALSE(
-      test_srp(&non_google_template_url, client_.get(), provider_.get()));
+  // Don't make Suggest requests if Google is not the search provider.
+  EXPECT_FALSE(test_lens(&non_google_template_url, client_.get()));
+  EXPECT_FALSE(test_other(&non_google_template_url, client_.get()));
+  EXPECT_FALSE(test_srp(&non_google_template_url, client_.get()));
 
   // Create a non-HTTPS Google search provider.
   TemplateURLData http_google_template_url_data;
@@ -3645,13 +3623,10 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
       "http://www.google.com/suggest?q={searchTerms}";
   TemplateURL http_google_template_url(http_google_template_url_data);
 
-  // These cases should otherwise succeed.
-  EXPECT_FALSE(test_different_origin(&http_google_template_url, client_.get(),
-                                     provider_.get()));
-  EXPECT_FALSE(test_same_origin(&http_google_template_url, client_.get(),
-                                provider_.get()));
-  EXPECT_FALSE(
-      test_srp(&http_google_template_url, client_.get(), provider_.get()));
+  // Don't make Suggest requests through non cryptographically secure channels.
+  EXPECT_FALSE(test_lens(&http_google_template_url, client_.get()));
+  EXPECT_FALSE(test_other(&http_google_template_url, client_.get()));
+  EXPECT_FALSE(test_srp(&http_google_template_url, client_.get()));
 }
 
 TEST_F(SearchProviderTest, TestDeleteMatch) {

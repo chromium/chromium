@@ -323,6 +323,7 @@ ZeroSuggestProvider::GetResultTypeAndEligibility(
   switch (result_type) {
     case ResultType::kRemoteNoURL: {
       if (!CanSendSuggestRequestWithoutPageURL(
+              input.current_page_classification(),
               template_url_service->GetDefaultSearchProvider(),
               template_url_service->search_terms_data(), client)) {
         eligibility = false;
@@ -331,7 +332,7 @@ ZeroSuggestProvider::GetResultTypeAndEligibility(
     }
     case ResultType::kRemoteSendURL: {
       if (!CanSendSuggestRequestWithPageURL(
-              input.current_url(),
+              input.current_url(), input.current_page_classification(),
               template_url_service->GetDefaultSearchProvider(),
               template_url_service->search_terms_data(), client)) {
         eligibility = false;
