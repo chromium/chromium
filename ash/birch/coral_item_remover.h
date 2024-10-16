@@ -30,6 +30,9 @@ class ASH_EXPORT CoralItemRemover {
   // Records the coral::mojom::Entity to be removed for the current session.
   void RemoveItem(const coral::mojom::Entity& item);
 
+  // Records the identifier to be removed for the current session.
+  void RemoveItem(const std::string& item_identifier);
+
   // Erases from the ContentItem list any items which have been removed by the
   // user. The list is mutated in place.
   void FilterRemovedItems(std::vector<coral::mojom::EntityPtr>* content_items);

@@ -238,14 +238,24 @@ coral::mojom::GroupPtr BirchCoralProvider::ExtractGroupById(int group_id) {
 void BirchCoralProvider::RemoveGroup(int group_id) {
   CHECK(coral_item_remover_);
   coral::mojom::GroupPtr group = ExtractGroupById(group_id);
-  for (const auto& entity : group->entities) {
+  for (const coral::mojom::EntityPtr& entity : group->entities) {
     coral_item_remover_->RemoveItem(entity);
   }
 }
 
-void BirchCoralProvider::RemoveItem(const coral::mojom::EntityPtr& item) {
+void BirchCoralProvider::RemoveItemFromGroup(const int group_id,
+                                             const std::string& identifier) {
   CHECK(coral_item_remover_);
-  coral_item_remover_->RemoveItem(item);
+  auto& group = GetGroupById(group_id);
+
+  group->entities.erase(
+      std::remove_if(group->entities.begin(), group->entities.end(),
+                     [identifier](const coral::mojom::EntityPtr& entity) {
+                       return coral_util::GetIdentifier(entity) == identifier;
+                     }),
+      group->entities.end());
+
+  coral_item_remover_->RemoveItem(identifier);
 }
 
 void BirchCoralProvider::RequestBirchDataFetch() {

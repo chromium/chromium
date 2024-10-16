@@ -116,7 +116,9 @@ class TabAppSelectionView::TabAppSelectionItemView
   };
 
   explicit TabAppSelectionItemView(InitParams params)
-      : type_(params.type), owner_(params.owner) {
+      : type_(params.type),
+        identifier_(params.identifier),
+        owner_(params.owner) {
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
         .SetAccessibleName(u"TempAccessibleName")
@@ -188,6 +190,7 @@ class TabAppSelectionView::TabAppSelectionItemView
   ~TabAppSelectionItemView() override = default;
 
   InitParams::Type type() const { return type_; }
+  std::string identifier() const { return identifier_; }
 
   void SetPositionAndSetSize(int position_in_selector,
                              int num_selector_elements) {
@@ -242,6 +245,7 @@ class TabAppSelectionView::TabAppSelectionItemView
   }
 
   const InitParams::Type type_;
+  const std::string identifier_;
 
   // True when the mouse is hovered over this view. The background is painted
   // differently.
@@ -262,7 +266,7 @@ END_METADATA
 
 // -----------------------------------------------------------------------------
 // TabAppSelectionView:
-TabAppSelectionView::TabAppSelectionView(int group_id) {
+TabAppSelectionView::TabAppSelectionView(int group_id) : group_id_(group_id) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -302,7 +306,7 @@ TabAppSelectionView::TabAppSelectionView(int group_id) {
 
   // Grab the lists of tabs and apps from data provider.
   const coral::mojom::GroupPtr& group =
-      BirchCoralProvider::Get()->GetGroupById(group_id);
+      BirchCoralProvider::Get()->GetGroupById(group_id_);
   std::vector<coral::mojom::TabPtr> tabs;
   std::vector<coral::mojom::AppPtr> apps;
   for (const auto& entity : group->entities) {
@@ -422,6 +426,8 @@ void TabAppSelectionView::AdvanceSelection(bool reverse) {
 
 void TabAppSelectionView::OnCloseButtonPressed(
     TabAppSelectionItemView* sender) {
+  BirchCoralProvider::Get()->RemoveItemFromGroup(group_id_,
+                                                 sender->identifier());
   TabAppSelectionItemView::InitParams::Type sender_type = sender->type();
   std::erase(item_views_, sender);
   scroll_view_->contents()->RemoveChildViewT(sender);

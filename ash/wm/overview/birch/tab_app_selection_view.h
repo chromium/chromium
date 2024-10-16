@@ -52,6 +52,9 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   // Deselects all items except `sender`.
   void OnItemTapped(TabAppSelectionItemView* sender);
 
+  // Unique identifier for the contents of the selection view.
+  const int group_id_;
+
   raw_ptr<views::ScrollView> scroll_view_;
 
   std::vector<raw_ptr<TabAppSelectionItemView>> item_views_;

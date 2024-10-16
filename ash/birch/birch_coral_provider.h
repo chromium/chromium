@@ -40,8 +40,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // Add all items in group `group_id` to the coral item remover blocklist.
   void RemoveGroup(int group_id);
 
-  // Add item with `key` to the coral item remover blocklist.
-  void RemoveItem(const coral::mojom::EntityPtr& item);
+  // Removes an item with `identifier` from the group with group_id.
+  void RemoveItemFromGroup(const int group_id, const std::string& identifier);
 
   // BirchDataProvider:
   void RequestBirchDataFetch() override;
