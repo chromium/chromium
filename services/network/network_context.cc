@@ -89,6 +89,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/log/net_log_source_type.h"
 #include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -2174,7 +2175,9 @@ void NetworkContext::VerifyCertificateForTesting(
       result,
       base::BindOnce(TestVerifyCertCallback, std::move(state),
                      std::move(callback)),
-      request, net::NetLogWithSource());
+      request,
+      net::NetLogWithSource::Make(net::NetLog::Get(),
+                                  net::NetLogSourceType::NONE));
 }
 
 void NetworkContext::PreconnectSockets(
