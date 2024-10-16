@@ -24,16 +24,6 @@ BASE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kAuthenticateUsingUserConsentVerifierInteropApi,
-             "AuthenticateUsingUserConsentVerifierInteropApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAuthenticateUsingUserConsentVerifierApi,
-             "AuthenticateUsingUserConsentVerifierApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kBiometricTouchToFill,
              "BiometricTouchToFill",
              base::FEATURE_DISABLED_BY_DEFAULT);

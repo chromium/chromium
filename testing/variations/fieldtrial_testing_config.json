@@ -1364,22 +1364,6 @@
             ]
         }
     ],
-    "AuthenticateUsingUserConsentVerifierApi": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AuthenticateUsingUserConsentVerifierApi",
-                        "AuthenticateUsingUserConsentVerifierInteropApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutoDisableAccessibility": [
         {
             "platforms": [

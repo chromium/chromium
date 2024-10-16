@@ -11183,15 +11183,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(fingerprinting_protection_filter::features::
                             kEnableFingerprintingProtectionFilter)},
 
-#if BUILDFLAG(IS_WIN)
-    {"authenticate-using-user-consent-verifier-api",
-     flag_descriptions::kAuthenticateUsingUserConsentVerifierApiName,
-     flag_descriptions::kAuthenticateUsingUserConsentVerifierApiDescription,
-     kOsWin,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kAuthenticateUsingUserConsentVerifierApi)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-forest-feature", flag_descriptions::kForestFeatureName,
      flag_descriptions::kForestFeatureDescription, kOsCrOS,
@@ -11414,16 +11405,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPerformanceInterventionDemoModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          performance_manager::features::kPerformanceInterventionDemoMode)},
-#endif
-
-#if BUILDFLAG(IS_WIN)
-    {"authenticate-using-user-consent-verifier-interop-api",
-     flag_descriptions::kAuthenticateUsingUserConsentVerifierInteropApiName,
-     flag_descriptions::
-         kAuthenticateUsingUserConsentVerifierInteropApiDescription,
-     kOsWin,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kAuthenticateUsingUserConsentVerifierInteropApi)},
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

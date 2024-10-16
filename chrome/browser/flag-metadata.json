@@ -571,16 +571,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "authenticate-using-user-consent-verifier-api",
-    "owners": [ "sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "authenticate-using-user-consent-verifier-interop-api",
-    "owners": [ "sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 134
-  },
-  {
     "name": "auto-framing-override",
     "owners": [ "kamesan@chromium.org", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116

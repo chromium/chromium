@@ -5543,19 +5543,6 @@ const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
 
 #if BUILDFLAG(IS_WIN)
 
-const char kAuthenticateUsingUserConsentVerifierInteropApiName[] =
-    "OS authentication will use IUserConsentVerifierInterop api if available.";
-const char kAuthenticateUsingUserConsentVerifierInteropApiDescription[] =
-    "If user has Windows Hello configured, OS authentication will use "
-    "IUserConsentVerifierInterop api with explicit window passing, otherwise "
-    "Wincred will be used.";
-
-const char kAuthenticateUsingUserConsentVerifierApiName[] =
-    "OS authentication will use UserConsentVerifier api if available.";
-const char kAuthenticateUsingUserConsentVerifierApiDescription[] =
-    "If user has Windows Hello configured, OS authentication will use "
-    "UserConsentVerifier api, otherwise Wincred will be used.";
-
 const char kCalculateNativeWinOcclusionName[] =
     "Calculate window occlusion on Windows";
 const char kCalculateNativeWinOcclusionDescription[] =
