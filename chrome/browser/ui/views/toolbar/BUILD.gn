@@ -109,7 +109,7 @@ source_set("toolbar") {
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
