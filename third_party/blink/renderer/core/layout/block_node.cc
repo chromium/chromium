@@ -452,8 +452,8 @@ const LayoutResult* BlockNode::Layout(
   }
 
   if (!fragment_geometry) {
-    fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this, break_token);
+    fragment_geometry.emplace(
+        CalculateInitialFragmentGeometry(constraint_space, *this, break_token));
   }
 
   // Only consider the size of the first container fragment.
@@ -558,8 +558,8 @@ const LayoutResult* BlockNode::Layout(
   // widths are now dirty, re-calculate our inline-size for comparison.
   if (!intrinsic_logical_widths_dirty_before &&
       box_->IntrinsicLogicalWidthsDirty()) {
-    fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this, break_token);
+    fragment_geometry.emplace(
+        CalculateInitialFragmentGeometry(constraint_space, *this, break_token));
   }
 
   // We may need to relayout if:
@@ -616,8 +616,8 @@ const LayoutResult* BlockNode::Layout(
       if (auto* view = DynamicTo<LayoutView>(GetLayoutBox())) {
         view->InvalidateSvgRootsWithRelativeLengthDescendents();
       }
-      fragment_geometry = CalculateInitialFragmentGeometry(constraint_space,
-                                                           *this, break_token);
+      fragment_geometry.emplace(CalculateInitialFragmentGeometry(
+          constraint_space, *this, break_token));
       layout_result = LayoutWithAlgorithm(params);
       FinishLayout(block_flow, constraint_space, break_token, layout_result,
                    old_box_size);
@@ -927,10 +927,10 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   std::optional<FragmentGeometry> cached_fragment_geometry;
   auto IntrinsicFragmentGeometry = [&]() -> FragmentGeometry& {
     if (!cached_fragment_geometry) {
-      cached_fragment_geometry =
+      cached_fragment_geometry.emplace(
           CalculateInitialFragmentGeometry(constraint_space, *this,
                                            /* break_token */ nullptr,
-                                           /* is_intrinsic */ true);
+                                           /* is_intrinsic */ true));
     }
     return *cached_fragment_geometry;
   };

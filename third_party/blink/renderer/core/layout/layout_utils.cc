@@ -440,8 +440,8 @@ bool IntrinsicSizeWillChange(
     return false;
 
   if (!*fragment_geometry) {
-    *fragment_geometry =
-        CalculateInitialFragmentGeometry(new_space, node, break_token);
+    fragment_geometry->emplace(
+        CalculateInitialFragmentGeometry(new_space, node, break_token));
   }
 
   LayoutUnit inline_size =
@@ -490,8 +490,8 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
   }
 
   if (!*fragment_geometry) {
-    *fragment_geometry =
-        CalculateInitialFragmentGeometry(new_space, node, break_token);
+    fragment_geometry->emplace(
+        CalculateInitialFragmentGeometry(new_space, node, break_token));
   }
 
   return CalculateSizeBasedLayoutCacheStatusWithGeometry(
