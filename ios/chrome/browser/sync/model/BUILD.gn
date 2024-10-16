@@ -176,6 +176,7 @@ source_set("sync_error_browser_agent") {
   ]
   deps = [
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

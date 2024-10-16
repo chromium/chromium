@@ -46,6 +46,7 @@ source_set("scene") {
     "//base",
     "//ios/chrome/app:blocking_scene_commands",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/blocking_overlay/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/public/commands",

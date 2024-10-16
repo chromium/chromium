@@ -10,6 +10,7 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_coordinator_delegate.h"
@@ -87,6 +88,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     SetIdleTimeoutPolicies();
     InitIdleService();
     InitSceneWithAgent();
+    SetUpMockProfileState();
   }
 
   void TearDown() override { [agent_ sceneStateDidDisableUI:scene_state_]; }
@@ -97,6 +99,13 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     startup_information_ = [[FakeStartupInformation alloc] init];
     app_state_ = [[FakeAppStateForAgent alloc]
         initWithStartupInformation:startup_information_];
+  }
+
+  // Install a mock ProfileState.
+  void SetUpMockProfileState() {
+    profile_state_ = OCMClassMock([ProfileState class]);
+    OCMStub([profile_state_ appState]).andReturn(app_state_);
+    scene_state_.profileState = profile_state_;
   }
 
   void InitIdleService() {
@@ -168,6 +177,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   FakeSceneState* scene_state_;
   // The agent under test.
   IdleTimeoutPolicySceneAgent* agent_;
+  ProfileState* profile_state_;
   id mock_snackbar_handler_;
   id mock_application_handler_;
   id mockSettingsHandler_;

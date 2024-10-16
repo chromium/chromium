@@ -12,16 +12,17 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator_delegate.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator_delegate.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "url/gurl.h"
 
@@ -96,14 +97,14 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.appState addObserver:self];
+  [self.sceneState.profileState.appState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
-  [self.sceneState.appState removeObserver:self];
+  [self.sceneState.profileState.appState removeObserver:self];
   [self stopUserPolicyPromptCoordinator];
 }
 
@@ -157,7 +158,7 @@
 
 // Returns YES if the scene UI is available to show the notification dialog.
 - (BOOL)isUIAvailableToShowNotification {
-  if (self.sceneState.appState.initStage < AppInitStage::kFinal) {
+  if (self.sceneState.profileState.appState.initStage < AppInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }
@@ -169,7 +170,7 @@
 
   // Return NO when the scene cannot present views because it is blocked. This
   // is what prevents showing more than one dialog at a time.
-  return !self.sceneState.appState.currentUIBlocker;
+  return !self.sceneState.profileState.appState.currentUIBlocker;
 }
 
 // Shows the User Policy notification dialog if the requirements are fulfilled.

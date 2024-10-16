@@ -40,12 +40,12 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   }
 
   // (3) There is no UI blocker.
-  if (scene_state.appState.currentUIBlocker) {
+  if (scene_state.profileState.appState.currentUIBlocker) {
     return NO;
   }
 
   // (4) The app isn't shutting down.
-  if (scene_state.appState.appIsTerminating) {
+  if (scene_state.profileState.appState.appIsTerminating) {
     return NO;
   }
 

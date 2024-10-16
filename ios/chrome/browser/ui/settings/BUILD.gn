@@ -116,6 +116,7 @@ source_set("settings") {
     "//components/url_formatter",
     "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_shared_ui",

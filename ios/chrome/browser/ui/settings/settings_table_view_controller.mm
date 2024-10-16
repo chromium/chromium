@@ -42,6 +42,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -545,7 +546,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // Feed is disabled in safe mode.
   SceneState* sceneState = _browser->GetSceneState();
-  BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
+  BOOL isSafeMode = [sceneState.profileState.appState resumingFromSafeMode];
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(_profile);
 

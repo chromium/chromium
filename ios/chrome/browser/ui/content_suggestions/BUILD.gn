@@ -37,6 +37,7 @@ source_set("content_suggestions") {
     "//components/url_formatter",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:model",
     "//ios/chrome/browser/commerce/model:shopping_service",

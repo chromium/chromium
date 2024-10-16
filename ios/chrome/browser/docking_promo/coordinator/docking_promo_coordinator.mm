@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_mediator.h"
 #import "ios/chrome/browser/docking_promo/model/utils.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
@@ -80,7 +81,7 @@
   PromosManager* promosManager =
       PromosManagerFactory::GetForProfile(self.browser->GetProfile());
 
-  AppState* appState = self.browser->GetSceneState().appState;
+  AppState* appState = self.browser->GetSceneState().profileState.appState;
 
   std::optional<base::TimeDelta> timeSinceLastForeground =
       MinTimeSinceLastForeground(appState.foregroundScenes);

@@ -589,7 +589,7 @@ void OnListFamilyMembersResponse(
     URLOpenerParams* params =
         [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
     [self openTabFromLaunchWithParams:params
-                   startupInformation:self.sceneState.appState
+                   startupInformation:self.sceneState.profileState.appState
                                           .startupInformation];
   }
   if (self.sceneState.connectionOptions.shortcutItem) {
@@ -1166,7 +1166,7 @@ void OnListFamilyMembersResponse(
 
   // Inject a NTP before setting the interface, which will trigger a load of
   // the current webState.
-  if (self.sceneState.appState.postCrashAction ==
+  if (self.sceneState.profileState.appState.postCrashAction ==
       PostCrashAction::kShowNTPWithReturnToTab) {
     InjectNTP(browser);
   }
@@ -1394,7 +1394,7 @@ void OnListFamilyMembersResponse(
     return NO;
   }
   // Don't show the promo if already presented.
-  if (self.sceneState.appState.signinUpgradePromoPresentedOnce) {
+  if (self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce) {
     return NO;
   }
   return YES;
@@ -1408,7 +1408,7 @@ void OnListFamilyMembersResponse(
   if (![self shouldPresentSigninUpgradePromo]) {
     return;
   }
-  self.sceneState.appState.signinUpgradePromoPresentedOnce = YES;
+  self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce = YES;
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
@@ -2104,7 +2104,7 @@ using UserFeedbackDataCallback =
   if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return NO;
   }
-  if (self.sceneState.appState.currentUIBlocker) {
+  if (self.sceneState.profileState.appState.currentUIBlocker) {
     return NO;
   }
   if (self.mainCoordinator.isTabGridActive) {

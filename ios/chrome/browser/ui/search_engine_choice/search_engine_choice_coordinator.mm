@@ -10,6 +10,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"

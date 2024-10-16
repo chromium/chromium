@@ -15,6 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
@@ -366,7 +367,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 }
 
 - (void)lockOrientationInPortrait:(BOOL)portraitLock {
-  AppState* appState = self.browser->GetSceneState().appState;
+  AppState* appState = self.browser->GetSceneState().profileState.appState;
   if (portraitLock) {
     if (!appState) {
       return;

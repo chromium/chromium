@@ -59,6 +59,7 @@ source_set("component_factory") {
     "//components/prefs",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/ntp/shared/metrics",

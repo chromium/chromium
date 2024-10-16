@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/blocking_overlay/ui_bundled/blocking_overlay_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
@@ -65,8 +66,9 @@
 
       [[BlockingOverlayViewController alloc] init];
   blockingOverlayViewController.blockingSceneCommandHandler =
-      HandlerForProtocol(self.sceneState.appState.appCommandDispatcher,
-                         BlockingSceneCommands);
+      HandlerForProtocol(
+          self.sceneState.profileState.appState.appCommandDispatcher,
+          BlockingSceneCommands);
 
   self.overlayWindow.rootViewController = blockingOverlayViewController;
   [self.overlayWindow makeKeyAndVisible];

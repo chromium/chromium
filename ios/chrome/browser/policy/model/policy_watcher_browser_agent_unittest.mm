@@ -16,6 +16,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -62,7 +63,9 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
 
     // SceneState.
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_.profileState = profile_state_;
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     // Set up the test browser and attach the browser agents.
@@ -105,6 +108,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   SceneState* scene_state_;
   // Keep app_state_ alive as it is a weak property of the scene state.
   AppState* app_state_;
+  ProfileState* profile_state_;
 };
 
 #pragma mark - Tests.
@@ -237,7 +241,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
-        return scene_state_.appState.shouldShowForceSignOutPrompt;
+        return scene_state_.profileState.appState.shouldShowForceSignOutPrompt;
       }));
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));

@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -118,7 +119,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       DiscoverFeedServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-  BOOL isSafeMode = [browser->GetSceneState().appState resumingFromSafeMode];
+  BOOL isSafeMode =
+      [browser->GetSceneState().profileState.appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
       initWithTemplateURLService:templateURLService
                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)

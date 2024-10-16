@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -191,7 +192,7 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
     // in in progress, the UI will prevent the prompt from showing.
     [handler_ showForceSignedOutPrompt];
   } else {
-    scene_state.appState.shouldShowForceSignOutPrompt = YES;
+    scene_state.profileState.appState.shouldShowForceSignOutPrompt = YES;
   }
 }
 
