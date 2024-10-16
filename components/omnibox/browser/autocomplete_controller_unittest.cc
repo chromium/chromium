@@ -1866,7 +1866,7 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
         "`OnResultChanged()` - there's no change to notify of.");
     controller_.SimulateAutocompletePass(true, false, matches);
     controller_.Stop(false);
-    controller_.ExpectStopAfter(0);
+    controller_.ExpectStopAfter(0, true);
     EXPECT_FALSE(controller_.published_result_.empty());
     controller_.ExpectNoNotificationOrStop();
   }
@@ -1879,7 +1879,7 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
     controller_.SimulateAutocompletePass(false, false, matches);
     controller_.Stop(false);
     EXPECT_FALSE(controller_.published_result_.empty());
-    controller_.ExpectStopAfter(0);
+    controller_.ExpectStopAfter(0, true);
     controller_.ExpectNoNotificationOrStop();
   }
   {

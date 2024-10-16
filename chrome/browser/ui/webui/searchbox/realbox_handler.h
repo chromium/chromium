@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -63,6 +64,9 @@ class RealboxHandler : public SearchboxHandler {
   void AddObserver(OmniboxWebUIPopupChangeObserver* observer);
   void RemoveObserver(OmniboxWebUIPopupChangeObserver* observer);
   bool HasObserver(const OmniboxWebUIPopupChangeObserver* observer) const;
+
+  // AutocompleteController::Observer:
+  void OnAutocompleteStopTimerTriggered() override;
 
   // searchbox::mojom::PageHandler:
   void SetPage(

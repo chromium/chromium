@@ -21,12 +21,15 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
-OmniboxController::OmniboxController(OmniboxView* view,
-                                     std::unique_ptr<OmniboxClient> client)
+OmniboxController::OmniboxController(
+    OmniboxView* view,
+    std::unique_ptr<OmniboxClient> client,
+    base::TimeDelta autocomplete_stop_timer_duration)
     : client_(std::move(client)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
-          AutocompleteClassifier::DefaultOmniboxProviders())),
+          AutocompleteClassifier::DefaultOmniboxProviders(),
+          autocomplete_stop_timer_duration)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this,
           view)) {

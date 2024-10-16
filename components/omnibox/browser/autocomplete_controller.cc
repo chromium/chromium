@@ -526,6 +526,7 @@ AutocompleteController::AutocompleteController(
       zero_suggest_provider_(nullptr),
       on_device_head_provider_(nullptr),
       history_fuzzy_provider_(nullptr),
+      stop_timer_duration_(kAutocompleteDefaultStopTimerDuration),
       notify_changed_debouncer_(false, 200),
       is_cros_launcher_(is_cros_launcher),
       search_service_worker_signal_sent_(false),
@@ -584,6 +585,19 @@ AutocompleteController::AutocompleteController(
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "AutocompleteController",
       base::SingleThreadTaskRunner::GetCurrentDefault());
+}
+
+AutocompleteController::AutocompleteController(
+    std::unique_ptr<AutocompleteProviderClient> provider_client,
+    int provider_types,
+    base::TimeDelta stop_timer_duration,
+    bool is_cros_launcher,
+    bool disable_ml)
+    : AutocompleteController(std::move(provider_client),
+                             provider_types,
+                             is_cros_launcher,
+                             disable_ml) {
+  stop_timer_duration_ = stop_timer_duration;
 }
 
 AutocompleteController::~AutocompleteController() {
@@ -1925,9 +1939,17 @@ void AutocompleteController::StartExpireTimer() {
 }
 
 void AutocompleteController::StartStopTimer() {
-  stop_timer_.Start(FROM_HERE, stop_timer_duration_,
-                    base::BindOnce(&AutocompleteController::Stop,
-                                   base::Unretained(this), false, true));
+  stop_timer_.Start(
+      FROM_HERE, stop_timer_duration_,
+      base::BindOnce(&AutocompleteController::OnStopTimerTriggered,
+                     base::Unretained(this)));
+}
+
+void AutocompleteController::OnStopTimerTriggered() {
+  Stop(false, true);
+  for (Observer& obs : observers_) {
+    obs.OnAutocompleteStopTimerTriggered();
+  }
 }
 
 bool AutocompleteController::OnMemoryDump(
