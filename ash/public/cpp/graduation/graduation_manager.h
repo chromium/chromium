@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/observer_list_types.h"
 
 namespace base {
 class Clock;
@@ -15,6 +16,15 @@ class TickClock;
 }  // namespace base
 
 namespace ash::graduation {
+
+// A checked observer which receives notification of changes to the
+// Graduation app.
+class ASH_PUBLIC_EXPORT GraduationManagerObserver
+    : public base::CheckedObserver {
+ public:
+  // Invoked when the session active state is changed.
+  virtual void OnGraduationAppUpdate(bool enabled) = 0;
+};
 
 // Creates interface to access browser-side functionalities in
 // GraduationManagerImpl.
@@ -29,6 +39,11 @@ class ASH_PUBLIC_EXPORT GraduationManager {
 
   // Returns the language code of the device's current locale.
   virtual const std::string GetLanguageCode() const = 0;
+
+  // Adds the specified observer to be notified of updates to the Graduation
+  // app.
+  virtual void AddObserver(GraduationManagerObserver* observer) = 0;
+  virtual void RemoveObserver(GraduationManagerObserver* observer) = 0;
 
   // Used by browser tests to set and fast-forward the system time.
   virtual void SetClocksForTesting(const base::Clock* clock,

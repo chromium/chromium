@@ -8,15 +8,31 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 type GraduationHandlerInterface =
     graduationHandlerMojom.GraduationHandlerInterface;
 
+type GraduationObserverRemoteType =
+    graduationHandlerMojom.GraduationObserverRemote;
+
 export class TestGraduationHandler extends TestBrowserProxy implements
     GraduationHandlerInterface {
+  private observer_: GraduationObserverRemoteType|null = null;
+
   constructor() {
     super([
       'launchGraduationApp',
+      'addObserver',
     ]);
   }
 
   launchGraduationApp(): void {
     this.methodCalled('launchGraduationApp');
+  }
+
+  addObserver(remoteObserver: GraduationObserverRemoteType): Promise<void> {
+    this.methodCalled('addObserver');
+    this.observer_ = remoteObserver;
+    return Promise.resolve();
+  }
+
+  getObserverRemote(): GraduationObserverRemoteType|null {
+    return this.observer_;
   }
 }

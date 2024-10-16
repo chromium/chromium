@@ -9,4 +9,15 @@ module ash.settings.graduation.mojom;
 interface GraduationHandler {
   // Opens the Graduation SWA.
   LaunchGraduationApp();
+
+  // Binds remote and notifies receiver for the graduation UI in OS Settings.
+  AddObserver(pending_remote<GraduationObserver> observer);
+};
+
+// Observer interface that sends remote updates to the graduation UI in
+// OSSettings.
+interface GraduationObserver {
+  // Notifies clients when there is an update to the Graduation app enablement
+  // state.
+  OnGraduationAppUpdated(bool is_app_enabled);
 };

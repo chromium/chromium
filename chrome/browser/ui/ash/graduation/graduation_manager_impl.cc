@@ -56,6 +56,15 @@ const std::string GraduationManagerImpl::GetLanguageCode() const {
       g_browser_process->GetApplicationLocale());
 }
 
+void GraduationManagerImpl::AddObserver(GraduationManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GraduationManagerImpl::RemoveObserver(
+    GraduationManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void GraduationManagerImpl::SetClocksForTesting(
     const base::Clock* clock,
     const base::TickClock* tick_clock) {
@@ -119,6 +128,7 @@ void GraduationManagerImpl::UpdateAppPinnedState() {
     return;
   }
 
+  NotifyAppUpdate();
   bool is_policy_enabled = IsEligibleForGraduation(profile_->GetPrefs());
   if (is_policy_enabled) {
     PinAppWithIDToShelf(ash::kGraduationAppId);
@@ -165,5 +175,12 @@ void GraduationManagerImpl::UpdateAppReadiness() {
       web_app::WebAppProvider::GetForWebApps(profile_);
   CHECK(provider);
   provider->policy_manager().OnDisableListPolicyChanged();
+}
+
+void GraduationManagerImpl::NotifyAppUpdate() {
+  for (GraduationManagerObserver& observer : observers_) {
+    observer.OnGraduationAppUpdate(
+        IsEligibleForGraduation(profile_->GetPrefs()));
+  }
 }
 }  // namespace ash::graduation

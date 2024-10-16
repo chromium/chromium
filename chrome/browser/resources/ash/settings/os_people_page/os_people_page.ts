@@ -35,11 +35,13 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isAccountManagerEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
+import {type GraduationHandlerInterface, GraduationObserverReceiver} from '../mojom-webui/graduation_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import {getGraduationHandlerProvider} from './graduation/mojo_interface_provider.js';
 import {getTemplate} from './os_people_page.html.js';
 
 const OsSettingsPeoplePageElementBase =
@@ -187,15 +189,17 @@ export class OsSettingsPeoplePageElement extends
   private profileEmail_: string;
   private profileLabel_: string;
   private fingerprintUnlockEnabled_: boolean;
+  private graduationMojoProvider_: GraduationHandlerInterface;
+  private graduationObserverReceiver_: GraduationObserverReceiver|null;
   private isAccountManagerEnabled_: boolean;
   private readonly isRevampWayfindingEnabled_: boolean;
+  private showGraduationApp_: boolean;
   private showParentalControls_: boolean;
   private section_: Section;
   private showPasswordPromptDialog_: boolean;
   private showSyncSettingsRevamp_: boolean;
   private syncBrowserProxy_: SyncBrowserProxy;
   private clearAccountPasswordTimeoutId_: number|undefined;
-
 
   constructor() {
     super();
@@ -204,6 +208,7 @@ export class OsSettingsPeoplePageElement extends
     this.route = routes.OS_PEOPLE;
 
     this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
+    this.graduationMojoProvider_ = getGraduationHandlerProvider();
 
     /**
      * The timeout ID to pass to clearTimeout() to cancel auth token
@@ -232,6 +237,10 @@ export class OsSettingsPeoplePageElement extends
         this.handleSyncStatus_.bind(this));
     this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
+
+    this.graduationObserverReceiver_ = new GraduationObserverReceiver(this);
+    this.graduationMojoProvider_.addObserver(
+        this.graduationObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   override ready(): void {
@@ -460,6 +469,11 @@ export class OsSettingsPeoplePageElement extends
     this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
       this.authTokenInfo_ = undefined;
     }, lifetimeMs);
+  }
+
+  onGraduationAppUpdated(isAppEnabled: boolean): void {
+    this.showGraduationApp_ =
+        loadTimeData.getBoolean('isGraduationFlagEnabled') && isAppEnabled;
   }
 }
 
