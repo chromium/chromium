@@ -316,6 +316,13 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   CHECK(source_browser);
   CHECK(web_contents);
   CHECK(target_browser);
+
+  // In a reparent, the owning session service needs to be told it's tab
+  // has been removed, otherwise it will reopen the tab on restoration.
+  SessionServiceBase* service =
+      GetAppropriateSessionServiceForProfile(source_browser);
+  service->TabClosing(web_contents);
+
   // Check-fail if the web contents given is not part of the source browser.
   std::optional<int> found_tab_index;
   for (int i = 0; i < source_browser->tab_strip_model()->count(); ++i) {
@@ -376,6 +383,13 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   }
 #endif
   target_browser->window()->Show();
+
+  // The window will be registered correctly, however the tab will not be
+  // correctly tracked. We need to do a reset to get the tab correctly tracked
+  // by either the app service or the regular service
+  SessionServiceBase* target_service =
+      GetAppropriateSessionServiceForProfile(target_browser);
+  target_service->ResetFromCurrentBrowsers();
 }
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {

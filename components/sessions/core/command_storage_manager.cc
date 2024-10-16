@@ -4,6 +4,7 @@
 
 #include "components/sessions/core/command_storage_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,8 +15,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
+#include "base/values.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
+#include "components/sessions/core/session_command.h"
 #include "crypto/random.h"
 
 namespace sessions {
@@ -30,6 +33,14 @@ void AdaptGetLastSessionCommands(
     CommandStorageBackend::ReadCommandsResult result) {
   std::move(callback).Run(std::move(result.commands), result.error_reading);
 }
+
+#if DCHECK_IS_ON()
+base::Value CommandToDebugValue(const SessionCommand& command) {
+  // There is no convenience function to transform the pickled contents into the
+  // payload struct itself, so just output the id for now.
+  return base::Value(command.id());
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -133,6 +144,16 @@ void CommandStorageManager::Save() {
   if (pending_commands_.empty())
     return;
 
+#if DCHECK_IS_ON()
+  for (const std::unique_ptr<SessionCommand>& command : pending_commands_) {
+    written_commands_reverse_debug_log_.push_front(
+        CommandToDebugValue(*command));
+  }
+  if (written_commands_reverse_debug_log_.size() > kMaxLogSize) {
+    written_commands_reverse_debug_log_.resize(kMaxLogSize);
+  }
+#endif  // DCHECK_IS_ON()
+
   std::vector<uint8_t> crypto_key;
   if (use_crypto_ && pending_reset_) {
     crypto_key = CreateCryptoKey();
@@ -177,6 +198,24 @@ void CommandStorageManager::GetLastSessionCommands(
                      backend()),
       base::BindOnce(&AdaptGetLastSessionCommands, std::move(callback)));
 }
+
+#if DCHECK_IS_ON()
+base::Value CommandStorageManager::ToDebugValue() const {
+  base::Value::Dict debug_value;
+  debug_value.Set("use_crypto", use_crypto_);
+  for (const std::unique_ptr<SessionCommand>& command : pending_commands_) {
+    debug_value.EnsureList("pending_commands")
+        ->Append(CommandToDebugValue(*command));
+  }
+  debug_value.Set("pending_reset", pending_reset_);
+  debug_value.Set("commands_since_reset", commands_since_reset_);
+  for (const base::Value& log_item : written_commands_reverse_debug_log_) {
+    debug_value.EnsureList("written_commands_reverse_debug_log")
+        ->Append(log_item.Clone());
+  }
+  return base::Value(std::move(debug_value));
+}
+#endif  // DCHECK_IS_ON()
 
 void CommandStorageManager::OnErrorWritingToFile() {
   delegate_->OnErrorWritingSessionCommands();
