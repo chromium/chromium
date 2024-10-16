@@ -19220,27 +19220,6 @@
             ]
         }
     ],
-    "ReadAnythingReadAloudWordHighlighting": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadAnythingReadAloudAutomaticWordHighlighting"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ReadAnythingReadAloudAutomaticWordHighlighting"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReclaimOldPrepaintTiles": [
         {
             "platforms": [
