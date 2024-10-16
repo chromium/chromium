@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_log_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_log_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -28,9 +28,11 @@ NSString* const kRecentActivitySectionIdentifier =
 
 }  // namespace
 
-@implementation RecentActivityViewController {
-  ActivityLogDiffableDataSource* _dataSource;
-}
+@interface RecentActivityViewController ()
+@property(nonatomic, strong) ActivityLogDiffableDataSource* dataSource;
+@end
+
+@implementation RecentActivityViewController
 
 #pragma mark - ChromeTableViewController
 
@@ -66,37 +68,39 @@ NSString* const kRecentActivitySectionIdentifier =
   tableView.allowsSelection = NO;
   tableView.scrollEnabled = YES;
 
-  // Configure table items.
-  __weak __typeof(self) weakSelf = self;
-  _dataSource = [[UITableViewDiffableDataSource alloc]
-      initWithTableView:tableView
-           cellProvider:^UITableViewCell*(
-               UITableView* view, NSIndexPath* indexPath,
-               RecentActivityLogItem* itemIdentifier) {
-             return [weakSelf cellForTableView:view
-                                     indexPath:indexPath
-                                itemIdentifier:itemIdentifier];
-           }];
-
-  RegisterTableViewCell<TableViewDetailIconCell>(tableView);
+  RegisterTableViewCell<RecentActivityLogCell>(tableView);
 }
 
 #pragma mark - RecentActivityConsumer
 
 - (void)populateItems:(NSArray<RecentActivityLogItem*>*)items {
-  CHECK(_dataSource);
-
   ActivityLogSnapshot* snapshot = [[ActivityLogSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ kRecentActivitySectionIdentifier ]];
+  [snapshot appendItemsWithIdentifiers:items];
 
-  // TODO(crbug.com/370897655): append cells to the data source based on the
-  // collected data from MessagingBackendService.
-
-  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+  [self.dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - Private
+
+// Overrides the getter to the data store to allow the lazy initialization.
+- (ActivityLogDiffableDataSource*)dataSource {
+  if (!_dataSource) {
+    // Lazy initialization of the data source.
+    __weak __typeof(self) weakSelf = self;
+    _dataSource = [[UITableViewDiffableDataSource alloc]
+        initWithTableView:self.tableView
+             cellProvider:^UITableViewCell*(
+                 UITableView* view, NSIndexPath* indexPath,
+                 RecentActivityLogItem* itemIdentifier) {
+               return [weakSelf cellForTableView:view
+                                       indexPath:indexPath
+                                  itemIdentifier:itemIdentifier];
+             }];
+  }
+  return _dataSource;
+}
 
 // This method is a callback for the right bar button, a close button.
 - (void)didTapCloseButton {
@@ -108,26 +112,12 @@ NSString* const kRecentActivitySectionIdentifier =
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(RecentActivityLogItem*)itemIdentifier {
-  TableViewDetailIconCell* cell =
-      DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-
-  // TODO(crbug.com/370897655): Configure a cell depending on the type of the
-  // cell.
-  switch (itemIdentifier.type) {
-    case ActivityLogType::kTabAdded:
-      break;
-    case ActivityLogType::kTabRemoved:
-      break;
-    case ActivityLogType::kTabNavigated:
-      break;
-    case ActivityLogType::kUserLeft:
-      break;
-    case ActivityLogType::kGroupColorChanged:
-      break;
-    case ActivityLogType::kGroupNameChanged:
-      break;
-  }
-
+  RecentActivityLogCell* cell =
+      DequeueTableViewCell<RecentActivityLogCell>(tableView);
+  cell.titleLabel.text = itemIdentifier.title;
+  cell.descriptionLabel.text = itemIdentifier.actionDescription;
+  cell.iconImageView.image = itemIdentifier.userIcon;
+  cell.faviconImageView.image = itemIdentifier.favicon;
   return cell;
 }
 

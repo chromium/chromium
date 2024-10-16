@@ -21,10 +21,25 @@ enum class ActivityLogType : NSUInteger {
 // ActivityLogItem obtained from MessagingBackendService.
 @interface RecentActivityLogItem : NSObject
 
-// The type of the activity log.
-@property(nonatomic, readonly) ActivityLogType type;
-
 // TODO(crbug.com/370897655): Store an ID of the ActivityLogItem struct.
+
+// The type of the activity log.
+@property(nonatomic, assign) ActivityLogType type;
+
+// The image of a favicon of a page.
+@property(nonatomic, strong) UIImage* favicon;
+
+// The image of a user icon.
+@property(nonatomic, strong) UIImage* userIcon;
+
+// The string of a title.
+@property(nonatomic, strong) NSString* title;
+
+// The string of a description.
+@property(nonatomic, strong) NSString* actionDescription;
+
+// The string of the timestamp when an action is taken.
+@property(nonatomic, strong) NSString* timestamp;
 
 @end
 

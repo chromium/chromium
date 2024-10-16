@@ -25,7 +25,7 @@
 - (BOOL)isEqualToRecentActivityLogItem:(RecentActivityLogItem*)item {
   // TODO(crbug.com/370897655): Check if 2 RecentActivityLogItems are equal
   // based on the ID in the ActivityLogItem struct.
-  return YES;
+  return NO;
 }
 
 @end

@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_view_controller.h"
 
 @implementation RecentActivityCoordinator {
+  // A mediator of the recent activity.
   RecentActivityMediator* _mediator;
+  // A view controller of the recent activity.
   RecentActivityViewController* _viewController;
 }
 
