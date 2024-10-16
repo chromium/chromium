@@ -394,7 +394,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
       image = ProduceGLTexture(manager, tracker);
     }
     auto result = std::make_unique<DawnGLTextureRepresentation>(
-        std::move(image), manager, this, tracker, device);
+        std::move(image), manager, this, tracker, device,
+        std::move(view_formats));
     return result;
   }
 #endif

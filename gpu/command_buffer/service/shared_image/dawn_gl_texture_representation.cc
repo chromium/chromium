@@ -30,10 +30,12 @@ DawnGLTextureRepresentation::DawnGLTextureRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    wgpu::Device device)
+    wgpu::Device device,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
-      device_(device) {
+      device_(device),
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
 }
 
@@ -52,6 +54,8 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
 
   // TODO(crbug.com/40278761): implement support for multiplanar formats.
   texture_descriptor.format = ToDawnFormat(format());
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
 
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
   internalDesc.internalUsage = internal_usage;

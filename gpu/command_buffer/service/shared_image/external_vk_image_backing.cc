@@ -716,7 +716,8 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
   if (backend_type == wgpu::BackendType::OpenGLES) {
     auto image = ProduceGLTexturePassthrough(manager, tracker);
     return std::make_unique<DawnGLTextureRepresentation>(
-        std::move(image), manager, this, tracker, wgpuDevice);
+        std::move(image), manager, this, tracker, wgpuDevice,
+        std::move(view_formats));
   }
 #endif
 
