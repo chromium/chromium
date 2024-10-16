@@ -150,7 +150,7 @@ void ExpectInitialManifestFieldsFromBasicWebApp(WebAppIconManager& icon_manager,
 }  // namespace
 
 class PreinstalledWebAppManagerBrowserTestBase
-    : virtual public InProcessBrowserTest {
+    : public extensions::ExtensionBrowserTest {
  public:
   PreinstalledWebAppManagerBrowserTestBase()
       : skip_preinstalled_web_app_startup_(
@@ -158,14 +158,14 @@ class PreinstalledWebAppManagerBrowserTestBase
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         WebAppProvider::GetForTest(browser()->profile()));
   }
 
   void TearDownOnMainThread() override {
     ResetInterceptor();
-    InProcessBrowserTest::TearDownOnMainThread();
+    ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   void InitUrlLoaderInterceptor() {
@@ -285,8 +285,6 @@ class PreinstalledWebAppManagerBrowserTestBase
   }
 
   ~PreinstalledWebAppManagerBrowserTestBase() override = default;
-
-  Profile* profile() { return browser()->profile(); }
 
  protected:
   void ResetInterceptor() { url_loader_interceptor_.reset(); }
@@ -475,8 +473,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 }
 
 class PreinstalledWebAppManagerExtensionBrowserTest
-    : public extensions::ExtensionBrowserTest,
-      public PreinstalledWebAppManagerBrowserTest {
+    : public PreinstalledWebAppManagerBrowserTest {
  public:
   PreinstalledWebAppManagerExtensionBrowserTest()
       : enable_chrome_apps_(
@@ -485,13 +482,13 @@ class PreinstalledWebAppManagerExtensionBrowserTest
   ~PreinstalledWebAppManagerExtensionBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+    PreinstalledWebAppManagerBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         WebAppProvider::GetForTest(browser()->profile()));
   }
   void TearDownOnMainThread() override {
     ResetInterceptor();
-    extensions::ExtensionBrowserTest::TearDownOnMainThread();
+    PreinstalledWebAppManagerBrowserTest::TearDownOnMainThread();
   }
 
  private:

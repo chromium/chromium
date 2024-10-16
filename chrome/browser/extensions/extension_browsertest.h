@@ -54,7 +54,7 @@ class WindowController;
 
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
-class ExtensionBrowserTest : virtual public InProcessBrowserTest,
+class ExtensionBrowserTest : public InProcessBrowserTest,
                              public ExtensionRegistryObserver {
  public:
   // Different types of extension's lazy background contexts used in some tests.
