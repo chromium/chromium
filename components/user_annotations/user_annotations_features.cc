@@ -13,8 +13,16 @@ BASE_FEATURE(kUserAnnotations,
              "UserAnnotations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUserAnnotationsObserveFormSubmissions,
+             "UserAnnotationsObserveFormSubmissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsUserAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(kUserAnnotations);
+}
+
+bool IsUserAnnotationsObserveFormSubmissionsEnabled() {
+  return base::FeatureList::IsEnabled(kUserAnnotationsObserveFormSubmissions);
 }
 
 std::vector<std::string> GetAllowedHostsForFormsAnnotations() {

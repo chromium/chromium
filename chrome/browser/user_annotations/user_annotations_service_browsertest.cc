@@ -14,17 +14,13 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
@@ -97,7 +93,9 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceEphemeralProfileBrowserTest,
 }
 #endif
 
-class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
+class UserAnnotationsServiceBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     InitializeFeatureList();
@@ -108,37 +106,9 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
 
-    browser()->profile()->GetPrefs()->SetBoolean(
-        autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
-
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data/autofill");
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&UserAnnotationsServiceBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void EnableSignin() {
-    auto account_info =
-        identity_test_env_adaptor_->identity_test_env()
-            ->MakePrimaryAccountAvailable("user@gmail.com",
-                                          signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
-    identity_test_env_adaptor_->identity_test_env()
-        ->UpdateAccountInfoForAccount(account_info);
-    identity_test_env_adaptor_->identity_test_env()
-        ->SetAutomaticIssueOfAccessTokens(true);
   }
 
   testing::AssertionResult SubmitForm(content::RenderFrameHost* rfh) {
@@ -158,6 +128,8 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         )");
   }
 
+  bool ShouldObserveFormSubmissions() { return GetParam(); }
+
  protected:
   UserAnnotationsService* service() {
     return UserAnnotationsServiceFactory::GetForProfile(browser()->profile());
@@ -168,40 +140,35 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void InitializeFeatureList() {
-    feature_list_.InitWithFeatures(
-        {kUserAnnotations,
-         autofill_prediction_improvements::kAutofillPredictionImprovements},
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kUserAnnotations,
+        autofill_prediction_improvements::kAutofillPredictionImprovements};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kUserAnnotationsObserveFormSubmissions};
+    if (ShouldObserveFormSubmissions()) {
+      enabled_features.emplace_back(kUserAnnotationsObserveFormSubmissions);
+      disabled_features.clear();
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   base::test::ScopedFeatureList feature_list_;
-
- private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
-  // Identity test support.
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, ServiceFactoryWorks) {
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, ServiceFactoryWorks) {
   EXPECT_TRUE(service());
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest,
                        ServiceNotCreatedForIncognito) {
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
   EXPECT_EQ(nullptr, UserAnnotationsServiceFactory::GetForProfile(
                          otr_browser->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
-  EnableSignin();
-
+// Flakily times out b/366323026
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest,
+                       DISABLED_FormSubmissionFlow) {
   base::HistogramTester histogram_tester;
 
   GURL url(
@@ -215,16 +182,17 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
   ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
 
-  EXPECT_EQ(
-      1, optimization_guide::RetryForHistogramUntilCountReached(
-             &histogram_tester, "UserAnnotations.AddFormSubmissionResult", 1));
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    1);
+  EXPECT_EQ(1, optimization_guide::RetryForHistogramUntilCountReached(
+                   &histogram_tester,
+                   "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+                   "FormsAnnotations",
+                   1));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      1);
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, NotOnAllowlist) {
-  EnableSignin();
-
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, NotOnAllowlist) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("notallowed.com",
@@ -235,9 +203,14 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, NotOnAllowlist) {
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      0);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAnnotationsServiceBrowserTest,
+                         ::testing::Bool());
 
 // TODO: b/361692317 - Delete below once optimization guide populates list.
 
@@ -245,22 +218,28 @@ class UserAnnotationsServiceExplicitAllowlistBrowserTest
     : public UserAnnotationsServiceBrowserTest {
  protected:
   void InitializeFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kUserAnnotations,
-          {{"allowed_hosts_for_form_submissions", "allowed.com"}}},
-         {autofill_prediction_improvements::kAutofillPredictionImprovements,
-          {{"skip_allowlist", "true"}}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
+        {kUserAnnotations,
+         {{"allowed_hosts_for_form_submissions", "allowed.com"}}},
+        {autofill_prediction_improvements::kAutofillPredictionImprovements,
+         {}}};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kUserAnnotationsObserveFormSubmissions};
+    if (ShouldObserveFormSubmissions()) {
+      enabled_features_and_params.emplace_back(base::test::FeatureRefAndParams{
+          kUserAnnotationsObserveFormSubmissions, {}});
+      disabled_features.clear();
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features_and_params,
+                                                disabled_features);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                        NotOnAllowlist) {
-  EnableSignin();
-
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("notallowed.com",
@@ -271,13 +250,17 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      0);
 }
 
-IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                        OnAllowlist) {
-  EnableSignin();
+  if (!GetParam()) {
+    // TODO(b/367201367): Test is flaky in this case. Re-enable when fixed.
+    return;
+  }
 
   base::HistogramTester histogram_tester;
 
@@ -288,11 +271,18 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
   ASSERT_TRUE(FillForm(web_contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
 
-  EXPECT_EQ(
-      1, optimization_guide::RetryForHistogramUntilCountReached(
-             &histogram_tester, "UserAnnotations.AddFormSubmissionResult", 1));
-  histogram_tester.ExpectTotalCount("UserAnnotations.AddFormSubmissionResult",
-                                    1);
+  EXPECT_EQ(1, optimization_guide::RetryForHistogramUntilCountReached(
+                   &histogram_tester,
+                   "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+                   "FormsAnnotations",
+                   1));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus.FormsAnnotations",
+      1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAnnotationsServiceExplicitAllowlistBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace user_annotations

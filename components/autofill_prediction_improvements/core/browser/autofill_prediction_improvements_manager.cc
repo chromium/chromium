@@ -650,7 +650,10 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
 
   bool skip_import = false;
 
-  if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
+  if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled()) {
+    // The import is skipped because importing is done by a different path.
+    skip_import = true;
+  } else if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     // `autofill::prefs::kAutofillPredictionImprovementsEnabled` is disabled.
     skip_import = true;
   } else if (!annotation_service) {
