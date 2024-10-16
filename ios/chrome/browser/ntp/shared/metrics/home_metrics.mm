@@ -197,6 +197,7 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
     case ContentSuggestionsModuleType::kPlaceholder:
       // Ephemeral Card
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:

@@ -32,6 +32,7 @@ source_set("content_suggestions") {
     "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//components/strings",
     "//components/sync/base:features",
     "//components/url_formatter",
@@ -103,6 +104,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
+    "//ios/chrome/browser/ui/content_suggestions/send_tab_to_self",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:content_notification_promo",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:default_browser_promo",
@@ -191,6 +193,7 @@ source_set("content_suggestions_ui") {
     "magic_stack_half_sheet_model_delegate.h",
     "magic_stack_half_sheet_table_view_controller.h",
     "magic_stack_half_sheet_table_view_controller.mm",
+    "notifications_module_delegate.h",
     "user_account_image_update_delegate.h",
   ]
   deps = [

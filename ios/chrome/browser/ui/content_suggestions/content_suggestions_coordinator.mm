@@ -29,6 +29,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -37,6 +38,8 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
@@ -120,6 +123,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/notifications_module_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
@@ -128,6 +132,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
@@ -165,6 +170,7 @@ using segmentation_platform::TipIdentifier;
     MagicStackHalfSheetTableViewControllerDelegate,
     MagicStackModuleContainerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
+    NotificationsModuleDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     PriceTrackingPromoActionDelegate,
@@ -235,6 +241,7 @@ using segmentation_platform::TipIdentifier;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
+  SendTabPromoMediator* _sendTabPromoMediator;
 
   MagicStackCollectionViewController* _magicStackCollectionView;
 
@@ -405,6 +412,18 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_safetyCheckMediator];
   }
 
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+    FaviconLoader* faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+
+    _sendTabPromoMediator =
+        [[SendTabPromoMediator alloc] initWithFaviconLoader:faviconLoader
+                                                prefService:prefs];
+    _sendTabPromoMediator.notificationsDelegate = self;
+    [moduleMediators addObject:_sendTabPromoMediator];
+  }
+
   if (IsTipsMagicStackEnabled() &&
       !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
@@ -496,6 +515,8 @@ using segmentation_platform::TipIdentifier;
   _shortcutsMediator = nil;
   [_safetyCheckMediator disconnect];
   _safetyCheckMediator = nil;
+  [_sendTabPromoMediator disconnect];
+  _sendTabPromoMediator = nil;
   [_tipsMediator disconnect];
   _tipsMediator = nil;
   [_setUpListMediator disconnect];
@@ -769,9 +790,11 @@ using segmentation_platform::TipIdentifier;
 // and Safety Check modules.
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // modules.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
-        type == ContentSuggestionsModuleType::kSafetyCheck);
+        type == ContentSuggestionsModuleType::kSafetyCheck ||
+        type == ContentSuggestionsModuleType::kSendTabPromo);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return PushNotificationClientId::kSafetyCheck;
@@ -781,17 +804,23 @@ using segmentation_platform::TipIdentifier;
     return PushNotificationClientId::kTips;
   }
 
+  if (type == ContentSuggestionsModuleType::kSendTabPromo) {
+    return PushNotificationClientId::kSendTab;
+  }
+
   NOTREACHED();
 }
 
 // Retrieves the message ID for the push notification feature title associated
 // with the specified `ContentSuggestionsModuleType`. Currently, push
-// notifications are exclusively supported by the Set Up List and Safety Check
-// modules.
+// notifications are exclusively supported by the Set Up List, Send Tab, and
+// Safety Check modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // modules.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
-        type == ContentSuggestionsModuleType::kSafetyCheck);
+        type == ContentSuggestionsModuleType::kSafetyCheck ||
+        type == ContentSuggestionsModuleType::kSendTabPromo);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return IDS_IOS_SAFETY_CHECK_TITLE;
@@ -805,13 +834,19 @@ using segmentation_platform::TipIdentifier;
     return IDS_IOS_MAGIC_STACK_TIP_TITLE;
   }
 
+  if (type == ContentSuggestionsModuleType::kSendTabPromo) {
+    return IDS_IOS_SEND_TAB_PROMO_FEATURE_NAME_FOR_SNACKBAR;
+  }
+
   NOTREACHED();
 }
 
 - (void)enableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // modules.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
-        type == ContentSuggestionsModuleType::kSafetyCheck);
+        type == ContentSuggestionsModuleType::kSafetyCheck ||
+        type == ContentSuggestionsModuleType::kSendTabPromo);
 
   // Ask user for permission to opt-in to notifications.
   [_notificationsOptInAlertCoordinator stop];
@@ -838,9 +873,11 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)disableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // modules.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
-        type == ContentSuggestionsModuleType::kSafetyCheck);
+        type == ContentSuggestionsModuleType::kSafetyCheck ||
+        type == ContentSuggestionsModuleType::kSendTabPromo);
 
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

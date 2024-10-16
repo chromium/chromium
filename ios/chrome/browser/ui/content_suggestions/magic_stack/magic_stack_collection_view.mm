@@ -428,6 +428,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (BOOL)isCardEphemeral:(MagicStackModule*)card {
   switch (card.type) {
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
       return YES;

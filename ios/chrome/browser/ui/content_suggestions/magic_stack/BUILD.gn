@@ -58,6 +58,7 @@ source_set("ranking_model") {
     "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
+    "//ios/chrome/browser/ui/content_suggestions/send_tab_to_self",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",

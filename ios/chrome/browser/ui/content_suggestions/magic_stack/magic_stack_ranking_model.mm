@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
@@ -160,6 +161,8 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
       } else if ([mediator isKindOfClass:[TipsMagicStackMediator class]]) {
         _tipsMediator = static_cast<TipsMagicStackMediator*>(mediator);
         _tipsMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[SendTabPromoMediator class]]) {
+        // TODO(crbug.com/343495516): Handle case.
       } else {
         // Known module mediators need to be handled.
         NOTREACHED_IN_MIGRATION();
