@@ -391,12 +391,6 @@ BASE_FEATURE(kLinkedServicesSetting,
              "LinkedServicesSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacyGuideAndroid3,
-             "PrivacyGuideAndroid3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCbdTimeframeRequired,
              "CbdTimeframeRequired",
