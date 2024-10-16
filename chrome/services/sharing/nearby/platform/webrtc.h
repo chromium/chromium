@@ -49,6 +49,10 @@ class WebRtcMedium : public api::WebRtcMedium {
   const std::string GetDefaultCountryCode() override;
   void CreatePeerConnection(webrtc::PeerConnectionObserver* observer,
                             PeerConnectionCallback callback) override;
+  void CreatePeerConnection(
+      std::optional<webrtc::PeerConnectionFactoryInterface::Options> options,
+      webrtc::PeerConnectionObserver* observer,
+      PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
       std::string_view self_id,
       const location::nearby::connections::LocationHint& location_hint) override;

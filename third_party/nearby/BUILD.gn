@@ -445,9 +445,9 @@ source_set("v3_types") {
     ":connections_enums_proto",
     ":connections_types",
     ":interop_device",
+    ":nearby_crypto",
     ":platform_base_connection_info",
     ":platform_public_types",
-    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -474,9 +474,6 @@ source_set("analytics_event_logger") {
 }
 
 # src/internal/crypto
-# NOTE: This does not include any of the classes found in //crypto.
-# //third_party/nearby/internal/crypto_cros is a subset of //crypto whereas
-# //third_party/nearby/internal/crypto contains completely different classes.
 source_set("nearby_crypto") {
   public_configs = [
     ":nearby_include_config",
@@ -487,6 +484,58 @@ source_set("nearby_crypto") {
   public_deps = [
     ":platform_base_logging",
     ":platform_public_types",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl:boringssl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+# src/internal/crypto_cros
+# NOTE: This is a subset of //crypto that uses different namespaces in order to
+# differentiate between the two when using both.
+source_set("crypto_cros") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [
+    "src/internal/crypto_cros/aead.cc",
+    "src/internal/crypto_cros/ec_private_key.cc",
+    "src/internal/crypto_cros/ec_signature_creator.cc",
+    "src/internal/crypto_cros/ec_signature_creator_impl.cc",
+    "src/internal/crypto_cros/encryptor.cc",
+    "src/internal/crypto_cros/hkdf.cc",
+    "src/internal/crypto_cros/hmac.cc",
+    "src/internal/crypto_cros/nearby_base.cc",
+    "src/internal/crypto_cros/openssl_util.cc",
+    "src/internal/crypto_cros/rsa_private_key.cc",
+    "src/internal/crypto_cros/secure_hash.cc",
+    "src/internal/crypto_cros/secure_util.cc",
+    "src/internal/crypto_cros/sha2.cc",
+    "src/internal/crypto_cros/signature_verifier.cc",
+    "src/internal/crypto_cros/symmetric_key.cc",
+  ]
+  public = [
+    "src/internal/crypto_cros/aead.h",
+    "src/internal/crypto_cros/ec_private_key.h",
+    "src/internal/crypto_cros/ec_signature_creator.h",
+    "src/internal/crypto_cros/ec_signature_creator_impl.h",
+    "src/internal/crypto_cros/encryptor.h",
+    "src/internal/crypto_cros/hkdf.h",
+    "src/internal/crypto_cros/hmac.h",
+    "src/internal/crypto_cros/nearby_base.h",
+    "src/internal/crypto_cros/openssl_util.h",
+    "src/internal/crypto_cros/rsa_private_key.h",
+    "src/internal/crypto_cros/secure_hash.h",
+    "src/internal/crypto_cros/secure_util.h",
+    "src/internal/crypto_cros/sha2.h",
+    "src/internal/crypto_cros/signature_verifier.h",
+    "src/internal/crypto_cros/symmetric_key.h",
+  ]
+  public_deps = [
+    ":platform_base_logging",
+    "//base:base",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]
@@ -636,10 +685,10 @@ source_set("platform_api_types") {
   ]
   public_deps = [
     ":platform_base",
+    ":platform_impl_crypto",
     "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
   ]
-  deps = [ ":platform_impl_crypto" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -728,7 +777,8 @@ source_set("platform_base_uuid") {
   public = [ "src/internal/platform/uuid.h" ]
   public_deps = [
     ":platform_base",
-    "//crypto:crypto",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl:boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -1094,6 +1144,7 @@ source_set("presence_internal") {
     ":connections_enums_proto",
     ":connections_local_credential_proto",
     ":connections_metadata_proto",
+    ":crypto_cros",
     ":nearby_crypto",
     ":platform_base",
     ":platform_base_uuid",
@@ -1102,7 +1153,6 @@ source_set("presence_internal") {
     ":platform_public_types",
     ":presence_mediums",
     ":presence_types",
-    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
     "//third_party/beto-core:ldt_np_adv_ffi",
     "//third_party/boringssl:boringssl",
