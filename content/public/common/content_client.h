@@ -166,6 +166,10 @@ class CONTENT_EXPORT ContentClient {
   virtual std::u16string GetLocalizedString(int message_id,
                                             const std::u16string& replacement);
 
+  // Returns true if GetDataResource would return non-null data for the
+  // specified |resource_id|.
+  virtual bool HasDataResource(int resource_id) const;
+
   // Return the contents of a resource in a std::string_view given the resource
   // id.
   virtual std::string_view GetDataResource(

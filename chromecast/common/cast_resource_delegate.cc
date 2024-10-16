@@ -63,6 +63,10 @@ gfx::Image CastResourceDelegate::GetNativeImageNamed(int resource_id) {
   return gfx::Image();
 }
 
+bool CastResourceDelegate::HasDataResource(int resource_id) const {
+  return false;
+}
+
 base::RefCountedStaticMemory* CastResourceDelegate::LoadDataResourceBytes(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {

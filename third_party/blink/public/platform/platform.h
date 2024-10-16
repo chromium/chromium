@@ -384,6 +384,10 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Resources -----------------------------------------------------------
 
+  // Returns true if GetDataResource would return non-null data for the
+  // specified |resource_id|.
+  virtual bool HasDataResource(int resource_id) const { return false; }
+
   // Returns a blob of data corresponding to |resource_id|. This should not be
   // used for resources which have compress="gzip" in *.grd.
   virtual WebData GetDataResource(

@@ -126,6 +126,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // default resource.
     virtual gfx::Image GetNativeImageNamed(int resource_id) = 0;
 
+    // Returns true if LoadDataResourceBytes would return non-null data for the
+    // specified |resource_id|.
+    virtual bool HasDataResource(int resource_id) const = 0;
+
     // Return a ref counted memory resource or null to attempt retrieval of the
     // default resource.
     virtual base::RefCountedMemory* LoadDataResourceBytes(
@@ -315,6 +319,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // from the current module data. |ResourceBundle| owns the result.
   const ui::ImageModel& GetThemedLottieImageNamed(int resource_id);
 #endif
+
+  // Returns true if LoadDataResourceBytes would return non-null data for the
+  // specified |resource_id|.
+  bool HasDataResource(int resource_id) const;
 
   // Loads the raw bytes of a scale independent data resource or null.
   base::RefCountedMemory* LoadDataResourceBytes(int resource_id) const;

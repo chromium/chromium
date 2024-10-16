@@ -244,6 +244,19 @@ TEST_F(ResourceBundleTest, DelegateGetNativeImageNamed) {
   EXPECT_EQ(empty_image.ToSkBitmap(), result.ToSkBitmap());
 }
 
+TEST_F(ResourceBundleTest, DelegateHasDataResource) {
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
+
+  int resource_id = 5;
+
+  EXPECT_CALL(delegate_, HasDataResource(resource_id))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  bool result = resource_bundle->HasDataResource(resource_id);
+  EXPECT_EQ(result, true);
+}
+
 TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
   ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
 
@@ -424,6 +437,24 @@ class ResourceBundleImageTest : public ResourceBundleTest {
  private:
   std::unique_ptr<DataPack> locale_pack_;
 };
+
+TEST_F(ResourceBundleImageTest, HasDataResource) {
+  base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
+
+  // Dump content into pak file.
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
+
+  // Load pak file.
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
+
+  EXPECT_FALSE(resource_bundle->HasDataResource(1));
+  EXPECT_TRUE(resource_bundle->HasDataResource(4));
+  EXPECT_TRUE(resource_bundle->HasDataResource(6));
+  EXPECT_TRUE(resource_bundle->HasDataResource(8));
+  EXPECT_FALSE(resource_bundle->HasDataResource(200));
+}
 
 TEST_F(ResourceBundleImageTest, LoadDataResourceBytes) {
   base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));

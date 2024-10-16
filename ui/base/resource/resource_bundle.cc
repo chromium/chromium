@@ -645,6 +645,18 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
 
 constexpr uint8_t ResourceBundle::kBrotliConst[];
 
+bool ResourceBundle::HasDataResource(int resource_id) const {
+  if (delegate_ && delegate_->HasDataResource(resource_id)) {
+    return true;
+  }
+  for (const auto& resource_handle : resource_handles_) {
+    if (resource_handle->HasResource(static_cast<uint16_t>(resource_id))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
     int resource_id) const {
   return LoadDataResourceBytesForScale(resource_id, ui::kScaleFactorNone);
