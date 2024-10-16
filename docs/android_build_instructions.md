@@ -503,3 +503,12 @@ committing code to chromium.
 3.  Go to
     [http://storage.googleapis.com/chrome-browser-components/BUILD\_ID\_FROM\_STEP\_2/index.html](http://storage.googleapis.com/chrome-browser-components/BUILD_ID_FROM_STEP_2/index.html)
 4.  Download the listed files and follow the steps in the README.
+
+### Building with Docker
+
+To build Chromium for Android using Docker, please follow the
+instructions in the [Docker in Linux build instructions](/docs/linux/build_instructions.md#docker).
+
+*** note
+**Note:** You need install the [Android dependencies](#install-additional-build-dependencies) after setting up the [Build dependencies](/docs/linux/build_instructions.md#install-additional-build-dependencies).
+***
