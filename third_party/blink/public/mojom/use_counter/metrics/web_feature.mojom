@@ -4491,6 +4491,8 @@ enum WebFeature {
   kV8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter = 5117,
   kV8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter = 5118,
   kV8AI_LanguageModel_AttributeGetter = 5119,
+  kV8RTCEncodedVideoFrame_Timestamp_AttributeGetter = 5120,
+  kV8RTCEncodedAudioFrame_Timestamp_AttributeGetter = 5121,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

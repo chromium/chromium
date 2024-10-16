@@ -10937,6 +10937,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5118"
       label="V8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter"/>
   <int value="5119" label="V8AI_LanguageModel_AttributeGetter"/>
+  <int value="5120" label="V8RTCEncodedVideoFrame_Timestamp_AttributeGetter"/>
+  <int value="5121" label="V8RTCEncodedAudioFrame_Timestamp_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
