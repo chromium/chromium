@@ -1242,11 +1242,6 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
                                   ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
-  // TODO(crbug.com/368360956): Not incrementing the refcount will cause
-  // `profile` to get destroyed too early. Remove or convert to a CHECK() once
-  // the root cause is fixed.
-  SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
-                            GetKeepAliveOriginName(origin));
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
 
@@ -1259,12 +1254,11 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
             << "The keepalive was not added. This may cause a crash during "
             << "teardown. (except in unit tests, where Profiles may not be "
             << "registered with the ProfileManager)";
-    CHECK_IS_TEST(base::NotFatalUntil::M135);
     return;
   }
 
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-    CHECK_NE(0, GetTotalRefCount(info->keep_alives), base::NotFatalUntil::M135)
+    DCHECK_NE(0, GetTotalRefCount(info->keep_alives))
         << "AddKeepAlive() on a soon-to-be-deleted Profile is not allowed";
   }
 
@@ -1290,12 +1284,6 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
                                      ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
-  // TODO(crbug.com/368360956): Not incrementing the refcount will cause
-  // `profile` to get destroyed too early. Remove or convert to a CHECK() once
-  // the root cause is fixed.
-  SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
-                            GetKeepAliveOriginName(origin));
-
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
 
@@ -1307,11 +1295,16 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
     VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
             << ") called before the Profile was added to the "
             << "ProfileManager. The keepalive was not removed.";
-    CHECK_IS_TEST(base::NotFatalUntil::M135);
+    // TODO(crbug.com/368360956): Not incrementing the refcount will cause
+    // `profile` to get destroyed too early. Remove or convert to a CHECK() once
+    // the root cause is fixed.
+    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
+                              GetKeepAliveOriginName(origin));
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
-  CHECK(base::Contains(info->keep_alives, origin), base::NotFatalUntil::M135);
+  DCHECK(base::Contains(info->keep_alives, origin));
 
 #if !BUILDFLAG(IS_ANDROID)
   // When removing the last keep alive of an ephemeral profile, schedule the
@@ -1329,7 +1322,7 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
 #endif
 
   info->keep_alives[origin]--;
-  CHECK_LE(0, info->keep_alives[origin], base::NotFatalUntil::M135);
+  DCHECK_LE(0, info->keep_alives[origin]);
 
   VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
           << "). keep_alives=" << info->keep_alives;
