@@ -37,18 +37,18 @@ public abstract class FeatureMap {
     /**
      * Returns whether the specified feature is enabled or not.
      *
-     * <p>Calling this has the side effect of bucketing this client, which may cause an experiment
-     * to be marked as active.
+     * Calling this has the side effect of bucketing this client, which may cause an experiment to
+     * be marked as active.
      *
-     * <p>Should be called only after native is loaded. If {@link FeatureList#isInitialized()}
-     * returns true, this method is safe to call. In tests, this will return any values set through
+     * Should be called only after native is loaded. If {@link FeatureList#isInitialized()} returns
+     * true, this method is safe to call.  In tests, this will return any values set through
      * {@link FeatureList#setTestFeatures(Map)}, even before native is loaded.
      *
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.
      */
     public boolean isEnabledInNative(String featureName) {
-        Boolean testValue = FeatureList.getTestValueForFeatureStrict(featureName);
+        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
         if (testValue != null) return testValue;
         ensureNativeMapInit();
         return FeatureMapJni.get().isEnabled(mNativeMapPtr, featureName);

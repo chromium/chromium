@@ -6,9 +6,9 @@ package org.chromium.base.test.util;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
-import org.chromium.base.FeatureList;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.cached_flags.ValuesOverridden;
+import org.chromium.base.cached_flags.ValuesReturned;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -152,14 +152,11 @@ public class FieldTrials {
         if (enableFeatures != null) {
             Collections.addAll(enableFeaturesSet, enableFeatures.split(","));
 
-            // TODO(crbug.com/372717700): This logic interprets "--enable-features=Feature1<Study".
-            //      Move this logic together with the logic in CommandLineFlags that interprets
-            //      "--enable-features=Feature1".
-            FeatureList.TestValues testValues = new FeatureList.TestValues();
+            Map<String, Boolean> enabledFeaturesMap = new HashMap<>();
             for (String enabledFeature : enableFeaturesSet) {
-                testValues.addFeatureFlagOverride(cleanupFeatureName(enabledFeature), true);
+                enabledFeaturesMap.put(cleanupFeatureName(enabledFeature), true);
             }
-            FeatureList.mergeTestValues(testValues, /* replace= */ true);
+            ValuesReturned.setFeaturesForTesting(enabledFeaturesMap);
         }
 
         if (forceFieldTrials == null || forceFieldTrialParams == null || enableFeatures == null) {

@@ -7,21 +7,15 @@ package org.chromium.components.cached_flags;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesOverridden;
 import org.chromium.base.cached_flags.ValuesReturned;
@@ -36,13 +30,16 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFeatureFlagsSafeModeUnitTest {
     @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
+    private static final FeatureMap FEATURE_MAP = BaseFlagTestRule.FEATURE_MAP;
     private static final String CRASHY_FEATURE = "CrashyFeature";
     private static final String OK_FEATURE = "OkFeature";
     private static final boolean CRASHY_FEATURE_DEFAULT = false;
     private static final boolean OK_FEATURE_DEFAULT = false;
+    private static final CachedFlag sCrashyFeature =
+            new CachedFlag(FEATURE_MAP, CRASHY_FEATURE, CRASHY_FEATURE_DEFAULT);
+    private static final CachedFlag sOkFeature =
+            new CachedFlag(FEATURE_MAP, OK_FEATURE, OK_FEATURE_DEFAULT);
 
     private static final String BOOL_PARAM_NAME = "BoolParam";
     private static final String INT_PARAM_NAME = "IntParam";
@@ -61,37 +58,28 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     private static final double DOUBLE_PARAM_NATIVE_2 = 77.5;
     private static final String STRING_PARAM_NATIVE_2 = "baz";
 
-    @Mock private FeatureMap mFeatureMap;
-    private CachedFlag mCrashyFeature;
-    private CachedFlag mOkFeature;
-    private BooleanCachedFieldTrialParameter mBoolParam;
-    private IntCachedFieldTrialParameter mIntParam;
-    private DoubleCachedFieldTrialParameter mDoubleParam;
-    private StringCachedFieldTrialParameter mStringParam;
+    private static final BooleanCachedFieldTrialParameter BOOL_PARAM =
+            new BooleanCachedFieldTrialParameter(
+                    FEATURE_MAP, OK_FEATURE, BOOL_PARAM_NAME, BOOL_PARAM_DEFAULT);
+    private static final IntCachedFieldTrialParameter INT_PARAM =
+            new IntCachedFieldTrialParameter(
+                    FEATURE_MAP, OK_FEATURE, INT_PARAM_NAME, INT_PARAM_DEFAULT);
+    private static final DoubleCachedFieldTrialParameter DOUBLE_PARAM =
+            new DoubleCachedFieldTrialParameter(
+                    FEATURE_MAP, OK_FEATURE, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
+    private static final StringCachedFieldTrialParameter STRING_PARAM =
+            new StringCachedFieldTrialParameter(
+                    FEATURE_MAP, OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
 
     @Before
     public void setUp() {
-        mCrashyFeature = new CachedFlag(mFeatureMap, CRASHY_FEATURE, CRASHY_FEATURE_DEFAULT);
-        mOkFeature = new CachedFlag(mFeatureMap, OK_FEATURE, OK_FEATURE_DEFAULT);
-        mBoolParam =
-                new BooleanCachedFieldTrialParameter(
-                        mFeatureMap, OK_FEATURE, BOOL_PARAM_NAME, BOOL_PARAM_DEFAULT);
-        mIntParam =
-                new IntCachedFieldTrialParameter(
-                        mFeatureMap, OK_FEATURE, INT_PARAM_NAME, INT_PARAM_DEFAULT);
-        mDoubleParam =
-                new DoubleCachedFieldTrialParameter(
-                        mFeatureMap, OK_FEATURE, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
-        mStringParam =
-                new StringCachedFieldTrialParameter(
-                        mFeatureMap, OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
-
         CachedFlagsSafeMode.getInstance().enableForTesting();
         clearMemory();
     }
 
     @After
     public void tearDown() {
+        FeatureList.setTestFeatures(null);
         clearMemory();
     }
 
@@ -104,8 +92,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
         endCleanRun(
                 false,
@@ -124,8 +112,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertFalse(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCleanRun(
                 true,
@@ -144,8 +132,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native2.
@@ -157,8 +145,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native2.
@@ -171,8 +159,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.ENGAGED_WITH_SAFE_VALUES,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertFalse(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCleanRun(
                 true,
@@ -191,8 +179,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.ENGAGED_WITH_SAFE_VALUES,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertFalse(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCleanRun(
                 false,
@@ -210,8 +198,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertFalse(mCrashyFeature.isEnabled());
-        assertFalse(mOkFeature.isEnabled());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
     }
 
@@ -343,8 +331,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
         endCleanRun(
                 true,
@@ -363,8 +351,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native2.
@@ -377,8 +365,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
         // Cached values are the flaky ones cached from native.
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
         endCleanRun(
                 true,
@@ -397,8 +385,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
     }
 
@@ -415,8 +403,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
         endFirstRunWithKill();
 
@@ -427,8 +415,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
         endFirstRunWithKill();
 
@@ -439,8 +427,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
     }
 
@@ -449,22 +437,20 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Simulate a cache without writing safe values. This happens before Safe Mode was
         // implemented and will become rare as clients start writing safe values.
         // Cache a crashy value.
-        when(mFeatureMap.isEnabledInNative(CRASHY_FEATURE)).thenReturn(true);
-        when(mFeatureMap.isEnabledInNative(OK_FEATURE)).thenReturn(true);
-        when(mFeatureMap.getFieldTrialParamByFeatureAsBoolean(
-                        eq(OK_FEATURE), eq(BOOL_PARAM_NAME), anyBoolean()))
-                .thenReturn(BOOL_PARAM_NATIVE_1);
-        when(mFeatureMap.getFieldTrialParamByFeatureAsInt(
-                        eq(OK_FEATURE), eq(INT_PARAM_NAME), anyInt()))
-                .thenReturn(INT_PARAM_NATIVE_1);
-        when(mFeatureMap.getFieldTrialParamByFeatureAsDouble(
-                        eq(OK_FEATURE), eq(DOUBLE_PARAM_NAME), anyDouble()))
-                .thenReturn(DOUBLE_PARAM_NATIVE_1);
-        when(mFeatureMap.getFieldTrialParamByFeature(OK_FEATURE, STRING_PARAM_NAME))
-                .thenReturn(STRING_PARAM_NATIVE_1);
-        CachedFlagUtils.cacheNativeFlags(Arrays.asList(mCrashyFeature, mOkFeature));
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(CRASHY_FEATURE, true);
+        testValues.addFeatureFlagOverride(OK_FEATURE, true);
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, BOOL_PARAM_NAME, Boolean.toString(BOOL_PARAM_NATIVE_1));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, INT_PARAM_NAME, Integer.toString(INT_PARAM_NATIVE_1));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, DOUBLE_PARAM_NAME, Double.toString(DOUBLE_PARAM_NATIVE_1));
+        testValues.addFieldTrialParamOverride(OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_NATIVE_1);
+        FeatureList.setTestValues(testValues);
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
         CachedFlagUtils.cacheFieldTrialParameters(
-                Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
+                Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
 
         clearMemory();
         // Cached values became true(crashy)/true/native1.
@@ -476,8 +462,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native1.
@@ -489,8 +475,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native1.
@@ -503,8 +489,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.ENGAGED_WITHOUT_SAFE_VALUES,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
     }
 
@@ -517,8 +503,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
         endCleanRun(
                 false,
@@ -537,8 +523,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertFalse(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCleanRun(
                 true,
@@ -563,8 +549,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native2.
@@ -576,8 +562,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative2();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native2.
@@ -590,8 +576,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Safe values are false/true/native1, but from another version.
         // Cached values are true(crashy)/true/native2, but the default values false/false/defaults
         // are returned since Safe Mode is falling back to default.
-        assertEquals(CRASHY_FEATURE_DEFAULT, mCrashyFeature.isEnabled());
-        assertEquals(OK_FEATURE_DEFAULT, mOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
         assertCachedParamsEqualDefaults();
     }
 
@@ -604,8 +590,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertFalse(mCrashyFeature.isEnabled());
-        assertFalse(mOkFeature.isEnabled());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endCleanRun(
                 true,
                 true,
@@ -626,8 +612,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(
                 Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFlagsSafeMode.getInstance().getBehaviorForTesting());
-        assertTrue(mCrashyFeature.isEnabled());
-        assertTrue(mOkFeature.isEnabled());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         assertCachedParamsEqualNative1();
         endCrashyRun();
         // Cached values remain true(crashy)/true/native1.
@@ -642,16 +628,16 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     private void startRun() {
         // Enter safe mode or not before the start checkpoint, since that's what happens and should
         // be supported.
-        mCrashyFeature.isEnabled();
+        sCrashyFeature.isEnabled();
 
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
 
         // Only flags and params that are checked before native flags are cached need to be switched
         // to safe values.
-        mBoolParam.getValue();
-        mIntParam.getValue();
-        mDoubleParam.getValue();
-        mStringParam.getValue();
+        BOOL_PARAM.getValue();
+        INT_PARAM.getValue();
+        DOUBLE_PARAM.getValue();
+        STRING_PARAM.getValue();
     }
 
     private void endFirstRunWithKill() {
@@ -680,23 +666,21 @@ public class CachedFeatureFlagsSafeModeUnitTest {
             int intParamValue,
             double doubleParamValue,
             String stringParamValue) {
-        when(mFeatureMap.isEnabledInNative(CRASHY_FEATURE)).thenReturn(crashyFeatureValue);
-        when(mFeatureMap.isEnabledInNative(OK_FEATURE)).thenReturn(okFeatureValue);
-        when(mFeatureMap.getFieldTrialParamByFeatureAsBoolean(
-                        eq(OK_FEATURE), eq(BOOL_PARAM_NAME), anyBoolean()))
-                .thenReturn(boolParamValue);
-        when(mFeatureMap.getFieldTrialParamByFeatureAsInt(
-                        eq(OK_FEATURE), eq(INT_PARAM_NAME), anyInt()))
-                .thenReturn(intParamValue);
-        when(mFeatureMap.getFieldTrialParamByFeatureAsDouble(
-                        eq(OK_FEATURE), eq(DOUBLE_PARAM_NAME), anyDouble()))
-                .thenReturn(doubleParamValue);
-        when(mFeatureMap.getFieldTrialParamByFeature(OK_FEATURE, STRING_PARAM_NAME))
-                .thenReturn(stringParamValue);
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(CRASHY_FEATURE, crashyFeatureValue);
+        testValues.addFeatureFlagOverride(OK_FEATURE, okFeatureValue);
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, BOOL_PARAM_NAME, Boolean.toString(boolParamValue));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, INT_PARAM_NAME, Integer.toString(intParamValue));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, DOUBLE_PARAM_NAME, Double.toString(doubleParamValue));
+        testValues.addFieldTrialParamOverride(OK_FEATURE, STRING_PARAM_NAME, stringParamValue);
+        FeatureList.setTestValues(testValues);
 
-        CachedFlagUtils.cacheNativeFlags(Arrays.asList(mCrashyFeature, mOkFeature));
+        CachedFlagUtils.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
         CachedFlagUtils.cacheFieldTrialParameters(
-                Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
+                Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mExecutorRule.runAllBackgroundAndUi();
@@ -709,24 +693,24 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     }
 
     private void assertCachedParamsEqualDefaults() {
-        assertEquals(BOOL_PARAM_DEFAULT, mBoolParam.getValue());
-        assertEquals(INT_PARAM_DEFAULT, mIntParam.getValue());
-        assertEquals(DOUBLE_PARAM_DEFAULT, mDoubleParam.getValue(), 1e-10);
-        assertEquals(STRING_PARAM_DEFAULT, mStringParam.getValue());
+        assertEquals(BOOL_PARAM_DEFAULT, BOOL_PARAM.getValue());
+        assertEquals(INT_PARAM_DEFAULT, INT_PARAM.getValue());
+        assertEquals(DOUBLE_PARAM_DEFAULT, DOUBLE_PARAM.getValue(), 1e-10);
+        assertEquals(STRING_PARAM_DEFAULT, STRING_PARAM.getValue());
     }
 
     private void assertCachedParamsEqualNative1() {
-        assertEquals(BOOL_PARAM_NATIVE_1, mBoolParam.getValue());
-        assertEquals(INT_PARAM_NATIVE_1, mIntParam.getValue());
-        assertEquals(DOUBLE_PARAM_NATIVE_1, mDoubleParam.getValue(), 1e-10);
-        assertEquals(STRING_PARAM_NATIVE_1, mStringParam.getValue());
+        assertEquals(BOOL_PARAM_NATIVE_1, BOOL_PARAM.getValue());
+        assertEquals(INT_PARAM_NATIVE_1, INT_PARAM.getValue());
+        assertEquals(DOUBLE_PARAM_NATIVE_1, DOUBLE_PARAM.getValue(), 1e-10);
+        assertEquals(STRING_PARAM_NATIVE_1, STRING_PARAM.getValue());
     }
 
     private void assertCachedParamsEqualNative2() {
-        assertEquals(BOOL_PARAM_NATIVE_2, mBoolParam.getValue());
-        assertEquals(INT_PARAM_NATIVE_2, mIntParam.getValue());
-        assertEquals(DOUBLE_PARAM_NATIVE_2, mDoubleParam.getValue(), 1e-10);
-        assertEquals(STRING_PARAM_NATIVE_2, mStringParam.getValue());
+        assertEquals(BOOL_PARAM_NATIVE_2, BOOL_PARAM.getValue());
+        assertEquals(INT_PARAM_NATIVE_2, INT_PARAM.getValue());
+        assertEquals(DOUBLE_PARAM_NATIVE_2, DOUBLE_PARAM.getValue(), 1e-10);
+        assertEquals(STRING_PARAM_NATIVE_2, STRING_PARAM.getValue());
     }
 
     private static void clearMemory() {

@@ -30,7 +30,7 @@ public abstract class Features {
     /** Returns true if the given feature is enabled. */
     public boolean isEnabled() {
         // FeatureFlags set for testing override the native default value.
-        Boolean testValue = FeatureList.getTestValueForFeatureStrict(getName());
+        Boolean testValue = FeatureList.getTestValueForFeature(getName());
         if (testValue != null) return testValue;
         return FeaturesJni.get().isEnabled(getFeaturePointer());
     }

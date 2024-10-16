@@ -9,12 +9,7 @@ import org.chromium.build.annotations.CheckDiscard;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Keeps track of values overridden for testing for CachedFieldTrialParameter.
- *
- * <p>TODO(crbug.com/40281605): Store these in FeatureList together with overrides for flags and
- * non-cached field trial parameters.
- */
+/** Keeps track of values overridden for testing for cached flags and field trial parameters. */
 public abstract class ValuesOverridden {
     @CheckDiscard(
             "Should only exist in tests and in debug builds, should be optimized out in "

@@ -6,9 +6,9 @@ package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
@@ -17,6 +17,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,11 +86,6 @@ public class CachedFlag extends Flag {
     public boolean isEnabled() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        Boolean testValue = FeatureList.getTestValueForFeature(mFeatureName);
-        if (testValue != null) {
-            return testValue;
-        }
-
         return ValuesReturned.getReturnedOrNewBoolValue(
                 getSharedPreferenceKey(), getValueSupplier());
     }
@@ -138,10 +134,8 @@ public class CachedFlag extends Flag {
      */
     @VisibleForTesting
     @Deprecated
-    public void setForTesting(boolean value) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(mFeatureName, value);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
+    public void setForTesting(@Nullable Boolean value) {
+        ValuesReturned.setFeaturesForTesting(Collections.singletonMap(getFeatureName(), value));
     }
 
     /**
