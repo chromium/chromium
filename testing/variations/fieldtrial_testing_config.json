@@ -19937,7 +19937,6 @@
     "SafeBrowsingDeepScanningCriteria": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -19957,6 +19956,7 @@
     "SafeBrowsingExternalAppRedirectTelemetry": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
