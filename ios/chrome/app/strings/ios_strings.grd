@@ -5090,7 +5090,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Share…
       </message>
       <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER" desc="Disclaimer for sharing a tab group.">
-        Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn about shared tab groups<ph name="END_LINK">END_LINK</ph>
+        Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER_LINK" desc="The link part of the disclaimer for sharing a tab group.">
+        Learn about shared tab groups
       </message>
       <message name="IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility Label of a button which will initiate the popup message with the full URL in the web context menu. [iOS only]">
         Show full URL
