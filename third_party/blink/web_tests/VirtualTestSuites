@@ -867,7 +867,7 @@
       "external/wpt/css/css-values/signs-abs-invalid.html"
     ],
     "args": ["--disable-blink-features=CSSSignRelatedFunctions"],
-    "expires": "Oct 1, 2024"
+    "expires": "Jan 1, 2025"
   },
   "The overlay-scrollbar virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
