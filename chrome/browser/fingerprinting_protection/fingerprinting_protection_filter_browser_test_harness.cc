@@ -81,8 +81,7 @@ FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kEnableFingerprintingProtectionFilterInIncognito,
-        {{"activation_level", "enabled"},
-         {"performance_measurement_rate", "0.0"}}}},
+        {{"performance_measurement_rate", "0.0"}}}},
       /*disabled_features=*/{});
 }
 
