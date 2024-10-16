@@ -17,6 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -120,8 +121,23 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
   return true;
 }
 
+bool OnTaskLockedSessionNavigationThrottle::
+    ShouldBlockSensitiveUrlNavigation() {
+  // Block download urls, files, urls via post request, blob urls, chrome urls,
+  // and other local schemes.
+  const GURL& url = navigation_handle()->GetURL();
+  return (navigation_handle()->IsDownload() ||
+          (navigation_handle()->GetRequestMethod() !=
+           net::HttpRequestHeaders::kGetMethod) ||
+          !url.SchemeIsHTTPOrHTTPS());
+}
+
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
+  if (ShouldBlockSensitiveUrlNavigation()) {
+    return CANCEL;
+  }
+
   const GURL& url = navigation_handle()->GetURL();
 
   // Checks if the query is the end of an OAuth login. If so, then we want
@@ -264,6 +280,14 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::WillStartRequest() {
   return CheckRestrictions();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+OnTaskLockedSessionNavigationThrottle::WillProcessResponse() {
+  if (ShouldBlockSensitiveUrlNavigation()) {
+    return CANCEL;
+  }
+  return PROCEED;
 }
 
 content::NavigationThrottle::ThrottleCheckResult

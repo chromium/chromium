@@ -1447,3 +1447,31 @@ TEST_F(OnTaskNavigationThrottleTest,
   EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
 }
+
+TEST_F(OnTaskNavigationThrottleTest, BlockNavigationForPostMethodRequest) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  ASSERT_TRUE(base::test::RunUntil([&window_tracker]() {
+    return window_tracker->on_task_blocklist()->GetURLBlocklistState(
+               GURL(kTabUrl1FrontSubDomain1)) !=
+           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  }));
+  const std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          url_a, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  simulator->SetMethod("POST");
+  simulator->Start();
+  EXPECT_EQ(content::NavigationThrottle::CANCEL,
+            simulator->GetLastThrottleCheckResult());
+}

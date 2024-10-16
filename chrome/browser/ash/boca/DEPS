@@ -45,3 +45,10 @@ include_rules = [
   "+chrome/browser/ash/settings/device_settings_service.h",
   "+components/sessions",
 ]
+
+specific_include_rules = {
+    "on_task_locked_session_window_tracker_browsertest.cc": [
+        "+chrome/common/chrome_paths.h",
+        "+chrome/test/base/ui_test_utils.h"
+    ]
+}

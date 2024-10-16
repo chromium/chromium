@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
@@ -13,11 +14,19 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/download_test_observer.h"
+#include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ash::boca::OnTaskSystemWebAppManagerImpl;
@@ -26,8 +35,8 @@ using ::testing::NotNull;
 
 namespace {
 
-constexpr char kTabUrl1[] = "http://example.com";
-constexpr char kTabUrl2[] = "http://company.org";
+constexpr char kTabUrl1[] = "https://example.com";
+constexpr char kTabUrl2[] = "https://company.org";
 
 class OnTaskLockedSessionWindowTrackerBrowserTest
     : public InProcessBrowserTest {
@@ -40,17 +49,39 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
                               ash::features::kBocaConsumer},
         /*disabled_features=*/{});
   }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   void SetUpOnMainThread() override {
     ash::SystemWebAppManager::Get(profile())->InstallSystemAppsForTesting();
     system_web_app_manager_ =
         std::make_unique<OnTaskSystemWebAppManagerImpl>(profile());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
+    https_server()->AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     system_web_app_manager_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   Browser* FindBocaSystemWebAppBrowser() {
@@ -66,6 +97,8 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OnTaskSystemWebAppManagerImpl> system_web_app_manager_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
@@ -99,6 +132,158 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   boca_app_browser->tab_strip_model()->CloseAllTabs();
   content::RunAllTasksUntilIdle();
   EXPECT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       BlockFileUrlTypes) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*active_tab_tracker=*/nullptr);
+
+  // Spawns a tab for testing purposes (outside the homepage tab).
+  const GURL base_url(kTabUrl1);
+  system_web_app_manager()->CreateBackgroundTabWithUrl(
+      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // File urls are blocked.
+  const GURL file_url(GURL("file:///foo.com/download.zip"));
+  content::TestNavigationObserver url_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, file_url));
+  url_obs.Wait();
+  EXPECT_EQ(base_url, boca_app_browser->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+  EXPECT_FALSE(url_obs.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       BlockChromeUrlTypes) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*active_tab_tracker=*/nullptr);
+
+  // Spawns a tab for testing purposes (outside the homepage tab).
+  const GURL base_url(kTabUrl1);
+  system_web_app_manager()->CreateBackgroundTabWithUrl(
+      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // Chrome urls are blocked.
+  const GURL chrome_url = GURL(chrome::kChromeUIVersionURL);
+  content::TestNavigationObserver url_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, chrome_url));
+  url_obs.Wait();
+  EXPECT_EQ(base_url, boca_app_browser->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+  EXPECT_FALSE(url_obs.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       BlockBlobUrlTypes) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*active_tab_tracker=*/nullptr);
+
+  // Spawns a tab for testing purposes (outside the homepage tab).
+  const GURL base_url(kTabUrl1);
+  system_web_app_manager()->CreateBackgroundTabWithUrl(
+      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // Blob urls are blocked.
+  const GURL blob_url(GURL("blob:https://foo.com/uuid"));
+  content::TestNavigationObserver url_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, blob_url));
+  url_obs.Wait();
+  EXPECT_EQ(base_url, boca_app_browser->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+  EXPECT_FALSE(url_obs.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       BlockDownloadUrlTypes) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*active_tab_tracker=*/nullptr);
+
+  // Spawns a tab for testing purposes (outside the homepage tab).
+  const GURL base_url(kTabUrl1);
+  system_web_app_manager()->CreateBackgroundTabWithUrl(
+      window_id, base_url, OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // Download urls are blocked and setup monitoring of the download.
+  const GURL download_url(
+      embedded_test_server()->GetURL("foo.com",
+                                     "/set-header?Content-Disposition: "
+                                     "attachment"));
+  content::NavigationHandleObserver nav_handle_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents(),
+      download_url);
+  content::TestNavigationObserver url_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, download_url));
+  EXPECT_FALSE(nav_handle_obs.has_committed());
+  EXPECT_TRUE(nav_handle_obs.is_download());
+  EXPECT_FALSE(url_obs.last_navigation_succeeded());
 }
 
 }  // namespace

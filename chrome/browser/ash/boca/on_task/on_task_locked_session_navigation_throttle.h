@@ -27,11 +27,17 @@ class OnTaskLockedSessionNavigationThrottle
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
   explicit OnTaskLockedSessionNavigationThrottle(
       content::NavigationHandle* handle);
+
+  // Checks to see if the url we are currently navigating should be blocked
+  // regardless of restriction levels. This includes special chrome urls, files,
+  // blobs, downloads and other sensitive local schemes.
+  bool ShouldBlockSensitiveUrlNavigation();
 
   // Checks that the restriction is applied to the navigation whether it
   // happens via redirect or when the navigation is first started.
