@@ -17,7 +17,7 @@
     "extension_pages": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:"
   },
   "background": {
-    "service_worker": "service_worker.js",
+    "service_worker": "service_worker_20241016.js",
     "type": "module"
   },
   "externally_connectable": {
