@@ -27,11 +27,11 @@ std::optional<QuickInsertSearchResult> PickerMathSearch(
   std::optional<std::string> result =
       fend_core::evaluate(base::UTF16ToUTF8(query));
   if (result.has_value()) {
-    return PickerTextResult(
+    return QuickInsertTextResult(
         base::UTF8ToUTF16(*result), u"",
         ui::ImageModel::FromVectorIcon(
             kPickerUnitsMathsIcon, cros_tokens::kCrosSysOnSurface, kIconSize),
-        PickerTextResult::Source::kMath);
+        QuickInsertTextResult::Source::kMath);
   }
   return std::nullopt;
 }
@@ -43,7 +43,7 @@ std::vector<QuickInsertSearchResult> PickerMathExamples() {
         fend_core::evaluate(base::UTF16ToUTF8(query));
     CHECK(result.has_value());
 
-    results.push_back(PickerSearchRequestResult(
+    results.push_back(QuickInsertSearchRequestResult(
         query, base::UTF8ToUTF16(*result),
         ui::ImageModel::FromVectorIcon(
             kPickerUnitsMathsIcon, cros_tokens::kCrosSysOnSurface, kIconSize)));

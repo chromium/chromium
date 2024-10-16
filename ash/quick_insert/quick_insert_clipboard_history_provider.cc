@@ -18,15 +18,15 @@ namespace {
 constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
 constexpr int kMaxTextLength = 10000;
 
-std::optional<PickerClipboardResult::DisplayFormat> GetDisplayFormat(
+std::optional<QuickInsertClipboardResult::DisplayFormat> GetDisplayFormat(
     crosapi::mojom::ClipboardHistoryDisplayFormat format) {
   switch (format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-      return PickerClipboardResult::DisplayFormat::kFile;
+      return QuickInsertClipboardResult::DisplayFormat::kFile;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
-      return PickerClipboardResult::DisplayFormat::kText;
+      return QuickInsertClipboardResult::DisplayFormat::kText;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
-      return PickerClipboardResult::DisplayFormat::kImage;
+      return QuickInsertClipboardResult::DisplayFormat::kImage;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       // TODO: b/348102522 - Show HTML content once it's possible to render them
       // inside Picker.
@@ -81,10 +81,10 @@ void PickerClipboardHistoryProvider::OnFetchHistory(
     if (!MatchQuery(item, query)) {
       continue;
     }
-    if (std::optional<PickerClipboardResult::DisplayFormat> display_format =
-            GetDisplayFormat(item.display_format());
+    if (std::optional<QuickInsertClipboardResult::DisplayFormat>
+            display_format = GetDisplayFormat(item.display_format());
         display_format.has_value()) {
-      results.push_back(PickerClipboardResult(
+      results.push_back(QuickInsertClipboardResult(
           item.id(), *display_format, item.file_count(), item.display_text(),
           item.display_image(),
           (clock_->Now() - item.time_copied()) < kRecencyThreshold));

@@ -25,7 +25,7 @@ enum class PresetQueryCategory;
 
 namespace ash {
 
-struct ASH_EXPORT PickerTextResult {
+struct ASH_EXPORT QuickInsertTextResult {
   enum class Source {
     kUnknown,  // This should only be used for tests.
     kDate,
@@ -39,69 +39,70 @@ struct ASH_EXPORT PickerTextResult {
   ui::ImageModel icon;
   Source source;
 
-  explicit PickerTextResult(
-      std::u16string_view text,
-      PickerTextResult::Source source = PickerTextResult::Source::kUnknown);
-  explicit PickerTextResult(std::u16string_view primary_text,
-                            std::u16string_view secondary_text,
-                            ui::ImageModel icon,
-                            Source source);
-  PickerTextResult(const PickerTextResult&);
-  PickerTextResult& operator=(const PickerTextResult&);
-  ~PickerTextResult();
+  explicit QuickInsertTextResult(std::u16string_view text,
+                                 QuickInsertTextResult::Source source =
+                                     QuickInsertTextResult::Source::kUnknown);
+  explicit QuickInsertTextResult(std::u16string_view primary_text,
+                                 std::u16string_view secondary_text,
+                                 ui::ImageModel icon,
+                                 Source source);
+  QuickInsertTextResult(const QuickInsertTextResult&);
+  QuickInsertTextResult& operator=(const QuickInsertTextResult&);
+  ~QuickInsertTextResult();
 
-  bool operator==(const PickerTextResult&) const;
+  bool operator==(const QuickInsertTextResult&) const;
 };
 
-struct ASH_EXPORT PickerSearchRequestResult {
+struct ASH_EXPORT QuickInsertSearchRequestResult {
   std::u16string primary_text;
   std::u16string secondary_text;
   ui::ImageModel icon;
 
-  explicit PickerSearchRequestResult(std::u16string_view primary_text,
-                                     std::u16string_view secondary_text,
-                                     ui::ImageModel icon);
-  PickerSearchRequestResult(const PickerSearchRequestResult&);
-  PickerSearchRequestResult& operator=(const PickerSearchRequestResult&);
-  ~PickerSearchRequestResult();
+  explicit QuickInsertSearchRequestResult(std::u16string_view primary_text,
+                                          std::u16string_view secondary_text,
+                                          ui::ImageModel icon);
+  QuickInsertSearchRequestResult(const QuickInsertSearchRequestResult&);
+  QuickInsertSearchRequestResult& operator=(
+      const QuickInsertSearchRequestResult&);
+  ~QuickInsertSearchRequestResult();
 
-  bool operator==(const PickerSearchRequestResult&) const;
+  bool operator==(const QuickInsertSearchRequestResult&) const;
 };
 
-struct ASH_EXPORT PickerEmojiResult {
+struct ASH_EXPORT QuickInsertEmojiResult {
   enum class Type { kEmoji, kSymbol, kEmoticon };
 
   Type type;
   std::u16string text;
   std::u16string name;
 
-  static PickerEmojiResult Emoji(std::u16string_view text,
-                                 std::u16string name = u"");
-  static PickerEmojiResult Symbol(std::u16string_view text,
-                                  std::u16string name = u"");
-  static PickerEmojiResult Emoticon(std::u16string_view text,
-                                    std::u16string name = u"");
+  static QuickInsertEmojiResult Emoji(std::u16string_view text,
+                                      std::u16string name = u"");
+  static QuickInsertEmojiResult Symbol(std::u16string_view text,
+                                       std::u16string name = u"");
+  static QuickInsertEmojiResult Emoticon(std::u16string_view text,
+                                         std::u16string name = u"");
 
-  explicit PickerEmojiResult(Type type,
-                             std::u16string_view text,
-                             std::u16string name);
-  PickerEmojiResult(const PickerEmojiResult&);
-  PickerEmojiResult& operator=(const PickerEmojiResult&);
-  ~PickerEmojiResult();
+  explicit QuickInsertEmojiResult(Type type,
+                                  std::u16string_view text,
+                                  std::u16string name);
+  QuickInsertEmojiResult(const QuickInsertEmojiResult&);
+  QuickInsertEmojiResult& operator=(const QuickInsertEmojiResult&);
+  ~QuickInsertEmojiResult();
 
-  bool operator==(const PickerEmojiResult&) const;
+  bool operator==(const QuickInsertEmojiResult&) const;
 };
 
-struct ASH_EXPORT PickerGifResult {
-  PickerGifResult(const GURL& preview_url,
-                  const GURL& preview_image_url,
-                  const gfx::Size& preview_dimensions,
-                  const GURL& full_url,
-                  const gfx::Size& full_dimensions,
-                  std::u16string content_description);
-  PickerGifResult(const PickerGifResult&);
-  PickerGifResult& operator=(const PickerGifResult&);
-  ~PickerGifResult();
+struct ASH_EXPORT QuickInsertGifResult {
+  QuickInsertGifResult(const GURL& preview_url,
+                       const GURL& preview_image_url,
+                       const gfx::Size& preview_dimensions,
+                       const GURL& full_url,
+                       const gfx::Size& full_dimensions,
+                       std::u16string content_description);
+  QuickInsertGifResult(const QuickInsertGifResult&);
+  QuickInsertGifResult& operator=(const QuickInsertGifResult&);
+  ~QuickInsertGifResult();
 
   // A url to an animated preview gif media source.
   GURL preview_url;
@@ -122,10 +123,10 @@ struct ASH_EXPORT PickerGifResult {
   // features.
   std::u16string content_description;
 
-  bool operator==(const PickerGifResult&) const;
+  bool operator==(const QuickInsertGifResult&) const;
 };
 
-struct ASH_EXPORT PickerClipboardResult {
+struct ASH_EXPORT QuickInsertClipboardResult {
   enum class DisplayFormat {
     kFile,
     kText,
@@ -142,82 +143,84 @@ struct ASH_EXPORT PickerClipboardResult {
   std::optional<ui::ImageModel> display_image;
   bool is_recent;
 
-  explicit PickerClipboardResult(base::UnguessableToken item_id,
-                                 DisplayFormat display_format,
-                                 size_t file_count,
-                                 std::u16string display_text,
-                                 std::optional<ui::ImageModel> display_image,
-                                 bool is_recent);
-  PickerClipboardResult(const PickerClipboardResult&);
-  PickerClipboardResult& operator=(const PickerClipboardResult&);
-  ~PickerClipboardResult();
+  explicit QuickInsertClipboardResult(
+      base::UnguessableToken item_id,
+      DisplayFormat display_format,
+      size_t file_count,
+      std::u16string display_text,
+      std::optional<ui::ImageModel> display_image,
+      bool is_recent);
+  QuickInsertClipboardResult(const QuickInsertClipboardResult&);
+  QuickInsertClipboardResult& operator=(const QuickInsertClipboardResult&);
+  ~QuickInsertClipboardResult();
 
-  bool operator==(const PickerClipboardResult&) const;
+  bool operator==(const QuickInsertClipboardResult&) const;
 };
 
-struct ASH_EXPORT PickerBrowsingHistoryResult {
+struct ASH_EXPORT QuickInsertBrowsingHistoryResult {
   GURL url;
   std::u16string title;
   ui::ImageModel icon;
   bool best_match;
 
-  explicit PickerBrowsingHistoryResult(GURL url,
-                                       std::u16string title,
-                                       ui::ImageModel icon,
-                                       bool best_match = false);
-  PickerBrowsingHistoryResult(const PickerBrowsingHistoryResult&);
-  PickerBrowsingHistoryResult& operator=(const PickerBrowsingHistoryResult&);
-  ~PickerBrowsingHistoryResult();
+  explicit QuickInsertBrowsingHistoryResult(GURL url,
+                                            std::u16string title,
+                                            ui::ImageModel icon,
+                                            bool best_match = false);
+  QuickInsertBrowsingHistoryResult(const QuickInsertBrowsingHistoryResult&);
+  QuickInsertBrowsingHistoryResult& operator=(
+      const QuickInsertBrowsingHistoryResult&);
+  ~QuickInsertBrowsingHistoryResult();
 
-  bool operator==(const PickerBrowsingHistoryResult&) const;
+  bool operator==(const QuickInsertBrowsingHistoryResult&) const;
 };
 
-struct ASH_EXPORT PickerLocalFileResult {
+struct ASH_EXPORT QuickInsertLocalFileResult {
   std::u16string title;
   base::FilePath file_path;
   bool best_match;
 
-  explicit PickerLocalFileResult(std::u16string title,
-                                 base::FilePath file_path,
-                                 bool best_match = false);
-  PickerLocalFileResult(const PickerLocalFileResult&);
-  PickerLocalFileResult& operator=(const PickerLocalFileResult&);
-  ~PickerLocalFileResult();
+  explicit QuickInsertLocalFileResult(std::u16string title,
+                                      base::FilePath file_path,
+                                      bool best_match = false);
+  QuickInsertLocalFileResult(const QuickInsertLocalFileResult&);
+  QuickInsertLocalFileResult& operator=(const QuickInsertLocalFileResult&);
+  ~QuickInsertLocalFileResult();
 
-  bool operator==(const PickerLocalFileResult&) const;
+  bool operator==(const QuickInsertLocalFileResult&) const;
 };
 
-struct ASH_EXPORT PickerDriveFileResult {
+struct ASH_EXPORT QuickInsertDriveFileResult {
   std::optional<std::string> id;
   std::u16string title;
   GURL url;
   base::FilePath file_path;
   bool best_match;
 
-  explicit PickerDriveFileResult(std::optional<std::string> id,
-                                 std::u16string title,
-                                 GURL url,
-                                 base::FilePath file_path,
-                                 bool best_match = false);
-  PickerDriveFileResult(const PickerDriveFileResult&);
-  PickerDriveFileResult& operator=(const PickerDriveFileResult&);
-  ~PickerDriveFileResult();
+  explicit QuickInsertDriveFileResult(std::optional<std::string> id,
+                                      std::u16string title,
+                                      GURL url,
+                                      base::FilePath file_path,
+                                      bool best_match = false);
+  QuickInsertDriveFileResult(const QuickInsertDriveFileResult&);
+  QuickInsertDriveFileResult& operator=(const QuickInsertDriveFileResult&);
+  ~QuickInsertDriveFileResult();
 
-  bool operator==(const PickerDriveFileResult&) const;
+  bool operator==(const QuickInsertDriveFileResult&) const;
 };
 
-struct ASH_EXPORT PickerCategoryResult {
+struct ASH_EXPORT QuickInsertCategoryResult {
   PickerCategory category;
 
-  explicit PickerCategoryResult(PickerCategory category);
-  PickerCategoryResult(const PickerCategoryResult&);
-  PickerCategoryResult& operator=(const PickerCategoryResult&);
-  ~PickerCategoryResult();
+  explicit QuickInsertCategoryResult(PickerCategory category);
+  QuickInsertCategoryResult(const QuickInsertCategoryResult&);
+  QuickInsertCategoryResult& operator=(const QuickInsertCategoryResult&);
+  ~QuickInsertCategoryResult();
 
-  bool operator==(const PickerCategoryResult&) const;
+  bool operator==(const QuickInsertCategoryResult&) const;
 };
 
-struct ASH_EXPORT PickerEditorResult {
+struct ASH_EXPORT QuickInsertEditorResult {
   enum class Mode { kWrite, kRewrite };
 
   Mode mode;
@@ -225,30 +228,30 @@ struct ASH_EXPORT PickerEditorResult {
   std::optional<chromeos::editor_menu::PresetQueryCategory> category;
   std::optional<std::string> preset_query_id;
 
-  PickerEditorResult(
+  QuickInsertEditorResult(
       Mode mode,
       std::u16string display_name,
       std::optional<chromeos::editor_menu::PresetQueryCategory> category,
       std::optional<std::string> preset_query_id);
-  PickerEditorResult(const PickerEditorResult&);
-  PickerEditorResult& operator=(const PickerEditorResult&);
-  ~PickerEditorResult();
+  QuickInsertEditorResult(const QuickInsertEditorResult&);
+  QuickInsertEditorResult& operator=(const QuickInsertEditorResult&);
+  ~QuickInsertEditorResult();
 
-  bool operator==(const PickerEditorResult&) const;
+  bool operator==(const QuickInsertEditorResult&) const;
 };
 
-struct ASH_EXPORT PickerLobsterResult {
+struct ASH_EXPORT QuickInsertLobsterResult {
   std::u16string display_name;
 
-  PickerLobsterResult(std::u16string display_name);
-  PickerLobsterResult(const PickerLobsterResult&);
-  PickerLobsterResult& operator=(const PickerLobsterResult&);
-  ~PickerLobsterResult();
+  QuickInsertLobsterResult(std::u16string display_name);
+  QuickInsertLobsterResult(const QuickInsertLobsterResult&);
+  QuickInsertLobsterResult& operator=(const QuickInsertLobsterResult&);
+  ~QuickInsertLobsterResult();
 
-  bool operator==(const PickerLobsterResult&) const;
+  bool operator==(const QuickInsertLobsterResult&) const;
 };
 
-struct ASH_EXPORT PickerNewWindowResult {
+struct ASH_EXPORT QuickInsertNewWindowResult {
   enum Type {
     kDoc,
     kSheet,
@@ -258,15 +261,15 @@ struct ASH_EXPORT PickerNewWindowResult {
 
   Type type;
 
-  explicit PickerNewWindowResult(Type type);
-  PickerNewWindowResult(const PickerNewWindowResult&);
-  PickerNewWindowResult& operator=(const PickerNewWindowResult&);
-  ~PickerNewWindowResult();
+  explicit QuickInsertNewWindowResult(Type type);
+  QuickInsertNewWindowResult(const QuickInsertNewWindowResult&);
+  QuickInsertNewWindowResult& operator=(const QuickInsertNewWindowResult&);
+  ~QuickInsertNewWindowResult();
 
-  bool operator==(const PickerNewWindowResult&) const;
+  bool operator==(const QuickInsertNewWindowResult&) const;
 };
 
-struct ASH_EXPORT PickerCapsLockResult {
+struct ASH_EXPORT QuickInsertCapsLockResult {
   enum class Shortcut {
     kAltLauncher,
     kAltSearch,
@@ -276,15 +279,15 @@ struct ASH_EXPORT PickerCapsLockResult {
   bool enabled;
   Shortcut shortcut;
 
-  explicit PickerCapsLockResult(bool enabled, Shortcut shortcut);
-  PickerCapsLockResult(const PickerCapsLockResult&);
-  PickerCapsLockResult& operator=(const PickerCapsLockResult&);
-  ~PickerCapsLockResult();
+  explicit QuickInsertCapsLockResult(bool enabled, Shortcut shortcut);
+  QuickInsertCapsLockResult(const QuickInsertCapsLockResult&);
+  QuickInsertCapsLockResult& operator=(const QuickInsertCapsLockResult&);
+  ~QuickInsertCapsLockResult();
 
-  bool operator==(const PickerCapsLockResult&) const;
+  bool operator==(const QuickInsertCapsLockResult&) const;
 };
 
-struct ASH_EXPORT PickerCaseTransformResult {
+struct ASH_EXPORT QuickInsertCaseTransformResult {
   enum Type {
     kUpperCase,
     kLowerCase,
@@ -293,28 +296,29 @@ struct ASH_EXPORT PickerCaseTransformResult {
 
   Type type;
 
-  explicit PickerCaseTransformResult(Type type);
-  PickerCaseTransformResult(const PickerCaseTransformResult&);
-  PickerCaseTransformResult& operator=(const PickerCaseTransformResult&);
-  ~PickerCaseTransformResult();
+  explicit QuickInsertCaseTransformResult(Type type);
+  QuickInsertCaseTransformResult(const QuickInsertCaseTransformResult&);
+  QuickInsertCaseTransformResult& operator=(
+      const QuickInsertCaseTransformResult&);
+  ~QuickInsertCaseTransformResult();
 
-  bool operator==(const PickerCaseTransformResult&) const;
+  bool operator==(const QuickInsertCaseTransformResult&) const;
 };
 
-using QuickInsertSearchResult = std::variant<PickerTextResult,
-                                             PickerSearchRequestResult,
-                                             PickerEmojiResult,
-                                             PickerGifResult,
-                                             PickerClipboardResult,
-                                             PickerBrowsingHistoryResult,
-                                             PickerLocalFileResult,
-                                             PickerDriveFileResult,
-                                             PickerCategoryResult,
-                                             PickerEditorResult,
-                                             PickerLobsterResult,
-                                             PickerNewWindowResult,
-                                             PickerCapsLockResult,
-                                             PickerCaseTransformResult>;
+using QuickInsertSearchResult = std::variant<QuickInsertTextResult,
+                                             QuickInsertSearchRequestResult,
+                                             QuickInsertEmojiResult,
+                                             QuickInsertGifResult,
+                                             QuickInsertClipboardResult,
+                                             QuickInsertBrowsingHistoryResult,
+                                             QuickInsertLocalFileResult,
+                                             QuickInsertDriveFileResult,
+                                             QuickInsertCategoryResult,
+                                             QuickInsertEditorResult,
+                                             QuickInsertLobsterResult,
+                                             QuickInsertNewWindowResult,
+                                             QuickInsertCapsLockResult,
+                                             QuickInsertCaseTransformResult>;
 
 }  // namespace ash
 

@@ -11,23 +11,23 @@
 
 namespace ash {
 
-PickerCapsLockResult::Shortcut GetPickerShortcutForCapsLock() {
+QuickInsertCapsLockResult::Shortcut GetPickerShortcutForCapsLock() {
   // The Shell may not exist in some tests. In this case, return the shortcut
   // for the default keyboard.
   if (!Shell::HasInstance()) {
-    return PickerCapsLockResult::Shortcut::kAltSearch;
+    return QuickInsertCapsLockResult::Shortcut::kAltSearch;
   }
 
   if (Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard()) {
-    return PickerCapsLockResult::Shortcut::kFnRightAlt;
+    return QuickInsertCapsLockResult::Shortcut::kFnRightAlt;
   }
 
   switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
     case ui::mojom::MetaKey::kSearch:
-      return PickerCapsLockResult::Shortcut::kAltSearch;
+      return QuickInsertCapsLockResult::Shortcut::kAltSearch;
     case ui::mojom::MetaKey::kLauncher:
     case ui::mojom::MetaKey::kLauncherRefresh:
-      return PickerCapsLockResult::Shortcut::kAltLauncher;
+      return QuickInsertCapsLockResult::Shortcut::kAltLauncher;
     case ui::mojom::MetaKey::kExternalMeta:
     case ui::mojom::MetaKey::kCommand:
       NOTREACHED_NORETURN();

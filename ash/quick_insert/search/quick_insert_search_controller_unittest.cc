@@ -167,7 +167,7 @@ TEST_F(QuickInsertSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   task_environment().FastForwardBy(base::Milliseconds(99));
@@ -184,11 +184,12 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromOmniboxSearch) {
       Call(Contains(AllOf(
           Property("type", &PickerSearchResultsSection::type,
                    PickerSectionType::kLinks),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(VariantWith<PickerBrowsingHistoryResult>(Field(
-                       "url", &PickerBrowsingHistoryResult::url,
-                       Property("spec", &GURL::spec,
-                                "https://www.google.com/search?q=cat")))))))))
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
+                  Field("url", &QuickInsertBrowsingHistoryResult::url,
+                        Property("spec", &GURL::spec,
+                                 "https://www.google.com/search?q=cat")))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(kBurnInPeriod);
 
@@ -199,7 +200,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromOmniboxSearch) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -269,7 +270,7 @@ TEST_F(QuickInsertSearchControllerTest,
   after_start_search.Call();
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StartSearch(
@@ -290,7 +291,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 
@@ -310,7 +311,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
   task_environment().FastForwardBy(kAfterBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 
@@ -387,7 +388,7 @@ TEST_F(QuickInsertSearchControllerTest,
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"monorail_cat.jpg")});
+      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
   controller.StopSearch();
 
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
@@ -429,7 +430,7 @@ TEST_F(
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StopSearch();
@@ -445,9 +446,9 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromFileSearch) {
                   Property("type", &PickerSearchResultsSection::type,
                            PickerSectionType::kLocalFiles),
                   Property("results", &PickerSearchResultsSection::results,
-                           ElementsAre(VariantWith<PickerTextResult>(
-                               Field("text", &PickerTextResult::primary_text,
-                                     u"monorail_cat.jpg"))))))))
+                           ElementsAre(VariantWith<QuickInsertTextResult>(Field(
+                               "text", &QuickInsertTextResult::primary_text,
+                               u"monorail_cat.jpg"))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(kBurnInPeriod);
 
@@ -457,7 +458,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromFileSearch) {
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"monorail_cat.jpg")});
+      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -473,7 +474,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"monorail_cat.jpg")});
+      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.FileProvider.QueryTime",
                                    kBeforeBurnIn, 1);
@@ -491,7 +492,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
   task_environment().FastForwardBy(kAfterBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"monorail_cat.jpg")});
+      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.FileProvider.QueryTime",
                                    kAfterBurnIn, 1);
@@ -566,7 +567,7 @@ TEST_F(QuickInsertSearchControllerTest,
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StopSearch();
@@ -582,9 +583,9 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromDriveSearch) {
                   Property("type", &PickerSearchResultsSection::type,
                            PickerSectionType::kDriveFiles),
                   Property("results", &PickerSearchResultsSection::results,
-                           ElementsAre(VariantWith<PickerTextResult>(
-                               Field("text", &PickerTextResult::primary_text,
-                                     u"catrbug_135117.jpg"))))))))
+                           ElementsAre(VariantWith<QuickInsertTextResult>(Field(
+                               "text", &QuickInsertTextResult::primary_text,
+                               u"catrbug_135117.jpg"))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(kBurnInPeriod);
 
@@ -594,7 +595,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromDriveSearch) {
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"catrbug_135117.jpg")});
+      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -610,7 +611,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"catrbug_135117.jpg")});
+      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.DriveProvider.QueryTime",
                                    kBeforeBurnIn, 1);
@@ -628,7 +629,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
   task_environment().FastForwardBy(kAfterBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"catrbug_135117.jpg")});
+      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.DriveProvider.QueryTime",
                                    kAfterBurnIn, 1);
@@ -703,7 +704,7 @@ TEST_F(QuickInsertSearchControllerTest,
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StopSearch();
@@ -717,24 +718,26 @@ TEST_F(QuickInsertSearchControllerTest, CombinesSearchResults) {
   EXPECT_CALL(
       search_results_callback,
       Call(IsSupersetOf({
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kLinks),
-                Property("results", &PickerSearchResultsSection::results,
-                         Contains(VariantWith<PickerTextResult>(Field(
-                             "primary_text", &PickerTextResult::primary_text,
-                             u"omnibox"))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kLinks),
+              Property("results", &PickerSearchResultsSection::results,
+                       Contains(VariantWith<QuickInsertTextResult>(Field(
+                           "primary_text", &QuickInsertTextResult::primary_text,
+                           u"omnibox"))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
                 Property("results", &PickerSearchResultsSection::results,
-                         Contains(VariantWith<PickerTextResult>(Field(
-                             "primary_text", &PickerTextResult::primary_text,
-                             u"file"))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kDriveFiles),
-                Property("results", &PickerSearchResultsSection::results,
-                         Contains(VariantWith<PickerTextResult>(Field(
-                             "primary_text", &PickerTextResult::primary_text,
-                             u"drive"))))),
+                         Contains(VariantWith<QuickInsertTextResult>(Field(
+                             "primary_text",
+                             &QuickInsertTextResult::primary_text, u"file"))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kDriveFiles),
+              Property("results", &PickerSearchResultsSection::results,
+                       Contains(VariantWith<QuickInsertTextResult>(Field(
+                           "primary_text", &QuickInsertTextResult::primary_text,
+                           u"drive"))))),
       })))
       .Times(AtLeast(1));
   PickerSearchController controller(kBurnInPeriod);
@@ -746,12 +749,12 @@ TEST_F(QuickInsertSearchControllerTest, CombinesSearchResults) {
   task_environment().FastForwardBy(kBeforeBurnIn);
 
   client().cros_search_callback().Run(ash::AppListSearchResultType::kOmnibox,
-                                      {ash::PickerTextResult(u"omnibox")});
+                                      {ash::QuickInsertTextResult(u"omnibox")});
   client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
-                                      {ash::PickerTextResult(u"file")});
+                                      {ash::QuickInsertTextResult(u"file")});
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"drive")});
+      {ash::QuickInsertTextResult(u"drive")});
   task_environment().FastForwardBy(kBurnInPeriod - kBeforeBurnIn);
 }
 
@@ -789,14 +792,15 @@ TEST_F(QuickInsertSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
 TEST_F(QuickInsertSearchControllerTest, ShowResultsEvenAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(Contains(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
-                           PickerSectionType::kLinks),
-                  Property("results", &PickerSearchResultsSection::results,
-                           Contains(VariantWith<PickerTextResult>(AllOf(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"test")))))))))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Contains(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kLinks),
+          Property("results", &PickerSearchResultsSection::results,
+                   Contains(VariantWith<QuickInsertTextResult>(AllOf(Field(
+                       "primary_text", &QuickInsertTextResult::primary_text,
+                       u"test")))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(kBurnInPeriod);
 
@@ -807,7 +811,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowResultsEvenAfterBurnIn) {
   task_environment().FastForwardBy(kBurnInPeriod);
   std::move(client().cros_search_callback())
       .Run(ash::AppListSearchResultType::kOmnibox,
-           {ash::PickerTextResult(u"test")});
+           {ash::QuickInsertTextResult(u"test")});
 }
 
 TEST_F(QuickInsertSearchControllerTest,
@@ -854,7 +858,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerTextResult(u"cat")});
+                                      {QuickInsertTextResult(u"cat")});
 }
 
 TEST_F(QuickInsertSearchControllerTest,
@@ -880,7 +884,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerTextResult(u"cat")});
+                                      {QuickInsertTextResult(u"cat")});
 }
 
 TEST_F(QuickInsertSearchControllerTest,
@@ -900,7 +904,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerTextResult(u"cat")});
+                                      {QuickInsertTextResult(u"cat")});
   controller.StopSearch();
 }
 
@@ -918,7 +922,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerTextResult(u"cat")});
+                                      {QuickInsertTextResult(u"cat")});
   controller.StopSearch();
 }
 
@@ -937,7 +941,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerTextResult(u"cat")});
+                                      {QuickInsertTextResult(u"cat")});
   controller.StopSearch();
 }
 
@@ -953,7 +957,7 @@ TEST_F(QuickInsertSearchControllerTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerTextResult(u"cat")});
+                                      {QuickInsertTextResult(u"cat")});
   controller.StopSearch();
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -1001,10 +1005,10 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataInAllLanguages) {
       results_callback,
       Call(ElementsAre(
           // JP is first because the current input method is a JP input method
-          Field("text", &PickerEmojiResult::text, Eq(u"😀jp")),
+          Field("text", &QuickInsertEmojiResult::text, Eq(u"😀jp")),
           // The rest is from English
-          Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
-          Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
+          Field("text", &QuickInsertEmojiResult::text, Eq(u"😀en")),
+          Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
   PickerSearchController controller(
@@ -1046,10 +1050,10 @@ TEST_F(QuickInsertSearchControllerTest,
   prefs_service().registry()->RegisterDictionaryPref(
       prefs::kEmojiPickerPreferences, base::Value::Dict());
   MockEmojiSearchResultsCallback results_callback;
-  EXPECT_CALL(
-      results_callback,
-      Call(ElementsAre(Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
-                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
+  EXPECT_CALL(results_callback,
+              Call(ElementsAre(
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u"😀en")),
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
   PickerSearchController controller(
@@ -1106,8 +1110,8 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   EXPECT_CALL(results_callback,
               Call(ElementsAre(
                   // Only English Results
-                  Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
-                  Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u"😀en")),
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
       &prefs_service(), u"smile",
@@ -1120,11 +1124,11 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
       base::Value("_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng,"
                   "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_jp,"));
   MockEmojiSearchResultsCallback results_callback_jp;
-  EXPECT_CALL(
-      results_callback_jp,
-      Call(ElementsAre(Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
-                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")),
-                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
+  EXPECT_CALL(results_callback_jp,
+              Call(ElementsAre(
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u"😀en")),
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u"😀jp")),
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
       &prefs_service(), u"smile",
@@ -1173,11 +1177,11 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
 
   controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback_jp;
-  EXPECT_CALL(
-      results_callback_jp,
-      Call(ElementsAre(Field("text", &PickerEmojiResult::text, Eq(u"😀en")),
-                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")),
-                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
+  EXPECT_CALL(results_callback_jp,
+              Call(ElementsAre(
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u"😀en")),
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u"😀jp")),
+                  Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
       &prefs_service(), u"smile",

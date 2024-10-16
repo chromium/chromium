@@ -42,21 +42,21 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
     std::vector<QuickInsertSearchResult> new_window_results;
-    for (PickerNewWindowResult::Type type : {
-             PickerNewWindowResult::Type::kDoc,
-             PickerNewWindowResult::Type::kSheet,
-             PickerNewWindowResult::Type::kSlide,
-             PickerNewWindowResult::Type::kChrome,
+    for (QuickInsertNewWindowResult::Type type : {
+             QuickInsertNewWindowResult::Type::kDoc,
+             QuickInsertNewWindowResult::Type::kSheet,
+             QuickInsertNewWindowResult::Type::kSlide,
+             QuickInsertNewWindowResult::Type::kChrome,
          }) {
-      new_window_results.push_back(PickerNewWindowResult(type));
+      new_window_results.push_back(QuickInsertNewWindowResult(type));
     }
     callback.Run(std::move(new_window_results));
   }
 
   if (model.GetMode() == PickerModeType::kUnfocused ||
       model.GetMode() == PickerModeType::kNoSelection) {
-    callback.Run({PickerCapsLockResult(!model.is_caps_lock_enabled(),
-                                       GetPickerShortcutForCapsLock())});
+    callback.Run({QuickInsertCapsLockResult(!model.is_caps_lock_enabled(),
+                                            GetPickerShortcutForCapsLock())});
   }
 
   if (base::Contains(model.GetAvailableCategories(),
@@ -67,17 +67,17 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
   if (base::Contains(model.GetAvailableCategories(),
                      PickerCategory::kLobster) &&
       model.GetMode() == PickerModeType::kHasSelection) {
-    callback.Run({PickerLobsterResult(/*display_name=*/u"")});
+    callback.Run({QuickInsertLobsterResult(/*display_name=*/u"")});
   }
 
   if (model.GetMode() == PickerModeType::kHasSelection) {
     std::vector<QuickInsertSearchResult> case_transform_results;
-    for (PickerCaseTransformResult::Type type : {
-             PickerCaseTransformResult::Type::kUpperCase,
-             PickerCaseTransformResult::Type::kLowerCase,
-             PickerCaseTransformResult::Type::kTitleCase,
+    for (QuickInsertCaseTransformResult::Type type : {
+             QuickInsertCaseTransformResult::Type::kUpperCase,
+             QuickInsertCaseTransformResult::Type::kLowerCase,
+             QuickInsertCaseTransformResult::Type::kTitleCase,
          }) {
-      case_transform_results.push_back(PickerCaseTransformResult(type));
+      case_transform_results.push_back(QuickInsertCaseTransformResult(type));
     }
     callback.Run(std::move(case_transform_results));
   }

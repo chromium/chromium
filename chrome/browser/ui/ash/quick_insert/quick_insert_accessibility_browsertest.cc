@@ -350,9 +350,9 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           /*delegate=*/nullptr, /*picker_width=*/1000,
           /*is_gifs_enabled=*/true));
   view->SetSearchResults({
-      ash::PickerEmojiResult::Emoji(u"😊", u"happy"),
-      ash::PickerEmojiResult::Symbol(u"♬", u"music"),
-      ash::PickerEmojiResult::Emoticon(u"(°□°)", u"surprise"),
+      ash::QuickInsertEmojiResult::Emoji(u"😊", u"happy"),
+      ash::QuickInsertEmojiResult::Symbol(u"♬", u"music"),
+      ash::QuickInsertEmojiResult::Emoticon(u"(°□°)", u"surprise"),
   });
 
   sm_.Call([view]() { view->GetItemsForTesting()[0]->RequestFocus(); });
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
           /*delegate=*/nullptr, /*picker_width=*/1000));
-  view->SetSearchResults({ash::PickerEmojiResult::Emoji(u"😊", u"happy")});
+  view->SetSearchResults({ash::QuickInsertEmojiResult::Emoji(u"😊", u"happy")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
           /*delegate=*/nullptr, /*picker_width=*/1000));
-  view->SetSearchResults({ash::PickerEmojiResult::Symbol(u"♬", u"music")});
+  view->SetSearchResults({ash::QuickInsertEmojiResult::Symbol(u"♬", u"music")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
           /*delegate=*/nullptr, /*picker_width=*/1000));
   view->SetSearchResults(
-      {ash::PickerEmojiResult::Emoticon(u"(°□°)", u"surprise")});
+      {ash::QuickInsertEmojiResult::Emoticon(u"(°□°)", u"surprise")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
@@ -887,7 +887,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm_.Call([&controller]() {
     controller.ToggleWidget();
     controller.CloseWidgetThenInsertResultOnNextFocus(
-        ash::PickerTextResult(u"abc"));
+        ash::QuickInsertTextResult(u"abc"));
   });
 
   sm_.ExpectSpeechPattern("Picker");

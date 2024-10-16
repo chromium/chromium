@@ -405,18 +405,18 @@ void PickerView::SetCapsLockDisplayed(bool displayed) {
 }
 
 void PickerView::SelectSearchResult(const QuickInsertSearchResult& result) {
-  if (const PickerCategoryResult* category_data =
-          std::get_if<PickerCategoryResult>(&result)) {
+  if (const QuickInsertCategoryResult* category_data =
+          std::get_if<QuickInsertCategoryResult>(&result)) {
     SelectCategory(category_data->category);
-  } else if (const PickerSearchRequestResult* search_request_data =
-                 std::get_if<PickerSearchRequestResult>(&result)) {
+  } else if (const QuickInsertSearchRequestResult* search_request_data =
+                 std::get_if<QuickInsertSearchRequestResult>(&result)) {
     UpdateSearchQueryAndActivePage(search_request_data->primary_text);
-  } else if (const PickerEditorResult* editor_data =
-                 std::get_if<PickerEditorResult>(&result)) {
+  } else if (const QuickInsertEditorResult* editor_data =
+                 std::get_if<QuickInsertEditorResult>(&result)) {
     delegate_->ShowEditor(
         editor_data->preset_query_id,
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));
-  } else if (std::get_if<PickerLobsterResult>(&result)) {
+  } else if (std::get_if<QuickInsertLobsterResult>(&result)) {
     delegate_->ShowLobster(
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));
   } else {
@@ -643,7 +643,8 @@ void PickerView::UpdateActivePage() {
   ResetEmojiBarToZeroState();
 }
 
-void PickerView::PublishEmojiResults(std::vector<PickerEmojiResult> results) {
+void PickerView::PublishEmojiResults(
+    std::vector<QuickInsertEmojiResult> results) {
   if (emoji_bar_view_ == nullptr) {
     return;
   }

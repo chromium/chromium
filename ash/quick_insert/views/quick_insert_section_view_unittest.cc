@@ -148,11 +148,11 @@ TEST_F(QuickInsertSectionViewTest, AddsResults) {
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
 
-  section_view.AddResult(PickerTextResult(u"Result"), &preview_controller,
+  section_view.AddResult(QuickInsertTextResult(u"Result"), &preview_controller,
                          QuickInsertSectionView::LocalFileResultStyle::kList,
                          base::DoNothing());
   section_view.AddResult(
-      PickerLocalFileResult(u"title", base::FilePath("abc.png")),
+      QuickInsertLocalFileResult(u"title", base::FilePath("abc.png")),
       &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
@@ -172,8 +172,8 @@ TEST_F(QuickInsertSectionViewTest,
                                       &submenu_controller);
 
   section_view.AddResult(
-      PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
-                                  u"Example Foo", /*icon=*/{}),
+      QuickInsertBrowsingHistoryResult(GURL("https://www.example.com/foo"),
+                                       u"Example Foo", /*icon=*/{}),
       &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
@@ -195,8 +195,8 @@ TEST_F(QuickInsertSectionViewTest,
                                       &submenu_controller);
 
   section_view.AddResult(
-      PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
-                                  /*title=*/u"", /*icon=*/{}),
+      QuickInsertBrowsingHistoryResult(GURL("https://www.example.com/foo"),
+                                       /*title=*/u"", /*icon=*/{}),
       &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
@@ -217,15 +217,16 @@ TEST_F(QuickInsertSectionViewTest,
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
 
-  section_view.AddResult(
-      PickerClipboardResult(base::UnguessableToken(),
-                            PickerClipboardResult::DisplayFormat::kText,
-                            /*file_count=*/0,
-                            /*display_text=*/u"testing",
-                            /*display_image=*/{},
-                            /*is_recent=*/false),
-      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
-      base::DoNothing());
+  section_view.AddResult(QuickInsertClipboardResult(
+                             base::UnguessableToken(),
+                             QuickInsertClipboardResult::DisplayFormat::kText,
+                             /*file_count=*/0,
+                             /*display_text=*/u"testing",
+                             /*display_image=*/{},
+                             /*is_recent=*/false),
+                         &preview_controller,
+                         QuickInsertSectionView::LocalFileResultStyle::kList,
+                         base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
@@ -249,15 +250,16 @@ TEST_F(QuickInsertSectionViewTest,
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
 
-  section_view.AddResult(
-      PickerClipboardResult(base::UnguessableToken(),
-                            PickerClipboardResult::DisplayFormat::kText,
-                            /*file_count=*/0,
-                            /*display_text=*/u"https://example.com/path",
-                            /*display_image=*/{},
-                            /*is_recent=*/false),
-      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
-      base::DoNothing());
+  section_view.AddResult(QuickInsertClipboardResult(
+                             base::UnguessableToken(),
+                             QuickInsertClipboardResult::DisplayFormat::kText,
+                             /*file_count=*/0,
+                             /*display_text=*/u"https://example.com/path",
+                             /*display_image=*/{},
+                             /*is_recent=*/false),
+                         &preview_controller,
+                         QuickInsertSectionView::LocalFileResultStyle::kList,
+                         base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
@@ -281,15 +283,16 @@ TEST_F(QuickInsertSectionViewTest,
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
 
-  section_view.AddResult(
-      PickerClipboardResult(base::UnguessableToken(),
-                            PickerClipboardResult::DisplayFormat::kFile,
-                            /*file_count=*/1,
-                            /*display_text=*/u"image.png",
-                            /*display_image=*/{},
-                            /*is_recent=*/false),
-      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
-      base::DoNothing());
+  section_view.AddResult(QuickInsertClipboardResult(
+                             base::UnguessableToken(),
+                             QuickInsertClipboardResult::DisplayFormat::kFile,
+                             /*file_count=*/1,
+                             /*display_text=*/u"image.png",
+                             /*display_image=*/{},
+                             /*is_recent=*/false),
+                         &preview_controller,
+                         QuickInsertSectionView::LocalFileResultStyle::kList,
+                         base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
@@ -313,15 +316,16 @@ TEST_F(QuickInsertSectionViewTest,
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
 
-  section_view.AddResult(
-      PickerClipboardResult(base::UnguessableToken(),
-                            PickerClipboardResult::DisplayFormat::kFile,
-                            /*file_count=*/2,
-                            /*display_text=*/u"2 files",
-                            /*display_image=*/{},
-                            /*is_recent=*/false),
-      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
-      base::DoNothing());
+  section_view.AddResult(QuickInsertClipboardResult(
+                             base::UnguessableToken(),
+                             QuickInsertClipboardResult::DisplayFormat::kFile,
+                             /*file_count=*/2,
+                             /*display_text=*/u"2 files",
+                             /*display_image=*/{},
+                             /*is_recent=*/false),
+                         &preview_controller,
+                         QuickInsertSectionView::LocalFileResultStyle::kList,
+                         base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
       section_view.item_views_for_testing();
@@ -345,8 +349,8 @@ TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
                                       &submenu_controller);
 
   section_view.AddResult(
-      PickerCapsLockResult(
-          /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
+      QuickInsertCapsLockResult(
+          /*enabled=*/true, QuickInsertCapsLockResult::Shortcut::kAltSearch),
       &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
@@ -395,7 +399,7 @@ TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
                                       &submenu_controller);
 
   section_view.AddResult(
-      PickerBrowsingHistoryResult(GetParam().first, u"title", /*icon=*/{}),
+      QuickInsertBrowsingHistoryResult(GetParam().first, u"title", /*icon=*/{}),
       &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 

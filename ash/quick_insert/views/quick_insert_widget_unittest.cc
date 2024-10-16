@@ -62,7 +62,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
       const QuickInsertSearchResult& result) override {
     return PickerActionType::kInsert;
   }
-  std::vector<PickerEmojiResult> GetSuggestedEmoji() override { return {}; }
+  std::vector<QuickInsertEmojiResult> GetSuggestedEmoji() override {
+    return {};
+  }
   bool IsGifsEnabled() override { return true; }
   PickerModeType GetMode() override { return PickerModeType::kNoSelection; }
   PickerCapsLockPosition GetCapsLockPosition() override {

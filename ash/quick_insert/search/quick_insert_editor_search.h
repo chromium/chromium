@@ -15,7 +15,7 @@ namespace ash {
 
 // `query` must not be empty.
 ASH_EXPORT std::optional<QuickInsertSearchResult> PickerEditorSearch(
-    PickerEditorResult::Mode mode,
+    QuickInsertEditorResult::Mode mode,
     std::u16string_view query);
 
 }  // namespace ash

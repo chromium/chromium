@@ -306,24 +306,27 @@ TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
       mock_search_callback,
       Run(ash::AppListSearchResultType::kOmnibox,
           IsSupersetOf({
-              VariantWith<ash::PickerBrowsingHistoryResult>(AllOf(
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+              VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("http://foo.com/history")),
                   Field("best_match",
-                        &ash::PickerBrowsingHistoryResult::best_match, false))),
-              VariantWith<ash::PickerBrowsingHistoryResult>(AllOf(
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+                        &ash::QuickInsertBrowsingHistoryResult::best_match,
+                        false))),
+              VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("http://foo.com/tab")),
                   Field("best_match",
-                        &ash::PickerBrowsingHistoryResult::best_match, true))),
+                        &ash::QuickInsertBrowsingHistoryResult::best_match,
+                        true))),
 
-              VariantWith<ash::PickerBrowsingHistoryResult>(AllOf(
-                  Field("title", &ash::PickerBrowsingHistoryResult::title,
+              VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
+                  Field("title", &ash::QuickInsertBrowsingHistoryResult::title,
                         u"Foobaz"),
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("http://foo.com/bookmarks")),
                   Field("best_match",
-                        &ash::PickerBrowsingHistoryResult::best_match, false))),
+                        &ash::QuickInsertBrowsingHistoryResult::best_match,
+                        false))),
           })))
       .WillOnce([&]() { test_done.SetValue(); });
 
@@ -393,8 +396,8 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
 
   EXPECT_THAT(
       future.Get(),
-      UnorderedElementsAre(VariantWith<ash::PickerLocalFileResult>(
-          Field("title", &ash::PickerLocalFileResult::title, u"local.png"))));
+      UnorderedElementsAre(VariantWith<ash::QuickInsertLocalFileResult>(Field(
+          "title", &ash::QuickInsertLocalFileResult::title, u"local.png"))));
 }
 
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
@@ -462,9 +465,9 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
 
   EXPECT_THAT(
       future.Get(),
-      UnorderedElementsAre(VariantWith<ash::PickerDriveFileResult>(AllOf(
-          Field("title", &ash::PickerDriveFileResult::title, u"drive.png"),
-          Field("url", &ash::PickerDriveFileResult::url,
+      UnorderedElementsAre(VariantWith<ash::QuickInsertDriveFileResult>(AllOf(
+          Field("title", &ash::QuickInsertDriveFileResult::title, u"drive.png"),
+          Field("url", &ash::QuickInsertDriveFileResult::url,
                 GURL("https://file_alternate_link/drive.png"))))));
 }
 
@@ -558,13 +561,14 @@ TEST_F(QuickInsertClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<ash::PickerBrowsingHistoryResult>(Field(
-                              "url", &ash::PickerBrowsingHistoryResult::url,
-                              GURL("http://b.com/history"))),
-                          VariantWith<ash::PickerBrowsingHistoryResult>(Field(
-                              "url", &ash::PickerBrowsingHistoryResult::url,
-                              GURL("http://a.com/history")))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                      Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
+                            GURL("http://b.com/history"))),
+                  VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                      Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
+                            GURL("http://a.com/history")))));
   EXPECT_EQ(favicon_service.page_url_, GURL("http://a.com/history"));
 }
 
@@ -584,8 +588,8 @@ TEST_F(QuickInsertClientImplTest,
   client.GetSuggestedLinkResults(1u, future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<ash::PickerBrowsingHistoryResult>(
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+              ElementsAre(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("http://b.com/history")))));
   EXPECT_EQ(favicon_service.page_url_, GURL("http://b.com/history"));
 }
@@ -609,8 +613,8 @@ TEST_F(QuickInsertClientImplTest,
   client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<ash::PickerBrowsingHistoryResult>(
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+              ElementsAre(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("https://mail.google.com")))));
 }
 
@@ -637,12 +641,13 @@ TEST_F(QuickInsertClientImplTest,
           }));
 
   const auto& results = result_future.Get();
-  ASSERT_THAT(results, Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
-                           Field("url", &ash::PickerBrowsingHistoryResult::url,
-                                 GURL("https://foo.com/secondary")))));
   ASSERT_THAT(results,
-              Not(Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+              Contains(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
+                        GURL("https://foo.com/secondary")))));
+  ASSERT_THAT(results,
+              Not(Contains(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("https://foo.com/primary"))))));
 }
 
@@ -670,12 +675,13 @@ TEST_F(QuickInsertClientImplTest,
           }));
 
   const auto& results = result_future.Get();
-  ASSERT_THAT(results, Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
-                           Field("url", &ash::PickerBrowsingHistoryResult::url,
-                                 GURL("https://foo.com/secondary")))));
   ASSERT_THAT(results,
-              Not(Contains(VariantWith<ash::PickerBrowsingHistoryResult>(
-                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+              Contains(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
+                        GURL("https://foo.com/secondary")))));
+  ASSERT_THAT(results,
+              Not(Contains(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
+                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("https://foo.com/primary"))))));
 }
 

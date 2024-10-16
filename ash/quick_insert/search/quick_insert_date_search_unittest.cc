@@ -37,27 +37,28 @@ base::Time TimeFromDateString(const std::string& time_string) {
 MATCHER(ResultMatchesDate, "") {
   const auto& [actual_result, expected_result] = arg;
   return ExplainMatchResult(
-      AllOf(VariantWith<PickerTextResult>(Field("text",
-                                                &PickerTextResult::primary_text,
-                                                expected_result.primary_text)),
-            VariantWith<PickerTextResult>(
-                Field("text", &PickerTextResult::secondary_text,
+      AllOf(VariantWith<QuickInsertTextResult>(
+                Field("text", &QuickInsertTextResult::primary_text,
+                      expected_result.primary_text)),
+            VariantWith<QuickInsertTextResult>(
+                Field("text", &QuickInsertTextResult::secondary_text,
                       expected_result.secondary_text)),
-            VariantWith<PickerTextResult>(Field(
-                "source", &PickerTextResult::source, expected_result.source))),
+            VariantWith<QuickInsertTextResult>(
+                Field("source", &QuickInsertTextResult::source,
+                      expected_result.source))),
       actual_result, result_listener);
 }
 
 struct TestCase {
   std::string_view date;
   std::u16string_view query;
-  std::vector<PickerTextResult> expected_results;
+  std::vector<QuickInsertTextResult> expected_results;
 };
 
-PickerTextResult MakeResult(std::u16string primary_text,
-                            std::u16string secondary_text = u"") {
-  return PickerTextResult(primary_text, secondary_text, ui::ImageModel(),
-                          PickerTextResult::Source::kDate);
+QuickInsertTextResult MakeResult(std::u16string primary_text,
+                                 std::u16string secondary_text = u"") {
+  return QuickInsertTextResult(primary_text, secondary_text, ui::ImageModel(),
+                               QuickInsertTextResult::Source::kDate);
 }
 
 class QuickInsertDateSearchTest
@@ -211,10 +212,11 @@ TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,
-      Each(VariantWith<PickerSearchRequestResult>(AllOf(
-          Field("primary_text", &PickerSearchRequestResult::primary_text,
+      Each(VariantWith<QuickInsertSearchRequestResult>(AllOf(
+          Field("primary_text", &QuickInsertSearchRequestResult::primary_text,
                 Not(IsEmpty())),
-          Field("secondary_text", &PickerSearchRequestResult::secondary_text,
+          Field("secondary_text",
+                &QuickInsertSearchRequestResult::secondary_text,
                 Not(IsEmpty()))))));
 }
 }  // namespace

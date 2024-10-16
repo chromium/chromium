@@ -137,51 +137,57 @@ cros_events::PickerResultSource GetResultSource(
   using ReturnType = cros_events::PickerResultSource;
   return std::visit(
       base::Overloaded{
-          [](const PickerTextResult& data) {
+          [](const QuickInsertTextResult& data) {
             switch (data.source) {
-              case PickerTextResult::Source::kUnknown:
+              case QuickInsertTextResult::Source::kUnknown:
                 return cros_events::PickerResultSource::UNKNOWN;
-              case PickerTextResult::Source::kDate:
+              case QuickInsertTextResult::Source::kDate:
                 return cros_events::PickerResultSource::DATES_TIMES;
-              case PickerTextResult::Source::kMath:
+              case QuickInsertTextResult::Source::kMath:
                 return cros_events::PickerResultSource::UNITS_MATHS;
-              case PickerTextResult::Source::kCaseTransform:
+              case QuickInsertTextResult::Source::kCaseTransform:
                 return cros_events::PickerResultSource::CASE_TRANSFORM;
-              case PickerTextResult::Source::kOmnibox:
+              case QuickInsertTextResult::Source::kOmnibox:
                 return cros_events::PickerResultSource::OMNIBOX;
             }
           },
-          [](const PickerEmojiResult& data) {
+          [](const QuickInsertEmojiResult& data) {
             return cros_events::PickerResultSource::EMOJI;
           },
-          [](const PickerClipboardResult& data) {
+          [](const QuickInsertClipboardResult& data) {
             return cros_events::PickerResultSource::CLIPBOARD;
           },
-          [](const PickerGifResult& data) {
+          [](const QuickInsertGifResult& data) {
             return cros_events::PickerResultSource::TENOR;
           },
-          [](const PickerBrowsingHistoryResult& data) {
+          [](const QuickInsertBrowsingHistoryResult& data) {
             return cros_events::PickerResultSource::OMNIBOX;
           },
-          [](const PickerLocalFileResult& data) {
+          [](const QuickInsertLocalFileResult& data) {
             return cros_events::PickerResultSource::LOCAL_FILES;
           },
-          [](const PickerDriveFileResult& data) {
+          [](const QuickInsertDriveFileResult& data) {
             return cros_events::PickerResultSource::DRIVE_FILES;
           },
-          [](const PickerCategoryResult& data) -> ReturnType { NOTREACHED(); },
-          [](const PickerSearchRequestResult& data) -> ReturnType {
+          [](const QuickInsertCategoryResult& data) -> ReturnType {
             NOTREACHED();
           },
-          [](const PickerEditorResult& data) -> ReturnType { NOTREACHED(); },
-          [](const PickerLobsterResult& data) -> ReturnType { NOTREACHED(); },
-          [](const PickerNewWindowResult& data) -> ReturnType {
+          [](const QuickInsertSearchRequestResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [](const QuickInsertEditorResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [](const QuickInsertLobsterResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [](const QuickInsertNewWindowResult& data) -> ReturnType {
             return cros_events::PickerResultSource::UNKNOWN;
           },
-          [](const PickerCapsLockResult& data) -> ReturnType {
+          [](const QuickInsertCapsLockResult& data) -> ReturnType {
             return cros_events::PickerResultSource::UNKNOWN;
           },
-          [](const PickerCaseTransformResult& data) -> ReturnType {
+          [](const QuickInsertCaseTransformResult& data) -> ReturnType {
             return cros_events::PickerResultSource::CASE_TRANSFORM;
           },
       },
@@ -196,56 +202,62 @@ cros_events::PickerResultType GetResultType(
   using ReturnType = cros_events::PickerResultType;
   return std::visit(
       base::Overloaded{
-          [](const PickerTextResult& data) {
+          [](const QuickInsertTextResult& data) {
             return cros_events::PickerResultType::TEXT;
           },
-          [](const PickerEmojiResult& data) {
+          [](const QuickInsertEmojiResult& data) {
             switch (data.type) {
-              case PickerEmojiResult::Type::kEmoji:
+              case QuickInsertEmojiResult::Type::kEmoji:
                 return cros_events::PickerResultType::EMOJI;
-              case PickerEmojiResult::Type::kSymbol:
+              case QuickInsertEmojiResult::Type::kSymbol:
                 return cros_events::PickerResultType::SYMBOL;
-              case PickerEmojiResult::Type::kEmoticon:
+              case QuickInsertEmojiResult::Type::kEmoticon:
                 return cros_events::PickerResultType::EMOTICON;
             }
           },
-          [](const PickerClipboardResult& data) {
+          [](const QuickInsertClipboardResult& data) {
             switch (data.display_format) {
-              case PickerClipboardResult::DisplayFormat::kFile:
+              case QuickInsertClipboardResult::DisplayFormat::kFile:
                 return cros_events::PickerResultType::CLIPBOARD_FILE;
-              case PickerClipboardResult::DisplayFormat::kText:
+              case QuickInsertClipboardResult::DisplayFormat::kText:
                 return cros_events::PickerResultType::CLIPBOARD_TEXT;
-              case PickerClipboardResult::DisplayFormat::kImage:
+              case QuickInsertClipboardResult::DisplayFormat::kImage:
                 return cros_events::PickerResultType::CLIPBOARD_IMAGE;
-              case PickerClipboardResult::DisplayFormat::kHtml:
+              case QuickInsertClipboardResult::DisplayFormat::kHtml:
                 return cros_events::PickerResultType::CLIPBOARD_HTML;
             }
           },
-          [](const PickerGifResult& data) {
+          [](const QuickInsertGifResult& data) {
             return cros_events::PickerResultType::GIF;
           },
-          [](const PickerBrowsingHistoryResult& data) {
+          [](const QuickInsertBrowsingHistoryResult& data) {
             return cros_events::PickerResultType::LINK;
           },
-          [](const PickerLocalFileResult& data) {
+          [](const QuickInsertLocalFileResult& data) {
             return cros_events::PickerResultType::LOCAL_FILE;
           },
-          [](const PickerDriveFileResult& data) {
+          [](const QuickInsertDriveFileResult& data) {
             return cros_events::PickerResultType::DRIVE_FILE;
           },
-          [](const PickerCategoryResult& data) -> ReturnType { NOTREACHED(); },
-          [](const PickerSearchRequestResult& data) -> ReturnType {
+          [](const QuickInsertCategoryResult& data) -> ReturnType {
             NOTREACHED();
           },
-          [](const PickerEditorResult& data) -> ReturnType { NOTREACHED(); },
-          [](const PickerLobsterResult& data) -> ReturnType { NOTREACHED(); },
-          [](const PickerNewWindowResult& data) -> ReturnType {
+          [](const QuickInsertSearchRequestResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [](const QuickInsertEditorResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [](const QuickInsertLobsterResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [](const QuickInsertNewWindowResult& data) -> ReturnType {
             return cros_events::PickerResultType::UNKNOWN;
           },
-          [](const PickerCapsLockResult& data) -> ReturnType {
+          [](const QuickInsertCapsLockResult& data) -> ReturnType {
             return cros_events::PickerResultType::UNKNOWN;
           },
-          [](const PickerCaseTransformResult& data) -> ReturnType {
+          [](const QuickInsertCaseTransformResult& data) -> ReturnType {
             return cros_events::PickerResultType::TEXT;
           },
       },
@@ -307,7 +319,7 @@ void PickerSessionMetrics::OnFinishSession() {
   if (caps_lock_displayed_) {
     UpdateCapLockPrefs(
         selected_result_.has_value() &&
-        std::holds_alternative<PickerCapsLockResult>(*selected_result_));
+        std::holds_alternative<QuickInsertCapsLockResult>(*selected_result_));
   }
   base::UmaHistogramEnumeration("Ash.Picker.Session.Outcome", outcome_);
   metrics::structured::StructuredMetricsClient::Record(

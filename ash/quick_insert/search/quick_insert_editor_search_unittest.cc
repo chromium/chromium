@@ -22,31 +22,33 @@ using ::testing::VariantWith;
 
 TEST(QuickInsertEditorSearchTest, MatchesEnglishString) {
   EXPECT_THAT(
-      PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"cat"),
-      Optional(VariantWith<PickerEditorResult>(AllOf(
-          Field("mode", &PickerEditorResult::mode,
-                PickerEditorResult::Mode::kWrite),
-          Field("display_name", &PickerEditorResult::display_name, u""),
-          Field("category", &PickerEditorResult::category, std::nullopt)))));
+      PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"cat"),
+      Optional(VariantWith<QuickInsertEditorResult>(AllOf(
+          Field("mode", &QuickInsertEditorResult::mode,
+                QuickInsertEditorResult::Mode::kWrite),
+          Field("display_name", &QuickInsertEditorResult::display_name, u""),
+          Field("category", &QuickInsertEditorResult::category,
+                std::nullopt)))));
 }
 
 TEST(QuickInsertEditorSearchTest, DoesNotMatchShortEnglishString) {
-  EXPECT_EQ(PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"ca"),
+  EXPECT_EQ(PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"ca"),
             std::nullopt);
 }
 
 TEST(QuickInsertEditorSearchTest, MatchesJapaneseString) {
   EXPECT_THAT(
-      PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"キツネ"),
-      Optional(VariantWith<PickerEditorResult>(AllOf(
-          Field("mode", &PickerEditorResult::mode,
-                PickerEditorResult::Mode::kWrite),
-          Field("display_name", &PickerEditorResult::display_name, u""),
-          Field("category", &PickerEditorResult::category, std::nullopt)))));
+      PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"キツネ"),
+      Optional(VariantWith<QuickInsertEditorResult>(AllOf(
+          Field("mode", &QuickInsertEditorResult::mode,
+                QuickInsertEditorResult::Mode::kWrite),
+          Field("display_name", &QuickInsertEditorResult::display_name, u""),
+          Field("category", &QuickInsertEditorResult::category,
+                std::nullopt)))));
 }
 
 TEST(QuickInsertEditorSearchTest, DoesNotMatchShortJapaneseString) {
-  EXPECT_EQ(PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"ねこ"),
+  EXPECT_EQ(PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"ねこ"),
             std::nullopt);
 }
 

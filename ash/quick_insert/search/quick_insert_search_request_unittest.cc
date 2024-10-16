@@ -135,8 +135,8 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromOmniboxSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
               Call(PickerSearchSource::kOmnibox,
-                   ElementsAre(VariantWith<PickerBrowsingHistoryResult>(
-                       Field("url", &PickerBrowsingHistoryResult::url,
+                   ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
+                       Field("url", &QuickInsertBrowsingHistoryResult::url,
                              Property("spec", &GURL::spec,
                                       "https://www.google.com/search?q=cat")))),
                    /*has_more_results=*/false))
@@ -150,7 +150,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromOmniboxSearch) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 }
@@ -160,14 +160,15 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesOmniboxResults) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kOmnibox,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"1")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"2")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"3"))),
-           /*has_more_results=*/true))
+      Call(
+          PickerSearchSource::kOmnibox,
+          ElementsAre(VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"1")),
+                      VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"2")),
+                      VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"3"))),
+          /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -178,8 +179,8 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesOmniboxResults) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerTextResult(u"1"), ash::PickerTextResult(u"2"),
-       ash::PickerTextResult(u"3"), ash::PickerTextResult(u"4")});
+      {ash::QuickInsertTextResult(u"1"), ash::QuickInsertTextResult(u"2"),
+       ash::QuickInsertTextResult(u"3"), ash::QuickInsertTextResult(u"4")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
@@ -187,16 +188,17 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kOmnibox,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"1")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"2")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"3")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"4"))),
-           /*has_more_results=*/false))
+      Call(
+          PickerSearchSource::kOmnibox,
+          ElementsAre(VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"1")),
+                      VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"2")),
+                      VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"3")),
+                      VariantWith<QuickInsertTextResult>(Field(
+                          "text", &QuickInsertTextResult::primary_text, u"4"))),
+          /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -207,8 +209,8 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerTextResult(u"1"), ash::PickerTextResult(u"2"),
-       ash::PickerTextResult(u"3"), ash::PickerTextResult(u"4")});
+      {ash::QuickInsertTextResult(u"1"), ash::QuickInsertTextResult(u"2"),
+       ash::QuickInsertTextResult(u"3"), ash::QuickInsertTextResult(u"4")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
@@ -219,20 +221,20 @@ TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
   EXPECT_CALL(
       search_results_callback,
       Call(PickerSearchSource::kOmnibox,
-           ElementsAre(VariantWith<PickerBrowsingHistoryResult>(
-                           Field("url", &PickerBrowsingHistoryResult::url,
+           ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
+                           Field("url", &QuickInsertBrowsingHistoryResult::url,
                                  GURL("https://example.com"))),
-                       VariantWith<PickerBrowsingHistoryResult>(
-                           Field("url", &PickerBrowsingHistoryResult::url,
+                       VariantWith<QuickInsertBrowsingHistoryResult>(
+                           Field("url", &QuickInsertBrowsingHistoryResult::url,
                                  GURL("http://go/link"))),
-                       VariantWith<PickerBrowsingHistoryResult>(
-                           Field("url", &PickerBrowsingHistoryResult::url,
+                       VariantWith<QuickInsertBrowsingHistoryResult>(
+                           Field("url", &QuickInsertBrowsingHistoryResult::url,
                                  GURL("https://example.com/2"))),
-                       VariantWith<PickerBrowsingHistoryResult>(
-                           Field("url", &PickerBrowsingHistoryResult::url,
+                       VariantWith<QuickInsertBrowsingHistoryResult>(
+                           Field("url", &QuickInsertBrowsingHistoryResult::url,
                                  GURL("https://goto2.corp.google.com/link2"))),
-                       VariantWith<PickerBrowsingHistoryResult>(
-                           Field("url", &PickerBrowsingHistoryResult::url,
+                       VariantWith<QuickInsertBrowsingHistoryResult>(
+                           Field("url", &QuickInsertBrowsingHistoryResult::url,
                                  GURL("https://example.com/3")))),
            /*has_more_results=*/false))
       .Times(AtLeast(1));
@@ -246,15 +248,18 @@ TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
   client().cros_search_callback().Run(
       AppListSearchResultType::kOmnibox,
       {
-          PickerBrowsingHistoryResult(GURL("https://example.com"), u"", {}),
-          PickerBrowsingHistoryResult(GURL("http://go/link"), u"", {}),
-          PickerBrowsingHistoryResult(GURL("https://example.com/2"), u"", {}),
-          PickerBrowsingHistoryResult(GURL("https://goto.google.com/link"), u"",
-                                      {}),
-          PickerBrowsingHistoryResult(
+          QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                           {}),
+          QuickInsertBrowsingHistoryResult(GURL("http://go/link"), u"", {}),
+          QuickInsertBrowsingHistoryResult(GURL("https://example.com/2"), u"",
+                                           {}),
+          QuickInsertBrowsingHistoryResult(GURL("https://goto.google.com/link"),
+                                           u"", {}),
+          QuickInsertBrowsingHistoryResult(
               GURL("https://goto2.corp.google.com/link2"), u"", {}),
-          PickerBrowsingHistoryResult(GURL("https://example.com/3"), u"", {}),
-          PickerBrowsingHistoryResult(
+          QuickInsertBrowsingHistoryResult(GURL("https://example.com/3"), u"",
+                                           {}),
+          QuickInsertBrowsingHistoryResult(
               GURL("https://goto.corp.google.com/link2"), u"", {}),
       });
 }
@@ -307,7 +312,7 @@ TEST_F(QuickInsertSearchRequestTest,
   after_start_search.Call();
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 }
@@ -324,7 +329,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsOmniboxMetrics) {
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerBrowsingHistoryResult(
+      {ash::QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 
@@ -401,7 +406,7 @@ TEST_F(QuickInsertSearchRequestTest,
         base::DoNothing(), &client(), kDefaultOptions);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kFileSearch,
-        {ash::PickerTextResult(u"monorail_cat.jpg")});
+        {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
@@ -444,7 +449,7 @@ TEST_F(
         base::DoNothing(), &client(), kDefaultOptions);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kOmnibox,
-        {ash::PickerBrowsingHistoryResult(
+        {ash::QuickInsertBrowsingHistoryResult(
             GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
             ui::ImageModel())});
   }
@@ -455,12 +460,12 @@ TEST_F(
 TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kLocalFile,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-               "text", &PickerTextResult::primary_text, u"monorail_cat.jpg"))),
-           /*has_more_results=*/false))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kLocalFile,
+                   ElementsAre(VariantWith<QuickInsertTextResult>(
+                       Field("text", &QuickInsertTextResult::primary_text,
+                             u"monorail_cat.jpg"))),
+                   /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -470,7 +475,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromFileSearch) {
       base::DoNothing(), &client(), kDefaultOptions);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"monorail_cat.jpg")});
+      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
@@ -479,13 +484,14 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
   EXPECT_CALL(
       search_results_callback,
       Call(PickerSearchSource::kLocalFile,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"1.jpg")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"2.jpg")),
+           ElementsAre(
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"2.jpg")),
 
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"3.jpg"))),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"3.jpg"))),
            /*has_more_results=*/true))
       .Times(AtLeast(1));
 
@@ -494,10 +500,11 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kDefaultOptions);
-  client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"1.jpg"), ash::PickerTextResult(u"2.jpg"),
-       ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
+  client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
+                                      {ash::QuickInsertTextResult(u"1.jpg"),
+                                       ash::QuickInsertTextResult(u"2.jpg"),
+                                       ash::QuickInsertTextResult(u"3.jpg"),
+                                       ash::QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
@@ -506,15 +513,16 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
   EXPECT_CALL(
       search_results_callback,
       Call(PickerSearchSource::kLocalFile,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"1.jpg")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"2.jpg")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"3.jpg")),
+           ElementsAre(
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"2.jpg")),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"3.jpg")),
 
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"4.jpg"))),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"4.jpg"))),
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
@@ -523,10 +531,11 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kDefaultOptions);
-  client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"1.jpg"), ash::PickerTextResult(u"2.jpg"),
-       ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
+  client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
+                                      {ash::QuickInsertTextResult(u"1.jpg"),
+                                       ash::QuickInsertTextResult(u"2.jpg"),
+                                       ash::QuickInsertTextResult(u"3.jpg"),
+                                       ash::QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, RecordsFileMetrics) {
@@ -541,7 +550,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsFileMetrics) {
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerTextResult(u"monorail_cat.jpg")});
+      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.FileProvider.QueryTime",
                                    kMetricMetricTime, 1);
@@ -615,7 +624,7 @@ TEST_F(QuickInsertSearchRequestTest,
         base::DoNothing(), &client(), kDefaultOptions);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kOmnibox,
-        {ash::PickerBrowsingHistoryResult(
+        {ash::QuickInsertBrowsingHistoryResult(
             GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
             ui::ImageModel())});
   }
@@ -626,13 +635,12 @@ TEST_F(QuickInsertSearchRequestTest,
 TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(
-          PickerSearchSource::kDrive,
-          ElementsAre(VariantWith<PickerTextResult>(Field(
-              "text", &PickerTextResult::primary_text, u"catrbug_135117.jpg"))),
-          /*has_more_results=*/false))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive,
+                   ElementsAre(VariantWith<QuickInsertTextResult>(
+                       Field("text", &QuickInsertTextResult::primary_text,
+                             u"catrbug_135117.jpg"))),
+                   /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -642,7 +650,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromDriveSearch) {
       base::DoNothing(), &client(), kDefaultOptions);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"catrbug_135117.jpg")});
+      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
@@ -651,13 +659,14 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
   EXPECT_CALL(
       search_results_callback,
       Call(PickerSearchSource::kDrive,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"1.jpg")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"2.jpg")),
+           ElementsAre(
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"2.jpg")),
 
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"3.jpg"))),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"3.jpg"))),
            /*has_more_results=*/true))
       .Times(AtLeast(1));
 
@@ -668,8 +677,10 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
       base::DoNothing(), &client(), kDefaultOptions);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"1.jpg"), ash::PickerTextResult(u"2.jpg"),
-       ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
+      {ash::QuickInsertTextResult(u"1.jpg"),
+       ash::QuickInsertTextResult(u"2.jpg"),
+       ash::QuickInsertTextResult(u"3.jpg"),
+       ash::QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest,
@@ -679,15 +690,16 @@ TEST_F(QuickInsertSearchRequestTest,
   EXPECT_CALL(
       search_results_callback,
       Call(PickerSearchSource::kDrive,
-           ElementsAre(VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"1.jpg")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"2.jpg")),
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"3.jpg")),
+           ElementsAre(
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"2.jpg")),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"3.jpg")),
 
-                       VariantWith<PickerTextResult>(Field(
-                           "text", &PickerTextResult::primary_text, u"4.jpg"))),
+               VariantWith<QuickInsertTextResult>(Field(
+                   "text", &QuickInsertTextResult::primary_text, u"4.jpg"))),
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
@@ -698,8 +710,10 @@ TEST_F(QuickInsertSearchRequestTest,
       base::DoNothing(), &client(), kDefaultOptions);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"1.jpg"), ash::PickerTextResult(u"2.jpg"),
-       ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
+      {ash::QuickInsertTextResult(u"1.jpg"),
+       ash::QuickInsertTextResult(u"2.jpg"),
+       ash::QuickInsertTextResult(u"3.jpg"),
+       ash::QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, RecordsDriveMetrics) {
@@ -714,7 +728,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsDriveMetrics) {
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerTextResult(u"catrbug_135117.jpg")});
+      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.DriveProvider.QueryTime",
                                    kMetricMetricTime, 1);
@@ -789,7 +803,7 @@ TEST_F(QuickInsertSearchRequestTest,
         base::DoNothing(), &client(), kDefaultOptions);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kOmnibox,
-        {ash::PickerBrowsingHistoryResult(
+        {ash::QuickInsertBrowsingHistoryResult(
             GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
             ui::ImageModel())});
   }
@@ -949,12 +963,13 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromClipboardSearch) {
 
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kClipboard,
-                   ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-                       _, PickerClipboardResult::DisplayFormat::kText,
-                       /*file_count=*/0, u"cat", std::nullopt, true))),
-                   /*has_more_results=*/false))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kClipboard,
+           ElementsAre(VariantWith<QuickInsertClipboardResult>(
+               FieldsAre(_, QuickInsertClipboardResult::DisplayFormat::kText,
+                         /*file_count=*/0, u"cat", std::nullopt, true))),
+           /*has_more_results=*/false))
       .Times(1);
 
   PickerSearchRequest request(
@@ -996,7 +1011,7 @@ TEST_P(QuickInsertSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(source, ElementsAre(VariantWith<PickerEditorResult>(_)),
+              Call(source, ElementsAre(VariantWith<QuickInsertEditorResult>(_)),
                    /*has_more_results=*/false))
       .Times(1);
 
@@ -1052,9 +1067,10 @@ TEST_P(QuickInsertSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
   const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(source, ElementsAre(VariantWith<PickerLobsterResult>(_)),
-                   /*has_more_results=*/false))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(source, ElementsAre(VariantWith<QuickInsertLobsterResult>(_)),
+           /*has_more_results=*/false))
       .Times(1);
 
   PickerSearchRequest request(

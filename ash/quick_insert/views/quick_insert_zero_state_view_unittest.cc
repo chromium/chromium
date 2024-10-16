@@ -176,7 +176,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerDriveFileResult(
+            std::move(callback).Run({QuickInsertDriveFileResult(
                 /*id=*/std::nullopt,
                 /*title=*/u"test drive file",
                 /*url=*/GURL(), base::FilePath())});
@@ -193,8 +193,9 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
 
   EXPECT_CALL(
       mock_delegate,
-      SelectZeroStateResult(VariantWith<ash::PickerDriveFileResult>(Field(
-          "title", &ash::PickerDriveFileResult::title, u"test drive file"))))
+      SelectZeroStateResult(VariantWith<ash::QuickInsertDriveFileResult>(
+          Field("title", &ash::QuickInsertDriveFileResult::title,
+                u"test drive file"))))
       .Times(1);
 
   ASSERT_THAT(
@@ -213,9 +214,9 @@ TEST_F(QuickInsertZeroStateViewTest,
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerLocalFileResult(u"a", {}),
-                                     PickerLocalFileResult(u"b", {}),
-                                     PickerLocalFileResult(u"c", {})});
+            std::move(callback).Run({QuickInsertLocalFileResult(u"a", {}),
+                                     QuickInsertLocalFileResult(u"b", {}),
+                                     QuickInsertLocalFileResult(u"c", {})});
           });
 
   std::unique_ptr<views::Widget> widget =
@@ -226,8 +227,9 @@ TEST_F(QuickInsertZeroStateViewTest,
       &submenu_controller_, &preview_controller_));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(VariantWith<ash::PickerLocalFileResult>(_)))
+  EXPECT_CALL(
+      mock_delegate,
+      SelectZeroStateResult(VariantWith<ash::QuickInsertLocalFileResult>(_)))
       .Times(1);
 
   ASSERT_THAT(
@@ -253,7 +255,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerLocalFileResult({}, {})});
+            std::move(callback).Run({QuickInsertLocalFileResult({}, {})});
           });
 
   std::unique_ptr<views::Widget> widget =
@@ -282,13 +284,13 @@ TEST_F(QuickInsertZeroStateViewTest,
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerDriveFileResult(
+                {QuickInsertDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath()),
-                 PickerCapsLockResult(
+                 QuickInsertCapsLockResult(
                      /*enabled=*/true,
-                     PickerCapsLockResult::Shortcut::kAltSearch)});
+                     QuickInsertCapsLockResult::Shortcut::kAltSearch)});
           });
   EXPECT_CALL(mock_delegate, SetCapsLockDisplayed(true)).Times(1);
 
@@ -310,10 +312,10 @@ TEST_F(QuickInsertZeroStateViewTest,
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerCapsLockResult(
+                {QuickInsertCapsLockResult(
                      /*enabled=*/true,
-                     PickerCapsLockResult::Shortcut::kAltSearch),
-                 PickerDriveFileResult(
+                     QuickInsertCapsLockResult::Shortcut::kAltSearch),
+                 QuickInsertDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath())});
@@ -332,9 +334,10 @@ TEST_F(QuickInsertZeroStateViewTest,
   task_environment()->AdvanceClock(base::Seconds(1));
   task_environment()->RunUntilIdle();
 
-  EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(VariantWith<ash::PickerCapsLockResult>(
-                  Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
+  EXPECT_CALL(
+      mock_delegate,
+      SelectZeroStateResult(VariantWith<ash::QuickInsertCapsLockResult>(
+          Field("enabled", &ash::QuickInsertCapsLockResult::enabled, true))))
       .Times(1);
 
   QuickInsertItemView* item_view =
@@ -351,10 +354,10 @@ TEST_F(QuickInsertZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerCapsLockResult(
+                {QuickInsertCapsLockResult(
                      /*enabled=*/true,
-                     PickerCapsLockResult::Shortcut::kAltSearch),
-                 PickerDriveFileResult(
+                     QuickInsertCapsLockResult::Shortcut::kAltSearch),
+                 QuickInsertDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath())});
@@ -371,9 +374,10 @@ TEST_F(QuickInsertZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
       &preview_controller_));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(VariantWith<ash::PickerCapsLockResult>(
-                  Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
+  EXPECT_CALL(
+      mock_delegate,
+      SelectZeroStateResult(VariantWith<ash::QuickInsertCapsLockResult>(
+          Field("enabled", &ash::QuickInsertCapsLockResult::enabled, true))))
       .Times(1);
 
   QuickInsertItemView* item_view = view->category_section_views_for_testing()
@@ -405,14 +409,14 @@ TEST_F(QuickInsertZeroStateViewTest,
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
-                PickerEditorResult(
-                    PickerEditorResult::Mode::kRewrite,
+                QuickInsertEditorResult(
+                    QuickInsertEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
                     "query_a"),
-                PickerEditorResult(
-                    PickerEditorResult::Mode::kRewrite,
+                QuickInsertEditorResult(
+                    QuickInsertEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
@@ -444,14 +448,14 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
-                PickerEditorResult(
-                    PickerEditorResult::Mode::kRewrite,
+                QuickInsertEditorResult(
+                    QuickInsertEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kShorten,
                     "shorten"),
-                PickerEditorResult(
-                    PickerEditorResult::Mode::kRewrite,
+                QuickInsertEditorResult(
+                    QuickInsertEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kEmojify,
@@ -499,7 +503,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerLobsterResult(
+            std::move(callback).Run({QuickInsertLobsterResult(
                 /*display_name=*/u"lobster")});
           });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kLobster}},
@@ -526,14 +530,17 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
 TEST_F(QuickInsertZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
-      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
-                       callback) {
-        std::move(callback).Run({
-            PickerCaseTransformResult(PickerCaseTransformResult::kUpperCase),
-            PickerCaseTransformResult(PickerCaseTransformResult::kLowerCase),
-            PickerCaseTransformResult(PickerCaseTransformResult::kTitleCase),
-        });
-      });
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({
+                QuickInsertCaseTransformResult(
+                    QuickInsertCaseTransformResult::kUpperCase),
+                QuickInsertCaseTransformResult(
+                    QuickInsertCaseTransformResult::kLowerCase),
+                QuickInsertCaseTransformResult(
+                    QuickInsertCaseTransformResult::kTitleCase),
+            });
+          });
   PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_,
                            &submenu_controller_, &preview_controller_);
 
@@ -572,7 +579,7 @@ TEST_F(QuickInsertZeroStateViewTest,
 
   EXPECT_CALL(mock_delegate, RequestPseudoFocus(_));
 
-  suggested_results_callback.Run({PickerDriveFileResult(
+  suggested_results_callback.Run({QuickInsertDriveFileResult(
       /*id=*/std::nullopt,
       /*title=*/u"test drive file",
       /*url=*/GURL(), base::FilePath())});

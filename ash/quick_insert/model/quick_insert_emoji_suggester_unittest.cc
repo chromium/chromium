@@ -46,12 +46,12 @@ TEST_F(QuickInsertEmojiSuggesterTest, ReturnsDefaultEmojis) {
   PickerEmojiSuggester suggester(&model, GetName());
 
   EXPECT_THAT(suggester.GetSuggestedEmoji(),
-              ElementsAre(PickerEmojiResult::Emoji(u"🙂", u"🙂 name"),
-                          PickerEmojiResult::Emoji(u"😂", u"😂 name"),
-                          PickerEmojiResult::Emoji(u"🤔", u"🤔 name"),
-                          PickerEmojiResult::Emoji(u"😢", u"😢 name"),
-                          PickerEmojiResult::Emoji(u"👏", u"👏 name"),
-                          PickerEmojiResult::Emoji(u"👍", u"👍 name")));
+              ElementsAre(QuickInsertEmojiResult::Emoji(u"🙂", u"🙂 name"),
+                          QuickInsertEmojiResult::Emoji(u"😂", u"😂 name"),
+                          QuickInsertEmojiResult::Emoji(u"🤔", u"🤔 name"),
+                          QuickInsertEmojiResult::Emoji(u"😢", u"😢 name"),
+                          QuickInsertEmojiResult::Emoji(u"👏", u"👏 name"),
+                          QuickInsertEmojiResult::Emoji(u"👍", u"👍 name")));
 }
 
 TEST_F(QuickInsertEmojiSuggesterTest,
@@ -65,12 +65,12 @@ TEST_F(QuickInsertEmojiSuggesterTest,
   update->Set("emoji", std::move(history_value));
 
   EXPECT_THAT(suggester.GetSuggestedEmoji(),
-              ElementsAre(PickerEmojiResult::Emoji(u"abc", u"abc name"),
-                          PickerEmojiResult::Emoji(u"xyz", u"xyz name"),
-                          PickerEmojiResult::Emoji(u"🙂", u"🙂 name"),
-                          PickerEmojiResult::Emoji(u"😂", u"😂 name"),
-                          PickerEmojiResult::Emoji(u"🤔", u"🤔 name"),
-                          PickerEmojiResult::Emoji(u"😢", u"😢 name")));
+              ElementsAre(QuickInsertEmojiResult::Emoji(u"abc", u"abc name"),
+                          QuickInsertEmojiResult::Emoji(u"xyz", u"xyz name"),
+                          QuickInsertEmojiResult::Emoji(u"🙂", u"🙂 name"),
+                          QuickInsertEmojiResult::Emoji(u"😂", u"😂 name"),
+                          QuickInsertEmojiResult::Emoji(u"🤔", u"🤔 name"),
+                          QuickInsertEmojiResult::Emoji(u"😢", u"😢 name")));
 }
 
 TEST_F(QuickInsertEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
@@ -83,12 +83,12 @@ TEST_F(QuickInsertEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
   update->Set("emoji", std::move(history_value));
 
   EXPECT_THAT(suggester.GetSuggestedEmoji(),
-              ElementsAre(PickerEmojiResult::Emoji(u"😂", u"😂 name"),
-                          PickerEmojiResult::Emoji(u"xyz", u"xyz name"),
-                          PickerEmojiResult::Emoji(u"🙂", u"🙂 name"),
-                          PickerEmojiResult::Emoji(u"🤔", u"🤔 name"),
-                          PickerEmojiResult::Emoji(u"😢", u"😢 name"),
-                          PickerEmojiResult::Emoji(u"👏", u"👏 name")));
+              ElementsAre(QuickInsertEmojiResult::Emoji(u"😂", u"😂 name"),
+                          QuickInsertEmojiResult::Emoji(u"xyz", u"xyz name"),
+                          QuickInsertEmojiResult::Emoji(u"🙂", u"🙂 name"),
+                          QuickInsertEmojiResult::Emoji(u"🤔", u"🤔 name"),
+                          QuickInsertEmojiResult::Emoji(u"😢", u"😢 name"),
+                          QuickInsertEmojiResult::Emoji(u"👏", u"👏 name")));
 }
 
 TEST_F(QuickInsertEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
@@ -117,12 +117,12 @@ TEST_F(QuickInsertEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
   EXPECT_THAT(
       suggester.GetSuggestedEmoji(),
       ElementsAre(
-          PickerEmojiResult::Symbol(u"symbol1", u"symbol1 name"),
-          PickerEmojiResult::Emoticon(u"emoticon1", u"emoticon1 name"),
-          PickerEmojiResult::Emoji(u"emoji1", u"emoji1 name"),
-          PickerEmojiResult::Symbol(u"symbol2", u"symbol2 name"),
-          PickerEmojiResult::Emoji(u"emoji2", u"emoji2 name"),
-          PickerEmojiResult::Emoticon(u"emoticon2", u"emoticon2 name")));
+          QuickInsertEmojiResult::Symbol(u"symbol1", u"symbol1 name"),
+          QuickInsertEmojiResult::Emoticon(u"emoticon1", u"emoticon1 name"),
+          QuickInsertEmojiResult::Emoji(u"emoji1", u"emoji1 name"),
+          QuickInsertEmojiResult::Symbol(u"symbol2", u"symbol2 name"),
+          QuickInsertEmojiResult::Emoji(u"emoji2", u"emoji2 name"),
+          QuickInsertEmojiResult::Emoticon(u"emoticon2", u"emoticon2 name")));
 }
 
 }  // namespace

@@ -108,7 +108,7 @@ TEST_F(QuickInsertListItemViewTest, SetsShortcutHintView) {
   QuickInsertListItemView item_view(base::DoNothing());
 
   item_view.SetShortcutHintView(std::make_unique<PickerShortcutHintView>(
-      PickerCapsLockResult::Shortcut::kAltSearch));
+      QuickInsertCapsLockResult::Shortcut::kAltSearch));
 
   EXPECT_NE(item_view.shortcut_hint_view_for_testing(), nullptr);
 }

@@ -23,11 +23,11 @@ bool HasMinCharsNeededForEditorMatch(std::u16string_view query) {
 }  // namespace
 
 std::optional<QuickInsertSearchResult> PickerEditorSearch(
-    PickerEditorResult::Mode mode,
+    QuickInsertEditorResult::Mode mode,
     std::u16string_view query) {
   CHECK(!query.empty());
   return HasMinCharsNeededForEditorMatch(query)
-             ? std::make_optional(PickerEditorResult(
+             ? std::make_optional(QuickInsertEditorResult(
                    mode, /*display_name=*/u"", /*category=*/std::nullopt,
                    /*preset_query_id=*/std::nullopt))
              : std::nullopt;

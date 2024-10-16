@@ -85,18 +85,18 @@ struct ResolvedDate {
 };
 
 QuickInsertSearchResult MakeResult(const ResolvedDate& date) {
-  return PickerTextResult(
+  return QuickInsertTextResult(
       base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
       date.disambiguation_text.value_or(u""),
       ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface),
-      PickerTextResult::Source::kDate);
+      QuickInsertTextResult::Source::kDate);
 }
 
 QuickInsertSearchResult MakeSuggestedResult(std::u16string_view query_text,
                                             const ResolvedDate& date) {
   CHECK(!date.disambiguation_text.has_value());
-  return PickerSearchRequestResult(
+  return QuickInsertSearchRequestResult(
       query_text, base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
       ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface));

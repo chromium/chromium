@@ -76,14 +76,14 @@ std::unique_ptr<views::View> CreateEmptyCell() {
   return cell_view;
 }
 
-std::u16string GetTooltipForEmojiResult(const PickerEmojiResult& result) {
+std::u16string GetTooltipForEmojiResult(const QuickInsertEmojiResult& result) {
   switch (result.type) {
-    case PickerEmojiResult::Type::kEmoji:
+    case QuickInsertEmojiResult::Type::kEmoji:
       return l10n_util::GetStringFUTF16(IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME,
                                         result.name);
-    case PickerEmojiResult::Type::kSymbol:
+    case QuickInsertEmojiResult::Type::kSymbol:
       return result.name;
-    case PickerEmojiResult::Type::kEmoticon:
+    case QuickInsertEmojiResult::Type::kEmoticon:
       return l10n_util::GetStringFUTF16(
           IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, result.name);
   }
@@ -93,23 +93,23 @@ std::u16string GetTooltipForEmojiResult(const PickerEmojiResult& result) {
 // Creates an item view for a search result. Only supports results that can be
 // added to the emoji bar, i.e. emojis, symbols and emoticons.
 std::unique_ptr<QuickInsertItemView> CreateItemView(
-    const PickerEmojiResult& result,
+    const QuickInsertEmojiResult& result,
     base::RepeatingClosure select_result_callback) {
   std::unique_ptr<QuickInsertItemView> item_view;
   switch (result.type) {
-    case PickerEmojiResult::Type::kEmoji:
+    case QuickInsertEmojiResult::Type::kEmoji:
       item_view = std::make_unique<PickerEmojiItemView>(
           PickerEmojiItemView::Style::kEmoji, std::move(select_result_callback),
           result.text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
-    case PickerEmojiResult::Type::kSymbol:
+    case QuickInsertEmojiResult::Type::kSymbol:
       item_view = std::make_unique<PickerEmojiItemView>(
           PickerEmojiItemView::Style::kSymbol,
           std::move(select_result_callback), result.text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
-    case PickerEmojiResult::Type::kEmoticon:
+    case QuickInsertEmojiResult::Type::kEmoticon:
       item_view = std::make_unique<PickerEmojiItemView>(
           PickerEmojiItemView::Style::kEmoticon,
           std::move(select_result_callback), result.text);
@@ -303,7 +303,7 @@ void PickerEmojiBarView::ClearSearchResults() {
 }
 
 void PickerEmojiBarView::SetSearchResults(
-    std::vector<PickerEmojiResult> results) {
+    std::vector<QuickInsertEmojiResult> results) {
   ClearSearchResults();
   int item_row_width = 0;
   // This may be slow to calculate, so only `CHECK` on debug builds.

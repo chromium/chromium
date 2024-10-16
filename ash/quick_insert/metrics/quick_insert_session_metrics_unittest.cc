@@ -149,7 +149,8 @@ TEST_F(QuickInsertSessionMetricsTest, RecordsFinishSessionEventForInsert) {
     metrics.UpdateSearchQuery(u"abcdef");
     metrics.UpdateSearchQuery(u"abcde");
     metrics.SetSelectedResult(
-        PickerTextResult(u"primary", PickerTextResult::Source::kDate), 3);
+        QuickInsertTextResult(u"primary", QuickInsertTextResult::Source::kDate),
+        3);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
   }
 
@@ -173,7 +174,8 @@ TEST_F(QuickInsertSessionMetricsTest,
   {
     PickerSessionMetrics metrics;
     metrics.SetSelectedResult(
-        PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase),
+        QuickInsertCaseTransformResult(
+            QuickInsertCaseTransformResult::Type::kUpperCase),
         0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
@@ -203,7 +205,8 @@ TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
     PickerSessionMetrics metrics(&prefs);
     metrics.SetCapsLockDisplayed(true);
     metrics.SetSelectedResult(
-        PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase),
+        QuickInsertCaseTransformResult(
+            QuickInsertCaseTransformResult::Type::kUpperCase),
         0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
@@ -223,8 +226,8 @@ TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
     PickerSessionMetrics metrics(&prefs);
     metrics.SetCapsLockDisplayed(true);
     metrics.SetSelectedResult(
-        PickerCapsLockResult(
-            /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
+        QuickInsertCapsLockResult(
+            /*enabled=*/true, QuickInsertCapsLockResult::Shortcut::kAltSearch),
         0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
@@ -244,7 +247,8 @@ TEST_F(QuickInsertSessionMetricsTest,
   {
     PickerSessionMetrics metrics(&prefs);
     metrics.SetSelectedResult(
-        PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase),
+        QuickInsertCaseTransformResult(
+            QuickInsertCaseTransformResult::Type::kUpperCase),
         0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
@@ -264,8 +268,8 @@ TEST_F(QuickInsertSessionMetricsTest, HalvesCapsLockPrefs) {
     PickerSessionMetrics metrics(&prefs);
     metrics.SetCapsLockDisplayed(true);
     metrics.SetSelectedResult(
-        PickerCapsLockResult(
-            /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
+        QuickInsertCapsLockResult(
+            /*enabled=*/true, QuickInsertCapsLockResult::Shortcut::kAltSearch),
         0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }

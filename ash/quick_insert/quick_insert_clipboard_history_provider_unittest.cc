@@ -60,10 +60,11 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesTextResult) {
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-                  expected_item_id, PickerClipboardResult::DisplayFormat::kText,
-                  0, u"xyz", std::nullopt, true))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(VariantWith<QuickInsertClipboardResult>(FieldsAre(
+          expected_item_id, QuickInsertClipboardResult::DisplayFormat::kText, 0,
+          u"xyz", std::nullopt, true))));
 }
 
 TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesImageResult) {
@@ -93,9 +94,9 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesImageResult) {
 
   EXPECT_THAT(
       future.Get(),
-      ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-          expected_item_id, PickerClipboardResult::DisplayFormat::kImage, 0, _,
-          expected_display_image, true))));
+      ElementsAre(VariantWith<QuickInsertClipboardResult>(FieldsAre(
+          expected_item_id, QuickInsertClipboardResult::DisplayFormat::kImage,
+          0, _, expected_display_image, true))));
 }
 
 TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesSingleFileResult) {
@@ -121,10 +122,11 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesSingleFileResult) {
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-                  expected_item_id, PickerClipboardResult::DisplayFormat::kFile,
-                  1, u"filename", std::nullopt, true))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(VariantWith<QuickInsertClipboardResult>(FieldsAre(
+          expected_item_id, QuickInsertClipboardResult::DisplayFormat::kFile, 1,
+          u"filename", std::nullopt, true))));
 }
 
 TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesMultipleFileResults) {
@@ -153,10 +155,11 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesMultipleFileResults) {
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-                  expected_item_id, PickerClipboardResult::DisplayFormat::kFile,
-                  2, u"2 files", std::nullopt, true))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(VariantWith<QuickInsertClipboardResult>(FieldsAre(
+          expected_item_id, QuickInsertClipboardResult::DisplayFormat::kFile, 2,
+          u"2 files", std::nullopt, true))));
 }
 
 TEST_F(QuickInsertClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
@@ -182,10 +185,11 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"");
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-                  expected_item_id, PickerClipboardResult::DisplayFormat::kText,
-                  0, u"xyz", std::nullopt, false))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(VariantWith<QuickInsertClipboardResult>(FieldsAre(
+          expected_item_id, QuickInsertClipboardResult::DisplayFormat::kText, 0,
+          u"xyz", std::nullopt, false))));
 }
 
 TEST_F(QuickInsertClipboardHistoryProviderTest, FiletersResultByQuery) {
@@ -211,9 +215,9 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiletersResultByQuery) {
   provider.FetchResults(future.GetCallback(), /*query=*/u"123");
 
   EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<PickerClipboardResult>(
-                  FieldsAre(_, PickerClipboardResult::DisplayFormat::kText, 0,
-                            u"12345", std::nullopt, true))));
+              ElementsAre(VariantWith<QuickInsertClipboardResult>(
+                  FieldsAre(_, QuickInsertClipboardResult::DisplayFormat::kText,
+                            0, u"12345", std::nullopt, true))));
 }
 
 TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutHtmlResults) {

@@ -58,12 +58,16 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
 bool ShouldPromote(const QuickInsertSearchResult& result) {
   return std::visit(
       base::Overloaded{
-          [](const PickerClipboardResult& data) { return data.is_recent; },
-          [](const PickerBrowsingHistoryResult& data) {
+          [](const QuickInsertClipboardResult& data) { return data.is_recent; },
+          [](const QuickInsertBrowsingHistoryResult& data) {
             return data.best_match;
           },
-          [](const PickerLocalFileResult& data) { return data.best_match; },
-          [](const PickerDriveFileResult& data) { return data.best_match; },
+          [](const QuickInsertLocalFileResult& data) {
+            return data.best_match;
+          },
+          [](const QuickInsertDriveFileResult& data) {
+            return data.best_match;
+          },
           [](const auto& data) { return false; }},
       result);
 }
@@ -72,7 +76,7 @@ std::vector<GURL> LinksFromSearchResults(
     base::span<const QuickInsertSearchResult> results) {
   std::vector<GURL> links;
   for (const QuickInsertSearchResult& link : results) {
-    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
+    auto* link_data = std::get_if<QuickInsertBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       continue;
     }
@@ -85,7 +89,7 @@ std::vector<std::string> DriveIdsFromSearchResults(
     base::span<const QuickInsertSearchResult> results) {
   std::vector<std::string> drive_ids;
   for (const QuickInsertSearchResult& file : results) {
-    auto* drive_data = std::get_if<PickerDriveFileResult>(&file);
+    auto* drive_data = std::get_if<QuickInsertDriveFileResult>(&file);
     if (drive_data == nullptr) {
       continue;
     }
@@ -114,7 +118,7 @@ void DeduplicateDriveLinksFromIds(std::vector<QuickInsertSearchResult>& links,
   CHECK(success);
 
   std::erase_if(links, [&matcher](const QuickInsertSearchResult& link) {
-    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
+    auto* link_data = std::get_if<QuickInsertBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       return false;
     }
@@ -126,7 +130,7 @@ void DeduplicateDriveFilesFromLinks(std::vector<QuickInsertSearchResult>& files,
                                     base::span<const GURL> links) {
   std::vector<base::MatcherStringPattern> patterns;
   for (size_t i = 0; i < files.size(); ++i) {
-    auto* drive_data = std::get_if<PickerDriveFileResult>(&files[i]);
+    auto* drive_data = std::get_if<QuickInsertDriveFileResult>(&files[i]);
     if (drive_data == nullptr) {
       continue;
     }

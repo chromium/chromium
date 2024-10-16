@@ -69,39 +69,39 @@ constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
 
-PickerCategory GetCategoryForEditorData(const PickerEditorResult& data) {
+PickerCategory GetCategoryForEditorData(const QuickInsertEditorResult& data) {
   switch (data.mode) {
-    case PickerEditorResult::Mode::kWrite:
+    case QuickInsertEditorResult::Mode::kWrite:
       return PickerCategory::kEditorWrite;
-    case PickerEditorResult::Mode::kRewrite:
+    case QuickInsertEditorResult::Mode::kRewrite:
       return PickerCategory::kEditorRewrite;
   }
 }
 
-std::u16string GetLabelForNewWindowType(PickerNewWindowResult::Type type) {
+std::u16string GetLabelForNewWindowType(QuickInsertNewWindowResult::Type type) {
   switch (type) {
-    case PickerNewWindowResult::Type::kDoc:
+    case QuickInsertNewWindowResult::Type::kDoc:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL);
-    case PickerNewWindowResult::Type::kSheet:
+    case QuickInsertNewWindowResult::Type::kSheet:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL);
-    case PickerNewWindowResult::Type::kSlide:
+    case QuickInsertNewWindowResult::Type::kSlide:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL);
-    case PickerNewWindowResult::Type::kChrome:
+    case QuickInsertNewWindowResult::Type::kChrome:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL);
   }
 }
 
 const gfx::VectorIcon& GetIconForNewWindowType(
-    PickerNewWindowResult::Type type) {
+    QuickInsertNewWindowResult::Type type) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (type) {
-    case PickerNewWindowResult::Type::kDoc:
+    case QuickInsertNewWindowResult::Type::kDoc:
       return vector_icons::kGoogleDocsIcon;
-    case PickerNewWindowResult::Type::kSheet:
+    case QuickInsertNewWindowResult::Type::kSheet:
       return vector_icons::kGoogleSheetsIcon;
-    case PickerNewWindowResult::Type::kSlide:
+    case QuickInsertNewWindowResult::Type::kSlide:
       return vector_icons::kGoogleSlidesIcon;
-    case PickerNewWindowResult::Type::kChrome:
+    case QuickInsertNewWindowResult::Type::kChrome:
       return vector_icons::kProductRefreshIcon;
   }
 #else
@@ -110,25 +110,25 @@ const gfx::VectorIcon& GetIconForNewWindowType(
 }
 
 std::u16string GetLabelForCaseTransformType(
-    PickerCaseTransformResult::Type type) {
+    QuickInsertCaseTransformResult::Type type) {
   switch (type) {
-    case PickerCaseTransformResult::Type::kUpperCase:
+    case QuickInsertCaseTransformResult::Type::kUpperCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_UPPER_CASE_MENU_LABEL);
-    case PickerCaseTransformResult::Type::kLowerCase:
+    case QuickInsertCaseTransformResult::Type::kLowerCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_LOWER_CASE_MENU_LABEL);
-    case PickerCaseTransformResult::Type::kTitleCase:
+    case QuickInsertCaseTransformResult::Type::kTitleCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_MENU_LABEL);
   }
 }
 
 const gfx::VectorIcon& GetIconForCaseTransformType(
-    PickerCaseTransformResult::Type type) {
+    QuickInsertCaseTransformResult::Type type) {
   switch (type) {
-    case PickerCaseTransformResult::Type::kUpperCase:
+    case QuickInsertCaseTransformResult::Type::kUpperCase:
       return kPickerUpperCaseIcon;
-    case PickerCaseTransformResult::Type::kLowerCase:
+    case QuickInsertCaseTransformResult::Type::kLowerCase:
       return kPickerLowerCaseIcon;
-    case PickerCaseTransformResult::Type::kTitleCase:
+    case QuickInsertCaseTransformResult::Type::kTitleCase:
       return kPickerTitleCaseIcon;
   }
 }
@@ -152,18 +152,18 @@ std::optional<base::File::Info> ResolveFileInfo(const base::FilePath& path) {
 
 // This should align with `chromeos::clipboard_history::GetIconForDescriptor`.
 const gfx::VectorIcon& GetIconForClipboardData(
-    const PickerClipboardResult& data) {
+    const QuickInsertClipboardResult& data) {
   switch (data.display_format) {
-    case PickerClipboardResult::DisplayFormat::kText:
+    case QuickInsertClipboardResult::DisplayFormat::kText:
       return GURL(data.display_text).is_valid() ? vector_icons::kLinkIcon
                                                 : chromeos::kTextIcon;
-    case PickerClipboardResult::DisplayFormat::kImage:
+    case QuickInsertClipboardResult::DisplayFormat::kImage:
       return chromeos::kFiletypeImageIcon;
-    case PickerClipboardResult::DisplayFormat::kFile:
+    case QuickInsertClipboardResult::DisplayFormat::kFile:
       return data.file_count == 1 ? chromeos::GetIconForPath(base::FilePath(
                                         base::UTF16ToUTF8(data.display_text)))
                                   : vector_icons::kContentCopyIcon;
-    case PickerClipboardResult::DisplayFormat::kHtml:
+    case QuickInsertClipboardResult::DisplayFormat::kHtml:
       NOTREACHED();
   }
   NOTREACHED();
@@ -209,7 +209,7 @@ QuickInsertSectionView::CreateItemFromResult(
   using ReturnType = std::unique_ptr<QuickInsertItemView>;
   return std::visit(
       base::Overloaded{
-          [&](const PickerTextResult& data) -> ReturnType {
+          [&](const QuickInsertTextResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.primary_text);
@@ -217,7 +217,7 @@ QuickInsertSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(data.icon);
             return item_view;
           },
-          [&](const PickerSearchRequestResult& data) -> ReturnType {
+          [&](const QuickInsertSearchRequestResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.primary_text);
@@ -225,23 +225,25 @@ QuickInsertSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(data.icon);
             return item_view;
           },
-          [&](const PickerEmojiResult& data) -> ReturnType { NOTREACHED(); },
-          [&](const PickerClipboardResult& data) -> ReturnType {
+          [&](const QuickInsertEmojiResult& data) -> ReturnType {
+            NOTREACHED();
+          },
+          [&](const QuickInsertClipboardResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             switch (data.display_format) {
-              case PickerClipboardResult::DisplayFormat::kFile:
-              case PickerClipboardResult::DisplayFormat::kText:
+              case QuickInsertClipboardResult::DisplayFormat::kFile:
+              case QuickInsertClipboardResult::DisplayFormat::kText:
                 item_view->SetPrimaryText(data.display_text);
                 break;
-              case PickerClipboardResult::DisplayFormat::kImage:
+              case QuickInsertClipboardResult::DisplayFormat::kImage:
                 if (!data.display_image.has_value()) {
                   return nullptr;
                 }
                 item_view->SetPrimaryImage(*data.display_image,
                                            available_width);
                 break;
-              case PickerClipboardResult::DisplayFormat::kHtml:
+              case QuickInsertClipboardResult::DisplayFormat::kHtml:
                 NOTREACHED();
             }
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -249,7 +251,7 @@ QuickInsertSectionView::CreateItemFromResult(
                 kIconSize));
             return item_view;
           },
-          [&](const PickerGifResult& data) -> ReturnType {
+          [&](const QuickInsertGifResult& data) -> ReturnType {
             // `base::Unretained` is safe because `asset_fetcher` outlives the
             // return value.
             auto gif_view = std::make_unique<PickerGifView>(
@@ -264,7 +266,7 @@ QuickInsertSectionView::CreateItemFromResult(
                 std::move(gif_view), data.content_description,
                 std::move(select_result_callback));
           },
-          [&](const PickerBrowsingHistoryResult& data) -> ReturnType {
+          [&](const QuickInsertBrowsingHistoryResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             std::u16string formatted_url = FormatBrowsingHistoryUrl(data.url);
@@ -274,7 +276,7 @@ QuickInsertSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(data.icon, kBrowsingHistoryIconSize);
             return item_view;
           },
-          [&](const PickerLocalFileResult& data) -> ReturnType {
+          [&](const QuickInsertLocalFileResult& data) -> ReturnType {
             switch (local_file_result_style) {
               case LocalFileResultStyle::kList: {
                 auto item_view = std::make_unique<QuickInsertListItemView>(
@@ -305,7 +307,7 @@ QuickInsertSectionView::CreateItemFromResult(
               }
             }
           },
-          [&](const PickerDriveFileResult& data) -> ReturnType {
+          [&](const QuickInsertDriveFileResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
@@ -323,14 +325,14 @@ QuickInsertSectionView::CreateItemFromResult(
                 /*update_icon=*/false);
             return item_view;
           },
-          [&](const PickerCategoryResult& data) -> ReturnType {
+          [&](const QuickInsertCategoryResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
             item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
             return item_view;
           },
-          [&](const PickerEditorResult& data) -> ReturnType {
+          [&](const QuickInsertEditorResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             if (data.category.has_value()) {
@@ -348,7 +350,7 @@ QuickInsertSectionView::CreateItemFromResult(
             }
             return item_view;
           },
-          [&](const PickerLobsterResult& data) -> ReturnType {
+          [&](const QuickInsertLobsterResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
 
@@ -357,7 +359,7 @@ QuickInsertSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(GetIconForPickerCategory(category));
             return item_view;
           },
-          [&](const PickerNewWindowResult& data) -> ReturnType {
+          [&](const QuickInsertNewWindowResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForNewWindowType(data.type));
@@ -366,7 +368,7 @@ QuickInsertSectionView::CreateItemFromResult(
                 cros_tokens::kCrosSysOnSurface));
             return item_view;
           },
-          [&](const PickerCapsLockResult& data) -> ReturnType {
+          [&](const QuickInsertCapsLockResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(l10n_util::GetStringUTF16(
@@ -379,7 +381,7 @@ QuickInsertSectionView::CreateItemFromResult(
                 std::make_unique<PickerShortcutHintView>(data.shortcut));
             return item_view;
           },
-          [&](const PickerCaseTransformResult& data) -> ReturnType {
+          [&](const QuickInsertCaseTransformResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForCaseTransformType(data.type));

@@ -16,27 +16,30 @@
 
 namespace ash {
 
-PickerTextResult::PickerTextResult(std::u16string_view text,
-                                   PickerTextResult::Source source)
-    : PickerTextResult(text, u"", ui::ImageModel(), source) {}
+QuickInsertTextResult::QuickInsertTextResult(
+    std::u16string_view text,
+    QuickInsertTextResult::Source source)
+    : QuickInsertTextResult(text, u"", ui::ImageModel(), source) {}
 
-PickerTextResult::PickerTextResult(std::u16string_view primary_text,
-                                   std::u16string_view secondary_text,
-                                   ui::ImageModel icon,
-                                   Source source)
+QuickInsertTextResult::QuickInsertTextResult(std::u16string_view primary_text,
+                                             std::u16string_view secondary_text,
+                                             ui::ImageModel icon,
+                                             Source source)
     : primary_text(primary_text),
       secondary_text(secondary_text),
       icon(std::move(icon)),
       source(source) {}
 
-PickerTextResult::PickerTextResult(const PickerTextResult&) = default;
-PickerTextResult& PickerTextResult::operator=(const PickerTextResult&) =
+QuickInsertTextResult::QuickInsertTextResult(const QuickInsertTextResult&) =
     default;
-PickerTextResult::~PickerTextResult() = default;
+QuickInsertTextResult& QuickInsertTextResult::operator=(
+    const QuickInsertTextResult&) = default;
+QuickInsertTextResult::~QuickInsertTextResult() = default;
 
-bool PickerTextResult::operator==(const PickerTextResult&) const = default;
+bool QuickInsertTextResult::operator==(const QuickInsertTextResult&) const =
+    default;
 
-PickerSearchRequestResult::PickerSearchRequestResult(
+QuickInsertSearchRequestResult::QuickInsertSearchRequestResult(
     std::u16string_view primary_text,
     std::u16string_view secondary_text,
     ui::ImageModel icon)
@@ -44,48 +47,51 @@ PickerSearchRequestResult::PickerSearchRequestResult(
       secondary_text(secondary_text),
       icon(std::move(icon)) {}
 
-PickerSearchRequestResult::PickerSearchRequestResult(
-    const PickerSearchRequestResult&) = default;
-PickerSearchRequestResult& PickerSearchRequestResult::operator=(
-    const PickerSearchRequestResult&) = default;
-PickerSearchRequestResult::~PickerSearchRequestResult() = default;
+QuickInsertSearchRequestResult::QuickInsertSearchRequestResult(
+    const QuickInsertSearchRequestResult&) = default;
+QuickInsertSearchRequestResult& QuickInsertSearchRequestResult::operator=(
+    const QuickInsertSearchRequestResult&) = default;
+QuickInsertSearchRequestResult::~QuickInsertSearchRequestResult() = default;
 
-bool PickerSearchRequestResult::operator==(
-    const PickerSearchRequestResult&) const = default;
+bool QuickInsertSearchRequestResult::operator==(
+    const QuickInsertSearchRequestResult&) const = default;
 
-PickerEmojiResult PickerEmojiResult::Emoji(std::u16string_view text,
-                                           std::u16string name) {
-  return PickerEmojiResult(Type::kEmoji, text, std::move(name));
+QuickInsertEmojiResult QuickInsertEmojiResult::Emoji(std::u16string_view text,
+                                                     std::u16string name) {
+  return QuickInsertEmojiResult(Type::kEmoji, text, std::move(name));
 }
 
-PickerEmojiResult PickerEmojiResult::Symbol(std::u16string_view text,
-                                            std::u16string name) {
-  return PickerEmojiResult(Type::kSymbol, text, std::move(name));
+QuickInsertEmojiResult QuickInsertEmojiResult::Symbol(std::u16string_view text,
+                                                      std::u16string name) {
+  return QuickInsertEmojiResult(Type::kSymbol, text, std::move(name));
 }
 
-PickerEmojiResult PickerEmojiResult::Emoticon(std::u16string_view text,
-                                              std::u16string name) {
-  return PickerEmojiResult(Type::kEmoticon, text, std::move(name));
+QuickInsertEmojiResult QuickInsertEmojiResult::Emoticon(
+    std::u16string_view text,
+    std::u16string name) {
+  return QuickInsertEmojiResult(Type::kEmoticon, text, std::move(name));
 }
 
-PickerEmojiResult::PickerEmojiResult(Type type,
-                                     std::u16string_view text,
-                                     std::u16string name)
+QuickInsertEmojiResult::QuickInsertEmojiResult(Type type,
+                                               std::u16string_view text,
+                                               std::u16string name)
     : type(type), text(text), name(std::move(name)) {}
 
-PickerEmojiResult::PickerEmojiResult(const PickerEmojiResult&) = default;
-PickerEmojiResult& PickerEmojiResult::operator=(const PickerEmojiResult&) =
+QuickInsertEmojiResult::QuickInsertEmojiResult(const QuickInsertEmojiResult&) =
     default;
-PickerEmojiResult::~PickerEmojiResult() = default;
+QuickInsertEmojiResult& QuickInsertEmojiResult::operator=(
+    const QuickInsertEmojiResult&) = default;
+QuickInsertEmojiResult::~QuickInsertEmojiResult() = default;
 
-bool PickerEmojiResult::operator==(const PickerEmojiResult&) const = default;
+bool QuickInsertEmojiResult::operator==(const QuickInsertEmojiResult&) const =
+    default;
 
-PickerGifResult::PickerGifResult(const GURL& preview_url,
-                                 const GURL& preview_image_url,
-                                 const gfx::Size& preview_dimensions,
-                                 const GURL& full_url,
-                                 const gfx::Size& full_dimensions,
-                                 std::u16string content_description)
+QuickInsertGifResult::QuickInsertGifResult(const GURL& preview_url,
+                                           const GURL& preview_image_url,
+                                           const gfx::Size& preview_dimensions,
+                                           const GURL& full_url,
+                                           const gfx::Size& full_dimensions,
+                                           std::u16string content_description)
     : preview_url(preview_url),
       preview_image_url(preview_image_url),
       preview_dimensions(preview_dimensions),
@@ -93,15 +99,18 @@ PickerGifResult::PickerGifResult(const GURL& preview_url,
       full_dimensions(full_dimensions),
       content_description(std::move(content_description)) {}
 
-PickerGifResult::PickerGifResult(const PickerGifResult&) = default;
+QuickInsertGifResult::QuickInsertGifResult(const QuickInsertGifResult&) =
+    default;
 
-PickerGifResult& PickerGifResult::operator=(const PickerGifResult&) = default;
+QuickInsertGifResult& QuickInsertGifResult::operator=(
+    const QuickInsertGifResult&) = default;
 
-PickerGifResult::~PickerGifResult() = default;
+QuickInsertGifResult::~QuickInsertGifResult() = default;
 
-bool PickerGifResult::operator==(const PickerGifResult&) const = default;
+bool QuickInsertGifResult::operator==(const QuickInsertGifResult&) const =
+    default;
 
-PickerClipboardResult::PickerClipboardResult(
+QuickInsertClipboardResult::QuickInsertClipboardResult(
     base::UnguessableToken item_id,
     DisplayFormat display_format,
     size_t file_count,
@@ -115,90 +124,92 @@ PickerClipboardResult::PickerClipboardResult(
       display_image(std::move(display_image)),
       is_recent(is_recent) {}
 
-PickerClipboardResult::PickerClipboardResult(const PickerClipboardResult&) =
-    default;
+QuickInsertClipboardResult::QuickInsertClipboardResult(
+    const QuickInsertClipboardResult&) = default;
 
-PickerClipboardResult& PickerClipboardResult::operator=(
-    const PickerClipboardResult&) = default;
+QuickInsertClipboardResult& QuickInsertClipboardResult::operator=(
+    const QuickInsertClipboardResult&) = default;
 
-PickerClipboardResult::~PickerClipboardResult() = default;
+QuickInsertClipboardResult::~QuickInsertClipboardResult() = default;
 
-bool PickerClipboardResult::operator==(const PickerClipboardResult&) const =
-    default;
+bool QuickInsertClipboardResult::operator==(
+    const QuickInsertClipboardResult&) const = default;
 
-PickerLocalFileResult::PickerLocalFileResult(std::u16string title,
-                                             base::FilePath file_path,
-                                             bool best_match)
+QuickInsertLocalFileResult::QuickInsertLocalFileResult(std::u16string title,
+                                                       base::FilePath file_path,
+                                                       bool best_match)
     : title(std::move(title)),
       file_path(std::move(file_path)),
       best_match(best_match) {}
 
-PickerLocalFileResult::PickerLocalFileResult(const PickerLocalFileResult&) =
-    default;
+QuickInsertLocalFileResult::QuickInsertLocalFileResult(
+    const QuickInsertLocalFileResult&) = default;
 
-PickerLocalFileResult& PickerLocalFileResult::operator=(
-    const PickerLocalFileResult&) = default;
+QuickInsertLocalFileResult& QuickInsertLocalFileResult::operator=(
+    const QuickInsertLocalFileResult&) = default;
 
-PickerLocalFileResult::~PickerLocalFileResult() = default;
+QuickInsertLocalFileResult::~QuickInsertLocalFileResult() = default;
 
-bool PickerLocalFileResult::operator==(const PickerLocalFileResult&) const =
-    default;
+bool QuickInsertLocalFileResult::operator==(
+    const QuickInsertLocalFileResult&) const = default;
 
-PickerDriveFileResult::PickerDriveFileResult(std::optional<std::string> id,
-                                             std::u16string title,
-                                             GURL url,
-                                             base::FilePath file_path,
-                                             bool best_match)
+QuickInsertDriveFileResult::QuickInsertDriveFileResult(
+    std::optional<std::string> id,
+    std::u16string title,
+    GURL url,
+    base::FilePath file_path,
+    bool best_match)
     : id(std::move(id)),
       title(std::move(title)),
       url(std::move(url)),
       file_path(std::move(file_path)),
       best_match(best_match) {}
 
-PickerDriveFileResult::PickerDriveFileResult(const PickerDriveFileResult&) =
-    default;
+QuickInsertDriveFileResult::QuickInsertDriveFileResult(
+    const QuickInsertDriveFileResult&) = default;
 
-PickerDriveFileResult& PickerDriveFileResult::operator=(
-    const PickerDriveFileResult&) = default;
+QuickInsertDriveFileResult& QuickInsertDriveFileResult::operator=(
+    const QuickInsertDriveFileResult&) = default;
 
-PickerDriveFileResult::~PickerDriveFileResult() = default;
+QuickInsertDriveFileResult::~QuickInsertDriveFileResult() = default;
 
-bool PickerDriveFileResult::operator==(const PickerDriveFileResult&) const =
-    default;
+bool QuickInsertDriveFileResult::operator==(
+    const QuickInsertDriveFileResult&) const = default;
 
-PickerBrowsingHistoryResult::PickerBrowsingHistoryResult(GURL url,
-                                                         std::u16string title,
-                                                         ui::ImageModel icon,
-                                                         bool best_match)
+QuickInsertBrowsingHistoryResult::QuickInsertBrowsingHistoryResult(
+    GURL url,
+    std::u16string title,
+    ui::ImageModel icon,
+    bool best_match)
     : url(std::move(url)),
       title(std::move(title)),
       icon(std::move(icon)),
       best_match(best_match) {}
 
-PickerBrowsingHistoryResult::PickerBrowsingHistoryResult(
-    const PickerBrowsingHistoryResult&) = default;
+QuickInsertBrowsingHistoryResult::QuickInsertBrowsingHistoryResult(
+    const QuickInsertBrowsingHistoryResult&) = default;
 
-PickerBrowsingHistoryResult& PickerBrowsingHistoryResult::operator=(
-    const PickerBrowsingHistoryResult&) = default;
+QuickInsertBrowsingHistoryResult& QuickInsertBrowsingHistoryResult::operator=(
+    const QuickInsertBrowsingHistoryResult&) = default;
 
-PickerBrowsingHistoryResult::~PickerBrowsingHistoryResult() = default;
+QuickInsertBrowsingHistoryResult::~QuickInsertBrowsingHistoryResult() = default;
 
-bool PickerBrowsingHistoryResult::operator==(
-    const PickerBrowsingHistoryResult&) const = default;
+bool QuickInsertBrowsingHistoryResult::operator==(
+    const QuickInsertBrowsingHistoryResult&) const = default;
 
-PickerCategoryResult::PickerCategoryResult(PickerCategory category)
+QuickInsertCategoryResult::QuickInsertCategoryResult(PickerCategory category)
     : category(category) {}
 
-PickerCategoryResult::PickerCategoryResult(const PickerCategoryResult&) =
-    default;
-PickerCategoryResult& PickerCategoryResult::operator=(
-    const PickerCategoryResult&) = default;
-PickerCategoryResult::~PickerCategoryResult() = default;
+QuickInsertCategoryResult::QuickInsertCategoryResult(
+    const QuickInsertCategoryResult&) = default;
+QuickInsertCategoryResult& QuickInsertCategoryResult::operator=(
+    const QuickInsertCategoryResult&) = default;
+QuickInsertCategoryResult::~QuickInsertCategoryResult() = default;
 
-bool PickerCategoryResult::operator==(const PickerCategoryResult&) const =
-    default;
+bool QuickInsertCategoryResult::operator==(
+    const QuickInsertCategoryResult&) const = default;
 
-PickerEditorResult::PickerEditorResult(
+QuickInsertEditorResult::QuickInsertEditorResult(
     Mode mode,
     std::u16string display_name,
     std::optional<chromeos::editor_menu::PresetQueryCategory> category,
@@ -208,62 +219,67 @@ PickerEditorResult::PickerEditorResult(
       category(std::move(category)),
       preset_query_id(std::move(preset_query_id)) {}
 
-PickerEditorResult::PickerEditorResult(const PickerEditorResult&) = default;
+QuickInsertEditorResult::QuickInsertEditorResult(
+    const QuickInsertEditorResult&) = default;
 
-PickerEditorResult& PickerEditorResult::operator=(const PickerEditorResult&) =
+QuickInsertEditorResult& QuickInsertEditorResult::operator=(
+    const QuickInsertEditorResult&) = default;
+
+QuickInsertEditorResult::~QuickInsertEditorResult() = default;
+
+bool QuickInsertEditorResult::operator==(const QuickInsertEditorResult&) const =
     default;
 
-PickerEditorResult::~PickerEditorResult() = default;
-
-bool PickerEditorResult::operator==(const PickerEditorResult&) const = default;
-
-PickerLobsterResult::PickerLobsterResult(std::u16string display_name)
+QuickInsertLobsterResult::QuickInsertLobsterResult(std::u16string display_name)
     : display_name(std::move(display_name)) {}
 
-PickerLobsterResult::PickerLobsterResult(const PickerLobsterResult&) = default;
+QuickInsertLobsterResult::QuickInsertLobsterResult(
+    const QuickInsertLobsterResult&) = default;
 
-PickerLobsterResult& PickerLobsterResult::operator=(
-    const PickerLobsterResult&) = default;
+QuickInsertLobsterResult& QuickInsertLobsterResult::operator=(
+    const QuickInsertLobsterResult&) = default;
 
-PickerLobsterResult::~PickerLobsterResult() = default;
+QuickInsertLobsterResult::~QuickInsertLobsterResult() = default;
 
-bool PickerLobsterResult::operator==(const PickerLobsterResult&) const =
-    default;
+bool QuickInsertLobsterResult::operator==(
+    const QuickInsertLobsterResult&) const = default;
 
-PickerNewWindowResult::PickerNewWindowResult(Type type) : type(type) {}
+QuickInsertNewWindowResult::QuickInsertNewWindowResult(Type type)
+    : type(type) {}
 
-PickerNewWindowResult::PickerNewWindowResult(const PickerNewWindowResult&) =
-    default;
-PickerNewWindowResult& PickerNewWindowResult::operator=(
-    const PickerNewWindowResult&) = default;
-PickerNewWindowResult::~PickerNewWindowResult() = default;
+QuickInsertNewWindowResult::QuickInsertNewWindowResult(
+    const QuickInsertNewWindowResult&) = default;
+QuickInsertNewWindowResult& QuickInsertNewWindowResult::operator=(
+    const QuickInsertNewWindowResult&) = default;
+QuickInsertNewWindowResult::~QuickInsertNewWindowResult() = default;
 
-bool PickerNewWindowResult::operator==(const PickerNewWindowResult&) const =
-    default;
+bool QuickInsertNewWindowResult::operator==(
+    const QuickInsertNewWindowResult&) const = default;
 
-PickerCapsLockResult::PickerCapsLockResult(
+QuickInsertCapsLockResult::QuickInsertCapsLockResult(
     bool enabled,
-    PickerCapsLockResult::Shortcut shortcut)
+    QuickInsertCapsLockResult::Shortcut shortcut)
     : enabled(enabled), shortcut(shortcut) {}
 
-PickerCapsLockResult::PickerCapsLockResult(const PickerCapsLockResult&) =
-    default;
-PickerCapsLockResult& PickerCapsLockResult::operator=(
-    const PickerCapsLockResult&) = default;
-PickerCapsLockResult::~PickerCapsLockResult() = default;
+QuickInsertCapsLockResult::QuickInsertCapsLockResult(
+    const QuickInsertCapsLockResult&) = default;
+QuickInsertCapsLockResult& QuickInsertCapsLockResult::operator=(
+    const QuickInsertCapsLockResult&) = default;
+QuickInsertCapsLockResult::~QuickInsertCapsLockResult() = default;
 
-bool PickerCapsLockResult::operator==(const PickerCapsLockResult&) const =
-    default;
+bool QuickInsertCapsLockResult::operator==(
+    const QuickInsertCapsLockResult&) const = default;
 
-PickerCaseTransformResult::PickerCaseTransformResult(Type type) : type(type) {}
+QuickInsertCaseTransformResult::QuickInsertCaseTransformResult(Type type)
+    : type(type) {}
 
-PickerCaseTransformResult::PickerCaseTransformResult(
-    const PickerCaseTransformResult&) = default;
-PickerCaseTransformResult& PickerCaseTransformResult::operator=(
-    const PickerCaseTransformResult&) = default;
-PickerCaseTransformResult::~PickerCaseTransformResult() = default;
+QuickInsertCaseTransformResult::QuickInsertCaseTransformResult(
+    const QuickInsertCaseTransformResult&) = default;
+QuickInsertCaseTransformResult& QuickInsertCaseTransformResult::operator=(
+    const QuickInsertCaseTransformResult&) = default;
+QuickInsertCaseTransformResult::~QuickInsertCaseTransformResult() = default;
 
-bool PickerCaseTransformResult::operator==(
-    const PickerCaseTransformResult&) const = default;
+bool QuickInsertCaseTransformResult::operator==(
+    const QuickInsertCaseTransformResult&) const = default;
 
 }  // namespace ash

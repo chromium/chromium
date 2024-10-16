@@ -129,8 +129,8 @@ CreateSearchResultsForRecentLocalImages(
   std::vector<ash::QuickInsertSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::LocalFile& file : files) {
-    results.push_back(ash::PickerLocalFileResult(std::move(file.title),
-                                                 std::move(file.path)));
+    results.push_back(ash::QuickInsertLocalFileResult(std::move(file.title),
+                                                      std::move(file.path)));
   }
   return results;
 }
@@ -141,9 +141,9 @@ CreateSearchResultsForRecentDriveFiles(
   std::vector<ash::QuickInsertSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::DriveFile& file : files) {
-    results.push_back(
-        ash::PickerDriveFileResult(std::move(file.id), std::move(file.title),
-                                   std::move(file.url), file.local_path));
+    results.push_back(ash::QuickInsertDriveFileResult(
+        std::move(file.id), std::move(file.title), std::move(file.url),
+        file.local_path));
   }
   return results;
 }
@@ -186,22 +186,22 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
 
         if (std::optional<GURL> result_url = result->url();
             result_url.has_value()) {
-          picker_results.push_back(ash::PickerBrowsingHistoryResult(
+          picker_results.push_back(ash::QuickInsertBrowsingHistoryResult(
               *result_url, result->title(), result->icon().icon,
               result->best_match()));
         } else {
-          picker_results.push_back(ash::PickerTextResult(
-              result->title(), ash::PickerTextResult::Source::kOmnibox));
+          picker_results.push_back(ash::QuickInsertTextResult(
+              result->title(), ash::QuickInsertTextResult::Source::kOmnibox));
         }
         break;
       }
       case ash::AppListSearchResultType::kFileSearch: {
-        picker_results.push_back(ash::PickerLocalFileResult(
+        picker_results.push_back(ash::QuickInsertLocalFileResult(
             result->title(), result->filePath(), result->best_match()));
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:
-        picker_results.push_back(ash::PickerDriveFileResult(
+        picker_results.push_back(ash::QuickInsertDriveFileResult(
             result->DriveId(), result->title(), *result->url(),
             result->filePath(), result->best_match()));
         break;
@@ -254,8 +254,9 @@ std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromPanelContext(
   std::vector<ash::QuickInsertSearchResult> results;
   for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
        panel_context->preset_text_queries) {
-    results.push_back(ash::PickerEditorResult(
-        ash::PickerEditorResult::Mode::kRewrite, base::UTF8ToUTF16(query->name),
+    results.push_back(ash::QuickInsertEditorResult(
+        ash::QuickInsertEditorResult::Mode::kRewrite,
+        base::UTF8ToUTF16(query->name),
         FromMojoPresetQueryCategory(query->category), query->text_query_id));
   }
   return results;

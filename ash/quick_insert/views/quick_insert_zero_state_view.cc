@@ -116,7 +116,7 @@ PickerZeroStateView::PickerZeroStateView(
       continue;
     }
 
-    auto result = PickerCategoryResult(category);
+    auto result = QuickInsertCategoryResult(category);
     GetOrCreateSectionView(category)->AddResult(
         std::move(result), preview_controller_,
         QuickInsertSectionView::LocalFileResultStyle::kList,
@@ -259,7 +259,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   std::unique_ptr<PickerItemWithSubmenuView> case_transform_submenu;
 
   for (const QuickInsertSearchResult& result : results) {
-    if (std::holds_alternative<PickerCapsLockResult>(result)) {
+    if (std::holds_alternative<QuickInsertCapsLockResult>(result)) {
       delegate_->SetCapsLockDisplayed(true);
       switch (delegate_->GetCapsLockPosition()) {
         case PickerCapsLockPosition::kTop:
@@ -279,7 +279,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                              GetOrCreateSectionView(PickerCategoryType::kMore));
           break;
       }
-    } else if (std::holds_alternative<PickerNewWindowResult>(result)) {
+    } else if (std::holds_alternative<QuickInsertNewWindowResult>(result)) {
       if (new_window_submenu == nullptr) {
         new_window_submenu =
             views::Builder<PickerItemWithSubmenuView>()
@@ -294,7 +294,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));
     } else if (const auto* editor_data =
-                   std::get_if<PickerEditorResult>(&result)) {
+                   std::get_if<QuickInsertEditorResult>(&result)) {
       auto callback =
           base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result);
@@ -332,13 +332,13 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           tone_submenu->AddEntry(result, std::move(callback));
           break;
       }
-    } else if (std::holds_alternative<PickerLobsterResult>(result)) {
+    } else if (std::holds_alternative<QuickInsertLobsterResult>(result)) {
       primary_section_view_->AddResult(
           result, preview_controller_,
           QuickInsertSectionView::LocalFileResultStyle::kList,
           base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result));
-    } else if (std::holds_alternative<PickerCaseTransformResult>(result)) {
+    } else if (std::holds_alternative<QuickInsertCaseTransformResult>(result)) {
       if (case_transform_submenu == nullptr) {
         case_transform_submenu =
             views::Builder<PickerItemWithSubmenuView>()

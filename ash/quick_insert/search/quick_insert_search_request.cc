@@ -87,7 +87,7 @@ DeduplicateGoogleCorpGotoDomains(
   std::vector<QuickInsertSearchResult*> results_to_remove;
 
   for (QuickInsertSearchResult& link : omnibox_results) {
-    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
+    auto* link_data = std::get_if<QuickInsertBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       deduped_results.push_back(std::move(link));
       continue;
@@ -192,7 +192,7 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
       MarkSearchStarted(PickerSearchSource::kEditorWrite);
       HandleEditorSearchResults(
           PickerSearchSource::kEditorWrite,
-          PickerEditorSearch(PickerEditorResult::Mode::kWrite, query));
+          PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, query));
     }
 
     if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
@@ -200,7 +200,7 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
       MarkSearchStarted(PickerSearchSource::kEditorRewrite);
       HandleEditorSearchResults(
           PickerSearchSource::kEditorRewrite,
-          PickerEditorSearch(PickerEditorResult::Mode::kRewrite, query));
+          PickerEditorSearch(QuickInsertEditorResult::Mode::kRewrite, query));
     }
 
     if (base::Contains(available_categories, PickerCategory::kLobster)) {

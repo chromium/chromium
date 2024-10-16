@@ -25,11 +25,11 @@ TEST(QuickInsertMathSearchTest, NoResult) {
 TEST(QuickInsertMathSearchTest, OnePlusOneEqualsTwo) {
   EXPECT_THAT(
       PickerMathSearch(u"1 + 1"),
-      Optional(AllOf(VariantWith<PickerTextResult>(
-                         Field("text", &PickerTextResult::primary_text, u"2")),
-                     VariantWith<PickerTextResult>(
-                         Field("source", &PickerTextResult::source,
-                               PickerTextResult::Source::kMath)))));
+      Optional(AllOf(VariantWith<QuickInsertTextResult>(Field(
+                         "text", &QuickInsertTextResult::primary_text, u"2")),
+                     VariantWith<QuickInsertTextResult>(
+                         Field("source", &QuickInsertTextResult::source,
+                               QuickInsertTextResult::Source::kMath)))));
 }
 
 TEST(QuickInsertMathSearchTest, ReturnsExamples) {
@@ -37,10 +37,11 @@ TEST(QuickInsertMathSearchTest, ReturnsExamples) {
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,
-      Each(VariantWith<PickerSearchRequestResult>(AllOf(
-          Field("primary_text", &PickerSearchRequestResult::primary_text,
+      Each(VariantWith<QuickInsertSearchRequestResult>(AllOf(
+          Field("primary_text", &QuickInsertSearchRequestResult::primary_text,
                 Not(IsEmpty())),
-          Field("secondary_text", &PickerSearchRequestResult::secondary_text,
+          Field("secondary_text",
+                &QuickInsertSearchRequestResult::secondary_text,
                 Not(IsEmpty()))))));
 }
 

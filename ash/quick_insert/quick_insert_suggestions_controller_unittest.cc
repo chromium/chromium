@@ -53,7 +53,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(Contains(VariantWith<PickerNewWindowResult>(_))))
+  EXPECT_CALL(callback,
+              Run(Contains(VariantWith<QuickInsertNewWindowResult>(_))))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -64,7 +65,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
       .WillRepeatedly(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-          PickerEditorResult(PickerEditorResult::Mode::kRewrite, u"", {}, {}),
+          QuickInsertEditorResult(QuickInsertEditorResult::Mode::kRewrite, u"",
+                                  {}, {}),
       }));
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -76,10 +78,11 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(AllOf(Not(IsEmpty()),
-                                  Each(VariantWith<PickerEditorResult>(Field(
-                                      &PickerEditorResult::mode,
-                                      PickerEditorResult::Mode::kRewrite))))))
+  EXPECT_CALL(callback,
+              Run(AllOf(Not(IsEmpty()),
+                        Each(VariantWith<QuickInsertEditorResult>(
+                            Field(&QuickInsertEditorResult::mode,
+                                  QuickInsertEditorResult::Mode::kRewrite))))))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -99,7 +102,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback, Run(IsSupersetOf({
-                            PickerLobsterResult(u""),
+                            QuickInsertLobsterResult(u""),
                         })))
       .Times(1);
 
@@ -117,7 +120,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
-  EXPECT_CALL(callback, Run(Contains(VariantWith<PickerNewWindowResult>(_))))
+  EXPECT_CALL(callback,
+              Run(Contains(VariantWith<QuickInsertNewWindowResult>(_))))
       .Times(0);
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
 
@@ -138,8 +142,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(
       callback,
-      Run(Contains(PickerCapsLockResult(
-          /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch))))
+      Run(Contains(QuickInsertCapsLockResult(
+          /*enabled=*/true, QuickInsertCapsLockResult::Shortcut::kAltSearch))))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -159,8 +163,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(
       callback,
-      Run(Contains(PickerCapsLockResult(
-          /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch))))
+      Run(Contains(QuickInsertCapsLockResult(
+          /*enabled=*/false, QuickInsertCapsLockResult::Shortcut::kAltSearch))))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -179,14 +183,15 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(IsSupersetOf({
-                            PickerCaseTransformResult(
-                                PickerCaseTransformResult::Type::kUpperCase),
-                            PickerCaseTransformResult(
-                                PickerCaseTransformResult::Type::kLowerCase),
-                            PickerCaseTransformResult(
-                                PickerCaseTransformResult::Type::kTitleCase),
-                        })))
+  EXPECT_CALL(callback,
+              Run(IsSupersetOf({
+                  QuickInsertCaseTransformResult(
+                      QuickInsertCaseTransformResult::Type::kUpperCase),
+                  QuickInsertCaseTransformResult(
+                      QuickInsertCaseTransformResult::Type::kLowerCase),
+                  QuickInsertCaseTransformResult(
+                      QuickInsertCaseTransformResult::Type::kTitleCase),
+              })))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -204,14 +209,14 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(Contains(PickerCaseTransformResult(
-                            PickerCaseTransformResult::Type::kUpperCase))))
+  EXPECT_CALL(callback, Run(Contains(QuickInsertCaseTransformResult(
+                            QuickInsertCaseTransformResult::Type::kUpperCase))))
       .Times(0);
-  EXPECT_CALL(callback, Run(Contains(PickerCaseTransformResult(
-                            PickerCaseTransformResult::Type::kLowerCase))))
+  EXPECT_CALL(callback, Run(Contains(QuickInsertCaseTransformResult(
+                            QuickInsertCaseTransformResult::Type::kLowerCase))))
       .Times(0);
-  EXPECT_CALL(callback, Run(Contains(PickerCaseTransformResult(
-                            PickerCaseTransformResult::Type::kTitleCase))))
+  EXPECT_CALL(callback, Run(Contains(QuickInsertCaseTransformResult(
+                            QuickInsertCaseTransformResult::Type::kTitleCase))))
       .Times(0);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -225,24 +230,24 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              PickerBrowsingHistoryResult(GURL("a.com"), u"a",
-                                          /*icon=*/{}),
-              PickerBrowsingHistoryResult(GURL("b.com"), u"b",
-                                          /*icon=*/{}),
+              QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
+                                               /*icon=*/{}),
+              QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
+                                               /*icon=*/{}),
           })));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
-                                    /*file_path=*/{}),
-              PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
-                                    /*file_path=*/{}),
+              QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                         /*file_path=*/{}),
+              QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                         /*file_path=*/{}),
           })));
   EXPECT_CALL(client, GetRecentLocalFileResults(1, _, _))
       .WillRepeatedly(
           WithArg<2>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              PickerLocalFileResult(u"a", /*file_path=*/{}),
-              PickerLocalFileResult(u"b", /*file_path=*/{}),
+              QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
+              QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
           })));
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
@@ -252,12 +257,15 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
+  EXPECT_CALL(
+      callback,
+      Run(ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(_))))
+      .Times(1);
   EXPECT_CALL(callback,
-              Run(ElementsAre(VariantWith<PickerBrowsingHistoryResult>(_))))
+              Run(ElementsAre(VariantWith<QuickInsertDriveFileResult>(_))))
       .Times(1);
-  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerDriveFileResult>(_))))
-      .Times(1);
-  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerLocalFileResult>(_))))
+  EXPECT_CALL(callback,
+              Run(ElementsAre(VariantWith<QuickInsertLocalFileResult>(_))))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -270,26 +278,26 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              PickerBrowsingHistoryResult(GURL("a.com"), u"a",
-                                          /*icon=*/{}),
-              PickerBrowsingHistoryResult(GURL("b.com"), u"b",
-                                          /*icon=*/{}),
+              QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
+                                               /*icon=*/{}),
+              QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
+                                               /*icon=*/{}),
           })));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
-                                    /*file_path=*/{}),
-              PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
-                                    /*file_path=*/{}),
+              QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                         /*file_path=*/{}),
+              QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                         /*file_path=*/{}),
           })));
   EXPECT_CALL(client, GetRecentLocalFileResults(3, _, _))
       .WillRepeatedly(
           WithArg<2>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              PickerLocalFileResult(u"a", /*file_path=*/{}),
-              PickerLocalFileResult(u"b", /*file_path=*/{}),
-              PickerLocalFileResult(u"c", /*file_path=*/{}),
-              PickerLocalFileResult(u"d", /*file_path=*/{}),
+              QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
+              QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
+              QuickInsertLocalFileResult(u"c", /*file_path=*/{}),
+              QuickInsertLocalFileResult(u"d", /*file_path=*/{}),
           })));
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
@@ -299,14 +307,17 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
+  EXPECT_CALL(
+      callback,
+      Run(ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(_))))
+      .Times(1);
   EXPECT_CALL(callback,
-              Run(ElementsAre(VariantWith<PickerBrowsingHistoryResult>(_))))
+              Run(ElementsAre(VariantWith<QuickInsertDriveFileResult>(_))))
       .Times(1);
-  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerDriveFileResult>(_))))
-      .Times(1);
-  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerLocalFileResult>(_),
-                                        VariantWith<PickerLocalFileResult>(_),
-                                        VariantWith<PickerLocalFileResult>(_))))
+  EXPECT_CALL(callback,
+              Run(ElementsAre(VariantWith<QuickInsertLocalFileResult>(_),
+                              VariantWith<QuickInsertLocalFileResult>(_),
+                              VariantWith<QuickInsertLocalFileResult>(_))))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
@@ -314,8 +325,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   const std::vector<QuickInsertSearchResult> suggested_links = {
-      PickerBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
-      PickerBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
+      QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
+      QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults)
@@ -332,10 +343,10 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForDriveFileCategory) {
   const std::vector<QuickInsertSearchResult> suggested_files = {
-      PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
-                            /*file_path=*/{}),
-      PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
-                            /*file_path=*/{}),
+      QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                 /*file_path=*/{}),
+      QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                 /*file_path=*/{}),
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetRecentDriveFileResults)
@@ -352,8 +363,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForLocalFileCategory) {
   const std::vector<QuickInsertSearchResult> suggested_files = {
-      PickerLocalFileResult(u"a", /*file_path=*/{}),
-      PickerLocalFileResult(u"b", /*file_path=*/{}),
+      QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
+      QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetRecentLocalFileResults)
@@ -409,10 +420,10 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   controller.GetSuggestionsForCategory(client, PickerCategory::kClipboard,
                                        future.GetRepeatingCallback());
 
-  EXPECT_THAT(
-      future.Take(),
-      ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-          _, PickerClipboardResult::DisplayFormat::kText, _, u"abc", _, _))));
+  EXPECT_THAT(future.Take(),
+              ElementsAre(VariantWith<QuickInsertClipboardResult>(
+                  FieldsAre(_, QuickInsertClipboardResult::DisplayFormat::kText,
+                            _, u"abc", _, _))));
 }
 
 }  // namespace
