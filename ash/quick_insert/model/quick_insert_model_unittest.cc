@@ -21,7 +21,7 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Not;
 
-TEST(PickerModel, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
+TEST(PickerModelTest, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                     &fake_ime_keyboard, PickerModel::EditorStatus::kEnabled,
@@ -31,7 +31,7 @@ TEST(PickerModel, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
                           PickerCategory::kLocalFiles));
 }
 
-TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
+TEST(PickerModelTest, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0));
@@ -48,7 +48,7 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
                   PickerCategory::kUnitsMaths));
 }
 
-TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
+TEST(PickerModelTest, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -61,7 +61,7 @@ TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
       ElementsAre(PickerCategory::kEditorRewrite, PickerCategory::kLobster));
 }
 
-TEST(PickerModel, AvailableCategoriesContainsEditorWriteWhenEnabled) {
+TEST(PickerModelTest, AvailableCategoriesContainsEditorWriteWhenEnabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
@@ -72,7 +72,7 @@ TEST(PickerModel, AvailableCategoriesContainsEditorWriteWhenEnabled) {
               Contains(PickerCategory::kEditorWrite));
 }
 
-TEST(PickerModel, AvailableCategoriesOmitsEditorWriteWhenDisabled) {
+TEST(PickerModelTest, AvailableCategoriesOmitsEditorWriteWhenDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
@@ -83,7 +83,7 @@ TEST(PickerModel, AvailableCategoriesOmitsEditorWriteWhenDisabled) {
               Not(Contains(PickerCategory::kEditorWrite)));
 }
 
-TEST(PickerModel, AvailableCategoriesContainsEditorRewriteWhenEnabled) {
+TEST(PickerModelTest, AvailableCategoriesContainsEditorRewriteWhenEnabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -95,7 +95,7 @@ TEST(PickerModel, AvailableCategoriesContainsEditorRewriteWhenEnabled) {
               Contains(PickerCategory::kEditorRewrite));
 }
 
-TEST(PickerModel, AvailableCategoriesOmitsEditorRewriteWhenDisabled) {
+TEST(PickerModelTest, AvailableCategoriesOmitsEditorRewriteWhenDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -107,7 +107,7 @@ TEST(PickerModel, AvailableCategoriesOmitsEditorRewriteWhenDisabled) {
               Not(Contains(PickerCategory::kEditorRewrite)));
 }
 
-TEST(PickerModel, AvailableCategoriesContainsLobsterWhenEnabled) {
+TEST(PickerModelTest, AvailableCategoriesContainsLobsterWhenEnabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
@@ -118,7 +118,7 @@ TEST(PickerModel, AvailableCategoriesContainsLobsterWhenEnabled) {
               Contains(PickerCategory::kLobster));
 }
 
-TEST(PickerModel, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
+TEST(PickerModelTest, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
@@ -129,7 +129,7 @@ TEST(PickerModel, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
               Not(Contains(PickerCategory::kLobster)));
 }
 
-TEST(PickerModel, AvailableCategoriesContainsEmojisAndGifsWhenGifsEnabled) {
+TEST(PickerModelTest, AvailableCategoriesContainsEmojisAndGifsWhenGifsEnabled) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
                                         true);
@@ -145,7 +145,7 @@ TEST(PickerModel, AvailableCategoriesContainsEmojisAndGifsWhenGifsEnabled) {
               Not(Contains(PickerCategory::kEmojis)));
 }
 
-TEST(PickerModel, AvailableCategoriesContainsOnlyEmojisWhenGifsDisables) {
+TEST(PickerModelTest, AvailableCategoriesContainsOnlyEmojisWhenGifsDisables) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
                                         false);
@@ -161,7 +161,8 @@ TEST(PickerModel, AvailableCategoriesContainsOnlyEmojisWhenGifsDisables) {
               Not(Contains(PickerCategory::kEmojisGifs)));
 }
 
-TEST(PickerModel, AvailableCategoriesDoesNotContainExpressionsForUrlFields) {
+TEST(PickerModelTest,
+     AvailableCategoriesDoesNotContainExpressionsForUrlFields) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_URL});
 
@@ -174,7 +175,7 @@ TEST(PickerModel, AvailableCategoriesDoesNotContainExpressionsForUrlFields) {
               Not(Contains(PickerCategory::kEmojisGifs)));
 }
 
-TEST(PickerModel, GetsEmptySelectedText) {
+TEST(PickerModelTest, GetsEmptySelectedText) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"abcd", gfx::Range(1, 1));
@@ -185,7 +186,7 @@ TEST(PickerModel, GetsEmptySelectedText) {
   EXPECT_EQ(model.selected_text(), u"");
 }
 
-TEST(PickerModel, GetsNonEmptySelectedText) {
+TEST(PickerModelTest, GetsNonEmptySelectedText) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"abcd", gfx::Range(1, 3));
@@ -196,7 +197,7 @@ TEST(PickerModel, GetsNonEmptySelectedText) {
   EXPECT_EQ(model.selected_text(), u"bc");
 }
 
-TEST(PickerModel, GetModeForUnfocusedState) {
+TEST(PickerModelTest, GetModeForUnfocusedState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                     &fake_ime_keyboard, PickerModel::EditorStatus::kEnabled,
@@ -205,7 +206,7 @@ TEST(PickerModel, GetModeForUnfocusedState) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
 }
 
-TEST(PickerModel, GetModeForInputTypeNone) {
+TEST(PickerModelTest, GetModeForInputTypeNone) {
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_NONE});
   input_method::FakeImeKeyboard fake_ime_keyboard;
   PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
@@ -215,7 +216,7 @@ TEST(PickerModel, GetModeForInputTypeNone) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
 }
 
-TEST(PickerModel, GetModeForNoSelectionState) {
+TEST(PickerModelTest, GetModeForNoSelectionState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
 
@@ -226,7 +227,7 @@ TEST(PickerModel, GetModeForNoSelectionState) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
 }
 
-TEST(PickerModel, GetModeForSelectionState) {
+TEST(PickerModelTest, GetModeForSelectionState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"abcd efgh", gfx::Range(1, 5));
@@ -238,7 +239,7 @@ TEST(PickerModel, GetModeForSelectionState) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kHasSelection);
 }
 
-TEST(PickerModel, GifsDisabledWhenPrefDoesNotExist) {
+TEST(PickerModelTest, GifsDisabledWhenPrefDoesNotExist) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -250,7 +251,7 @@ TEST(PickerModel, GifsDisabledWhenPrefDoesNotExist) {
   EXPECT_FALSE(model.IsGifsEnabled());
 }
 
-TEST(PickerModel, GifsEnabledWhenPrefIsTrue) {
+TEST(PickerModelTest, GifsEnabledWhenPrefIsTrue) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
                                         true);
@@ -265,7 +266,7 @@ TEST(PickerModel, GifsEnabledWhenPrefIsTrue) {
   EXPECT_TRUE(model.IsGifsEnabled());
 }
 
-TEST(PickerModel, GifsDisabledWhenPrefIsFalse) {
+TEST(PickerModelTest, GifsDisabledWhenPrefIsFalse) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
                                         true);
@@ -280,7 +281,7 @@ TEST(PickerModel, GifsDisabledWhenPrefIsFalse) {
   EXPECT_FALSE(model.IsGifsEnabled());
 }
 
-TEST(PickerModel, GetModeForBlankStringsSelectionState) {
+TEST(PickerModelTest, GetModeForBlankStringsSelectionState) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"  \n \t\ra", gfx::Range(0, 5));
@@ -292,7 +293,7 @@ TEST(PickerModel, GetModeForBlankStringsSelectionState) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
 }
 
-TEST(PickerModel, UnfocusedShouldLearn) {
+TEST(PickerModelTest, UnfocusedShouldLearn) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
 
   PickerModel model(/*prefs=*/nullptr, nullptr, &fake_ime_keyboard,
@@ -302,7 +303,7 @@ TEST(PickerModel, UnfocusedShouldLearn) {
   EXPECT_TRUE(model.should_do_learning());
 }
 
-TEST(PickerModel, FocusedShouldLearnIfLearningEnabled) {
+TEST(PickerModelTest, FocusedShouldLearnIfLearningEnabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = true});
@@ -314,7 +315,7 @@ TEST(PickerModel, FocusedShouldLearnIfLearningEnabled) {
   EXPECT_TRUE(model.should_do_learning());
 }
 
-TEST(PickerModel, FocusedShouldLearnIfLearningDisabled) {
+TEST(PickerModelTest, FocusedShouldLearnIfLearningDisabled) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = false});
