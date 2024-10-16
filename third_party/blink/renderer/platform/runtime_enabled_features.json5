@@ -998,11 +998,6 @@
       status: "stable",
     },
     {
-      // crbug.com/353228153
-      name: "CssDisplaySerialziationFix",
-      status: "stable",
-    },
-    {
       name: "CSSDynamicRangeLimit",
       status: "experimental",
     },

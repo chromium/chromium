@@ -3229,8 +3229,7 @@ void AdjustDisplayKeywords(DisplayValidationResult& result) {
     case CSSValueID::kTable:
       if (outside == CSSValueID::kBlock) {
         result.outside = nullptr;
-      } else if (RuntimeEnabledFeatures::CssDisplaySerialziationFixEnabled() &&
-                 outside == CSSValueID::kInline && !result.list_item) {
+      } else if (outside == CSSValueID::kInline && !result.list_item) {
         CSSValueID new_id = CSSValueID::kInvalid;
         if (inside == CSSValueID::kFlex) {
           new_id = CSSValueID::kInlineFlex;
@@ -3322,8 +3321,7 @@ const CSSValue* Display::ParseSingleValue(CSSParserTokenStream& stream,
 
     // The property has only one keyword (or one keyword and then junk,
     // in which case the caller will abort for us).
-    if (RuntimeEnabledFeatures::CssDisplaySerialziationFixEnabled() &&
-        id == CSSValueID::kFlow) {
+    if (id == CSSValueID::kFlow) {
       return CSSIdentifierValue::Create(CSSValueID::kBlock);
     } else if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
                IsDisplayInternal(id) || IsDisplayLegacy(id) ||
