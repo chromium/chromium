@@ -875,11 +875,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kConcat: {
-        RETURN_IF_ERROR(AddOperationForConcat(*operation->get_concat(), block));
+        AddOperationForConcat(*operation->get_concat(), block);
         break;
       }
       case mojom::Operation::Tag::kConv2d: {
-        RETURN_IF_ERROR(AddOperationForConv2d(*operation->get_conv2d(), block));
+        AddOperationForConv2d(*operation->get_conv2d(), block);
         break;
       }
       case mojom::Operation::Tag::kCumulativeSum: {
@@ -922,8 +922,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kHardSigmoid: {
-        RETURN_IF_ERROR(
-            AddOperationForHardSigmoid(*operation->get_hard_sigmoid(), block));
+        AddOperationForHardSigmoid(*operation->get_hard_sigmoid(), block);
         break;
       }
       case mojom::Operation::Tag::kHardSwish: {
@@ -977,8 +976,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kResample2d: {
-        RETURN_IF_ERROR(
-            AddOperationForResample2d(*operation->get_resample2d(), block));
+        AddOperationForResample2d(*operation->get_resample2d(), block);
         break;
       }
       case mojom::Operation::Tag::kReshape: {
@@ -995,12 +993,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kSlice: {
-        RETURN_IF_ERROR(AddOperationForSlice(*operation->get_slice(), block));
+        AddOperationForSlice(*operation->get_slice(), block);
         break;
       }
       case mojom::Operation::Tag::kSoftmax: {
-        RETURN_IF_ERROR(
-            AddOperationForSoftmax(*operation->get_softmax(), block));
+        AddOperationForSoftmax(*operation->get_softmax(), block);
         break;
       }
       case mojom::Operation::Tag::kSoftplus: {
@@ -1122,7 +1119,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
     // int32 is only supported as immediate value.
     if (constant_operand->descriptor().shape().empty() ||
         constant_operand->descriptor().data_type() == OperandDataType::kInt32) {
-      RETURN_IF_ERROR(AddConstantImmediateValue(id, block));
+      AddConstantImmediateValue(id, block);
       continue;
     }
 
@@ -1145,7 +1142,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
       return NewUnknownError(kWriteWeightsErrorMessage);
     }
 
-    RETURN_IF_ERROR(AddConstantFileValue(id, current_offset, block));
+    AddConstantFileValue(id, current_offset, block);
     current_offset += sizeof(metadata);
     current_offset += constant_operand->ByteSpan().size();
     current_offset = base::bits::AlignUp(current_offset, kWeightAlignment);
@@ -1538,7 +1535,7 @@ void GraphBuilderCoreml::AddOperationForClamp(
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConcat(
+void GraphBuilderCoreml::AddOperationForConcat(
     const mojom::Concat& operation,
     CoreML::Specification::MILSpec::Block& block) {
   CHECK(base::ranges::all_of(
@@ -1565,10 +1562,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConcat(
        {kParamInterleave, CreateScalarImmediateValue(false)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
-  return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
+void GraphBuilderCoreml::AddOperationForConv2d(
     const mojom::Conv2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
@@ -1640,7 +1636,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
   }
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
-  return base::ok();
 }
 
 void GraphBuilderCoreml::AddOperationForCumulativeSum(
@@ -2162,8 +2157,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
       mojom::ElementWiseBinary::Kind::kAdd, block);
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddOperationForHardSigmoid(
+void GraphBuilderCoreml::AddOperationForHardSigmoid(
     uint64_t input_operand_id,
     float alpha,
     float beta,
@@ -2189,16 +2183,14 @@ GraphBuilderCoreml::AddOperationForHardSigmoid(
       });
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
-  return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddOperationForHardSigmoid(
+void GraphBuilderCoreml::AddOperationForHardSigmoid(
     const mojom::HardSigmoid& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  return AddOperationForHardSigmoid(operation.input_operand_id, operation.alpha,
-                                    operation.beta, operation.output_operand_id,
-                                    block);
+  AddOperationForHardSigmoid(operation.input_operand_id, operation.alpha,
+                             operation.beta, operation.output_operand_id,
+                             block);
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -2222,8 +2214,8 @@ GraphBuilderCoreml::AddOperationForHardSwish(
   constexpr static float alpha = float(1.0 / 6);
   constexpr static float beta = float(0.5);
 
-  RETURN_IF_ERROR(AddOperationForHardSigmoid(operation.input_operand_id, alpha,
-                                             beta, hardsigmoid_output, block));
+  AddOperationForHardSigmoid(operation.input_operand_id, alpha, beta,
+                             hardsigmoid_output, block);
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       operation.input_operand_id, hardsigmoid_output,
       operation.output_operand_id, mojom::ElementWiseBinary::Kind::kMul,
@@ -2667,8 +2659,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddOperationForResample2d(
+void GraphBuilderCoreml::AddOperationForResample2d(
     const mojom::Resample2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2732,7 +2723,6 @@ GraphBuilderCoreml::AddOperationForResample2d(
        {kParamScaleFactorWidth, CreateScalarImmediateValue(scales[1])}});
 
   PopulateNamedValueType(operation.output_operand_id, *op.add_outputs());
-  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -2777,7 +2767,7 @@ GraphBuilderCoreml::AddOperationForReshape(
                                 operation.output_operand_id, block);
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForSlice(
+void GraphBuilderCoreml::AddOperationForSlice(
     const mojom::Slice& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2809,11 +2799,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForSlice(
        {kParamSize, Create1DTensorImmediateValue<int32_t>(sizes)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
-  return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddOperationForSoftmax(
+void GraphBuilderCoreml::AddOperationForSoftmax(
     const mojom::Softmax& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
@@ -2831,7 +2819,6 @@ GraphBuilderCoreml::AddOperationForSoftmax(
       *op->mutable_inputs(), kOpParamAxis,
       CreateScalarImmediateValue(base::checked_cast<int32_t>(operation.axis)));
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
-  return base::ok();
 }
 
 void GraphBuilderCoreml::AddOperationForSplit(
@@ -2959,12 +2946,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddConstantImmediateValue(
+void GraphBuilderCoreml::AddConstantImmediateValue(
     uint64_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
   auto* op = block.add_operations();
-  RETURN_IF_ERROR(PopulateConstantOpFromOperand(constant_id, *op));
+  PopulateConstantOpFromOperand(constant_id, *op);
 
   google::protobuf::Map<std::string, ::CoreML::Specification::MILSpec::Value>&
       attributes = *op->mutable_attributes();
@@ -3015,15 +3001,14 @@ GraphBuilderCoreml::AddConstantImmediateValue(
       NOTREACHED() << "Unsupported data type.";
     }
   }
-  return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddConstantFileValue(
+void GraphBuilderCoreml::AddConstantFileValue(
     uint64_t constant_id,
     uint64_t offset,
     CoreML::Specification::MILSpec::Block& block) {
   auto* op = block.add_operations();
-  RETURN_IF_ERROR(PopulateConstantOpFromOperand(constant_id, *op));
+  PopulateConstantOpFromOperand(constant_id, *op);
   // Blob path is defined in generic Operation.attributes.
   // This follows the actual data structure in
   // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/load.py#L60.
@@ -3038,7 +3023,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddConstantFileValue(
   blob->set_filename(kWeightsRelativeFilePath);
   blob->set_offset(offset);
   attributes["val"] = std::move(blob_value);
-  return base::ok();
 }
 
 const mojom::Operand& GraphBuilderCoreml::GetOperand(
@@ -3051,8 +3035,7 @@ GraphBuilderCoreml::GetOperandInfo(uint64_t operand_id) const {
   return result_->GetOperandInfo(operand_id);
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::PopulateConstantOpFromOperand(
+void GraphBuilderCoreml::PopulateConstantOpFromOperand(
     uint64_t constant_id,
     CoreML::Specification::MILSpec::Operation& op) {
   CoreML::Specification::MILSpec::DataType mil_data_type =
@@ -3061,7 +3044,6 @@ GraphBuilderCoreml::PopulateConstantOpFromOperand(
 
   op.set_type(kOpConstTypeName);
   PopulateNamedValueType(constant_id, *op.add_outputs());
-  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr>

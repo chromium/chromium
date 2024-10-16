@@ -210,12 +210,10 @@ class GraphBuilderCoreml {
                            CoreML::Specification::MILSpec::Block& block);
   void AddOperationForClamp(const mojom::Clamp& operation,
                             CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConcat(
-      const mojom::Concat& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
-      const mojom::Conv2d& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForConcat(const mojom::Concat& operation,
+                             CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForConv2d(const mojom::Conv2d& operation,
+                             CoreML::Specification::MILSpec::Block& block);
   void AddOperationForCumulativeSum(
       const mojom::CumulativeSum& operation,
       CoreML::Specification::MILSpec::Block& block);
@@ -245,15 +243,13 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForGemm(
       const mojom::Gemm& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddOperationForHardSigmoid(uint64_t input_operand_id,
-                             float alpha,
-                             float beta,
-                             uint64_t output_operand_id,
-                             CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddOperationForHardSigmoid(const mojom::HardSigmoid& operation,
-                             CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForHardSigmoid(uint64_t input_operand_id,
+                                  float alpha,
+                                  float beta,
+                                  uint64_t output_operand_id,
+                                  CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForHardSigmoid(const mojom::HardSigmoid& operation,
+                                  CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForHardSwish(
       const mojom::HardSwish& operation,
       CoreML::Specification::MILSpec::Block& block);
@@ -288,9 +284,8 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReduce(
       const mojom::Reduce& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForResample2d(
-      const mojom::Resample2d& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForResample2d(const mojom::Resample2d& operation,
+                                 CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
       uint64_t input_operand_id,
       uint64_t output_operand_id,
@@ -298,12 +293,10 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
       const mojom::Reshape& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSlice(
-      const mojom::Slice& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSoftmax(
-      const mojom::Softmax& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForSlice(const mojom::Slice& operation,
+                            CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForSoftmax(const mojom::Softmax& operation,
+                              CoreML::Specification::MILSpec::Block& block);
   void AddOperationForSplit(const mojom::Split& operation,
                             CoreML::Specification::MILSpec::Block& block);
   void AddOperationForTile(const mojom::Tile& operation,
@@ -315,17 +308,15 @@ class GraphBuilderCoreml {
       CoreML::Specification::MILSpec::Block& block);
 
   // Add constants as immediate values in the model file.
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConstantImmediateValue(
-      uint64_t constant_id,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddConstantImmediateValue(uint64_t constant_id,
+                                 CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConstantFileValue(
-      uint64_t constant_id,
-      uint64_t offset,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddConstantFileValue(uint64_t constant_id,
+                            uint64_t offset,
+                            CoreML::Specification::MILSpec::Block& block);
 
   // Populate generic fields that apply to all `const` operations.
-  base::expected<void, mojom::ErrorPtr> PopulateConstantOpFromOperand(
+  void PopulateConstantOpFromOperand(
       uint64_t constant_id,
       CoreML::Specification::MILSpec::Operation& op);
 
