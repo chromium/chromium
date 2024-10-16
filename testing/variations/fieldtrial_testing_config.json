@@ -26881,6 +26881,47 @@
             ]
         }
     ],
+    "WhatsNewHats": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_en_20241016",
+                    "params": {
+                        "en_site_id": "6bnVh68QF0ugnJ3q1cK0NQxjpCFS",
+                        "probability": "0.4"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopWhatsNew"
+                    ]
+                },
+                {
+                    "name": "Enabled_de_20241016",
+                    "params": {
+                        "en_site_id": "6bnVh68QF0ugnJ3q1cK0NQxjpCFS",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopWhatsNew"
+                    ]
+                },
+                {
+                    "name": "Enabled_ja_20241016",
+                    "params": {
+                        "en_site_id": "6bnVh68QF0ugnJ3q1cK0NQxjpCFS",
+                        "probability": "0.8"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopWhatsNew"
+                    ]
+                }
+            ]
+        }
+    ],
     "WhatsNewSparkEdition": [
         {
             "platforms": [
