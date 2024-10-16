@@ -6,40 +6,39 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 
 namespace user_annotations {
 
+BASE_FEATURE(kUserAnnotations,
+             "UserAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsUserAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(
-      autofill_prediction_improvements::kAutofillPredictionImprovements);
+  return base::FeatureList::IsEnabled(kUserAnnotations);
 }
 
 std::vector<std::string> GetAllowedHostsForFormsAnnotations() {
   std::string allowed_hosts_string = base::GetFieldTrialParamValueByFeature(
-      autofill_prediction_improvements::kAutofillPredictionImprovements,
-      "allowed_hosts_for_form_submissions");
+      kUserAnnotations, "allowed_hosts_for_form_submissions");
   return base::SplitString(allowed_hosts_string, ",",
                            base::WhitespaceHandling::TRIM_WHITESPACE,
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 bool ShouldPersistUserAnnotations() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      autofill_prediction_improvements::kAutofillPredictionImprovements,
-      "persist_annotations", false);
+  return base::GetFieldTrialParamByFeatureAsBool(kUserAnnotations,
+                                                 "persist_annotations", false);
 }
 
 bool ShouldExtractAXTreeForFormsAnnotations() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      autofill_prediction_improvements::kAutofillPredictionImprovements,
-      "should_extract_ax_tree_for_forms_annotations", false);
+      kUserAnnotations, "should_extract_ax_tree_for_forms_annotations", false);
 }
 
 base::TimeDelta GetFormSubmissionCompletionTimeout() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      autofill_prediction_improvements::kAutofillPredictionImprovements,
-      "form_submission_completion_timeout", base::Seconds(30));
+      kUserAnnotations, "form_submission_completion_timeout",
+      base::Seconds(30));
 }
 
 }  // namespace user_annotations

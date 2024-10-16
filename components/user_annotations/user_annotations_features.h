@@ -13,6 +13,8 @@
 
 namespace user_annotations {
 
+BASE_DECLARE_FEATURE(kUserAnnotations);
+
 // Whether the user annotations feature is enabled.
 bool IsUserAnnotationsEnabled();
 
