@@ -46,6 +46,21 @@ std::string MapOriginToServer(const GURL& origin,
       {"MAP ", origin.host_piece(), " ", server.host_port_pair().ToString()});
 }
 
+// Appends the given `rule` to `kHostResolverRules`, maintaining existing rules.
+void AppendHostResolverRule(base::CommandLine* command_line,
+                            std::string_view rule) {
+  if (!command_line->HasSwitch(network::switches::kHostResolverRules)) {
+    return command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules, rule);
+  }
+
+  std::string existing_rules =
+      command_line->GetSwitchValueASCII(network::switches::kHostResolverRules);
+  command_line->RemoveSwitch(network::switches::kHostResolverRules);
+  command_line->AppendSwitchASCII(network::switches::kHostResolverRules,
+                                  base::StrCat({existing_rules, ",", rule}));
+}
+
 void LogUrl(const net::test_server::HttpRequest& request) {
   LOG(INFO) << "Received request for url '" << request.GetURL() << "'";
 }
@@ -90,7 +105,7 @@ void FakeOriginTestServerMixin::SetUpCommandLine(
   // Set the `kHostResolverRules` switch so Chrome forwards request made to
   // `origin_` to the given `server_`.
   auto rule = MapOriginToServer(origin_, server_);
-  command_line->AppendSwitchASCII(network::switches::kHostResolverRules, rule);
+  AppendHostResolverRule(command_line, rule);
   LOG(INFO) << "Configured host resolver rule '" << rule << "'";
 }
 
