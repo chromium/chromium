@@ -38,7 +38,7 @@ PickerSectionListView::~PickerSectionListView() = default;
 views::View* PickerSectionListView::GetTopItem() {
   for (views::View* section : children()) {
     if (views::View* top_item =
-            views::AsViewClass<PickerSectionView>(section)->GetTopItem()) {
+            views::AsViewClass<QuickInsertSectionView>(section)->GetTopItem()) {
       return top_item;
     }
   }
@@ -48,7 +48,8 @@ views::View* PickerSectionListView::GetTopItem() {
 views::View* PickerSectionListView::GetBottomItem() {
   for (views::View* section : base::Reversed(children())) {
     if (views::View* bottom_item =
-            views::AsViewClass<PickerSectionView>(section)->GetBottomItem()) {
+            views::AsViewClass<QuickInsertSectionView>(section)
+                ->GetBottomItem()) {
       return bottom_item;
     }
   }
@@ -56,7 +57,7 @@ views::View* PickerSectionListView::GetBottomItem() {
 }
 
 views::View* PickerSectionListView::GetItemAbove(views::View* item) {
-  PickerSectionView* section = GetSectionContaining(item);
+  QuickInsertSectionView* section = GetSectionContaining(item);
   if (section == nullptr) {
     return nullptr;
   }
@@ -72,7 +73,7 @@ views::View* PickerSectionListView::GetItemAbove(views::View* item) {
            std::make_reverse_iterator(base::ranges::find(children(), section));
        section_it != children().rend(); section_it = std::next(section_it)) {
     if (views::View* prev_section_bottom_item =
-            views::AsViewClass<PickerSectionView>(section_it->get())
+            views::AsViewClass<QuickInsertSectionView>(section_it->get())
                 ->GetBottomItem()) {
       return prev_section_bottom_item;
     }
@@ -82,7 +83,7 @@ views::View* PickerSectionListView::GetItemAbove(views::View* item) {
 }
 
 views::View* PickerSectionListView::GetItemBelow(views::View* item) {
-  PickerSectionView* section = GetSectionContaining(item);
+  QuickInsertSectionView* section = GetSectionContaining(item);
   if (section == nullptr) {
     return nullptr;
   }
@@ -97,7 +98,7 @@ views::View* PickerSectionListView::GetItemBelow(views::View* item) {
   for (auto section_it = std::next(base::ranges::find(children(), section));
        section_it != children().end(); section_it = std::next(section_it)) {
     if (views::View* next_section_top_item =
-            views::AsViewClass<PickerSectionView>(section_it->get())
+            views::AsViewClass<QuickInsertSectionView>(section_it->get())
                 ->GetTopItem()) {
       return next_section_top_item;
     }
@@ -106,24 +107,24 @@ views::View* PickerSectionListView::GetItemBelow(views::View* item) {
 }
 
 views::View* PickerSectionListView::GetItemLeftOf(views::View* item) {
-  PickerSectionView* section = GetSectionContaining(item);
+  QuickInsertSectionView* section = GetSectionContaining(item);
   return section != nullptr ? section->GetItemLeftOf(item) : nullptr;
 }
 
 views::View* PickerSectionListView::GetItemRightOf(views::View* item) {
-  PickerSectionView* section = GetSectionContaining(item);
+  QuickInsertSectionView* section = GetSectionContaining(item);
   return section != nullptr ? section->GetItemRightOf(item) : nullptr;
 }
 
-PickerSectionView* PickerSectionListView::AddSection() {
-  return AddChildView(std::make_unique<PickerSectionView>(
+QuickInsertSectionView* PickerSectionListView::AddSection() {
+  return AddChildView(std::make_unique<QuickInsertSectionView>(
       section_width_, asset_fetcher_, submenu_controller_));
 }
 
-PickerSectionView* PickerSectionListView::AddSectionAt(size_t index) {
+QuickInsertSectionView* PickerSectionListView::AddSectionAt(size_t index) {
   return AddChildViewAt(
-      std::make_unique<PickerSectionView>(section_width_, asset_fetcher_,
-                                          submenu_controller_),
+      std::make_unique<QuickInsertSectionView>(section_width_, asset_fetcher_,
+                                               submenu_controller_),
       index);
 }
 
@@ -131,12 +132,13 @@ void PickerSectionListView::ClearSectionList() {
   RemoveAllChildViews();
 }
 
-PickerSectionView* PickerSectionListView::GetSectionContaining(
+QuickInsertSectionView* PickerSectionListView::GetSectionContaining(
     views::View* item) {
   for (views::View* view = item->parent(); view != nullptr;
        view = view->parent()) {
-    if (views::IsViewClass<PickerSectionView>(view) && view->parent() == this) {
-      return views::AsViewClass<PickerSectionView>(view);
+    if (views::IsViewClass<QuickInsertSectionView>(view) &&
+        view->parent() == this) {
+      return views::AsViewClass<QuickInsertSectionView>(view);
     }
   }
   return nullptr;

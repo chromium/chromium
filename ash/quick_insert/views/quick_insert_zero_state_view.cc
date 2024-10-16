@@ -119,7 +119,7 @@ PickerZeroStateView::PickerZeroStateView(
     auto result = PickerCategoryResult(category);
     GetOrCreateSectionView(category)->AddResult(
         std::move(result), preview_controller_,
-        PickerSectionView::LocalFileResultStyle::kList,
+        QuickInsertSectionView::LocalFileResultStyle::kList,
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
@@ -187,7 +187,7 @@ bool PickerZeroStateView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
+QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
     PickerCategoryType category_type) {
   auto section_view_iterator = category_section_views_.find(category_type);
   if (section_view_iterator != category_section_views_.end()) {
@@ -201,7 +201,7 @@ PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
   return section_view;
 }
 
-PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
+QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
     PickerCategory category) {
   return GetOrCreateSectionView(GetPickerCategoryType(category));
 }
@@ -215,12 +215,12 @@ void PickerZeroStateView::OnResultSelected(const PickerSearchResult& result) {
 }
 
 void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
-                                             PickerSectionView* section) {
+                                             QuickInsertSectionView* section) {
   QuickInsertItemView* view = section->AddResult(
       result, preview_controller_,
       base::FeatureList::IsEnabled(ash::features::kPickerGrid)
-          ? PickerSectionView::LocalFileResultStyle::kRow
-          : PickerSectionView::LocalFileResultStyle::kList,
+          ? QuickInsertSectionView::LocalFileResultStyle::kRow
+          : QuickInsertSectionView::LocalFileResultStyle::kList,
       base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 
@@ -300,7 +300,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
         case EditorSubmenu::kNone:
           primary_section_view_->AddResult(
               result, preview_controller_,
-              PickerSectionView::LocalFileResultStyle::kList,
+              QuickInsertSectionView::LocalFileResultStyle::kList,
               std::move(callback));
           break;
         case EditorSubmenu::kLength:
@@ -333,7 +333,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
     } else if (std::holds_alternative<PickerLobsterResult>(result)) {
       primary_section_view_->AddResult(
           result, preview_controller_,
-          PickerSectionView::LocalFileResultStyle::kList,
+          QuickInsertSectionView::LocalFileResultStyle::kList,
           base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result));
     } else if (std::holds_alternative<PickerCaseTransformResult>(result)) {

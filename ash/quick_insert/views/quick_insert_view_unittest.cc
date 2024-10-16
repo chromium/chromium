@@ -901,7 +901,7 @@ TEST_F(QuickInsertViewTest, CategoryViewFromSeeMoreHasResults) {
   EXPECT_THAT(picker_view->category_results_view_for_testing()
                   .section_views_for_testing(),
               ElementsAre(Pointee(Property(
-                  "item views", &PickerSectionView::item_views_for_testing,
+                  "item views", &QuickInsertSectionView::item_views_for_testing,
                   ElementsAre(AsView<QuickInsertListItemView>(Property(
                       "primary text",
                       &QuickInsertListItemView::GetPrimaryTextForTesting,
@@ -1165,11 +1165,11 @@ TEST_F(QuickInsertViewTest,
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(picker_view->search_results_view_for_testing()
                   .section_views_for_testing(),
-              ElementsAre(Pointee(
-                  Property("title", &PickerSectionView::title_label_for_testing,
-                           Property("text", &views::Label::GetText,
-                                    l10n_util::GetStringUTF16(
-                                        IDS_PICKER_LINKS_CATEGORY_LABEL))))));
+              ElementsAre(Pointee(Property(
+                  "title", &QuickInsertSectionView::title_label_for_testing,
+                  Property("text", &views::Label::GetText,
+                           l10n_util::GetStringUTF16(
+                               IDS_PICKER_LINKS_CATEGORY_LABEL))))));
 }
 
 TEST_F(QuickInsertViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
@@ -1205,11 +1205,11 @@ TEST_F(QuickInsertViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(picker_view->search_results_view_for_testing()
                   .section_views_for_testing(),
-              ElementsAre(Pointee(
-                  Property("title", &PickerSectionView::title_label_for_testing,
-                           Property("text", &views::Label::GetText,
-                                    l10n_util::GetStringUTF16(
-                                        IDS_PICKER_LINKS_CATEGORY_LABEL))))));
+              ElementsAre(Pointee(Property(
+                  "title", &QuickInsertSectionView::title_label_for_testing,
+                  Property("text", &views::Label::GetText,
+                           l10n_util::GetStringUTF16(
+                               IDS_PICKER_LINKS_CATEGORY_LABEL))))));
 }
 
 TEST_F(QuickInsertViewTest, SearchingReplacesOldResultsWithNewResults) {
@@ -1251,11 +1251,11 @@ TEST_F(QuickInsertViewTest, SearchingReplacesOldResultsWithNewResults) {
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(picker_view->search_results_view_for_testing()
                   .section_views_for_testing(),
-              ElementsAre(Pointee(
-                  Property("title", &PickerSectionView::title_label_for_testing,
-                           Property("text", &views::Label::GetText,
-                                    l10n_util::GetStringUTF16(
-                                        IDS_PICKER_LINKS_CATEGORY_LABEL))))));
+              ElementsAre(Pointee(Property(
+                  "title", &QuickInsertSectionView::title_label_for_testing,
+                  Property("text", &views::Label::GetText,
+                           l10n_util::GetStringUTF16(
+                               IDS_PICKER_LINKS_CATEGORY_LABEL))))));
 }
 
 TEST_F(QuickInsertViewTest, ShowsNoResultsBeforeTimeout) {
@@ -2967,14 +2967,14 @@ TEST_F(QuickInsertViewTest, EnterOnSearchResults) {
   first_callback.Run({PickerSearchResultsSection(
       PickerSectionType::kClipboard, {PickerTextResult(u"first search")},
       /*has_more_results=*/false)});
-  base::span<const raw_ptr<PickerSectionView>> section_views =
+  base::span<const raw_ptr<QuickInsertSectionView>> section_views =
       picker_view->search_results_view_for_testing()
           .section_views_for_testing();
   QuickInsertListItemView* search_item_view;
   ASSERT_THAT(
       section_views,
       ElementsAre(Pointee(Property(
-          "item views", &PickerSectionView::item_views_for_testing,
+          "item views", &QuickInsertSectionView::item_views_for_testing,
           ElementsAre(ResultOf(
               [&](const raw_ptr<QuickInsertItemView> view) {
                 ViewDrawnWaiter().Wait(view);
@@ -3014,14 +3014,14 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnSearchResults) {
   first_callback.Run({PickerSearchResultsSection(
       PickerSectionType::kClipboard, {PickerTextResult(u"first search")},
       /*has_more_results=*/false)});
-  base::span<const raw_ptr<PickerSectionView>> section_views =
+  base::span<const raw_ptr<QuickInsertSectionView>> section_views =
       picker_view->search_results_view_for_testing()
           .section_views_for_testing();
   QuickInsertListItemView* search_item_view;
   ASSERT_THAT(
       section_views,
       ElementsAre(Pointee(Property(
-          "item views", &PickerSectionView::item_views_for_testing,
+          "item views", &QuickInsertSectionView::item_views_for_testing,
           ElementsAre(ResultOf(
               [&](const raw_ptr<QuickInsertItemView> view) {
                 ViewDrawnWaiter().Wait(view);

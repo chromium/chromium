@@ -179,7 +179,7 @@ auto FindContainerForItem(Range&& containers, views::View* item) {
 
 }  // namespace
 
-PickerSectionView::PickerSectionView(
+QuickInsertSectionView::QuickInsertSectionView(
     int section_width,
     PickerAssetFetcher* asset_fetcher,
     PickerSubmenuController* submenu_controller)
@@ -196,9 +196,10 @@ PickerSectionView::PickerSectionView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 }
 
-PickerSectionView::~PickerSectionView() = default;
+QuickInsertSectionView::~QuickInsertSectionView() = default;
 
-std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
+std::unique_ptr<QuickInsertItemView>
+QuickInsertSectionView::CreateItemFromResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     PickerAssetFetcher* asset_fetcher,
@@ -391,7 +392,7 @@ std::unique_ptr<QuickInsertItemView> PickerSectionView::CreateItemFromResult(
       result);
 }
 
-void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
+void QuickInsertSectionView::AddTitleLabel(const std::u16string& title_text) {
   if (title_text.empty()) {
     return;
   }
@@ -408,7 +409,7 @@ void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
   title_container_->SetFlexForView(title_label_, 1);
 }
 
-void PickerSectionView::AddTitleTrailingLink(
+void QuickInsertSectionView::AddTitleTrailingLink(
     const std::u16string& link_text,
     const std::u16string& accessible_name,
     views::Link::ClickedCallback link_callback) {
@@ -427,7 +428,7 @@ void PickerSectionView::AddTitleTrailingLink(
   title_trailing_link_->GetViewAccessibility().SetName(accessible_name);
 }
 
-QuickInsertListItemView* PickerSectionView::AddListItem(
+QuickInsertListItemView* QuickInsertSectionView::AddListItem(
     std::unique_ptr<QuickInsertListItemView> list_item) {
   list_item->SetSubmenuController(submenu_controller_);
   QuickInsertListItemView* list_item_ptr =
@@ -436,7 +437,7 @@ QuickInsertListItemView* PickerSectionView::AddListItem(
   return list_item_ptr;
 }
 
-PickerImageItemView* PickerSectionView::AddImageGridItem(
+PickerImageItemView* QuickInsertSectionView::AddImageGridItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   image_item->SetSubmenuController(submenu_controller_);
   PickerImageItemView* image_item_ptr =
@@ -445,7 +446,7 @@ PickerImageItemView* PickerSectionView::AddImageGridItem(
   return image_item_ptr;
 }
 
-PickerImageItemView* PickerSectionView::AddImageRowItem(
+PickerImageItemView* QuickInsertSectionView::AddImageRowItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   image_item->SetSubmenuController(submenu_controller_);
   PickerImageItemView* image_item_ptr =
@@ -454,7 +455,7 @@ PickerImageItemView* PickerSectionView::AddImageRowItem(
   return image_item_ptr;
 }
 
-PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
+PickerItemWithSubmenuView* QuickInsertSectionView::AddItemWithSubmenu(
     std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
   PickerItemWithSubmenuView* item_ptr =
       GetOrCreateListItemContainer()->AddItemWithSubmenu(
@@ -463,7 +464,7 @@ PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
   return item_ptr;
 }
 
-QuickInsertItemView* PickerSectionView::AddResult(
+QuickInsertItemView* QuickInsertSectionView::AddResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     LocalFileResultStyle local_file_result_style,
@@ -491,7 +492,7 @@ QuickInsertItemView* PickerSectionView::AddResult(
   NOTREACHED();
 }
 
-void PickerSectionView::ClearItems() {
+void QuickInsertSectionView::ClearItems() {
   item_containers_.clear();
   item_views_.clear();
   if (image_item_grid_ != nullptr) {
@@ -502,17 +503,17 @@ void PickerSectionView::ClearItems() {
   }
 }
 
-views::View* PickerSectionView::GetTopItem() {
+views::View* QuickInsertSectionView::GetTopItem() {
   return item_containers_.empty() ? nullptr
                                   : item_containers_.front()->GetTopItem();
 }
 
-views::View* PickerSectionView::GetBottomItem() {
+views::View* QuickInsertSectionView::GetBottomItem() {
   return item_containers_.empty() ? nullptr
                                   : item_containers_.back()->GetBottomItem();
 }
 
-views::View* PickerSectionView::GetItemAbove(views::View* item) {
+views::View* QuickInsertSectionView::GetItemAbove(views::View* item) {
   auto it = FindContainerForItem(item_containers_, item);
   if (it == item_containers_.end()) {
     return nullptr;
@@ -527,7 +528,7 @@ views::View* PickerSectionView::GetItemAbove(views::View* item) {
                                         : (*std::prev(it))->GetBottomItem();
 }
 
-views::View* PickerSectionView::GetItemBelow(views::View* item) {
+views::View* QuickInsertSectionView::GetItemBelow(views::View* item) {
   auto it = FindContainerForItem(item_containers_, item);
   if (it == item_containers_.end()) {
     return nullptr;
@@ -542,17 +543,17 @@ views::View* PickerSectionView::GetItemBelow(views::View* item) {
                                           : (*std::next(it))->GetTopItem();
 }
 
-views::View* PickerSectionView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertSectionView::GetItemLeftOf(views::View* item) {
   auto it = FindContainerForItem(item_containers_, item);
   return it == item_containers_.end() ? nullptr : (*it)->GetItemLeftOf(item);
 }
 
-views::View* PickerSectionView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertSectionView::GetItemRightOf(views::View* item) {
   auto it = FindContainerForItem(item_containers_, item);
   return it == item_containers_.end() ? nullptr : (*it)->GetItemRightOf(item);
 }
 
-void PickerSectionView::SetImageRowProperties(
+void QuickInsertSectionView::SetImageRowProperties(
     std::u16string accessible_name,
     base::RepeatingClosure more_items_button_callback,
     std::u16string more_items_button_accessible_name) {
@@ -563,17 +564,18 @@ void PickerSectionView::SetImageRowProperties(
       std::move(more_items_button_accessible_name);
 }
 
-views::View* PickerSectionView::GetImageRowMoreItemsButtonForTesting() {
+views::View* QuickInsertSectionView::GetImageRowMoreItemsButtonForTesting() {
   return image_item_row_ == nullptr
              ? nullptr
              : image_item_row_->GetMoreItemsButtonForTesting();  // IN-TEST
 }
 
-PickerSectionView::ImageRowProperties::ImageRowProperties() = default;
+QuickInsertSectionView::ImageRowProperties::ImageRowProperties() = default;
 
-PickerSectionView::ImageRowProperties::~ImageRowProperties() = default;
+QuickInsertSectionView::ImageRowProperties::~ImageRowProperties() = default;
 
-PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
+PickerListItemContainerView*
+QuickInsertSectionView::GetOrCreateListItemContainer() {
   if (list_item_container_ == nullptr) {
     list_item_container_ =
         AddChildView(std::make_unique<PickerListItemContainerView>());
@@ -582,7 +584,7 @@ PickerListItemContainerView* PickerSectionView::GetOrCreateListItemContainer() {
   return list_item_container_;
 }
 
-PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
+PickerImageItemGridView* QuickInsertSectionView::GetOrCreateImageItemGrid() {
   if (image_item_grid_ == nullptr) {
     image_item_grid_ =
         AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
@@ -591,7 +593,7 @@ PickerImageItemGridView* PickerSectionView::GetOrCreateImageItemGrid() {
   return image_item_grid_;
 }
 
-PickerImageItemRowView* PickerSectionView::GetOrCreateImageItemRow() {
+PickerImageItemRowView* QuickInsertSectionView::GetOrCreateImageItemRow() {
   if (image_item_row_ == nullptr) {
     image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>(
         image_row_properties_.more_items_button_callback,
@@ -605,7 +607,7 @@ PickerImageItemRowView* PickerSectionView::GetOrCreateImageItemRow() {
   return image_item_row_;
 }
 
-BEGIN_METADATA(PickerSectionView)
+BEGIN_METADATA(QuickInsertSectionView)
 END_METADATA
 
 }  // namespace ash

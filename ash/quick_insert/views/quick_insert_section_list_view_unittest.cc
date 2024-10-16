@@ -47,7 +47,7 @@ TEST_F(QuickInsertSectionListViewTest, AddsSection) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section = section_list.AddSection();
+  QuickInsertSectionView* section = section_list.AddSection();
 
   EXPECT_THAT(section_list.children(), ElementsAre(section));
 }
@@ -70,12 +70,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItem) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* top_item = section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
-  PickerSectionView* section2 = section_list.AddSection();
+  QuickInsertSectionView* section2 = section_list.AddSection();
   section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -88,10 +88,10 @@ TEST_F(QuickInsertSectionListViewTest, AddsSectionAtTheTop) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
-  PickerSectionView* section2 = section_list.AddSectionAt(0);
+  QuickInsertSectionView* section2 = section_list.AddSectionAt(0);
   QuickInsertItemView* top_item = section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -104,7 +104,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section = section_list.AddSection();
+  QuickInsertSectionView* section = section_list.AddSection();
   QuickInsertItemView* top_item = section->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section->AddListItem(
@@ -130,12 +130,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItem) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
-  PickerSectionView* section2 = section_list.AddSection();
+  QuickInsertSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* bottom_item = section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -148,7 +148,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section = section_list.AddSection();
+  QuickInsertSectionView* section = section_list.AddSection();
   QuickInsertItemView* top_item = section->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   section->AddListItem(
@@ -174,12 +174,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemAbove) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 = section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   QuickInsertItemView* item2 = section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
-  PickerSectionView* section2 = section_list.AddSection();
+  QuickInsertSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -204,12 +204,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemBelow) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 = section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   QuickInsertItemView* item2 = section1->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
-  PickerSectionView* section2 = section_list.AddSection();
+  QuickInsertSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -234,12 +234,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemLeftOf) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 =
       section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   QuickInsertItemView* item2 =
       section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerSectionView* section2 = section_list.AddSection();
+  QuickInsertSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -264,12 +264,12 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemRightOf) {
   PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                      &submenu_controller);
 
-  PickerSectionView* section1 = section_list.AddSection();
+  QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 =
       section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
   QuickInsertItemView* item2 =
       section1->AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
-  PickerSectionView* section2 = section_list.AddSection();
+  QuickInsertSectionView* section2 = section_list.AddSection();
   QuickInsertItemView* item3 = section2->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 

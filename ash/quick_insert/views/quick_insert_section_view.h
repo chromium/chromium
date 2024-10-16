@@ -38,8 +38,8 @@ class PickerTraversableItemContainer;
 enum class PickerActionType;
 
 // View for a Picker section with a title and related items.
-class ASH_EXPORT PickerSectionView : public views::View {
-  METADATA_HEADER(PickerSectionView, views::View)
+class ASH_EXPORT QuickInsertSectionView : public views::View {
+  METADATA_HEADER(QuickInsertSectionView, views::View)
 
  public:
   using SelectResultCallback = base::RepeatingClosure;
@@ -54,12 +54,12 @@ class ASH_EXPORT PickerSectionView : public views::View {
     kRow,
   };
 
-  explicit PickerSectionView(int section_width,
-                             PickerAssetFetcher* asset_fetcher,
-                             PickerSubmenuController* submenu_controller);
-  PickerSectionView(const PickerSectionView&) = delete;
-  PickerSectionView& operator=(const PickerSectionView&) = delete;
-  ~PickerSectionView() override;
+  explicit QuickInsertSectionView(int section_width,
+                                  PickerAssetFetcher* asset_fetcher,
+                                  PickerSubmenuController* submenu_controller);
+  QuickInsertSectionView(const QuickInsertSectionView&) = delete;
+  QuickInsertSectionView& operator=(const QuickInsertSectionView&) = delete;
+  ~QuickInsertSectionView() override;
 
   // Creates an item based on `result` and adds it to the section view.
   // `preview_controller` can be null if previews are not needed.

@@ -126,10 +126,10 @@ void PickerItemWithSubmenuView::ShowSubmenu() {
   for (const auto& [result, callback] : entries_) {
     // There are no image item results in submenus, so can pass 0 for
     // `available_width`.
-    auto item = PickerSectionView::CreateItemFromResult(
+    auto item = QuickInsertSectionView::CreateItemFromResult(
         result, /*preview_controller=*/nullptr, /*asset_fetcher=*/nullptr,
-        /*available_width=*/0, PickerSectionView::LocalFileResultStyle::kList,
-        callback);
+        /*available_width=*/0,
+        QuickInsertSectionView::LocalFileResultStyle::kList, callback);
     auto list_item = base::WrapUnique(
         views::AsViewClass<QuickInsertListItemView>(item.release()));
     CHECK(list_item);

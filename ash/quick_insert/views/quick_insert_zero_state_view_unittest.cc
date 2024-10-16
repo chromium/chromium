@@ -428,7 +428,7 @@ TEST_F(QuickInsertZeroStateViewTest,
       Pointee(AllOf(
           Property("GetVisible", &views::View::GetVisible, true),
           Property("item_views_for_testing",
-                   &PickerSectionView::item_views_for_testing,
+                   &QuickInsertSectionView::item_views_for_testing,
                    ElementsAre(
                        AsView<QuickInsertListItemView>(Property(
                            &QuickInsertListItemView::GetPrimaryTextForTesting,
@@ -468,7 +468,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
           Property("GetVisible", &views::View::GetVisible, true),
           Property(
               "item_views_for_testing",
-              &PickerSectionView::item_views_for_testing,
+              &QuickInsertSectionView::item_views_for_testing,
               ElementsAre(AsView<PickerItemWithSubmenuView>(Property(
                               &PickerItemWithSubmenuView::GetTextForTesting,
                               l10n_util::GetStringUTF16(
@@ -512,7 +512,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
           Property("GetVisible", &views::View::GetVisible, true),
           Property(
               "item_views_for_testing",
-              &PickerSectionView::item_views_for_testing,
+              &QuickInsertSectionView::item_views_for_testing,
               ElementsAre(AsView<QuickInsertListItemView>(Property(
                   &QuickInsertListItemView::GetPrimaryTextForTesting,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -545,7 +545,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
               Property("GetVisible", &views::View::GetVisible, true),
               Property(
                   "item_views_for_testing",
-                  &PickerSectionView::item_views_for_testing,
+                  &QuickInsertSectionView::item_views_for_testing,
                   ElementsAre(AsView<PickerItemWithSubmenuView>(Property(
                       &PickerItemWithSubmenuView::GetTextForTesting,
                       l10n_util::GetStringUTF16(

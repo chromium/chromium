@@ -29,7 +29,7 @@ namespace ash {
 class PickerAssetFetcher;
 class PickerSearchResultsViewDelegate;
 class PickerSectionListView;
-class PickerSectionView;
+class QuickInsertSectionView;
 class PickerPreviewBubbleController;
 class PickerSkeletonLoaderView;
 
@@ -99,7 +99,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
     return section_list_view_;
   }
 
-  base::span<const raw_ptr<PickerSectionView>> section_views_for_testing()
+  base::span<const raw_ptr<QuickInsertSectionView>> section_views_for_testing()
       const {
     return section_views_;
   }
@@ -124,7 +124,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // Adds a result item view to `section_view` based on what type `result` is.
   void AddResultToSection(const PickerSearchResult& result,
-                          PickerSectionView* section_view);
+                          QuickInsertSectionView* section_view);
 
   void OnTrailingLinkClicked(PickerSectionType section_type,
                              const ui::Event& event);
@@ -141,7 +141,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
 
   // Used to track the views for each section of results.
-  std::vector<raw_ptr<PickerSectionView>> section_views_;
+  std::vector<raw_ptr<QuickInsertSectionView>> section_views_;
 
   // Used to calculate the index of the inserted result.
   std::vector<PickerSearchResult> top_results_;

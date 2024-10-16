@@ -76,13 +76,13 @@ std::u16string GetAccessibleNameForSeeMoreButton(
   }
 }
 
-PickerSectionView::LocalFileResultStyle ConvertLocalFileResultStyle(
+QuickInsertSectionView::LocalFileResultStyle ConvertLocalFileResultStyle(
     PickerSearchResultsView::LocalFileResultStyle style) {
   switch (style) {
     case PickerSearchResultsView::LocalFileResultStyle::kList:
-      return PickerSectionView::LocalFileResultStyle::kList;
+      return QuickInsertSectionView::LocalFileResultStyle::kList;
     case PickerSearchResultsView::LocalFileResultStyle::kGrid:
-      return PickerSectionView::LocalFileResultStyle::kGrid;
+      return QuickInsertSectionView::LocalFileResultStyle::kGrid;
   }
 }
 
@@ -275,7 +275,7 @@ void PickerSearchResultsView::SelectSearchResult(
 
 void PickerSearchResultsView::AddResultToSection(
     const PickerSearchResult& result,
-    PickerSectionView* section_view) {
+    QuickInsertSectionView* section_view) {
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
   QuickInsertItemView* view = section_view->AddResult(

@@ -82,26 +82,28 @@ auto AsView(Matcher matcher) {
 
 auto MatchesTitlelessSection(int num_items) {
   return AllOf(
-      Property(&PickerSectionView::title_label_for_testing, nullptr),
-      Property(&PickerSectionView::item_views_for_testing, SizeIs(num_items)));
+      Property(&QuickInsertSectionView::title_label_for_testing, nullptr),
+      Property(&QuickInsertSectionView::item_views_for_testing,
+               SizeIs(num_items)));
 }
 
 auto MatchesResultSection(PickerSectionType section_type, int num_items) {
   return AllOf(
-      Property(&PickerSectionView::title_label_for_testing,
+      Property(&QuickInsertSectionView::title_label_for_testing,
                Property(&views::Label::GetText,
                         GetSectionTitleForPickerSectionType(section_type))),
-      Property(&PickerSectionView::item_views_for_testing, SizeIs(num_items)));
+      Property(&QuickInsertSectionView::item_views_for_testing,
+               SizeIs(num_items)));
 }
 
 template <class Matcher>
 auto MatchesResultSectionWithOneItem(PickerSectionType section_type,
                                      Matcher item_matcher) {
   return AllOf(
-      Property(&PickerSectionView::title_label_for_testing,
+      Property(&QuickInsertSectionView::title_label_for_testing,
                Property(&views::Label::GetText,
                         GetSectionTitleForPickerSectionType(section_type))),
-      Property(&PickerSectionView::item_views_for_testing,
+      Property(&QuickInsertSectionView::item_views_for_testing,
                ElementsAre(item_matcher)));
 }
 
@@ -368,7 +370,7 @@ TEST_F(QuickInsertSearchResultsViewTest,
       view->section_views_for_testing(),
       ElementsAre(Pointee(Property(
           "title_trailing_link_for_testing",
-          &PickerSectionView::title_trailing_link_for_testing,
+          &QuickInsertSectionView::title_trailing_link_for_testing,
           Property(
               &views::View::GetAccessibleName,
               l10n_util::GetStringUTF16(
@@ -391,11 +393,11 @@ TEST_F(QuickInsertSearchResultsViewTest,
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles, {}, /*has_more_results=*/false));
 
-  ASSERT_THAT(
-      view->section_views_for_testing(),
-      ElementsAre(Pointee(Property(
-          "title_trailing_link_for_testing",
-          &PickerSectionView::title_trailing_link_for_testing, IsNull()))));
+  ASSERT_THAT(view->section_views_for_testing(),
+              ElementsAre(Pointee(Property(
+                  "title_trailing_link_for_testing",
+                  &QuickInsertSectionView::title_trailing_link_for_testing,
+                  IsNull()))));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {

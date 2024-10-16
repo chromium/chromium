@@ -12,7 +12,7 @@
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerSectionView;
+class QuickInsertSectionView;
 class PickerSubmenuController;
 
 // View which displays Picker sections in a vertical list.
@@ -52,10 +52,10 @@ class ASH_EXPORT PickerSectionListView : public views::View {
   views::View* GetItemRightOf(views::View* item);
 
   // Adds a section to the end of the section list.
-  PickerSectionView* AddSection();
+  QuickInsertSectionView* AddSection();
 
   // Adds a section to the specified position in the list.
-  PickerSectionView* AddSectionAt(size_t index);
+  QuickInsertSectionView* AddSectionAt(size_t index);
 
   // Clears the section list. This deletes all contained sections and items.
   void ClearSectionList();
@@ -63,7 +63,7 @@ class ASH_EXPORT PickerSectionListView : public views::View {
  private:
   // Returns the section containing `item`, or nullptr if `item` is not part of
   // this section list.
-  PickerSectionView* GetSectionContaining(views::View* item);
+  QuickInsertSectionView* GetSectionContaining(views::View* item);
 
   // Width of the sections in this view.
   int section_width_;

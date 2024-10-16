@@ -58,7 +58,7 @@ PickerSubmenuView::PickerSubmenuView(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
 
   // Don't allow submenus within submenus.
-  section_view_ = AddChildView(std::make_unique<PickerSectionView>(
+  section_view_ = AddChildView(std::make_unique<QuickInsertSectionView>(
       kSubmenuWidth, /*asset_fetcher=*/nullptr,
       /*submenu_controller=*/nullptr));
 

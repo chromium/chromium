@@ -63,9 +63,9 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
 using QuickInsertSectionViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertSectionViewTest, HasListRole) {
-  PickerSectionView section_view(kDefaultSectionWidth,
-                                 /*asset_fetcher=*/nullptr,
-                                 /*submenu_controller=*/nullptr);
+  QuickInsertSectionView section_view(kDefaultSectionWidth,
+                                      /*asset_fetcher=*/nullptr,
+                                      /*submenu_controller=*/nullptr);
 
   EXPECT_EQ(section_view.GetAccessibleRole(), ax::mojom::Role::kList);
 }
@@ -73,8 +73,8 @@ TEST_F(QuickInsertSectionViewTest, HasListRole) {
 TEST_F(QuickInsertSectionViewTest, CreatesTitleLabel) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   const std::u16string kSectionTitleText = u"Section";
   section_view.AddTitleLabel(kSectionTitleText);
@@ -86,8 +86,8 @@ TEST_F(QuickInsertSectionViewTest, CreatesTitleLabel) {
 TEST_F(QuickInsertSectionViewTest, TitleHasHeadingRole) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
   section_view.AddTitleLabel(u"Section");
 
   EXPECT_THAT(section_view.title_label_for_testing()->GetAccessibleRole(),
@@ -97,8 +97,8 @@ TEST_F(QuickInsertSectionViewTest, TitleHasHeadingRole) {
 TEST_F(QuickInsertSectionViewTest, AddsListItem) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -112,8 +112,8 @@ TEST_F(QuickInsertSectionViewTest, AddsListItem) {
 TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -130,8 +130,8 @@ TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
 TEST_F(QuickInsertSectionViewTest, AddsGifItem) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddImageGridItem(CreateGifItem(gfx::Size(100, 100)));
 
@@ -145,15 +145,15 @@ TEST_F(QuickInsertSectionViewTest, AddsResults) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(PickerTextResult(u"Result"), &preview_controller,
-                         PickerSectionView::LocalFileResultStyle::kList,
+                         QuickInsertSectionView::LocalFileResultStyle::kList,
                          base::DoNothing());
   section_view.AddResult(
       PickerLocalFileResult(u"title", base::FilePath("abc.png")),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -168,13 +168,13 @@ TEST_F(QuickInsertSectionViewTest,
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
                                   u"Example Foo", /*icon=*/{}),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -191,13 +191,13 @@ TEST_F(QuickInsertSectionViewTest,
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
                                   /*title=*/u"", /*icon=*/{}),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -214,8 +214,8 @@ TEST_F(QuickInsertSectionViewTest,
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerClipboardResult(base::UnguessableToken(),
@@ -224,7 +224,7 @@ TEST_F(QuickInsertSectionViewTest,
                             /*display_text=*/u"testing",
                             /*display_image=*/{},
                             /*is_recent=*/false),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -246,8 +246,8 @@ TEST_F(QuickInsertSectionViewTest,
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerClipboardResult(base::UnguessableToken(),
@@ -256,7 +256,7 @@ TEST_F(QuickInsertSectionViewTest,
                             /*display_text=*/u"https://example.com/path",
                             /*display_image=*/{},
                             /*is_recent=*/false),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -278,8 +278,8 @@ TEST_F(QuickInsertSectionViewTest,
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerClipboardResult(base::UnguessableToken(),
@@ -288,7 +288,7 @@ TEST_F(QuickInsertSectionViewTest,
                             /*display_text=*/u"image.png",
                             /*display_image=*/{},
                             /*is_recent=*/false),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -310,8 +310,8 @@ TEST_F(QuickInsertSectionViewTest,
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerClipboardResult(base::UnguessableToken(),
@@ -320,7 +320,7 @@ TEST_F(QuickInsertSectionViewTest,
                             /*display_text=*/u"2 files",
                             /*display_image=*/{},
                             /*is_recent=*/false),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -341,13 +341,13 @@ TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerCapsLockResult(
           /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -361,8 +361,8 @@ TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
 TEST_F(QuickInsertSectionViewTest, ClearsItems) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
   section_view.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
@@ -391,12 +391,12 @@ TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
-                                 &submenu_controller);
+  QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                      &submenu_controller);
 
   section_view.AddResult(
       PickerBrowsingHistoryResult(GetParam().first, u"title", /*icon=*/{}),
-      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      &preview_controller, QuickInsertSectionView::LocalFileResultStyle::kList,
       base::DoNothing());
 
   base::span<const raw_ptr<QuickInsertItemView>> items =
@@ -409,9 +409,9 @@ TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
 }
 
 TEST_F(QuickInsertSectionViewTest, GetItemsFromListItems) {
-  PickerSectionView section_view(kDefaultSectionWidth,
-                                 /*asset_fetcher=*/nullptr,
-                                 /*submenu_controller=*/nullptr);
+  QuickInsertSectionView section_view(kDefaultSectionWidth,
+                                      /*asset_fetcher=*/nullptr,
+                                      /*submenu_controller=*/nullptr);
   views::View* item1 = section_view.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item2 = section_view.AddListItem(
@@ -436,9 +436,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromListItems) {
 }
 
 TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridItems) {
-  PickerSectionView section_view(kDefaultSectionWidth,
-                                 /*asset_fetcher=*/nullptr,
-                                 /*submenu_controller=*/nullptr);
+  QuickInsertSectionView section_view(kDefaultSectionWidth,
+                                      /*asset_fetcher=*/nullptr,
+                                      /*submenu_controller=*/nullptr);
   views::View* item1 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item2 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
@@ -460,9 +460,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridItems) {
 }
 
 TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageGridItems) {
-  PickerSectionView section_view(kDefaultSectionWidth,
-                                 /*asset_fetcher=*/nullptr,
-                                 /*submenu_controller=*/nullptr);
+  QuickInsertSectionView section_view(kDefaultSectionWidth,
+                                      /*asset_fetcher=*/nullptr,
+                                      /*submenu_controller=*/nullptr);
   views::View* item1 = section_view.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item2 = section_view.AddListItem(
@@ -496,9 +496,9 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageGridItems) {
 }
 
 TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridAboveListItems) {
-  PickerSectionView section_view(kDefaultSectionWidth,
-                                 /*asset_fetcher=*/nullptr,
-                                 /*submenu_controller=*/nullptr);
+  QuickInsertSectionView section_view(kDefaultSectionWidth,
+                                      /*asset_fetcher=*/nullptr,
+                                      /*submenu_controller=*/nullptr);
   views::View* item1 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item2 = section_view.AddImageGridItem(CreateImageItem());
   views::View* item3 = section_view.AddImageGridItem(CreateImageItem());
@@ -534,10 +534,10 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridAboveListItems) {
 TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageRowItems) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  PickerSectionView* section_view = widget->SetContentsView(
-      std::make_unique<PickerSectionView>(kDefaultSectionWidth,
-                                          /*asset_fetcher=*/nullptr,
-                                          /*submenu_controller=*/nullptr));
+  QuickInsertSectionView* section_view = widget->SetContentsView(
+      std::make_unique<QuickInsertSectionView>(kDefaultSectionWidth,
+                                               /*asset_fetcher=*/nullptr,
+                                               /*submenu_controller=*/nullptr));
   views::View* item1 = section_view->AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   views::View* item2 = section_view->AddListItem(
@@ -574,10 +574,10 @@ TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageRowItems) {
 TEST_F(QuickInsertSectionViewTest, GetItemsFromImageRowAboveListItems) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  PickerSectionView* section_view = widget->SetContentsView(
-      std::make_unique<PickerSectionView>(kDefaultSectionWidth,
-                                          /*asset_fetcher=*/nullptr,
-                                          /*submenu_controller=*/nullptr));
+  QuickInsertSectionView* section_view = widget->SetContentsView(
+      std::make_unique<QuickInsertSectionView>(kDefaultSectionWidth,
+                                               /*asset_fetcher=*/nullptr,
+                                               /*submenu_controller=*/nullptr));
   views::View* item1 = section_view->AddImageRowItem(CreateImageItem());
   views::View* item2 = section_view->AddImageRowItem(CreateImageItem());
   views::View* more_items =

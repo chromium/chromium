@@ -32,7 +32,7 @@ class PickerAssetFetcher;
 class PickerClipboardHistoryProvider;
 class PickerPreviewBubbleController;
 class PickerSectionListView;
-class PickerSectionView;
+class QuickInsertSectionView;
 class PickerZeroStateViewDelegate;
 
 class ASH_EXPORT PickerZeroStateView : public PickerPageView {
@@ -61,12 +61,12 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   views::View* GetItemRightOf(views::View* item) override;
   bool ContainsItem(views::View* item) override;
 
-  std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
+  std::map<PickerCategoryType, raw_ptr<QuickInsertSectionView>>
   category_section_views_for_testing() const {
     return category_section_views_;
   }
 
-  PickerSectionView* primary_section_view_for_testing() {
+  QuickInsertSectionView* primary_section_view_for_testing() {
     return primary_section_view_;
   }
 
@@ -76,14 +76,15 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   void RecordCapsLockIgnored(bool ignored);
 
   // Gets or creates the category type section for `category_type`.
-  PickerSectionView* GetOrCreateSectionView(PickerCategoryType category_type);
+  QuickInsertSectionView* GetOrCreateSectionView(
+      PickerCategoryType category_type);
 
   // Gets or creates the category type section to contain `category`.
-  PickerSectionView* GetOrCreateSectionView(PickerCategory category);
+  QuickInsertSectionView* GetOrCreateSectionView(PickerCategory category);
 
   void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
   void AddResultToSection(const PickerSearchResult& result,
-                          PickerSectionView* section);
+                          QuickInsertSectionView* section);
 
   raw_ptr<PickerZeroStateViewDelegate> delegate_;
   raw_ptr<PickerSubmenuController> submenu_controller_;
@@ -94,11 +95,11 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   // The primary section is a titleless section that is shown first.
   // It contains items such as zero-state suggestions.
-  raw_ptr<PickerSectionView> primary_section_view_ = nullptr;
+  raw_ptr<QuickInsertSectionView> primary_section_view_ = nullptr;
 
   // Below the primary section, there is a set of sections for each category
   // type.
-  std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
+  std::map<PickerCategoryType, raw_ptr<QuickInsertSectionView>>
       category_section_views_;
 
   std::unique_ptr<PickerClipboardHistoryProvider> clipboard_provider_;

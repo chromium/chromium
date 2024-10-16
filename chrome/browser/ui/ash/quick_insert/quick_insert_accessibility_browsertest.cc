@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section_view = view->AddSection();
+  ash::QuickInsertSectionView* section_view = view->AddSection();
   section_view->AddTitleLabel(u"Section");
   section_view->AddTitleTrailingLink(u"Show all", u"cat", base::DoNothing());
 
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section = view->AddSection();
+  ash::QuickInsertSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
   ash::QuickInsertListItemView* item = section->AddListItem(
       std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section = view->AddSection();
+  ash::QuickInsertSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
   ash::QuickInsertListItemView* item = section->AddListItem(
       std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section = view->AddSection();
+  ash::QuickInsertSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
   section->SetImageRowProperties(u"Image Row", base::DoNothing(),
                                  u"More Items");
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section = view->AddSection();
+  ash::QuickInsertSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
   section->SetImageRowProperties(u"Image Row", base::DoNothing(),
                                  u"More Items");
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section = view->AddSection();
+  ash::QuickInsertSectionView* section = view->AddSection();
   section->AddTitleLabel(u"Section1");
   ash::PickerImageItemView* item1 =
       section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
@@ -690,14 +690,14 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
           /*section_width=*/100, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section1 = view->AddSection();
+  ash::QuickInsertSectionView* section1 = view->AddSection();
   ash::QuickInsertListItemView* item1 = section1->AddListItem(
       std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item1->SetPrimaryText(u"item1");
   ash::QuickInsertListItemView* item2 = section1->AddListItem(
       std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item2->SetPrimaryText(u"item2");
-  ash::PickerSectionView* section2 = view->AddSection();
+  ash::QuickInsertSectionView* section2 = view->AddSection();
   ash::QuickInsertListItemView* item3 = section2->AddListItem(
       std::make_unique<ash::QuickInsertListItemView>(base::DoNothing()));
   item3->SetPrimaryText(u"item3");

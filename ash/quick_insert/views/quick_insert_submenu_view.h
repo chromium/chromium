@@ -18,7 +18,7 @@
 namespace ash {
 
 class QuickInsertListItemView;
-class PickerSectionView;
+class QuickInsertSectionView;
 
 // View for a Picker submenu, which shows a list of results in a bubble outside
 // the main Picker container.
@@ -53,7 +53,7 @@ class ASH_EXPORT PickerSubmenuView : public views::WidgetDelegateView,
   gfx::Rect GetDesiredBounds(gfx::Rect anchor_rect);
 
   // Section which contains the submenu items.
-  raw_ptr<PickerSectionView> section_view_;
+  raw_ptr<QuickInsertSectionView> section_view_;
 };
 
 }  // namespace ash
