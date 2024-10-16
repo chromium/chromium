@@ -203,7 +203,7 @@ AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
 
 // Controls whether the disable trackpad feature is enabled.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);
-AX_BASE_EXPORT bool IsAccessibilityDisableTrackpadEnabled();
+AX_BASE_EXPORT bool IsAccessibilityDisableTouchpadEnabled();
 
 // Controls whether the flash screen for notifications feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFlashScreenFeature);

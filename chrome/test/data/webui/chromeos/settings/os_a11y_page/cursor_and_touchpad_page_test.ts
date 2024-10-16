@@ -34,7 +34,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   const overscrollFeatureEnabled =
       loadTimeData.getBoolean('isAccessibilityOverscrollSettingFeatureEnabled');
   const disableInternalTrackpadFeatureEnabled =
-      loadTimeData.getBoolean('isAccessibilityDisableTrackpadEnabled');
+      loadTimeData.getBoolean('isAccessibilityDisableTouchpadEnabled');
 
   async function initPage() {
     prefElement = document.createElement('settings-prefs');
@@ -769,7 +769,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
               DisableTouchpadMode.ALWAYS,
               disableInternalTrackpadModePref.value);
           assertTrue(isVisible(
-              page.shadowRoot!.querySelector('#reEnableTrackpadLabel')));
+              page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
         });
 
     test(
@@ -791,7 +791,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
               DisableTouchpadMode.ON_MOUSE_CONNECTED,
               disableInternalTrackpadModePref.value);
           assertTrue(isVisible(
-              page.shadowRoot!.querySelector('#reEnableTrackpadLabel')));
+              page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
         });
 
     test(
@@ -812,9 +812,9 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           assertEquals(
               DisableTouchpadMode.NEVER, disableInternalTrackpadModePref.value);
           assertFalse(isVisible(
-              page.shadowRoot!.querySelector('#reEnableTrackpadLabel')));
+              page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
           assertTrue(isVisible(
-              page.shadowRoot!.querySelector('#disableTrackpadLabel')));
+              page.shadowRoot!.querySelector('#disableTouchpadLabel')));
         });
   } else {
     test('disable internal trackpad feature disabled', async () => {

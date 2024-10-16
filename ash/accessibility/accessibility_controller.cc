@@ -20,7 +20,7 @@
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
-#include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/disable_touchpad_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
@@ -206,7 +206,7 @@ const FeatureData kFeatures[] = {
     {FeatureType::kFaceGaze, prefs::kAccessibilityFaceGazeEnabled, nullptr,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE,
      /*toggleable_in_quicksettings=*/true},
-    {FeatureType::kDisableTrackpad, prefs::kAccessibilityDisableTrackpadEnabled,
+    {FeatureType::kDisableTouchpad, prefs::kAccessibilityDisableTrackpadEnabled,
      nullptr, 0, /*toggleable_in_quicksettings=*/false},
 };
 
@@ -432,7 +432,7 @@ void CopySigninPrefsIfNeeded(PrefService* previous_pref_service,
 const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
   switch (type) {
     case A11yNotificationType::kSpokenFeedbackBrailleEnabled:
-    case A11yNotificationType::kTrackpadDisabled:
+    case A11yNotificationType::kTouchpadDisabled:
       return kNotificationAccessibilityIcon;
     case A11yNotificationType::kBrailleDisplayConnected:
       return kNotificationAccessibilityBrailleIcon;
@@ -549,15 +549,15 @@ void ShowAccessibilityNotification(
         IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED_TITLE);
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
     catalog_name = NotificationCatalogName::kSwitchAccessEnabled;
-  } else if (type == A11yNotificationType::kTrackpadDisabled) {
+  } else if (type == A11yNotificationType::kTouchpadDisabled) {
     title =
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_TITLE);
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_TITLE);
     text = l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_DESCRIPTION);
-    catalog_name = NotificationCatalogName::kTrackpadDisabled;
+        IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_DESCRIPTION);
+    catalog_name = NotificationCatalogName::kTouchpadDisabled;
     options.pinned = true;
     options.buttons.emplace_back(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_TURN_ON));
+        IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_TURN_ON));
 
   } else {
     bool is_tablet = display::Screen::GetScreen()->InTabletMode();
@@ -1007,8 +1007,8 @@ void AccessibilityController::Feature::LogDurationMetric() {
     case FeatureType::kDictation:
       feature_duration_metric += "CrosDictation";
       break;
-    case FeatureType::kDisableTrackpad:
-      feature_duration_metric += "CrosDisableTrackpad";
+    case FeatureType::kDisableTouchpad:
+      feature_duration_metric += "CrosDisableTouchpad";
       break;
     case FeatureType::kDockedMagnifier:
       feature_duration_metric += "CrosDockedMagnifier";
@@ -1229,7 +1229,7 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAccessibilityDisableTrackpadEnabled,
                                 false);
   registry->RegisterIntegerPref(prefs::kAccessibilityDisableTrackpadMode,
-                                static_cast<int>(DisableTrackpadMode::kNever));
+                                static_cast<int>(DisableTouchpadMode::kNever));
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -1636,9 +1636,9 @@ AccessibilityController::Feature& AccessibilityController::dictation() const {
   return GetFeature(FeatureType::kDictation);
 }
 
-AccessibilityController::Feature& AccessibilityController::disable_trackpad()
+AccessibilityController::Feature& AccessibilityController::disable_touchpad()
     const {
-  return GetFeature(FeatureType::kDisableTrackpad);
+  return GetFeature(FeatureType::kDisableTouchpad);
 }
 
 AccessibilityController::Feature& AccessibilityController::color_correction()
@@ -1881,13 +1881,13 @@ void AccessibilityController::RequestSelectToSpeakStateChange() {
   client_->RequestSelectToSpeakStateChange();
 }
 
-void AccessibilityController::OnTrackpadNotificationClicked(
+void AccessibilityController::OnTouchpadNotificationClicked(
     std::optional<int> button_index) {
   if (!button_index) {
     return;
   }
 
-  EnableInternalTrackpad();
+  EnableInternalTouchpad();
 }
 
 void AccessibilityController::RecordSelectToSpeakSpeechDuration(
@@ -1984,14 +1984,14 @@ void AccessibilityController::SetAccessibilityEventRewriter(
   accessibility_event_rewriter_ = accessibility_event_rewriter;
 }
 
-void AccessibilityController::SetDisableTrackpadEventRewriter(
-    DisableTrackpadEventRewriter* rewriter) {
-  disable_trackpad_event_rewriter_ = rewriter;
+void AccessibilityController::SetDisableTouchpadEventRewriter(
+    DisableTouchpadEventRewriter* rewriter) {
+  disable_touchpad_event_rewriter_ = rewriter;
 }
 
-void AccessibilityController::EnableInternalTrackpad() {
+void AccessibilityController::EnableInternalTouchpad() {
   active_user_prefs_->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
-                                 static_cast<int>(DisableTrackpadMode::kNever));
+                                 static_cast<int>(DisableTouchpadMode::kNever));
 }
 
 void AccessibilityController::SetFilterKeysEventRewriter(
@@ -2464,9 +2464,9 @@ AccessibilityController::GetAccessibilityEventRewriterForTest() {
   return accessibility_event_rewriter_;
 }
 
-DisableTrackpadEventRewriter*
-AccessibilityController::GetDisableTrackpadEventRewriterForTest() {
-  return disable_trackpad_event_rewriter_;
+DisableTouchpadEventRewriter*
+AccessibilityController::GetDisableTouchpadEventRewriterForTest() {
+  return disable_touchpad_event_rewriter_;
 }
 
 FilterKeysEventRewriter*
@@ -2656,11 +2656,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
             &AccessibilityController::UpdateFlashNotificationsFromPrefs,
             base::Unretained(this)));
   }
-  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
+  if (::features::IsAccessibilityDisableTouchpadEnabled()) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityDisableTrackpadMode,
         base::BindRepeating(
-            &AccessibilityController::UpdateDisableTrackpadFromPrefs,
+            &AccessibilityController::UpdateDisableTouchpadFromPrefs,
             base::Unretained(this), /*notify*/ true));
   }
 
@@ -2700,8 +2700,8 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     UpdateFlashNotificationsFromPrefs();
   }
-  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
-    UpdateDisableTrackpadFromPrefs(/*notify=*/false);
+  if (::features::IsAccessibilityDisableTouchpadEnabled()) {
+    UpdateDisableTouchpadFromPrefs(/*notify=*/false);
   }
 }
 
@@ -2928,47 +2928,47 @@ void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
       prefs::kAccessibilityFlashNotificationsColor));
 }
 
-void AccessibilityController::UpdateDisableTrackpadFromPrefs(bool notify) {
-  if (!disable_trackpad_event_rewriter_ ||
-      !::features::IsAccessibilityDisableTrackpadEnabled()) {
+void AccessibilityController::UpdateDisableTouchpadFromPrefs(bool notify) {
+  if (!disable_touchpad_event_rewriter_ ||
+      !::features::IsAccessibilityDisableTouchpadEnabled()) {
     return;
   }
 
   if (notify) {
-    DisableTrackpadWithDialog();
+    DisableTouchpadWithDialog();
     return;
   }
 
-  const DisableTrackpadMode trackpad_mode = static_cast<DisableTrackpadMode>(
+  const DisableTouchpadMode trackpad_mode = static_cast<DisableTouchpadMode>(
       active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
 
-  if (trackpad_mode == DisableTrackpadMode::kAlways ||
-      trackpad_mode == DisableTrackpadMode::kOnExternalMouseConnected) {
-    disable_trackpad_event_rewriter_->SetEnabled(true);
+  if (trackpad_mode == DisableTouchpadMode::kAlways ||
+      trackpad_mode == DisableTouchpadMode::kOnExternalMouseConnected) {
+    disable_touchpad_event_rewriter_->SetEnabled(true);
   }
 }
 
-void AccessibilityController::DisableTrackpadWithDialog() {
-  const DisableTrackpadMode trackpad_mode = static_cast<DisableTrackpadMode>(
+void AccessibilityController::DisableTouchpadWithDialog() {
+  const DisableTouchpadMode touchpad_mode = static_cast<DisableTouchpadMode>(
       active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
 
-  switch (trackpad_mode) {
-    case DisableTrackpadMode::kAlways:
-      ShowDisableTrackpadDialog();
+  switch (touchpad_mode) {
+    case DisableTouchpadMode::kAlways:
+      ShowDisableTouchpadDialog();
       break;
 
-    case DisableTrackpadMode::kOnExternalMouseConnected:
+    case DisableTouchpadMode::kOnExternalMouseConnected:
       if (Shell::Get()
               ->input_device_settings_controller()
               ->GetConnectedMice()
               .size() > 0) {
-        ShowDisableTrackpadDialog();
+        ShowDisableTouchpadDialog();
       }
       break;
 
-    case DisableTrackpadMode::kNever:
-      ShowToast(AccessibilityToastType::kTrackpadDisabled);
-      disable_trackpad_event_rewriter_->SetEnabled(false);
+    case DisableTouchpadMode::kNever:
+      ShowToast(AccessibilityToastType::kTouchpadDisabled);
+      disable_touchpad_event_rewriter_->SetEnabled(false);
       break;
   }
 }
@@ -2983,64 +2983,64 @@ void AccessibilityController::OnTouchpadConnected(
 }
 
 void AccessibilityController::ExternalDeviceConnected() {
-  if (!disable_trackpad_event_rewriter_) {
+  if (!disable_touchpad_event_rewriter_) {
     return;
   }
 
-  const DisableTrackpadMode trackpad_mode = static_cast<DisableTrackpadMode>(
+  const DisableTouchpadMode touchpad_mode = static_cast<DisableTouchpadMode>(
       active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
 
-  const bool trackpad_disabled = disable_trackpad_event_rewriter_->IsEnabled();
-  if (trackpad_mode == DisableTrackpadMode::kOnExternalMouseConnected &&
-      !trackpad_disabled) {
-    DisableTrackpadWithDialog();
+  const bool touchpad_disabled = disable_touchpad_event_rewriter_->IsEnabled();
+  if (touchpad_mode == DisableTouchpadMode::kOnExternalMouseConnected &&
+      !touchpad_disabled) {
+    DisableTouchpadWithDialog();
   }
 }
 
-void AccessibilityController::ShowDisableTrackpadDialog() {
-  // The internal trackpad should be disabled before the user clicks "Accept",
+void AccessibilityController::ShowDisableTouchpadDialog() {
+  // The internal touchpad should be disabled before the user clicks "Accept",
   // This is done to ensure the user can navigate with their keyboard.
-  disable_trackpad_event_rewriter_->SetEnabled(true);
-  const DisableTrackpadMode disable_trackpad_mode =
-      static_cast<DisableTrackpadMode>(active_user_prefs_->GetInteger(
+  disable_touchpad_event_rewriter_->SetEnabled(true);
+  const DisableTouchpadMode disable_touchpad_mode =
+      static_cast<DisableTouchpadMode>(active_user_prefs_->GetInteger(
           prefs::kAccessibilityDisableTrackpadMode));
   const std::u16string title =
-      l10n_util::GetStringUTF16(IDS_ASH_DISABLE_TRACKPAD_DIALOG_TITLE);
+      l10n_util::GetStringUTF16(IDS_ASH_DISABLE_TOUCHPAD_DIALOG_TITLE);
   const std::u16string description =
-      disable_trackpad_mode == DisableTrackpadMode::kAlways
+      disable_touchpad_mode == DisableTouchpadMode::kAlways
           ? l10n_util::GetStringUTF16(
-                IDS_ASH_DISABLE_TRACKPAD_DIALOG_DESCRIPTION)
+                IDS_ASH_DISABLE_TOUCHPAD_DIALOG_DESCRIPTION)
           : l10n_util::GetStringUTF16(
-                IDS_ASH_DISABLE_TRACKPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION);
+                IDS_ASH_DISABLE_TOUCHPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION);
 
   ShowConfirmationDialog(
       title, description, l10n_util::GetStringUTF16(IDS_ASH_CONFIRM_BUTTON),
       l10n_util::GetStringUTF16(IDS_APP_CANCEL),
-      base::BindOnce(&AccessibilityController::OnDisableTrackpadDialogAccepted,
+      base::BindOnce(&AccessibilityController::OnDisableTouchpadDialogAccepted,
                      GetWeakPtr()),
-      base::BindOnce(&AccessibilityController::OnDisableTrackpadDialogDismissed,
+      base::BindOnce(&AccessibilityController::OnDisableTouchpadDialogDismissed,
                      GetWeakPtr()),
-      base::BindOnce(&AccessibilityController::OnDisableTrackpadDialogDismissed,
+      base::BindOnce(&AccessibilityController::OnDisableTouchpadDialogDismissed,
                      GetWeakPtr()));
 }
 
-void AccessibilityController::OnDisableTrackpadDialogAccepted() {
+void AccessibilityController::OnDisableTouchpadDialogAccepted() {
   confirmation_dialog_.reset();
   ShowAccessibilityNotification(A11yNotificationWrapper(
-      A11yNotificationType::kTrackpadDisabled, std::vector<std::u16string>(),
+      A11yNotificationType::kTouchpadDisabled, std::vector<std::u16string>(),
       base::BindRepeating(
-          &AccessibilityController::OnTrackpadNotificationClicked,
+          &AccessibilityController::OnTouchpadNotificationClicked,
           GetWeakPtr())));
 }
 
-void AccessibilityController::OnDisableTrackpadDialogDismissed() {
+void AccessibilityController::OnDisableTouchpadDialogDismissed() {
   confirmation_dialog_.reset();
   active_user_prefs_->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
-                                 static_cast<int>(DisableTrackpadMode::kNever));
+                                 static_cast<int>(DisableTouchpadMode::kNever));
 }
 
-DisableTrackpadMode AccessibilityController::GetDisableTrackpadMode() {
-  return static_cast<DisableTrackpadMode>(
+DisableTouchpadMode AccessibilityController::GetDisableTouchpadMode() {
+  return static_cast<DisableTouchpadMode>(
       active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
 }
 
@@ -3585,13 +3585,13 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
         dictation_bubble_controller_.reset();
       }
       break;
-    case FeatureType::kDisableTrackpad:
-      if (!::features::IsAccessibilityDisableTrackpadEnabled() ||
-          !disable_trackpad_event_rewriter_) {
+    case FeatureType::kDisableTouchpad:
+      if (!::features::IsAccessibilityDisableTouchpadEnabled() ||
+          !disable_touchpad_event_rewriter_) {
         return;
       }
 
-      disable_trackpad_event_rewriter_->SetEnabled(enabled);
+      disable_touchpad_event_rewriter_->SetEnabled(enabled);
       break;
     case FeatureType::kFloatingMenu:
       if (enabled && always_show_floating_menu_when_enabled_) {

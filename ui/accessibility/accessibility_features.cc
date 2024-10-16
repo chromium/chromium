@@ -257,7 +257,7 @@ bool IsAccessibilitySelectToSpeakShortcutEnabled() {
 BASE_FEATURE(kAccessibilityDisableTrackpad,
              "AccessibilityDisableTrackpad",
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityDisableTrackpadEnabled() {
+bool IsAccessibilityDisableTouchpadEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityDisableTrackpad);
 }

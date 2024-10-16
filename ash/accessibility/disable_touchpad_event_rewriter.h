@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_DISABLE_TRACKPAD_EVENT_REWRITER_H_
-#define ASH_ACCESSIBILITY_DISABLE_TRACKPAD_EVENT_REWRITER_H_
+#ifndef ASH_ACCESSIBILITY_DISABLE_TOUCHPAD_EVENT_REWRITER_H_
+#define ASH_ACCESSIBILITY_DISABLE_TOUCHPAD_EVENT_REWRITER_H_
 
 #include "ash/ash_export.h"
 #include "ui/events/event_rewriter.h"
 
-
 namespace ash {
 
-// EventRewriter that cancels events from the built-in trackpad.
-class ASH_EXPORT DisableTrackpadEventRewriter : public ui::EventRewriter {
+// EventRewriter that cancels events from the built-in touchpad.
+class ASH_EXPORT DisableTouchpadEventRewriter : public ui::EventRewriter {
  public:
-  DisableTrackpadEventRewriter();
-  DisableTrackpadEventRewriter(const DisableTrackpadEventRewriter&) = delete;
-  DisableTrackpadEventRewriter& operator=(const DisableTrackpadEventRewriter&) =
+  DisableTouchpadEventRewriter();
+  DisableTouchpadEventRewriter(const DisableTouchpadEventRewriter&) = delete;
+  DisableTouchpadEventRewriter& operator=(const DisableTouchpadEventRewriter&) =
       delete;
-  ~DisableTrackpadEventRewriter() override;
+  ~DisableTouchpadEventRewriter() override;
 
   void SetEnabled(bool enabled);
   bool IsEnabled();
@@ -43,4 +42,4 @@ class ASH_EXPORT DisableTrackpadEventRewriter : public ui::EventRewriter {
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_DISABLE_TRACKPAD_EVENT_REWRITER_H_
+#endif  // ASH_ACCESSIBILITY_DISABLE_TOUCHPAD_EVENT_REWRITER_H_

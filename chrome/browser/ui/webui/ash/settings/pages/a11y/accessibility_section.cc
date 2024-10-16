@@ -584,8 +584,8 @@ bool IsAccessibilityMouseKeysEnabled() {
   return ::features::IsAccessibilityMouseKeysEnabled();
 }
 
-bool IsAccessibilityDisableTrackpadEnabled() {
-  return ::features::IsAccessibilityDisableTrackpadEnabled();
+bool IsAccessibilityDisableTouchpadEnabled() {
+  return ::features::IsAccessibilityDisableTouchpadEnabled();
 }
 
 bool IsAccessibilityOverscrollSettingFeatureEnabled() {
@@ -899,11 +899,11 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR},
       {"dictationLocaleSubLabelOffline",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE},
-      {"disableTrackpadLabel", IDS_SETTINGS_DISABLE_TRACKPAD_LABEL},
-      {"disableTrackpadAlways", IDS_SETTINGS_DISABLE_TRACKPAD_ALWAYS},
-      {"disableTrackpadMouseConnected",
-       IDS_SETTINGS_DISABLE_TRACKPAD_MOUSE_CONNECTED},
-      {"disableTrackpadNever", IDS_SETTINGS_DISABLE_TRACKPAD_NEVER},
+      {"disableTouchpadLabel", IDS_SETTINGS_DISABLE_TOUCHPAD_LABEL},
+      {"disableTouchpadAlways", IDS_SETTINGS_DISABLE_TOUCHPAD_ALWAYS},
+      {"disableTouchpadMouseConnected",
+       IDS_SETTINGS_DISABLE_TOUCHPAD_MOUSE_CONNECTED},
+      {"disableTouchpadNever", IDS_SETTINGS_DISABLE_TOUCHPAD_NEVER},
       {"displayAndMagnificationLinkTitle",
        IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE},
       {"displayHeading", IDS_SETTINGS_ACCESSIBILITY_DISPLAY_HEADING},
@@ -915,7 +915,7 @@ void AccessibilitySection::AddLoadTimeData(
       {"dockedMagnifierLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_LABEL},
       {"dockedMagnifierZoomLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_ZOOM_LABEL},
       {"durationInSeconds", IDS_SETTINGS_DURATION_IN_SECONDS},
-      {"reEnableTrackpadLabel", IDS_SETTINGS_RE_ENABLE_TRACKPAD},
+      {"reEnableTouchpadLabel", IDS_SETTINGS_RE_ENABLE_TOUCHPAD},
       {"focusHighlightLabel",
        IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
       {"focusHighlightLabelSubtext",
@@ -1489,8 +1489,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
-  html_source->AddBoolean("isAccessibilityDisableTrackpadEnabled",
-                          IsAccessibilityDisableTrackpadEnabled());
+  html_source->AddBoolean("isAccessibilityDisableTouchpadEnabled",
+                          IsAccessibilityDisableTouchpadEnabled());
 
   html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
                           IsAccessibilityMouseKeysEnabled());

@@ -190,16 +190,16 @@ export class SettingsCursorAndTouchpadPageElement extends
         },
       },
 
-      disableTrackpadOptions_: {
+      disableTouchpadOptions_: {
         readOnly: true,
         type: Array,
         value() {
           return [
-            {value: 0, name: loadTimeData.getString('disableTrackpadNever')},
-            {value: 1, name: loadTimeData.getString('disableTrackpadAlways')},
+            {value: 0, name: loadTimeData.getString('disableTouchpadNever')},
+            {value: 1, name: loadTimeData.getString('disableTouchpadAlways')},
             {
               value: 2,
-              name: loadTimeData.getString('disableTrackpadMouseConnected'),
+              name: loadTimeData.getString('disableTouchpadMouseConnected'),
             },
           ];
         },
@@ -269,11 +269,11 @@ export class SettingsCursorAndTouchpadPageElement extends
        * Whether the controlling the mouse cursor with the keyboard feature is
        * enabled.
        */
-      isAccessibilityDisableTrackpadEnabled_: {
+      isAccessibilityDisableTouchpadEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'isAccessibilityDisableTrackpadEnabled');
+              'isAccessibilityDisableTouchpadEnabled');
         },
       },
 
@@ -361,13 +361,13 @@ export class SettingsCursorAndTouchpadPageElement extends
   private cursorAndTouchpadBrowserProxy_: CursorAndTouchpadPageBrowserProxy;
   private cursorColorOptions_: Option[];
   private deviceBrowserProxy_: DevicePageBrowserProxy;
-  private disableTrackpadOptions_: Option[];
+  private disableTouchpadOptions_: Option[];
   private readonly isKioskModeActive_: boolean;
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
-  private readonly isAccessibilityDisableTrackpadEnabled_: boolean;
+  private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   private readonly isAccessibilityFaceGazeEnabled_: boolean;
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
   private readonly isAccessibilityOverscrollSettingFeatureEnabled_: boolean;

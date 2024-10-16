@@ -404,13 +404,13 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED_TITLE" desc="The title message shown on a notification when Switch Access is enabled.">
         Switch Access enabled
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_DESCRIPTION" desc="The message shown on a notification when the internal trackpad is disabled.">
+      <message name="IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_DESCRIPTION" desc="The message shown on a notification when the internal touchpad is disabled.">
         Esc 5 times
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_TURN_ON" desc="Title of the dialog for disabling the internal trackpad.">
+      <message name="IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_TURN_ON" desc="Title of the dialog for disabling the internal touchpad.">
         Turn on
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_TITLE" desc="The title message shown on a notification when the internal trackpad is disabled">
+      <message name="IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_TITLE" desc="The title message shown on a notification when the internal touchpad is disabled">
        Built-in touchpad is disabled
       </message>
       <message name="IDS_ASH_STATUS_TRAY_USER_INFO_ACCESSIBILITY" desc="The accessibility string used for an item in user chooser that tells the user name and the mail address.">
@@ -1525,7 +1525,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_MIC_MUTED" desc="Displayed in a nudge when Dictation cannot start because the active microphone is muted.">
         Can't start dictation. Your mic is off.
       </message>
-      <message name="IDS_ASH_ACCESSIBILITY_NUDGE_TRACKPAD_DISABLED" desc="Displayed in a nudge when the touchpad is turned back on.">
+      <message name="IDS_ASH_ACCESSIBILITY_NUDGE_TOUCHPAD_DISABLED" desc="Displayed in a nudge when the touchpad is turned back on.">
        Built-in touchpad is turned on
       </message>
 
@@ -7950,16 +7950,16 @@ New install
         Update and shut down
       </message>
 
-      <!-- Disable trackpad feature -->
-      <message name="IDS_ASH_DISABLE_TRACKPAD_DIALOG_TITLE" desc="Title of the dialog for disabling the internal trackpad.">
+      <!-- Disable touchpad feature -->
+      <message name="IDS_ASH_DISABLE_TOUCHPAD_DIALOG_TITLE" desc="Title of the dialog for disabling the internal touchpad.">
         Confirm that you want to disable the built-in touchpad
       </message>
-      <message name="IDS_ASH_DISABLE_TRACKPAD_DIALOG_DESCRIPTION" desc="Content of the dialog for disabling the internal trackpad.">
+      <message name="IDS_ASH_DISABLE_TOUCHPAD_DIALOG_DESCRIPTION" desc="Content of the dialog for disabling the internal touchpad.">
         The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
 
 Otherwise the built-in touchpad will be re-enabled in 30 seconds.
       </message>
-      <message name="IDS_ASH_DISABLE_TRACKPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION" desc="Sign out button.">
+      <message name="IDS_ASH_DISABLE_TOUCHPAD_DIALOG_EXTERNAL_MOUSE_DESCRIPTION" desc="Sign out button.">
         The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
 
 Otherwise the built-in touchpad will be re-enabled in 30 seconds.

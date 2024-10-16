@@ -8019,8 +8019,8 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAccessibilityCaretBlinkIntervalSetting)},
 
     {"enable-accessibility-disable-trackpad",
-     flag_descriptions::kAccessibilityDisableTrackpadName,
-     flag_descriptions::kAccessibilityDisableTrackpadDescription, kOsCrOS,
+     flag_descriptions::kAccessibilityDisableTouchpadName,
+     flag_descriptions::kAccessibilityDisableTouchpadDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityDisableTrackpad)},
 
     {"enable-accessibility-flash-screen-feature",

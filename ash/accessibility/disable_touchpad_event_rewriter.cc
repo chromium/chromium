@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/disable_touchpad_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -24,7 +24,7 @@ bool IsExternalDevice(const ui::InputDevice& device) {
          device.type == ui::InputDeviceType::INPUT_DEVICE_USB;
 }
 
-bool IsExternalMouseOrTrackpadConnected() {
+bool IsExternalMouseOrTouchpadConnected() {
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
   InputDeviceSettingsControllerImpl* input_device_settings_controller =
@@ -53,7 +53,7 @@ bool IsExternalMouseOrTrackpadConnected() {
   return false;
 }
 
-int GetInternalTrackpadDeviceId() {
+int GetInternalTouchpadDeviceId() {
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
   InputDeviceSettingsControllerImpl* input_device_settings_controller =
@@ -72,32 +72,32 @@ int GetInternalTrackpadDeviceId() {
   return ui::InputDevice::kInvalidId;
 }
 
-bool IsFromInternalTrackpad(const ui::Event& event) {
-  return event.source_device_id() == GetInternalTrackpadDeviceId();
+bool IsFromInternalTouchpad(const ui::Event& event) {
+  return event.source_device_id() == GetInternalTouchpadDeviceId();
 }
 
-constexpr base::TimeDelta kEnableTrackpadKeyPressWindow = base::Seconds(3);
+constexpr base::TimeDelta kEnableTouchpadKeyPressWindow = base::Seconds(3);
 }  // namespace
 
-DisableTrackpadEventRewriter::DisableTrackpadEventRewriter() {
-  Shell::Get()->accessibility_controller()->SetDisableTrackpadEventRewriter(
+DisableTouchpadEventRewriter::DisableTouchpadEventRewriter() {
+  Shell::Get()->accessibility_controller()->SetDisableTouchpadEventRewriter(
       this);
 }
 
-DisableTrackpadEventRewriter::~DisableTrackpadEventRewriter() {
-  Shell::Get()->accessibility_controller()->SetDisableTrackpadEventRewriter(
+DisableTouchpadEventRewriter::~DisableTouchpadEventRewriter() {
+  Shell::Get()->accessibility_controller()->SetDisableTouchpadEventRewriter(
       nullptr);
 }
 
-void DisableTrackpadEventRewriter::SetEnabled(bool enabled) {
+void DisableTouchpadEventRewriter::SetEnabled(bool enabled) {
   enabled_ = enabled;
 }
 
-bool DisableTrackpadEventRewriter::IsEnabled() {
+bool DisableTouchpadEventRewriter::IsEnabled() {
   return enabled_;
 }
 
-ui::EventDispatchDetails DisableTrackpadEventRewriter::RewriteEvent(
+ui::EventDispatchDetails DisableTouchpadEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
   if (!IsEnabled()) {
@@ -115,28 +115,28 @@ ui::EventDispatchDetails DisableTrackpadEventRewriter::RewriteEvent(
   return SendEvent(continuation, &event);
 }
 
-ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseOrScrollEvent(
+ui::EventDispatchDetails DisableTouchpadEventRewriter::HandleMouseOrScrollEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  DisableTrackpadMode disable_trackpad_mode =
-      Shell::Get()->accessibility_controller()->GetDisableTrackpadMode();
-  bool is_internal_trackpad_event = IsFromInternalTrackpad(event);
-  bool is_external_device_connected = IsExternalMouseOrTrackpadConnected();
+  DisableTouchpadMode disable_touchpad_mode =
+      Shell::Get()->accessibility_controller()->GetDisableTouchpadMode();
+  bool is_internal_touchpad_event = IsFromInternalTouchpad(event);
+  bool is_external_device_connected = IsExternalMouseOrTouchpadConnected();
 
-  switch (disable_trackpad_mode) {
-    case DisableTrackpadMode::kNever:
+  switch (disable_touchpad_mode) {
+    case DisableTouchpadMode::kNever:
       Shell::Get()->cursor_manager()->ShowCursor();
       return SendEvent(continuation, &event);
 
-    case DisableTrackpadMode::kAlways:
-      if (is_internal_trackpad_event) {
+    case DisableTouchpadMode::kAlways:
+      if (is_internal_touchpad_event) {
         Shell::Get()->cursor_manager()->HideCursor();
         return DiscardEvent(continuation);
       }
       return SendEvent(continuation, &event);
 
-    case DisableTrackpadMode::kOnExternalMouseConnected:
-      if (is_internal_trackpad_event && is_external_device_connected) {
+    case DisableTouchpadMode::kOnExternalMouseConnected:
+      if (is_internal_touchpad_event && is_external_device_connected) {
         Shell::Get()->cursor_manager()->HideCursor();
         return DiscardEvent(continuation);
       }
@@ -144,7 +144,7 @@ ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseOrScrollEvent(
   }
 }
 
-void DisableTrackpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
+void DisableTouchpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
   // TODO(b/365813554): Prevent escape key from propagating to the system before
   // a specified time window between escape key presses.
   if (event->type() != ui::EventType::kKeyPressed) {
@@ -154,7 +154,7 @@ void DisableTrackpadEventRewriter::HandleKeyEvent(const ui::KeyEvent* event) {
                                        : ResetEscapeKeyPressTracking();
 }
 
-void DisableTrackpadEventRewriter::HandleEscapeKeyPress() {
+void DisableTouchpadEventRewriter::HandleEscapeKeyPress() {
   if (escape_press_count_ == 0) {
     first_escape_press_time_ = ui::EventTimeForNow();
   }
@@ -163,19 +163,19 @@ void DisableTrackpadEventRewriter::HandleEscapeKeyPress() {
   base::TimeDelta elapsed_time =
       ui::EventTimeForNow() - first_escape_press_time_;
 
-  if (elapsed_time > kEnableTrackpadKeyPressWindow) {
+  if (elapsed_time > kEnableTouchpadKeyPressWindow) {
     ResetEscapeKeyPressTracking();
     return;
   }
 
   if (escape_press_count_ >= 5) {
     SetEnabled(false);
-    Shell::Get()->accessibility_controller()->EnableInternalTrackpad();
+    Shell::Get()->accessibility_controller()->EnableInternalTouchpad();
     ResetEscapeKeyPressTracking();
   }
 }
 
-void DisableTrackpadEventRewriter::ResetEscapeKeyPressTracking() {
+void DisableTouchpadEventRewriter::ResetEscapeKeyPressTracking() {
   escape_press_count_ = 0;
   first_escape_press_time_ = base::TimeTicks();
 }

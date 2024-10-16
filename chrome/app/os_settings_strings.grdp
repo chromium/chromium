@@ -1902,22 +1902,22 @@
   <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_SIDE_BY_SIDE" desc="A dropdown item that lets the user enable the display style of the virtual display that is side by side, where regular text is on the left and braille is on the right.">
     Side-by-side
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_LABEL" desc="A label for the dropdown that lets the user set the disabled state of the internal trackpad.">
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_LABEL" desc="A label for the dropdown that lets the user set the disabled state of the internal touchpad.">
     Disable built-in touchpad
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_ALWAYS" desc="A dropdown item that lets the user always disable the internal trackpad.">
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_ALWAYS" desc="A dropdown item that lets the user always disable the internal touchpad.">
     Always
   </message>
   <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_DISABLED" desc="In Device Settings, link that shows up when the built-in touchpad is disabled.">
     Built-in touchpad is disabled
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_MOUSE_CONNECTED" desc="A dropdown item that lets the user disable the internal trackpad only when a mouse is connected.">
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_MOUSE_CONNECTED" desc="A dropdown item that lets the user disable the internal touchpad only when a mouse is connected.">
     When a mouse is connected
   </message>
-  <message name="IDS_SETTINGS_RE_ENABLE_TRACKPAD" desc="A label to show how to re-enable the internal trackpad.">
+  <message name="IDS_SETTINGS_RE_ENABLE_TOUCHPAD" desc="A label to show how to re-enable the internal touchpad.">
     Press esc 5 times to re-enable it
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_NEVER" desc="A dropdown item that lets the user never disable the internal trackpad.">
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_NEVER" desc="A dropdown item that lets the user never disable the internal touchpad.">
     Never
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">

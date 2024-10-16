@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/disable_touchpad_event_rewriter.h"
 
 #include <memory>
 #include <vector>
@@ -32,7 +32,7 @@ namespace {
 
 const int kUsbMouseDeviceId = 20;
 const int kBluetoothMouseDeviceId = 25;
-const int kInternalTrackpadDeviceId = 30;
+const int kInternalTouchpadDeviceId = 30;
 const uint16_t kLogitechVID = 0x046d;
 const uint16_t kMousePID = 0xb034;
 
@@ -51,23 +51,23 @@ ui::InputDevice GetSampleMouseBluetooth() {
           /* version= */ 0};
 }
 
-ui::TouchpadDevice GetSampleTrackpadInternal() {
-  return {kInternalTrackpadDeviceId, ui::INPUT_DEVICE_INTERNAL, "touchpad"};
+ui::TouchpadDevice GetSampleTouchpadInternal() {
+  return {kInternalTouchpadDeviceId, ui::INPUT_DEVICE_INTERNAL, "touchpad"};
 }
 
-void SimulateOnlyInternalTrackpadConnected() {
+void SimulateOnlyInternalTouchpadConnected() {
   ui::DeviceDataManagerTestApi().SetTouchpadDevices(
-      {GetSampleTrackpadInternal()});
+      {GetSampleTouchpadInternal()});
 }
 
 void SimulateExternalMouseConnected() {
   ui::DeviceDataManagerTestApi().SetMouseDevices(
       {GetSampleMouseUsb(), GetSampleMouseBluetooth()});
 
-  SimulateOnlyInternalTrackpadConnected();
+  SimulateOnlyInternalTouchpadConnected();
 }
 
-void SetDisableTrackpadMode(DisableTrackpadMode mode) {
+void SetDisableTouchpadMode(DisableTouchpadMode mode) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   prefs->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
@@ -76,14 +76,14 @@ void SetDisableTrackpadMode(DisableTrackpadMode mode) {
 
 }  // namespace
 
-class DisableTrackpadEventRewriterTest : public AshTestBase {
+class DisableTouchpadEventRewriterTest : public AshTestBase {
  public:
-  DisableTrackpadEventRewriterTest() = default;
-  DisableTrackpadEventRewriterTest(const DisableTrackpadEventRewriterTest&) =
+  DisableTouchpadEventRewriterTest() = default;
+  DisableTouchpadEventRewriterTest(const DisableTouchpadEventRewriterTest&) =
       delete;
-  DisableTrackpadEventRewriterTest& operator=(
-      const DisableTrackpadEventRewriterTest&) = delete;
-  ~DisableTrackpadEventRewriterTest() override = default;
+  DisableTouchpadEventRewriterTest& operator=(
+      const DisableTouchpadEventRewriterTest&) = delete;
+  ~DisableTouchpadEventRewriterTest() override = default;
 
   void PressAndReleaseEscapeKey() {
     generator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
@@ -92,7 +92,7 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    event_rewriter_ = std::make_unique<DisableTrackpadEventRewriter>();
+    event_rewriter_ = std::make_unique<DisableTouchpadEventRewriter>();
     generator_ = AshTestBase::GetEventGenerator();
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
         event_rewriter());
@@ -113,7 +113,7 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
 
   ui::test::EventGenerator* generator() { return generator_; }
   TestEventRecorder* event_recorder() { return &event_recorder_; }
-  DisableTrackpadEventRewriter* event_rewriter() {
+  DisableTouchpadEventRewriter* event_rewriter() {
     return event_rewriter_.get();
   }
 
@@ -121,13 +121,13 @@ class DisableTrackpadEventRewriterTest : public AshTestBase {
   // Generates ui::Events to simulate user input.
   raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
-  // DisableTrackpadEventRewriter.
+  // DisableTouchpadEventRewriter.
   TestEventRecorder event_recorder_;
-  // The DisableTrackpadEventRewriter instance.
-  std::unique_ptr<DisableTrackpadEventRewriter> event_rewriter_;
+  // The DisableTouchpadEventRewriter instance.
+  std::unique_ptr<DisableTouchpadEventRewriter> event_rewriter_;
 };
 
-TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceledIfDisabled) {
+TEST_F(DisableTouchpadEventRewriterTest, KeyboardEventsNotCanceledIfDisabled) {
   event_rewriter()->SetEnabled(false);
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_EQ(1U, event_recorder()->events().size());
@@ -139,7 +139,7 @@ TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceledIfDisabled) {
             event_recorder()->events().back()->type());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceledIfDisabled) {
+TEST_F(DisableTouchpadEventRewriterTest, MouseButtonsNotCanceledIfDisabled) {
   event_rewriter()->SetEnabled(false);
   generator()->PressLeftButton();
   EXPECT_EQ(1U, event_recorder()->events().size());
@@ -151,7 +151,7 @@ TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsNotCanceledIfDisabled) {
             event_recorder()->events().back()->type());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceled) {
+TEST_F(DisableTouchpadEventRewriterTest, KeyboardEventsNotCanceled) {
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
   ASSERT_EQ(1U, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyPressed,
@@ -162,11 +162,11 @@ TEST_F(DisableTrackpadEventRewriterTest, KeyboardEventsNotCanceled) {
             event_recorder()->events().back()->type());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsCanceledInAlwaysMode) {
+TEST_F(DisableTouchpadEventRewriterTest, MouseButtonsCanceledInAlwaysMode) {
   event_rewriter()->SetEnabled(true);
-  SetDisableTrackpadMode(DisableTrackpadMode::kAlways);
-  generator()->set_mouse_source_device_id(kInternalTrackpadDeviceId);
-  SimulateOnlyInternalTrackpadConnected();
+  SetDisableTouchpadMode(DisableTouchpadMode::kAlways);
+  generator()->set_mouse_source_device_id(kInternalTouchpadDeviceId);
+  SimulateOnlyInternalTouchpadConnected();
 
   generator()->PressLeftButton();
   EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
@@ -175,7 +175,7 @@ TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsCanceledInAlwaysMode) {
   EXPECT_EQ(0U, event_recorder()->events().size());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, DisableAfterFiveEscapeKeyPresses) {
+TEST_F(DisableTouchpadEventRewriterTest, DisableAfterFiveEscapeKeyPresses) {
   event_rewriter()->SetEnabled(true);
 
   int escapeKeyPressCount = 0;
@@ -195,7 +195,7 @@ TEST_F(DisableTrackpadEventRewriterTest, DisableAfterFiveEscapeKeyPresses) {
   }
 }
 
-TEST_F(DisableTrackpadEventRewriterTest,
+TEST_F(DisableTouchpadEventRewriterTest,
        EscapePressesExceedTimeWindowStaysEnabled) {
   event_rewriter()->SetEnabled(true);
 
@@ -212,7 +212,7 @@ TEST_F(DisableTrackpadEventRewriterTest,
   EXPECT_TRUE(event_rewriter()->IsEnabled());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest,
+TEST_F(DisableTouchpadEventRewriterTest,
        ResetEscapeKeyCountOnNonEscapeKeyPress) {
   event_rewriter()->SetEnabled(true);
 
@@ -243,13 +243,13 @@ TEST_F(DisableTrackpadEventRewriterTest,
   }
 }
 
-TEST_F(DisableTrackpadEventRewriterTest,
+TEST_F(DisableTouchpadEventRewriterTest,
        InternalMouseCanceledWithExternalMouse) {
   event_rewriter()->SetEnabled(true);
-  SetDisableTrackpadMode(DisableTrackpadMode::kOnExternalMouseConnected);
-  generator()->set_mouse_source_device_id(kInternalTrackpadDeviceId);
+  SetDisableTouchpadMode(DisableTouchpadMode::kOnExternalMouseConnected);
+  generator()->set_mouse_source_device_id(kInternalTouchpadDeviceId);
 
-  SimulateOnlyInternalTrackpadConnected();
+  SimulateOnlyInternalTouchpadConnected();
   generator()->PressLeftButton();
   EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
   EXPECT_EQ(1U, event_recorder()->events().size());
@@ -264,12 +264,12 @@ TEST_F(DisableTrackpadEventRewriterTest,
   EXPECT_EQ(2U, event_recorder()->events().size());
 }
 
-TEST_F(DisableTrackpadEventRewriterTest, ExternalMouseAllowedWhenConnected) {
+TEST_F(DisableTouchpadEventRewriterTest, ExternalMouseAllowedWhenConnected) {
   event_rewriter()->SetEnabled(true);
-  SetDisableTrackpadMode(DisableTrackpadMode::kOnExternalMouseConnected);
-  generator()->set_mouse_source_device_id(kInternalTrackpadDeviceId);
+  SetDisableTouchpadMode(DisableTouchpadMode::kOnExternalMouseConnected);
+  generator()->set_mouse_source_device_id(kInternalTouchpadDeviceId);
 
-  SimulateOnlyInternalTrackpadConnected();
+  SimulateOnlyInternalTouchpadConnected();
   EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
   generator()->PressLeftButton();
   EXPECT_EQ(1U, event_recorder()->events().size());

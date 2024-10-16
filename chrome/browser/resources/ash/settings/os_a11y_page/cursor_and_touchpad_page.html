@@ -190,22 +190,24 @@
       deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
   </settings-toggle-button>
 </template>
-<template is="dom-if" if="[[isAccessibilityDisableTrackpadEnabled_]]">
+<template is="dom-if" if="[[isAccessibilityDisableTouchpadEnabled_]]">
   <div class="settings-box start-padding">
     <div class="flex start settings-box-text">
-      <div id="disableInternalTrackpadLabel">
-          $i18n{disableTrackpadLabel}
+      <div id="disableInternalTouchpadLabel">
+          $i18n{disableTouchpadLabel}
       </div>
-      <template is="dom-if" if="[[showTrackpadEnableMessage_(prefs.settings.a11y.disable_trackpad_mode.value)]]">
-        <div class="cr-secondary-text sub-label" id="reEnableTrackpadLabel" >
-           <span class="sub-label-text">$i18n{reEnableTrackpadLabel}</span>
+      <template is="dom-if" if="[[showTouchpadEnableMessage_(
+            prefs.settings.a11y.disable_trackpad_mode.value
+          )]]">
+        <div class="cr-secondary-text sub-label" id="reEnableTouchpadLabel" >
+           <span class="sub-label-text">$i18n{reEnableTouchpadLabel}</span>
         </div>
       </template>
     </div>
-    <settings-dropdown-menu id="disableInternalTrackpadDropdown"
-          aria-labeledby="disableInternalTrackpadLabel"
+    <settings-dropdown-menu id="disableInternalTouchpadDropdown"
+          aria-labeledby="disableInternalTouchpadLabel"
           pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
-          menu-options="[[disableTrackpadOptions_]]"
+          menu-options="[[disableTouchpadOptions_]]"
           deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]"
           >
     </settings-dropdown-menu>

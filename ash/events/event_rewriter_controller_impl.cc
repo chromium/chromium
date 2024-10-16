@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/disable_touchpad_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/constants/ash_features.h"
@@ -128,14 +128,14 @@ void EventRewriterControllerImpl::Initialize(
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
   // EventRewriters are notified in the order they are added.
-  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
-    std::unique_ptr<DisableTrackpadEventRewriter>
-        disable_trackpad_event_rewriter =
-            std::make_unique<DisableTrackpadEventRewriter>();
-    disable_trackpad_event_rewriter_ = disable_trackpad_event_rewriter.get();
-    // The DisableTrackpadEventRewriter needs to be notified first, as it
-    // should stop all trackpad events from propagating further into the system.
-    AddEventRewriter(std::move(disable_trackpad_event_rewriter));
+  if (::features::IsAccessibilityDisableTouchpadEnabled()) {
+    std::unique_ptr<DisableTouchpadEventRewriter>
+        disable_touchpad_event_rewriter =
+            std::make_unique<DisableTouchpadEventRewriter>();
+    disable_touchpad_event_rewriter_ = disable_touchpad_event_rewriter.get();
+    // The DisableTouchpadEventRewriter needs to be notified first, as it
+    // should stop all touchpad events from propagating further into the system.
+    AddEventRewriter(std::move(disable_touchpad_event_rewriter));
   }
   if (::features::IsAccessibilityFilterKeysEnabled()) {
     std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =

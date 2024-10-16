@@ -826,7 +826,7 @@ Shell::~Shell() {
   // EventRewriterController directly, so it must be reset first to avoid
   // accessing invalid memory (see b/315127220).
   AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
-  AccessibilityController::Get()->SetDisableTrackpadEventRewriter(nullptr);
+  AccessibilityController::Get()->SetDisableTouchpadEventRewriter(nullptr);
   AccessibilityController::Get()->SetFilterKeysEventRewriter(nullptr);
   // AccessibilityController observes
   // input_device_settings_controller_; it also outlives

@@ -32,12 +32,12 @@ ToastData GetToastData(AccessibilityToastType type) {
               /*text=*/
               l10n_util::GetStringUTF16(
                   IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_MIC_MUTED)};
-    case AccessibilityToastType::kTrackpadDisabled:
+    case AccessibilityToastType::kTouchpadDisabled:
       return {/*id=*/kAccessibilityToastId,
-              /*catalog_name=*/ToastCatalogName::kTrackpadDisabled,
+              /*catalog_name=*/ToastCatalogName::kTouchpadDisabled,
               /*text=*/
               l10n_util::GetStringUTF16(
-                  IDS_ASH_ACCESSIBILITY_NUDGE_TRACKPAD_DISABLED)};
+                  IDS_ASH_ACCESSIBILITY_NUDGE_TOUCHPAD_DISABLED)};
   }
 }
 
