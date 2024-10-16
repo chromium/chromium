@@ -19,7 +19,7 @@ class XRGPUSwapChain : public GarbageCollected<XRGPUSwapChain> {
  public:
   virtual ~XRGPUSwapChain() = default;
 
-  virtual GPUTexture* GetCurrentTexture() = 0;
+  virtual GPUTexture* GetCurrentTexture();
   virtual void OnFrameStart();
   virtual void OnFrameEnd();
 
@@ -28,10 +28,13 @@ class XRGPUSwapChain : public GarbageCollected<XRGPUSwapChain> {
   virtual void SetLayer(XRCompositionLayer* layer) { layer_ = layer; }
   XRCompositionLayer* layer() { return layer_.Get(); }
 
+  bool texture_was_queried() const { return texture_queried_; }
+
   virtual void Trace(Visitor* visitor) const;
 
  private:
   Member<XRCompositionLayer> layer_;
+  bool texture_queried_;
 };
 
 // A swap chain backed by Mailboxes
@@ -54,6 +57,7 @@ class XRGPUMailboxSwapChain : public XRGPUSwapChain {
   Member<GPUDevice> device_;
   Member<GPUTexture> texture_;
   wgpu::TextureDescriptor descriptor_;
+  wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
 };
 
 }  // namespace blink

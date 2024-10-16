@@ -11,8 +11,16 @@
 
 namespace blink {
 
-void XRGPUSwapChain::OnFrameStart() {}
+void XRGPUSwapChain::OnFrameStart() {
+  texture_queried_ = false;
+}
 void XRGPUSwapChain::OnFrameEnd() {}
+
+GPUTexture* XRGPUSwapChain::GetCurrentTexture() {
+  texture_queried_ = true;
+  return nullptr;
+}
+
 void XRGPUSwapChain::Trace(Visitor* visitor) const {
   visitor->Trace(layer_);
 }
@@ -24,12 +32,22 @@ XRGPUMailboxSwapChain::XRGPUMailboxSwapChain(
   CHECK(device);
 
   descriptor_ = desc;
+
+  // TODO(crbug.com/359418629): Internal Usage will not be necessary once we can
+  // use texture array mailboxes directly.
+  wgpu::TextureUsage internal_usage = wgpu::TextureUsage::CopyDst;
+  texture_internal_usage_ = {{
+      .internalUsage = internal_usage,
+  }};
+  descriptor_.nextInChain = &texture_internal_usage_;
 }
 
 GPUTexture* XRGPUMailboxSwapChain::GetCurrentTexture() {
   if (texture_) {
     return texture_.Get();
   }
+
+  XRGPUSwapChain::GetCurrentTexture();
 
   const XRLayerMailboxes& mailboxes = layer()->GetMailboxes();
 

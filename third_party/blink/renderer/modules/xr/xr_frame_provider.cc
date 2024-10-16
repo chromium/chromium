@@ -18,6 +18,11 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
@@ -630,9 +635,10 @@ double XRFrameProvider::UpdateImmersiveFrameTime(
 }
 
 void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
-  DCHECK(layer);
-  DCHECK(immersive_session_);
-  DCHECK(layer->session() == immersive_session_);
+  CHECK(layer);
+  CHECK(immersive_session_);
+  CHECK_EQ(layer->session(), immersive_session_);
+  CHECK_EQ(layer->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGL);
   if (!immersive_presentation_provider_.is_bound())
     return;
 
@@ -739,6 +745,106 @@ void XRFrameProvider::UpdateWebGLLayerViewports(XRWebGLLayer* layer) {
                   static_cast<float>(right->width()) / width,
                   static_cast<float>(right->height()) / height)
             : gfx::RectF();
+
+  immersive_presentation_provider_->UpdateLayerBounds(
+      frame_id_, left_coords, right_coords, gfx::Size(width, height));
+}
+
+void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
+                                        bool was_queried) {
+  CHECK(layer);
+  CHECK(immersive_session_);
+  CHECK_EQ(layer->session(), immersive_session_);
+  CHECK_EQ(layer->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU);
+  if (!immersive_presentation_provider_.is_bound()) {
+    return;
+  }
+
+  TRACE_EVENT1("gpu", "XRFrameProvider::SubmitWebGPULayer", "frame", frame_id_);
+  DVLOG(3) << __func__ << ": frame=" << frame_id_;
+
+  XRGPUBinding* webgpu_binding = static_cast<XRGPUBinding*>(layer->binding());
+  GPUDevice* device = webgpu_binding->device();
+
+  if (frame_id_ < 0) {
+    // There is no valid frame_id_, and the browser side is not currently
+    // expecting a frame to be submitted. That can happen for the first
+    // immersive frame if the animation loop submits without a preceding
+    // immersive GetFrameData response, in that case frame_id_ is -1 (see
+    // https://crbug.com/855722).
+    return;
+  }
+
+  if (!was_queried) {
+    // Just tell the device side that there was no submitted frame instead of
+    // executing the implicit end-of-frame submit.
+    frame_transport_->FrameSubmitMissingWebGPU(
+        immersive_presentation_provider_.get(), device->GetDawnControlClient(),
+        frame_id_);
+    dropped_frames_++;
+    return;
+  }
+
+  frame_transport_->FramePreImageWebGPU(device->GetDawnControlClient());
+
+  if (!frame_transport_->DrawingIntoSharedBuffer()) {
+    NOTREACHED()
+        << "WebXR/WebGPU bindings only supports the DRAW_INTO_TEXTURE_MAILBOX "
+        << "XRPresentationTransportMethod at this time.";
+  }
+
+  DVLOG(3) << __func__ << ": FrameSubmitWebGPU for SharedBuffer mode";
+  bool succeeded = frame_transport_->FrameSubmitWebGPU(
+      immersive_presentation_provider_.get(), device->GetDawnControlClient(),
+      device->GetHandle(), frame_id_);
+  succeeded ? num_frames_++ : dropped_frames_++;
+  if (succeeded) {
+    submit_frame_time_.StartTimer();
+  }
+
+  // Reset our frame id, since anything we'd want to do (resizing/etc) can
+  // no-longer happen to this frame.
+  frame_id_ = -1;
+}
+
+// TODO(bajones): This only works because we're restricted to a single layer at
+// the moment. Will need an overhaul when we get more robust layering support.
+void XRFrameProvider::UpdateWebGPULayerViewports(XRGPUProjectionLayer* layer) {
+  DCHECK(layer->session() == immersive_session_);
+  DCHECK(layer->session()->GraphicsApi() == XRGraphicsBinding::Api::kWebGPU);
+  DCHECK(immersive_presentation_provider_.is_bound());
+
+  XRGPUBinding* webgpu_binding = static_cast<XRGPUBinding*>(layer->binding());
+
+  gfx::Rect left = webgpu_binding->GetViewportForEye(
+      layer, device::mojom::blink::XREye::kLeft);
+  gfx::Rect right = webgpu_binding->GetViewportForEye(
+      layer, device::mojom::blink::XREye::kRight);
+
+  // TODO(crbug.com/359418629): Adjust viewport calculations once we start using
+  // texture array-capable mailboxes.
+  float width = layer->textureWidth() * layer->textureArrayLength();
+  float height = layer->textureHeight();
+  float eye_width =
+      1.0f /
+      float(layer->textureArrayLength());  // To account for single-view AR.
+
+  // We may only have one eye view, i.e. in smartphone immersive AR mode.
+  // Use all-zero bounds for unused views.
+  gfx::RectF left_coords = gfx::RectF(
+      static_cast<float>(left.x()) / width,
+      static_cast<float>(height - (left.y() + left.height())) / height,
+      static_cast<float>(left.width()) / width,
+      static_cast<float>(left.height()) / height);
+  gfx::RectF right_coords =
+      layer->textureArrayLength() > 1
+          ? gfx::RectF(
+                (static_cast<float>(right.x()) / width) + eye_width,
+                static_cast<float>(height - (right.y() + right.height())) /
+                    height,
+                (static_cast<float>(right.width()) / width) + eye_width,
+                static_cast<float>(right.height()) / height)
+          : gfx::RectF();
 
   immersive_presentation_provider_->UpdateLayerBounds(
       frame_id_, left_coords, right_coords, gfx::Size(width, height));

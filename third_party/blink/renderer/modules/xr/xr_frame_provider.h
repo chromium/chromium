@@ -25,6 +25,7 @@ namespace blink {
 
 class LocalDOMWindow;
 class XRFrameTransport;
+class XRGPUProjectionLayer;
 class XRSession;
 class XRSystem;
 class XRWebGLLayer;
@@ -61,6 +62,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   void SubmitWebGLLayer(XRWebGLLayer*, bool was_changed);
   void UpdateWebGLLayerViewports(XRWebGLLayer*);
+
+  void SubmitWebGPULayer(XRGPUProjectionLayer*, bool was_queried);
+  void UpdateWebGPULayerViewports(XRGPUProjectionLayer*);
 
   void Dispose();
   void OnFocusChanged();

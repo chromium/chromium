@@ -151,7 +151,7 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
 
   gfx::Size texture_size = gfx::ToFlooredSize(scaled_size);
 
-  // Create the color swap chain
+  // Create the side-by-side color swap chain
   wgpu::TextureDescriptor color_desc = {};
   color_desc.label = "XRProjectionLayer Color";
   color_desc.format = AsDawnEnum(init->colorFormat());
@@ -192,7 +192,7 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
         MakeGarbageCollected<XRGPUStaticSwapChain>(device_, depth_stencil_desc);
   }
 
-  return MakeGarbageCollected<XRGPUProjectionLayer>(this, color_swap_chain,
+  return MakeGarbageCollected<XRGPUProjectionLayer>(this, wrapped_swap_chain,
                                                     depth_stencil_swap_chain);
 }
 
@@ -218,16 +218,24 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
     depth_stencil_texture = depth_stencil_swap_chain->GetCurrentTexture();
   }
 
-  gfx::Rect viewport =
-      gfx::Rect(0, 0, color_texture->width(), color_texture->height());
+  gfx::Rect viewport = GetViewportForEye(layer, view->EyeValue());
 
   return MakeGarbageCollected<XRGPUSubImage>(
       viewport, view->ViewData()->index(), color_texture,
       depth_stencil_texture);
 }
 
+gfx::Rect XRGPUBinding::GetViewportForEye(XRProjectionLayer* layer,
+                                          device::mojom::blink::XREye eye) {
+  CHECK(OwnsLayer(layer));
+
+  // TODO(crbug.com/5818595): Allow for configurable viewports.
+  return gfx::Rect(0, 0, layer->textureWidth(), layer->textureHeight());
+}
+
 V8GPUTextureFormat XRGPUBinding::getPreferredColorFormat() {
-  return FromDawnEnum(GPU::preferred_canvas_format());
+  // TODO(crbug.com/5818595): Replace with GPU::preferred_canvas_format()?
+  return FromDawnEnum(wgpu::TextureFormat::RGBA8Unorm);
 }
 
 bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {

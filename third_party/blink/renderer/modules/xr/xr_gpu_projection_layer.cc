@@ -58,7 +58,8 @@ void XRGPUProjectionLayer::OnFrameEnd() {
     depth_stencil_swap_chain_->OnFrameEnd();
   }
 
-  // TODO(crbug.com/359418629): Submit the layer
+  session()->xr()->frameProvider()->SubmitWebGPULayer(
+      this, color_swap_chain_->texture_was_queried());
 }
 
 void XRGPUProjectionLayer::OnResize() {}
