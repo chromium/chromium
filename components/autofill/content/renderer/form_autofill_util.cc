@@ -1768,7 +1768,7 @@ std::vector<SelectOption> GetDataListOptions(const WebInputElement& element) {
   WebVector<WebOptionElement> option_elements =
       element.FilteredDataListOptions();
   std::vector<SelectOption> options;
-  options.reserve(std::max(option_elements.size(), kMaxListSize));
+  options.reserve(std::min(option_elements.size(), kMaxListSize));
   for (const WebOptionElement& option_element : option_elements) {
     if (options.size() > kMaxListSize) {
       break;
