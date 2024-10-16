@@ -59,6 +59,7 @@
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
@@ -78,6 +79,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/feed/feed_feature_list.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
@@ -94,8 +98,14 @@
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "media/base/media_switches.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -309,6 +319,66 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Reads favicons for the IWA represented by `page_url` in all available sizes
+// from the disk.
+// `callback` is always run asynchronously for consistency with how extensions
+// favicons are read.
+void ReadIsolatedWebAppFaviconsFromDisk(
+    Profile* profile,
+    const GURL& page_url,
+    favicon_base::FaviconResultsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto callback_async = base::BindOnce(
+      [](favicon_base::FaviconResultsCallback callback,
+         std::vector<favicon_base::FaviconRawBitmapResult>
+             favicon_bitmap_results) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback),
+                                      std::move(favicon_bitmap_results)));
+      },
+      std::move(callback));
+
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!web_app_provider) {
+    std::move(callback_async).Run(/*favicon_bitmap_results=*/{});
+    return;
+  }
+
+  ASSIGN_OR_RETURN(
+      auto url_info, web_app::IsolatedWebAppUrlInfo::Create(page_url),
+      [&](auto) {
+        std::move(callback_async).Run(/*favicon_bitmap_results=*/{});
+      });
+
+  web_app_provider->icon_manager().ReadFavicons(
+      url_info.app_id(), /*purpose=*/web_app::IconPurpose::ANY,
+      base::BindOnce([](gfx::ImageSkia image_skia) {
+        std::vector<favicon_base::FaviconRawBitmapResult>
+            favicon_bitmap_results;
+
+        for (const gfx::ImageSkiaRep& image_rep : image_skia.image_reps()) {
+          if (std::optional<std::vector<uint8_t>> data =
+                  gfx::PNGCodec::EncodeBGRASkBitmap(
+                      image_rep.GetBitmap(), /*discard_transparency=*/false)) {
+            favicon_base::FaviconRawBitmapResult bitmap_result;
+            bitmap_result.bitmap_data =
+                base::MakeRefCounted<base::RefCountedBytes>(std::move(*data));
+            bitmap_result.pixel_size =
+                gfx::Size(image_rep.pixel_width(), image_rep.pixel_height());
+            // Leave |bitmap_result|'s icon URL as the default of GURL().
+            bitmap_result.icon_type = favicon_base::IconType::kFavicon;
+
+            favicon_bitmap_results.push_back(std::move(bitmap_result));
+          }
+        }
+
+        return favicon_bitmap_results;
+      }).Then(std::move(callback_async)));
+}
+#endif
+
 }  // namespace
 
 WebUI::TypeID ChromeWebUIControllerFactory::GetWebUIType(
@@ -342,6 +412,13 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     const GURL& page_url,
     const std::vector<int>& desired_sizes_in_pixel,
     favicon_base::FaviconResultsCallback callback) const {
+#if !BUILDFLAG(IS_ANDROID)
+  if (page_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    ReadIsolatedWebAppFaviconsFromDisk(profile, page_url, std::move(callback));
+    return;
+  }
+#endif
+
   // Before determining whether page_url is an extension url, we must handle
   // overrides. This changes urls in |kChromeUIScheme| to extension urls, and
   // allows to use ExtensionWebUI::GetFaviconForURL.

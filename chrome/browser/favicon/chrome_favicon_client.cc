@@ -42,6 +42,12 @@ bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
     return true;
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    return true;
+  }
+#endif
+
   return url.SchemeIs(content::kChromeUIScheme);
 }
 
