@@ -153,6 +153,8 @@ TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserEnabled) {
 TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserDisabled) {
   base::HistogramTester histogram_tester;
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kArcOnDemandV2);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
@@ -181,8 +183,11 @@ TEST_F(ArcActivationNecessityCheckerTest, PacakgeListIsNotUpToDate) {
       "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
 }
 
-TEST_F(ArcActivationNecessityCheckerTest, AppIsInstalled) {
+TEST_F(ArcActivationNecessityCheckerTest, InstalledAppWithFeatureDisabled) {
   base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kArcOnDemandV2);
+
   auto package_info = mojom::ArcPackageInfo::New();
   package_info->package_name = "com.example.third_party_app";
   app_instance_->SendPackageAdded(std::move(package_info));
