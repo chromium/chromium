@@ -700,10 +700,9 @@ void HTMLCanvasElement::DisableAcceleration(
       .IncrementDisabledCount();
   // Create and configure an unaccelerated Canvas2DLayerBridge.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
-  std::unique_ptr<Canvas2DLayerBridge> bridge = Create2DLayerBridge();
 
-  if (bridge && canvas2d_bridge_) {
-    ReplaceExisting2dLayerBridge(std::move(bridge),
+  if (canvas2d_bridge_) {
+    ReplaceExisting2dLayerBridge(std::make_unique<Canvas2DLayerBridge>(this),
                                  std::move(new_provider_for_testing));
   }
 
@@ -1424,10 +1423,6 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
       .ShouldDisableAcceleration();
 }
 
-std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {
-  return std::make_unique<Canvas2DLayerBridge>(this);
-}
-
 void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
     std::unique_ptr<Canvas2DLayerBridge> external_canvas2d_bridge) {
   DCHECK(IsRenderingContext2D() && !canvas2d_bridge_);
@@ -1459,11 +1454,8 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
             ? RasterModeHint::kPreferGPU
             : RasterModeHint::kPreferCPU;
     SetPreferred2DRasterMode(hint);
-    canvas2d_bridge_ = Create2DLayerBridge();
+    canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
   }
-
-  if (!canvas2d_bridge_)
-    return;
 
   did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
@@ -1611,11 +1603,7 @@ bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {
     return false;
   }
   SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  std::unique_ptr<Canvas2DLayerBridge> surface = Create2DLayerBridge();
-  if (!surface) {
-    return false;
-  }
-  ReplaceExisting2dLayerBridge(std::move(surface));
+  ReplaceExisting2dLayerBridge(std::make_unique<Canvas2DLayerBridge>(this));
   return true;
 }
 
