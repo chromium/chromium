@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 source_set("core") {
   sources = [
     "application_breadcrumbs_logger.cc",
@@ -35,6 +37,10 @@ source_set("core") {
     "//net",
     "//ui/base",
   ]
+
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
+  }
 }
 
 source_set("status") {
@@ -60,6 +66,13 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//testing/gtest",
   ]
+
+  if (toolkit_views) {
+    deps += [
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
 
   sources = [
     "application_breadcrumbs_logger_unittest.cc",

@@ -13,6 +13,10 @@
 #include "base/run_loop.h"
 #include "ui/views/views_export.h"
 
+namespace breadcrumbs {
+class ApplicationBreadcrumbsLogger;
+}
+
 namespace views {
 
 namespace internal {
@@ -190,11 +194,12 @@ class VIEWS_EXPORT NamedWidgetShownWaiter {
 
 class AnyWidgetPasskey {
  private:
-  AnyWidgetPasskey();  // NOLINT
+  AnyWidgetPasskey() = default;  // NOLINT
 
   // Add friend classes here that are allowed to use AnyWidgetObserver in
   // production code.
   friend class NamedWidgetShownWaiter;
+  friend class breadcrumbs::ApplicationBreadcrumbsLogger;
 };
 
 namespace test {
