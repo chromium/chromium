@@ -110,8 +110,6 @@ source_set("common") {
     "in_process_child_thread_params.h",
     "input/actions_parser.cc",
     "input/actions_parser.h",
-    "input/events_helper.cc",
-    "input/events_helper.h",
     "input/synthetic_gesture.cc",
     "input/synthetic_gesture.h",
     "input/synthetic_gesture_controller.cc",

@@ -10,10 +10,10 @@
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/input/events_helper.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/input/web_touch_event_traits.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
-#include "content/common/input/events_helper.h"
 #include "content/grit/content_resources.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -335,7 +335,7 @@ bool TouchEmulatorImpl::HandleTouchEventAck(
     if (gesture_provider_) {
       gesture_provider_->OnTouchEventAck(
           event.unique_touch_event_id, event_consumed,
-          InputEventResultStateIsSetBlocking(ack_result));
+          input::InputEventResultStateIsSetBlocking(ack_result));
     }
     if (pending_taps_count_ == taps_count_before)
       OnInjectedTouchCompleted();

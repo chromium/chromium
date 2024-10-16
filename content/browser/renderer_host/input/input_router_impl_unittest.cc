@@ -45,7 +45,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if defined(USE_AURA)
-#include "content/common/input/events_helper.h"
+#include "components/input/events_helper.h"
 #include "ui/events/event.h"
 #endif
 

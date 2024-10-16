@@ -29,8 +29,10 @@
 #include "cc/base/math_util.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
+#include "components/input/events_helper.h"
 #include "components/input/input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/switches.h"
 #include "components/input/web_input_event_builders_android.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -59,9 +61,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
-#include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
-#include "content/common/input/events_helper.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -2187,7 +2187,7 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
   // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of
   // the future inputs.
   const bool is_source_touch_event_set_non_blocking =
-      InputEventResultStateIsSetBlocking(ack_result);
+      input::InputEventResultStateIsSetBlocking(ack_result);
   // |was_touch_blocked| indicates whether the current event was dispatched
   // blocking to the Renderer.
   const bool was_touch_blocked =
@@ -2646,7 +2646,7 @@ void RenderWidgetHostViewAndroid::OnGestureEvent(
   if ((gesture.type() == ui::EventType::kGesturePinchBegin ||
        gesture.type() == ui::EventType::kGesturePinchUpdate ||
        gesture.type() == ui::EventType::kGesturePinchEnd) &&
-      !IsPinchToZoomEnabled()) {
+      !input::switches::IsPinchToZoomEnabled()) {
     return;
   }
 

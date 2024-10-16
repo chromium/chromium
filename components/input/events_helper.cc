@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/events_helper.h"
+#include "components/input/events_helper.h"
 
 #include "third_party/blink/public/common/features.h"
 
-namespace content {
+namespace input {
 
 bool InputEventResultStateIsSetBlocking(
     blink::mojom::InputEventResultState ack_state) {
@@ -25,4 +25,4 @@ bool InputEventResultStateIsSetBlocking(
   }
 }
 
-}  // namespace content
+}  // namespace input

@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/input/cursor_manager.h"
+#import "components/input/events_helper.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/web_input_event_builders_mac.h"
@@ -42,7 +43,6 @@
 #include "content/browser/renderer_host/render_widget_helper.h"
 #import "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
-#import "content/common/input/events_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/render_widget_host.h"
@@ -1445,7 +1445,7 @@ void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
       ack_result == blink::mojom::InputEventResultState::kConsumed;
   gesture_provider_.OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
-      InputEventResultStateIsSetBlocking(ack_result));
+      input::InputEventResultStateIsSetBlocking(ack_result));
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()

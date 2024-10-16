@@ -9,7 +9,10 @@
 
 namespace input::switches {
 
+COMPONENT_EXPORT(INPUT) extern const char kDisablePinch[];
 COMPONENT_EXPORT(INPUT) extern const char kValidateInputEventStream[];
+
+COMPONENT_EXPORT(INPUT) bool IsPinchToZoomEnabled();
 
 }  // namespace input::switches
 

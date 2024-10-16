@@ -18,6 +18,7 @@ namespace input::features {
 
 COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kInputOnViz);
 #endif
+COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kScrollBubblingFix);
 
 }  // namespace input::features
 

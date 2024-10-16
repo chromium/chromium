@@ -26,6 +26,7 @@
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/input/cursor_manager.h"
+#include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "components/viz/common/features.h"
@@ -50,7 +51,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
-#include "content/common/input/events_helper.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -1226,7 +1226,7 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
       CHECK(!sent_ack);
       window_host->dispatcher()->ProcessedTouchEvent(
           touch.event.unique_touch_event_id, window_, result,
-          InputEventResultStateIsSetBlocking(ack_result));
+          input::InputEventResultStateIsSetBlocking(ack_result));
       if (touch.event.touch_start_or_first_touch_move &&
           result == ui::ER_HANDLED && host()->delegate() &&
           host()->delegate()->GetInputEventRouter()) {

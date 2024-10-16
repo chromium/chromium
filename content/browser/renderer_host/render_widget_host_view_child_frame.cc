@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/input/cursor_manager.h"
+#include "components/input/features.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -583,7 +584,7 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
   // TODO(crbug.com/346629231): Remove flag guard once this lands. Prior to the
   // fix this section was always entered.
   if (!event_filtered ||
-      !base::FeatureList::IsEnabled(features::kScrollBubblingFix)) {
+      !base::FeatureList::IsEnabled(input::features::kScrollBubblingFix)) {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
       DCHECK(!is_scroll_sequence_bubbling_);
       is_scroll_sequence_bubbling_ =

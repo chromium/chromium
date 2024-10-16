@@ -15,6 +15,8 @@ component("input") {
     "cursor_manager.cc",
     "cursor_manager.h",
     "event_with_latency_info.h",
+    "events_helper.cc",
+    "events_helper.h",
     "features.cc",
     "features.h",
     "fling_controller.cc",

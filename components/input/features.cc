@@ -10,4 +10,9 @@ namespace input::features {
 BASE_FEATURE(kInputOnViz, "InputOnViz", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Flag guard for fix for crbug.com/346629231.
+BASE_FEATURE(kScrollBubblingFix,
+             "ScrollBubblingFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace input::features

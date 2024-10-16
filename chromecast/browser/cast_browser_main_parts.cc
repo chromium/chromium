@@ -70,6 +70,7 @@
 #include "chromecast/ui/display_settings_manager_impl.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/input/switches.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/common/switches.h"
@@ -334,7 +335,7 @@ const DefaultCommandLineSwitch kDefaultSwitches[] = {
     // TODO(halliwell): Revert after fix for b/63101386.
     {switches::kDisallowNonExactResourceReuse, ""},
     // Disable pinch zoom gesture.
-    {switches::kDisablePinch, ""},
+    {input::switches::kDisablePinch, ""},
 };
 
 void AddDefaultCommandLineSwitches(base::CommandLine* command_line) {

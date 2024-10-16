@@ -213,9 +213,6 @@ const char kDisableNotifications[]          = "disable-notifications";
 // Disable Pepper3D.
 const char kDisablePepper3d[]               = "disable-pepper-3d";
 
-// Disables compositor-accelerated touch-screen pinch gestures.
-const char kDisablePinch[]                  = "disable-pinch";
-
 // Disables the Presentation API.
 const char kDisablePresentationAPI[]        = "disable-presentation-api";
 

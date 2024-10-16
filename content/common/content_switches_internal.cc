@@ -65,14 +65,6 @@ std::string FromNativeString(const std::string& string) {
 
 }  // namespace
 
-bool IsPinchToZoomEnabled() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  // Enable pinch everywhere unless it's been explicitly disabled.
-  return !command_line.HasSwitch(switches::kDisablePinch);
-}
-
 blink::mojom::V8CacheOptions GetV8CacheOptions() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
