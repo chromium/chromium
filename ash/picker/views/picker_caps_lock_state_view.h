@@ -15,7 +15,7 @@ class Rect;
 }
 
 namespace views {
-class Label;
+class ImageView;
 }
 
 namespace ash {
@@ -36,10 +36,10 @@ class ASH_EXPORT PickerCapsLockStateView
   void Close();
   void Show();
 
-  views::Label* label_for_testing() const { return label_; }
+  views::ImageView& icon_view_for_testing() const { return *icon_view_; }
 
  private:
-  raw_ptr<views::Label> label_;
+  raw_ptr<views::ImageView> icon_view_;
 };
 
 }  // namespace ash
