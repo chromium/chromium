@@ -4334,7 +4334,7 @@ deps = {
 
   'src/components/test/data/autofill/label-doms/internal': {
       'url': Var('chrome_git') + '/chrome/test/autofill/field_labels.git' + '@' +
-        '932bfac96f5e5792bca46e9d1ae76a4fe36798c3',
+        '796ed53c92ffd36e3544499a2ead1e13a9f8788e',
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
