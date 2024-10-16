@@ -226,7 +226,7 @@ public class WarmupManagerTest {
         return tabs;
     }
 
-    private static Profile getNonPrimaryOtrProfile() {
+    private static Profile getNonPrimaryOTRProfile() {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
@@ -237,12 +237,12 @@ public class WarmupManagerTest {
                         });
     }
 
-    private static Profile getPrimaryOtrProfile() {
+    private static Profile getPrimaryOTRProfile() {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () ->
                                 ProfileManager.getLastUsedRegularProfile()
-                                        .getPrimaryOtrProfile(/* createIfNeeded= */ true));
+                                        .getPrimaryOTRProfile(/* createIfNeeded= */ true));
     }
 
     private static Profile getRegularProfile() {
@@ -253,9 +253,9 @@ public class WarmupManagerTest {
     private static Profile getProfile(ProfileType profileType) {
         switch (profileType) {
             case NON_PRIMARY_OTR_PROFILE:
-                return getNonPrimaryOtrProfile();
+                return getNonPrimaryOTRProfile();
             case PRIMARY_OTR_PROFILE:
-                return getPrimaryOtrProfile();
+                return getPrimaryOTRProfile();
             default:
                 return getRegularProfile();
         }

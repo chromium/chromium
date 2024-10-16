@@ -95,7 +95,7 @@ public class TabModelSelectorProfileSupplierTest {
     }
 
     @Test
-    public void tesOtrProfileReturnsForIncognitoTabModel() {
+    public void tesOTRProfileReturnsForIncognitoTabModel() {
         mTabModelSelectorSupplier.set(mSelector);
         mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         mSelector.markTabStateInitialized();

@@ -68,8 +68,8 @@ public class LocationBarModelUnitTest {
     @Mock private Tab mRegularTabMock;
 
     @Mock private Profile mRegularProfileMock;
-    @Mock private Profile mPrimaryOtrProfileMock;
-    @Mock private Profile mNonPrimaryOtrProfileMock;
+    @Mock private Profile mPrimaryOTRProfileMock;
+    @Mock private Profile mNonPrimaryOTRProfileMock;
 
     @Mock private LocationBarDataProvider.Observer mLocationBarDataObserver;
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
@@ -90,16 +90,16 @@ public class LocationBarModelUnitTest {
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
         mJniMocker.mock(OmniboxUrlEmphasizerJni.TEST_HOOKS, mOmniboxUrlEmphasizerJni);
 
-        when(mPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);
-        when(mNonPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);
+        when(mPrimaryOTRProfileMock.isOffTheRecord()).thenReturn(true);
+        when(mNonPrimaryOTRProfileMock.isOffTheRecord()).thenReturn(true);
 
         when(mRegularTabMock.getProfile()).thenReturn(mRegularProfileMock);
 
         when(mIncognitoTabMock.isIncognito()).thenReturn(true);
-        when(mIncognitoTabMock.getProfile()).thenReturn(mPrimaryOtrProfileMock);
+        when(mIncognitoTabMock.getProfile()).thenReturn(mPrimaryOTRProfileMock);
 
         when(mIncognitoNonPrimaryTabMock.isIncognito()).thenReturn(true);
-        when(mIncognitoNonPrimaryTabMock.getProfile()).thenReturn(mNonPrimaryOtrProfileMock);
+        when(mIncognitoNonPrimaryTabMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
     }
 
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
@@ -138,21 +138,21 @@ public class LocationBarModelUnitTest {
 
     @Test
     @MediumTest
-    public void getProfile_IncognitoTab_ReturnsPrimaryOtrProfile() {
+    public void getProfile_IncognitoTab_ReturnsPrimaryOTRProfile() {
         LocationBarModel locationBarModel = new TestLocationBarModel();
-        locationBarModel.setTab(mIncognitoTabMock, mPrimaryOtrProfileMock);
+        locationBarModel.setTab(mIncognitoTabMock, mPrimaryOTRProfileMock);
         Profile otrProfile = locationBarModel.getProfile();
-        Assert.assertEquals(mPrimaryOtrProfileMock, otrProfile);
+        Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
         locationBarModel.destroy();
     }
 
     @Test
     @MediumTest
-    public void getProfile_IncognitoTab_ReturnsNonPrimaryOtrProfile() {
+    public void getProfile_IncognitoTab_ReturnsNonPrimaryOTRProfile() {
         LocationBarModel locationBarModel = new TestLocationBarModel();
-        locationBarModel.setTab(mIncognitoNonPrimaryTabMock, mNonPrimaryOtrProfileMock);
+        locationBarModel.setTab(mIncognitoNonPrimaryTabMock, mNonPrimaryOTRProfileMock);
         Profile otrProfile = locationBarModel.getProfile();
-        Assert.assertEquals(mNonPrimaryOtrProfileMock, otrProfile);
+        Assert.assertEquals(mNonPrimaryOTRProfileMock, otrProfile);
         locationBarModel.destroy();
     }
 
@@ -163,11 +163,11 @@ public class LocationBarModelUnitTest {
         locationBarModel.setTab(null, mRegularProfileMock);
         Assert.assertEquals(mRegularProfileMock, locationBarModel.getProfile());
 
-        locationBarModel.setTab(null, mPrimaryOtrProfileMock);
-        Assert.assertEquals(mPrimaryOtrProfileMock, locationBarModel.getProfile());
+        locationBarModel.setTab(null, mPrimaryOTRProfileMock);
+        Assert.assertEquals(mPrimaryOTRProfileMock, locationBarModel.getProfile());
 
-        locationBarModel.setTab(null, mNonPrimaryOtrProfileMock);
-        Assert.assertEquals(mNonPrimaryOtrProfileMock, locationBarModel.getProfile());
+        locationBarModel.setTab(null, mNonPrimaryOTRProfileMock);
+        Assert.assertEquals(mNonPrimaryOTRProfileMock, locationBarModel.getProfile());
 
         locationBarModel.destroy();
     }

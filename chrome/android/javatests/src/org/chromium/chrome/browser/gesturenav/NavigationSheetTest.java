@@ -361,7 +361,7 @@ public class NavigationSheetTest {
                     Tab tab = mActivityTestRule.getActivity().getActivityTabProvider().get();
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     if (isOffTheRecord) {
-                        profile = profile.getPrimaryOtrProfile(true);
+                        profile = profile.getPrimaryOTRProfile(true);
                     }
                     NavigationSheet navigationSheet =
                             NavigationSheet.create(

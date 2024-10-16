@@ -312,7 +312,7 @@ public class DownloadSharedPreferenceEntryTest {
 
     @Test
     @Feature({"Download"})
-    public void testParseFromStringVersion7ForNonprimaryOtrProfile() {
+    public void testParseFromStringVersion7ForNonprimaryOTRProfile() {
         String id1 = newUUID();
         String notificationString = "7,2,test_namespace," + id1 + ",,1,1,1,test,2.pdf";
         DownloadSharedPreferenceEntry entry =

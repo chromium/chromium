@@ -219,7 +219,7 @@ public class CustomTabActivityIncognitoTest {
                                             .getActivity()
                                             .getCurrentWebContents());
                     assertTrue(profile.isOffTheRecord());
-                    assertFalse(profile.isPrimaryOtrProfile());
+                    assertFalse(profile.isPrimaryOTRProfile());
                     assertTrue(profile.isIncognitoBranded());
                 });
     }
@@ -262,7 +262,7 @@ public class CustomTabActivityIncognitoTest {
                 () -> {
                     Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
                     assertTrue(profile.isOffTheRecord());
-                    assertFalse(profile.isPrimaryOtrProfile());
+                    assertFalse(profile.isPrimaryOTRProfile());
                     assertTrue(profile.isIncognitoBranded());
                 });
     }

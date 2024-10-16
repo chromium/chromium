@@ -93,13 +93,13 @@ public class ActivityProfileProviderTest {
         Assert.assertNotNull(provider);
 
         provider.hasOffTheRecordProfile();
-        verify(mOriginalProfile).hasPrimaryOtrProfile();
+        verify(mOriginalProfile).hasPrimaryOTRProfile();
 
         provider.getOffTheRecordProfile(false);
-        verify(mOriginalProfile).getPrimaryOtrProfile(eq(false));
+        verify(mOriginalProfile).getPrimaryOTRProfile(eq(false));
 
         provider.getOffTheRecordProfile(true);
-        verify(mOriginalProfile).getPrimaryOtrProfile(eq(true));
+        verify(mOriginalProfile).getPrimaryOTRProfile(eq(true));
     }
 
     @Test

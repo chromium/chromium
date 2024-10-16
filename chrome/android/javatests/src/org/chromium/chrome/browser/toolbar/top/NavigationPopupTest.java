@@ -204,7 +204,7 @@ public class NavigationPopupTest {
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     if (isOffTheRecord) {
-                        profile = profile.getPrimaryOtrProfile(true);
+                        profile = profile.getPrimaryOTRProfile(true);
                     }
                     NavigationPopup popup =
                             new NavigationPopup(

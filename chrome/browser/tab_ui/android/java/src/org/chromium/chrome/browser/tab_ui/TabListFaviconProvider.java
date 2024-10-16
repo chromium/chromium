@@ -609,7 +609,7 @@ public class TabListFaviconProvider {
     private Profile getProfile(boolean isIncognito) {
         if (!isIncognito) return mProfile;
 
-        Profile otrProfile = mProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false);
+        Profile otrProfile = mProfile.getPrimaryOTRProfile(/* createIfNeeded= */ false);
         assert otrProfile != null : "Requesting favicon for OTR Profile when none exists.";
         return otrProfile;
     }

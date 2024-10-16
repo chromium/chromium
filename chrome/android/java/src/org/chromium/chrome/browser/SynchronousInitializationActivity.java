@@ -52,17 +52,17 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
             @Nullable
             @Override
             public Profile getOffTheRecordProfile(boolean createIfNeeded) {
-                // TODO(crbug.com/40254448): Instead of using getPrimaryOtrProfile, this should
+                // TODO(crbug.com/40254448): Instead of using getPrimaryOTRProfile, this should
                 // account
                 //                      for instances where the incognito profile is using a
                 //                      non-primary key. Because the Bookmark model redirects to the
                 //                      original profile regardless, this is not a critical issue.
-                return profile.getPrimaryOtrProfile(createIfNeeded);
+                return profile.getPrimaryOTRProfile(createIfNeeded);
             }
 
             @Override
             public boolean hasOffTheRecordProfile() {
-                return profile.hasPrimaryOtrProfile();
+                return profile.hasPrimaryOTRProfile();
             }
         };
     }

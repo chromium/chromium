@@ -61,7 +61,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
                         Profile originalProfile = getOriginalProfile();
                         OtrProfileId otrProfileId = getOrCreateOtrProfileId();
                         return otrProfileId == null
-                                ? originalProfile.getPrimaryOtrProfile(createIfNeeded)
+                                ? originalProfile.getPrimaryOTRProfile(createIfNeeded)
                                 : originalProfile.getOffTheRecordProfile(
                                         otrProfileId, createIfNeeded);
                     }
@@ -71,7 +71,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
                         Profile originalProfile = getOriginalProfile();
                         OtrProfileId otrProfileId = getOrCreateOtrProfileId();
                         return otrProfileId == null
-                                ? originalProfile.hasPrimaryOtrProfile()
+                                ? originalProfile.hasPrimaryOTRProfile()
                                 : originalProfile.hasOffTheRecordProfile(otrProfileId);
                     }
                 });

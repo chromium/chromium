@@ -231,7 +231,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mOfflinePageBridge);
@@ -245,7 +245,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
                 });
         OfflinePageBridge offlinePageBridgeRetrievedByKey = getBridgeForProfileKey();
         Assert.assertNull(offlinePageBridgeRetrievedByKey);
@@ -262,7 +262,7 @@ public class OfflinePageBridgeTest {
                                     .getOffTheRecordProfile(
                                             otrProfileId, /* createIfNeeded= */ true);
                     Assert.assertTrue(mProfile.isOffTheRecord());
-                    Assert.assertFalse(mProfile.isPrimaryOtrProfile());
+                    Assert.assertFalse(mProfile.isPrimaryOTRProfile());
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mOfflinePageBridge);
@@ -279,7 +279,7 @@ public class OfflinePageBridgeTest {
                                     .getOffTheRecordProfile(
                                             otrProfileId, /* createIfNeeded= */ true);
                     Assert.assertTrue(mProfile.isOffTheRecord());
-                    Assert.assertFalse(mProfile.isPrimaryOtrProfile());
+                    Assert.assertFalse(mProfile.isPrimaryOTRProfile());
                 });
         OfflinePageBridge offlinePageBridgeRetrievedByKey = getBridgeForProfileKey();
         Assert.assertNull(offlinePageBridgeRetrievedByKey);

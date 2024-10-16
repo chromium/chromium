@@ -58,7 +58,7 @@ public class CookiesFetcherTest {
     public void setUp() {
         Mockito.when(mProfile1.getOriginalProfile()).thenReturn(mProfile1);
         Mockito.when(mIncognitoProfile1.getOriginalProfile()).thenReturn(mProfile1);
-        Mockito.when(mIncognitoProfile1.isPrimaryOtrProfile()).thenReturn(true);
+        Mockito.when(mIncognitoProfile1.isPrimaryOTRProfile()).thenReturn(true);
 
         jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
 

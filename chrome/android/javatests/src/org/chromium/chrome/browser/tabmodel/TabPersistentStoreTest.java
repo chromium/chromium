@@ -468,7 +468,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
 
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
@@ -598,7 +598,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabCreator regularCreator = mockManager.getTabCreator(false);
@@ -906,7 +906,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
 
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
@@ -999,7 +999,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
 
         MockTabCreatorManager firstManager = new MockTabCreatorManager(firstSelector);
@@ -1027,7 +1027,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
 
         MockTabCreatorManager secondManager = new MockTabCreatorManager(secondSelector);
@@ -1106,7 +1106,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
 
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
@@ -1165,7 +1165,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
@@ -1212,7 +1212,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         final MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
@@ -1292,7 +1292,7 @@ public class TabPersistentStoreTest {
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return new MockTabModelSelector(
-                                    profile, profile.getPrimaryOtrProfile(true), 0, 0, null);
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
                         });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();

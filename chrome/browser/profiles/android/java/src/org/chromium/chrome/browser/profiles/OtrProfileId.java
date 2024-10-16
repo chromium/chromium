@@ -107,7 +107,7 @@ public class OtrProfileId {
         return otrProfileId;
     }
 
-    public boolean isPrimaryOtrId() {
+    public boolean isPrimaryOTRId() {
         return this.equals(sPrimaryOtrProfileId);
     }
 

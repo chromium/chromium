@@ -53,23 +53,23 @@ public class OtrProfileIdTest {
 
     @Test
     @MediumTest
-    public void testOtrProfileIdForPrimaryOtrProfile() {
+    public void testOtrProfileIdForPrimaryOTRProfile() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
 
                     // OtrProfileId should not be null for primary OTR profile and it should be the
                     // id of primary OTR profile.
                     assert profile.getOtrProfileId() != null;
-                    assert profile.getOtrProfileId().isPrimaryOtrId();
+                    assert profile.getOtrProfileId().isPrimaryOTRId();
                 });
     }
 
     @Test
     @MediumTest
-    public void testOtrProfileIdForNonPrimaryOtrProfile() {
+    public void testOtrProfileIdForNonPrimaryOTRProfile() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OtrProfileId otrProfileId = new OtrProfileId(TEST_OTR_PROFILE_ID_ONE);
@@ -81,7 +81,7 @@ public class OtrProfileIdTest {
                     // OtrProfileId should not be null for non-primary OTR profile and it should not
                     // be the id of primary OTR profile.
                     assert profile.getOtrProfileId() != null;
-                    assert !profile.getOtrProfileId().isPrimaryOtrId();
+                    assert !profile.getOtrProfileId().isPrimaryOTRId();
                 });
     }
 

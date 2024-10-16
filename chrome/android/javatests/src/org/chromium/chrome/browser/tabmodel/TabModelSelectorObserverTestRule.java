@@ -146,7 +146,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         mIncognitoTabModel =
                 new TabModelSelectorTestIncognitoTabModel(
                         ProfileManager.getLastUsedRegularProfile()
-                                .getPrimaryOtrProfile(/* createIfNeeded= */ true),
+                                .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                         orderController,
                         tabContentManager,
                         nextTabPolicySupplier,
@@ -218,7 +218,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 TabModelDelegate modelDelegate) {
             super(
                     ProfileManager.getLastUsedRegularProfile()
-                            .getPrimaryOtrProfile(/* createIfNeeded= */ true),
+                            .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                     orderController,
                     tabContentManager,
                     nextTabPolicySupplier,
