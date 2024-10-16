@@ -363,12 +363,12 @@ void PickerView::SelectZeroStateCategory(PickerCategory category) {
   SelectCategory(category);
 }
 
-void PickerView::SelectZeroStateResult(const PickerSearchResult& result) {
+void PickerView::SelectZeroStateResult(const QuickInsertSearchResult& result) {
   SelectSearchResult(result);
 }
 
 PickerActionType PickerView::GetActionForResult(
-    const PickerSearchResult& result) {
+    const QuickInsertSearchResult& result) {
   return delegate_->GetActionForResult(result);
 }
 
@@ -404,7 +404,7 @@ void PickerView::SetCapsLockDisplayed(bool displayed) {
   delegate_->GetSessionMetrics().SetCapsLockDisplayed(displayed);
 }
 
-void PickerView::SelectSearchResult(const PickerSearchResult& result) {
+void PickerView::SelectSearchResult(const QuickInsertSearchResult& result) {
   if (const PickerCategoryResult* category_data =
           std::get_if<PickerCategoryResult>(&result)) {
     SelectCategory(category_data->category);

@@ -47,8 +47,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void StartEmojiSearch(std::u16string_view query,
                         EmojiSearchResultsCallback callback) override {}
   void CloseWidgetThenInsertResultOnNextFocus(
-      const PickerSearchResult& result) override {}
-  void OpenResult(const PickerSearchResult& result) override {}
+      const QuickInsertSearchResult& result) override {}
+  void OpenResult(const QuickInsertSearchResult& result) override {}
   void ShowEmojiPicker(ui::EmojiPickerCategory category,
                        std::u16string_view query) override {}
   void ShowEditor(std::optional<std::string> preset_query_id,
@@ -59,7 +59,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return session_metrics_;
   }
   PickerActionType GetActionForResult(
-      const PickerSearchResult& result) override {
+      const QuickInsertSearchResult& result) override {
     return PickerActionType::kInsert;
   }
   std::vector<PickerEmojiResult> GetSuggestedEmoji() override { return {}; }

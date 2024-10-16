@@ -44,14 +44,14 @@ bool IsMatch(const string_matching::TokenizedString& query,
 
 }  // namespace
 
-std::vector<PickerSearchResult> PickerActionSearch(
+std::vector<QuickInsertSearchResult> PickerActionSearch(
     const PickerActionSearchOptions& options,
     std::u16string_view query) {
   CHECK(!query.empty());
   string_matching::TokenizedString tokenized_query((std::u16string(query)));
 
   // TODO: b/349494170 - Speed this up by pretokenizing the search terms.
-  std::vector<PickerSearchResult> matches;
+  std::vector<QuickInsertSearchResult> matches;
   for (const PickerCategory category : options.available_categories) {
     if (IsMatch(tokenized_query, GetLabelForPickerCategory(category))) {
       matches.push_back(PickerCategoryResult(category));

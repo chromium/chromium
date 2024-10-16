@@ -750,7 +750,7 @@ TEST_F(QuickInsertSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
 
 struct QuickInsertSearchResultTestCase {
   std::string test_name;
-  PickerSearchResult result;
+  QuickInsertSearchResult result;
 };
 
 class QuickInsertSearchResultsViewResultSelectionTest

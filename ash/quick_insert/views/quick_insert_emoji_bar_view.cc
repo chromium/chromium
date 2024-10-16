@@ -340,7 +340,8 @@ size_t PickerEmojiBarView::GetNumItems() const {
   return item_row_->children().size();
 }
 
-void PickerEmojiBarView::SelectSearchResult(const PickerSearchResult& result) {
+void PickerEmojiBarView::SelectSearchResult(
+    const QuickInsertSearchResult& result) {
   delegate_->SelectSearchResult(result);
 }
 

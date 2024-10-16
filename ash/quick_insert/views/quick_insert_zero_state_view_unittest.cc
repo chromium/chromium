@@ -99,7 +99,7 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
   MOCK_METHOD(void, SelectZeroStateCategory, (PickerCategory), (override));
   MOCK_METHOD(void,
               SelectZeroStateResult,
-              (const PickerSearchResult&),
+              (const QuickInsertSearchResult&),
               (override));
   MOCK_METHOD(void,
               GetZeroStateSuggestedResults,
@@ -108,7 +108,7 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
   MOCK_METHOD(void, RequestPseudoFocus, (views::View*), (override));
   MOCK_METHOD(PickerActionType,
               GetActionForResult,
-              (const PickerSearchResult& result),
+              (const QuickInsertSearchResult& result),
               (override));
   MOCK_METHOD(void, OnZeroStateViewHeightChanged, (), (override));
   MOCK_METHOD(PickerCapsLockPosition, GetCapsLockPosition, (), (override));
@@ -185,7 +185,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  base::test::TestFuture<const PickerSearchResult&> future;
+  base::test::TestFuture<const QuickInsertSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
       &submenu_controller_, &preview_controller_));
@@ -321,7 +321,7 @@ TEST_F(QuickInsertZeroStateViewTest,
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  base::test::TestFuture<const PickerSearchResult&> future;
+  base::test::TestFuture<const QuickInsertSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate,
       std::vector<PickerCategory>{PickerCategory::kDatesTimes,
@@ -362,7 +362,7 @@ TEST_F(QuickInsertZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  base::test::TestFuture<const PickerSearchResult&> future;
+  base::test::TestFuture<const QuickInsertSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate,
       std::vector<PickerCategory>{PickerCategory::kDatesTimes,

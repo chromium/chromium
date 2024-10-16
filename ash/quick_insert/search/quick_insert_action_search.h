@@ -22,7 +22,7 @@ struct PickerActionSearchOptions {
   bool search_case_transforms = false;
 };
 
-ASH_EXPORT std::vector<PickerSearchResult> PickerActionSearch(
+ASH_EXPORT std::vector<QuickInsertSearchResult> PickerActionSearch(
     const PickerActionSearchOptions& options,
     std::u16string_view query);
 

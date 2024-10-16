@@ -90,7 +90,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void ShowLoadingAnimation();
 
   // Returns the index of `inserted_result` in the search result list.
-  int GetIndex(const PickerSearchResult& inserted_result);
+  int GetIndex(const QuickInsertSearchResult& inserted_result);
 
   // Sets the number of emoji results for accessibility.
   void SetNumEmojiResultsForA11y(size_t num_emoji_results);
@@ -120,10 +120,10 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Runs `select_search_result_callback_` on `result`. Note that only one
   // result can be selected (and subsequently calling this method will do
   // nothing).
-  void SelectSearchResult(const PickerSearchResult& result);
+  void SelectSearchResult(const QuickInsertSearchResult& result);
 
   // Adds a result item view to `section_view` based on what type `result` is.
-  void AddResultToSection(const PickerSearchResult& result,
+  void AddResultToSection(const QuickInsertSearchResult& result,
                           QuickInsertSectionView* section_view);
 
   void OnTrailingLinkClicked(PickerSectionType section_type,
@@ -144,7 +144,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   std::vector<raw_ptr<QuickInsertSectionView>> section_views_;
 
   // Used to calculate the index of the inserted result.
-  std::vector<PickerSearchResult> top_results_;
+  std::vector<QuickInsertSearchResult> top_results_;
 
   // A view for when there are no results.
   raw_ptr<views::View> no_results_view_ = nullptr;

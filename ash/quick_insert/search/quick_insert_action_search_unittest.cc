@@ -27,7 +27,7 @@ using CaseTransformType = PickerCaseTransformResult::Type;
 struct TestCase {
   PickerActionSearchOptions options;
   std::u16string query;
-  std::vector<PickerSearchResult> expected_results;
+  std::vector<QuickInsertSearchResult> expected_results;
 };
 
 class QuickInsertActionSearchTest : public testing::TestWithParam<TestCase> {};

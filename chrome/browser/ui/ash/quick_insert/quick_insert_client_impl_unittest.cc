@@ -354,7 +354,7 @@ TEST_F(QuickInsertClientImplTest, IgnoresWhatYouTypedResults) {
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
 
   client.GetRecentLocalFileResults(
       /*max_files=*/100, /*now_delta=*/base::Days(30), future.GetCallback());
@@ -365,7 +365,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesWithNoFiles) {
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
       profile(),
@@ -400,7 +400,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   SetRecentFiles(
       profile(),
       {
@@ -425,7 +425,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
 
   client.GetRecentDriveFileResults(/*max_files=*/100, future.GetCallback());
 
@@ -435,7 +435,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesWithNoFiles) {
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
       profile(),
@@ -471,7 +471,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   SetRecentFiles(
       profile(),
       {
@@ -496,7 +496,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesTruncates) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
       profile(),
@@ -522,7 +522,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesTruncates) {
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesTruncates) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
       profile(),
@@ -555,7 +555,7 @@ TEST_F(QuickInsertClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   client.get_link_suggester_for_test()->set_favicon_service_for_test(
       &favicon_service);
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Get(),
@@ -580,7 +580,7 @@ TEST_F(QuickInsertClientImplTest,
   client.get_link_suggester_for_test()->set_favicon_service_for_test(
       &favicon_service);
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   client.GetSuggestedLinkResults(1u, future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Get(),
@@ -605,7 +605,7 @@ TEST_F(QuickInsertClientImplTest,
   client.get_link_suggester_for_test()->set_favicon_service_for_test(
       &favicon_service);
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Get(),
@@ -624,12 +624,13 @@ TEST_F(QuickInsertClientImplTest,
   client.StartCrosSearch(u"foo", /*category=*/std::nullopt, base::DoNothing());
   SwitchActiveUser("secondary@test");
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> result_future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>>
+      result_future;
   client.StartCrosSearch(
       u"foo", /*category=*/std::nullopt,
       base::BindLambdaForTesting(
           [&result_future](ash::AppListSearchResultType result_type,
-                           std::vector<ash::PickerSearchResult> results) {
+                           std::vector<ash::QuickInsertSearchResult> results) {
             if (result_type == ash::AppListSearchResultType::kOmnibox) {
               result_future.SetValue(std::move(results));
             }
@@ -656,12 +657,13 @@ TEST_F(QuickInsertClientImplTest,
                          base::DoNothing());
   SwitchActiveUser("secondary@test");
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> result_future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>>
+      result_future;
   client.StartCrosSearch(
       u"foo", ash::PickerCategory::kLinks,
       base::BindLambdaForTesting(
           [&result_future](ash::AppListSearchResultType result_type,
-                           std::vector<ash::PickerSearchResult> results) {
+                           std::vector<ash::QuickInsertSearchResult> results) {
             if (result_type == ash::AppListSearchResultType::kOmnibox) {
               result_future.SetValue(std::move(results));
             }
@@ -797,7 +799,7 @@ TEST_F(QuickInsertClientImplEditorTest, GetSuggestedEditorResults) {
                                             {.type = ui::TEXT_INPUT_TYPE_TEXT});
   text_input_client.Focus();
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   client.GetSuggestedEditorResults(future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
@@ -816,7 +818,7 @@ TEST_F(QuickInsertClientImplEditorTest,
                                             {.type = ui::TEXT_INPUT_TYPE_TEXT});
   text_input_client.Focus();
 
-  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   client.GetSuggestedEditorResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());

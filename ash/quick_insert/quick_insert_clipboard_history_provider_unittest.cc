@@ -57,7 +57,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesTextResult) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(),
@@ -88,7 +88,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesImageResult) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
   EXPECT_THAT(
@@ -118,7 +118,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesSingleFileResult) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(),
@@ -150,7 +150,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesMultipleFileResults) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(),
@@ -179,7 +179,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
   clock.SetNow(base::Time::Now());
   clock.Advance(base::Hours(1));
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"");
 
   EXPECT_THAT(future.Get(),
@@ -207,7 +207,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiletersResultByQuery) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"123");
 
   EXPECT_THAT(future.Get(),
@@ -230,7 +230,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutHtmlResults) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"123");
 
   EXPECT_THAT(future.Get(), IsEmpty());
@@ -252,7 +252,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutLongResults) {
   PickerClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"a");
 
   EXPECT_THAT(future.Get(), IsEmpty());

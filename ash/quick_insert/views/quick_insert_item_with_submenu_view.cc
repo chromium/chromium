@@ -107,7 +107,7 @@ void PickerItemWithSubmenuView::SetText(const std::u16string& primary_text) {
   SetAccessibleName(primary_text);
 }
 
-void PickerItemWithSubmenuView::AddEntry(PickerSearchResult result,
+void PickerItemWithSubmenuView::AddEntry(QuickInsertSearchResult result,
                                          SelectItemCallback callback) {
   entries_.emplace_back(std::move(result), std::move(callback));
 }

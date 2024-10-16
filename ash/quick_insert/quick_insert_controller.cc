@@ -144,7 +144,7 @@ using InsertionContent =
     std::variant<PickerRichMedia, PickerClipboardResult, std::monostate>;
 
 InsertionContent GetInsertionContentForResult(
-    const PickerSearchResult& result) {
+    const QuickInsertSearchResult& result) {
   using ReturnType = InsertionContent;
   return std::visit(
       base::Overloaded{
@@ -195,7 +195,7 @@ InsertionContent GetInsertionContentForResult(
 
 std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
     PickerSectionType section_type,
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   if (results.empty()) {
     return {};
   }
@@ -363,7 +363,7 @@ void PickerController::StartEmojiSearch(std::u16string_view query,
 }
 
 void PickerController::CloseWidgetThenInsertResultOnNextFocus(
-    const PickerSearchResult& result) {
+    const QuickInsertSearchResult& result) {
   InsertResultOnNextFocus(result);
 
   client_->Announce(
@@ -379,7 +379,7 @@ void PickerController::CloseWidgetThenInsertResultOnNextFocus(
   }
 }
 
-void PickerController::OpenResult(const PickerSearchResult& result) {
+void PickerController::OpenResult(const QuickInsertSearchResult& result) {
   return std::visit(
       base::Overloaded{
           [](const PickerTextResult& data) { NOTREACHED(); },
@@ -477,7 +477,7 @@ PickerSessionMetrics& PickerController::GetSessionMetrics() {
 }
 
 PickerActionType PickerController::GetActionForResult(
-    const PickerSearchResult& result) {
+    const QuickInsertSearchResult& result) {
   CHECK(session_);
   const PickerModeType mode = session_->model.GetMode();
   return std::visit(
@@ -663,7 +663,7 @@ std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
 }
 
 void PickerController::InsertResultOnNextFocus(
-    const PickerSearchResult& result) {
+    const QuickInsertSearchResult& result) {
   if (!widget_) {
     return;
   }

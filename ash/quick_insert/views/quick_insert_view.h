@@ -92,7 +92,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // PickerZeroStateViewDelegate:
   void SelectZeroStateCategory(PickerCategory category) override;
-  void SelectZeroStateResult(const PickerSearchResult& result) override;
+  void SelectZeroStateResult(const QuickInsertSearchResult& result) override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
   void OnZeroStateViewHeightChanged() override;
@@ -100,10 +100,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerCapsLockPosition GetCapsLockPosition() override;
 
   // PickerSearchResultsViewDelegate:
-  void SelectSearchResult(const PickerSearchResult& result) override;
+  void SelectSearchResult(const QuickInsertSearchResult& result) override;
   void SelectMoreResults(PickerSectionType type) override;
   PickerActionType GetActionForResult(
-      const PickerSearchResult& result) override;
+      const QuickInsertSearchResult& result) override;
   void OnSearchResultsViewHeightChanged() override;
 
   // PickerEmojiBarViewDelegate:

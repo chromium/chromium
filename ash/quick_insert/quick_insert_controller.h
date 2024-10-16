@@ -123,8 +123,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void StartEmojiSearch(std::u16string_view,
                         EmojiSearchResultsCallback callback) override;
   void CloseWidgetThenInsertResultOnNextFocus(
-      const PickerSearchResult& result) override;
-  void OpenResult(const PickerSearchResult& result) override;
+      const QuickInsertSearchResult& result) override;
+  void OpenResult(const QuickInsertSearchResult& result) override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category,
                        std::u16string_view query) override;
   void ShowEditor(std::optional<std::string> preset_query_id,
@@ -133,7 +133,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerAssetFetcher* GetAssetFetcher() override;
   PickerSessionMetrics& GetSessionMetrics() override;
   PickerActionType GetActionForResult(
-      const PickerSearchResult& result) override;
+      const QuickInsertSearchResult& result) override;
   std::vector<PickerEmojiResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
   PickerModeType GetMode() override;
@@ -186,7 +186,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                   WidgetTriggerSource trigger_source);
   void CloseWidget();
   void ShowWidgetPostFeatureTour();
-  void InsertResultOnNextFocus(const PickerSearchResult& result);
+  void InsertResultOnNextFocus(const QuickInsertSearchResult& result);
   void OnInsertCompleted(const PickerRichMedia& media,
                          PickerInsertMediaRequest::Result result);
   PrefService* GetPrefs();

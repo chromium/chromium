@@ -28,9 +28,9 @@ constexpr base::TimeDelta kMaxLocalFileCategoryRecencyDelta = base::Days(3652);
 PickerSuggestionsController::PickerSuggestionsController() = default;
 PickerSuggestionsController::~PickerSuggestionsController() = default;
 
-std::vector<PickerSearchResult> GetMostRecentResults(
+std::vector<QuickInsertSearchResult> GetMostRecentResults(
     size_t n,
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   if (results.size() > n) {
     results.erase(results.begin() + n, results.end());
   }
@@ -41,7 +41,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
                                                  const QuickInsertModel& model,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
-    std::vector<PickerSearchResult> new_window_results;
+    std::vector<QuickInsertSearchResult> new_window_results;
     for (PickerNewWindowResult::Type type : {
              PickerNewWindowResult::Type::kDoc,
              PickerNewWindowResult::Type::kSheet,
@@ -71,7 +71,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
   }
 
   if (model.GetMode() == PickerModeType::kHasSelection) {
-    std::vector<PickerSearchResult> case_transform_results;
+    std::vector<QuickInsertSearchResult> case_transform_results;
     for (PickerCaseTransformResult::Type type : {
              PickerCaseTransformResult::Type::kUpperCase,
              PickerCaseTransformResult::Type::kLowerCase,

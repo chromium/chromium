@@ -52,7 +52,7 @@ class MockEmojiBarViewDelegate : public PickerEmojiBarViewDelegate {
  public:
   MOCK_METHOD(void,
               SelectSearchResult,
-              (const PickerSearchResult&),
+              (const QuickInsertSearchResult&),
               (override));
   MOCK_METHOD(void, ToggleGifs, (), (override));
   MOCK_METHOD(void, ShowEmojiPicker, (ui::EmojiPickerCategory), (override));

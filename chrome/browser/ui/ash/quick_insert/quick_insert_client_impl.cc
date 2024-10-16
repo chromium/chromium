@@ -123,9 +123,10 @@ AppListControllerDelegate* GetEmptyAppListControllerDelegate() {
   return delegate.get();
 }
 
-std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
+std::vector<ash::QuickInsertSearchResult>
+CreateSearchResultsForRecentLocalImages(
     std::vector<PickerFileSuggester::LocalFile> files) {
-  std::vector<ash::PickerSearchResult> results;
+  std::vector<ash::QuickInsertSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::LocalFile& file : files) {
     results.push_back(ash::PickerLocalFileResult(std::move(file.title),
@@ -134,9 +135,10 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
   return results;
 }
 
-std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
+std::vector<ash::QuickInsertSearchResult>
+CreateSearchResultsForRecentDriveFiles(
     std::vector<PickerFileSuggester::DriveFile> files) {
-  std::vector<ash::PickerSearchResult> results;
+  std::vector<ash::QuickInsertSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::DriveFile& file : files) {
     results.push_back(
@@ -160,9 +162,9 @@ std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
       std::vector<std::string>{".jpg", ".jpeg", ".png", ".gif", ".webp"});
 }
 
-std::vector<ash::PickerSearchResult> ConvertSearchResults(
+std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
     std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-  std::vector<ash::PickerSearchResult> picker_results;
+  std::vector<ash::QuickInsertSearchResult> picker_results;
   picker_results.reserve(results.size());
 
   for (const std::unique_ptr<ChromeSearchResult>& result : results) {
@@ -247,9 +249,9 @@ chromeos::editor_menu::PresetQueryCategory FromMojoPresetQueryCategory(
   }
 }
 
-std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
+std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromPanelContext(
     crosapi::mojom::EditorPanelContextPtr panel_context) {
-  std::vector<ash::PickerSearchResult> results;
+  std::vector<ash::QuickInsertSearchResult> results;
   for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
        panel_context->preset_text_queries) {
     results.push_back(ash::PickerEditorResult(

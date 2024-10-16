@@ -72,7 +72,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
  private:
   void OnCategorySelected(PickerCategory category);
-  void OnResultSelected(const PickerSearchResult& result);
+  void OnResultSelected(const QuickInsertSearchResult& result);
   void RecordCapsLockIgnored(bool ignored);
 
   // Gets or creates the category type section for `category_type`.
@@ -82,8 +82,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // Gets or creates the category type section to contain `category`.
   QuickInsertSectionView* GetOrCreateSectionView(PickerCategory category);
 
-  void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
-  void AddResultToSection(const PickerSearchResult& result,
+  void OnFetchSuggestedResults(std::vector<QuickInsertSearchResult> result);
+  void AddResultToSection(const QuickInsertSearchResult& result,
                           QuickInsertSectionView* section);
 
   raw_ptr<PickerZeroStateViewDelegate> delegate_;

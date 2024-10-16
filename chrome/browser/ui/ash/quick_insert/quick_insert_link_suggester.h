@@ -32,7 +32,7 @@ class URLResult;
 class PickerLinkSuggester {
  public:
   using SuggestedLinksCallback =
-      base::RepeatingCallback<void(std::vector<ash::PickerSearchResult>)>;
+      base::RepeatingCallback<void(std::vector<ash::QuickInsertSearchResult>)>;
 
   explicit PickerLinkSuggester(Profile* profile);
   ~PickerLinkSuggester();
@@ -50,14 +50,14 @@ class PickerLinkSuggester {
                             history::QueryResults results);
   void OnGetFaviconImage(
       history::URLResult result,
-      base::OnceCallback<void(ash::PickerSearchResult)> callback,
+      base::OnceCallback<void(ash::QuickInsertSearchResult)> callback,
       const favicon_base::FaviconImageResult& favicon_image_result);
 
   raw_ptr<history::HistoryService> history_service_;
   base::CancelableTaskTracker history_query_tracker_;
   raw_ptr<favicon::FaviconService> favicon_service_;
   std::vector<base::CancelableTaskTracker> favicon_query_trackers_;
-  std::vector<ash::PickerSearchResult> suggested_links_;
+  std::vector<ash::QuickInsertSearchResult> suggested_links_;
 
   base::WeakPtrFactory<PickerLinkSuggester> weak_factory_{this};
 };

@@ -20,12 +20,12 @@ class ASH_EXPORT MockPickerSearchResultsViewDelegate
   MOCK_METHOD(void, SelectMoreResults, (PickerSectionType), (override));
   MOCK_METHOD(void,
               SelectSearchResult,
-              (const PickerSearchResult&),
+              (const QuickInsertSearchResult&),
               (override));
   MOCK_METHOD(void, RequestPseudoFocus, (views::View*), (override));
   MOCK_METHOD(PickerActionType,
               GetActionForResult,
-              (const PickerSearchResult& result),
+              (const QuickInsertSearchResult& result),
               (override));
   MOCK_METHOD(void, OnSearchResultsViewHeightChanged, (), (override));
 };

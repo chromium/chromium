@@ -14,7 +14,7 @@
 namespace ash {
 
 // `query` must not be empty.
-ASH_EXPORT std::optional<PickerSearchResult> PickerLobsterSearch(
+ASH_EXPORT std::optional<QuickInsertSearchResult> PickerLobsterSearch(
     std::u16string_view query);
 
 }  // namespace ash

@@ -76,7 +76,7 @@ void PickerClipboardHistoryProvider::OnFetchHistory(
     OnFetchResultsCallback callback,
     std::u16string query,
     std::vector<ClipboardHistoryItem> items) {
-  std::vector<PickerSearchResult> results;
+  std::vector<QuickInsertSearchResult> results;
   for (const auto& item : items) {
     if (!MatchQuery(item, query)) {
       continue;

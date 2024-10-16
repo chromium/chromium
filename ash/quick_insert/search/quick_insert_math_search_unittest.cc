@@ -33,7 +33,7 @@ TEST(QuickInsertMathSearchTest, OnePlusOneEqualsTwo) {
 }
 
 TEST(QuickInsertMathSearchTest, ReturnsExamples) {
-  std::vector<PickerSearchResult> results = PickerMathExamples();
+  std::vector<QuickInsertSearchResult> results = PickerMathExamples();
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,

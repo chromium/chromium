@@ -17,7 +17,7 @@ namespace ash {
 // Delegate for `PickerEmojiBarView`.
 class ASH_EXPORT PickerEmojiBarViewDelegate {
  public:
-  virtual void SelectSearchResult(const PickerSearchResult& result) = 0;
+  virtual void SelectSearchResult(const QuickInsertSearchResult& result) = 0;
 
   virtual void ToggleGifs() = 0;
 

@@ -63,7 +63,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenSelectedTextReturnsEditorRewriteResults) {
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
-      .WillRepeatedly(RunCallbackArgWith(std::vector<PickerSearchResult>{
+      .WillRepeatedly(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
           PickerEditorResult(PickerEditorResult::Mode::kRewrite, u"", {}, {}),
       }));
   PickerSuggestionsController controller;
@@ -224,7 +224,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
               PickerBrowsingHistoryResult(GURL("a.com"), u"a",
                                           /*icon=*/{}),
               PickerBrowsingHistoryResult(GURL("b.com"), u"b",
@@ -232,7 +232,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           })));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
               PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
                                     /*file_path=*/{}),
               PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
@@ -240,7 +240,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           })));
   EXPECT_CALL(client, GetRecentLocalFileResults(1, _, _))
       .WillRepeatedly(
-          WithArg<2>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<2>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
               PickerLocalFileResult(u"a", /*file_path=*/{}),
               PickerLocalFileResult(u"b", /*file_path=*/{}),
           })));
@@ -269,7 +269,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
               PickerBrowsingHistoryResult(GURL("a.com"), u"a",
                                           /*icon=*/{}),
               PickerBrowsingHistoryResult(GURL("b.com"), u"b",
@@ -277,7 +277,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           })));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
               PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
                                     /*file_path=*/{}),
               PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
@@ -285,7 +285,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           })));
   EXPECT_CALL(client, GetRecentLocalFileResults(3, _, _))
       .WillRepeatedly(
-          WithArg<2>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+          WithArg<2>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
               PickerLocalFileResult(u"a", /*file_path=*/{}),
               PickerLocalFileResult(u"b", /*file_path=*/{}),
               PickerLocalFileResult(u"c", /*file_path=*/{}),
@@ -313,7 +313,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 }
 
 TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
-  const std::vector<PickerSearchResult> suggested_links = {
+  const std::vector<QuickInsertSearchResult> suggested_links = {
       PickerBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
       PickerBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
   };
@@ -322,7 +322,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
       .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_links)));
   PickerSuggestionsController controller;
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, PickerCategory::kLinks,
                                        future.GetRepeatingCallback());
 
@@ -331,7 +331,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForDriveFileCategory) {
-  const std::vector<PickerSearchResult> suggested_files = {
+  const std::vector<QuickInsertSearchResult> suggested_files = {
       PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
                             /*file_path=*/{}),
       PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
@@ -342,7 +342,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
       .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_files)));
   PickerSuggestionsController controller;
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, PickerCategory::kDriveFiles,
                                        future.GetRepeatingCallback());
 
@@ -351,7 +351,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForLocalFileCategory) {
-  const std::vector<PickerSearchResult> suggested_files = {
+  const std::vector<QuickInsertSearchResult> suggested_files = {
       PickerLocalFileResult(u"a", /*file_path=*/{}),
       PickerLocalFileResult(u"b", /*file_path=*/{}),
   };
@@ -360,7 +360,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
       .WillRepeatedly(WithArg<2>(RunCallbackArgWith(suggested_files)));
   PickerSuggestionsController controller;
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, PickerCategory::kLocalFiles,
                                        future.GetRepeatingCallback());
 
@@ -372,7 +372,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, PickerCategory::kDatesTimes,
                                        future.GetRepeatingCallback());
 
@@ -384,7 +384,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, PickerCategory::kUnitsMaths,
                                        future.GetRepeatingCallback());
 
@@ -405,7 +405,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, PickerCategory::kClipboard,
                                        future.GetRepeatingCallback());
 

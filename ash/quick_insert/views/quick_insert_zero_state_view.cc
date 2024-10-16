@@ -210,12 +210,14 @@ void PickerZeroStateView::OnCategorySelected(PickerCategory category) {
   delegate_->SelectZeroStateCategory(category);
 }
 
-void PickerZeroStateView::OnResultSelected(const PickerSearchResult& result) {
+void PickerZeroStateView::OnResultSelected(
+    const QuickInsertSearchResult& result) {
   delegate_->SelectZeroStateResult(result);
 }
 
-void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
-                                             QuickInsertSectionView* section) {
+void PickerZeroStateView::AddResultToSection(
+    const QuickInsertSearchResult& result,
+    QuickInsertSectionView* section) {
   QuickInsertItemView* view = section->AddResult(
       result, preview_controller_,
       base::FeatureList::IsEnabled(ash::features::kPickerGrid)
@@ -234,7 +236,7 @@ void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
 }
 
 void PickerZeroStateView::OnFetchSuggestedResults(
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   if (results.empty()) {
     return;
   }
@@ -256,7 +258,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   std::unique_ptr<PickerItemWithSubmenuView> tone_submenu;
   std::unique_ptr<PickerItemWithSubmenuView> case_transform_submenu;
 
-  for (const PickerSearchResult& result : results) {
+  for (const QuickInsertSearchResult& result : results) {
     if (std::holds_alternative<PickerCapsLockResult>(result)) {
       delegate_->SetCapsLockDisplayed(true);
       switch (delegate_->GetCapsLockPosition()) {

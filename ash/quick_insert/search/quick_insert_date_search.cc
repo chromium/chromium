@@ -84,7 +84,7 @@ struct ResolvedDate {
   std::optional<std::u16string> disambiguation_text;
 };
 
-PickerSearchResult MakeResult(const ResolvedDate& date) {
+QuickInsertSearchResult MakeResult(const ResolvedDate& date) {
   return PickerTextResult(
       base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
       date.disambiguation_text.value_or(u""),
@@ -93,8 +93,8 @@ PickerSearchResult MakeResult(const ResolvedDate& date) {
       PickerTextResult::Source::kDate);
 }
 
-PickerSearchResult MakeSuggestedResult(std::u16string_view query_text,
-                                       const ResolvedDate& date) {
+QuickInsertSearchResult MakeSuggestedResult(std::u16string_view query_text,
+                                            const ResolvedDate& date) {
   CHECK(!date.disambiguation_text.has_value());
   return PickerSearchRequestResult(
       query_text, base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
@@ -226,10 +226,11 @@ std::vector<ResolvedDate> ResolveQuery(const base::Time& now,
 
 }  // namespace
 
-std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
-                                                 std::u16string_view query) {
+std::vector<QuickInsertSearchResult> PickerDateSearch(
+    const base::Time& now,
+    std::u16string_view query) {
   std::vector<ResolvedDate> resolved_dates = ResolveQuery(now, query);
-  std::vector<PickerSearchResult> results;
+  std::vector<QuickInsertSearchResult> results;
   results.reserve(resolved_dates.size());
   for (const ResolvedDate& resolved_date : resolved_dates) {
     results.push_back(MakeResult(resolved_date));
@@ -237,8 +238,8 @@ std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
   return results;
 }
 
-std::vector<PickerSearchResult> PickerSuggestedDateResults() {
-  std::vector<PickerSearchResult> results;
+std::vector<QuickInsertSearchResult> PickerSuggestedDateResults() {
+  std::vector<QuickInsertSearchResult> results;
 
   for (const std::u16string_view query : kSuggestedDates) {
     std::vector<ResolvedDate> resolved_dates =

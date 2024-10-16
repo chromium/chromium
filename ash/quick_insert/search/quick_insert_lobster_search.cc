@@ -13,7 +13,7 @@
 
 namespace ash {
 
-std::optional<PickerSearchResult> PickerLobsterSearch(
+std::optional<QuickInsertSearchResult> PickerLobsterSearch(
     std::u16string_view query) {
   CHECK(!query.empty());
   // TODO: b/369508495 - implement matching logic.

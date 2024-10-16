@@ -176,7 +176,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   struct Options {
     std::vector<PickerCategory> available_categories;
-    std::vector<PickerSearchResult> zero_state_suggested_results;
+    std::vector<QuickInsertSearchResult> zero_state_suggested_results;
     FakeSearchFunction search_function;
     base::RepeatingClosure stop_search_function;
     FakeCategorySearchFunction category_results_function;
@@ -233,12 +233,12 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   }
 
   void CloseWidgetThenInsertResultOnNextFocus(
-      const PickerSearchResult& result) override {
+      const QuickInsertSearchResult& result) override {
     last_inserted_result_ = result;
     session_metrics_.SetOutcome(
         PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
   }
-  void OpenResult(const PickerSearchResult& result) override {
+  void OpenResult(const QuickInsertSearchResult& result) override {
     last_opened_result_ = result;
   }
 
@@ -261,7 +261,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return session_metrics_;
   }
   PickerActionType GetActionForResult(
-      const PickerSearchResult& result) override {
+      const QuickInsertSearchResult& result) override {
     return options_.action_type;
   }
 
@@ -280,10 +280,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return PickerCapsLockPosition::kTop;
   }
 
-  std::optional<PickerSearchResult> last_inserted_result() const {
+  std::optional<QuickInsertSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }
-  std::optional<PickerSearchResult> last_opened_result() const {
+  std::optional<QuickInsertSearchResult> last_opened_result() const {
     return last_opened_result_;
   }
 
@@ -303,8 +303,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   Options options_;
   MockPickerAssetFetcher asset_fetcher_;
   PickerSessionMetrics session_metrics_;
-  std::optional<PickerSearchResult> last_inserted_result_;
-  std::optional<PickerSearchResult> last_opened_result_;
+  std::optional<QuickInsertSearchResult> last_inserted_result_;
+  std::optional<QuickInsertSearchResult> last_opened_result_;
   std::optional<ui::EmojiPickerCategory> emoji_picker_category_;
   std::optional<std::u16string> emoji_picker_query_;
   bool showed_editor_ = false;
@@ -353,7 +353,7 @@ TEST_F(QuickInsertViewTest, SizeIsMaxWhenLotsOfContentWithoutEmojiBar) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
       .zero_state_suggested_results =
-          std::vector<PickerSearchResult>(10, PickerTextResult(u"abc")),
+          std::vector<QuickInsertSearchResult>(10, PickerTextResult(u"abc")),
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -366,7 +366,7 @@ TEST_P(QuickInsertViewEmojiTest, SizeIsMaxWhenLotsOfContentWithEmojiBar) {
   FakePickerViewDelegate delegate({
       .available_categories = {GetParam()},
       .zero_state_suggested_results =
-          std::vector<PickerSearchResult>(10, PickerTextResult(u"abc")),
+          std::vector<QuickInsertSearchResult>(10, PickerTextResult(u"abc")),
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -563,7 +563,7 @@ TEST_F(QuickInsertViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
     FakePickerViewDelegate delegate({
         .available_categories = {PickerCategory::kLinks},
         .zero_state_suggested_results =
-            std::vector<PickerSearchResult>(10, PickerTextResult(u"abc")),
+            std::vector<QuickInsertSearchResult>(10, PickerTextResult(u"abc")),
         .action_type = PickerActionType::kInsert,
     });
     auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);

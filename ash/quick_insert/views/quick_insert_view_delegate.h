@@ -32,9 +32,9 @@ class ASH_EXPORT PickerViewDelegate {
   using EmojiSearchResultsCallback =
       base::OnceCallback<void(std::vector<PickerEmojiResult> results)>;
   using SuggestedEditorResultsCallback =
-      base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
-  using SuggestedResultsCallback =
-      base::RepeatingCallback<void(std::vector<PickerSearchResult> results)>;
+      base::OnceCallback<void(std::vector<QuickInsertSearchResult> results)>;
+  using SuggestedResultsCallback = base::RepeatingCallback<void(
+      std::vector<QuickInsertSearchResult> results)>;
 
   virtual ~PickerViewDelegate() {}
 
@@ -69,10 +69,10 @@ class ASH_EXPORT PickerViewDelegate {
   // If there's no focus event within some timeout after the widget is closed,
   // the result is dropped silently.
   virtual void CloseWidgetThenInsertResultOnNextFocus(
-      const PickerSearchResult& result) = 0;
+      const QuickInsertSearchResult& result) = 0;
 
   // Opens `result`. The exact behavior varies on the type of result.
-  virtual void OpenResult(const PickerSearchResult& result) = 0;
+  virtual void OpenResult(const QuickInsertSearchResult& result) = 0;
 
   // Shows the Emoji Picker with `category`.
   virtual void ShowEmojiPicker(ui::EmojiPickerCategory category,
@@ -86,7 +86,7 @@ class ASH_EXPORT PickerViewDelegate {
 
   // Returns the current action for `result`.
   virtual PickerActionType GetActionForResult(
-      const PickerSearchResult& result) = 0;
+      const QuickInsertSearchResult& result) = 0;
 
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 

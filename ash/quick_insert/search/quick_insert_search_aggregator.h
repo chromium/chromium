@@ -43,7 +43,7 @@ class ASH_EXPORT PickerSearchAggregator {
   ~PickerSearchAggregator();
 
   void HandleSearchSourceResults(PickerSearchSource source,
-                                 std::vector<PickerSearchResult> results,
+                                 std::vector<QuickInsertSearchResult> results,
                                  bool has_more_results);
   void HandleNoMoreResults(bool interrupted);
 
@@ -52,12 +52,13 @@ class ASH_EXPORT PickerSearchAggregator {
  private:
   struct UnpublishedResults {
     UnpublishedResults();
-    UnpublishedResults(std::vector<PickerSearchResult> results, bool has_more);
+    UnpublishedResults(std::vector<QuickInsertSearchResult> results,
+                       bool has_more);
     UnpublishedResults(UnpublishedResults&& other);
     UnpublishedResults& operator=(UnpublishedResults&& other);
     ~UnpublishedResults();
 
-    std::vector<PickerSearchResult> results;
+    std::vector<QuickInsertSearchResult> results;
     bool has_more = false;
   };
 

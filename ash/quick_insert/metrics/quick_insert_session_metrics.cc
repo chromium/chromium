@@ -130,7 +130,7 @@ cros_events::PickerAction ConvertToCrosEventAction(
 }
 
 cros_events::PickerResultSource GetResultSource(
-    std::optional<PickerSearchResult> result) {
+    std::optional<QuickInsertSearchResult> result) {
   if (!result.has_value()) {
     return cros_events::PickerResultSource::UNKNOWN;
   }
@@ -189,7 +189,7 @@ cros_events::PickerResultSource GetResultSource(
 }
 
 cros_events::PickerResultType GetResultType(
-    std::optional<PickerSearchResult> result) {
+    std::optional<QuickInsertSearchResult> result) {
   if (!result.has_value()) {
     return cros_events::PickerResultType::UNKNOWN;
   }
@@ -280,8 +280,9 @@ void PickerSessionMetrics::SetSelectedCategory(PickerCategory category) {
   }
 }
 
-void PickerSessionMetrics::SetSelectedResult(PickerSearchResult selected_result,
-                                             int index) {
+void PickerSessionMetrics::SetSelectedResult(
+    QuickInsertSearchResult selected_result,
+    int index) {
   if (!selected_result_.has_value()) {
     selected_result_ = std::move(selected_result);
     result_index_ = index;

@@ -67,7 +67,7 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
   // Both `preview_controller` and `asset_fetcher` must outlive the return
   // value.
   static std::unique_ptr<QuickInsertItemView> CreateItemFromResult(
-      const PickerSearchResult& result,
+      const QuickInsertSearchResult& result,
       PickerPreviewBubbleController* preview_controller,
       PickerAssetFetcher* asset_fetcher,
       int available_width,
@@ -100,7 +100,7 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
   // Same as `CreateItemFromResult`, but additionally adds the item to this
   // section.
   QuickInsertItemView* AddResult(
-      const PickerSearchResult& result,
+      const QuickInsertSearchResult& result,
       PickerPreviewBubbleController* preview_controller,
       LocalFileResultStyle local_file_result_style,
       SelectResultCallback select_result_callback);

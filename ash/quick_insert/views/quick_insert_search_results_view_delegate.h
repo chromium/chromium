@@ -20,7 +20,7 @@ enum class PickerSectionType;
 // Delegate for `PickerSearchResultsView`.
 class ASH_EXPORT PickerSearchResultsViewDelegate {
  public:
-  virtual void SelectSearchResult(const PickerSearchResult& result) = 0;
+  virtual void SelectSearchResult(const QuickInsertSearchResult& result) = 0;
 
   virtual void SelectMoreResults(PickerSectionType type) = 0;
 
@@ -28,7 +28,7 @@ class ASH_EXPORT PickerSearchResultsViewDelegate {
   virtual void RequestPseudoFocus(views::View* view) = 0;
 
   virtual PickerActionType GetActionForResult(
-      const PickerSearchResult& result) = 0;
+      const QuickInsertSearchResult& result) = 0;
 
   // Informs that the height of the search results view may change.
   virtual void OnSearchResultsViewHeightChanged() = 0;

@@ -39,7 +39,7 @@ class ASH_EXPORT PickerItemWithSubmenuView : public QuickInsertItemView {
 
   void SetText(const std::u16string& text);
 
-  void AddEntry(PickerSearchResult item, SelectItemCallback callback);
+  void AddEntry(QuickInsertSearchResult item, SelectItemCallback callback);
 
   bool IsEmpty() const;
 
@@ -53,7 +53,7 @@ class ASH_EXPORT PickerItemWithSubmenuView : public QuickInsertItemView {
  private:
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
-  std::vector<std::pair<PickerSearchResult, SelectItemCallback>> entries_;
+  std::vector<std::pair<QuickInsertSearchResult, SelectItemCallback>> entries_;
 
   base::WeakPtrFactory<PickerItemWithSubmenuView> weak_ptr_factory_{this};
 };

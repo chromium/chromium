@@ -36,7 +36,7 @@ class ASH_EXPORT PickerSearchRequest {
  public:
   using SearchResultsCallback =
       base::RepeatingCallback<void(PickerSearchSource source,
-                                   std::vector<PickerSearchResult> results,
+                                   std::vector<QuickInsertSearchResult> results,
                                    bool has_more_results)>;
   using DoneCallback = base::OnceCallback<void(bool interrupted)>;
 
@@ -60,19 +60,21 @@ class ASH_EXPORT PickerSearchRequest {
 
  private:
   void HandleSearchSourceResults(PickerSearchSource source,
-                                 std::vector<PickerSearchResult> results,
+                                 std::vector<QuickInsertSearchResult> results,
                                  bool has_more_results);
 
-  void HandleActionSearchResults(std::vector<PickerSearchResult> results);
+  void HandleActionSearchResults(std::vector<QuickInsertSearchResult> results);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,
-                               std::vector<PickerSearchResult> results);
-  void HandleDateSearchResults(std::vector<PickerSearchResult> results);
-  void HandleMathSearchResults(std::optional<PickerSearchResult> result);
-  void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
+                               std::vector<QuickInsertSearchResult> results);
+  void HandleDateSearchResults(std::vector<QuickInsertSearchResult> results);
+  void HandleMathSearchResults(std::optional<QuickInsertSearchResult> result);
+  void HandleClipboardSearchResults(
+      std::vector<QuickInsertSearchResult> results);
   void HandleEditorSearchResults(PickerSearchSource source,
-                                 std::optional<PickerSearchResult> result);
-  void HandleLobsterSearchResults(PickerSearchSource source,
-                                  std::optional<PickerSearchResult> result);
+                                 std::optional<QuickInsertSearchResult> result);
+  void HandleLobsterSearchResults(
+      PickerSearchSource source,
+      std::optional<QuickInsertSearchResult> result);
 
   // Sets the search for the source to be started right now.
   // `CHECK` fails if a search was already started.

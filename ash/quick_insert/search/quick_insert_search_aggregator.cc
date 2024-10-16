@@ -55,7 +55,7 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
   }
 }
 
-bool ShouldPromote(const PickerSearchResult& result) {
+bool ShouldPromote(const QuickInsertSearchResult& result) {
   return std::visit(
       base::Overloaded{
           [](const PickerClipboardResult& data) { return data.is_recent; },
@@ -69,9 +69,9 @@ bool ShouldPromote(const PickerSearchResult& result) {
 }
 
 std::vector<GURL> LinksFromSearchResults(
-    base::span<const PickerSearchResult> results) {
+    base::span<const QuickInsertSearchResult> results) {
   std::vector<GURL> links;
-  for (const PickerSearchResult& link : results) {
+  for (const QuickInsertSearchResult& link : results) {
     auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       continue;
@@ -82,9 +82,9 @@ std::vector<GURL> LinksFromSearchResults(
 }
 
 std::vector<std::string> DriveIdsFromSearchResults(
-    base::span<const PickerSearchResult> results) {
+    base::span<const QuickInsertSearchResult> results) {
   std::vector<std::string> drive_ids;
-  for (const PickerSearchResult& file : results) {
+  for (const QuickInsertSearchResult& file : results) {
     auto* drive_data = std::get_if<PickerDriveFileResult>(&file);
     if (drive_data == nullptr) {
       continue;
@@ -97,7 +97,7 @@ std::vector<std::string> DriveIdsFromSearchResults(
   return drive_ids;
 }
 
-void DeduplicateDriveLinksFromIds(std::vector<PickerSearchResult>& links,
+void DeduplicateDriveLinksFromIds(std::vector<QuickInsertSearchResult>& links,
                                   std::vector<std::string> drive_ids) {
   std::vector<base::MatcherStringPattern> patterns;
   base::MatcherStringPattern::ID next_id = 0;
@@ -113,7 +113,7 @@ void DeduplicateDriveLinksFromIds(std::vector<PickerSearchResult>& links,
   // having >190,000 Drive IDs in the worst case. This should never happen.
   CHECK(success);
 
-  std::erase_if(links, [&matcher](const PickerSearchResult& link) {
+  std::erase_if(links, [&matcher](const QuickInsertSearchResult& link) {
     auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       return false;
@@ -122,7 +122,7 @@ void DeduplicateDriveLinksFromIds(std::vector<PickerSearchResult>& links,
   });
 }
 
-void DeduplicateDriveFilesFromLinks(std::vector<PickerSearchResult>& files,
+void DeduplicateDriveFilesFromLinks(std::vector<QuickInsertSearchResult>& files,
                                     base::span<const GURL> links) {
   std::vector<base::MatcherStringPattern> patterns;
   for (size_t i = 0; i < files.size(); ++i) {
@@ -149,15 +149,15 @@ void DeduplicateDriveFilesFromLinks(std::vector<PickerSearchResult>& files,
     // limited to `O(t)` for each call.
     matcher.Match(link.spec(), &matched_files);
   }
-  std::vector<PickerSearchResult*> results_to_remove;
+  std::vector<QuickInsertSearchResult*> results_to_remove;
   for (size_t i : matched_files) {
     results_to_remove.push_back(&files[i]);
   }
-  base::flat_set<PickerSearchResult*> results_to_remove_set =
+  base::flat_set<QuickInsertSearchResult*> results_to_remove_set =
       std::move(results_to_remove);
 
   std::erase_if(files,
-                [&results_to_remove_set](const PickerSearchResult& file) {
+                [&results_to_remove_set](const QuickInsertSearchResult& file) {
                   return results_to_remove_set.contains(&file);
                 });
 }
@@ -179,7 +179,7 @@ PickerSearchAggregator::~PickerSearchAggregator() = default;
 
 void PickerSearchAggregator::HandleSearchSourceResults(
     PickerSearchSource source,
-    std::vector<PickerSearchResult> results,
+    std::vector<QuickInsertSearchResult> results,
     bool has_more_results) {
   CHECK(!current_callback_.is_null())
       << "Results were obtained after \"no more results\"";
@@ -250,7 +250,7 @@ void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
 PickerSearchAggregator::UnpublishedResults::UnpublishedResults() = default;
 
 PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
-    std::vector<PickerSearchResult> results,
+    std::vector<QuickInsertSearchResult> results,
     bool has_more)
     : results(std::move(results)), has_more(has_more) {}
 

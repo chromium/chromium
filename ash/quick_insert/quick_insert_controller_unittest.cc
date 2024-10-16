@@ -1187,7 +1187,7 @@ TEST_F(QuickInsertControllerTest,
 }
 
 struct ActionTestCase {
-  PickerSearchResult result;
+  QuickInsertSearchResult result;
   std::optional<PickerActionType> unfocused_action;
   std::optional<PickerActionType> no_selection_action;
   std::optional<PickerActionType> has_selection_action;

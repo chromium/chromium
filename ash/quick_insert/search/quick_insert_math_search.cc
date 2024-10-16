@@ -22,7 +22,8 @@ constexpr std::u16string_view kMathExamples[] = {
 };
 }  // namespace
 
-std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
+std::optional<QuickInsertSearchResult> PickerMathSearch(
+    std::u16string_view query) {
   std::optional<std::string> result =
       fend_core::evaluate(base::UTF16ToUTF8(query));
   if (result.has_value()) {
@@ -35,8 +36,8 @@ std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
   return std::nullopt;
 }
 
-std::vector<PickerSearchResult> PickerMathExamples() {
-  std::vector<PickerSearchResult> results;
+std::vector<QuickInsertSearchResult> PickerMathExamples() {
+  std::vector<QuickInsertSearchResult> results;
   for (const auto& query : kMathExamples) {
     std::optional<std::string> result =
         fend_core::evaluate(base::UTF16ToUTF8(query));

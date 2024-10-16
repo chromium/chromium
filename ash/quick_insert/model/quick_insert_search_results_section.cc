@@ -14,7 +14,7 @@ namespace ash {
 
 PickerSearchResultsSection::PickerSearchResultsSection(
     PickerSectionType type,
-    std::vector<PickerSearchResult> results,
+    std::vector<QuickInsertSearchResult> results,
     bool has_more_results)
     : type_(type),
       results_(std::move(results)),
@@ -38,7 +38,7 @@ PickerSectionType PickerSearchResultsSection::type() const {
   return type_;
 }
 
-base::span<const PickerSearchResult> PickerSearchResultsSection::results()
+base::span<const QuickInsertSearchResult> PickerSearchResultsSection::results()
     const {
   return results_;
 }

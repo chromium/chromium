@@ -81,7 +81,7 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
   if (favicon_service_) {
     favicon_query_trackers_ =
         std::vector<base::CancelableTaskTracker>(filtered_results.size());
-    auto barrier_callback = base::BarrierCallback<ash::PickerSearchResult>(
+    auto barrier_callback = base::BarrierCallback<ash::QuickInsertSearchResult>(
         /*num_callbacks=*/filtered_results.size(),
         /*done_callback=*/std::move(callback));
 
@@ -95,7 +95,7 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
     }
   } else {
     // Fallback to placeholder icon if favicon service is not available.
-    std::vector<ash::PickerSearchResult> picker_search_results;
+    std::vector<ash::QuickInsertSearchResult> picker_search_results;
     for (const auto& result : filtered_results) {
       picker_search_results.push_back(ash::PickerBrowsingHistoryResult(
           result.url(), result.title(),
@@ -109,7 +109,7 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
 
 void PickerLinkSuggester::OnGetFaviconImage(
     history::URLResult result,
-    base::OnceCallback<void(ash::PickerSearchResult)> callback,
+    base::OnceCallback<void(ash::QuickInsertSearchResult)> callback,
     const favicon_base::FaviconImageResult& favicon_image_result) {
   std::move(callback).Run(ash::PickerBrowsingHistoryResult(
       result.url(), result.title(),

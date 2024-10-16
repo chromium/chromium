@@ -207,7 +207,7 @@ TEST_P(QuickInsertDateSearchTest, ReturnsExpectedDates) {
 }
 
 TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
-  std::vector<PickerSearchResult> results = PickerSuggestedDateResults();
+  std::vector<QuickInsertSearchResult> results = PickerSuggestedDateResults();
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,

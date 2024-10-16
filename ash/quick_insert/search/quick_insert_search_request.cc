@@ -79,13 +79,14 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
   NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
 }
 
-[[nodiscard]] std::vector<PickerSearchResult> DeduplicateGoogleCorpGotoDomains(
-    std::vector<PickerSearchResult> omnibox_results) {
+[[nodiscard]] std::vector<QuickInsertSearchResult>
+DeduplicateGoogleCorpGotoDomains(
+    std::vector<QuickInsertSearchResult> omnibox_results) {
   std::set<std::string, std::less<>> seen;
-  std::vector<PickerSearchResult> deduped_results;
-  std::vector<PickerSearchResult*> results_to_remove;
+  std::vector<QuickInsertSearchResult> deduped_results;
+  std::vector<QuickInsertSearchResult*> results_to_remove;
 
-  for (PickerSearchResult& link : omnibox_results) {
+  for (QuickInsertSearchResult& link : omnibox_results) {
     auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       deduped_results.push_back(std::move(link));
@@ -227,7 +228,7 @@ PickerSearchRequest::~PickerSearchRequest() {
 
 void PickerSearchRequest::HandleSearchSourceResults(
     PickerSearchSource source,
-    std::vector<PickerSearchResult> results,
+    std::vector<QuickInsertSearchResult> results,
     bool has_more_results) {
   MarkSearchEnded(source);
   // This method is only called from `Handle*SearchResults` methods (one for
@@ -243,14 +244,14 @@ void PickerSearchRequest::HandleSearchSourceResults(
 }
 
 void PickerSearchRequest::HandleActionSearchResults(
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   HandleSearchSourceResults(PickerSearchSource::kAction, std::move(results),
                             /*has_more_results*/ false);
 }
 
 void PickerSearchRequest::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   switch (type) {
     case AppListSearchResultType::kOmnibox: {
       results = DeduplicateGoogleCorpGotoDomains(std::move(results));
@@ -293,15 +294,15 @@ void PickerSearchRequest::HandleCrosSearchResults(
 }
 
 void PickerSearchRequest::HandleDateSearchResults(
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   // Date results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results),
                             /*has_more_results=*/false);
 }
 
 void PickerSearchRequest::HandleMathSearchResults(
-    std::optional<PickerSearchResult> result) {
-  std::vector<PickerSearchResult> results;
+    std::optional<QuickInsertSearchResult> result) {
+  std::vector<QuickInsertSearchResult> results;
   if (result.has_value()) {
     results.push_back(*std::move(result));
   }
@@ -312,7 +313,7 @@ void PickerSearchRequest::HandleMathSearchResults(
 }
 
 void PickerSearchRequest::HandleClipboardSearchResults(
-    std::vector<PickerSearchResult> results) {
+    std::vector<QuickInsertSearchResult> results) {
   // Clipboard results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results),
                             /*has_more_results=*/false);
@@ -320,8 +321,8 @@ void PickerSearchRequest::HandleClipboardSearchResults(
 
 void PickerSearchRequest::HandleEditorSearchResults(
     PickerSearchSource source,
-    std::optional<PickerSearchResult> result) {
-  std::vector<PickerSearchResult> results;
+    std::optional<QuickInsertSearchResult> result) {
+  std::vector<QuickInsertSearchResult> results;
   if (result.has_value()) {
     results.push_back(std::move(*result));
   }
@@ -333,8 +334,8 @@ void PickerSearchRequest::HandleEditorSearchResults(
 
 void PickerSearchRequest::HandleLobsterSearchResults(
     PickerSearchSource source,
-    std::optional<PickerSearchResult> result) {
-  std::vector<PickerSearchResult> results;
+    std::optional<QuickInsertSearchResult> result) {
+  std::vector<QuickInsertSearchResult> results;
   if (result.has_value()) {
     results.push_back(std::move(*result));
   }

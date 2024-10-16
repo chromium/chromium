@@ -37,20 +37,20 @@ namespace ash {
 // Lets PickerController in Ash to communicate with the browser.
 class ASH_EXPORT PickerClient {
  public:
-  using CrosSearchResultsCallback =
-      base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
-                                   std::vector<PickerSearchResult> results)>;
+  using CrosSearchResultsCallback = base::RepeatingCallback<void(
+      ash::AppListSearchResultType result_type,
+      std::vector<QuickInsertSearchResult> results)>;
   using ShowEditorCallback =
       base::OnceCallback<void(std::optional<std::string> preset_query_id,
                               std::optional<std::string> freeform_text)>;
   using ShowLobsterCallback =
       base::OnceCallback<void(std::optional<std::string> query)>;
   using SuggestedEditorResultsCallback =
-      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
+      base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
   using RecentFilesCallback =
-      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
+      base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
   using SuggestedLinksCallback =
-      base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
+      base::RepeatingCallback<void(std::vector<QuickInsertSearchResult>)>;
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 

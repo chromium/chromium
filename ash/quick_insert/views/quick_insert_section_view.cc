@@ -200,7 +200,7 @@ QuickInsertSectionView::~QuickInsertSectionView() = default;
 
 std::unique_ptr<QuickInsertItemView>
 QuickInsertSectionView::CreateItemFromResult(
-    const PickerSearchResult& result,
+    const QuickInsertSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     PickerAssetFetcher* asset_fetcher,
     int available_width,
@@ -465,7 +465,7 @@ PickerItemWithSubmenuView* QuickInsertSectionView::AddItemWithSubmenu(
 }
 
 QuickInsertItemView* QuickInsertSectionView::AddResult(
-    const PickerSearchResult& result,
+    const QuickInsertSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     LocalFileResultStyle local_file_result_style,
     SelectResultCallback select_result_callback) {

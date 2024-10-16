@@ -301,20 +301,20 @@ struct ASH_EXPORT PickerCaseTransformResult {
   bool operator==(const PickerCaseTransformResult&) const;
 };
 
-using PickerSearchResult = std::variant<PickerTextResult,
-                                        PickerSearchRequestResult,
-                                        PickerEmojiResult,
-                                        PickerGifResult,
-                                        PickerClipboardResult,
-                                        PickerBrowsingHistoryResult,
-                                        PickerLocalFileResult,
-                                        PickerDriveFileResult,
-                                        PickerCategoryResult,
-                                        PickerEditorResult,
-                                        PickerLobsterResult,
-                                        PickerNewWindowResult,
-                                        PickerCapsLockResult,
-                                        PickerCaseTransformResult>;
+using QuickInsertSearchResult = std::variant<PickerTextResult,
+                                             PickerSearchRequestResult,
+                                             PickerEmojiResult,
+                                             PickerGifResult,
+                                             PickerClipboardResult,
+                                             PickerBrowsingHistoryResult,
+                                             PickerLocalFileResult,
+                                             PickerDriveFileResult,
+                                             PickerCategoryResult,
+                                             PickerEditorResult,
+                                             PickerLobsterResult,
+                                             PickerNewWindowResult,
+                                             PickerCapsLockResult,
+                                             PickerCaseTransformResult>;
 
 }  // namespace ash
 

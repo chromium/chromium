@@ -22,7 +22,7 @@ class QuickInsertModel;
 class ASH_EXPORT PickerSuggestionsController {
  public:
   using SuggestionsCallback =
-      base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
+      base::RepeatingCallback<void(std::vector<QuickInsertSearchResult>)>;
 
   PickerSuggestionsController();
   PickerSuggestionsController(const PickerSuggestionsController&) = delete;

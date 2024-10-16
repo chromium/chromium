@@ -25,14 +25,14 @@ enum class PickerCapsLockPosition;
 class ASH_EXPORT PickerZeroStateViewDelegate {
  public:
   using SuggestedEditorResultsCallback =
-      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
+      base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
 
   using SuggestedResultsCallback =
-      base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
+      base::RepeatingCallback<void(std::vector<QuickInsertSearchResult>)>;
 
   virtual void SelectZeroStateCategory(PickerCategory category) = 0;
 
-  virtual void SelectZeroStateResult(const PickerSearchResult& result) = 0;
+  virtual void SelectZeroStateResult(const QuickInsertSearchResult& result) = 0;
 
   virtual void GetZeroStateSuggestedResults(
       SuggestedResultsCallback callback) = 0;
@@ -41,7 +41,7 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
   virtual void RequestPseudoFocus(views::View* view) = 0;
 
   virtual PickerActionType GetActionForResult(
-      const PickerSearchResult& result) = 0;
+      const QuickInsertSearchResult& result) = 0;
 
   // Informs that the height of the zero state view may change.
   virtual void OnZeroStateViewHeightChanged() = 0;

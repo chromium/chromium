@@ -69,7 +69,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   IconButton* more_emojis_button_for_testing() { return more_emojis_button_; }
 
  private:
-  void SelectSearchResult(const PickerSearchResult& result);
+  void SelectSearchResult(const QuickInsertSearchResult& result);
 
   void OpenMoreEmojis();
 

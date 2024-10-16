@@ -269,12 +269,12 @@ void PickerSearchResultsView::ShowLoadingAnimation() {
 }
 
 void PickerSearchResultsView::SelectSearchResult(
-    const PickerSearchResult& result) {
+    const QuickInsertSearchResult& result) {
   delegate_->SelectSearchResult(result);
 }
 
 void PickerSearchResultsView::AddResultToSection(
-    const PickerSearchResult& result,
+    const QuickInsertSearchResult& result,
     QuickInsertSectionView* section_view) {
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
@@ -300,7 +300,7 @@ void PickerSearchResultsView::OnTrailingLinkClicked(
 }
 
 int PickerSearchResultsView::GetIndex(
-    const PickerSearchResult& inserted_result) {
+    const QuickInsertSearchResult& inserted_result) {
   if (top_results_.empty()) {
     return -1;
   }

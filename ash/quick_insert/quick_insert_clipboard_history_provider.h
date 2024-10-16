@@ -23,7 +23,7 @@ class ClipboardHistoryItem;
 class ASH_EXPORT PickerClipboardHistoryProvider {
  public:
   using OnFetchResultsCallback =
-      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
+      base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
 
   explicit PickerClipboardHistoryProvider(
       base::Clock* clock = base::DefaultClock::GetInstance());
