@@ -6,6 +6,7 @@ package org.chromium.base.test.util;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureList;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.cached_flags.ValuesOverridden;
 
@@ -17,7 +18,7 @@ import java.util.Set;
 
 /**
  * Helps with setting Field Trial parameters during instrumentation tests. It parses the field
- * trials info from CommandLine, and applies the overrides to CachedFieldTrialParameters.
+ * trials info from CommandLine, and applies the overrides to CachedFlag.
  */
 public class FieldTrials {
     // TODO(crbug.com/40257556): Allow setting field trial via annotation.
@@ -150,6 +151,15 @@ public class FieldTrials {
         Set<String> enableFeaturesSet = new HashSet<>();
         if (enableFeatures != null) {
             Collections.addAll(enableFeaturesSet, enableFeatures.split(","));
+
+            // TODO(crbug.com/372717700): This logic interprets "--enable-features=Feature1<Study".
+            //      Move this logic together with the logic in CommandLineFlags that interprets
+            //      "--enable-features=Feature1".
+            FeatureList.TestValues testValues = new FeatureList.TestValues();
+            for (String enabledFeature : enableFeaturesSet) {
+                testValues.addFeatureFlagOverride(cleanupFeatureName(enabledFeature), true);
+            }
+            FeatureList.mergeTestValues(testValues, /* replace= */ true);
         }
 
         if (forceFieldTrials == null || forceFieldTrialParams == null || enableFeatures == null) {
