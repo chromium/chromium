@@ -60,9 +60,9 @@ namespace {
 // They should test Picker view components on a low-level.
 // They are browser tests in order to bring in ChromeVox so that we can test
 // announcements.
-class PickerAccessibilityBrowserTest : public InProcessBrowserTest {
+class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
  public:
-  PickerAccessibilityBrowserTest() = default;
+  QuickInsertAccessibilityBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -112,7 +112,7 @@ class PickerAccessibilityBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingEmptySearchFieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        SetDescendantAnnouncesDescendant) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        SetDescendantAnnouncesDescendantAfterKeyEvent) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        SetDescendantToTextfieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   SetDescendantThenFocusingSearchFieldAnnouncesDescendant
 #endif
 IN_PROC_BROWSER_TEST_F(
-    PickerAccessibilityBrowserTest,
+    QuickInsertAccessibilityBrowserTest,
     MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingNonEmptySearchFieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingSearchFieldClearButtonAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingSearchFieldBackButtonAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingEmojiBarItemsAnnouncesGrid) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingGifsButtonAnnouncesLabel) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingMoreEmojisAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        SectionsAnnouncesHeadings) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingSectionShowAllAnnounces) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        ListItemAnnouncesTextWithAction) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        ListItemAnnouncesPreviewMetadata) {
   ash::PickerPreviewBubbleController preview_controller;
   std::unique_ptr<views::Widget> widget =
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        ImageRowItemAnnouncesTitle) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        ImageRowMoreItemsButtonAnnouncesTooltip) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        ImageGridItemAnnouncesTitle) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingItemInSectionListViewAnnouncesSizeAndPosition) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingItemWithSubmenuAnnouncesMenuRole) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingEmojiResultButtonAnnouncesNameOfEmoji) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingSymbolResultButtonAnnouncesNameOfSymbol) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        FocusingEmoticonResultButtonAnnouncesNameOfEmoticon) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        StoppingSearchAnnouncesEmojiResults) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        StoppingSearchAnnouncesNoResults) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        ShowingFeatureTourAnnouncesContents) {
   ash::PickerFeatureTour feature_tour;
 
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        InsertingAnnouncesInsertionBeforeTextfieldRefocus) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager::UserManager::Get());

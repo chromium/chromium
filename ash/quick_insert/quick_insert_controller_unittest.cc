@@ -176,9 +176,9 @@ class TestPickerClient : public MockPickerClient {
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ = nullptr;
 };
 
-class PickerControllerTest : public AshTestBase {
+class QuickInsertControllerTest : public AshTestBase {
  public:
-  PickerControllerTest()
+  QuickInsertControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
@@ -223,13 +223,13 @@ class PickerControllerTest : public AshTestBase {
       metrics_recorder_;
 };
 
-TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
+TEST_F(QuickInsertControllerTest, ToggleWidgetShowsWidgetIfClosed) {
   controller().ToggleWidget();
 
   EXPECT_TRUE(controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ToggleWidgetInPasswordFieldTogglesCapslockAndShowsBubbleForAShortTime) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -254,7 +254,7 @@ TEST_F(PickerControllerTest,
                    .bubble_view_for_testing());
 }
 
-TEST_F(PickerControllerTest, TogglingWidgetRecordsStartSessionMetrics) {
+TEST_F(QuickInsertControllerTest, TogglingWidgetRecordsStartSessionMetrics) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
@@ -278,7 +278,7 @@ TEST_F(PickerControllerTest, TogglingWidgetRecordsStartSessionMetrics) {
                    Eq(std::ref(expected_event.metric_values()))))));
 }
 
-TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
+TEST_F(QuickInsertControllerTest, ToggleWidgetClosesWidgetIfOpen) {
   controller().ToggleWidget();
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller().widget_for_testing());
@@ -289,7 +289,7 @@ TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {
   EXPECT_FALSE(controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
+TEST_F(QuickInsertControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
   controller().ToggleWidget();
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller().widget_for_testing());
@@ -301,7 +301,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
   EXPECT_TRUE(controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
+TEST_F(QuickInsertControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
   PickerFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
 
@@ -309,7 +309,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
   EXPECT_FALSE(controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithNoWindows) {
   wm::FocusController* focus_controller = Shell::Get()->focus_controller();
   ASSERT_EQ(focus_controller->GetActiveWindow(), nullptr);
@@ -347,7 +347,7 @@ TEST_F(PickerControllerTest,
   EXPECT_EQ(focus_controller->GetFocusedWindow(), nullptr);
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
   std::unique_ptr<views::Widget> test_widget =
       ash::TestWidgetBuilder()
@@ -394,7 +394,7 @@ TEST_F(PickerControllerTest,
             test_widget->GetNativeWindow());
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithFocus) {
   std::unique_ptr<views::Widget> textfield_widget =
       ash::TestWidgetBuilder()
@@ -449,7 +449,7 @@ TEST_F(PickerControllerTest,
   EXPECT_TRUE(textfield->HasFocus());
 }
 
-TEST_F(PickerControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
+TEST_F(QuickInsertControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
   PickerFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
@@ -468,7 +468,7 @@ TEST_F(PickerControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
   EXPECT_FALSE(controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
+TEST_F(QuickInsertControllerTest, SetClientToNullKeepsWidget) {
   controller().ToggleWidget();
 
   controller().SetClient(nullptr);
@@ -476,7 +476,7 @@ TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
   EXPECT_TRUE(controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {
+TEST_F(QuickInsertControllerTest, ShowWidgetRecordsInputReadyLatency) {
   base::HistogramTester histogram;
 
   controller().ToggleWidget(base::TimeTicks::Now());
@@ -487,7 +487,7 @@ TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {
   histogram.ExpectTotalCount("Ash.Picker.Session.InputReadyLatency", 1);
 }
 
-TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
+TEST_F(QuickInsertControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
@@ -502,7 +502,8 @@ TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
   EXPECT_EQ(input_field.text(), u"");
 }
 
-TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
+TEST_F(QuickInsertControllerTest,
+       InsertTextResultInsertsIntoInputFieldAfterFocus) {
   controller().ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -520,7 +521,7 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   EXPECT_EQ(input_field.text(), u"abc");
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        InsertClipboardResultPastesIntoInputFieldAfterFocus) {
   controller().ToggleWidget();
   ASSERT_TRUE(CopyTextToClipboard());
@@ -541,7 +542,8 @@ TEST_F(PickerControllerTest,
   waiter.Wait();
 }
 
-TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {
+TEST_F(QuickInsertControllerTest,
+       InsertGifResultInsertsIntoInputFieldAfterFocus) {
   controller().ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
@@ -562,7 +564,7 @@ TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {
             GURL("http://foo.com/fake.gif"));
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        InsertUnsupportedImageResultTimeoutCopiesToClipboard) {
   controller().ToggleWidget();
   auto* input_method =
@@ -588,7 +590,7 @@ TEST_F(PickerControllerTest,
       ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        InsertBrowsingHistoryResultInsertsIntoInputFieldAfterFocus) {
   controller().ToggleWidget();
   auto* input_method =
@@ -606,7 +608,7 @@ TEST_F(PickerControllerTest,
   EXPECT_EQ(input_field.text(), u"http://foo.com/");
 }
 
-TEST_F(PickerControllerTest, InsertResultClosesWidgetImmediately) {
+TEST_F(QuickInsertControllerTest, InsertResultClosesWidgetImmediately) {
   controller().ToggleWidget();
 
   controller().CloseWidgetThenInsertResultOnNextFocus(PickerTextResult(u"abc"));
@@ -614,7 +616,8 @@ TEST_F(PickerControllerTest, InsertResultClosesWidgetImmediately) {
   EXPECT_TRUE(controller().widget_for_testing()->IsClosed());
 }
 
-TEST_F(PickerControllerTest, InsertResultDelaysWidgetCloseForAccessibility) {
+TEST_F(QuickInsertControllerTest,
+       InsertResultDelaysWidgetCloseForAccessibility) {
   controller().ToggleWidget();
   Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
       true, A11Y_NOTIFICATION_NONE);
@@ -626,7 +629,7 @@ TEST_F(PickerControllerTest, InsertResultDelaysWidgetCloseForAccessibility) {
       controller().widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {
+TEST_F(QuickInsertControllerTest, OpenBrowsingHistoryResult) {
   controller().ToggleWidget();
 
   EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
@@ -636,7 +639,7 @@ TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {
       GURL("http://foo.com"), u"Foo", ui::ImageModel{}));
 }
 
-TEST_F(PickerControllerTest, OpenDriveFileResult) {
+TEST_F(QuickInsertControllerTest, OpenDriveFileResult) {
   controller().ToggleWidget();
 
   EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
@@ -646,7 +649,7 @@ TEST_F(PickerControllerTest, OpenDriveFileResult) {
       /*id=*/std::nullopt, u"title", GURL("http://foo.com"), base::FilePath()));
 }
 
-TEST_F(PickerControllerTest, OpenLocalFileResult) {
+TEST_F(QuickInsertControllerTest, OpenLocalFileResult) {
   controller().ToggleWidget();
 
   EXPECT_CALL(mock_new_window_delegate(), OpenFile(base::FilePath("abc.png")))
@@ -656,7 +659,7 @@ TEST_F(PickerControllerTest, OpenLocalFileResult) {
       PickerLocalFileResult(u"title", base::FilePath("abc.png")));
 }
 
-TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
+TEST_F(QuickInsertControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
   controller().ToggleWidget();
 
   EXPECT_CALL(mock_new_window_delegate(),
@@ -667,7 +670,8 @@ TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
       PickerNewWindowResult(PickerNewWindowResult::Type::kDoc));
 }
 
-TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLockOnNextFocus) {
+TEST_F(QuickInsertControllerTest,
+       OpenCapsLockResultTurnsOnCapsLockOnNextFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -683,7 +687,8 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLockOnNextFocus) {
   EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
 }
 
-TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLockOnNextFocus) {
+TEST_F(QuickInsertControllerTest,
+       OpenCapsLockResultTurnsOffCapsLockOnNextFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -699,7 +704,7 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLockOnNextFocus) {
   EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
 }
 
-TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLockOnTimeout) {
+TEST_F(QuickInsertControllerTest, OpenCapsLockResultTurnsOnCapsLockOnTimeout) {
   controller().ToggleWidget();
 
   controller().OpenResult(PickerCapsLockResult(
@@ -711,7 +716,7 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLockOnTimeout) {
   EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
 }
 
-TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLockOnTimeout) {
+TEST_F(QuickInsertControllerTest, OpenCapsLockResultTurnsOffCapsLockOnTimeout) {
   controller().ToggleWidget();
 
   controller().OpenResult(PickerCapsLockResult(
@@ -723,7 +728,7 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLockOnTimeout) {
   EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
 }
 
-TEST_F(PickerControllerTest, OpenUpperCaseResultCommitsUpperCase) {
+TEST_F(QuickInsertControllerTest, OpenUpperCaseResultCommitsUpperCase) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -739,7 +744,7 @@ TEST_F(PickerControllerTest, OpenUpperCaseResultCommitsUpperCase) {
   EXPECT_EQ(input_field.text(), u"ABC DEF");
 }
 
-TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
+TEST_F(QuickInsertControllerTest, OpenLowerCaseResultCommitsLowerCase) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -755,7 +760,7 @@ TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
   EXPECT_EQ(input_field.text(), u"abc def");
 }
 
-TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
+TEST_F(QuickInsertControllerTest, OpenTitleCaseResultCommitsTitleCase) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -771,7 +776,7 @@ TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
   EXPECT_EQ(input_field.text(), u"Abc Def");
 }
 
-TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
+TEST_F(QuickInsertControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   controller().ToggleWidget();
   base::test::TestFuture<ui::EmojiPickerCategory, ui::EmojiPickerFocusBehavior,
                          const std::string&>
@@ -786,7 +791,7 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   EXPECT_EQ(initial_query, "abc");
 }
 
-TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
+TEST_F(QuickInsertControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
   base::HistogramTester histogram_tester;
 
   // Show the widget twice.
@@ -815,7 +820,7 @@ TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
                                          base::Seconds(3), 1);
 }
 
-TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
+TEST_F(QuickInsertControllerTest, ShowEditorCallsCallbackFromClient) {
   base::test::TestFuture<std::optional<std::string>, std::optional<std::string>>
       show_editor_future;
   EXPECT_CALL(client(), CacheEditorContext)
@@ -828,7 +833,7 @@ TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
   EXPECT_THAT(show_editor_future.Get(), FieldsAre("preset", "freeform"));
 }
 
-TEST_F(PickerControllerTest, ShowLobsterCallsCallbackFromClient) {
+TEST_F(QuickInsertControllerTest, ShowLobsterCallsCallbackFromClient) {
   base::test::TestFuture<std::optional<std::string>> show_lobster_future;
   EXPECT_CALL(client(), GetShowLobsterCallback)
       .WillOnce(Return(show_lobster_future.GetCallback()));
@@ -839,7 +844,8 @@ TEST_F(PickerControllerTest, ShowLobsterCallsCallbackFromClient) {
   EXPECT_THAT(show_lobster_future.Get(), "freeform");
 }
 
-TEST_F(PickerControllerTest, GetResultsForCategoryReturnsEmptyForEmptyResults) {
+TEST_F(QuickInsertControllerTest,
+       GetResultsForCategoryReturnsEmptyForEmptyResults) {
   base::test::TestFuture<std::vector<PickerSearchResultsSection>> future;
   EXPECT_CALL(client(), GetSuggestedLinkResults)
       .WillRepeatedly([](size_t max_results,
@@ -854,7 +860,8 @@ TEST_F(PickerControllerTest, GetResultsForCategoryReturnsEmptyForEmptyResults) {
   EXPECT_THAT(future.Take(), IsEmpty());
 }
 
-TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
+TEST_F(QuickInsertControllerTest,
+       AvailableCategoriesContainsEditorWhenEnabled) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -869,7 +876,7 @@ TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
               Contains(PickerCategory::kEditorWrite));
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        AvailableCategoriesDoesNotContainEditorWhenDisabled) {
   EXPECT_CALL(client(), CacheEditorContext)
       .WillOnce(Return(base::NullCallback()));
@@ -880,7 +887,7 @@ TEST_F(PickerControllerTest,
               Not(Contains(PickerCategory::kEditorWrite)));
 }
 
-TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
+TEST_F(QuickInsertControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
   controller().ToggleWidget();
 
   EXPECT_THAT(
@@ -891,7 +898,7 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
           PickerEmojiResult::Emoji(u"👏"), PickerEmojiResult::Emoji(u"👍")));
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        SuggestedEmojiReturnsRecentEmojiFollowedByDefaultEmojis) {
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
@@ -909,7 +916,7 @@ TEST_F(PickerControllerTest,
           PickerEmojiResult::Emoji(u"🤔"), PickerEmojiResult::Emoji(u"😢")));
 }
 
-TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
+TEST_F(QuickInsertControllerTest, AddsNewRecentEmoji) {
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
@@ -928,7 +935,7 @@ TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
           PickerEmojiResult::Emoji(u"😂"), PickerEmojiResult::Emoji(u"🤔")));
 }
 
-TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
+TEST_F(QuickInsertControllerTest, AddsExistingRecentEmoji) {
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
@@ -947,7 +954,7 @@ TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
           PickerEmojiResult::Emoji(u"🤔"), PickerEmojiResult::Emoji(u"😢")));
 }
 
-TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
+TEST_F(QuickInsertControllerTest, AddsRecentEmojiEmptyHistory) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
       PickerEmojiResult::Emoji(u"abc"));
@@ -960,7 +967,7 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
           PickerEmojiResult::Emoji(u"😢"), PickerEmojiResult::Emoji(u"👏")));
 }
 
-TEST_F(PickerControllerTest, RecentlyAddedEmojiHasCorrectType) {
+TEST_F(QuickInsertControllerTest, RecentlyAddedEmojiHasCorrectType) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
       PickerEmojiResult::Emoji(u"abc"));
@@ -969,7 +976,7 @@ TEST_F(PickerControllerTest, RecentlyAddedEmojiHasCorrectType) {
               Contains(PickerEmojiResult::Emoji(u"abc")));
 }
 
-TEST_F(PickerControllerTest, RecentlyAddedSymbolHasCorrectType) {
+TEST_F(QuickInsertControllerTest, RecentlyAddedSymbolHasCorrectType) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
       PickerEmojiResult::Symbol(u"abc"));
@@ -978,7 +985,7 @@ TEST_F(PickerControllerTest, RecentlyAddedSymbolHasCorrectType) {
               Contains(PickerEmojiResult::Symbol(u"abc")));
 }
 
-TEST_F(PickerControllerTest, RecentlyAddedEmoticonHasCorrectType) {
+TEST_F(QuickInsertControllerTest, RecentlyAddedEmoticonHasCorrectType) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
       PickerEmojiResult::Emoticon(u"abc"));
@@ -987,7 +994,7 @@ TEST_F(PickerControllerTest, RecentlyAddedEmoticonHasCorrectType) {
               Contains(PickerEmojiResult::Emoticon(u"abc")));
 }
 
-TEST_F(PickerControllerTest, AddRecentEmojiWithFocus) {
+TEST_F(QuickInsertControllerTest, AddRecentEmojiWithFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(
@@ -1003,7 +1010,7 @@ TEST_F(PickerControllerTest, AddRecentEmojiWithFocus) {
               Contains(PickerEmojiResult::Emoji(u"abc")));
 }
 
-TEST_F(PickerControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
+TEST_F(QuickInsertControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(
@@ -1019,7 +1026,7 @@ TEST_F(PickerControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
               Not(Contains(PickerEmojiResult::Emoji(u"abc"))));
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        SuggestedEmojiReturnsRecentEmojiEmoticonAndSymbol) {
   base::Value::List emoji_history_value;
   emoji_history_value.Append(
@@ -1052,7 +1059,7 @@ TEST_F(PickerControllerTest,
                           PickerEmojiResult::Emoticon(u"emoticon2")));
 }
 
-TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
+TEST_F(QuickInsertControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
   base::test::TestFuture<std::vector<PickerSearchResultsSection>> search_future;
 
   controller().ToggleWidget();
@@ -1067,7 +1074,7 @@ TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
                             PickerCapsLockResult::Shortcut::kAltLauncher)))));
 }
 
-TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
+TEST_F(QuickInsertControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
   base::test::TestFuture<std::vector<PickerSearchResultsSection>> search_future;
   GetImeKeyboard()->SetCapsLockEnabled(true);
 
@@ -1083,7 +1090,8 @@ TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
                             PickerCapsLockResult::Shortcut::kAltLauncher)))));
 }
 
-TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {
+TEST_F(QuickInsertControllerTest,
+       DoesNotSearchCaseTransformWhenNoSelectedText) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -1102,7 +1110,7 @@ TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {
   controller().StartSearch(u"uppercase", /*category=*/{}, callback.Get());
 }
 
-TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
+TEST_F(QuickInsertControllerTest, SearchesCaseTransformWhenSelectedText) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -1124,7 +1132,7 @@ TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
   controller().StartSearch(u"uppercase", /*category=*/{}, callback.Get());
 }
 
-TEST_F(PickerControllerTest, IsValidDuringWidgetClose) {
+TEST_F(QuickInsertControllerTest, IsValidDuringWidgetClose) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -1139,21 +1147,21 @@ TEST_F(PickerControllerTest, IsValidDuringWidgetClose) {
   controller().GetAvailableCategories();
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockHasNotShownEnoughTimes) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockIsAlwaysUsed) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 14);
   EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionMiddleWhenCapsLockIsSometimesUsed) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 7);
@@ -1161,7 +1169,7 @@ TEST_F(PickerControllerTest,
             PickerCapsLockPosition::kMiddle);
 }
 
-TEST_F(PickerControllerTest,
+TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionBottomWhenCapsLockIsNeverUsed) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
@@ -1169,7 +1177,8 @@ TEST_F(PickerControllerTest,
             PickerCapsLockPosition::kBottom);
 }
 
-TEST_F(PickerControllerTest, ReturnCapsLockPositionTopWhenCapsLockIsEnabled) {
+TEST_F(QuickInsertControllerTest,
+       ReturnCapsLockPositionTopWhenCapsLockIsEnabled) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
   GetImeKeyboard()->SetCapsLockEnabled(true);
@@ -1184,11 +1193,11 @@ struct ActionTestCase {
   std::optional<PickerActionType> has_selection_action;
 };
 
-class PickerControllerActionTest
-    : public PickerControllerTest,
+class QuickInsertControllerActionTest
+    : public QuickInsertControllerTest,
       public testing::WithParamInterface<ActionTestCase> {};
 
-TEST_P(PickerControllerActionTest, GetActionForResultUnfocused) {
+TEST_P(QuickInsertControllerActionTest, GetActionForResultUnfocused) {
   controller().ToggleWidget();
 
   if (GetParam().unfocused_action.has_value()) {
@@ -1197,7 +1206,7 @@ TEST_P(PickerControllerActionTest, GetActionForResultUnfocused) {
   }
 }
 
-TEST_P(PickerControllerActionTest, GetActionForResultNoSelection) {
+TEST_P(QuickInsertControllerActionTest, GetActionForResultNoSelection) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -1211,7 +1220,7 @@ TEST_P(PickerControllerActionTest, GetActionForResultNoSelection) {
   }
 }
 
-TEST_P(PickerControllerActionTest, GetActionForResultHasSelection) {
+TEST_P(QuickInsertControllerActionTest, GetActionForResultHasSelection) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
   ui::FakeTextInputClient input_field(input_method,
@@ -1228,7 +1237,7 @@ TEST_P(PickerControllerActionTest, GetActionForResultHasSelection) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerControllerActionTest,
+    QuickInsertControllerActionTest,
     testing::ValuesIn<ActionTestCase>({
         {
             .result = PickerTextResult(u""),

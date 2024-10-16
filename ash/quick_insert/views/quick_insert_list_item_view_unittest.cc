@@ -49,12 +49,12 @@ base::OnceCallback<std::optional<base::File::Info>()> GetFileInfoCallback(
   return base::ReturnValueOnce<std::optional<base::File::Info>>(file_info);
 }
 
-class PickerListItemViewTest : public views::ViewsTestBase {
+class QuickInsertListItemViewTest : public views::ViewsTestBase {
  private:
   AshColorProvider provider_;
 };
 
-TEST_F(PickerListItemViewTest, SetsPrimaryText) {
+TEST_F(QuickInsertListItemViewTest, SetsPrimaryText) {
   PickerListItemView item_view(base::DoNothing());
 
   const std::u16string kPrimaryText = u"Item";
@@ -68,7 +68,7 @@ TEST_F(PickerListItemViewTest, SetsPrimaryText) {
               Property(&views::Label::GetText, kPrimaryText));
 }
 
-TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
+TEST_F(QuickInsertListItemViewTest, SetsPrimaryImage) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetPrimaryImage(ui::ImageModel(), /*available_width=*/100);
@@ -78,7 +78,7 @@ TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
       item_view.primary_container_for_testing()->children()[0]));
 }
 
-TEST_F(PickerListItemViewTest, SetPrimaryImageScalesImage) {
+TEST_F(QuickInsertListItemViewTest, SetPrimaryImageScalesImage) {
   PickerListItemView item_view(base::DoNothing());
   item_view.SetPrimaryImage(
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(1)),
@@ -94,7 +94,7 @@ TEST_F(PickerListItemViewTest, SetPrimaryImageScalesImage) {
             gfx::Size(252, 64));
 }
 
-TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
+TEST_F(QuickInsertListItemViewTest, SetsLeadingIcon) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -104,7 +104,7 @@ TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
       item_view.leading_icon_view_for_testing().GetImageModel().IsVectorIcon());
 }
 
-TEST_F(PickerListItemViewTest, SetsShortcutHintView) {
+TEST_F(QuickInsertListItemViewTest, SetsShortcutHintView) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetShortcutHintView(std::make_unique<PickerShortcutHintView>(
@@ -113,7 +113,7 @@ TEST_F(PickerListItemViewTest, SetsShortcutHintView) {
   EXPECT_NE(item_view.shortcut_hint_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerListItemViewTest, SetsBadgeVisible) {
+TEST_F(QuickInsertListItemViewTest, SetsBadgeVisible) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetBadgeVisible(true);
@@ -121,7 +121,7 @@ TEST_F(PickerListItemViewTest, SetsBadgeVisible) {
   EXPECT_TRUE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
-TEST_F(PickerListItemViewTest, SetsBadgeNotVisible) {
+TEST_F(QuickInsertListItemViewTest, SetsBadgeNotVisible) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetBadgeVisible(false);
@@ -129,7 +129,7 @@ TEST_F(PickerListItemViewTest, SetsBadgeNotVisible) {
   EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
-TEST_F(PickerListItemViewTest, SetsBadgeVisibleWithPrimaryText) {
+TEST_F(QuickInsertListItemViewTest, SetsBadgeVisibleWithPrimaryText) {
   PickerListItemView item_view(base::DoNothing());
   item_view.SetPrimaryText(u"a");
 
@@ -138,7 +138,7 @@ TEST_F(PickerListItemViewTest, SetsBadgeVisibleWithPrimaryText) {
   EXPECT_TRUE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
-TEST_F(PickerListItemViewTest, DoesNotSetBadgeVisibleWithPrimaryImage) {
+TEST_F(QuickInsertListItemViewTest, DoesNotSetBadgeVisibleWithPrimaryImage) {
   PickerListItemView item_view(base::DoNothing());
   item_view.SetPrimaryImage(ui::ImageModel(), /*available_width=*/100);
 
@@ -147,7 +147,7 @@ TEST_F(PickerListItemViewTest, DoesNotSetBadgeVisibleWithPrimaryImage) {
   EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
-TEST_F(PickerListItemViewTest, SetBadgeActionDoHasNoLabelText) {
+TEST_F(QuickInsertListItemViewTest, SetBadgeActionDoHasNoLabelText) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetBadgeAction(PickerActionType::kDo);
@@ -155,7 +155,7 @@ TEST_F(PickerListItemViewTest, SetBadgeActionDoHasNoLabelText) {
   EXPECT_EQ(item_view.trailing_badge_for_testing().GetText(), u"");
 }
 
-TEST_F(PickerListItemViewTest, SetBadgeActionHasLabelText) {
+TEST_F(QuickInsertListItemViewTest, SetBadgeActionHasLabelText) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetBadgeAction(PickerActionType::kInsert);
@@ -168,7 +168,7 @@ TEST_F(PickerListItemViewTest, SetBadgeActionHasLabelText) {
   EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
 }
 
-TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
+TEST_F(QuickInsertListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -187,7 +187,8 @@ TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
             SK_ColorTRANSPARENT);
 }
 
-TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconOncePreviewIconResolves) {
+TEST_F(QuickInsertListItemViewTest,
+       SetPreviewUpdatesIconOncePreviewIconResolves) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -216,7 +217,7 @@ TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconOncePreviewIconResolves) {
             SK_ColorBLUE);
 }
 
-TEST_F(PickerListItemViewTest, SetPreviewResolvesFileInfo) {
+TEST_F(QuickInsertListItemViewTest, SetPreviewResolvesFileInfo) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -232,7 +233,8 @@ TEST_F(PickerListItemViewTest, SetPreviewResolvesFileInfo) {
   EXPECT_TRUE(file_info_future.Wait());
 }
 
-TEST_F(PickerListItemViewTest, PseudofocusHidesLabelsBeforeFileInfoResolves) {
+TEST_F(QuickInsertListItemViewTest,
+       PseudofocusHidesLabelsBeforeFileInfoResolves) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -254,7 +256,7 @@ TEST_F(PickerListItemViewTest, PseudofocusHidesLabelsBeforeFileInfoResolves) {
   EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        PseudofocusHidesPreviewLabelsAfterFileInfoResolvesWithNullFileInfo) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -284,7 +286,8 @@ TEST_F(PickerListItemViewTest,
   EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
-TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewLabelsWithValidFileInfo) {
+TEST_F(QuickInsertListItemViewTest,
+       PseudofocusShowsPreviewLabelsWithValidFileInfo) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -312,7 +315,8 @@ TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewLabelsWithValidFileInfo) {
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
-TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewUsingCachedFileInfo) {
+TEST_F(QuickInsertListItemViewTest,
+       PseudofocusShowsPreviewUsingCachedFileInfo) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -342,7 +346,7 @@ TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewUsingCachedFileInfo) {
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
-TEST_F(PickerListItemViewTest, ClosesPreviewBubbleAfterLosingPseudoFocus) {
+TEST_F(QuickInsertListItemViewTest, ClosesPreviewBubbleAfterLosingPseudoFocus) {
   PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
@@ -360,7 +364,7 @@ TEST_F(PickerListItemViewTest, ClosesPreviewBubbleAfterLosingPseudoFocus) {
   EXPECT_EQ(preview_controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerListItemViewTest, ClosesSubmenuOnEnter) {
+TEST_F(QuickInsertListItemViewTest, ClosesSubmenuOnEnter) {
   auto anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -382,14 +386,14 @@ TEST_F(PickerListItemViewTest, ClosesSubmenuOnEnter) {
       .Wait();
 }
 
-TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryText) {
+TEST_F(QuickInsertListItemViewTest, AccessibleNameUsesPrimaryText) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
 
   EXPECT_EQ(view.GetAccessibleName(), u"primary");
 }
 
-TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryAndSecondaryText) {
+TEST_F(QuickInsertListItemViewTest, AccessibleNameUsesPrimaryAndSecondaryText) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
   view.SetSecondaryText(u"secondary");
@@ -397,7 +401,8 @@ TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryAndSecondaryText) {
   EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
 }
 
-TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryTextAndBadgeActionDo) {
+TEST_F(QuickInsertListItemViewTest,
+       AccessibleNameUsesPrimaryTextAndBadgeActionDo) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
   view.SetBadgeAction(PickerActionType::kDo);
@@ -405,7 +410,7 @@ TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryTextAndBadgeActionDo) {
   EXPECT_EQ(view.GetAccessibleName(), u"primary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionInsert) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
@@ -414,7 +419,7 @@ TEST_F(PickerListItemViewTest,
   EXPECT_EQ(view.GetAccessibleName(), u"Insert primary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionOpen) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
@@ -423,7 +428,7 @@ TEST_F(PickerListItemViewTest,
   EXPECT_EQ(view.GetAccessibleName(), u"Open primary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionCreate) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
@@ -432,7 +437,7 @@ TEST_F(PickerListItemViewTest,
   EXPECT_EQ(view.GetAccessibleName(), u"primary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionDo) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
@@ -442,7 +447,7 @@ TEST_F(PickerListItemViewTest,
   EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionInsert) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
@@ -452,7 +457,7 @@ TEST_F(PickerListItemViewTest,
   EXPECT_EQ(view.GetAccessibleName(), u"Insert primary, secondary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionOpen) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
@@ -462,7 +467,7 @@ TEST_F(PickerListItemViewTest,
   EXPECT_EQ(view.GetAccessibleName(), u"Open primary, secondary");
 }
 
-TEST_F(PickerListItemViewTest,
+TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionCreate) {
   PickerListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");

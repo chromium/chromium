@@ -40,9 +40,9 @@ auto RunCallbackArgWith(auto result) {
   return [result](auto callback) { return std::move(callback).Run(result); };
 }
 
-using PickerSuggestionsControllerTest = testing::Test;
+using QuickInsertSuggestionsControllerTest = testing::Test;
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenUnfocusedReturnsNewWindowResults) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -59,7 +59,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenSelectedTextReturnsEditorRewriteResults) {
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
@@ -85,7 +85,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsLobsterResult) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -106,7 +106,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenFocusedDoesNotReturnNewWindowResults) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -124,7 +124,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOffReturnsCapsOn) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -145,7 +145,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOnReturnsCapsOff) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -166,7 +166,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsCaseTransforms) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -192,7 +192,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithNoSelectionDoesNotReturnCaseTransforms) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -217,7 +217,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsOneSuggestionPerCategory) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(ash::features::kPickerGrid);
@@ -263,7 +263,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsSuggestionsPerCategory) {
   base::test::ScopedFeatureList feature_list(ash::features::kPickerGrid);
   NiceMock<MockPickerClient> client;
@@ -312,7 +312,7 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(client, model, callback.Get());
 }
 
-TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
+TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   const std::vector<PickerSearchResult> suggested_links = {
       PickerBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
       PickerBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
@@ -329,7 +329,8 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   EXPECT_EQ(future.Take(), suggested_links);
 }
 
-TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForDriveFileCategory) {
+TEST_F(QuickInsertSuggestionsControllerTest,
+       GetSuggestionsForDriveFileCategory) {
   const std::vector<PickerSearchResult> suggested_files = {
       PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
                             /*file_path=*/{}),
@@ -348,7 +349,8 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForDriveFileCategory) {
   EXPECT_EQ(future.Take(), suggested_files);
 }
 
-TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLocalFileCategory) {
+TEST_F(QuickInsertSuggestionsControllerTest,
+       GetSuggestionsForLocalFileCategory) {
   const std::vector<PickerSearchResult> suggested_files = {
       PickerLocalFileResult(u"a", /*file_path=*/{}),
       PickerLocalFileResult(u"b", /*file_path=*/{}),
@@ -365,7 +367,7 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLocalFileCategory) {
   EXPECT_EQ(future.Take(), suggested_files);
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForDatesCategoryReturnsSomeResults) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -377,7 +379,7 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_THAT(future.Take(), Not(IsEmpty()));
 }
 
-TEST_F(PickerSuggestionsControllerTest,
+TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForMathsCategoryReturnsSomeResults) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;
@@ -389,7 +391,8 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_THAT(future.Take(), Not(IsEmpty()));
 }
 
-TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForClipboardCategory) {
+TEST_F(QuickInsertSuggestionsControllerTest,
+       GetSuggestionsForClipboardCategory) {
   ClipboardHistoryItem clipboard_item =
       ClipboardHistoryItemBuilder()
           .SetFormat(ui::ClipboardInternalFormat::kText)

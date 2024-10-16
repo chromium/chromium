@@ -53,7 +53,8 @@ struct TestCase {
   PickerSectionType section_type;
 };
 
-class PickerSearchAggregatorTest : public testing::TestWithParam<TestCase> {
+class QuickInsertSearchAggregatorTest
+    : public testing::TestWithParam<TestCase> {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -114,25 +115,25 @@ const TestCase kContentEditorSectionTestCases[] = {
 };
 
 INSTANTIATE_TEST_SUITE_P(NamedSections,
-                         PickerSearchAggregatorTest,
+                         QuickInsertSearchAggregatorTest,
                          testing::ValuesIn(kNamedSectionTestCases));
 
 INSTANTIATE_TEST_SUITE_P(NoneSections,
-                         PickerSearchAggregatorTest,
+                         QuickInsertSearchAggregatorTest,
                          testing::ValuesIn(kNoneSectionTestCases));
 
 INSTANTIATE_TEST_SUITE_P(ContentEditorSections,
-                         PickerSearchAggregatorTest,
+                         QuickInsertSearchAggregatorTest,
                          testing::ValuesIn(kContentEditorSectionTestCases));
 
-class PickerSearchAggregatorNamedSectionTest
-    : public PickerSearchAggregatorTest {};
+class QuickInsertSearchAggregatorNamedSectionTest
+    : public QuickInsertSearchAggregatorTest {};
 
 INSTANTIATE_TEST_SUITE_P(,
-                         PickerSearchAggregatorNamedSectionTest,
+                         QuickInsertSearchAggregatorNamedSectionTest,
                          testing::ValuesIn(kNamedSectionTestCases));
 
-TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
+TEST_P(QuickInsertSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
@@ -147,7 +148,7 @@ TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   task_environment().FastForwardBy(base::Milliseconds(99));
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        DoesNotPublishResultsDuringBurnInIfInterruptedNoMoreResults) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
@@ -164,7 +165,7 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        ImmediatelyPublishesResultsDuringBurnInIfNoMoreResults) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -186,7 +187,7 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        PublishesResultsInCorrectSectionAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback,
@@ -210,7 +211,7 @@ TEST_P(PickerSearchAggregatorTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_P(PickerSearchAggregatorTest, PublishesResultsPostBurnIn) {
+TEST_P(QuickInsertSearchAggregatorTest, PublishesResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
@@ -233,7 +234,7 @@ TEST_P(PickerSearchAggregatorTest, PublishesResultsPostBurnIn) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
+TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -251,7 +252,7 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
+TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -269,7 +270,7 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
                                        /*has_more_results=*/false);
 }
 
-TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySearchAfterBurnIn) {
+TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySearchAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
@@ -283,7 +284,7 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySearchAfterBurnIn) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySearchPostBurnIn) {
+TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySearchPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
@@ -297,7 +298,7 @@ TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySearchPostBurnIn) {
                                        /*has_more_results=*/false);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        PublishesEmptyAfterResultsIfNoMoreResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   {
@@ -322,7 +323,7 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        PublishesEmptyAfterResultsIfNoMoreResultsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   {
@@ -349,7 +350,7 @@ TEST_P(PickerSearchAggregatorTest,
 
 // Results in the "none" section are never published post burn in, so don't test
 // on those.
-TEST_P(PickerSearchAggregatorNamedSectionTest,
+TEST_P(QuickInsertSearchAggregatorNamedSectionTest,
        PublishesEmptyAfterResultsIfNoMoreResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   {
@@ -374,7 +375,7 @@ TEST_P(PickerSearchAggregatorNamedSectionTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        DoesNotPublishEmptyAfterResultsIfInterruptedNoMoreResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -392,7 +393,7 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        DoesNotPublishEmptyAfterResultsIfInterruptedNoMoreResultsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -410,7 +411,7 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
 }
 
-TEST_P(PickerSearchAggregatorTest,
+TEST_P(QuickInsertSearchAggregatorTest,
        DoesNotPublishEmptyAfterResultsIfInterruptedNoMoreResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -428,7 +429,7 @@ TEST_P(PickerSearchAggregatorTest,
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
 }
 
-class PickerSearchAggregatorMultipleSourcesTest : public testing::Test {
+class QuickInsertSearchAggregatorMultipleSourcesTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -439,7 +440,7 @@ class PickerSearchAggregatorMultipleSourcesTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PublishesEmptySectionsIfNoResultsCameBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(0);
@@ -451,7 +452,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PublishesEmptySectionsIfOnlyEmptyResultsCameBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(0);
@@ -476,7 +477,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        CombinesSearchResultsWithPredefinedTypeOrderBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
@@ -580,7 +581,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        CombinesSearchResultsAndPromotesBestMatchBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
@@ -639,7 +640,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        CombinesSearchResultsAndPromotesRecentClipboardBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
@@ -698,7 +699,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        AppendsSearchResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
@@ -779,7 +780,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/false);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        CombinesSearchResultsRetainingHasMoreResultsBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback,
@@ -804,7 +805,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        AppendsSearchResultsRetainingSeeMoreResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
@@ -832,7 +833,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/true);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PreBurnInLinksAreDeduplicatedWithPreBurnInDriveFilesWhichCameBefore) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
@@ -910,7 +911,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PreBurnInLinksAreDeduplicatedWithPreBurnInDriveFilesWhichCameAfter) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
@@ -988,7 +989,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PostBurnInLinksAreDeduplicatedWithPreBurnInDriveFiles) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
@@ -1070,7 +1071,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       /*has_more_results=*/true);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PostBurnInLinksAreDeduplicatedWithPostBurnInDriveFilesWhichCameBefore) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
@@ -1152,7 +1153,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       /*has_more_results=*/true);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PostBurnInDriveFilesAreDeduplicatedWithPreBurnInLinks) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
@@ -1238,7 +1239,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       /*has_more_results=*/true);
 }
 
-TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        PostBurnInDriveFilesAreDeduplicatedWithPostBurnInLinksWhichCameBefore) {
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;

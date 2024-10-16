@@ -27,9 +27,9 @@ base::Time TimeFromMicroSeconds(int64_t microseconds) {
       base::Microseconds(microseconds));
 }
 
-class PickerEmojiHistoryModelTest : public testing::Test {
+class QuickInsertEmojiHistoryModelTest : public testing::Test {
  public:
-  PickerEmojiHistoryModelTest() {
+  QuickInsertEmojiHistoryModelTest() {
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
   }
 
@@ -39,7 +39,7 @@ class PickerEmojiHistoryModelTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
-TEST_F(PickerEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
+TEST_F(QuickInsertEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set(
       "emoji",
@@ -59,7 +59,7 @@ TEST_F(PickerEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
                               .timestamp = TimeFromMicroSeconds(5)}));
 }
 
-TEST_F(PickerEmojiHistoryModelTest, AddsNewRecentEmoji) {
+TEST_F(QuickInsertEmojiHistoryModelTest, AddsNewRecentEmoji) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set(
       "emoji",
@@ -86,7 +86,7 @@ TEST_F(PickerEmojiHistoryModelTest, AddsNewRecentEmoji) {
                               .timestamp = TimeFromMicroSeconds(5)}));
 }
 
-TEST_F(PickerEmojiHistoryModelTest, AddsExistingRecentEmoji) {
+TEST_F(QuickInsertEmojiHistoryModelTest, AddsExistingRecentEmoji) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set(
       "emoji",
@@ -110,7 +110,7 @@ TEST_F(PickerEmojiHistoryModelTest, AddsExistingRecentEmoji) {
                               .timestamp = TimeFromMicroSeconds(10)}));
 }
 
-TEST_F(PickerEmojiHistoryModelTest, AddsRecentEmojiEmptyHistory) {
+TEST_F(QuickInsertEmojiHistoryModelTest, AddsRecentEmojiEmptyHistory) {
   base::SimpleTestClock clock;
   PickerEmojiHistoryModel model(pref_service(), &clock);
   clock.SetNow(TimeFromMicroSeconds(5));

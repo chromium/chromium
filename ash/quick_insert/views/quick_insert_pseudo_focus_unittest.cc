@@ -13,9 +13,9 @@
 namespace ash {
 namespace {
 
-using PickerPseudoFocusTest = views::ViewsTestBase;
+using QuickInsertPseudoFocusTest = views::ViewsTestBase;
 
-TEST_F(PickerPseudoFocusTest,
+TEST_F(QuickInsertPseudoFocusTest,
        ApplyPseudoFocusToListItemUpdatesItemStateAndBadge) {
   PickerListItemView item_view(base::DoNothing());
 
@@ -26,7 +26,7 @@ TEST_F(PickerPseudoFocusTest,
   EXPECT_TRUE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
-TEST_F(PickerPseudoFocusTest,
+TEST_F(QuickInsertPseudoFocusTest,
        RemovePseudoFocusFromListItemUpdatesItemStateAndBadge) {
   PickerListItemView item_view(base::DoNothing());
   ApplyPickerPseudoFocusToView(&item_view);

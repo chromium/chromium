@@ -94,9 +94,9 @@ using MockSearchResultsCallback =
 using MockEmojiSearchResultsCallback =
     ::testing::MockFunction<PickerViewDelegate::EmojiSearchResultsCallback>;
 
-class PickerSearchControllerTest : public testing::Test {
+class QuickInsertSearchControllerTest : public testing::Test {
  protected:
-  PickerSearchControllerTest() {
+  QuickInsertSearchControllerTest() {
     ON_CALL(client(), GetPrefs).WillByDefault(testing::Return(&prefs_service_));
   }
 
@@ -145,7 +145,7 @@ class ScopedFakeResourceBundleDelegate {
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
-TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
+TEST_F(QuickInsertSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
   PickerSearchController controller(kBurnInPeriod);
@@ -156,7 +156,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
                           base::Unretained(&search_results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
   PickerSearchController controller(/*burn_in_period=*/base::Milliseconds(100));
@@ -173,7 +173,7 @@ TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
   task_environment().FastForwardBy(base::Milliseconds(99));
 }
 
-TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
+TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromOmniboxSearch) {
   MockSearchResultsCallback search_results_callback;
   // Catch-all to prevent unexpected gMock call errors. See
   // https://google.github.io/googletest/gmock_cook_book.html#uninteresting-vs-unexpected
@@ -205,7 +205,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
+TEST_F(QuickInsertSearchControllerTest,
+       DoesNotFlashEmptyResultsFromOmniboxSearch) {
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
   // CrOS search calls `StopSearch()` automatically on starting a search.
@@ -277,7 +278,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
                           base::Unretained(&second_search_results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(kBurnInPeriod);
@@ -297,7 +298,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
       "Ash.Picker.Search.OmniboxProvider.QueryTime", kBeforeBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(kBurnInPeriod);
@@ -317,7 +318,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
       "Ash.Picker.Search.OmniboxProvider.QueryTime", kAfterBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotRecordOmniboxMetricsIfNoOmniboxResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -353,7 +354,7 @@ TEST_F(PickerSearchControllerTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotRecordOmniboxMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -393,7 +394,7 @@ TEST_F(PickerSearchControllerTest,
 }
 
 TEST_F(
-    PickerSearchControllerTest,
+    QuickInsertSearchControllerTest,
     DoesNotRecordOmniboxMetricsTwiceIfSearchResultsArePublishedAfterStopSearch) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -436,7 +437,7 @@ TEST_F(
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 1);
 }
 
-TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
+TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -460,7 +461,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(kBurnInPeriod);
@@ -478,7 +479,7 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
                                    kBeforeBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(kBurnInPeriod);
@@ -496,7 +497,8 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
                                    kAfterBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
+TEST_F(QuickInsertSearchControllerTest,
+       DoesNotRecordFileMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
@@ -531,7 +533,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
   histogram.ExpectTotalCount("Ash.Picker.Search.FileProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotRecordFileMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -572,7 +574,7 @@ TEST_F(PickerSearchControllerTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.FileProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
+TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -596,7 +598,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(kBurnInPeriod);
@@ -614,7 +616,7 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
                                    kBeforeBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(kBurnInPeriod);
@@ -632,7 +634,8 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
                                    kAfterBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
+TEST_F(QuickInsertSearchControllerTest,
+       DoesNotRecordDriveMetricsIfNoDriveResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
@@ -667,7 +670,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
   histogram.ExpectTotalCount("Ash.Picker.Search.DriveProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotRecordDriveMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -708,7 +711,7 @@ TEST_F(PickerSearchControllerTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.DriveProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
+TEST_F(QuickInsertSearchControllerTest, CombinesSearchResults) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -752,7 +755,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   task_environment().FastForwardBy(kBurnInPeriod - kBeforeBurnIn);
 }
 
-TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
   PickerSearchController controller(kBurnInPeriod);
@@ -768,7 +771,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
   PickerSearchController controller(kBurnInPeriod);
@@ -783,7 +786,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
                                       {});
 }
 
-TEST_F(PickerSearchControllerTest, ShowResultsEvenAfterBurnIn) {
+TEST_F(QuickInsertSearchControllerTest, ShowResultsEvenAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -807,7 +810,8 @@ TEST_F(PickerSearchControllerTest, ShowResultsEvenAfterBurnIn) {
            {ash::PickerTextResult(u"test")});
 }
 
-TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
+TEST_F(QuickInsertSearchControllerTest,
+       OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
               StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
       .Times(1);
@@ -827,7 +831,7 @@ TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
                          kDefaultSearchOptions, base::DoNothing());
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        PublishesEmptyResultsAfterResultsOnceDoneDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   {
@@ -853,7 +857,7 @@ TEST_F(PickerSearchControllerTest,
                                       {PickerTextResult(u"cat")});
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        PublishesEmptyResultsAfterResultsOnceDoneAfterDoneAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   {
@@ -879,7 +883,7 @@ TEST_F(PickerSearchControllerTest,
                                       {PickerTextResult(u"cat")});
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotPublishResultsWhenInterruptedDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -900,7 +904,7 @@ TEST_F(PickerSearchControllerTest,
   controller.StopSearch();
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotPublishEmptyResultsWhenInterruptedDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -918,7 +922,7 @@ TEST_F(PickerSearchControllerTest,
   controller.StopSearch();
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        DoesNotPublishEmptyResultsWhenInterruptedAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -937,7 +941,8 @@ TEST_F(PickerSearchControllerTest,
   controller.StopSearch();
 }
 
-TEST_F(PickerSearchControllerTest, StopSearchDoesNotCallOldCallbackAfterwards) {
+TEST_F(QuickInsertSearchControllerTest,
+       StopSearchDoesNotCallOldCallbackAfterwards) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
   MockSearchResultsCallback second_search_results_callback;
@@ -953,7 +958,7 @@ TEST_F(PickerSearchControllerTest, StopSearchDoesNotCallOldCallbackAfterwards) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
+TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataInAllLanguages) {
   ScopedFakeResourceBundleDelegate mock_resource_delegate(
       {{FakeResource{
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
@@ -1011,7 +1016,7 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
                           base::Unretained(&results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest,
+TEST_F(QuickInsertSearchControllerTest,
        LoadsEmojiDataInDefaultEnglishIfNoSupportedLanguage) {
   ScopedFakeResourceBundleDelegate mock_resource_delegate(
       {{FakeResource{
@@ -1056,7 +1061,7 @@ TEST_F(PickerSearchControllerTest,
                           base::Unretained(&results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
+TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   ScopedFakeResourceBundleDelegate mock_resource_delegate(
       {{FakeResource{
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
@@ -1127,7 +1132,7 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
                           base::Unretained(&results_callback_jp)));
 }
 
-TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
+TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   ScopedFakeResourceBundleDelegate mock_resource_delegate(
       {{FakeResource{
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,

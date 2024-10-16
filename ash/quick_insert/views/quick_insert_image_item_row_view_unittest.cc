@@ -33,15 +33,15 @@ std::unique_ptr<PickerImageItemView> CreateImageItem() {
       u"image", base::DoNothing());
 }
 
-using PickerImageItemRowViewTest = views::ViewsTestBase;
+using QuickInsertImageItemRowViewTest = views::ViewsTestBase;
 
-TEST_F(PickerImageItemRowViewTest, HasGridRole) {
+TEST_F(QuickInsertImageItemRowViewTest, HasGridRole) {
   PickerImageItemRowView item_row;
 
   EXPECT_EQ(item_row.GetAccessibleRole(), ax::mojom::Role::kGrid);
 }
 
-TEST_F(PickerImageItemRowViewTest, HasRowOfItems) {
+TEST_F(QuickInsertImageItemRowViewTest, HasRowOfItems) {
   PickerImageItemRowView item_row;
 
   EXPECT_THAT(item_row.children(),
@@ -49,7 +49,7 @@ TEST_F(PickerImageItemRowViewTest, HasRowOfItems) {
                                         ax::mojom::Role::kRow))));
 }
 
-TEST_F(PickerImageItemRowViewTest, CreatesImageItems) {
+TEST_F(QuickInsertImageItemRowViewTest, CreatesImageItems) {
   PickerImageItemRowView item_row;
 
   views::View* item1 = item_row.AddImageItem(CreateImageItem());
@@ -59,7 +59,7 @@ TEST_F(PickerImageItemRowViewTest, CreatesImageItems) {
   EXPECT_THAT(item_row.GetItems(), ElementsAre(item1, item2));
 }
 
-TEST_F(PickerImageItemRowViewTest, ImageItemsAreResizedToSameWidth) {
+TEST_F(QuickInsertImageItemRowViewTest, ImageItemsAreResizedToSameWidth) {
   PickerImageItemRowView item_row;
   item_row.SetPreferredSize(gfx::Size(320, 60));
 
@@ -70,7 +70,7 @@ TEST_F(PickerImageItemRowViewTest, ImageItemsAreResizedToSameWidth) {
             item2->GetPreferredSize().width());
 }
 
-TEST_F(PickerImageItemRowViewTest, GetsTopItem) {
+TEST_F(QuickInsertImageItemRowViewTest, GetsTopItem) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -83,7 +83,7 @@ TEST_F(PickerImageItemRowViewTest, GetsTopItem) {
   EXPECT_EQ(item_row->GetTopItem(), item1);
 }
 
-TEST_F(PickerImageItemRowViewTest, EmptyRowTopItemIsMoreItemsButton) {
+TEST_F(QuickInsertImageItemRowViewTest, EmptyRowTopItemIsMoreItemsButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -92,7 +92,7 @@ TEST_F(PickerImageItemRowViewTest, EmptyRowTopItemIsMoreItemsButton) {
   EXPECT_EQ(item_row->GetTopItem(), item_row->GetMoreItemsButtonForTesting());
 }
 
-TEST_F(PickerImageItemRowViewTest, GetsBottomItem) {
+TEST_F(QuickInsertImageItemRowViewTest, GetsBottomItem) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -105,7 +105,7 @@ TEST_F(PickerImageItemRowViewTest, GetsBottomItem) {
   EXPECT_EQ(item_row->GetBottomItem(), item1);
 }
 
-TEST_F(PickerImageItemRowViewTest, EmptyRowBottomItemIsMoreItemsButton) {
+TEST_F(QuickInsertImageItemRowViewTest, EmptyRowBottomItemIsMoreItemsButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -115,7 +115,7 @@ TEST_F(PickerImageItemRowViewTest, EmptyRowBottomItemIsMoreItemsButton) {
             item_row->GetMoreItemsButtonForTesting());
 }
 
-TEST_F(PickerImageItemRowViewTest, GetsItemAbove) {
+TEST_F(QuickInsertImageItemRowViewTest, GetsItemAbove) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -132,7 +132,7 @@ TEST_F(PickerImageItemRowViewTest, GetsItemAbove) {
             nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemAbove) {
+TEST_F(QuickInsertImageItemRowViewTest, ItemNotInRowHasNoItemAbove) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -142,7 +142,7 @@ TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemAbove) {
   EXPECT_EQ(item_row->GetItemAbove(item_not_in_row.get()), nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, GetsItemBelow) {
+TEST_F(QuickInsertImageItemRowViewTest, GetsItemBelow) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -159,7 +159,7 @@ TEST_F(PickerImageItemRowViewTest, GetsItemBelow) {
             nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemBelow) {
+TEST_F(QuickInsertImageItemRowViewTest, ItemNotInRowHasNoItemBelow) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -169,7 +169,7 @@ TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemBelow) {
   EXPECT_EQ(item_row->GetItemBelow(item_not_in_row.get()), nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, GetsItemLeftOf) {
+TEST_F(QuickInsertImageItemRowViewTest, GetsItemLeftOf) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -186,7 +186,7 @@ TEST_F(PickerImageItemRowViewTest, GetsItemLeftOf) {
             item3);
 }
 
-TEST_F(PickerImageItemRowViewTest, ItemLeftOfMoreItemsButtonInEmptyRow) {
+TEST_F(QuickInsertImageItemRowViewTest, ItemLeftOfMoreItemsButtonInEmptyRow) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -196,7 +196,7 @@ TEST_F(PickerImageItemRowViewTest, ItemLeftOfMoreItemsButtonInEmptyRow) {
             nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemLeftOf) {
+TEST_F(QuickInsertImageItemRowViewTest, ItemNotInRowHasNoItemLeftOf) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -206,7 +206,7 @@ TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemLeftOf) {
   EXPECT_EQ(item_row->GetItemLeftOf(item_not_in_row.get()), nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, GetsItemRightOf) {
+TEST_F(QuickInsertImageItemRowViewTest, GetsItemRightOf) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -224,7 +224,7 @@ TEST_F(PickerImageItemRowViewTest, GetsItemRightOf) {
             nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, ItemRightOfMoreItemsButtonInEmptyRow) {
+TEST_F(QuickInsertImageItemRowViewTest, ItemRightOfMoreItemsButtonInEmptyRow) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =
@@ -234,7 +234,7 @@ TEST_F(PickerImageItemRowViewTest, ItemRightOfMoreItemsButtonInEmptyRow) {
             nullptr);
 }
 
-TEST_F(PickerImageItemRowViewTest, ItemNotInRowHasNoItemRightOf) {
+TEST_F(QuickInsertImageItemRowViewTest, ItemNotInRowHasNoItemRightOf) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemRowView* item_row =

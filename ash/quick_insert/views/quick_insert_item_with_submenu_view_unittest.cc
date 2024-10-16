@@ -27,12 +27,12 @@
 namespace ash {
 namespace {
 
-class PickerItemWithSubmenuViewTest : public views::ViewsTestBase {
+class QuickInsertItemWithSubmenuViewTest : public views::ViewsTestBase {
  private:
   AshColorProvider provider_;
 };
 
-TEST_F(PickerItemWithSubmenuViewTest, HasAccessibilityAttributes) {
+TEST_F(QuickInsertItemWithSubmenuViewTest, HasAccessibilityAttributes) {
   PickerItemWithSubmenuView view;
 
   ui::AXNodeData data;
@@ -42,7 +42,7 @@ TEST_F(PickerItemWithSubmenuViewTest, HasAccessibilityAttributes) {
   EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
 }
 
-TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenu) {
+TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenu) {
   PickerSubmenuController submenu_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view =
@@ -57,7 +57,7 @@ TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenu) {
       .Wait();
 }
 
-TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenuOnMouseEnter) {
+TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenuOnMouseEnter) {
   PickerSubmenuController submenu_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view =
@@ -74,7 +74,7 @@ TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenuOnMouseEnter) {
       .Wait();
 }
 
-TEST_F(PickerItemWithSubmenuViewTest, ShowsSubmenuOnGestureTap) {
+TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenuOnGestureTap) {
   PickerSubmenuController submenu_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view =

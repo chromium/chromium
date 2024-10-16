@@ -14,7 +14,7 @@
 namespace ash {
 namespace {
 
-TEST(PickerPreviewMetadataTest, ReturnsLastModified) {
+TEST(QuickInsertPreviewMetadataTest, ReturnsLastModified) {
   base::File::Info only_modified;
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &only_modified.last_modified));
@@ -22,7 +22,7 @@ TEST(PickerPreviewMetadataTest, ReturnsLastModified) {
   EXPECT_EQ(PickerGetFilePreviewDescription(only_modified), u"Edited · Dec 23");
 }
 
-TEST(PickerPreviewMetadataTest, ReturnsLastAccessed) {
+TEST(QuickInsertPreviewMetadataTest, ReturnsLastAccessed) {
   base::File::Info only_accessed;
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &only_accessed.last_accessed));
@@ -31,7 +31,7 @@ TEST(PickerPreviewMetadataTest, ReturnsLastAccessed) {
             u"You opened · Dec 23");
 }
 
-TEST(PickerPreviewMetadataTest, ReturnsModifiedIfNewer) {
+TEST(QuickInsertPreviewMetadataTest, ReturnsModifiedIfNewer) {
   base::File::Info modified_newer;
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &modified_newer.last_modified));
@@ -42,7 +42,7 @@ TEST(PickerPreviewMetadataTest, ReturnsModifiedIfNewer) {
             u"Edited · Dec 23");
 }
 
-TEST(PickerPreviewMetadataTest, ReturnsAccessedIfNewer) {
+TEST(QuickInsertPreviewMetadataTest, ReturnsAccessedIfNewer) {
   base::File::Info accessed_newer;
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:00:00",
                                      &accessed_newer.last_modified));
@@ -53,7 +53,7 @@ TEST(PickerPreviewMetadataTest, ReturnsAccessedIfNewer) {
             u"You opened · Dec 23");
 }
 
-TEST(PickerPreviewMetadataTest, ReturnsModifiedIfSameAsAccessed) {
+TEST(QuickInsertPreviewMetadataTest, ReturnsModifiedIfSameAsAccessed) {
   base::File::Info modified_newer;
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &modified_newer.last_modified));

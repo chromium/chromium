@@ -190,9 +190,9 @@ void SetRecentFiles(TestingProfile* profile, std::vector<Volume> volumes) {
       base::BindRepeating(BuildTestRecentModelFactory, std::move(volumes)));
 }
 
-class PickerClientImplTest : public BrowserWithTestWindowTest {
+class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
  public:
-  PickerClientImplTest() = default;
+  QuickInsertClientImplTest() = default;
 
   void SetUp() override {
     ash::CrosDisksClient::InitializeFake();
@@ -279,14 +279,14 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
 
-TEST_F(PickerClientImplTest, GetsSharedURLLoaderFactory) {
+TEST_F(QuickInsertClientImplTest, GetsSharedURLLoaderFactory) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
 
   EXPECT_EQ(client.GetSharedURLLoaderFactory(), GetSharedURLLoaderFactory());
 }
 
-TEST_F(PickerClientImplTest, StartCrosSearch) {
+TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   AddSearchToHistory(profile(), GURL("http://foo.com/history"));
@@ -333,7 +333,7 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   ASSERT_TRUE(test_done.Wait());
 }
 
-TEST_F(PickerClientImplTest, IgnoresWhatYouTypedResults) {
+TEST_F(QuickInsertClientImplTest, IgnoresWhatYouTypedResults) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<void> test_done;
@@ -351,7 +351,7 @@ TEST_F(PickerClientImplTest, IgnoresWhatYouTypedResults) {
   ASSERT_TRUE(test_done.Wait());
 }
 
-TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
+TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -362,7 +362,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
+TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -397,7 +397,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
           Field("title", &ash::PickerLocalFileResult::title, u"local.png"))));
 }
 
-TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
+TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -422,7 +422,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentDriveFilesWithNoFiles) {
+TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -432,7 +432,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesWithNoFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
+TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -468,7 +468,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
                 GURL("https://file_alternate_link/drive.png"))))));
 }
 
-TEST_F(PickerClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
+TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -493,7 +493,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentLocalFilesTruncates) {
+TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesTruncates) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -519,7 +519,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesTruncates) {
   EXPECT_THAT(future.Get(), SizeIs(1));
 }
 
-TEST_F(PickerClientImplTest, GetRecentDriveFilesTruncates) {
+TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesTruncates) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -544,7 +544,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesTruncates) {
   EXPECT_THAT(future.Get(), SizeIs(1));
 }
 
-TEST_F(PickerClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
+TEST_F(QuickInsertClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   const base::Time now = base::Time::Now();
@@ -568,7 +568,8 @@ TEST_F(PickerClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   EXPECT_EQ(favicon_service.page_url_, GURL("http://a.com/history"));
 }
 
-TEST_F(PickerClientImplTest, GetSuggestedLinkResultsAreTruncatedToMostRecent) {
+TEST_F(QuickInsertClientImplTest,
+       GetSuggestedLinkResultsAreTruncatedToMostRecent) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   const base::Time now = base::Time::Now();
@@ -589,7 +590,7 @@ TEST_F(PickerClientImplTest, GetSuggestedLinkResultsAreTruncatedToMostRecent) {
   EXPECT_EQ(favicon_service.page_url_, GURL("http://b.com/history"));
 }
 
-TEST_F(PickerClientImplTest,
+TEST_F(QuickInsertClientImplTest,
        GetSuggestedLinkResultsFiltersOutPersonalizedLinks) {
   base::test::ScopedFeatureList features(ash::features::kPickerFilterLinks);
   ash::PickerController controller;
@@ -613,7 +614,7 @@ TEST_F(PickerClientImplTest,
                         GURL("https://mail.google.com")))));
 }
 
-TEST_F(PickerClientImplTest,
+TEST_F(QuickInsertClientImplTest,
        SearchAfterSwitchingActiveUserReturnsResultsFromNewUser) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -644,7 +645,7 @@ TEST_F(PickerClientImplTest,
                         GURL("https://foo.com/primary"))))));
 }
 
-TEST_F(PickerClientImplTest,
+TEST_F(QuickInsertClientImplTest,
        SearchCategoryAfterSwitchingActiveUserReturnsResultsFromNewUser) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -676,7 +677,7 @@ TEST_F(PickerClientImplTest,
                         GURL("https://foo.com/primary"))))));
 }
 
-class PickerClientImplEditorTest : public PickerClientImplTest {
+class QuickInsertClientImplEditorTest : public QuickInsertClientImplTest {
  public:
   ash::input_method::EditorMediator& GetEditorMediator(Profile* profile) {
     return *ash::input_method::EditorMediatorFactory::GetForProfile(profile);
@@ -686,13 +687,13 @@ class PickerClientImplEditorTest : public PickerClientImplTest {
 
  protected:
   void SetUp() override {
-    PickerClientImplTest::SetUp();
+    QuickInsertClientImplTest::SetUp();
 
     ash::IMEBridge::Get()->SetInputContextHandler(&ime_);
   }
 
   void TearDown() override {
-    PickerClientImplTest::TearDown();
+    QuickInsertClientImplTest::TearDown();
 
     ash::IMEBridge::Get()->SetInputContextHandler(nullptr);
   }
@@ -701,7 +702,7 @@ class PickerClientImplEditorTest : public PickerClientImplTest {
   ash::InputMethodAsh ime_{nullptr};
 };
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        IsEligibleForEditorReturnsFalseIfEditorDisabled) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -711,7 +712,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_FALSE(client.IsEligibleForEditor());
 }
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        IsEligibleForEditorReturnsFalseIfHardBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
@@ -722,7 +723,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_FALSE(client.IsEligibleForEditor());
 }
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        IsEligibleForEditorReturnsTrueIfSoftBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
@@ -733,7 +734,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_TRUE(client.IsEligibleForEditor());
 }
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenEditorFlagDisabled) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -743,7 +744,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_TRUE(client.CacheEditorContext().is_null());
 }
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
@@ -754,7 +755,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_TRUE(client.CacheEditorContext().is_null());
 }
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        CacheEditorContextReturnsCallbackWhenNotBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
@@ -765,7 +766,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_FALSE(client.CacheEditorContext().is_null());
 }
 
-TEST_F(PickerClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
+TEST_F(QuickInsertClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -786,7 +787,7 @@ TEST_F(PickerClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
             gfx::Rect(1, 2, 3, 4));
 }
 
-TEST_F(PickerClientImplEditorTest, GetSuggestedEditorResults) {
+TEST_F(QuickInsertClientImplEditorTest, GetSuggestedEditorResults) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -804,7 +805,7 @@ TEST_F(PickerClientImplEditorTest, GetSuggestedEditorResults) {
   // EditorServiceConnector is injectable.
 }
 
-TEST_F(PickerClientImplEditorTest,
+TEST_F(QuickInsertClientImplEditorTest,
        GetSuggestedEditorResultsReturnsNothingWhenBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
@@ -821,7 +822,7 @@ TEST_F(PickerClientImplEditorTest,
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
+TEST_F(QuickInsertClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
@@ -832,7 +833,7 @@ TEST_F(PickerClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
   counter.WaitForEvent(ax::mojom::Event::kLiveRegionChanged);
 }
 
-TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesAll) {
+TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesAll) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   const int types =
@@ -848,7 +849,7 @@ TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesAll) {
   EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
 }
 
-TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesBookmarks) {
+TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesBookmarks) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   const int types =
@@ -863,7 +864,7 @@ TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesBookmarks) {
   EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
 }
 
-TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesHistory) {
+TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesHistory) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   const int types =
@@ -878,7 +879,7 @@ TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesHistory) {
   EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
 }
 
-TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesOpenTab) {
+TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesOpenTab) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   const int types =

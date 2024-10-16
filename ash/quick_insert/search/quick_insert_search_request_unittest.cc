@@ -78,7 +78,7 @@ constexpr PickerSearchRequest::Options kDefaultOptions{
 using MockSearchResultsCallback =
     ::testing::MockFunction<PickerSearchRequest::SearchResultsCallback>;
 
-class PickerSearchRequestTest : public testing::Test {
+class QuickInsertSearchRequestTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -92,7 +92,7 @@ class PickerSearchRequestTest : public testing::Test {
   NiceMock<MockSearchPickerClient> client_;
 };
 
-TEST_F(PickerSearchRequestTest, SendsQueryToCrosSearchImmediately) {
+TEST_F(QuickInsertSearchRequestTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
 
@@ -103,7 +103,7 @@ TEST_F(PickerSearchRequestTest, SendsQueryToCrosSearchImmediately) {
       base::DoNothing(), &client(), kDefaultOptions);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoesNotSendQueryToCrosSearchIfNotAvailableNoCategory) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
@@ -115,7 +115,7 @@ TEST_F(PickerSearchRequestTest,
       base::DoNothing(), &client(), {});
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoesNotSendQueryToCrosSearchIfNotAvailableWithCategory) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
@@ -127,7 +127,7 @@ TEST_F(PickerSearchRequestTest,
       base::DoNothing(), &client(), {});
 }
 
-TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
+TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromOmniboxSearch) {
   MockSearchResultsCallback search_results_callback;
   // Catch-all to prevent unexpected gMock call errors. See
   // https://google.github.io/googletest/gmock_cook_book.html#uninteresting-vs-unexpected
@@ -155,7 +155,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
           ui::ImageModel())});
 }
 
-TEST_F(PickerSearchRequestTest, TruncatesOmniboxResults) {
+TEST_F(QuickInsertSearchRequestTest, TruncatesOmniboxResults) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -182,7 +182,7 @@ TEST_F(PickerSearchRequestTest, TruncatesOmniboxResults) {
        ash::PickerTextResult(u"3"), ash::PickerTextResult(u"4")});
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
+TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -211,7 +211,7 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
        ash::PickerTextResult(u"3"), ash::PickerTextResult(u"4")});
 }
 
-TEST_F(PickerSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
+TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback,
               Call(Ne(PickerSearchSource::kOmnibox), _, _))
@@ -259,7 +259,8 @@ TEST_F(PickerSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
       });
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
+TEST_F(QuickInsertSearchRequestTest,
+       DoesNotFlashEmptyResultsFromOmniboxSearch) {
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
   // CrOS search calls `StopSearch()` automatically on starting a search.
@@ -311,7 +312,7 @@ TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
           ui::ImageModel())});
 }
 
-TEST_F(PickerSearchRequestTest, RecordsOmniboxMetrics) {
+TEST_F(QuickInsertSearchRequestTest, RecordsOmniboxMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
@@ -331,7 +332,7 @@ TEST_F(PickerSearchRequestTest, RecordsOmniboxMetrics) {
       "Ash.Picker.Search.OmniboxProvider.QueryTime", kMetricMetricTime, 1);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoesNotRecordOmniboxMetricsIfNoOmniboxResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -367,7 +368,7 @@ TEST_F(PickerSearchRequestTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoesNotRecordOmniboxMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -407,7 +408,7 @@ TEST_F(PickerSearchRequestTest,
 }
 
 TEST_F(
-    PickerSearchRequestTest,
+    QuickInsertSearchRequestTest,
     DoesNotRecordOmniboxMetricsTwiceIfSearchResultsArePublishedAfterStopSearch) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
@@ -451,7 +452,7 @@ TEST_F(
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 1);
 }
 
-TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
+TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -472,7 +473,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
       {ash::PickerTextResult(u"monorail_cat.jpg")});
 }
 
-TEST_F(PickerSearchRequestTest, TruncatesResultsFromFileSearch) {
+TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -499,7 +500,7 @@ TEST_F(PickerSearchRequestTest, TruncatesResultsFromFileSearch) {
        ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
+TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -528,7 +529,7 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
        ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
 }
 
-TEST_F(PickerSearchRequestTest, RecordsFileMetrics) {
+TEST_F(QuickInsertSearchRequestTest, RecordsFileMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
@@ -546,7 +547,7 @@ TEST_F(PickerSearchRequestTest, RecordsFileMetrics) {
                                    kMetricMetricTime, 1);
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
+TEST_F(QuickInsertSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
@@ -581,7 +582,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
   histogram.ExpectTotalCount("Ash.Picker.Search.FileProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoesNotRecordFileMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -622,7 +623,7 @@ TEST_F(PickerSearchRequestTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.FileProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
+TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -644,7 +645,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
       {ash::PickerTextResult(u"catrbug_135117.jpg")});
 }
 
-TEST_F(PickerSearchRequestTest, TruncatesResultsFromDriveSearch) {
+TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -671,7 +672,8 @@ TEST_F(PickerSearchRequestTest, TruncatesResultsFromDriveSearch) {
        ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromDriveOnlySearch) {
+TEST_F(QuickInsertSearchRequestTest,
+       DoesNotTruncateResultsFromDriveOnlySearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -700,7 +702,7 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromDriveOnlySearch) {
        ash::PickerTextResult(u"3.jpg"), ash::PickerTextResult(u"4.jpg")});
 }
 
-TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
+TEST_F(QuickInsertSearchRequestTest, RecordsDriveMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
@@ -718,7 +720,8 @@ TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
                                    kMetricMetricTime, 1);
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
+TEST_F(QuickInsertSearchRequestTest,
+       DoesNotRecordDriveMetricsIfNoDriveResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
@@ -753,7 +756,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
   histogram.ExpectTotalCount("Ash.Picker.Search.DriveProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoesNotRecordDriveMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -794,7 +797,7 @@ TEST_F(PickerSearchRequestTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.DriveProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchRequestTest, PublishesDateResultsOnlyOnce) {
+TEST_F(QuickInsertSearchRequestTest, PublishesDateResultsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -814,7 +817,7 @@ TEST_F(PickerSearchRequestTest, PublishesDateResultsOnlyOnce) {
       base::DoNothing(), &client(), kDefaultOptions);
 }
 
-TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
+TEST_F(QuickInsertSearchRequestTest, RecordsDateMetricsOnlyOnce) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   // Fast forward the clock to a Sunday (day_of_week = 0).
@@ -835,7 +838,8 @@ TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
   histogram.ExpectTotalCount("Ash.Picker.Search.DateProvider.QueryTime", 1);
 }
 
-TEST_F(PickerSearchRequestTest, PublishesDateResultsWhenDateCategorySelected) {
+TEST_F(QuickInsertSearchRequestTest,
+       PublishesDateResultsWhenDateCategorySelected) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -855,7 +859,7 @@ TEST_F(PickerSearchRequestTest, PublishesDateResultsWhenDateCategorySelected) {
       base::DoNothing(), &client(), kDefaultOptions);
 }
 
-TEST_F(PickerSearchRequestTest, PublishesMathResultsOnlyOnce) {
+TEST_F(QuickInsertSearchRequestTest, PublishesMathResultsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -869,7 +873,7 @@ TEST_F(PickerSearchRequestTest, PublishesMathResultsOnlyOnce) {
       base::DoNothing(), &client(), kDefaultOptions);
 }
 
-TEST_F(PickerSearchRequestTest, RecordsMathMetricsOnlyOnce) {
+TEST_F(QuickInsertSearchRequestTest, RecordsMathMetricsOnlyOnce) {
   base::HistogramTester histogram;
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -888,7 +892,8 @@ TEST_F(PickerSearchRequestTest, RecordsMathMetricsOnlyOnce) {
   histogram.ExpectTotalCount("Ash.Picker.Search.MathProvider.QueryTime", 1);
 }
 
-TEST_F(PickerSearchRequestTest, PublishesMathResultsWhenMathCategorySelected) {
+TEST_F(QuickInsertSearchRequestTest,
+       PublishesMathResultsWhenMathCategorySelected) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
@@ -902,7 +907,7 @@ TEST_F(PickerSearchRequestTest, PublishesMathResultsWhenMathCategorySelected) {
       base::DoNothing(), &client(), kDefaultOptions);
 }
 
-TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
+TEST_F(QuickInsertSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
               StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
       .Times(1);
@@ -930,7 +935,7 @@ TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   }
 }
 
-TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
+TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromClipboardSearch) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
@@ -959,7 +964,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
       base::DoNothing(), &client(), kDefaultOptions);
 }
 
-TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
+TEST_F(QuickInsertSearchRequestTest, RecordsClipboardMetrics) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
@@ -981,12 +986,12 @@ TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
       "Ash.Picker.Search.ClipboardProvider.QueryTime", kMetricMetricTime, 1);
 }
 
-class PickerSearchRequestEditorTest
-    : public PickerSearchRequestTest,
+class QuickInsertSearchRequestEditorTest
+    : public QuickInsertSearchRequestTest,
       public testing::WithParamInterface<
           std::pair<PickerCategory, PickerSearchSource>> {};
 
-TEST_P(PickerSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
+TEST_P(QuickInsertSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
   const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -1002,7 +1007,7 @@ TEST_P(PickerSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
       base::DoNothing(), &client(), {.available_categories = {{category}}});
 }
 
-TEST_P(PickerSearchRequestEditorTest,
+TEST_P(QuickInsertSearchRequestEditorTest,
        DoNotShowResultsFromEditorSearchIfNotAvailable) {
   const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
@@ -1016,7 +1021,7 @@ TEST_P(PickerSearchRequestEditorTest,
       base::DoNothing(), &client(), {});
 }
 
-TEST_P(PickerSearchRequestEditorTest, RecordsEditorMetrics) {
+TEST_P(QuickInsertSearchRequestEditorTest, RecordsEditorMetrics) {
   const auto& [category, source] = GetParam();
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -1032,18 +1037,18 @@ TEST_P(PickerSearchRequestEditorTest, RecordsEditorMetrics) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerSearchRequestEditorTest,
+    QuickInsertSearchRequestEditorTest,
     testing::Values(std::make_pair(PickerCategory::kEditorWrite,
                                    PickerSearchSource::kEditorWrite),
                     std::make_pair(PickerCategory::kEditorRewrite,
                                    PickerSearchSource::kEditorRewrite)));
 
-class PickerSearchRequestLobsterTest
-    : public PickerSearchRequestTest,
+class QuickInsertSearchRequestLobsterTest
+    : public QuickInsertSearchRequestTest,
       public testing::WithParamInterface<
           std::pair<PickerCategory, PickerSearchSource>> {};
 
-TEST_P(PickerSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
+TEST_P(QuickInsertSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
   const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -1059,7 +1064,7 @@ TEST_P(PickerSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
       base::DoNothing(), &client(), {.available_categories = {{category}}});
 }
 
-TEST_P(PickerSearchRequestLobsterTest,
+TEST_P(QuickInsertSearchRequestLobsterTest,
        DoNotShowResultsFromLobsterSearchIfNotAvailable) {
   const auto& [category, source] = GetParam();
   MockSearchResultsCallback search_results_callback;
@@ -1073,7 +1078,7 @@ TEST_P(PickerSearchRequestLobsterTest,
       base::DoNothing(), &client(), {});
 }
 
-TEST_P(PickerSearchRequestLobsterTest, RecordsLobsterMetrics) {
+TEST_P(QuickInsertSearchRequestLobsterTest, RecordsLobsterMetrics) {
   const auto& [category, source] = GetParam();
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
@@ -1089,13 +1094,13 @@ TEST_P(PickerSearchRequestLobsterTest, RecordsLobsterMetrics) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerSearchRequestLobsterTest,
+    QuickInsertSearchRequestLobsterTest,
     testing::Values(std::make_pair(PickerCategory::kLobster,
                                    PickerSearchSource::kLobster),
                     std::make_pair(PickerCategory::kLobster,
                                    PickerSearchSource::kLobster)));
 
-TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
+TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   // This actually calls category search.
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
@@ -1110,7 +1115,8 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   EXPECT_FALSE(interrupted);
 }
 
-TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenSynchronous) {
+TEST_F(QuickInsertSearchRequestTest,
+       DoneClosureCalledImmediatelyWhenSynchronous) {
   // This actually calls category search.
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kAction, _, _))
@@ -1130,7 +1136,7 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenSynchronous) {
   EXPECT_FALSE(interrupted);
 }
 
-TEST_F(PickerSearchRequestTest, DoneClosureNotCalledWhenAsynchronous) {
+TEST_F(QuickInsertSearchRequestTest, DoneClosureNotCalledWhenAsynchronous) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
@@ -1144,7 +1150,7 @@ TEST_F(PickerSearchRequestTest, DoneClosureNotCalledWhenAsynchronous) {
   EXPECT_FALSE(done_callback.IsReady());
 }
 
-TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterClipboard) {
+TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledAfterClipboard) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   base::test::TestFuture<ClipboardHistoryController::GetHistoryValuesCallback>
       get_history_values_future;
@@ -1175,7 +1181,8 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterClipboard) {
   EXPECT_FALSE(interrupted);
 }
 
-TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterSingleCrosSearchSource) {
+TEST_F(QuickInsertSearchRequestTest,
+       DoneClosureCalledAfterSingleCrosSearchSource) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
@@ -1192,7 +1199,7 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterSingleCrosSearchSource) {
   EXPECT_FALSE(interrupted);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoneClosureCalledAfterMultipleCrosSearchSources) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
@@ -1217,7 +1224,8 @@ TEST_F(PickerSearchRequestTest,
   EXPECT_FALSE(interrupted);
 }
 
-TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterClipboardAndOmnibox) {
+TEST_F(QuickInsertSearchRequestTest,
+       DoneClosureCalledAfterClipboardAndOmnibox) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   base::test::TestFuture<ClipboardHistoryController::GetHistoryValuesCallback>
       get_history_values_future;
@@ -1251,7 +1259,7 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterClipboardAndOmnibox) {
   EXPECT_FALSE(interrupted);
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoneClosureCalledAfterSearchCallbackSynchronous) {
   MockSearchResultsCallback search_results_callback;
   base::MockOnceCallback<void(bool)> done_callback;
@@ -1269,7 +1277,7 @@ TEST_F(PickerSearchRequestTest,
       {.available_categories = {{PickerCategory::kUnitsMaths}}});
 }
 
-TEST_F(PickerSearchRequestTest,
+TEST_F(QuickInsertSearchRequestTest,
        DoneClosureCalledAfterSearchCallbackAsynchronous) {
   MockSearchResultsCallback search_results_callback;
   base::MockOnceCallback<void(bool)> done_callback;
@@ -1288,7 +1296,7 @@ TEST_F(PickerSearchRequestTest,
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox, {});
 }
 
-TEST_F(PickerSearchRequestTest, DoneClosureCalledWhenDestructed) {
+TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledWhenDestructed) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 

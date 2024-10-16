@@ -16,7 +16,7 @@
 namespace ash {
 namespace {
 
-class PickerActionOnNextFocusRequestTest : public testing::Test {
+class QuickInsertActionOnNextFocusRequestTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -27,7 +27,7 @@ class PickerActionOnNextFocusRequestTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(PickerActionOnNextFocusRequestTest, PerformsActionOnNextFocus) {
+TEST_F(QuickInsertActionOnNextFocusRequestTest, PerformsActionOnNextFocus) {
   ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
   InputMethodAsh input_method(nullptr);
 
@@ -40,7 +40,7 @@ TEST_F(PickerActionOnNextFocusRequestTest, PerformsActionOnNextFocus) {
   EXPECT_TRUE(action_future.Wait());
 }
 
-TEST_F(PickerActionOnNextFocusRequestTest,
+TEST_F(QuickInsertActionOnNextFocusRequestTest,
        PerformsActionOnlyOnceWithMultipleFocus) {
   ui::FakeTextInputClient client1(ui::TEXT_INPUT_TYPE_TEXT);
   ui::FakeTextInputClient client2(ui::TEXT_INPUT_TYPE_TEXT);
@@ -56,7 +56,7 @@ TEST_F(PickerActionOnNextFocusRequestTest,
   EXPECT_TRUE(action_future.Wait());
 }
 
-TEST_F(PickerActionOnNextFocusRequestTest,
+TEST_F(QuickInsertActionOnNextFocusRequestTest,
        DoesNotCallTimeoutCallbackAfterSuccessfulAction) {
   ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
   InputMethodAsh input_method(nullptr);
@@ -73,7 +73,7 @@ TEST_F(PickerActionOnNextFocusRequestTest,
   EXPECT_FALSE(timeout_future.IsReady());
 }
 
-TEST_F(PickerActionOnNextFocusRequestTest, CallsTimeoutCallbackOnTimeout) {
+TEST_F(QuickInsertActionOnNextFocusRequestTest, CallsTimeoutCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 
   base::test::TestFuture<void> timeout_future;
@@ -85,7 +85,8 @@ TEST_F(PickerActionOnNextFocusRequestTest, CallsTimeoutCallbackOnTimeout) {
   EXPECT_TRUE(timeout_future.Wait());
 }
 
-TEST_F(PickerActionOnNextFocusRequestTest, DoesNotPerformActionAfterTimeout) {
+TEST_F(QuickInsertActionOnNextFocusRequestTest,
+       DoesNotPerformActionAfterTimeout) {
   ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
   InputMethodAsh input_method(nullptr);
   base::test::TestFuture<void> action_future;

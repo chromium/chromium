@@ -67,7 +67,7 @@ class GifAssetFetcher {
   PickerGifView::PreviewImageFetchedCallback preview_image_fetched_callback_;
 };
 
-TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
+TEST(QuickInsertGifViewTest, PreferredHeightPreservesAspectRatio) {
   constexpr gfx::Size kOriginalGifDimensions(100, 200);
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
@@ -77,7 +77,7 @@ TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
   EXPECT_EQ(gif_view.GetHeightForWidth(50), 100);
 }
 
-TEST(PickerGifViewTest, CorrectSizeBeforePreviewFetched) {
+TEST(QuickInsertGifViewTest, CorrectSizeBeforePreviewFetched) {
   GifAssetFetcher asset_fetcher;
   PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
                          asset_fetcher.GetPreviewImageFetcher(), kImageSize);
@@ -85,7 +85,7 @@ TEST(PickerGifViewTest, CorrectSizeBeforePreviewFetched) {
   EXPECT_EQ(gif_view.GetImageModel().Size(), kImageSize);
 }
 
-TEST(PickerGifViewTest, ShowsPreviewImageWhenFramesNotFetched) {
+TEST(QuickInsertGifViewTest, ShowsPreviewImageWhenFramesNotFetched) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   GifAssetFetcher asset_fetcher;
@@ -99,7 +99,7 @@ TEST(PickerGifViewTest, ShowsPreviewImageWhenFramesNotFetched) {
   EXPECT_EQ(gif_view.GetImageModel().Size(), kImageSize);
 }
 
-TEST(PickerGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
+TEST(QuickInsertGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   GifAssetFetcher asset_fetcher;
@@ -117,7 +117,7 @@ TEST(PickerGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
   EXPECT_EQ(gif_view.GetImageModel().Size(), kImageSize);
 }
 
-TEST(PickerGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
+TEST(QuickInsertGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   GifAssetFetcher asset_fetcher;
@@ -137,7 +137,7 @@ TEST(PickerGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
   EXPECT_TRUE(GetImage(gif_view).BackedBySameObjectAs(frames[0].image));
 }
 
-TEST(PickerGifViewTest, FrameDurations) {
+TEST(QuickInsertGifViewTest, FrameDurations) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
@@ -163,7 +163,7 @@ TEST(PickerGifViewTest, FrameDurations) {
   EXPECT_TRUE(GetImage(gif_view).BackedBySameObjectAs(frames[0].image));
 }
 
-TEST(PickerGifViewTest, AdjustsShortFrameDurations) {
+TEST(QuickInsertGifViewTest, AdjustsShortFrameDurations) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
@@ -188,7 +188,7 @@ TEST(PickerGifViewTest, AdjustsShortFrameDurations) {
   EXPECT_TRUE(GetImage(gif_view).BackedBySameObjectAs(frames[1].image));
 }
 
-TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenGifIsFetchedFirst) {
+TEST(QuickInsertGifViewTest, RecordsTimeToFirstFrameWhenGifIsFetchedFirst) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
@@ -207,7 +207,7 @@ TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenGifIsFetchedFirst) {
                                           base::Milliseconds(100), 1);
 }
 
-TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenPreviewIsFetchedFirst) {
+TEST(QuickInsertGifViewTest, RecordsTimeToFirstFrameWhenPreviewIsFetchedFirst) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
@@ -226,7 +226,8 @@ TEST(PickerGifViewTest, RecordsTimeToFirstFrameWhenPreviewIsFetchedFirst) {
                                           base::Milliseconds(100), 1);
 }
 
-TEST(PickerGifViewTest, DoesNotRecordTimeToFirstFrameForInvalidGifsOrPreviews) {
+TEST(QuickInsertGifViewTest,
+     DoesNotRecordTimeToFirstFrameForInvalidGifsOrPreviews) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;

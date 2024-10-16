@@ -13,9 +13,9 @@
 namespace ash {
 namespace {
 
-using PickerBubbleEventFilterTest = AshTestBase;
+using QuickInsertBubbleEventFilterTest = AshTestBase;
 
-TEST_F(PickerBubbleEventFilterTest, ClickingOnWidgetDoesNotCloseWidget) {
+TEST_F(QuickInsertBubbleEventFilterTest, ClickingOnWidgetDoesNotCloseWidget) {
   auto widget =
       TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
   PickerBubbleEventFilter filter(widget.get());
@@ -27,7 +27,8 @@ TEST_F(PickerBubbleEventFilterTest, ClickingOnWidgetDoesNotCloseWidget) {
   EXPECT_FALSE(widget->IsClosed());
 }
 
-TEST_F(PickerBubbleEventFilterTest, ClickingOnChildWidgetDoesNotCloseWidget) {
+TEST_F(QuickInsertBubbleEventFilterTest,
+       ClickingOnChildWidgetDoesNotCloseWidget) {
   auto widget =
       TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
   auto child = TestWidgetBuilder()
@@ -46,7 +47,7 @@ TEST_F(PickerBubbleEventFilterTest, ClickingOnChildWidgetDoesNotCloseWidget) {
   EXPECT_FALSE(widget->IsClosed());
 }
 
-TEST_F(PickerBubbleEventFilterTest, ClickingOutsideWidgetClosesWidget) {
+TEST_F(QuickInsertBubbleEventFilterTest, ClickingOutsideWidgetClosesWidget) {
   auto widget =
       TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
   PickerBubbleEventFilter filter(widget.get());

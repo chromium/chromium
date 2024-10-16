@@ -115,9 +115,9 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
   MOCK_METHOD(void, SetCapsLockDisplayed, (bool), (override));
 };
 
-class PickerZeroStateViewTest : public views::ViewsTestBase {
+class QuickInsertZeroStateViewTest : public views::ViewsTestBase {
  public:
-  PickerZeroStateViewTest()
+  QuickInsertZeroStateViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -130,7 +130,7 @@ class PickerZeroStateViewTest : public views::ViewsTestBase {
   AshColorProvider ash_color_provider_;
 };
 
-TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
+TEST_F(QuickInsertZeroStateViewTest, CreatesCategorySections) {
   MockZeroStateViewDelegate mock_delegate;
   PickerZeroStateView view(&mock_delegate, kAllCategories, kPickerWidth,
                            &asset_fetcher_, &submenu_controller_,
@@ -142,7 +142,7 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
                           Key(PickerCategoryType::kMore)));
 }
 
-TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
+TEST_F(QuickInsertZeroStateViewTest, LeftClickSelectsCategory) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
@@ -170,7 +170,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   LeftClickOn(*category_view);
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
+TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
@@ -205,7 +205,8 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   LeftClickOn(*item_view);
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsSuggestedLocalFileResultsInRowFormat) {
+TEST_F(QuickInsertZeroStateViewTest,
+       ShowsSuggestedLocalFileResultsInRowFormat) {
   base::test::ScopedFeatureList feature_list(features::kPickerGrid);
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
@@ -245,7 +246,7 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedLocalFileResultsInRowFormat) {
   LeftClickOn(*item_view);
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
+TEST_F(QuickInsertZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
   base::test::ScopedFeatureList feature_list(features::kPickerGrid);
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
@@ -273,7 +274,8 @@ TEST_F(PickerZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
   LeftClickOn(*more_items_button);
 }
 
-TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
+TEST_F(QuickInsertZeroStateViewTest,
+       DisplayingCapsLockResultSetsCapsLockDisplayed) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
@@ -298,7 +300,7 @@ TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
   widget->Show();
 }
 
-TEST_F(PickerZeroStateViewTest,
+TEST_F(QuickInsertZeroStateViewTest,
        PutsCapsLockAtTheEndOfSuggestedResultsForMiddleCase) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetCapsLockPosition)
@@ -340,7 +342,7 @@ TEST_F(PickerZeroStateViewTest,
   LeftClickOn(*item_view);
 }
 
-TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
+TEST_F(QuickInsertZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetCapsLockPosition)
       .WillOnce(Return(PickerCapsLockPosition::kBottom));
@@ -380,7 +382,7 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   LeftClickOn(*item_view);
 }
 
-TEST_F(PickerZeroStateViewTest,
+TEST_F(QuickInsertZeroStateViewTest,
        DoesntShowEditorRewriteCategoryForEmptySuggestions) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
@@ -395,7 +397,8 @@ TEST_F(PickerZeroStateViewTest,
   EXPECT_THAT(view.primary_section_view_for_testing(), IsNull());
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
+TEST_F(QuickInsertZeroStateViewTest,
+       ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
@@ -434,7 +437,7 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
                                u"b")))))));
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
+TEST_F(QuickInsertZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
@@ -475,7 +478,8 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
                                   IDS_PICKER_CHANGE_TONE_MENU_LABEL))))))));
 }
 
-TEST_F(PickerZeroStateViewTest, DoesntShowLobsterCategoryForEmptySuggestions) {
+TEST_F(QuickInsertZeroStateViewTest,
+       DoesntShowLobsterCategoryForEmptySuggestions) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
@@ -489,7 +493,7 @@ TEST_F(PickerZeroStateViewTest, DoesntShowLobsterCategoryForEmptySuggestions) {
   EXPECT_THAT(view.primary_section_view_for_testing(), IsNull());
 }
 
-TEST_F(PickerZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
+TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
@@ -518,7 +522,7 @@ TEST_F(PickerZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
                       )))))));
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
+TEST_F(QuickInsertZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
@@ -547,7 +551,8 @@ TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
                           IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))))))))));
 }
 
-TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingSuggestedItems) {
+TEST_F(QuickInsertZeroStateViewTest,
+       RequestsPseudoFocusAfterGettingSuggestedItems) {
   MockZeroStateViewDelegate mock_delegate;
   PickerZeroStateViewDelegate::SuggestedResultsCallback
       suggested_results_callback;

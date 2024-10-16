@@ -20,7 +20,7 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-TEST(PickerEditorSearchTest, MatchesEnglishString) {
+TEST(QuickInsertEditorSearchTest, MatchesEnglishString) {
   EXPECT_THAT(
       PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"cat"),
       Optional(VariantWith<PickerEditorResult>(AllOf(
@@ -30,12 +30,12 @@ TEST(PickerEditorSearchTest, MatchesEnglishString) {
           Field("category", &PickerEditorResult::category, std::nullopt)))));
 }
 
-TEST(PickerEditorSearchTest, DoesNotMatchShortEnglishString) {
+TEST(QuickInsertEditorSearchTest, DoesNotMatchShortEnglishString) {
   EXPECT_EQ(PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"ca"),
             std::nullopt);
 }
 
-TEST(PickerEditorSearchTest, MatchesJapaneseString) {
+TEST(QuickInsertEditorSearchTest, MatchesJapaneseString) {
   EXPECT_THAT(
       PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"キツネ"),
       Optional(VariantWith<PickerEditorResult>(AllOf(
@@ -45,7 +45,7 @@ TEST(PickerEditorSearchTest, MatchesJapaneseString) {
           Field("category", &PickerEditorResult::category, std::nullopt)))));
 }
 
-TEST(PickerEditorSearchTest, DoesNotMatchShortJapaneseString) {
+TEST(QuickInsertEditorSearchTest, DoesNotMatchShortJapaneseString) {
   EXPECT_EQ(PickerEditorSearch(PickerEditorResult::Mode::kWrite, u"ねこ"),
             std::nullopt);
 }

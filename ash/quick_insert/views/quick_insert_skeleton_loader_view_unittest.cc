@@ -17,20 +17,21 @@
 namespace ash {
 namespace {
 
-class PickerSkeletonLoaderViewTest : public views::ViewsTestBase {
+class QuickInsertSkeletonLoaderViewTest : public views::ViewsTestBase {
  public:
-  PickerSkeletonLoaderViewTest()
+  QuickInsertSkeletonLoaderViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
-TEST_F(PickerSkeletonLoaderViewTest, InitialStateHasNoOpacity) {
+TEST_F(QuickInsertSkeletonLoaderViewTest, InitialStateHasNoOpacity) {
   PickerSkeletonLoaderView view;
 
   EXPECT_EQ(view.layer()->opacity(), 0);
 }
 
-TEST_F(PickerSkeletonLoaderViewTest, StartAnimationDoesNotImmediatelyAnimate) {
+TEST_F(QuickInsertSkeletonLoaderViewTest,
+       StartAnimationDoesNotImmediatelyAnimate) {
   PickerSkeletonLoaderView view;
 
   view.StartAnimationAfter(base::Seconds(1));
@@ -39,7 +40,7 @@ TEST_F(PickerSkeletonLoaderViewTest, StartAnimationDoesNotImmediatelyAnimate) {
   EXPECT_EQ(view.layer()->opacity(), 0);
 }
 
-TEST_F(PickerSkeletonLoaderViewTest, AnimationStartsAfterDelay) {
+TEST_F(QuickInsertSkeletonLoaderViewTest, AnimationStartsAfterDelay) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PickerSkeletonLoaderView view;
@@ -50,7 +51,7 @@ TEST_F(PickerSkeletonLoaderViewTest, AnimationStartsAfterDelay) {
   EXPECT_EQ(view.layer()->opacity(), 1.0f);
 }
 
-TEST_F(PickerSkeletonLoaderViewTest,
+TEST_F(QuickInsertSkeletonLoaderViewTest,
        StopAnimationStopsUnstartedAnimationAndResetsOpacity) {
   PickerSkeletonLoaderView view;
   view.StartAnimationAfter(base::Seconds(1));
@@ -63,7 +64,7 @@ TEST_F(PickerSkeletonLoaderViewTest,
   EXPECT_FALSE(view.layer()->GetAnimator()->is_animating());
 }
 
-TEST_F(PickerSkeletonLoaderViewTest,
+TEST_F(QuickInsertSkeletonLoaderViewTest,
        StopAnimationStopsRunningAnimationAndResetsOpacity) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);

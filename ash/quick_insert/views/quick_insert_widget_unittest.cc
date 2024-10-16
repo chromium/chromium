@@ -73,9 +73,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   PickerSessionMetrics session_metrics_;
 };
 
-using PickerWidgetTest = AshTestBase;
+using QuickInsertWidgetTest = AshTestBase;
 
-TEST_F(PickerWidgetTest, CreateWidgetHasCorrectHierarchy) {
+TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectHierarchy) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
 
@@ -89,14 +89,14 @@ TEST_F(PickerWidgetTest, CreateWidgetHasCorrectHierarchy) {
               ElementsAre(Truly(views::IsViewClass<PickerView>)));
 }
 
-TEST_F(PickerWidgetTest, CreateWidgetHasCorrectBorder) {
+TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectBorder) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
 }
 
-TEST_F(PickerWidgetTest, ClickingOutsideClosesPickerWidget) {
+TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesPickerWidget) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -109,7 +109,7 @@ TEST_F(PickerWidgetTest, ClickingOutsideClosesPickerWidget) {
   EXPECT_TRUE(widget->IsClosed());
 }
 
-TEST_F(PickerWidgetTest, LosingFocusClosesPickerWidget) {
+TEST_F(QuickInsertWidgetTest, LosingFocusClosesPickerWidget) {
   // Create something other than the picker to focus.
   auto window = CreateTestWindow();
   window->Show();
@@ -130,7 +130,7 @@ TEST_F(PickerWidgetTest, LosingFocusClosesPickerWidget) {
             PickerSessionMetrics::SessionOutcome::kAbandoned);
 }
 
-TEST_F(PickerWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
+TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
   std::unique_ptr<views::Widget> anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
 
@@ -149,7 +149,7 @@ TEST_F(PickerWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
   bubble_view->GetWidget()->CloseNow();
 }
 
-TEST_F(PickerWidgetTest, CreatesCenteredWidget) {
+TEST_F(QuickInsertWidgetTest, CreatesCenteredWidget) {
   FakePickerViewDelegate delegate;
   auto widget =
       PickerWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));

@@ -23,9 +23,9 @@ namespace {
 
 constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 100, 10);
 
-using PickerSubmenuViewTest = views::ViewsTestBase;
+using QuickInsertSubmenuViewTest = views::ViewsTestBase;
 
-TEST_F(PickerSubmenuViewTest, GetsTopItem) {
+TEST_F(QuickInsertSubmenuViewTest, GetsTopItem) {
   std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -35,7 +35,7 @@ TEST_F(PickerSubmenuViewTest, GetsTopItem) {
   EXPECT_EQ(submenu_view.GetTopItem(), top_item_ptr);
 }
 
-TEST_F(PickerSubmenuViewTest, GetsBottomItem) {
+TEST_F(QuickInsertSubmenuViewTest, GetsBottomItem) {
   std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -45,7 +45,7 @@ TEST_F(PickerSubmenuViewTest, GetsBottomItem) {
   EXPECT_EQ(submenu_view.GetBottomItem(), bottom_item_ptr);
 }
 
-TEST_F(PickerSubmenuViewTest, GetsItemAbove) {
+TEST_F(QuickInsertSubmenuViewTest, GetsItemAbove) {
   std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -57,7 +57,7 @@ TEST_F(PickerSubmenuViewTest, GetsItemAbove) {
   EXPECT_EQ(submenu_view.GetItemAbove(bottom_item_ptr), top_item_ptr);
 }
 
-TEST_F(PickerSubmenuViewTest, GetItemBelow) {
+TEST_F(QuickInsertSubmenuViewTest, GetItemBelow) {
   std::vector<std::unique_ptr<PickerListItemView>> items;
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -69,7 +69,7 @@ TEST_F(PickerSubmenuViewTest, GetItemBelow) {
   EXPECT_EQ(submenu_view.GetItemBelow(bottom_item_ptr), nullptr);
 }
 
-TEST_F(PickerSubmenuViewTest, TriggersItemCallbackOnPseudoFocusAction) {
+TEST_F(QuickInsertSubmenuViewTest, TriggersItemCallbackOnPseudoFocusAction) {
   std::vector<std::unique_ptr<PickerListItemView>> items;
   base::test::TestFuture<void> select_item_future;
   items.push_back(std::make_unique<PickerListItemView>(

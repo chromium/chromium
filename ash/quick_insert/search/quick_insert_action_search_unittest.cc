@@ -30,16 +30,16 @@ struct TestCase {
   std::vector<PickerSearchResult> expected_results;
 };
 
-class PickerActionSearchTest : public testing::TestWithParam<TestCase> {};
+class QuickInsertActionSearchTest : public testing::TestWithParam<TestCase> {};
 
-TEST_P(PickerActionSearchTest, MatchesExpectedCategories) {
+TEST_P(QuickInsertActionSearchTest, MatchesExpectedCategories) {
   const auto& [options, query, expected_results] = GetParam();
   EXPECT_THAT(PickerActionSearch(options, query), expected_results);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerActionSearchTest,
+    QuickInsertActionSearchTest,
     testing::Values(
         // Exact match
         TestCase{

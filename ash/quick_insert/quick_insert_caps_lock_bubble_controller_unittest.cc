@@ -18,13 +18,13 @@
 namespace ash {
 namespace {
 
-class PickerCapsLockBubbleControllerTest : public AshTestBase {
+class QuickInsertCapsLockBubbleControllerTest : public AshTestBase {
  public:
-  PickerCapsLockBubbleControllerTest()
+  QuickInsertCapsLockBubbleControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
-TEST_F(PickerCapsLockBubbleControllerTest,
+TEST_F(QuickInsertCapsLockBubbleControllerTest,
        ToggleCapsLockWhenNotFocusedDoesNotShowBubble) {
   input_method::FakeImeKeyboard ime_keyboard;
   PickerCapsLockBubbleController controller(&ime_keyboard);
@@ -34,7 +34,7 @@ TEST_F(PickerCapsLockBubbleControllerTest,
   EXPECT_FALSE(controller.bubble_view_for_testing());
 }
 
-TEST_F(PickerCapsLockBubbleControllerTest,
+TEST_F(QuickInsertCapsLockBubbleControllerTest,
        ToggleCapsLockInTextFieldShowsBubbleForAShortTime) {
   input_method::FakeImeKeyboard ime_keyboard;
   PickerCapsLockBubbleController controller(&ime_keyboard);
@@ -50,7 +50,7 @@ TEST_F(PickerCapsLockBubbleControllerTest,
   EXPECT_FALSE(controller.bubble_view_for_testing());
 }
 
-TEST_F(PickerCapsLockBubbleControllerTest,
+TEST_F(QuickInsertCapsLockBubbleControllerTest,
        ToggleCapsLockTwiceQuicklyInTextFieldExtendsBubbleShowTime) {
   input_method::FakeImeKeyboard ime_keyboard;
   PickerCapsLockBubbleController controller(&ime_keyboard);
@@ -70,7 +70,7 @@ TEST_F(PickerCapsLockBubbleControllerTest,
   EXPECT_FALSE(controller.bubble_view_for_testing());
 }
 
-TEST_F(PickerCapsLockBubbleControllerTest, InputEventClosesBubble) {
+TEST_F(QuickInsertCapsLockBubbleControllerTest, InputEventClosesBubble) {
   input_method::FakeImeKeyboard ime_keyboard;
   PickerCapsLockBubbleController controller(&ime_keyboard);
   ui::FakeTextInputClient input_field(
@@ -89,7 +89,7 @@ TEST_F(PickerCapsLockBubbleControllerTest, InputEventClosesBubble) {
   EXPECT_FALSE(controller.bubble_view_for_testing());
 }
 
-TEST_F(PickerCapsLockBubbleControllerTest,
+TEST_F(QuickInsertCapsLockBubbleControllerTest,
        InputEventDoesNotCloseBubbleIfTooEarly) {
   input_method::FakeImeKeyboard ime_keyboard;
   PickerCapsLockBubbleController controller(&ime_keyboard);

@@ -17,9 +17,9 @@
 namespace ash {
 namespace {
 
-using PickerListItemContainerViewTest = views::ViewsTestBase;
+using QuickInsertListItemContainerViewTest = views::ViewsTestBase;
 
-TEST_F(PickerListItemContainerViewTest, GetsTopItem) {
+TEST_F(QuickInsertListItemContainerViewTest, GetsTopItem) {
   PickerListItemContainerView container;
 
   PickerListItemView* top_item = container.AddListItem(
@@ -30,13 +30,13 @@ TEST_F(PickerListItemContainerViewTest, GetsTopItem) {
   EXPECT_EQ(container.GetTopItem(), top_item);
 }
 
-TEST_F(PickerListItemContainerViewTest, EmptyContainerHasNoTopItem) {
+TEST_F(QuickInsertListItemContainerViewTest, EmptyContainerHasNoTopItem) {
   PickerListItemContainerView container;
 
   EXPECT_EQ(container.GetTopItem(), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, GetsBottomItem) {
+TEST_F(QuickInsertListItemContainerViewTest, GetsBottomItem) {
   PickerListItemContainerView container;
 
   container.AddListItem(
@@ -47,13 +47,13 @@ TEST_F(PickerListItemContainerViewTest, GetsBottomItem) {
   EXPECT_EQ(container.GetBottomItem(), bottom_item);
 }
 
-TEST_F(PickerListItemContainerViewTest, EmptyContainerHasNoBottomItem) {
+TEST_F(QuickInsertListItemContainerViewTest, EmptyContainerHasNoBottomItem) {
   PickerListItemContainerView container;
 
   EXPECT_EQ(container.GetBottomItem(), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, GetsItemAbove) {
+TEST_F(QuickInsertListItemContainerViewTest, GetsItemAbove) {
   PickerListItemContainerView container;
 
   PickerListItemView* item1 = container.AddListItem(
@@ -65,7 +65,7 @@ TEST_F(PickerListItemContainerViewTest, GetsItemAbove) {
   EXPECT_EQ(container.GetItemAbove(item2), item1);
 }
 
-TEST_F(PickerListItemContainerViewTest, ItemNotInContainerHasNoItemAbove) {
+TEST_F(QuickInsertListItemContainerViewTest, ItemNotInContainerHasNoItemAbove) {
   PickerListItemContainerView container;
 
   PickerListItemView item_not_in_container(base::DoNothing());
@@ -73,7 +73,7 @@ TEST_F(PickerListItemContainerViewTest, ItemNotInContainerHasNoItemAbove) {
   EXPECT_EQ(container.GetItemAbove(&item_not_in_container), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, GetsItemBelow) {
+TEST_F(QuickInsertListItemContainerViewTest, GetsItemBelow) {
   PickerListItemContainerView container;
 
   PickerListItemView* item1 = container.AddListItem(
@@ -85,7 +85,7 @@ TEST_F(PickerListItemContainerViewTest, GetsItemBelow) {
   EXPECT_EQ(container.GetItemBelow(item2), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, ItemNotInContainerHasNoItemBelow) {
+TEST_F(QuickInsertListItemContainerViewTest, ItemNotInContainerHasNoItemBelow) {
   PickerListItemContainerView container;
 
   PickerListItemView item_not_in_container(base::DoNothing());
@@ -93,7 +93,7 @@ TEST_F(PickerListItemContainerViewTest, ItemNotInContainerHasNoItemBelow) {
   EXPECT_EQ(container.GetItemBelow(&item_not_in_container), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, NoItemLeftOf) {
+TEST_F(QuickInsertListItemContainerViewTest, NoItemLeftOf) {
   PickerListItemContainerView container;
 
   PickerListItemView* item1 = container.AddListItem(
@@ -105,7 +105,7 @@ TEST_F(PickerListItemContainerViewTest, NoItemLeftOf) {
   EXPECT_EQ(container.GetItemLeftOf(item2), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, NoItemRightOf) {
+TEST_F(QuickInsertListItemContainerViewTest, NoItemRightOf) {
   PickerListItemContainerView container;
 
   PickerListItemView* item1 = container.AddListItem(
@@ -117,7 +117,7 @@ TEST_F(PickerListItemContainerViewTest, NoItemRightOf) {
   EXPECT_EQ(container.GetItemRightOf(item2), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, ChildrenHasListItemRole) {
+TEST_F(QuickInsertListItemContainerViewTest, ChildrenHasListItemRole) {
   PickerListItemContainerView container;
 
   container.AddListItem(

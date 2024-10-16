@@ -97,20 +97,22 @@ class MockPickerAssetFetcherDelegate : public PickerAssetFetcherImplDelegate {
               (override));
 };
 
-class PickerAssetFetcherImplTest : public testing::Test {
+class QuickInsertAssetFetcherImplTest : public testing::Test {
  public:
-  PickerAssetFetcherImplTest() = default;
-  PickerAssetFetcherImplTest(const PickerAssetFetcherImplTest&) = delete;
-  PickerAssetFetcherImplTest& operator=(const PickerAssetFetcherImplTest&) =
+  QuickInsertAssetFetcherImplTest() = default;
+  QuickInsertAssetFetcherImplTest(const QuickInsertAssetFetcherImplTest&) =
       delete;
-  ~PickerAssetFetcherImplTest() override = default;
+  QuickInsertAssetFetcherImplTest& operator=(
+      const QuickInsertAssetFetcherImplTest&) = delete;
+  ~QuickInsertAssetFetcherImplTest() override = default;
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   InProcessDataDecoder decoder_;
 };
 
-TEST_F(PickerAssetFetcherImplTest, FetchGifReturnsEmptyOnFailedNetworkRequest) {
+TEST_F(QuickInsertAssetFetcherImplTest,
+       FetchGifReturnsEmptyOnFailedNetworkRequest) {
   scoped_refptr<MockPickerAssetUrlLoaderFactory> url_loader_factory =
       base::MakeRefCounted<MockPickerAssetUrlLoaderFactory>();
   const GURL kGifUrl("https://media.tenor.com/invalid-gif.gif");
@@ -126,7 +128,7 @@ TEST_F(PickerAssetFetcherImplTest, FetchGifReturnsEmptyOnFailedNetworkRequest) {
   EXPECT_TRUE(future.Get().empty());
 }
 
-TEST_F(PickerAssetFetcherImplTest, FetchesGifPreviewImageFromTenorUrl) {
+TEST_F(QuickInsertAssetFetcherImplTest, FetchesGifPreviewImageFromTenorUrl) {
   scoped_refptr<MockPickerAssetUrlLoaderFactory> url_loader_factory =
       base::MakeRefCounted<MockPickerAssetUrlLoaderFactory>();
   const GURL kGifPreviewImageUrl(
@@ -148,7 +150,8 @@ TEST_F(PickerAssetFetcherImplTest, FetchesGifPreviewImageFromTenorUrl) {
   EXPECT_EQ(future.Get().size(), kGifPreviewImageDimensions);
 }
 
-TEST_F(PickerAssetFetcherImplTest, DoesNotFetchGifPreviewImageFromNonTenorUrl) {
+TEST_F(QuickInsertAssetFetcherImplTest,
+       DoesNotFetchGifPreviewImageFromNonTenorUrl) {
   scoped_refptr<MockPickerAssetUrlLoaderFactory> url_loader_factory =
       base::MakeRefCounted<MockPickerAssetUrlLoaderFactory>();
   const GURL kNonTenorUrl("https://media.nottenor.com/gif-image-preview.png");
@@ -166,7 +169,7 @@ TEST_F(PickerAssetFetcherImplTest, DoesNotFetchGifPreviewImageFromNonTenorUrl) {
   EXPECT_TRUE(future.Get().isNull());
 }
 
-TEST_F(PickerAssetFetcherImplTest, ForwardsToDelegateToFetchThumbnail) {
+TEST_F(QuickInsertAssetFetcherImplTest, ForwardsToDelegateToFetchThumbnail) {
   MockPickerAssetFetcherDelegate mock_delegate;
   base::test::TestFuture<base::FilePath, gfx::Size,
                          PickerAssetFetcher::FetchFileThumbnailCallback>

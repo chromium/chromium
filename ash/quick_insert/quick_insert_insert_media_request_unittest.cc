@@ -147,10 +147,10 @@ TestCaseCallback MakeLocalImageTestCaseCallback(
       std::move(format), std::move(encode));
 }
 
-class PickerInsertMediaRequestTest
+class QuickInsertInsertMediaRequestTest
     : public testing::TestWithParam<TestCaseCallback> {
  protected:
-  PickerInsertMediaRequestTest() : test_case_(GetParam().Run()) {}
+  QuickInsertInsertMediaRequestTest() : test_case_(GetParam().Run()) {}
 
   std::unique_ptr<TestCase>& test_case() { return test_case_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -161,8 +161,8 @@ class PickerInsertMediaRequestTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-class PickerInsertMediaRequestImageTest : public PickerInsertMediaRequestTest {
-};
+class QuickInsertInsertMediaRequestImageTest
+    : public QuickInsertInsertMediaRequestTest {};
 
 const TestCaseCallback kTextTestCases[] = {
     BasicTestCase(
@@ -202,18 +202,18 @@ const TestCaseCallback kImageTestCases[] = {
             }))};
 
 INSTANTIATE_TEST_SUITE_P(Text,
-                         PickerInsertMediaRequestTest,
+                         QuickInsertInsertMediaRequestTest,
                          testing::ValuesIn(kTextTestCases));
 
 INSTANTIATE_TEST_SUITE_P(Image,
-                         PickerInsertMediaRequestTest,
+                         QuickInsertInsertMediaRequestTest,
                          testing::ValuesIn(kImageTestCases));
 
 INSTANTIATE_TEST_SUITE_P(,
-                         PickerInsertMediaRequestImageTest,
+                         QuickInsertInsertMediaRequestImageTest,
                          testing::ValuesIn(kImageTestCases));
 
-TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
+TEST_P(QuickInsertInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
@@ -232,7 +232,7 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   EXPECT_EQ(client.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, InsertsWhileBlurred) {
+TEST_P(QuickInsertInsertMediaRequestTest, InsertsWhileBlurred) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
@@ -253,7 +253,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsWhileBlurred) {
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestTest,
+TEST_P(QuickInsertInsertMediaRequestTest,
        InsertsOnNextFocusBeforeTimeoutWhileBlurred) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
@@ -277,7 +277,8 @@ TEST_P(PickerInsertMediaRequestTest,
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestTest, DoesNotInsertAfterTimeoutWhileBlurred) {
+TEST_P(QuickInsertInsertMediaRequestTest,
+       DoesNotInsertAfterTimeoutWhileBlurred) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
@@ -298,7 +299,7 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertAfterTimeoutWhileBlurred) {
   EXPECT_EQ(client.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, InsertsOnNextFocusWhileFocused) {
+TEST_P(QuickInsertInsertMediaRequestTest, InsertsOnNextFocusWhileFocused) {
   ui::FakeTextInputClient prev_client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   ui::FakeTextInputClient next_client(
@@ -323,7 +324,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnNextFocusWhileFocused) {
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestTest,
+TEST_P(QuickInsertInsertMediaRequestTest,
        InsertsOnNextFocusBeforeTimeoutWhileFocused) {
   ui::FakeTextInputClient prev_client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
@@ -351,7 +352,7 @@ TEST_P(PickerInsertMediaRequestTest,
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestTest,
+TEST_P(QuickInsertInsertMediaRequestTest,
        DoesNotInsertOnNextFocusAfterTimeoutWhileFocused) {
   ui::FakeTextInputClient prev_client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
@@ -377,7 +378,7 @@ TEST_P(PickerInsertMediaRequestTest,
   EXPECT_EQ(next_client.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, InsertIsCancelledUponDestruction) {
+TEST_P(QuickInsertInsertMediaRequestTest, InsertIsCancelledUponDestruction) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
@@ -393,7 +394,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertIsCancelledUponDestruction) {
   EXPECT_EQ(client.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, DoesNotInsertInInputTypeNone) {
+TEST_P(QuickInsertInsertMediaRequestTest, DoesNotInsertInInputTypeNone) {
   ui::FakeTextInputClient client_none(ui::TEXT_INPUT_TYPE_NONE);
   ui::FakeTextInputClient client_text(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
@@ -415,7 +416,7 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertInInputTypeNone) {
   EXPECT_EQ(client_text.text(), test_case()->expected_text());
 }
 
-TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithMultipleFocus) {
+TEST_P(QuickInsertInsertMediaRequestTest, InsertsOnlyOnceWithMultipleFocus) {
   ui::FakeTextInputClient client1(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   ui::FakeTextInputClient client2(
@@ -438,7 +439,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithMultipleFocus) {
   EXPECT_EQ(client2.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithTimeout) {
+TEST_P(QuickInsertInsertMediaRequestTest, InsertsOnlyOnceWithTimeout) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
@@ -462,7 +463,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithTimeout) {
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithDestruction) {
+TEST_P(QuickInsertInsertMediaRequestTest, InsertsOnlyOnceWithDestruction) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
@@ -488,7 +489,8 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithDestruction) {
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
+TEST_P(QuickInsertInsertMediaRequestTest,
+       DoesNotInsertWhenInputMethodIsDestroyed) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   auto old_input_method = std::make_unique<InputMethodAsh>(nullptr);
@@ -510,7 +512,7 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
   EXPECT_EQ(client.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, CallsCallbackOnSuccess) {
+TEST_P(QuickInsertInsertMediaRequestTest, CallsCallbackOnSuccess) {
   InputMethodAsh input_method(nullptr);
   ui::FakeTextInputClient client(
       &input_method,
@@ -529,7 +531,7 @@ TEST_P(PickerInsertMediaRequestTest, CallsCallbackOnSuccess) {
   EXPECT_EQ(insert_duration, base::Seconds(0));
 }
 
-TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
+TEST_P(QuickInsertInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 
   base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
@@ -545,7 +547,7 @@ TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   EXPECT_EQ(insert_duration, base::Seconds(1));
 }
 
-TEST_P(PickerInsertMediaRequestImageTest,
+TEST_P(QuickInsertInsertMediaRequestImageTest,
        InsertingImageIgnoresUnsupportedClients) {
   InputMethodAsh input_method(nullptr);
   ui::FakeTextInputClient unsupported_client(
@@ -572,7 +574,7 @@ TEST_P(PickerInsertMediaRequestImageTest,
             test_case()->expected_image_url());
 }
 
-TEST_P(PickerInsertMediaRequestImageTest,
+TEST_P(QuickInsertInsertMediaRequestImageTest,
        InsertingUnsupportedImageFailsAfterTimeout) {
   InputMethodAsh input_method(nullptr);
   ui::FakeTextInputClient client(

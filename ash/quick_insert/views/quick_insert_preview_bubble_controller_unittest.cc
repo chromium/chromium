@@ -33,9 +33,9 @@
 namespace ash {
 namespace {
 
-class PickerPreviewBubbleControllerTest : public views::ViewsTestBase {
+class QuickInsertPreviewBubbleControllerTest : public views::ViewsTestBase {
  public:
-  PickerPreviewBubbleControllerTest()
+  QuickInsertPreviewBubbleControllerTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
@@ -60,7 +60,7 @@ ash::HoldingSpaceImage CreateUnresolvedAsyncImage() {
                                 base::FilePath(), base::DoNothing());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, ShowsBubbleAfterDelay) {
+TEST_F(QuickInsertPreviewBubbleControllerTest, ShowsBubbleAfterDelay) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -76,7 +76,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowsBubbleAfterDelay) {
   views::test::WidgetVisibleWaiter(bubble_view->GetWidget()).Wait();
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        DoesNotShowBubbleIfCanceledBeforeDelay) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
@@ -90,7 +90,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   ASSERT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        DoesNotShowBubbleIfAnchorWidgetClosedBeforeDelay) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
@@ -105,7 +105,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   ASSERT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
+TEST_F(QuickInsertPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -122,7 +122,7 @@ TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
   EXPECT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        DestroyingAnchorWidgetDestroysBubbleWidget) {
   PickerPreviewBubbleController controller;
   std::unique_ptr<views::Widget> anchor_widget =
@@ -140,7 +140,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   EXPECT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        DestroyingAnchorWidgetImmediatelyDoesNotCrash) {
   PickerPreviewBubbleController controller;
   std::unique_ptr<views::Widget> anchor_widget =
@@ -154,7 +154,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
   EXPECT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleWhileShownKeepsSameBubble) {
+TEST_F(QuickInsertPreviewBubbleControllerTest,
+       ShowBubbleWhileShownKeepsSameBubble) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -172,7 +173,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleWhileShownKeepsSameBubble) {
             bubble_view->GetWidget());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleWithoutShowing) {
+TEST_F(QuickInsertPreviewBubbleControllerTest, CloseBubbleWithoutShowing) {
   PickerPreviewBubbleController controller;
 
   controller.CloseBubble();
@@ -180,7 +181,8 @@ TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleWithoutShowing) {
   EXPECT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, ShowingBubbleWhileClosingOldBubble) {
+TEST_F(QuickInsertPreviewBubbleControllerTest,
+       ShowingBubbleWhileClosingOldBubble) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -200,7 +202,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowingBubbleWhileClosingOldBubble) {
             bubble_view->GetWidget());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        ShowBubbleUsesPlaceholderBeforeBitmapResolves) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
@@ -216,7 +218,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
             SK_ColorTRANSPARENT);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        ShowBubbleUpdatesPreviewAfterBitmapResolves) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
@@ -242,7 +244,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
             SK_ColorBLUE);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleHidesLabelsByDefault) {
+TEST_F(QuickInsertPreviewBubbleControllerTest, ShowBubbleHidesLabelsByDefault) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -256,7 +258,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleHidesLabelsByDefault) {
   EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
+TEST_F(QuickInsertPreviewBubbleControllerTest,
        SetBubbleMainTextHidesLabelsWithEmptyText) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
@@ -272,7 +274,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
   EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, SetBubbleMainTextUpdatesBubbleText) {
+TEST_F(QuickInsertPreviewBubbleControllerTest,
+       SetBubbleMainTextUpdatesBubbleText) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;

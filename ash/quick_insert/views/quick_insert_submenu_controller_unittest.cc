@@ -21,7 +21,7 @@
 namespace ash {
 namespace {
 
-using PickerSubmenuControllerTest = AshTestBase;
+using QuickInsertSubmenuControllerTest = AshTestBase;
 
 std::vector<std::unique_ptr<PickerListItemView>> CreateSingleItem(
     base::RepeatingClosure callback) {
@@ -30,7 +30,7 @@ std::vector<std::unique_ptr<PickerListItemView>> CreateSingleItem(
   return items;
 }
 
-TEST_F(PickerSubmenuControllerTest, ShowsWidget) {
+TEST_F(QuickInsertSubmenuControllerTest, ShowsWidget) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -40,7 +40,7 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidget) {
   EXPECT_NE(controller.widget_for_testing(), nullptr);
 }
 
-TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchorLTR) {
+TEST_F(QuickInsertSubmenuControllerTest, ShowsWidgetAlignedWithAnchorLTR) {
   base::i18n::SetRTLForTesting(false);
   UpdateDisplay("2000x1000");
   PickerSubmenuController controller;
@@ -62,7 +62,7 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchorLTR) {
   EXPECT_NEAR(submenu_bounds.y(), anchor_bounds.y(), 20);
 }
 
-TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchorRTL) {
+TEST_F(QuickInsertSubmenuControllerTest, ShowsWidgetAlignedWithAnchorRTL) {
   base::i18n::SetRTLForTesting(true);
   UpdateDisplay("2000x1000");
   PickerSubmenuController controller;
@@ -84,7 +84,7 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchorRTL) {
   EXPECT_NEAR(submenu_bounds.y(), anchor_bounds.y(), 20);
 }
 
-TEST_F(PickerSubmenuControllerTest, ShowsWidgetWithParent) {
+TEST_F(QuickInsertSubmenuControllerTest, ShowsWidgetWithParent) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -95,7 +95,7 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidgetWithParent) {
             anchor_widget->GetNativeWindow());
 }
 
-TEST_F(PickerSubmenuControllerTest, ClosesWidget) {
+TEST_F(QuickInsertSubmenuControllerTest, ClosesWidget) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -106,7 +106,8 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidget) {
   views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
 }
 
-TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorWidgetIsDestroyed) {
+TEST_F(QuickInsertSubmenuControllerTest,
+       ClosesWidgetWhenAnchorWidgetIsDestroyed) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -118,7 +119,8 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorWidgetIsDestroyed) {
   EXPECT_EQ(controller.widget_for_testing(), nullptr);
 }
 
-TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsDestroyed) {
+TEST_F(QuickInsertSubmenuControllerTest,
+       ClosesWidgetWhenAnchorViewIsDestroyed) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   auto* contents_view =
@@ -133,7 +135,7 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsDestroyed) {
   views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
 }
 
-TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsHidden) {
+TEST_F(QuickInsertSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsHidden) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   auto* contents_view =
@@ -148,7 +150,7 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsHidden) {
   views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
 }
 
-TEST_F(PickerSubmenuControllerTest, GetsSubmenuView) {
+TEST_F(QuickInsertSubmenuControllerTest, GetsSubmenuView) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -158,7 +160,7 @@ TEST_F(PickerSubmenuControllerTest, GetsSubmenuView) {
   EXPECT_NE(controller.GetSubmenuView(), nullptr);
 }
 
-TEST_F(PickerSubmenuControllerTest, GetsAnchorView) {
+TEST_F(QuickInsertSubmenuControllerTest, GetsAnchorView) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   auto* anchor_view =
@@ -169,7 +171,7 @@ TEST_F(PickerSubmenuControllerTest, GetsAnchorView) {
   EXPECT_EQ(controller.GetAnchorView(), anchor_view);
 }
 
-TEST_F(PickerSubmenuControllerTest, TriggersCallbackWhenClickingOnItem) {
+TEST_F(QuickInsertSubmenuControllerTest, TriggersCallbackWhenClickingOnItem) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());

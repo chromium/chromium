@@ -15,16 +15,16 @@
 namespace ash {
 namespace {
 
-class PickerCopyMediaTest : public AshTestBase {};
+class QuickInsertCopyMediaTest : public AshTestBase {};
 
-TEST_F(PickerCopyMediaTest, CopiesText) {
+TEST_F(QuickInsertCopyMediaTest, CopiesText) {
   CopyMediaToClipboard(PickerTextMedia(u"hello"));
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"hello");
 }
 
-TEST_F(PickerCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
+TEST_F(QuickInsertCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
   CopyMediaToClipboard(
       PickerImageMedia(GURL("https://foo.com"), gfx::Size(30, 20)));
 
@@ -33,7 +33,7 @@ TEST_F(PickerCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
       uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" width="30" height="20"/>)html");
 }
 
-TEST_F(PickerCopyMediaTest, CopiesImageWithUnknownDimensionsAsHtml) {
+TEST_F(QuickInsertCopyMediaTest, CopiesImageWithUnknownDimensionsAsHtml) {
   CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com")));
 
   EXPECT_EQ(
@@ -41,7 +41,8 @@ TEST_F(PickerCopyMediaTest, CopiesImageWithUnknownDimensionsAsHtml) {
       uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer"/>)html");
 }
 
-TEST_F(PickerCopyMediaTest, CopiesImagesWithBothAltTextAndDimensionsAsHtml) {
+TEST_F(QuickInsertCopyMediaTest,
+       CopiesImagesWithBothAltTextAndDimensionsAsHtml) {
   CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com"),
                                         gfx::Size(30, 20),
                                         /*content_description=*/u"img"));
@@ -51,7 +52,7 @@ TEST_F(PickerCopyMediaTest, CopiesImagesWithBothAltTextAndDimensionsAsHtml) {
       uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="img" width="30" height="20"/>)html");
 }
 
-TEST_F(PickerCopyMediaTest, EscapesAltTextForImages) {
+TEST_F(QuickInsertCopyMediaTest, EscapesAltTextForImages) {
   CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com"),
                                         /*dimensions=*/std::nullopt,
                                         /*content_description=*/u"\"img\""));
@@ -61,7 +62,7 @@ TEST_F(PickerCopyMediaTest, EscapesAltTextForImages) {
       uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="&quot;img&quot;"/>)html");
 }
 
-TEST_F(PickerCopyMediaTest, CopiesLinks) {
+TEST_F(QuickInsertCopyMediaTest, CopiesLinks) {
   CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com"), "Foo"));
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
@@ -72,7 +73,7 @@ TEST_F(PickerCopyMediaTest, CopiesLinks) {
             u"<a title=\"Foo\" href=\"https://foo.com/\">https://foo.com/</a>");
 }
 
-TEST_F(PickerCopyMediaTest, LinksAreEscaped) {
+TEST_F(QuickInsertCopyMediaTest, LinksAreEscaped) {
   CopyMediaToClipboard(PickerLinkMedia(
       GURL("https://foo.com/?\"><svg onload=\"alert(1)\"><a href=\""),
       "<svg onload=\"alert(1)\">"));
@@ -90,27 +91,27 @@ TEST_F(PickerCopyMediaTest, LinksAreEscaped) {
       u"</a>");
 }
 
-TEST_F(PickerCopyMediaTest, CopiesFiles) {
+TEST_F(QuickInsertCopyMediaTest, CopiesFiles) {
   CopyMediaToClipboard(PickerLocalFileMedia(base::FilePath("/foo.txt")));
 
   EXPECT_EQ(ReadFilenameFromClipboard(ui::Clipboard::GetForCurrentThread()),
             base::FilePath("/foo.txt"));
 }
 
-class PickerCopyMediaToastTest
+class QuickInsertCopyMediaToastTest
     : public AshTestBase,
       public testing::WithParamInterface<PickerRichMedia> {};
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerCopyMediaToastTest,
+    QuickInsertCopyMediaToastTest,
     ::testing::Values(PickerTextMedia(u"hello"),
                       PickerImageMedia(GURL("https://foo.com"),
                                        gfx::Size(30, 20)),
                       PickerLinkMedia(GURL("https://foo.com"), "Foo"),
                       PickerLocalFileMedia(base::FilePath("/foo.txt"))));
 
-TEST_P(PickerCopyMediaToastTest, ShowsToastAfterCopyingLink) {
+TEST_P(QuickInsertCopyMediaToastTest, ShowsToastAfterCopyingLink) {
   CopyMediaToClipboard(GetParam());
 
   EXPECT_TRUE(

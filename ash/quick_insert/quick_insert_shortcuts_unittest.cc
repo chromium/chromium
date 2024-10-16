@@ -20,9 +20,9 @@
 namespace ash {
 namespace {
 
-using PickerShortcutsTest = AshTestBase;
+using QuickInsertShortcutsTest = AshTestBase;
 
-TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithSearchKey) {
+TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithSearchKey) {
   ui::KeyboardDevice keyboard(/*id=*/1, ui::INPUT_DEVICE_INTERNAL,
                               /*name=*/"Keyboard1");
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({keyboard});
@@ -38,7 +38,7 @@ TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithSearchKey) {
             PickerCapsLockResult::Shortcut::kAltSearch);
 }
 
-TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
+TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
   ui::KeyboardDevice keyboard(/*id=*/1, ui::INPUT_DEVICE_INTERNAL,
                               /*name=*/"Keyboard1");
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({keyboard});
@@ -54,7 +54,7 @@ TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
             PickerCapsLockResult::Shortcut::kAltLauncher);
 }
 
-TEST_F(PickerShortcutsTest, GetsCapsLockShortcutWithFnKey) {
+TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithFnKey) {
   base::test::ScopedFeatureList scoped_feature_list(features::kModifierSplit);
   base::AutoReset<bool> ignore_modifier_split_key =
       switches::SetIgnoreModifierSplitSecretKeyForTest();

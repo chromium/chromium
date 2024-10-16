@@ -21,9 +21,9 @@ namespace {
 
 using ::testing::_;
 
-using PickerPasteRequestTest = views::ViewsTestBase;
+using QuickInsertPasteRequestTest = views::ViewsTestBase;
 
-TEST_F(PickerPasteRequestTest, DoesNotPasteWithoutNewFocus) {
+TEST_F(QuickInsertPasteRequestTest, DoesNotPasteWithoutNewFocus) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->Show();
   views::test::WidgetVisibleWaiter(widget.get()).Wait();
@@ -39,7 +39,7 @@ TEST_F(PickerPasteRequestTest, DoesNotPasteWithoutNewFocus) {
   widget->CloseNow();
 }
 
-TEST_F(PickerPasteRequestTest, PastesOnNewFocus) {
+TEST_F(QuickInsertPasteRequestTest, PastesOnNewFocus) {
   auto old_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   old_widget->Show();
@@ -64,7 +64,7 @@ TEST_F(PickerPasteRequestTest, PastesOnNewFocus) {
   views::test::WidgetVisibleWaiter(new_widget.get()).Wait();
 }
 
-TEST_F(PickerPasteRequestTest, DoesNotPasteAfterDestruction) {
+TEST_F(QuickInsertPasteRequestTest, DoesNotPasteAfterDestruction) {
   auto old_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   old_widget->Show();

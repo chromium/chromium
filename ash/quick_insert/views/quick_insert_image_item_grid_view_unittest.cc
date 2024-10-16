@@ -41,9 +41,9 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
       u"gif", base::DoNothing());
 }
 
-using PickerImageItemGridViewTest = views::ViewsTestBase;
+using QuickInsertImageItemGridViewTest = views::ViewsTestBase;
 
-TEST_F(PickerImageItemGridViewTest, OneGifItem) {
+TEST_F(QuickInsertImageItemGridViewTest, OneGifItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item =
@@ -57,7 +57,7 @@ TEST_F(PickerImageItemGridViewTest, OneGifItem) {
                   Pointee(Property(&views::View::children, IsEmpty()))));
 }
 
-TEST_F(PickerImageItemGridViewTest, TwoGifItems) {
+TEST_F(QuickInsertImageItemGridViewTest, TwoGifItems) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
@@ -73,7 +73,7 @@ TEST_F(PickerImageItemGridViewTest, TwoGifItems) {
                                            ElementsAre(item2->parent())))));
 }
 
-TEST_F(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
+TEST_F(QuickInsertImageItemGridViewTest, GifItemsWithVaryingHeight) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
@@ -96,7 +96,8 @@ TEST_F(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
 }
 
 // TODO: b/357146181 - Re-enable once Gifs are used again.
-TEST_F(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
+TEST_F(QuickInsertImageItemGridViewTest,
+       DISABLED_GifItemsAreResizedToSameWidth) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   const PickerItemView* item1 =
@@ -108,7 +109,7 @@ TEST_F(PickerImageItemGridViewTest, DISABLED_GifItemsAreResizedToSameWidth) {
             item2->GetPreferredSize().width());
 }
 
-TEST_F(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
+TEST_F(QuickInsertImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   constexpr gfx::Size kGifDimensions(100, 200);
@@ -119,7 +120,7 @@ TEST_F(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
             GetAspectRatio(kGifDimensions));
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsTopItem) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsTopItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -138,13 +139,13 @@ TEST_F(PickerImageItemGridViewTest, GetsTopItem) {
   EXPECT_EQ(item_grid.GetTopItem(), item1);
 }
 
-TEST_F(PickerImageItemGridViewTest, EmptyGridHasNoTopItem) {
+TEST_F(QuickInsertImageItemGridViewTest, EmptyGridHasNoTopItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   EXPECT_EQ(item_grid.GetTopItem(), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsBottomItem) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsBottomItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -163,13 +164,13 @@ TEST_F(PickerImageItemGridViewTest, GetsBottomItem) {
   EXPECT_EQ(item_grid.GetBottomItem(), item3);
 }
 
-TEST_F(PickerImageItemGridViewTest, EmptyGridHasNoBottomItem) {
+TEST_F(QuickInsertImageItemGridViewTest, EmptyGridHasNoBottomItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   EXPECT_EQ(item_grid.GetBottomItem(), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsItemAbove) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsItemAbove) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -194,7 +195,7 @@ TEST_F(PickerImageItemGridViewTest, GetsItemAbove) {
   EXPECT_EQ(item_grid.GetItemAbove(item4), item2);
 }
 
-TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
+TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -202,7 +203,7 @@ TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
   EXPECT_EQ(item_grid.GetItemAbove(item_not_in_grid.get()), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsItemBelow) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsItemBelow) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -227,7 +228,7 @@ TEST_F(PickerImageItemGridViewTest, GetsItemBelow) {
   EXPECT_EQ(item_grid.GetItemBelow(item4), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
+TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -235,7 +236,7 @@ TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
   EXPECT_EQ(item_grid.GetItemBelow(item_not_in_grid.get()), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsItemLeftOf) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsItemLeftOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -260,7 +261,7 @@ TEST_F(PickerImageItemGridViewTest, GetsItemLeftOf) {
   EXPECT_EQ(item_grid.GetItemLeftOf(item4), item3);
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -281,7 +282,7 @@ TEST_F(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   EXPECT_EQ(item_grid.GetItemLeftOf(item3), item1);
 }
 
-TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
+TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -289,7 +290,7 @@ TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
   EXPECT_EQ(item_grid.GetItemLeftOf(item_not_in_grid.get()), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, GetsItemRightOf) {
+TEST_F(QuickInsertImageItemGridViewTest, GetsItemRightOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   PickerItemView* item1 =
@@ -314,7 +315,7 @@ TEST_F(PickerImageItemGridViewTest, GetsItemRightOf) {
   EXPECT_EQ(item_grid.GetItemRightOf(item4), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
+TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
   std::unique_ptr<PickerImageItemView> item_not_in_grid =
       CreateGifItem(gfx::Size(100, 100));
@@ -322,7 +323,7 @@ TEST_F(PickerImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
   EXPECT_EQ(item_grid.GetItemRightOf(item_not_in_grid.get()), nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
+TEST_F(QuickInsertImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerImageItemGridView* item_grid = widget->SetContentsView(
@@ -353,7 +354,7 @@ TEST_F(PickerImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
             nullptr);
 }
 
-TEST_F(PickerImageItemGridViewTest,
+TEST_F(QuickInsertImageItemGridViewTest,
        ReverseTabFocusTraversesInReverseOrderAdded) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

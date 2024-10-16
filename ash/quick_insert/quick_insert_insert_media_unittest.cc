@@ -51,9 +51,9 @@ struct TestCase {
   std::optional<GURL> expected_image_url;
 };
 
-using PickerInsertMediaTest = testing::TestWithParam<TestCase>;
+using QuickInsertInsertMediaTest = testing::TestWithParam<TestCase>;
 
-TEST_P(PickerInsertMediaTest, SupportsInsertingMedia) {
+TEST_P(QuickInsertInsertMediaTest, SupportsInsertingMedia) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
@@ -61,7 +61,7 @@ TEST_P(PickerInsertMediaTest, SupportsInsertingMedia) {
       InputFieldSupportsInsertingMedia(GetParam().media_to_insert, client));
 }
 
-TEST_P(PickerInsertMediaTest, InsertsMediaWithNoError) {
+TEST_P(QuickInsertInsertMediaTest, InsertsMediaWithNoError) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
@@ -76,7 +76,7 @@ TEST_P(PickerInsertMediaTest, InsertsMediaWithNoError) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerInsertMediaTest,
+    QuickInsertInsertMediaTest,
     testing::Values(
         TestCase{
             .media_to_insert = PickerTextMedia(u"hello"),
@@ -92,7 +92,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"http://foo.com/",
         }));
 
-TEST(PickerInsertImageMediaTest, UnsupportedInputField) {
+TEST(QuickInsertInsertImageMediaTest, UnsupportedInputField) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
@@ -100,7 +100,7 @@ TEST(PickerInsertImageMediaTest, UnsupportedInputField) {
       PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client));
 }
 
-TEST(PickerInsertImageMediaTest,
+TEST(QuickInsertInsertImageMediaTest,
      InsertingUnsupportedInputFieldFailsAsynchronously) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
@@ -114,7 +114,7 @@ TEST(PickerInsertImageMediaTest,
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 
-TEST(PickerInsertLocalFileMediaTest, SupportedInputField) {
+TEST(QuickInsertInsertLocalFileMediaTest, SupportedInputField) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
@@ -122,7 +122,7 @@ TEST(PickerInsertLocalFileMediaTest, SupportedInputField) {
       PickerLocalFileMedia(base::FilePath("foo.txt")), client));
 }
 
-TEST(PickerInsertLocalFileMediaTest, UnsupportedInputField) {
+TEST(QuickInsertInsertLocalFileMediaTest, UnsupportedInputField) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
@@ -130,7 +130,7 @@ TEST(PickerInsertLocalFileMediaTest, UnsupportedInputField) {
       PickerLocalFileMedia(base::FilePath("foo.txt")), client));
 }
 
-TEST(PickerInsertLocalFileMediaTest, InsertsAsynchronously) {
+TEST(QuickInsertInsertLocalFileMediaTest, InsertsAsynchronously) {
   base::test::TaskEnvironment task_environment;
   ScopedTestFile file;
   ASSERT_TRUE(file.Create("foo.png", "Test data"));
@@ -147,7 +147,8 @@ TEST(PickerInsertLocalFileMediaTest, InsertsAsynchronously) {
             GURL("data:image/png;base64,VGVzdCBkYXRh"));
 }
 
-TEST(PickerInsertLocalFileMediaTest, InsertingInUnsupportedClientReturnsError) {
+TEST(QuickInsertInsertLocalFileMediaTest,
+     InsertingInUnsupportedClientReturnsError) {
   base::test::TaskEnvironment task_environment;
   ScopedTestFile file;
   ASSERT_TRUE(file.Create("foo.png", "Test data"));
@@ -163,7 +164,7 @@ TEST(PickerInsertLocalFileMediaTest, InsertingInUnsupportedClientReturnsError) {
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 
-TEST(PickerInsertLocalFileMediaTest,
+TEST(QuickInsertInsertLocalFileMediaTest,
      InsertingUnsupportedMediaTypeReturnsError) {
   base::test::TaskEnvironment task_environment;
   ScopedTestFile file;
@@ -180,7 +181,8 @@ TEST(PickerInsertLocalFileMediaTest,
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 
-TEST(PickerInsertLocalFileMediaTest, InsertingNonExistentFileReturnsError) {
+TEST(QuickInsertInsertLocalFileMediaTest,
+     InsertingNonExistentFileReturnsError) {
   base::test::TaskEnvironment task_environment;
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});

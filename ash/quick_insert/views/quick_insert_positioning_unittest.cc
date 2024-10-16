@@ -16,7 +16,7 @@ namespace {
 constexpr gfx::Outsets kPaddingAroundCaret(4);
 constexpr gfx::Point kDefaultCursorPoint(42, 42);
 
-TEST(PickerPositioningTest,
+TEST(QuickInsertPositioningTest,
      UsesCaretBoundsWhenCaretBoundsIsWithinWindowBounds) {
   gfx::Rect caret_bounds(100, 200, 5, 5);
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
@@ -27,7 +27,7 @@ TEST(PickerPositioningTest,
   EXPECT_EQ(anchor_bounds, caret_bounds);
 }
 
-TEST(PickerPositioningTest,
+TEST(QuickInsertPositioningTest,
      UsesCursorPointWhenCaretBoundsIsOutsideWindowBounds) {
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
       /*caret_bounds=*/gfx::Rect(600, 200, 5, 5), kDefaultCursorPoint,
@@ -38,7 +38,7 @@ TEST(PickerPositioningTest,
   EXPECT_EQ(anchor_bounds.height(), 0);
 }
 
-TEST(PickerPositioningTest, UsesCursorPointWhenCaretBoundsIsEmpty) {
+TEST(QuickInsertPositioningTest, UsesCursorPointWhenCaretBoundsIsEmpty) {
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
       /*caret_bounds=*/gfx::Rect(), kDefaultCursorPoint,
       /*focused_window_bounds=*/gfx::Rect(0, 0, 500, 500));

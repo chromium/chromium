@@ -65,9 +65,9 @@ using ::testing::VariantWith;
 
 constexpr int kPickerWidth = 320;
 
-class PickerSearchResultsViewTest : public views::ViewsTestBase {
+class QuickInsertSearchResultsViewTest : public views::ViewsTestBase {
  public:
-  PickerSearchResultsViewTest()
+  QuickInsertSearchResultsViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
@@ -105,7 +105,7 @@ auto MatchesResultSectionWithOneItem(PickerSectionType section_type,
                ElementsAre(item_matcher)));
 }
 
-TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
+TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSections) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -129,7 +129,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
                               PickerSectionType::kLocalFiles, 1))));
 }
 
-TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
+TEST_F(QuickInsertSearchResultsViewTest, ClearSearchResultsClearsView) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -145,7 +145,7 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
   EXPECT_THAT(view.section_list_view_for_testing()->children(), IsEmpty());
 }
 
-TEST_F(PickerSearchResultsViewTest, EmptySearchResultsShowsThrobber) {
+TEST_F(QuickInsertSearchResultsViewTest, EmptySearchResultsShowsThrobber) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -161,7 +161,7 @@ TEST_F(PickerSearchResultsViewTest, EmptySearchResultsShowsThrobber) {
   EXPECT_TRUE(view.throbber_container_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
+TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -182,7 +182,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
               ElementsAre(Pointee(MatchesTitlelessSection(1))));
 }
 
-TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
+TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithCategories) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -200,7 +200,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
               ElementsAre(Pointee(MatchesTitlelessSection(1))));
 }
 
-TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
+TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -222,7 +222,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
               &PickerListItemView::GetPrimaryTextForTesting, u"local"))))));
 }
 
-TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
+TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -245,7 +245,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
               &PickerListItemView::GetPrimaryTextForTesting, u"drive"))))));
 }
 
-TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
+TEST_F(QuickInsertSearchResultsViewTest, UpdatesResultsSections) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -268,7 +268,7 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
                           Pointee(MatchesTitlelessSection(1))));
 }
 
-TEST_F(PickerSearchResultsViewTest, GetsTopItem) {
+TEST_F(QuickInsertSearchResultsViewTest, GetsTopItem) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -287,7 +287,7 @@ TEST_F(PickerSearchResultsViewTest, GetsTopItem) {
   EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(view.GetTopItem()));
 }
 
-TEST_F(PickerSearchResultsViewTest, GetsBottomItem) {
+TEST_F(QuickInsertSearchResultsViewTest, GetsBottomItem) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -306,7 +306,7 @@ TEST_F(PickerSearchResultsViewTest, GetsBottomItem) {
   EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(view.GetBottomItem()));
 }
 
-TEST_F(PickerSearchResultsViewTest, GetsItemAbove) {
+TEST_F(QuickInsertSearchResultsViewTest, GetsItemAbove) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -327,7 +327,7 @@ TEST_F(PickerSearchResultsViewTest, GetsItemAbove) {
       view.GetItemAbove(view.GetBottomItem())));
 }
 
-TEST_F(PickerSearchResultsViewTest, GetsItemBelow) {
+TEST_F(QuickInsertSearchResultsViewTest, GetsItemBelow) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -348,7 +348,8 @@ TEST_F(PickerSearchResultsViewTest, GetsItemBelow) {
       DoPickerPseudoFocusedActionOnView(view.GetItemBelow(view.GetTopItem())));
 }
 
-TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
+TEST_F(QuickInsertSearchResultsViewTest,
+       ShowsSeeMoreLinkWhenThereAreMoreResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   MockPickerSearchResultsViewDelegate mock_delegate;
@@ -374,7 +375,7 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
                   IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME))))));
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        DoesNotShowSeeMoreLinkWhenThereAreNoMoreResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -397,7 +398,7 @@ TEST_F(PickerSearchResultsViewTest,
           &PickerSectionView::title_trailing_link_for_testing, IsNull()))));
 }
 
-TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
+TEST_F(QuickInsertSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
@@ -421,7 +422,7 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
   LeftClickOn(*trailing_link);
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        SearchStoppedShowsNoResultsViewWithNoIllustration) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -439,7 +440,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(view.no_results_label_for_testing().GetText(), u"no results");
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        SearchStoppedShowsNoResultsViewWithIllustration) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -459,7 +460,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(view.no_results_label_for_testing().GetText(), u"no results");
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        SearchStoppedShowsSectionListIfThereAreResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -476,7 +477,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_FALSE(view.no_results_view_for_testing()->GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesLoaderView) {
+TEST_F(QuickInsertSearchResultsViewTest, SearchStoppedHidesLoaderView) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -490,7 +491,7 @@ TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesLoaderView) {
   EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesThrobber) {
+TEST_F(QuickInsertSearchResultsViewTest, SearchStoppedHidesThrobber) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -504,7 +505,7 @@ TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesThrobber) {
   EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
+TEST_F(QuickInsertSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -519,7 +520,7 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
   EXPECT_FALSE(view.no_results_view_for_testing()->GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest, ShowLoadingShowsLoaderView) {
+TEST_F(QuickInsertSearchResultsViewTest, ShowLoadingShowsLoaderView) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -536,7 +537,7 @@ TEST_F(PickerSearchResultsViewTest, ShowLoadingShowsLoaderView) {
                    ->is_animating());
 }
 
-TEST_F(PickerSearchResultsViewTest, ShowSkeletonLoaderHidesThrobber) {
+TEST_F(QuickInsertSearchResultsViewTest, ShowSkeletonLoaderHidesThrobber) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -550,7 +551,7 @@ TEST_F(PickerSearchResultsViewTest, ShowSkeletonLoaderHidesThrobber) {
   EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
+TEST_F(QuickInsertSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   MockPickerSearchResultsViewDelegate mock_delegate;
@@ -570,7 +571,8 @@ TEST_F(PickerSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
                   ->is_animating());
 }
 
-TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingStopsAnimation) {
+TEST_F(QuickInsertSearchResultsViewTest,
+       AppendResultsDuringLoadingStopsAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   MockPickerSearchResultsViewDelegate mock_delegate;
@@ -593,7 +595,8 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingStopsAnimation) {
                    ->is_animating());
 }
 
-TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
+TEST_F(QuickInsertSearchResultsViewTest,
+       AppendResultsDuringLoadingAppendsResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -610,7 +613,7 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
   EXPECT_THAT(view.section_views_for_testing(), SizeIs(1));
 }
 
-TEST_F(PickerSearchResultsViewTest, AppendResultsHidesThrobber) {
+TEST_F(QuickInsertSearchResultsViewTest, AppendResultsHidesThrobber) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -625,7 +628,7 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsHidesThrobber) {
   EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        StoppingSearchDoesNotAnnounceWhenThereAreResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -645,7 +648,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 0);
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        StoppingSearchWithNoEmojisTriggersLiveRegionChange) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -664,7 +667,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        StoppingSearchWithEmojisTriggersLiveRegionChange) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -683,7 +686,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        StoppingSearchConsecutivelyDoesNotTriggerLiveRegionChange) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -703,7 +706,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
-TEST_F(PickerSearchResultsViewTest,
+TEST_F(QuickInsertSearchResultsViewTest,
        StoppingSearchAfterClearingSearchAnnouncesWhenThereAreResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -726,7 +729,7 @@ TEST_F(PickerSearchResultsViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 2);
 }
 
-TEST_F(PickerSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
+TEST_F(QuickInsertSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->Show();
@@ -743,20 +746,21 @@ TEST_F(PickerSearchResultsViewTest, ClearingSearchResultsDoesNotAnnounce) {
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 0);
 }
 
-struct PickerSearchResultTestCase {
+struct QuickInsertSearchResultTestCase {
   std::string test_name;
   PickerSearchResult result;
 };
 
-class PickerSearchResultsViewResultSelectionTest
-    : public PickerSearchResultsViewTest,
-      public testing::WithParamInterface<PickerSearchResultTestCase> {
+class QuickInsertSearchResultsViewResultSelectionTest
+    : public QuickInsertSearchResultsViewTest,
+      public testing::WithParamInterface<QuickInsertSearchResultTestCase> {
  private:
   AshColorProvider ash_color_provider_;
 };
 
-TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
-  const PickerSearchResultTestCase& test_case = GetParam();
+TEST_P(QuickInsertSearchResultsViewResultSelectionTest,
+       LeftClickSelectsResult) {
+  const QuickInsertSearchResultTestCase& test_case = GetParam();
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
@@ -786,8 +790,8 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PickerSearchResultsViewResultSelectionTest,
-    testing::ValuesIn<PickerSearchResultTestCase>({
+    QuickInsertSearchResultsViewResultSelectionTest,
+    testing::ValuesIn<QuickInsertSearchResultTestCase>({
         {"Text", PickerTextResult(u"result")},
         {"Gif", PickerGifResult(
                     /*preview_url=*/GURL(),
@@ -804,7 +808,7 @@ INSTANTIATE_TEST_SUITE_P(
                                             base::FilePath())},
     }),
     [](const testing::TestParamInfo<
-        PickerSearchResultsViewResultSelectionTest::ParamType>& info) {
+        QuickInsertSearchResultsViewResultSelectionTest::ParamType>& info) {
       return info.param.test_name;
     });
 

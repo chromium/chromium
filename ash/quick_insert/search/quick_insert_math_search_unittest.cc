@@ -18,11 +18,11 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-TEST(PickerMathSearchTest, NoResult) {
+TEST(QuickInsertMathSearchTest, NoResult) {
   EXPECT_FALSE(PickerMathSearch(u"abc").has_value());
 }
 
-TEST(PickerMathSearchTest, OnePlusOneEqualsTwo) {
+TEST(QuickInsertMathSearchTest, OnePlusOneEqualsTwo) {
   EXPECT_THAT(
       PickerMathSearch(u"1 + 1"),
       Optional(AllOf(VariantWith<PickerTextResult>(
@@ -32,7 +32,7 @@ TEST(PickerMathSearchTest, OnePlusOneEqualsTwo) {
                                PickerTextResult::Source::kMath)))));
 }
 
-TEST(PickerMathSearchTest, ReturnsExamples) {
+TEST(QuickInsertMathSearchTest, ReturnsExamples) {
   std::vector<PickerSearchResult> results = PickerMathExamples();
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(

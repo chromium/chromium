@@ -10,13 +10,13 @@
 namespace ash {
 namespace {
 
-TEST(PickerItemViewTest, DefaultIsNormalState) {
+TEST(QuickInsertItemViewTest, DefaultIsNormalState) {
   PickerItemView item_view(base::DoNothing());
 
   EXPECT_EQ(item_view.GetItemState(), PickerItemView::ItemState::kNormal);
 }
 
-TEST(PickerItemViewTest, NoBackgroundInNormalState) {
+TEST(QuickInsertItemViewTest, NoBackgroundInNormalState) {
   PickerItemView item_view(base::DoNothing());
 
   item_view.SetItemState(PickerItemView::ItemState::kNormal);
@@ -24,7 +24,7 @@ TEST(PickerItemViewTest, NoBackgroundInNormalState) {
   EXPECT_FALSE(item_view.background());
 }
 
-TEST(PickerItemViewTest, HasBackgroundInPseudoFocusedState) {
+TEST(QuickInsertItemViewTest, HasBackgroundInPseudoFocusedState) {
   PickerItemView item_view(base::DoNothing());
 
   item_view.SetItemState(PickerItemView::ItemState::kPseudoFocused);

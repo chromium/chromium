@@ -20,9 +20,9 @@
 namespace ash {
 namespace {
 
-class PickerFeatureTourTest : public AshTestBase {
+class QuickInsertFeatureTourTest : public AshTestBase {
  public:
-  PickerFeatureTourTest() {
+  QuickInsertFeatureTourTest() {
     RegisterUserProfilePrefs(pref_service_.registry(), /*country=*/"",
                              /*for_test=*/true);
   }
@@ -33,7 +33,7 @@ class PickerFeatureTourTest : public AshTestBase {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(PickerFeatureTourTest, ShowShowsDialogForFirstTime) {
+TEST_F(QuickInsertFeatureTourTest, ShowShowsDialogForFirstTime) {
   PickerFeatureTour feature_tour;
 
   EXPECT_TRUE(feature_tour.MaybeShowForFirstUse(
@@ -44,7 +44,7 @@ TEST_F(PickerFeatureTourTest, ShowShowsDialogForFirstTime) {
   views::test::WidgetVisibleWaiter(widget).Wait();
 }
 
-TEST_F(PickerFeatureTourTest,
+TEST_F(QuickInsertFeatureTourTest,
        ClickingCompleteButtonClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
@@ -62,7 +62,7 @@ TEST_F(PickerFeatureTourTest,
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 
-TEST_F(PickerFeatureTourTest,
+TEST_F(QuickInsertFeatureTourTest,
        ClickingLearnMoreButtonClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> learn_more_future;
@@ -80,7 +80,8 @@ TEST_F(PickerFeatureTourTest,
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 
-TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
+TEST_F(QuickInsertFeatureTourTest,
+       PressingEnterClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
   feature_tour.MaybeShowForFirstUse(
@@ -95,7 +96,7 @@ TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 
-TEST_F(PickerFeatureTourTest, ShouldNotShowDialogSecondTime) {
+TEST_F(QuickInsertFeatureTourTest, ShouldNotShowDialogSecondTime) {
   PickerFeatureTour feature_tour;
   feature_tour.MaybeShowForFirstUse(pref_service(),
                                     PickerFeatureTour::EditorStatus::kEligible,

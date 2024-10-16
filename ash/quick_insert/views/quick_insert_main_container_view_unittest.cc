@@ -45,9 +45,9 @@ class MockPickerPageView : public PickerPageView {
 BEGIN_METADATA(MockPickerPageView)
 END_METADATA
 
-using PickerMainContainerViewTest = views::ViewsTestBase;
+using QuickInsertMainContainerViewTest = views::ViewsTestBase;
 
-TEST_F(PickerMainContainerViewTest, BackgroundColor) {
+TEST_F(QuickInsertMainContainerViewTest, BackgroundColor) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* container =
@@ -58,7 +58,7 @@ TEST_F(PickerMainContainerViewTest, BackgroundColor) {
                 cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 }
 
-TEST_F(PickerMainContainerViewTest, LayoutWithContentsBelowSearchField) {
+TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsBelowSearchField) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   std::unique_ptr<views::Widget> widget =
@@ -76,7 +76,7 @@ TEST_F(PickerMainContainerViewTest, LayoutWithContentsBelowSearchField) {
             search_field->GetBoundsInScreen().bottom());
 }
 
-TEST_F(PickerMainContainerViewTest, LayoutWithContentsAboveSearchField) {
+TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsAboveSearchField) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   std::unique_ptr<views::Widget> widget =
@@ -94,7 +94,7 @@ TEST_F(PickerMainContainerViewTest, LayoutWithContentsAboveSearchField) {
             search_field->GetBoundsInScreen().y());
 }
 
-TEST_F(PickerMainContainerViewTest, SetsActivePage) {
+TEST_F(QuickInsertMainContainerViewTest, SetsActivePage) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* container =

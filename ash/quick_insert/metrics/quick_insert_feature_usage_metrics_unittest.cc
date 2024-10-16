@@ -15,7 +15,7 @@ namespace {
 
 using ::testing::Optional;
 
-class PickerFeatureUsageMetricsTest : public testing::Test {
+class QuickInsertFeatureUsageMetricsTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -26,25 +26,25 @@ class PickerFeatureUsageMetricsTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(PickerFeatureUsageMetricsTest, IsAlwaysEligible) {
+TEST_F(QuickInsertFeatureUsageMetricsTest, IsAlwaysEligible) {
   PickerFeatureUsageMetrics metrics;
 
   EXPECT_TRUE(metrics.IsEnabled());
 }
 
-TEST_F(PickerFeatureUsageMetricsTest, IsAlwaysAccessible) {
+TEST_F(QuickInsertFeatureUsageMetricsTest, IsAlwaysAccessible) {
   PickerFeatureUsageMetrics metrics;
 
   EXPECT_THAT(metrics.IsAccessible(), Optional(true));
 }
 
-TEST_F(PickerFeatureUsageMetricsTest, IsAlwaysEnabled) {
+TEST_F(QuickInsertFeatureUsageMetricsTest, IsAlwaysEnabled) {
   PickerFeatureUsageMetrics metrics;
 
   EXPECT_EQ(metrics.IsEnabled(), true);
 }
 
-TEST_F(PickerFeatureUsageMetricsTest, RecordsUsageEvent) {
+TEST_F(QuickInsertFeatureUsageMetricsTest, RecordsUsageEvent) {
   base::HistogramTester histogram_tester;
   PickerFeatureUsageMetrics metrics;
 
@@ -62,7 +62,7 @@ TEST_F(PickerFeatureUsageMetricsTest, RecordsUsageEvent) {
       0);
 }
 
-TEST_F(PickerFeatureUsageMetricsTest, RecordsUsageTime) {
+TEST_F(QuickInsertFeatureUsageMetricsTest, RecordsUsageTime) {
   base::HistogramTester histogram_tester;
   PickerFeatureUsageMetrics metrics;
 

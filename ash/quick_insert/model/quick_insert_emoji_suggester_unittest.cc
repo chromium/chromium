@@ -23,9 +23,9 @@ namespace {
 
 using ::testing::ElementsAre;
 
-class PickerEmojiSuggesterTest : public testing::Test {
+class QuickInsertEmojiSuggesterTest : public testing::Test {
  public:
-  PickerEmojiSuggesterTest() {
+  QuickInsertEmojiSuggesterTest() {
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
   }
 
@@ -41,7 +41,7 @@ PickerEmojiSuggester::GetNameCallback GetName() {
   });
 }
 
-TEST_F(PickerEmojiSuggesterTest, ReturnsDefaultEmojis) {
+TEST_F(QuickInsertEmojiSuggesterTest, ReturnsDefaultEmojis) {
   PickerEmojiHistoryModel model(pref_service());
   PickerEmojiSuggester suggester(&model, GetName());
 
@@ -54,7 +54,8 @@ TEST_F(PickerEmojiSuggesterTest, ReturnsDefaultEmojis) {
                           PickerEmojiResult::Emoji(u"👍", u"👍 name")));
 }
 
-TEST_F(PickerEmojiSuggesterTest, ReturnsRecentEmojiFollowedByDefaultEmojis) {
+TEST_F(QuickInsertEmojiSuggesterTest,
+       ReturnsRecentEmojiFollowedByDefaultEmojis) {
   PickerEmojiHistoryModel model(pref_service());
   PickerEmojiSuggester suggester(&model, GetName());
   base::Value::List history_value;
@@ -72,7 +73,7 @@ TEST_F(PickerEmojiSuggesterTest, ReturnsRecentEmojiFollowedByDefaultEmojis) {
                           PickerEmojiResult::Emoji(u"😢", u"😢 name")));
 }
 
-TEST_F(PickerEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
+TEST_F(QuickInsertEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
   PickerEmojiHistoryModel model(pref_service());
   PickerEmojiSuggester suggester(&model, GetName());
   base::Value::List history_value;
@@ -90,7 +91,7 @@ TEST_F(PickerEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
                           PickerEmojiResult::Emoji(u"👏", u"👏 name")));
 }
 
-TEST_F(PickerEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
+TEST_F(QuickInsertEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
   PickerEmojiHistoryModel model(pref_service());
   PickerEmojiSuggester suggester(&model, GetName());
   base::Value::List emoji_history_value;

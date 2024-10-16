@@ -44,7 +44,7 @@ class MockPseudoFocusHandler : public PickerPseudoFocusHandler {
   }
 };
 
-TEST(PickerKeyEventHandlerTest,
+TEST(QuickInsertKeyEventHandlerTest,
      DoesNotHandleKeyEventyWithoutPseudoFocusHandler) {
   PickerKeyEventHandler key_event_handler;
 
@@ -52,7 +52,7 @@ TEST(PickerKeyEventHandlerTest,
       key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RETURN)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesKeyEventWithPseudoFocusHandler) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesKeyEventWithPseudoFocusHandler) {
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -61,7 +61,7 @@ TEST(PickerKeyEventHandlerTest, HandlesKeyEventWithPseudoFocusHandler) {
       key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RETURN)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesUnmodifedArrowKeyEvent) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesUnmodifedArrowKeyEvent) {
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -69,7 +69,7 @@ TEST(PickerKeyEventHandlerTest, HandlesUnmodifedArrowKeyEvent) {
   EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_UP)));
 }
 
-TEST(PickerKeyEventHandlerTest, DoesNotHandleModifiedArrowKeyEvent) {
+TEST(QuickInsertKeyEventHandlerTest, DoesNotHandleModifiedArrowKeyEvent) {
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -78,7 +78,7 @@ TEST(PickerKeyEventHandlerTest, DoesNotHandleModifiedArrowKeyEvent) {
       CreateKeyEvent(ui::VKEY_UP, ui::EF_SHIFT_DOWN)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesTabKeyEvent) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesTabKeyEvent) {
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -86,7 +86,7 @@ TEST(PickerKeyEventHandlerTest, HandlesTabKeyEvent) {
   EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_TAB)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesShiftTabKeyEvent) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesShiftTabKeyEvent) {
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -95,7 +95,7 @@ TEST(PickerKeyEventHandlerTest, HandlesShiftTabKeyEvent) {
       CreateKeyEvent(ui::VKEY_TAB, ui::EF_SHIFT_DOWN)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesLeftArrowLTR) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesLeftArrowLTR) {
   base::i18n::SetRTLForTesting(false);
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
@@ -107,7 +107,7 @@ TEST(PickerKeyEventHandlerTest, HandlesLeftArrowLTR) {
   EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_LEFT)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesRightArrowLTR) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesRightArrowLTR) {
   base::i18n::SetRTLForTesting(false);
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
@@ -119,7 +119,7 @@ TEST(PickerKeyEventHandlerTest, HandlesRightArrowLTR) {
   EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RIGHT)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesLeftArrowRTL) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesLeftArrowRTL) {
   base::i18n::SetRTLForTesting(true);
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
@@ -131,7 +131,7 @@ TEST(PickerKeyEventHandlerTest, HandlesLeftArrowRTL) {
   EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_LEFT)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesRightArrowRTL) {
+TEST(QuickInsertKeyEventHandlerTest, HandlesRightArrowRTL) {
   base::i18n::SetRTLForTesting(true);
   PickerKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;

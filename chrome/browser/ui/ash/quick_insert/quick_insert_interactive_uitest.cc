@@ -106,13 +106,13 @@ bool AddLocalFileToDownloads(Profile* profile, const std::string& file_name) {
   }
 }
 
-class PickerInteractiveUiTest : public InteractiveAshTest {
+class QuickInsertInteractiveUiTest : public InteractiveAshTest {
  public:
   const WebContentsInteractionTestUtil::DeepQuery kInputFieldQuery{
       "input[type=\"text\"]",
   };
 
-  PickerInteractiveUiTest() {
+  QuickInsertInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kPickerGrid},
         /*disabled_features=*/{});
@@ -169,7 +169,7 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
 
 // Searches for 'thumbs up', checks the top emoji result is '👍', and inserts it
 // into a web input field.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoji) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoji) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoji) {
 
 // Searches for 'greek letter alpha', checks the top emoji result is 'α'; and
 // inserts it into a web input field.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertSymbol) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertSymbol) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertSymbol) {
 
 // Searches for 'denko of disapproval', checks the top emoji result is 'ಠωಠ';
 // and inserts it into a web input field.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoticon) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoticon) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -265,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoticon) {
                 WaitForWebInputFieldValue(kExpectedFirstEmoticon)));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndSelectMoreEmojis) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
+                       SearchAndSelectMoreEmojis) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -289,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndSelectMoreEmojis) {
       WaitForShow(ash::kEmojiPickerElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchGifs) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchGifs) {
       WaitForShow(ash::kEmojiPickerElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchBrowsingHistory) {
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
@@ -343,7 +344,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
                 WaitForWebInputFieldValue(u"https://foo.com/history")));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistoryCategory) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
+                       SearchBrowsingHistoryCategory) {
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
@@ -385,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistoryCategory) {
                 WaitForWebInputFieldValue(u"https://foo.com/history")));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFile) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
   // inserted.
@@ -415,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
       PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFileCategory) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
   // inserted.
@@ -458,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFileCategory) {
 
 // Searches for 'today', checks the top result is the date, and inserts it
 // into a web input field.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertDate) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -499,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
 // Searches for '1 + 1', checks the top result is '2', and inserts it
 // into a web input field.
 // TODO: crbug.com/355618977 - Fix flakiness.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
+                       DISABLED_SearchAndInsertMath) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -528,7 +531,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, ZeroStateShowsSuggestions) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
+                       ZeroStateShowsSuggestions) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test1.png"));
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test2.png"));
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test3.png"));
@@ -569,7 +573,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, ZeroStateShowsSuggestions) {
 }
 
 // Navigates through the zero-state UI using only the keyboard.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, KeyboardNavigationInZeroState) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
+                       KeyboardNavigationInZeroState) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -639,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, KeyboardNavigationInZeroState) {
                         ash::PickerItemView::ItemState::kNormal));
 }
 
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, LocalFilePreview) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, LocalFilePreview) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
   constexpr std::string_view kFileResultName = "FileResult";
   views::Textfield* picker_search_field = nullptr;

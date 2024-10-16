@@ -45,9 +45,9 @@ int32_t GetActiveDescendantId(const views::View& view) {
       ax::mojom::IntAttribute::kActivedescendantId);
 }
 
-class PickerSearchFieldViewTest : public views::ViewsTestBase {
+class QuickInsertSearchFieldViewTest : public views::ViewsTestBase {
  public:
-  PickerSearchFieldViewTest()
+  QuickInsertSearchFieldViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -55,7 +55,7 @@ class PickerSearchFieldViewTest : public views::ViewsTestBase {
   AshColorProvider ash_color_provider_;
 };
 
-TEST_F(PickerSearchFieldViewTest, HasTextFieldRole) {
+TEST_F(QuickInsertSearchFieldViewTest, HasTextFieldRole) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -65,7 +65,7 @@ TEST_F(PickerSearchFieldViewTest, HasTextFieldRole) {
             ax::mojom::Role::kTextField);
 }
 
-TEST_F(PickerSearchFieldViewTest, ClearButtonHasTooltip) {
+TEST_F(QuickInsertSearchFieldViewTest, ClearButtonHasTooltip) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -75,7 +75,7 @@ TEST_F(PickerSearchFieldViewTest, ClearButtonHasTooltip) {
             l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
 }
 
-TEST_F(PickerSearchFieldViewTest, BackButtonHasTooltip) {
+TEST_F(QuickInsertSearchFieldViewTest, BackButtonHasTooltip) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -85,7 +85,7 @@ TEST_F(PickerSearchFieldViewTest, BackButtonHasTooltip) {
             l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
 }
 
-TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
+TEST_F(QuickInsertSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
@@ -95,7 +95,7 @@ TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
+TEST_F(QuickInsertSearchFieldViewTest, TriggersSearchOnContentsChange) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   base::test::TestFuture<const std::u16string&> future;
@@ -111,7 +111,7 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   EXPECT_EQ(future.Get(), u"a");
 }
 
-TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
+TEST_F(QuickInsertSearchFieldViewTest, SetPlaceholderText) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -122,7 +122,7 @@ TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
   EXPECT_EQ(view.textfield_for_testing().GetPlaceholderText(), u"hello");
 }
 
-TEST_F(PickerSearchFieldViewTest, SetQueryText) {
+TEST_F(QuickInsertSearchFieldViewTest, SetQueryText) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -133,7 +133,7 @@ TEST_F(PickerSearchFieldViewTest, SetQueryText) {
   EXPECT_EQ(view.textfield_for_testing().GetText(), u"test");
 }
 
-TEST_F(PickerSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
+TEST_F(QuickInsertSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   base::test::TestFuture<const std::u16string&> future;
@@ -145,7 +145,7 @@ TEST_F(PickerSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(PickerSearchFieldViewTest, DoesNotShowClearButtonInitially) {
+TEST_F(QuickInsertSearchFieldViewTest, DoesNotShowClearButtonInitially) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -154,7 +154,7 @@ TEST_F(PickerSearchFieldViewTest, DoesNotShowClearButtonInitially) {
   EXPECT_FALSE(view.clear_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest, DoesNotShowBackButtonInitially) {
+TEST_F(QuickInsertSearchFieldViewTest, DoesNotShowBackButtonInitially) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
@@ -163,7 +163,7 @@ TEST_F(PickerSearchFieldViewTest, DoesNotShowBackButtonInitially) {
   EXPECT_FALSE(view.back_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithQuery) {
+TEST_F(QuickInsertSearchFieldViewTest, ShowsClearButtonWithQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -177,7 +177,7 @@ TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithQuery) {
   EXPECT_TRUE(view->clear_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
+TEST_F(QuickInsertSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -196,7 +196,7 @@ TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
   EXPECT_TRUE(view->clear_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithSetQueryText) {
+TEST_F(QuickInsertSearchFieldViewTest, ShowsClearButtonWithSetQueryText) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -209,7 +209,7 @@ TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithSetQueryText) {
   EXPECT_TRUE(view->clear_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptySetQueryText) {
+TEST_F(QuickInsertSearchFieldViewTest, HidesClearButtonWithEmptySetQueryText) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -223,7 +223,7 @@ TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptySetQueryText) {
   EXPECT_FALSE(view->clear_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        ClickingClearButtonResetsQueryAndHidesButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -247,7 +247,7 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_FALSE(view->clear_button_for_testing().GetVisible());
 }
 
-TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
+TEST_F(QuickInsertSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->Show();
@@ -266,7 +266,7 @@ TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
   EXPECT_TRUE(future.Wait());
 }
 
-TEST_F(PickerSearchFieldViewTest, GetsViewLeftOfBackButton) {
+TEST_F(QuickInsertSearchFieldViewTest, GetsViewLeftOfBackButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -280,7 +280,7 @@ TEST_F(PickerSearchFieldViewTest, GetsViewLeftOfBackButton) {
             &view->back_button_for_testing());
 }
 
-TEST_F(PickerSearchFieldViewTest, GetsViewLeftOfClearButton) {
+TEST_F(QuickInsertSearchFieldViewTest, GetsViewLeftOfClearButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -294,7 +294,7 @@ TEST_F(PickerSearchFieldViewTest, GetsViewLeftOfClearButton) {
             &view->textfield_for_testing());
 }
 
-TEST_F(PickerSearchFieldViewTest, GetsViewRightOfBackButton) {
+TEST_F(QuickInsertSearchFieldViewTest, GetsViewRightOfBackButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -308,7 +308,7 @@ TEST_F(PickerSearchFieldViewTest, GetsViewRightOfBackButton) {
   EXPECT_EQ(view->GetViewRightOf(&view->textfield_for_testing()), nullptr);
 }
 
-TEST_F(PickerSearchFieldViewTest, GetsViewRightOfClearButton) {
+TEST_F(QuickInsertSearchFieldViewTest, GetsViewRightOfClearButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -322,7 +322,8 @@ TEST_F(PickerSearchFieldViewTest, GetsViewRightOfClearButton) {
   EXPECT_EQ(view->GetViewRightOf(&view->clear_button_for_testing()), nullptr);
 }
 
-TEST_F(PickerSearchFieldViewTest, LeftEventShouldMoveCursorFromMiddleOfQuery) {
+TEST_F(QuickInsertSearchFieldViewTest,
+       LeftEventShouldMoveCursorFromMiddleOfQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -335,7 +336,7 @@ TEST_F(PickerSearchFieldViewTest, LeftEventShouldMoveCursorFromMiddleOfQuery) {
   EXPECT_TRUE(view->LeftEventShouldMoveCursor(&view->textfield_for_testing()));
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        LeftEventShouldNotMoveCursorFromStartOfQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -350,7 +351,8 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_FALSE(view->LeftEventShouldMoveCursor(&view->textfield_for_testing()));
 }
 
-TEST_F(PickerSearchFieldViewTest, LeftEventShouldMoveCursorFromEndOfQuery) {
+TEST_F(QuickInsertSearchFieldViewTest,
+       LeftEventShouldMoveCursorFromEndOfQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -363,7 +365,8 @@ TEST_F(PickerSearchFieldViewTest, LeftEventShouldMoveCursorFromEndOfQuery) {
   EXPECT_TRUE(view->LeftEventShouldMoveCursor(&view->textfield_for_testing()));
 }
 
-TEST_F(PickerSearchFieldViewTest, RightEventShouldMoveCursorFromMiddleOfQuery) {
+TEST_F(QuickInsertSearchFieldViewTest,
+       RightEventShouldMoveCursorFromMiddleOfQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -376,7 +379,8 @@ TEST_F(PickerSearchFieldViewTest, RightEventShouldMoveCursorFromMiddleOfQuery) {
   EXPECT_TRUE(view->RightEventShouldMoveCursor(&view->textfield_for_testing()));
 }
 
-TEST_F(PickerSearchFieldViewTest, RightEventShouldMoveCursorFromStartOfQuery) {
+TEST_F(QuickInsertSearchFieldViewTest,
+       RightEventShouldMoveCursorFromStartOfQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -390,7 +394,8 @@ TEST_F(PickerSearchFieldViewTest, RightEventShouldMoveCursorFromStartOfQuery) {
   EXPECT_TRUE(view->RightEventShouldMoveCursor(&view->textfield_for_testing()));
 }
 
-TEST_F(PickerSearchFieldViewTest, RightEventShouldNotMoveCursorFromEndOfQuery) {
+TEST_F(QuickInsertSearchFieldViewTest,
+       RightEventShouldNotMoveCursorFromEndOfQuery) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
@@ -404,7 +409,7 @@ TEST_F(PickerSearchFieldViewTest, RightEventShouldNotMoveCursorFromEndOfQuery) {
       view->RightEventShouldMoveCursor(&view->textfield_for_testing()));
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        SetTextfieldActiveDescendantNotifiesAfterDelayWhenFocused) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -431,7 +436,7 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        SetTextfieldActiveDescendantDoesNotNotifyWhenUnfocused) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -449,7 +454,7 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        RequestFocusNotifiesInitialActiveDescendantAfterDelay) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -476,7 +481,7 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        RequestFocusDoesNotNotifyEmptyActiveDescendant) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -501,7 +506,7 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 }
 
-TEST_F(PickerSearchFieldViewTest,
+TEST_F(QuickInsertSearchFieldViewTest,
        SetTextfieldActiveDescendantOnlyNotifiesNewestDescendant) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

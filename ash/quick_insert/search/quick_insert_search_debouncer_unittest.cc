@@ -12,7 +12,7 @@
 namespace ash {
 namespace {
 
-class PickerSearchDebouncerTest : public testing::Test {
+class QuickInsertSearchDebouncerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -23,7 +23,8 @@ class PickerSearchDebouncerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(PickerSearchDebouncerTest, RequestSearchDoesNotTriggerSearchUntilDelay) {
+TEST_F(QuickInsertSearchDebouncerTest,
+       RequestSearchDoesNotTriggerSearchUntilDelay) {
   base::test::TestFuture<void> future;
   PickerSearchDebouncer debouncer(base::Milliseconds(100));
 
@@ -33,7 +34,7 @@ TEST_F(PickerSearchDebouncerTest, RequestSearchDoesNotTriggerSearchUntilDelay) {
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(PickerSearchDebouncerTest, RequestSearchTriggersSearchAfterDelay) {
+TEST_F(QuickInsertSearchDebouncerTest, RequestSearchTriggersSearchAfterDelay) {
   base::test::TestFuture<void> future;
   PickerSearchDebouncer debouncer(base::Milliseconds(100));
 
@@ -43,7 +44,7 @@ TEST_F(PickerSearchDebouncerTest, RequestSearchTriggersSearchAfterDelay) {
   EXPECT_TRUE(future.IsReady());
 }
 
-TEST_F(PickerSearchDebouncerTest, NewRequestSearchCancelsPreviousRequest) {
+TEST_F(QuickInsertSearchDebouncerTest, NewRequestSearchCancelsPreviousRequest) {
   base::test::TestFuture<void> future;
   PickerSearchDebouncer debouncer(base::Milliseconds(100));
 
@@ -55,7 +56,8 @@ TEST_F(PickerSearchDebouncerTest, NewRequestSearchCancelsPreviousRequest) {
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(PickerSearchDebouncerTest, NewRequestSearchTriggersSearchAfterDelay) {
+TEST_F(QuickInsertSearchDebouncerTest,
+       NewRequestSearchTriggersSearchAfterDelay) {
   base::test::TestFuture<void> future;
   PickerSearchDebouncer debouncer(base::Milliseconds(100));
 

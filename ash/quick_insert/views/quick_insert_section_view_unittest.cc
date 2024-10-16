@@ -60,9 +60,9 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
       u"gif", base::DoNothing());
 }
 
-using PickerSectionViewTest = views::ViewsTestBase;
+using QuickInsertSectionViewTest = views::ViewsTestBase;
 
-TEST_F(PickerSectionViewTest, HasListRole) {
+TEST_F(QuickInsertSectionViewTest, HasListRole) {
   PickerSectionView section_view(kDefaultSectionWidth,
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
@@ -70,7 +70,7 @@ TEST_F(PickerSectionViewTest, HasListRole) {
   EXPECT_EQ(section_view.GetAccessibleRole(), ax::mojom::Role::kList);
 }
 
-TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
+TEST_F(QuickInsertSectionViewTest, CreatesTitleLabel) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -83,7 +83,7 @@ TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
               Property(&views::Label::GetText, kSectionTitleText));
 }
 
-TEST_F(PickerSectionViewTest, TitleHasHeadingRole) {
+TEST_F(QuickInsertSectionViewTest, TitleHasHeadingRole) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -94,7 +94,7 @@ TEST_F(PickerSectionViewTest, TitleHasHeadingRole) {
               ax::mojom::Role::kHeading);
 }
 
-TEST_F(PickerSectionViewTest, AddsListItem) {
+TEST_F(QuickInsertSectionViewTest, AddsListItem) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -109,7 +109,7 @@ TEST_F(PickerSectionViewTest, AddsListItem) {
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
 }
 
-TEST_F(PickerSectionViewTest, AddsTwoListItems) {
+TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -127,7 +127,7 @@ TEST_F(PickerSectionViewTest, AddsTwoListItems) {
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[1]));
 }
 
-TEST_F(PickerSectionViewTest, AddsGifItem) {
+TEST_F(QuickInsertSectionViewTest, AddsGifItem) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -141,7 +141,7 @@ TEST_F(PickerSectionViewTest, AddsGifItem) {
   EXPECT_TRUE(views::IsViewClass<PickerImageItemView>(items[0]));
 }
 
-TEST_F(PickerSectionViewTest, AddsResults) {
+TEST_F(QuickInsertSectionViewTest, AddsResults) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
@@ -163,7 +163,7 @@ TEST_F(PickerSectionViewTest, AddsResults) {
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[1]));
 }
 
-TEST_F(PickerSectionViewTest,
+TEST_F(QuickInsertSectionViewTest,
        BrowsingHistoryResultsWithTitleShowsTitleAsPrimary) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -186,7 +186,7 @@ TEST_F(PickerSectionViewTest,
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
 }
 
-TEST_F(PickerSectionViewTest,
+TEST_F(QuickInsertSectionViewTest,
        BrowsingHistoryResultsWithoutTitleShowsUrlAsPrimary) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -209,7 +209,7 @@ TEST_F(PickerSectionViewTest,
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
 }
 
-TEST_F(PickerSectionViewTest,
+TEST_F(QuickInsertSectionViewTest,
        TextClipboardHistoryResultsUseDefaultIconIfNotLink) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -241,7 +241,7 @@ TEST_F(PickerSectionViewTest,
   EXPECT_THAT(vector_icon->name, StrEq(chromeos::kTextIcon.name));
 }
 
-TEST_F(PickerSectionViewTest,
+TEST_F(QuickInsertSectionViewTest,
        TextClipboardHistoryResultsUsesLinkIconIfValidLink) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -273,7 +273,7 @@ TEST_F(PickerSectionViewTest,
   EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kLinkIcon.name));
 }
 
-TEST_F(PickerSectionViewTest,
+TEST_F(QuickInsertSectionViewTest,
        SingleFileClipboardHistoryResultsUseIconForFiletype) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -305,7 +305,7 @@ TEST_F(PickerSectionViewTest,
   EXPECT_THAT(vector_icon->name, StrEq(chromeos::kFiletypeImageIcon.name));
 }
 
-TEST_F(PickerSectionViewTest,
+TEST_F(QuickInsertSectionViewTest,
        MultipleFileClipboardHistoryResultsUseIconForFiletype) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
@@ -337,7 +337,7 @@ TEST_F(PickerSectionViewTest,
   EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kContentCopyIcon.name));
 }
 
-TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
+TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
@@ -358,7 +358,7 @@ TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
   EXPECT_NE(list_item->shortcut_hint_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerSectionViewTest, ClearsItems) {
+TEST_F(QuickInsertSectionViewTest, ClearsItems) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -371,13 +371,13 @@ TEST_F(PickerSectionViewTest, ClearsItems) {
   EXPECT_THAT(section_view.item_views_for_testing(), IsEmpty());
 }
 
-class PickerSectionViewUrlFormattingTest
-    : public PickerSectionViewTest,
+class QuickInsertSectionViewUrlFormattingTest
+    : public QuickInsertSectionViewTest,
       public testing::WithParamInterface<std::pair<GURL, std::u16string>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerSectionViewUrlFormattingTest,
+    QuickInsertSectionViewUrlFormattingTest,
     testing::Values(
         std::make_pair(GURL("http://foo.com/bar"), u"foo.com/bar"),
         std::make_pair(GURL("https://foo.com/bar"), u"foo.com/bar"),
@@ -387,7 +387,7 @@ INSTANTIATE_TEST_SUITE_P(
                        u"chrome-extension://aaa"),
         std::make_pair(GURL("file://a/b/c"), u"file://a/b/c")));
 
-TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
+TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
   PickerSubmenuController submenu_controller;
@@ -408,7 +408,7 @@ TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
             GetParam().second);
 }
 
-TEST_F(PickerSectionViewTest, GetItemsFromListItems) {
+TEST_F(QuickInsertSectionViewTest, GetItemsFromListItems) {
   PickerSectionView section_view(kDefaultSectionWidth,
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
@@ -435,7 +435,7 @@ TEST_F(PickerSectionViewTest, GetItemsFromListItems) {
   EXPECT_EQ(section_view.GetItemRightOf(item3), nullptr);
 }
 
-TEST_F(PickerSectionViewTest, GetItemsFromImageGridItems) {
+TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridItems) {
   PickerSectionView section_view(kDefaultSectionWidth,
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
@@ -459,7 +459,7 @@ TEST_F(PickerSectionViewTest, GetItemsFromImageGridItems) {
   EXPECT_EQ(section_view.GetItemRightOf(item3), item2);
 }
 
-TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageGridItems) {
+TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageGridItems) {
   PickerSectionView section_view(kDefaultSectionWidth,
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
@@ -495,7 +495,7 @@ TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageGridItems) {
   EXPECT_EQ(section_view.GetItemRightOf(item5), item4);
 }
 
-TEST_F(PickerSectionViewTest, GetItemsFromImageGridAboveListItems) {
+TEST_F(QuickInsertSectionViewTest, GetItemsFromImageGridAboveListItems) {
   PickerSectionView section_view(kDefaultSectionWidth,
                                  /*asset_fetcher=*/nullptr,
                                  /*submenu_controller=*/nullptr);
@@ -531,7 +531,7 @@ TEST_F(PickerSectionViewTest, GetItemsFromImageGridAboveListItems) {
   EXPECT_EQ(section_view.GetItemRightOf(item5), nullptr);
 }
 
-TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageRowItems) {
+TEST_F(QuickInsertSectionViewTest, GetItemsFromListAboveImageRowItems) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerSectionView* section_view = widget->SetContentsView(
@@ -571,7 +571,7 @@ TEST_F(PickerSectionViewTest, GetItemsFromListAboveImageRowItems) {
   EXPECT_EQ(section_view->GetItemRightOf(more_items), nullptr);
 }
 
-TEST_F(PickerSectionViewTest, GetItemsFromImageRowAboveListItems) {
+TEST_F(QuickInsertSectionViewTest, GetItemsFromImageRowAboveListItems) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerSectionView* section_view = widget->SetContentsView(

@@ -36,9 +36,9 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-class PickerClipboardHistoryProviderTest : public views::ViewsTestBase {};
+class QuickInsertClipboardHistoryProviderTest : public views::ViewsTestBase {};
 
-TEST_F(PickerClipboardHistoryProviderTest, FetchesTextResult) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesTextResult) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -66,7 +66,7 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesTextResult) {
                   0, u"xyz", std::nullopt, true))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FetchesImageResult) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesImageResult) {
   base::UnguessableToken expected_item_id;
   ui::ImageModel expected_display_image =
       ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16));
@@ -98,7 +98,7 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesImageResult) {
           expected_display_image, true))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FetchesSingleFileResult) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesSingleFileResult) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -127,7 +127,7 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesSingleFileResult) {
                   1, u"filename", std::nullopt, true))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FetchesMultipleFileResults) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesMultipleFileResults) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -159,7 +159,7 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesMultipleFileResults) {
                   2, u"2 files", std::nullopt, true))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -188,7 +188,7 @@ TEST_F(PickerClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
                   0, u"xyz", std::nullopt, false))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FiletersResultByQuery) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FiletersResultByQuery) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
@@ -216,7 +216,7 @@ TEST_F(PickerClipboardHistoryProviderTest, FiletersResultByQuery) {
                             u"12345", std::nullopt, true))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FiltersOutHtmlResults) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutHtmlResults) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce([](ClipboardHistoryController::GetHistoryValuesCallback
@@ -236,7 +236,7 @@ TEST_F(PickerClipboardHistoryProviderTest, FiltersOutHtmlResults) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FiltersOutLongResults) {
+TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutLongResults) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(

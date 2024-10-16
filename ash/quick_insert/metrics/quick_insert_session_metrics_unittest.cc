@@ -24,7 +24,7 @@ using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::Property;
 
-class PickerSessionMetricsTest : public testing::Test {
+class QuickInsertSessionMetricsTest : public testing::Test {
  public:
   void SetUp() override {
     metrics_recorder_ =
@@ -39,7 +39,7 @@ class PickerSessionMetricsTest : public testing::Test {
       metrics_recorder_;
 };
 
-TEST_F(PickerSessionMetricsTest, RecordsUmaSessionOutcomeOnce) {
+TEST_F(QuickInsertSessionMetricsTest, RecordsUmaSessionOutcomeOnce) {
   base::HistogramTester histogram;
   {
     PickerSessionMetrics metrics;
@@ -55,7 +55,7 @@ TEST_F(PickerSessionMetricsTest, RecordsUmaSessionOutcomeOnce) {
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied, 1);
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsUmaUnknownOutcomeOnDestruction) {
+TEST_F(QuickInsertSessionMetricsTest, RecordsUmaUnknownOutcomeOnDestruction) {
   base::HistogramTester histogram;
   { PickerSessionMetrics metrics; }
 
@@ -72,7 +72,7 @@ auto ContainsEvent(const metrics::structured::Event& event) {
                Eq(std::ref(event.metric_values())))));
 }
 
-TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsOnPlainTextField) {
+TEST_F(QuickInsertSessionMetricsTest, OnStartSessionMetricsOnPlainTextField) {
   ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
   client.SetTextAndSelection(u"abcd", gfx::Range(1, 1));
 
@@ -90,7 +90,7 @@ TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsOnPlainTextField) {
   EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsOnRichTextField) {
+TEST_F(QuickInsertSessionMetricsTest, OnStartSessionMetricsOnRichTextField) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   client.SetTextAndSelection(u"abcd", gfx::Range(1, 4));
@@ -108,7 +108,8 @@ TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsOnRichTextField) {
   EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsForNullTextInputClient) {
+TEST_F(QuickInsertSessionMetricsTest,
+       OnStartSessionMetricsForNullTextInputClient) {
   PickerSessionMetrics metrics;
 
   metrics.OnStartSession(nullptr);
@@ -123,7 +124,7 @@ TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsForNullTextInputClient) {
   EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
+TEST_F(QuickInsertSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
   { PickerSessionMetrics metrics; }
 
   cros_events::Picker_FinishSession expected_event;
@@ -140,7 +141,7 @@ TEST_F(PickerSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
   EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
+TEST_F(QuickInsertSessionMetricsTest, RecordsFinishSessionEventForInsert) {
   {
     PickerSessionMetrics metrics;
     metrics.SetSelectedCategory(PickerCategory::kDatesTimes);
@@ -167,7 +168,8 @@ TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
   EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForCaseTransform) {
+TEST_F(QuickInsertSessionMetricsTest,
+       RecordsFinishSessionEventForCaseTransform) {
   {
     PickerSessionMetrics metrics;
     metrics.SetSelectedResult(
@@ -190,7 +192,7 @@ TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForCaseTransform) {
   EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
+TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kPickerCapsLockDislayedCountPrefName, 2);
@@ -210,7 +212,7 @@ TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
   EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 1);
 }
 
-TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
+TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kPickerCapsLockDislayedCountPrefName, 2);
@@ -231,7 +233,8 @@ TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
   EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 2);
 }
 
-TEST_F(PickerSessionMetricsTest, DoesNotUpdateCapsLockPrefsWhenNotDisplayed) {
+TEST_F(QuickInsertSessionMetricsTest,
+       DoesNotUpdateCapsLockPrefsWhenNotDisplayed) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kPickerCapsLockDislayedCountPrefName, 2);
@@ -250,7 +253,7 @@ TEST_F(PickerSessionMetricsTest, DoesNotUpdateCapsLockPrefsWhenNotDisplayed) {
   EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 1);
 }
 
-TEST_F(PickerSessionMetricsTest, HalvesCapsLockPrefs) {
+TEST_F(QuickInsertSessionMetricsTest, HalvesCapsLockPrefs) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kPickerCapsLockDislayedCountPrefName, 19);

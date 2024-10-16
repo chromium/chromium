@@ -60,13 +60,13 @@ PickerTextResult MakeResult(std::u16string primary_text,
                           PickerTextResult::Source::kDate);
 }
 
-class PickerDateSearchTest
+class QuickInsertDateSearchTest
     : public ::testing::TestWithParam<std::tuple<std::string_view, TestCase>> {
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PickerDateSearchTest,
+    QuickInsertDateSearchTest,
     Combine(Values("00:00", "12:00", "23:59"),
             Values(
                 // No result
@@ -198,7 +198,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .expected_results = {MakeResult(u"Mar 11")},
                 })));
 
-TEST_P(PickerDateSearchTest, ReturnsExpectedDates) {
+TEST_P(QuickInsertDateSearchTest, ReturnsExpectedDates) {
   std::string_view time = std::get<0>(GetParam());
   const auto& [date, query, expected_results] = std::get<1>(GetParam());
   EXPECT_THAT(PickerDateSearch(
