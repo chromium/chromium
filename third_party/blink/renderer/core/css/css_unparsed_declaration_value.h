@@ -51,7 +51,7 @@ class CORE_EXPORT CSSUnparsedDeclarationValue final : public CSSValue {
   }
 
   bool Equals(const CSSUnparsedDeclarationValue& other) const {
-    return data_ == other.data_;
+    return base::ValuesEquivalent(data_, other.data_);
   }
   String CustomCSSText() const;
 
