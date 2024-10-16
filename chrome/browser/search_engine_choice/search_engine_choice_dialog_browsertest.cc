@@ -765,6 +765,61 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       PRE_SearchEngineChoiceIsShownOnEachGuestSession) {
+  // Initial browser
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          guest_session->profile()));
+
+  // Complete the choice for the first guest profile and choose to save the
+  // choice between guest sessions.
+  first_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/false,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_FALSE(first_service->IsShowingDialog(*guest_session));
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(guest_session->profile())
+                ->GetDefaultSearchProvider()
+                ->data()
+                .prepopulate_id,
+            TemplateURLPrepopulateData::bing.id);
+
+  CloseBrowserSynchronously(guest_session);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       SearchEngineChoiceIsShownOnEachGuestSession) {
+#if !BUILDFLAG(IS_MAC)
+  // This initial browser is sometimes missing on mac. We don't really need that
+  // browser, so if the guest browser works, then the test might still succeed.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+#endif
+
+  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+#endif
+  auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          guest_session->profile()));
+
+  // The search engine choice dialog doesn't get displayed for the second guest
+  // profile and the previously chosen default search engine is used.
+  EXPECT_TRUE(second_service->IsShowingDialog(*guest_session));
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kDefaultSearchProviderGuestModePrepopulatedId));
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(guest_session->profile())
+                ->GetDefaultSearchProvider()
+                ->data()
+                .prepopulate_id,
+            TemplateURLPrepopulateData::google.id);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        PRE_SearchEngineIsSavedBetweenGuestSessionsIfNeeded) {
   // Initial browser
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
