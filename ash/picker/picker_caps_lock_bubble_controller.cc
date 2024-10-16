@@ -22,6 +22,12 @@ namespace {
 
 constexpr base::TimeDelta kBubbleViewDisplayTime = base::Seconds(3);
 
+// Starting at the time the bubble is shown, events that would normally close
+// the bubble are ignored for this grace period, to prevent the bubble from
+// being closed immediately.
+constexpr base::TimeDelta kIgnoreCloseBubbleEventsDuration =
+    base::Milliseconds(100);
+
 gfx::NativeView GetParentView() {
   aura::Window* active_window = window_util::GetActiveWindow();
   return Shell::GetContainer(active_window
@@ -49,16 +55,43 @@ gfx::Rect GetCaretBounds() {
   return gfx::Rect();
 }
 
+bool ShouldCloseBubbleOnEvent(ui::Event* event) {
+  switch (event->type()) {
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kTouchPressed:
+    case ui::EventType::kKeyPressed:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 PickerCapsLockBubbleController::PickerCapsLockBubbleController(
     input_method::ImeKeyboard* keyboard) {
   ime_keyboard_observation_.Observe(keyboard);
+
+  Shell::Get()->AddPreTargetHandler(this);
 }
 
 PickerCapsLockBubbleController::~PickerCapsLockBubbleController() {
+  Shell::Get()->RemovePreTargetHandler(this);
+
   // Close the bubble if it's open to avoid a dangling pointer.
   CloseBubble();
+}
+
+void PickerCapsLockBubbleController::OnMouseEvent(ui::MouseEvent* event) {
+  MaybeCloseBubbleByEvent(event);
+}
+
+void PickerCapsLockBubbleController::OnTouchEvent(ui::TouchEvent* event) {
+  MaybeCloseBubbleByEvent(event);
+}
+
+void PickerCapsLockBubbleController::OnKeyEvent(ui::KeyEvent* event) {
+  MaybeCloseBubbleByEvent(event);
 }
 
 void PickerCapsLockBubbleController::CloseBubble() {
@@ -81,9 +114,17 @@ void PickerCapsLockBubbleController::OnCapsLockChanged(bool enabled) {
       FROM_HERE, kBubbleViewDisplayTime,
       base::BindOnce(&PickerCapsLockBubbleController::CloseBubble,
                      weak_ptr_factory_.GetWeakPtr()));
+  last_shown_ = base::TimeTicks::Now();
 }
 
 void PickerCapsLockBubbleController::OnLayoutChanging(
     const std::string& layout_name) {}
+
+void PickerCapsLockBubbleController::MaybeCloseBubbleByEvent(ui::Event* event) {
+  if (ShouldCloseBubbleOnEvent(event) &&
+      base::TimeTicks::Now() - last_shown_ > kIgnoreCloseBubbleEventsDuration) {
+    CloseBubble();
+  }
+}
 
 }  // namespace ash
