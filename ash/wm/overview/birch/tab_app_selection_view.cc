@@ -7,14 +7,12 @@
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/typography.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -100,6 +98,9 @@ class TabAppSelectionView::TabAppSelectionItemView
     // will use the favicon and app services to fetch the favicon and app icon.
     std::string identifier;
 
+    // Title of the tab or app.
+    std::string title;
+
     raw_ptr<TabAppSelectionView> owner;
 
     bool show_close_button = true;
@@ -116,7 +117,6 @@ class TabAppSelectionView::TabAppSelectionItemView
 
   explicit TabAppSelectionItemView(InitParams params)
       : type_(params.type), owner_(params.owner) {
-    views::Label* title;
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
         .SetAccessibleName(u"TempAccessibleName")
@@ -134,7 +134,7 @@ class TabAppSelectionView::TabAppSelectionItemView
                 .SetImageSize(gfx::Size(kImageSize, kImageSize))
                 .SetPreferredSize(kImagePreferredSize),
             views::Builder<views::Label>()
-                .CopyAddressTo(&title)
+                .SetText(base::UTF8ToUTF16(params.title))
                 .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                 .SetProperty(views::kBoxLayoutFlexKey,
                              views::BoxLayoutFlexSpecification())
@@ -173,24 +173,12 @@ class TabAppSelectionView::TabAppSelectionItemView
         delegate->GetFaviconForUrl(params.identifier, /*lacros_profile_id=*/0,
                                    std::move(set_icon_image_callback),
                                    &cancelable_favicon_task_tracker_);
-        title->SetText(base::UTF8ToUTF16(params.identifier));
         return;
       }
       case InitParams::Type::kApp: {
         //  The callback may be called synchronously.
         delegate->GetIconForAppId(params.identifier, kImageSize,
                                   std::move(set_icon_image_callback));
-
-        // Retrieve the title from the app registry cache, which may be null in
-        // tests.
-        if (apps::AppRegistryCache* cache =
-                apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
-                    Shell::Get()->session_controller()->GetActiveAccountId())) {
-          cache->ForOneApp(params.identifier,
-                           [&title](const apps::AppUpdate& update) {
-                             title->SetText(base::UTF8ToUTF16(update.Name()));
-                           });
-        }
         return;
       }
     }
@@ -315,51 +303,53 @@ TabAppSelectionView::TabAppSelectionView(int group_id) {
   // Grab the lists of tabs and apps from data provider.
   const coral::mojom::GroupPtr& group =
       BirchCoralProvider::Get()->GetGroupById(group_id);
-  std::vector<GURL> page_urls;
-  std::vector<std::string> app_ids;
+  std::vector<coral::mojom::TabPtr> tabs;
+  std::vector<coral::mojom::AppPtr> apps;
   for (const auto& entity : group->entities) {
     if (entity->is_tab()) {
-      page_urls.push_back(entity->get_tab()->url);
+      tabs.push_back(entity->get_tab().Clone());
     } else {
-      app_ids.push_back(entity->get_app()->id);
+      apps.push_back(entity->get_app().Clone());
     }
   }
 
-  const size_t num_tabs = page_urls.size();
-  const size_t num_apps = app_ids.size();
+  const size_t num_tabs = tabs.size();
+  const size_t num_apps = apps.size();
   item_views_.reserve(num_tabs + num_apps);
   const bool show_close_button = (num_tabs + num_apps) > kMinItems;
-  auto create_item_view =
-      [&](TabAppSelectionItemView::InitParams::Type type,
-          const std::string& identifier, int position_in_selector) {
-        TabAppSelectionItemView::InitParams params;
-        params.type = type;
-        params.identifier = identifier;
-        params.owner = this;
-        params.show_close_button = show_close_button;
-        params.position_in_selector = position_in_selector;
-        params.num_selector_elements = static_cast<int>(num_tabs + num_apps);
-        auto* item_view = contents->AddChildView(
-            std::make_unique<TabAppSelectionItemView>(std::move(params)));
-        item_views_.push_back(item_view);
-      };
+  auto create_item_view = [&](TabAppSelectionItemView::InitParams::Type type,
+                              const std::string& identifier,
+                              const std::string& title,
+                              int position_in_selector) {
+    TabAppSelectionItemView::InitParams params;
+    params.type = type;
+    params.identifier = identifier;
+    params.title = title;
+    params.owner = this;
+    params.show_close_button = show_close_button;
+    params.position_in_selector = position_in_selector;
+    params.num_selector_elements = static_cast<int>(num_tabs + num_apps);
+    auto* item_view = contents->AddChildView(
+        std::make_unique<TabAppSelectionItemView>(std::move(params)));
+    item_views_.push_back(item_view);
+  };
 
   int position = 1;
   if (num_tabs > 0) {
     contents->AddChildView(CreateSubtitle(
         IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE, kTabSubtitleID));
-    for (const GURL& gurl : page_urls) {
+    for (const coral::mojom::TabPtr& tab : tabs) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kTab,
-                       gurl.spec(), position++);
+                       tab->url.spec(), tab->title, position++);
     }
   }
 
   if (num_apps > 0) {
     contents->AddChildView(CreateSubtitle(
         IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE, kAppSubtitleID));
-    for (const std::string& app_id : app_ids) {
-      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app_id,
-                       position++);
+    for (const coral::mojom::AppPtr& app : apps) {
+      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app->id,
+                       app->title, position++);
     }
   }
 
