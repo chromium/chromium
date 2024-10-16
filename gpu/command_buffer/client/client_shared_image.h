@@ -52,9 +52,6 @@ class GPU_EXPORT ClientSharedImage
    public:
     ~ScopedMapping();
 
-    // Returns a pointer to the beginning of the plane.
-    void* Memory(const uint32_t plane_index);
-
     base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index);
 
     SkPixmap GetSkPixmapForPlane(const uint32_t plane_index,

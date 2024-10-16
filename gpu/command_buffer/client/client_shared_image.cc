@@ -147,13 +147,10 @@ bool ClientSharedImage::ScopedMapping::Init(
   return true;
 }
 
-void* ClientSharedImage::ScopedMapping::Memory(const uint32_t plane_index) {
-  CHECK(buffer_);
-  return buffer_->memory(plane_index);
-}
-
 base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
     const uint32_t plane_index) {
+  CHECK(buffer_);
+
   size_t height_in_pixels;
   size_t row_size_in_bytes;
 
@@ -176,7 +173,7 @@ base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
   // the start of the plane, as that region is by definition the memory storing
   // the data of the plane.
   return UNSAFE_BUFFERS(base::span<uint8_t>(
-      reinterpret_cast<uint8_t*>(Memory(plane_index)), span_length));
+      reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
 }
 
 SkPixmap ClientSharedImage::ScopedMapping::GetSkPixmapForPlane(
