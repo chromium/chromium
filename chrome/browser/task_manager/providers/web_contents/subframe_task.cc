@@ -32,8 +32,8 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions = {
 SubframeTask::SubframeTask(content::RenderFrameHost* render_frame_host,
                            RendererTask* main_task)
     : RendererTask(std::u16string(), nullptr, render_frame_host),
-      site_instance_(render_frame_host->GetSiteInstance()),
-      main_task_(main_task) {
+      site_instance_(render_frame_host->GetSiteInstance()) {
+  main_task_ = main_task->AsWeakPtr();
   set_title(GetTitle());
   // Note that we didn't get the RenderProcessHost from the WebContents, but
   // rather from the RenderFrameHost. Out-of-process iframes reside on
@@ -53,7 +53,7 @@ void SubframeTask::UpdateFavicon() {
 }
 
 Task* SubframeTask::GetParentTask() const {
-  return main_task_;
+  return main_task_.get();
 }
 
 void SubframeTask::Activate() {

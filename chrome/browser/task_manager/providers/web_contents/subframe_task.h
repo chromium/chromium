@@ -40,7 +40,7 @@ class SubframeTask : public RendererTask {
   raw_ptr<content::SiteInstance, DanglingUntriaged> site_instance_;
 
   // The task for the main frame of this WebContents.
-  raw_ptr<RendererTask, DanglingUntriaged> main_task_;
+  base::WeakPtr<RendererTask> main_task_;
 };
 
 }  // namespace task_manager
