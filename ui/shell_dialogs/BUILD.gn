@@ -63,6 +63,7 @@ component("shell_dialogs") {
       ]
       deps += [
         "//components/dbus/thread_linux",
+        "//components/dbus/utils",
         "//dbus",
         "//ui/views",
       ]
