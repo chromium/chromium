@@ -246,6 +246,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   // status. The callback is a mojo callback that must be called in all cases.
   void HandleMobilePromoSegmentationResponse(
       GetMobilePromoQrCodeCallback callback,
+      base::Time request_start_time,
       const segmentation_platform::ClassificationResult& result);
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
