@@ -97,12 +97,6 @@ suite('Main', function() {
     assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');
   });
 
-  // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/40156980): This class directly calls
-  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
-  // moment and is never called from Lacros-Chrome. This should be revisited
-  // when there is a solution for the client certificates settings page on
-  // Lacros-Chrome.
   test('ManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -113,7 +107,6 @@ suite('Main', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('certManagementV2URL'));
   });
-  // </if>
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
@@ -392,12 +385,6 @@ suite('FlagsDisabled', function() {
     assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   });
 
-  // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/40156980): This class directly calls
-  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
-  // moment and is never called from Lacros-Chrome. This should be revisited
-  // when there is a solution for the client certificates settings page on
-  // Lacros-Chrome.
   test('LogManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -405,7 +392,6 @@ suite('FlagsDisabled', function() {
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
   });
-  // </if>
 
   test('ManageSecurityKeysSubpageHidden', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));

@@ -158,9 +158,6 @@ suite('SyncSettings', function() {
     assertEquals(otherItems.querySelectorAll('cr-expand-button').length, 1);
 
     assertTrue(isChildVisible(syncPage, '#sync-advanced-row'));
-    // <if expr="chromeos_lacros">
-    assertTrue(isChildVisible(syncPage, '#os-sync-device-row'));
-    // </if>
     // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
     assertFalse(isChildVisible(syncPage, '#activityControlsLinkRowV1'));
 

@@ -500,11 +500,6 @@ export class SettingsClearBrowsingDataDialogElement extends
     if (shouldShowCookieException) {
       return clearCookiesSummarySyncing;
     }
-    // <if expr="chromeos_lacros">
-    if (!loadTimeData.getBoolean('isSecondaryUser')) {
-      return loadTimeData.getString('clearCookiesSummarySignedInMainProfile');
-    }
-    // </if>
     return cookiesSummary;
   }
 

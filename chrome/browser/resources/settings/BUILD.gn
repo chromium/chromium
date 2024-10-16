@@ -325,17 +325,13 @@ build_webui("build") {
     non_web_component_files +=
         [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
-    if (!is_chromeos_lacros) {
-      non_web_component_files += [
-        "default_browser_page/default_browser_browser_proxy.ts",
-        "people_page/import_data_browser_proxy.ts",
-      ]
-    }
     non_web_component_files += [
-      "languages_page/languages.ts",
+      "default_browser_page/default_browser_browser_proxy.ts",
       "languages_page/languages_browser_proxy.ts",
       "languages_page/languages_settings_metrics_proxy.ts",
+      "languages_page/languages.ts",
       "languages_page/languages_types.ts",
+      "people_page/import_data_browser_proxy.ts",
       "people_page/manage_profile_browser_proxy.ts",
       "system_page/system_page_browser_proxy.ts",
     ]

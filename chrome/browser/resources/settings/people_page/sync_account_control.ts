@@ -353,13 +353,6 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldAllowAccountSwitch_(): boolean {
-    // <if expr="chromeos_lacros">
-    if (!loadTimeData.getBoolean('isSecondaryUser')) {
-      // Sync account can't be changed in the main profile, it is always the
-      // device account.
-      return false;
-    }
-    // </if>
     return !this.hideButtons && !this.isSyncing_() &&
         this.syncStatus.signedInState !== SignedInState.SIGNED_IN_PAUSED &&
         (!loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') ||

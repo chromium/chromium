@@ -266,40 +266,6 @@ suite('SyncAccountControl', function() {
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
   });
 
-  // <if expr="chromeos_lacros">
-  test('main profile not signed in but has stored accounts', function() {
-    loadTimeData.overrideValues({isSecondaryUser: false});
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SIGNED_OUT,
-      signedInUsername: '',
-      statusAction: StatusAction.NO_ACTION,
-      hasError: false,
-      disabled: false,
-    };
-    simulateStoredAccounts([
-      {
-        fullName: 'fooName',
-        givenName: 'foo',
-        email: 'foo@foo.com',
-      },
-    ]);
-
-    const userInfo =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
-
-    // Avatar row shows the right account.
-    assertTrue(isChildVisible(testElement, '#promo-header'));
-    assertTrue(isChildVisible(testElement, '#avatar-row'));
-    assertTrue(userInfo.textContent!.includes('fooName'));
-    assertTrue(userInfo.textContent!.includes('foo@foo.com'));
-
-    // Menu is hidden.
-    assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
-    assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
-  });
-  // </if>
-
   test('signed in, no error', function() {
     testElement.syncStatus = {
       firstSetupInProgress: false,
@@ -605,13 +571,6 @@ suite('SyncAccountControl', function() {
   });
 
   test('signinPaused effects', function() {
-    // <if expr="chromeos_lacros">
-    // For Lacros, force the page to be loaded as if it was a secondary user so
-    // that it is similar to other platforms. E.g. the drowdown menu would not
-    // show on lacros main user.
-    loadTimeData.overrideValues({isSecondaryUser: true});
-    // </if>
-
     const signedInAccount: StoredAccount = {
       fullName: 'fooName',
       givenName: 'foo',
