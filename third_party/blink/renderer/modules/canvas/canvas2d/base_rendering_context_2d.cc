@@ -2333,20 +2333,10 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       [this, image_source, image, src_rect, dst_rect](
           cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
-        // TODO: investigate relocating this adjustment to paint_op.cc.
-        cc::PaintFlags::ScalingOperation scaling_option =
-            cc::PaintFlags::ScalingOperation::kUnknown;
-        SkSize scale;
-        if (c->getLocalToDevice().asM33().decomposeScale(&scale)) {
-          scaling_option = (scale.width() > 1 && scale.height() > 1)
-                               ? cc::PaintFlags::ScalingOperation::kUpscale
-                               : cc::PaintFlags::ScalingOperation::kUnknown;
-        }
         SkSamplingOptions sampling =
             cc::PaintFlags::FilterQualityToSkSamplingOptions(
                 flags ? flags->getFilterQuality()
-                      : cc::PaintFlags::FilterQuality::kNone,
-                scaling_option);
+                      : cc::PaintFlags::FilterQuality::kNone);
         DrawImageInternal(c, image_source, image.get(), src_rect, dst_rect,
                           sampling, flags);
       },

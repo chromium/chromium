@@ -1368,7 +1368,15 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
   if (!params.image_provider) {
     SkRect adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
-    flags->DrawToSk(canvas, [op, adjusted_src](SkCanvas* c, const SkPaint& p) {
+    SkM44 matrix = canvas->getLocalToDevice() *
+                   SkM44(SkMatrix::RectToRect(adjusted_src, op->dst));
+    PaintFlags::ScalingOperation scale =
+        MatrixToScalingOperation(matrix.asM33());
+    PaintFlags::FilterQuality quality = sampling_to_quality(op->sampling);
+    SkSamplingOptions sampling =
+        PaintFlags::FilterQualityToSkSamplingOptions(quality, scale);
+    flags->DrawToSk(canvas, [op, adjusted_src, sampling](SkCanvas* c,
+                                                         const SkPaint& p) {
       sk_sp<SkImage> sk_image;
       if (op->image.IsTextureBacked()) {
         sk_image = op->image.GetAcceleratedSkImage();
@@ -1386,7 +1394,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
         skia::DrawGainmapImageRect(
             c, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
             op->image.gainmap_info_.value(), op->image.target_hdr_headroom_,
-            adjusted_src, op->dst, op->sampling, p);
+            adjusted_src, op->dst, sampling, p);
         return;
       }
 
@@ -1398,12 +1406,12 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
             tonemap_paint, op->image, c->imageInfo().refColorSpace());
         sk_image =
             sk_image->reinterpretColorSpace(c->imageInfo().refColorSpace());
-        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling,
+        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
                       &tonemap_paint, op->constraint);
         return;
       }
 
-      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
+      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling, &p,
                     op->constraint);
     });
     return;
@@ -1434,12 +1442,12 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
                          decoded_image.src_rect_offset().height());
   adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
   PaintFlags::ScalingOperation scale = MatrixToScalingOperation(matrix.asM33());
-  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src, scale](
+  SkSamplingOptions sampling = PaintFlags::FilterQualityToSkSamplingOptions(
+      decoded_image.filter_quality(), scale);
+  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src, sampling](
                               SkCanvas* c, const SkPaint& p) {
-    SkSamplingOptions options = PaintFlags::FilterQualityToSkSamplingOptions(
-        decoded_image.filter_quality(), scale);
     DrawImageRect(c, decoded_image.image().get(), adjusted_src, op->dst,
-                  options, &p, op->constraint);
+                  sampling, &p, op->constraint);
   });
 }
 
