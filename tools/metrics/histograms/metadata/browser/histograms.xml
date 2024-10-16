@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.MetricsReporting.{MetricCollector}NoMetricData"
-    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-22">
+    enum="EnterpriseCloudReportingDestination" expires_after="2025-11-22">
   <owner>vshenvi@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
