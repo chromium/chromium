@@ -2192,6 +2192,10 @@ void DevToolsUIBindings::SetDelegate(Delegate* delegate) {
 
 void DevToolsUIBindings::TransferDelegate(DevToolsUIBindings& other) {
   std::swap(delegate_, other.delegate_);
+  if (auto agent_host = agent_host_) {
+    Detach();
+    other.AttachTo(agent_host);
+  }
 }
 
 void DevToolsUIBindings::AttachTo(
