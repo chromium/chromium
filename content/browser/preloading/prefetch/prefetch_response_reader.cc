@@ -93,11 +93,16 @@ bool PrefetchResponseReader::MatchesCookieIndices(
   return hash == cookie_indices_->expected_hash;
 }
 
-PrefetchResponseReader::PrefetchResponseReader() {
+PrefetchResponseReader::PrefetchResponseReader(bool is_reusable)
+    : is_reusable_(is_reusable) {
   serving_url_loader_receivers_.set_disconnect_handler(base::BindRepeating(
       &PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
       weak_ptr_factory_.GetWeakPtr()));
 }
+
+PrefetchResponseReader::PrefetchResponseReader()
+    : PrefetchResponseReader(
+          base::FeatureList::IsEnabled(features::kPrefetchReusable)) {}
 
 PrefetchResponseReader::~PrefetchResponseReader() {
   if (should_record_metrics_) {
@@ -147,7 +152,7 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
     case LoadState::kResponseReceived:
     case LoadState::kCompleted:
     case LoadState::kFailed:
-      if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+      if (is_reusable_) {
         if (body_tee_) {
           body = body_tee_->Clone();
         }
@@ -185,7 +190,7 @@ void PrefetchResponseReader::BindAndStart(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+  if (!is_reusable_) {
     // Only one client is allowed if the feature is disabled.
     CHECK(serving_url_loader_clients_.empty());
   }
@@ -445,7 +450,7 @@ void PrefetchResponseReader::OnReceiveResponse(
   head->request_cookies.clear();
 
   head_ = std::move(head);
-  if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+  if (is_reusable_) {
     body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
         std::move(body), features::kPrefetchReusableBodySizeLimit.Get());
   } else {
