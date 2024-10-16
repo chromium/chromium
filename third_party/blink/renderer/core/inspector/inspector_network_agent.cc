@@ -301,7 +301,7 @@ class InspectorPostBodyParser
               base::as_byte_span(data.data_));
           break;
         case FormDataElement::kEncodedBlob:
-          ReadDataBlob(data.optional_blob_data_handle_, &parts_[i]);
+          ReadDataBlob(data.blob_data_handle_, &parts_[i]);
           break;
         case FormDataElement::kEncodedFile:
         case FormDataElement::kDataPipe:

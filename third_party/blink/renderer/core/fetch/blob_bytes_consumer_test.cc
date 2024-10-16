@@ -192,10 +192,9 @@ TEST_F(BlobBytesConsumerTest, DrainAsFormData) {
   ASSERT_TRUE(result);
   ASSERT_EQ(1u, result->Elements().size());
   ASSERT_EQ(FormDataElement::kEncodedBlob, result->Elements()[0].type_);
-  ASSERT_TRUE(result->Elements()[0].optional_blob_data_handle_);
-  EXPECT_EQ(body.length(),
-            result->Elements()[0].optional_blob_data_handle_->size());
-  EXPECT_EQ(blob_data_handle->Uuid(), result->Elements()[0].blob_uuid_);
+  ASSERT_TRUE(result->Elements()[0].blob_data_handle_);
+  EXPECT_EQ(body.length(), result->Elements()[0].blob_data_handle_->size());
+  EXPECT_EQ(blob_data_handle, result->Elements()[0].blob_data_handle_);
   EXPECT_EQ(PublicState::kClosed, consumer->GetPublicState());
   EXPECT_FALSE(DidStartLoading());
 }

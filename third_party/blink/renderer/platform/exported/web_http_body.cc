@@ -89,10 +89,8 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
       break;
     case FormDataElement::kEncodedBlob:
       result.type = HTTPBodyElementType::kTypeBlob;
-      result.blob_length = std::numeric_limits<uint64_t>::max();
-      result.optional_blob =
-          element.optional_blob_data_handle_->CloneBlobRemote();
-      result.blob_length = element.optional_blob_data_handle_->size();
+      result.optional_blob = element.blob_data_handle_->CloneBlobRemote();
+      result.blob_length = element.blob_data_handle_->size();
       break;
     case FormDataElement::kDataPipe:
       result.type = HTTPBodyElementType::kTypeDataPipe;
@@ -126,11 +124,6 @@ void WebHTTPBody::AppendFileRange(
   EnsureMutable();
   private_->AppendFileRange(file_path, file_start, file_length,
                             modification_time);
-}
-
-void WebHTTPBody::AppendBlob(const WebString& uuid) {
-  EnsureMutable();
-  private_->AppendBlob(uuid, nullptr);
 }
 
 void WebHTTPBody::AppendDataPipe(

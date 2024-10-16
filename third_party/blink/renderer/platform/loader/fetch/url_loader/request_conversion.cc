@@ -188,9 +188,9 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
         }
         break;
       case FormDataElement::kEncodedBlob: {
-        DCHECK(element.optional_blob_data_handle_);
+        CHECK(element.blob_data_handle_);
         mojo::Remote<mojom::blink::Blob> blob_remote(
-            element.optional_blob_data_handle_->CloneBlobRemote());
+            element.blob_data_handle_->CloneBlobRemote());
         mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
             data_pipe_getter_remote;
         blob_remote->AsDataPipeGetter(

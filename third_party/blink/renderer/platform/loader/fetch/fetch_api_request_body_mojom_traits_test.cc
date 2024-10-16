@@ -95,11 +95,10 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFileRange) {
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {
   ResourceRequestBody src(EncodedFormData::Create());
   mojo::MessagePipe pipe;
-  String uuid = "test_uuid";
   auto blob_data_handle = BlobDataHandle::Create(
-      uuid, "type-test", 100,
+      "test_uuid", "type-test", 100,
       mojo::PendingRemote<mojom::blink::Blob>(std::move(pipe.handle0), 0));
-  src.FormBody()->AppendBlob(uuid, blob_data_handle);
+  src.FormBody()->AppendBlob(blob_data_handle);
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -109,7 +108,6 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {
   ASSERT_EQ(1u, dest.FormBody()->Elements().size());
   const FormDataElement& e = dest.FormBody()->Elements()[0];
   EXPECT_EQ(e.type_, FormDataElement::kDataPipe);
-  EXPECT_EQ(e.blob_uuid_, String());
   EXPECT_TRUE(e.data_pipe_getter_);
 }
 

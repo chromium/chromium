@@ -33,17 +33,9 @@ class EncodedFormDataTest : public testing::Test {
       EXPECT_NE(a.Impl(), b.Impl());
   }
 
-  void CheckDeepCopied(const KURL& a, const KURL& b) {
-    EXPECT_EQ(a, b);
-    CheckDeepCopied(a.GetString(), b.GetString());
-    if (a.InnerURL() && b.InnerURL())
-      CheckDeepCopied(*a.InnerURL(), *b.InnerURL());
-  }
-
   void CheckDeepCopied(const FormDataElement& a, const FormDataElement& b) {
     EXPECT_EQ(a, b);
     CheckDeepCopied(a.filename_, b.filename_);
-    CheckDeepCopied(a.blob_uuid_, b.blob_uuid_);
   }
 };
 
@@ -56,9 +48,8 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   mojo::PendingRemote<mojom::blink::Blob> remote;
   mojo::PendingReceiver<mojom::blink::Blob> receiver =
       remote.InitWithNewPipeAndPassReceiver();
-  original->AppendBlob(
-      "originalUUID", BlobDataHandle::Create("uuid", "" /* type */,
-                                             0u /* size */, std::move(remote)));
+  original->AppendBlob(BlobDataHandle::Create("uuid", /*type=*/"", /*size=*/0,
+                                              std::move(remote)));
 
   Vector<char> boundary_vector;
   boundary_vector.Append("----boundaryForTest", 19);
@@ -86,7 +77,6 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
                 .expected_file_modification_time_->InSecondsFSinceUnixEpoch());
 
   EXPECT_EQ(FormDataElement::kEncodedBlob, copy_elements[2].type_);
-  EXPECT_EQ(String("originalUUID"), copy_elements[2].blob_uuid_);
 
   EXPECT_EQ(45678, copy->Identifier());
   EXPECT_EQ(boundary_vector, copy->Boundary());
@@ -100,8 +90,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
 
   // m_optionalBlobDataHandle is not checked, because BlobDataHandle is
   // ThreadSafeRefCounted.
-  // filename_ and blob_uuid_ are now thread safe, so they don't need a
-  // deep copy.
+  // filename_ is now thread safe, so it doesn't need a deep copy.
 }
 
 TEST_F(EncodedFormDataTest, GetType) {

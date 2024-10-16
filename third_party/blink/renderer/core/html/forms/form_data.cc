@@ -335,8 +335,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
         if (!file->GetPath().empty())
           form_data->AppendFile(file->GetPath(), file->LastModifiedTime());
       } else {
-        form_data->AppendBlob(entry->GetBlob()->Uuid(),
-                              entry->GetBlob()->GetBlobDataHandle());
+        form_data->AppendBlob(entry->GetBlob()->GetBlobDataHandle());
       }
     } else {
       std::string encoded_value =

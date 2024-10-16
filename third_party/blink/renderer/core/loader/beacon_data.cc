@@ -47,7 +47,7 @@ scoped_refptr<EncodedFormData> BeaconBlob::GetEncodedFormData() const {
     entity_body->AppendFile(To<File>(data_)->GetPath(),
                             To<File>(data_)->LastModifiedTime());
   } else {
-    entity_body->AppendBlob(data_->Uuid(), data_->GetBlobDataHandle());
+    entity_body->AppendBlob(data_->GetBlobDataHandle());
   }
 
   return entity_body;

@@ -86,7 +86,7 @@ scoped_refptr<EncodedFormData> ComplexFormData() {
   auto size = blob_data->length();
   scoped_refptr<BlobDataHandle> blob_data_handle =
       BlobDataHandle::Create(std::move(blob_data), size);
-  data->AppendBlob(blob_data_handle->Uuid(), blob_data_handle);
+  data->AppendBlob(blob_data_handle);
   Vector<char> boundary;
   boundary.Append("\0", 1);
   data->SetBoundary(boundary);

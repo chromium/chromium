@@ -95,7 +95,6 @@ class BLINK_PLATFORM_EXPORT WebHTTPBody {
                        int64_t file_start,
                        int64_t file_length,
                        const std::optional<base::Time>& modification_time);
-  void AppendBlob(const WebString& uuid);
   void AppendDataPipe(
       CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>
           data_pipe_getter);

@@ -403,9 +403,9 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
           break;
         }
         case FormDataElement::kEncodedBlob:
-          if (element.optional_blob_data_handle_) {
-            blob_data->AppendBlob(element.optional_blob_data_handle_, 0,
-                                  element.optional_blob_data_handle_->size());
+          if (element.blob_data_handle_) {
+            blob_data->AppendBlob(element.blob_data_handle_, 0,
+                                  element.blob_data_handle_->size());
           }
           break;
         case FormDataElement::kDataPipe:

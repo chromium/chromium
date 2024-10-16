@@ -129,7 +129,7 @@ scoped_refptr<EncodedFormData> BlobBytesConsumer::DrainAsFormData() {
   if (!handle)
     return nullptr;
   scoped_refptr<EncodedFormData> form_data = EncodedFormData::Create();
-  form_data->AppendBlob(handle->Uuid(), handle);
+  form_data->AppendBlob(std::move(handle));
   return form_data;
 }
 

@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 
+#include "base/check_is_test.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
@@ -50,12 +51,9 @@ FormDataElement::FormDataElement(
       file_length_(file_length),
       expected_file_modification_time_(expected_file_modification_time) {}
 
-FormDataElement::FormDataElement(const String& blob_uuid,
-                                 scoped_refptr<BlobDataHandle> optional_handle)
-    : type_(kEncodedBlob),
-      blob_uuid_(blob_uuid),
-      optional_blob_data_handle_(std::move(optional_handle)) {
-  DCHECK(optional_blob_data_handle_);
+FormDataElement::FormDataElement(scoped_refptr<BlobDataHandle> handle)
+    : type_(kEncodedBlob), blob_data_handle_(std::move(handle)) {
+  CHECK(blob_data_handle_);
 }
 
 FormDataElement::FormDataElement(
@@ -69,23 +67,29 @@ FormDataElement& FormDataElement::operator=(const FormDataElement&) = default;
 FormDataElement& FormDataElement::operator=(FormDataElement&&) = default;
 
 bool operator==(const FormDataElement& a, const FormDataElement& b) {
-  if (&a == &b)
+  CHECK_IS_TEST();
+  if (&a == &b) {
     return true;
+  }
 
-  if (a.type_ != b.type_)
+  if (a.type_ != b.type_) {
     return false;
-  if (a.type_ == FormDataElement::kData)
+  }
+  if (a.type_ == FormDataElement::kData) {
     return a.data_ == b.data_;
+  }
   if (a.type_ == FormDataElement::kEncodedFile) {
     return a.filename_ == b.filename_ && a.file_start_ == b.file_start_ &&
            a.file_length_ == b.file_length_ &&
            a.expected_file_modification_time_ ==
                b.expected_file_modification_time_;
   }
-  if (a.type_ == FormDataElement::kEncodedBlob)
-    return a.blob_uuid_ == b.blob_uuid_;
-  if (a.type_ == FormDataElement::kDataPipe)
+  if (a.type_ == FormDataElement::kEncodedBlob) {
+    return a.blob_data_handle_ == b.blob_data_handle_;
+  }
+  if (a.type_ == FormDataElement::kDataPipe) {
     return a.data_pipe_getter_ == b.data_pipe_getter_;
+  }
 
   return true;
 }
@@ -150,7 +154,7 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
         break;
       case FormDataElement::kEncodedBlob:
         form_data->elements_.UncheckedAppend(
-            FormDataElement(e.blob_uuid_, e.optional_blob_data_handle_));
+            FormDataElement(e.blob_data_handle_));
         break;
       case FormDataElement::kDataPipe:
         mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
@@ -222,9 +226,8 @@ void EncodedFormData::AppendFileRange(
 }
 
 void EncodedFormData::AppendBlob(
-    const String& uuid,
     scoped_refptr<BlobDataHandle> optional_handle) {
-  elements_.push_back(FormDataElement(uuid, std::move(optional_handle)));
+  elements_.emplace_back(std::move(optional_handle));
 }
 
 void EncodedFormData::AppendDataPipe(
@@ -258,8 +261,9 @@ uint64_t EncodedFormData::SizeInBytes() const {
         size += e.file_length_ - e.file_start_;
         break;
       case FormDataElement::kEncodedBlob:
-        if (e.optional_blob_data_handle_)
-          size += e.optional_blob_data_handle_->size();
+        if (e.blob_data_handle_) {
+          size += e.blob_data_handle_->size();
+        }
         break;
       case FormDataElement::kDataPipe:
         // We can get the size but it'd be async. Data pipe elements exist only
@@ -267,7 +271,7 @@ uint64_t EncodedFormData::SizeInBytes() const {
         // using the WebHTTPBody interface, and generally represent blobs.
         // Since for actual kEncodedBlob elements we ignore their size as well
         // if the element was created through WebHTTPBody (which never sets
-        // optional_blob_data_handle), we'll ignore the size of these elements
+        // blob_data_handle), we'll ignore the size of these elements
         // as well.
         break;
     }

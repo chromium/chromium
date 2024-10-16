@@ -828,8 +828,6 @@ bool XMLHttpRequest::AreMethodAndURLValidForSend() {
 }
 
 void XMLHttpRequest::send(Document* document, ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() Document " << static_cast<void*>(document);
-
   DCHECK(document);
 
   if (!InitSend(exception_state))
@@ -856,8 +854,6 @@ void XMLHttpRequest::send(Document* document, ExceptionState& exception_state) {
 }
 
 void XMLHttpRequest::send(const String& body, ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() String " << body;
-
   if (!InitSend(exception_state))
     return;
 
@@ -874,8 +870,6 @@ void XMLHttpRequest::send(const String& body, ExceptionState& exception_state) {
 }
 
 void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() Blob " << body->Uuid();
-
   if (!InitSend(exception_state))
     return;
 
@@ -899,7 +893,7 @@ void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
       else
         DUMP_WILL_BE_NOTREACHED();
     } else {
-      http_body->AppendBlob(body->Uuid(), body->GetBlobDataHandle());
+      http_body->AppendBlob(body->GetBlobDataHandle());
     }
   }
 
@@ -907,8 +901,6 @@ void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
 }
 
 void XMLHttpRequest::send(FormData* body, ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() FormData " << body;
-
   if (!InitSend(exception_state))
     return;
 
@@ -932,8 +924,6 @@ void XMLHttpRequest::send(FormData* body, ExceptionState& exception_state) {
 
 void XMLHttpRequest::send(URLSearchParams* body,
                           ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() URLSearchParams " << body;
-
   if (!InitSend(exception_state))
     return;
 
@@ -951,15 +941,11 @@ void XMLHttpRequest::send(URLSearchParams* body,
 
 void XMLHttpRequest::send(DOMArrayBuffer* body,
                           ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() ArrayBuffer " << body;
-
   SendBytesData(body->Data(), body->ByteLength(), exception_state);
 }
 
 void XMLHttpRequest::send(DOMArrayBufferView* body,
                           ExceptionState& exception_state) {
-  DVLOG(1) << this << " send() ArrayBufferView " << body;
-
   SendBytesData(body->BaseAddress(), body->byteLength(), exception_state);
 }
 
