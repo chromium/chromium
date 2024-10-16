@@ -429,7 +429,7 @@ void CreateConstantNode(
   // DML_GRAPH_NODE_TYPE_CONSTANT is introduced in DML_FEATURE_LEVEL_6_2.
   bool should_create_dml_constant_node =
       adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_6_2) &&
-      CalculateElementCount(operand_descriptor.shape()) == 1;
+      CalculatePhysicalElementCount(operand_descriptor.shape()) == 1;
 
   const Node* node = nullptr;
   if (should_create_dml_constant_node) {

@@ -48,8 +48,8 @@ D3D12_RESOURCE_DESC CreateResourceDesc(
 
 }  // namespace
 
-uint64_t CalculateElementCount(base::span<const uint32_t> dimensions,
-                               base::span<const uint32_t> strides) {
+uint64_t CalculatePhysicalElementCount(base::span<const uint32_t> dimensions,
+                                       base::span<const uint32_t> strides) {
   base::CheckedNumeric<uint64_t> checked_element_count = 1;
   if (strides.empty()) {
     for (uint32_t dimension : dimensions) {
@@ -102,7 +102,7 @@ uint64_t CalculateDMLBufferTensorSize(
 
   base::CheckedNumeric<uint64_t> checked_buffer_length_in_bytes =
       (base::CheckedNumeric<uint64_t>(element_size_in_bits) *
-           CalculateElementCount(dimensions, strides) +
+           CalculatePhysicalElementCount(dimensions, strides) +
        7) /
       8;
 

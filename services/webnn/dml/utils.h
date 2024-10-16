@@ -23,8 +23,8 @@ namespace webnn::dml {
 
 // Note that the element count is considered as 1 when the given dimensions is
 // empty.
-uint64_t CalculateElementCount(base::span<const uint32_t> dimensions,
-                               base::span<const uint32_t> strides = {});
+uint64_t CalculatePhysicalElementCount(base::span<const uint32_t> dimensions,
+                                       base::span<const uint32_t> strides = {});
 
 uint64_t CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE data_type,
                                       const std::vector<uint32_t>& dimensions,
