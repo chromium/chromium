@@ -43,7 +43,7 @@
   [self.sceneState.profileState addObserver:self];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
