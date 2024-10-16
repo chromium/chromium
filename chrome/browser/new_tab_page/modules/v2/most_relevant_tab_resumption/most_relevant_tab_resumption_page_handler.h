@@ -21,6 +21,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class MostRelevantTabResumptionPageHandlerTest;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class URLVisitAggregateDataType {
@@ -85,10 +87,11 @@ class MostRelevantTabResumptionPageHandler
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  friend class MostRelevantTabResumptionPageHandlerTest;
+
  private:
   // Method to determine if a url is in the list of previously dismissed urls.
-  bool IsNewURL(
-      ntp::most_relevant_tab_resumption::mojom::URLVisitPtr& url_visit);
+  bool IsNewURL(const std::string& url_key, const base::Time& timestamp);
 
   void DismissURLVisits(
       const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>&
