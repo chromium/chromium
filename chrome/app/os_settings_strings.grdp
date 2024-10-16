@@ -1418,6 +1418,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CUSTOM_KEY_COMBO" desc="This text describes an action that a user can take on their computer to fire a custom key combination.">
     Create custom key combination
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_ASSIGNED_CUSTOM_KEY_COMBO" desc="This text describes an action that a user can take on their computer to fire the given custom key combination.">
+    Custom key combination: <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes how users can scroll on their computer using their face when in scroll mode.">
     Once you start scroll mode, move your head in the direction you'd like to scroll
   </message>

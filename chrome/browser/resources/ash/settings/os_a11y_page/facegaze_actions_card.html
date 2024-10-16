@@ -41,12 +41,14 @@
     <template>
       <div class="command-pair settings-box">
         <div class="start settings-box-text two-line single-column action-row">
-          <div>[[getActionDisplayText_(item.action)]]</div>
+          <template is="dom-if" if="[[getKeyComboDisplayText_(item)]]">
+            <div>[[getKeyComboDisplayText_(item)]]</div>
+          </template>
+          <template is="dom-if" if="[[!getKeyComboDisplayText_(item)]]">
+            <div>[[getActionDisplayText_(item.action)]]</div>
+          </template>
           <template is="dom-if" if="[[getSubLabel_(item.action)]]">
             <div class="secondary">[[getSubLabel_(item.action)]]</div>
-          </template>
-          <template is="dom-if" if="[[getKeyComboDisplayText_(item)]]">
-            <div class="secondary">[[getKeyComboDisplayText_(item)]]</div>
           </template>
         </div>
         <template is="dom-if" if="[[item.gesture]]" restamp>

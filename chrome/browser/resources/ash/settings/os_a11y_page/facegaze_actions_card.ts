@@ -174,17 +174,18 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   private getKeyComboDisplayText_(commandPair: FaceGazeCommandPair): string
       |null {
-    if (commandPair.action !== MacroName.CUSTOM_KEY_COMBINATION ||
-        !commandPair.gesture) {
+    if (commandPair.action !== MacroName.CUSTOM_KEY_COMBINATION) {
       return null;
     }
 
     if (!commandPair.assignedKeyCombo) {
-      throw new Error(this.getKeyComboErrorMessage_(commandPair.gesture));
+      throw new Error('FaceGaze expected key combination to be assigned');
     }
 
     const keyCombo = commandPair.assignedKeyCombo.keyCombo;
-    return FaceGazeUtils.getKeyComboDisplayText(keyCombo);
+    return this.i18n(
+        'faceGazeMacroLabelAssignedCustomKeyCombo',
+        FaceGazeUtils.getKeyComboDisplayText(keyCombo));
   }
 
   private getRemoveButtonLabel_(macro: MacroName): string {
