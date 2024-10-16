@@ -122,6 +122,9 @@ source_set("profile_util_impl") {
   sources = [
     "nuke_profile_directory_utils.cc",
     "pref_service_builder_utils.cc",
+    "profile_attributes_entry.cc",
+    "profile_attributes_init_params.cc",
+    "profile_attributes_storage.cc",
     "profile_avatar_icon_util.cc",
     "reporting_util.cc",
   ]
@@ -132,13 +135,16 @@ source_set("profile_util_impl") {
     ":profile",
     ":profile_util",
     "//base",
+    "//base:i18n",
     "//build:chromeos_buildflags",
     "//cc/paint",
+    "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
+    "//chrome/common:constants",
     "//components/account_id",
     "//components/embedder_support:browser_util",
     "//components/enterprise/common/proto:connectors_proto",
@@ -147,21 +153,29 @@ source_set("profile_util_impl") {
     "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/sync_preferences",
     "//components/variations/service",
     "//components/vector_icons",
     "//content/public/browser",
     "//services/preferences/public/mojom",
+    "//third_party/icu:icui18n",
     "//ui/base",
     "//ui/color",
     "//ui/color/dynamic_color",
     "//ui/gfx",
+    "//ui/gfx:color_utils",
     "//ui/gfx/geometry",
     "//ui/native_theme",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_list" ]
+  }
 
   if (is_chromeos) {
     deps += [
@@ -169,44 +183,6 @@ source_set("profile_util_impl") {
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
     ]
-  }
-}
-
-source_set("profile_attributes_impl") {
-  sources = [
-    "profile_attributes_entry.cc",
-    "profile_attributes_init_params.cc",
-    "profile_attributes_storage.cc",
-  ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  deps = [
-    ":profile_util",
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//chrome/app:generated_resources",
-    "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
-    "//chrome/common:constants",
-    "//components/account_id",
-    "//components/policy/core/browser:browser",
-    "//components/policy/core/common:common",
-    "//components/prefs",
-    "//components/profile_metrics",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//content/public/browser",
-    "//third_party/icu:icui18n",
-    "//ui/base",
-    "//ui/gfx",
-    "//ui/gfx:color_utils",
-    "//ui/native_theme",
-  ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_list" ]
   }
 }
 
