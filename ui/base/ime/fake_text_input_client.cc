@@ -141,6 +141,19 @@ gfx::Rect FakeTextInputClient::GetSelectionBoundingBox() const {
   return {};
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> FakeTextInputClient::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  return std::nullopt;
+}
+
+std::optional<size_t> FakeTextInputClient::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    IndexFromPointFlags flags) const {
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool FakeTextInputClient::GetCompositionCharacterBounds(size_t index,
                                                         gfx::Rect* rect) const {
   return false;

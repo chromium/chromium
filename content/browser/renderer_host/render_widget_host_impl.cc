@@ -3001,16 +3001,24 @@ void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting() {
 }
 
 void RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled(
-    const std::optional<gfx::Rect>& focused_edit_bounds,
-    const std::optional<gfx::Rect>& caret_bounds) {
-  if (view_) {
-    if (focused_edit_bounds.has_value() && caret_bounds.has_value()) {
-      view_->OnEditElementFocusedForStylusWriting(focused_edit_bounds.value(),
-                                                  caret_bounds.value());
-    } else {
-      view_->OnEditElementFocusClearedForStylusWriting();
+    blink::mojom::StylusWritingFocusResultPtr focus_result) {
+  if (!view_) {
+    return;
+  }
+#if BUILDFLAG(IS_WIN)
+  if (focus_result && focus_result->proximate_bounds) {
+    if (focus_result->proximate_bounds->range.length() !=
+        focus_result->proximate_bounds->bounds.size()) {
+      mojo::ReportBadMessage("mismatched range and bounds length received");
+      return;
+    }
+    if (focus_result->proximate_bounds->range.is_reversed()) {
+      mojo::ReportBadMessage("unexpected reversed range");
+      return;
     }
   }
+#endif  // BUILDFLAG(IS_WIN)
+  view_->OnEditElementFocusedForStylusWriting(std::move(focus_result));
 }
 
 void RenderWidgetHostImpl::PassImeRenderWidgetHost(

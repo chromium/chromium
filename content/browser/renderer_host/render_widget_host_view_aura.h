@@ -208,12 +208,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   viz::SurfaceId GetCurrentSurfaceId() const override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
+#if BUILDFLAG(IS_WIN)
   bool ShouldInitiateStylusWriting() override;
   void OnStartStylusWriting() override;
   void OnEditElementFocusedForStylusWriting(
-      const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) override;
-  void OnEditElementFocusClearedForStylusWriting() override;
+      blink::mojom::StylusWritingFocusResultPtr focus_result) override;
+#endif  // BUILDFLAG(IS_WIN)
   void OnSynchronizedDisplayPropertiesChanged(bool rotation = false) override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
@@ -242,6 +242,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
   gfx::Rect GetSelectionBoundingBox() const override;
+#if BUILDFLAG(IS_WIN)
+  std::optional<gfx::Rect> GetProximateCharacterBounds(
+      const gfx::Range& range) const override;
+  std::optional<size_t> GetProximateCharacterIndexFromPoint(
+      const gfx::Point& point,
+      ui::IndexFromPointFlags flags) const override;
+#endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -695,6 +702,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Provided a list of viewport segments, calculate and set the
   // DisplayFeature.
   void ComputeDisplayFeature();
+
+#if BUILDFLAG(IS_WIN)
+  // Forwards `proximate_bounds` to the TextInputManager for caching.
+  void UpdateProximateCharacterBounds(
+      blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds);
+#endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<aura::Window> window_;
 

@@ -86,6 +86,19 @@ gfx::Rect DummyTextInputClient::GetSelectionBoundingBox() const {
   return gfx::Rect();
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> DummyTextInputClient::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  return std::nullopt;
+}
+
+std::optional<size_t> DummyTextInputClient::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    IndexFromPointFlags flags) const {
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool DummyTextInputClient::GetCompositionCharacterBounds(
     size_t index,
     gfx::Rect* rect) const {

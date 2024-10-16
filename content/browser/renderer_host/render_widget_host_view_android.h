@@ -174,9 +174,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void NotifyHoverActionStylusWritable(bool stylus_writable) override;
   void OnStartStylusWriting() override;
   void OnEditElementFocusedForStylusWriting(
-      const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) override;
-  void OnEditElementFocusClearedForStylusWriting() override;
+      blink::mojom::StylusWritingFocusResultPtr focus_result) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;

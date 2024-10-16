@@ -34,6 +34,7 @@ component("win") {
   public_deps = [ "//ui/base/ime" ]
 
   deps = [
+    "//components/stylus_handwriting/win:win",
     "//ui/base",
     "//ui/display",
   ]

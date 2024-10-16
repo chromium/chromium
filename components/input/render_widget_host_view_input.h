@@ -18,6 +18,7 @@
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event.h"
 
@@ -228,17 +229,12 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // Initiate stylus handwriting.
   virtual void OnStartStylusWriting() {}
 
-  // This is called after ensuring content eligible for handwriting in the
-  // renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
-  // It receives the focused edit element bounds and the current caret bounds
-  // needed for stylus writing service.
+  // This is called after the renderer attempts to focus content eligible for
+  // handwriting via mojom::blink::FrameWidget::OnStartStylusWriting. If content
+  // eligible for stylus handwriting has focus, then `focus_result` will be set,
+  // otherwise it will be nullptr.
   virtual void OnEditElementFocusedForStylusWriting(
-      const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) {}
-
-  // This is called after failing to ensure content eligible for handwriting in
-  // the renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
-  virtual void OnEditElementFocusClearedForStylusWriting() {}
+      blink::mojom::StylusWritingFocusResultPtr focus_result) {}
 
   virtual void OnAutoscrollStart() = 0;
 

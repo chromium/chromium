@@ -1568,17 +1568,12 @@ void RenderWidgetHostViewAndroid::OnStartStylusWriting() {
 }
 
 void RenderWidgetHostViewAndroid::OnEditElementFocusedForStylusWriting(
-    const gfx::Rect& focused_edit_bounds,
-    const gfx::Rect& caret_bounds) {
+    blink::mojom::StylusWritingFocusResultPtr focus_result) {
   if (ime_adapter_android_) {
     ime_adapter_android_->OnEditElementFocusedForStylusWriting(
-        focused_edit_bounds, caret_bounds);
+        focus_result ? focus_result->focused_edit_bounds : gfx::Rect(),
+        focus_result ? focus_result->caret_bounds : gfx::Rect());
   }
-}
-
-void RenderWidgetHostViewAndroid::OnEditElementFocusClearedForStylusWriting() {
-  // ImeAdapterAndroid expects empty bounds when focus could not be set.
-  OnEditElementFocusedForStylusWriting(gfx::Rect(), gfx::Rect());
 }
 
 void RenderWidgetHostViewAndroid::RenderProcessGone() {

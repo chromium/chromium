@@ -841,6 +841,17 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+void RenderWidgetHostViewAura::UpdateProximateCharacterBounds(
+    blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds) {
+  if (!text_input_manager_) {
+    return;
+  }
+  text_input_manager_->UpdateProximateCharacterBounds(
+      *this, std::move(proximate_bounds));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 std::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
   return display_feature_;
 }
@@ -1537,6 +1548,24 @@ gfx::Rect RenderWidgetHostViewAura::GetSelectionBoundingBox() const {
   return ConvertRectToScreen(bounding_box);
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> RenderWidgetHostViewAura::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  // TODO(crbug.com/355578906): Implement character bounds collection to satisfy
+  // ITextStoreACP::GetTextExt.
+  return std::nullopt;
+}
+
+std::optional<size_t>
+RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    ui::IndexFromPointFlags flags) const {
+  // TODO(crbug.com/355578906): Implement point to character offset collection
+  // to satisfy ITextStoreACP::GetACPFromPoint.
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
     size_t index,
     gfx::Rect* rect) const {
@@ -2189,15 +2218,12 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
 #endif
 }
 
-bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
 #if BUILDFLAG(IS_WIN)
+bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
   // TODO(crbug.com/355578906): Check whether Windows Text Services Framework
   // Shell Handwriting API is available or supported by the OS.
   // return stylus_handwriting::win::IsStylusHandwritingWinEnabled();
   return false;
-#else   // BUILDFLAG(IS_WIN)
-  return false;
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void RenderWidgetHostViewAura::OnStartStylusWriting() {
@@ -2219,8 +2245,7 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
 }
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
-    const gfx::Rect& focused_edit_bounds,
-    const gfx::Rect& caret_bounds) {
+    blink::mojom::StylusWritingFocusResultPtr focus_result) {
   // TODO(crbug.com/355578906): Update Windows Text Services Framework (TSF)
   // focus, stash relevant character bounds from the renderer, and notify the
   // TSF Shell Handwriting API that focus is set.
@@ -2245,14 +2270,17 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
   // in the inability of Shell Handwriting to perform gestures (selection,
   // scratch out, split/join word, new-line) and may result in text being
   // inserted instead.
+  if (!focus_result) {
+    // TODO(crbug.com/355578906): Notify Windows Text Services Framework (TSF)
+    // Shell Handwriting API [1] to cancel the inking session, causing ink to
+    // disappear without making any modifications.
+    // [1]
+    // `ITfFocusHandwritingTargetArgs::SetResponse(TF_NO_HANDWRITING_TARGET)`
+    return;
+  }
+  UpdateProximateCharacterBounds(std::move(focus_result->proximate_bounds));
 }
-
-void RenderWidgetHostViewAura::OnEditElementFocusClearedForStylusWriting() {
-  // TODO(crbug.com/355578906): Notify Windows Text Services Framework (TSF)
-  // Shell Handwriting API [1] to cancel the inking session, causing ink to
-  // disappear without making any modifications.
-  // [1] `ITfFocusHandwritingTargetArgs::SetResponse(TF_NO_HANDWRITING_TARGET)`
-}
+#endif  // BUILDFLAG(IS_WIN)
 
 void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
   event_handler_->OnScrollEvent(event);

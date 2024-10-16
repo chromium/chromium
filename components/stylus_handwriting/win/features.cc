@@ -11,8 +11,7 @@ BASE_FEATURE(kStylusHandwritingWin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsStylusHandwritingWinEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::stylus_handwriting::win::kStylusHandwritingWin);
+  return base::FeatureList::IsEnabled(kStylusHandwritingWin);
 }
 
 }  // namespace stylus_handwriting::win

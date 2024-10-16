@@ -62,6 +62,7 @@
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -1032,6 +1033,14 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
+
+#if BUILDFLAG(IS_WIN)
+  // Computes a contiguous range of character bounds within proximity of
+  // `pivot_position` to enable gesture support for StylusHandwritingWin.
+  mojom::blink::ProximateCharacterRangeBoundsPtr
+  ComputeProximateCharacterBounds(
+      const PositionWithAffinity& pivot_position) const;
+#endif  // BUILDFLAG(IS_WIN)
 
   // Stores the current composition line bounds. These bounds are rectangles
   // which surround each line of text in a currently focused input or textarea

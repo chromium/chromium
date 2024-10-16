@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/ime/stylus_writing_gesture.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
@@ -607,18 +608,19 @@ gfx::Rect WebFrameWidgetImpl::GetAbsoluteCaretBounds() {
 
 void WebFrameWidgetImpl::OnStartStylusWriting(
     OnStartStylusWritingCallback callback) {
+  mojom::blink::StylusWritingFocusResultPtr focus_result;
   // Focus the stylus writable element for current touch sequence as we have
   // detected writing has started.
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   if (!frame) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
+    std::move(callback).Run(std::move(focus_result));
     return;
   }
 
   Element* stylus_writable_element =
       frame->GetEventHandler().CurrentTouchDownElement();
   if (!stylus_writable_element) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
+    std::move(callback).Run(std::move(focus_result));
     return;
   }
 
@@ -632,13 +634,17 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   // Since the element can change after it gets focused, we just verify if
   // the focused element is editable to continue writing.
   if (IsElementNotNullAndEditable(focused_element)) {
-    std::move(callback).Run(
-        focused_element->BoundsInWidget(),
-        frame->View()->FrameToViewport(GetAbsoluteCaretBounds()));
-    return;
+    focus_result = mojom::blink::StylusWritingFocusResult::New();
+    focus_result->focused_edit_bounds = focused_element->BoundsInWidget();
+    focus_result->caret_bounds =
+        frame->View()->FrameToViewport(GetAbsoluteCaretBounds());
+#if BUILDFLAG(IS_WIN)
+    focus_result->proximate_bounds =
+        ComputeProximateCharacterBounds(/*pivot_position=*/{});
+#endif  // BUILDFLAG(IS_WIN)
   }
 
-  std::move(callback).Run(std::nullopt, std::nullopt);
+  std::move(callback).Run(std::move(focus_result));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4714,6 +4720,19 @@ void WebFrameWidgetImpl::EnqueueMoveEvent() {
 
   document->EnqueueMoveEvent();
 }
+
+#if BUILDFLAG(IS_WIN)
+mojom::blink::ProximateCharacterRangeBoundsPtr
+WebFrameWidgetImpl::ComputeProximateCharacterBounds(
+    const PositionWithAffinity& pivot_position) const {
+  // TODO(crbug.com/355578906): Implement.
+  // 1. Compute a PlainTextRange for a subset of text around `pivot_position`.
+  // 2. Compute the DIP space bounding box for each character in the range
+  //    relative to the root editable Element containing `pivot_position`.
+  // 3. Return a new ProximateCharacterRangeBounds if successful, or nullptr.
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void WebFrameWidgetImpl::OrientationChanged() {
   local_root_->SendOrientationChangeEvent();

@@ -1733,6 +1733,21 @@ gfx::Rect Textfield::GetSelectionBoundingBox() const {
   return gfx::Rect();
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> Textfield::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+
+std::optional<size_t> Textfield::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    ui::IndexFromPointFlags flags) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool Textfield::GetCompositionCharacterBounds(size_t index,
                                               gfx::Rect* rect) const {
   DCHECK(rect);

@@ -1176,13 +1176,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void OnSnapshotReceived(int snapshot_id, gfx::Image image);
 
-  // This message is received when the stylus writable element is focused.
-  // It receives the focused edit element bounds and the current caret bounds
-  // needed for stylus writing service. These bounds would be null when the
-  // stylus writable element could not be focused.
+  // This is called after the renderer attempts to focus content eligible for
+  // handwriting via mojom::blink::FrameWidget::OnStartStylusWriting. If content
+  // eligible for stylus handwriting has focus, then `focus_result` will be set,
+  // otherwise it will be nullptr.
   void OnUpdateElementFocusForStylusWritingHandled(
-      const std::optional<gfx::Rect>& focused_edit_bounds,
-      const std::optional<gfx::Rect>& caret_bounds);
+      blink::mojom::StylusWritingFocusResultPtr focus_result);
 
   // Called by the RenderProcessHost to handle the case when the process
   // changed its state of being blocked.
