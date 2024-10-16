@@ -743,6 +743,7 @@ android_library("ui_unit_device_javatests") {
     "java/src/org/chromium/ui/listmenu/ListMenuButtonTest.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
+    "javatests/src/org/chromium/ui/base/EventForwarderDeviceTest.java",
     "javatests/src/org/chromium/ui/util/WindowInsetsUtilsJavaUnitTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithLeadingTest.java",
   ]
@@ -763,6 +764,7 @@ android_library("ui_unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

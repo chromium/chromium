@@ -233,6 +233,37 @@ jboolean EventForwarder::OnGenericMotionEvent(
   return view_->OnGenericMotionEvent(event);
 }
 
+void EventForwarder::OnMouseWheelEvent(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jlong time_ns,
+    jfloat x,
+    jfloat y,
+    jfloat raw_x,
+    jfloat raw_y,
+    jfloat delta_x,
+    jfloat delta_y,
+    jint meta_state,
+    jint source) {
+  ui::MotionEventAndroid::Pointer pointer(
+      /*id=*/0, x, y, /*touch_major_pixels=*/0.0f, /*touch_minor_pixels=*/0.0f,
+      /*orientation_rad=*/0.0f, /*tilt_rad=*/0.0f, /*tool_type=*/0);
+
+  auto* window = view_->GetWindowAndroid();
+  float pixels_per_tick =
+      window ? window->mouse_wheel_scroll_factor()
+             : ui::kDefaultMouseWheelTickMultiplier * view_->GetDipScale();
+  ui::MotionEventAndroidJava event(
+      env, nullptr, 1.f / view_->GetDipScale(), delta_x / pixels_per_tick,
+      delta_y / pixels_per_tick, pixels_per_tick,
+      base::TimeTicks::FromJavaNanoTime(time_ns), /*android_action=*/0,
+      /*pointer_count=*/1, /*history_size=*/0, /*action_index=*/0,
+      /*android_action_button=*/0, /*android_gesture_classification=*/0, 0,
+      meta_state, source, /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0, /*for_touch_handle=*/false, &pointer, nullptr);
+  view_->OnMouseWheelEvent(event);
+}
+
 jboolean EventForwarder::OnKeyUp(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
                                  const JavaParamRef<jobject>& key_event,
