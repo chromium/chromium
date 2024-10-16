@@ -162,6 +162,15 @@ class OpenerHeuristicBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest,
       public content::TestDevToolsProtocolClient {
  public:
+  OpenerHeuristicBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // We host the "images" on an HTTPS server, because for it to write a
+    // cookie, the cookie needs to be SameSite=None and Secure.
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  }
+
   void SetUp() override {
     tpcd_heuristics_grants_params_["TpcdReadHeuristicsGrants"] = "true";
 
@@ -185,6 +194,8 @@ class OpenerHeuristicBrowserTest
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
 
+    ASSERT_TRUE(https_server_.Start());
+
     // These rules apply an ad-tagging param to scripts in ad_script.js,
     // and to cookies marked with the `isad=1` param value.
     SetRulesetWithRules(
@@ -200,7 +211,11 @@ class OpenerHeuristicBrowserTest
     ClearNotifications();
   }
 
-  void TearDownOnMainThread() override { DetachProtocolClient(); }
+  void TearDownOnMainThread() override {
+    ASSERT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+
+    DetachProtocolClient();
+  }
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -337,6 +352,7 @@ class OpenerHeuristicBrowserTest
     return state;
   }
 
+  net::EmbeddedTestServer https_server_;
   base::FieldTrialParams tpcd_heuristics_grants_params_;
   base::SimpleTestClock clock_;
   base::test::ScopedFeatureList feature_list_;
@@ -949,23 +965,15 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicInteractionTypesBrowserTest,
       .Then(std::move(assert_popup));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
-  // We host the "image" on an HTTPS server, because for it to write a
-  // cookie, the cookie needs to be SameSite=None and Secure.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
-  ASSERT_TRUE(https_server.Start());
-
   // Add a cookie access by popup_url on opener_url.
-  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
+  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server_,
                                   "sub.b.test",
                                   /*is_secure_cookie_set=*/true,
                                   /*is_ad_tagged=*/true));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
-      https_server.GetURL("sub.b.test", "/favicon/icon.png?isad=1"));
+      https_server_.GetURL("sub.b.test", "/favicon/icon.png?isad=1"));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
   // Assert that the UKM event for the PostPopupCookieAccess was recorded.
@@ -1227,23 +1235,15 @@ IN_PROC_BROWSER_TEST_P(
       .Then(std::move(assert_popup));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
-  // We host the "image" on an HTTPS server, because for it to write a
-  // cookie, the cookie needs to be SameSite=None and Secure.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
-  ASSERT_TRUE(https_server.Start());
-
   // Add a cookie access by popup_url on opener_url.
-  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
+  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server_,
                                   "sub.b.test",
                                   /*is_secure_cookie_set=*/true,
                                   /*is_ad_tagged=*/false));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
-      https_server.GetURL("sub.b.test", "/favicon/icon.png"));
+      https_server_.GetURL("sub.b.test", "/favicon/icon.png"));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
   // Assert that the UKM event for the PostPopupCookieAccess was recorded.
@@ -1263,19 +1263,11 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                        PopupInteraction_CookieAccessEmitsDevtoolsWarning) {
-  // We will host an "image" on an HTTPS server, because for it to write a
-  // cookie, the cookie needs to be SameSite=None and Secure.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
-  ASSERT_TRUE(https_server.Start());
-
-  GURL opener_url = https_server.GetURL("a.test", "/title1.html");
-  GURL popup_url_1 = https_server.GetURL("c.test", "/title1.html");
+  GURL opener_url = https_server_.GetURL("a.test", "/title1.html");
+  GURL popup_url_1 = https_server_.GetURL("c.test", "/title1.html");
   GURL popup_url_2 =
-      https_server.GetURL("b.test", "/server-redirect?title1.html");
-  GURL popup_url_3 = https_server.GetURL("b.test", "/title1.html");
+      https_server_.GetURL("b.test", "/server-redirect?title1.html");
+  GURL popup_url_3 = https_server_.GetURL("b.test", "/title1.html");
 
   // Initialize popup and interaction.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
@@ -1288,7 +1280,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   SimulateMouseClick(popup);
 
   // Add a cookie access by popup_url on opener_url.
-  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
+  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server_,
                                   "sub.b.test",
                                   /*is_secure_cookie_set=*/true,
                                   /*is_ad_tagged=*/false));
@@ -1296,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
-      https_server.GetURL("sub.b.test", "/favicon/icon.png"));
+      https_server_.GetURL("sub.b.test", "/favicon/icon.png"));
 
   // CookieIssue was fired since it was exempt from blocking
   WaitForCookieIssueAndCheck("sub.b.test", "WarnThirdPartyCookieHeuristic");
