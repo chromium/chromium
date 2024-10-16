@@ -231,12 +231,6 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
                                                          "many-videos", -1};
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
-BASE_FEATURE(kCanSkipRenderPassOverlay,
-             "CanSkipRenderPassOverlay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_MAC)
 // Use the system CVDisplayLink callbacks for the BeginFrame source, so
 // BeginFrame is aligned with HW VSync.

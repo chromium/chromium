@@ -971,10 +971,6 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                      resource_provider,
                      overlay_processor),
       skia_output_surface_(skia_output_surface),
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
-      can_skip_render_pass_overlay_(
-          base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
-#endif
       lock_set_for_external_use_(resource_provider, skia_output_surface_),
       is_using_raw_draw_(features::IsUsingRawDraw()) {
 #if BUILDFLAG(IS_WIN)
@@ -3663,9 +3659,6 @@ bool SkiaRenderer::CanSkipRenderPassOverlay(
   // The render pass draw quad can be skipped if (1) the render pass has no
   // damage and is skipped in DirectRender and (2) the parameters of drawing the
   // render pass has not changed.
-
-  if (!can_skip_render_pass_overlay_)
-    return false;
 
   // Check if the render pass has been re-drawn.
   if (skipped_render_pass_ids_.count(render_pass_id) == 0)
