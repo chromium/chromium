@@ -290,17 +290,9 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
       std::make_unique<RemoveStudentRequest>(
           session_client_impl_->sender(), user_identity_.gaia_id(),
           session->session_id(),
-          base::BindOnce(
-              [](RemoveStudentCallback callback,
-                 base::expected<bool, google_apis::ApiErrorCode> result) {
-                if (!result.has_value()) {
-                  std::move(callback).Run(
-                      mojom::RemoveStudentError::kHTTPError);
-                  return;
-                }
-                std::move(callback).Run(std::nullopt);
-              },
-              std::move(callback)));
+          base::BindOnce(&BocaAppHandler::OnStudentRemoved,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         session, id));
 
   request->set_student_ids({id});
   session_client_impl_->RemoveStudent(std::move(request));
@@ -404,7 +396,7 @@ void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
       std::move(local_caption_config));
 }
 
-void BocaAppHandler::setActivityInterceptorCallbackForTesting(
+void BocaAppHandler::SetActivityInterceptorCallbackForTesting(
     ActivityInterceptorCallback callback) {
   test_activity_callback_ = std::move(callback);
 }
@@ -453,5 +445,28 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
   // Trigger a session reload from session response.
   BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
       std::move(result.value()), true);
+}
+
+void BocaAppHandler::OnStudentRemoved(
+    RemoveStudentCallback callback,
+    ::boca::Session* current_session,
+    std::string id,
+    base::expected<bool, google_apis::ApiErrorCode> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(mojom::RemoveStudentError::kHTTPError);
+    return;
+  }
+  std::move(callback).Run(std::nullopt);
+
+  // Remove student from local session
+  for (int i = 0; i < current_session->roster().student_groups().size(); i++) {
+    auto* group = current_session->mutable_roster()->mutable_student_groups(i);
+    for (int j = 0; j < group->students().size(); j++) {
+      if (group->students()[i].gaia_id() == id) {
+        group->mutable_students()->DeleteSubrange(j, 1);
+        break;
+      }
+    }
+  }
 }
 }  // namespace ash::boca

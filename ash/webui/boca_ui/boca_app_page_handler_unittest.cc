@@ -1167,7 +1167,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateEmptyStudentActivitySucceed) {
   std::map<std::string, ::boca::StudentStatus> activities;
   // EXPECT_CALL(mock_page(), OnStudentActivityUpdated(_)).Times(1);
   base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
-  boca_app_handler()->setActivityInterceptorCallbackForTesting(
+  boca_app_handler()->SetActivityInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnConsumerActivityUpdated(activities);
   auto result = future.Take();
@@ -1198,7 +1198,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
 
   // EXPECT_CALL(mock_page(), OnStudentActivityUpdated(_)).Times(1);
   base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
-  boca_app_handler()->setActivityInterceptorCallbackForTesting(
+  boca_app_handler()->SetActivityInterceptorCallbackForTesting(
       future.GetCallback());
   boca_app_handler()->OnConsumerActivityUpdated(activities);
   auto result = future.Take();
@@ -1221,11 +1221,22 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_FALSE(result[2]->activity->is_active);
 }
 
-TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceed) {
+TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   auto* session_id = "123";
   auto session = std::make_unique<::boca::Session>();
   session->set_session_state(::boca::Session::ACTIVE);
+  auto* roster = session->mutable_roster();
+  auto* student_groups = roster->mutable_student_groups()->Add();
+  auto* student_1 = student_groups->mutable_students()->Add();
+  student_1->set_gaia_id("2");
+  auto* student_2 = student_groups->mutable_students()->Add();
+  student_2->set_gaia_id("3");
 
+  auto* student_groups_2 = roster->mutable_student_groups()->Add();
+  auto* student_3 = student_groups_2->mutable_students()->Add();
+  student_3->set_gaia_id("4");
+  auto* student_4 = student_groups_2->mutable_students()->Add();
+  student_4->set_gaia_id("5");
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(session.get()));
 
@@ -1238,7 +1249,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceed) {
   RemoveStudentRequest request(nullptr, kGaiaId, session_id,
                                future.GetCallback());
 
-  const char student_id[] = "id";
+  const char student_id[] = "2";
   EXPECT_CALL(*session_client_impl(), RemoveStudent(_))
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
@@ -1253,6 +1264,9 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceed) {
   boca_app_handler()->RemoveStudent(student_id, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
+  EXPECT_EQ(2, session->roster().student_groups().size());
+  EXPECT_EQ(1, session->roster().student_groups()[0].students().size());
+  EXPECT_EQ("3", session->roster().student_groups()[0].students()[0].gaia_id());
 }
 
 TEST_F(BocaAppPageHandlerTest, RemoveStudentWithHTTPFailure) {

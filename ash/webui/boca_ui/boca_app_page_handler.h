@@ -78,7 +78,7 @@ class BocaAppHandler : public mojom::PageHandler,
   // For testing.
   // Mojo service binding is not invoked in unit test. So we manually override a
   // interceptor for testing.
-  void setActivityInterceptorCallbackForTesting(
+  void SetActivityInterceptorCallbackForTesting(
       ActivityInterceptorCallback callback);
 
  private:
@@ -88,6 +88,10 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnUpdatedCaptionConfig(UpdateCaptionConfigCallback callback,
                               base::expected<std::unique_ptr<::boca::Session>,
                                              google_apis::ApiErrorCode> result);
+  void OnStudentRemoved(RemoveStudentCallback callback,
+                        ::boca::Session* current_session,
+                        std::string id,
+                        base::expected<bool, google_apis::ApiErrorCode> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
   TabInfoCollector tab_info_collector_;
