@@ -2593,10 +2593,10 @@
   {
     "name": "enable-autofill-virtual-view-structure",
     "owners": [
-      "fhorschig@chromium.org",
+      "friedrichh@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
   },
   {
     "name": "enable-automotive-fullscreen-toolbar-improvements",
