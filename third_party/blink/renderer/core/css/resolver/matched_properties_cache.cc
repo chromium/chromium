@@ -154,7 +154,7 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (!cache_item) {
     return nullptr;
   }
-  if (*cache_item != key.result_.GetMatchedProperties()) {
+  if (!cache_item->CorrespondsTo(key.result_.GetMatchedProperties())) {
     return nullptr;
   }
   if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
@@ -174,25 +174,20 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   return cache_item;
 }
 
-bool CachedMatchedProperties::operator==(
-    const MatchedPropertiesVector& properties) const {
-  if (properties.size() != matched_properties.size()) {
+bool CachedMatchedProperties::CorrespondsTo(
+    const MatchedPropertiesVector& lookup_properties) const {
+  if (lookup_properties.size() != matched_properties.size()) {
     return false;
   }
-  for (wtf_size_t i = 0; i < properties.size(); ++i) {
-    if (properties[i].properties != matched_properties[i]) {
+  for (wtf_size_t i = 0; i < lookup_properties.size(); ++i) {
+    if (lookup_properties[i].properties != matched_properties[i]) {
       return false;
     }
-    if (properties[i].data_ != matched_properties_metadata[i]) {
+    if (lookup_properties[i].data_ != matched_properties_metadata[i]) {
       return false;
     }
   }
   return true;
-}
-
-bool CachedMatchedProperties::operator!=(
-    const MatchedPropertiesVector& properties) const {
-  return !(*this == properties);
 }
 
 void MatchedPropertiesCache::Add(const Key& key,
