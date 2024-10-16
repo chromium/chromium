@@ -1552,8 +1552,7 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   return release_sync_token_;
 }
 
-gpu::SyncToken VideoFrame::UpdateMailboxHolderSyncToken(
-    SyncTokenClient* client) {
+gpu::SyncToken VideoFrame::UpdateAcquireSyncToken(SyncTokenClient* client) {
   DCHECK(HasOneRef());
   DCHECK(HasSharedImage());
   DCHECK(!wrapped_frame_);

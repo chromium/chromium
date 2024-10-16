@@ -267,7 +267,7 @@ void CopyToGpuMemoryBuffer(
   gpu::SyncToken completion_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   media::SimpleSyncTokenClient simple_client(completion_sync_token);
-  dst_frame->UpdateMailboxHolderSyncToken(&simple_client);
+  dst_frame->UpdateAcquireSyncToken(&simple_client);
   dst_frame->UpdateReleaseSyncToken(&simple_client);
 
   // Do not use a query to track copy completion on Windows when using the new
@@ -327,7 +327,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     return false;
   }
 
-  // VideoFrame::UpdateMailboxHolderSyncToken requires that the video frame have
+  // VideoFrame::UpdateAcquireSyncToken requires that the video frame have
   // a single owner. So cache the pointer for later use after the std::move().
   [[maybe_unused]] auto* dst_frame_ptr = dst_frame.get();
 
@@ -346,7 +346,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
             // we've synchronized with the GPU.
             gpu::SyncToken empty_sync_token;
             media::SimpleSyncTokenClient simple_client(empty_sync_token);
-            frame->UpdateMailboxHolderSyncToken(&simple_client);
+            frame->UpdateAcquireSyncToken(&simple_client);
             frame->UpdateReleaseSyncToken(&simple_client);
             std::move(callback).Run(std::move(frame));
           },

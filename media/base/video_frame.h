@@ -789,7 +789,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Similar to UpdateReleaseSyncToken() but operates on the gpu::SyncToken
   // for mailbox. This should only be called when a VideoFrame has a single
   // owner. I.e., before it has been vended after creation.
-  gpu::SyncToken UpdateMailboxHolderSyncToken(SyncTokenClient* client);
+  gpu::SyncToken UpdateAcquireSyncToken(SyncTokenClient* client);
 
   // Returns a human-readable string describing |*this|.
   std::string AsHumanReadableString() const;
