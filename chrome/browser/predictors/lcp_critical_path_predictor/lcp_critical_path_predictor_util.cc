@@ -9,6 +9,9 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/predictors/prefetch_manager.h"
+#include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -1288,6 +1291,126 @@ bool LcppDataMap::CreateOrClearTablesIfNecessary(sql::Database* db) {
   return result && db->Execute(base::StringPrintf(
                        "DROP TABLE IF EXISTS %s",
                        std::string(kLcppTableNameInitiatorOrigin).c_str()));
+}
+
+void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
+                                          const LcppStat& lcpp_stat,
+                                          PreconnectPrediction& prediction) {
+  // LCPP: AutoPreconnectLCPOrigins experiment (crbug.com/1518996)
+  // Preconnect to LCPP predicted LCP origins in all platforms including those
+  // without optimization guide.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPPAutoPreconnectLcpOrigin)) {
+    size_t count = 0;
+    std::vector<PreconnectRequest> additional_preconnects;
+    auto anonymization_key =
+        net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
+    for (const GURL& preconnect_origin :
+         PredictPreconnectableOrigins(lcpp_stat)) {
+      additional_preconnects.emplace_back(
+          url::Origin::Create(preconnect_origin), 1, anonymization_key);
+      ++count;
+    }
+
+    if (count) {
+      // The first preconnect record is usually to the url origin itself.
+      // We want to prioritize LCP preconnects just after the page origin
+      // preconnect, to minimize any performance regression. If no new
+      // requests were identified, leave the existing set as-is.
+      if (prediction.requests.empty()) {
+        prediction.requests = std::move(additional_preconnects);
+      } else {
+        prediction.requests.reserve(count + prediction.requests.size());
+        prediction.requests.insert(++prediction.requests.begin(),
+                                   additional_preconnects.begin(),
+                                   additional_preconnects.end());
+      }
+    }
+    base::UmaHistogramCounts10000("Blink.LCPP.PreconnectPredictionCount",
+                                  count);
+  }
+
+  // LCPP: set fonts to be prefetched to prefetch_requests.
+  // TODO(crbug.com/40285959): make prefetch work for platforms without the
+  // optimization guide.
+  static const bool kLCPPFontURLPredictorEnabled =
+      base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
+      blink::features::kLCPPFontURLPredictorEnablePrefetch.Get();
+  static const bool kLoadingPredictorPrefetchEnabled =
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
+      features::kLoadingPredictorPrefetchSubresourceType.Get() ==
+          features::PrefetchSubresourceType::kAll;
+  if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
+    auto network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateSameSite(
+            net::SchemefulSite(url::Origin::Create(url)));
+    size_t count = 0;
+    for (const GURL& font_url : PredictFetchedFontUrls(lcpp_stat)) {
+      prediction.prefetch_requests.emplace_back(
+          font_url, network_anonymization_key,
+          network::mojom::RequestDestination::kFont);
+      ++count;
+    }
+    base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource)) {
+    const std::vector<GURL>& subresource_urls =
+        PredictFetchedSubresourceUrls(lcpp_stat);
+    if (!subresource_urls.empty()) {
+      const auto network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(url::Origin::Create(url)));
+
+      size_t subresource_urls_same_site = 0;
+      size_t subresource_urls_cross_site = 0;
+      for (const GURL& subresource_url : subresource_urls) {
+        const auto destination_it =
+            lcpp_stat.fetched_subresource_url_destination().find(
+                subresource_url.spec());
+        // Database is broken.
+        // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
+        // database.
+        CHECK(destination_it !=
+              lcpp_stat.fetched_subresource_url_destination().end());
+        CHECK_GE(destination_it->second, 0);
+        CHECK_LE(destination_it->second,
+                 static_cast<int32_t>(
+                     network::mojom::RequestDestination::kMaxValue));
+        const network::mojom::RequestDestination destination =
+            static_cast<network::mojom::RequestDestination>(
+                destination_it->second);
+        if (destination == network::mojom::RequestDestination::kFont) {
+          // This is done by kLCPPFontURLPredictor.
+          continue;
+        }
+        if (!PrefetchManager::IsAvailableForPrefetch(destination)) {
+          continue;
+        }
+        const bool is_same_site = IsSameSite(url, subresource_url);
+        if (is_same_site) {
+          subresource_urls_same_site++;
+        } else {
+          subresource_urls_cross_site++;
+          // TODO(crbug.com/40140806): Allow cross site.
+          // Once we support cross-site cases, remove the following continue;
+          continue;
+        }
+        prediction.prefetch_requests.emplace_back(
+            subresource_url, network_anonymization_key, destination);
+      }
+      base::UmaHistogramCounts10000(
+          "Blink.LCPP.PrefetchSubresource.Count.SameSite",
+          base::checked_cast<int>(subresource_urls_same_site));
+      base::UmaHistogramCounts10000(
+          "Blink.LCPP.PrefetchSubresource.Count.CrossSite",
+          base::checked_cast<int>(subresource_urls_cross_site));
+      base::UmaHistogramPercentage(
+          "Blink.LCPP.PrefetchSubresource.Count.SameSiteRatio",
+          base::checked_cast<int>(100 * subresource_urls_same_site /
+                                  subresource_urls.size()));
+    }
+  }
 }
 
 }  // namespace predictors

@@ -28,6 +28,7 @@ struct LastVisitTimeCompare {
 };
 
 }  // namespace lcpp
+struct PreconnectPrediction;
 
 // Converts LcppStat to LCPCriticalPathPredictorNavigationTimeHint
 // so that it can be passed to the renderer via the navigation handle.
@@ -207,6 +208,10 @@ std::string GetFirstLevelPath(const GURL& url);
 
 // Returns true if `url1` and `url2` are the same site.
 bool IsSameSite(const GURL& url1, const GURL& url2);
+
+void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
+                                          const LcppStat& lcpp_stat,
+                                          PreconnectPrediction& prediction);
 
 class LcppDataMap {
  public:
