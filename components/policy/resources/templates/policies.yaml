@@ -1305,6 +1305,7 @@ policies:
   1304: DirectSocketsPrivateNetworkAccessAllowedForUrls
   1305: DirectSocketsPrivateNetworkAccessBlockedForUrls
   1306: SelectParserRelaxationEnabled
+  1307: ClassManagementEnabled
 
 atomic_groups:
   1: Homepage

@@ -2486,6 +2486,11 @@ inline constexpr char kBirchUseCoral[] = "ash.birch.use_coral";
 
 // LINT.ThenChange(/chrome/browser/ui/ash/birch/birch_browsertest.cc)
 
+// A string pref indicating class management tools availability. Valid values
+// are `disabled`, `student`, `teacher`.
+inline constexpr char kClassManagementToolsAvailabilitySetting[] =
+    "ash.class_management_tools.availability_setting";
+
 // A boolean pref that holds whether the user dismissed the extended updates
 // notification.
 inline constexpr char kExtendedUpdatesNotificationDismissed[] =
