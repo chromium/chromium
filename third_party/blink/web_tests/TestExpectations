@@ -2548,7 +2548,7 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Crash ]
 
 # Flaky; random ID dumped into text output
-external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]
+crbug.com/373655919 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/css/css-ui/outline-auto-width-001.html [ Failure ]
