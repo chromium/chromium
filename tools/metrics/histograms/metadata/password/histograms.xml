@@ -51,6 +51,9 @@ chromium-metrics-reviews@google.com.
   <variant name="GetBreachedCredentialsCount"
       summary="get breached credentials count"/>
   <variant name="GetIntent" summary="get password checkup UI intent"/>
+  <variant name="GetReusedCredentialsCount"
+      summary="get reused credentials count"/>
+  <variant name="GetWeakCredentialsCount" summary="get weak credentials count"/>
   <variant name="RunPasswordCheckup" summary="run password checkup"/>
 </variants>
 

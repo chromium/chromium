@@ -33,6 +33,10 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     interface Observer {
         void compromisedPasswordCountChanged();
 
+        void weakPasswordCountChanged();
+
+        void reusedPasswordCountChanged();
+
         void updateStatusChanged();
     }
 
@@ -143,6 +147,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * Makes a call to GMSCore to fetch the latest leaked credentials count for the currently
      * syncing profile.
      */
+    // TODO(crbug.com/372481954): Create an unified call for fetching all password counts.
     void fetchBreachedCredentialsCount(Callback<Boolean> onFinishedCallback) {
         if (!checkConditions()) {
             onFinishedCallback.onResult(/* needsReschedule= */ false);
@@ -169,6 +174,66 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     }
 
     /**
+     * Makes a call to GMSCore to fetch the latest weak credentials count for the currently syncing
+     * profile.
+     */
+    // TODO(crbug.com/372481954): Create an unified call for fetching all password counts.
+    void fetchWeakCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!checkConditions()) {
+            onFinishedCallback.onResult(/* needsReschedule= */ false);
+            cancelFetchJob();
+            return;
+        }
+
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        PrefService prefService = UserPrefs.get(mProfile);
+
+        passwordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                SafetyHubUtils.getAccountEmail(mProfile),
+                count -> {
+                    prefService.setInteger(Pref.WEAK_CREDENTIALS_COUNT, count);
+                    notifyWeakPasswordCountChanged();
+
+                    onFinishedCallback.onResult(/* needsReschedule= */ false);
+                    scheduleNextFetchJob();
+                },
+                error -> {
+                    onFinishedCallback.onResult(/* needsReschedule= */ true);
+                });
+    }
+
+    /**
+     * Makes a call to GMSCore to fetch the latest reused credentials count for the currently
+     * syncing profile.
+     */
+    // TODO(crbug.com/372481954): Create an unified call for fetching all password counts.
+    void fetchReusedCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!checkConditions()) {
+            onFinishedCallback.onResult(/* needsReschedule= */ false);
+            cancelFetchJob();
+            return;
+        }
+
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        PrefService prefService = UserPrefs.get(mProfile);
+
+        passwordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                SafetyHubUtils.getAccountEmail(mProfile),
+                count -> {
+                    prefService.setInteger(Pref.REUSED_CREDENTIALS_COUNT, count);
+                    notifyReusedPasswordCountChanged();
+
+                    onFinishedCallback.onResult(/* needsReschedule= */ false);
+                    scheduleNextFetchJob();
+                },
+                error -> {
+                    onFinishedCallback.onResult(/* needsReschedule= */ true);
+                });
+    }
+
+    /**
      * Schedules the background fetch job to run after the given delay if the conditions are met,
      * cancels and cleans up prefs otherwise.
      */
@@ -179,6 +244,8 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
             // Clean up account specific prefs.
             PrefService prefService = UserPrefs.get(mProfile);
             prefService.clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
+            prefService.clearPref(Pref.WEAK_CREDENTIALS_COUNT);
+            prefService.clearPref(Pref.REUSED_CREDENTIALS_COUNT);
 
             cancelFetchJob();
         }
@@ -187,6 +254,18 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
     private void notifyCompromisedPasswordCountChanged() {
         for (Observer observer : mObservers) {
             observer.compromisedPasswordCountChanged();
+        }
+    }
+
+    private void notifyWeakPasswordCountChanged() {
+        for (Observer observer : mObservers) {
+            observer.weakPasswordCountChanged();
+        }
+    }
+
+    private void notifyReusedPasswordCountChanged() {
+        for (Observer observer : mObservers) {
+            observer.reusedPasswordCountChanged();
         }
     }
 

@@ -514,6 +514,16 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     @Override
+    public void weakPasswordCountChanged() {
+        // TODO(crbug.com/357780273): Implement UI for weak passwords.
+    }
+
+    @Override
+    public void reusedPasswordCountChanged() {
+        // TODO(crbug.com/357780273): Implement UI for reused passwords.
+    }
+
+    @Override
     public void updateStatusChanged() {
         updateUpdateCheckPreference();
     }

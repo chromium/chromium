@@ -1021,6 +1021,44 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsSuccessMetricsForGetWeakCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                                PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT)
+                        .build();
+
+        chooseToSyncPasswords();
+        setUpSuccessfulGetWeakCredentialsCount();
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsSuccessMetricsForGetReusedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                                PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT)
+                        .build();
+
+        chooseToSyncPasswords();
+        setUpSuccessfulGetReusedCredentialsCount();
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testRecordsErrorMetricsForGetBreachedCredentialsCount() {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
@@ -1042,6 +1080,48 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsErrorMetricsForGetWeakCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
+                                CredentialManagerError.UNCATEGORIZED,
+                                OptionalInt.empty())
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingWeakCredentialsCount(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsErrorMetricsForGetReusedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT,
+                                CredentialManagerError.UNCATEGORIZED,
+                                OptionalInt.empty())
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingReusedCredentialsCount(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testRecordsApiErrorMetricsForGetBreachedCredentialsCount() {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
@@ -1054,6 +1134,48 @@ public class PasswordManagerHelperTest {
                 new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
 
         mPasswordManagerHelper.getBreachedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsApiErrorMetricsForGetWeakCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
+                                CredentialManagerError.API_EXCEPTION,
+                                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingWeakCredentialsCount(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsApiErrorMetricsForGetReusedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT,
+                                CredentialManagerError.API_EXCEPTION,
+                                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingReusedCredentialsCount(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
@@ -1707,6 +1829,34 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsErrorMetricsWhenGetWeakCredentialsCountFails() {
+        chooseToSyncPasswords();
+        Exception expectedException =
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenGettingWeakCredentialsCount(expectedException);
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+    }
+
+    @Test
+    public void testRecordsErrorMetricsWhenGetReusedCredentialsCountFails() {
+        chooseToSyncPasswords();
+        Exception expectedException =
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenGettingReusedCredentialsCount(expectedException);
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+    }
+
+    @Test
     public void testRecordsApiErrorWhenFetchingAccountCredentialManagerIntent() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
@@ -2094,6 +2244,30 @@ public class PasswordManagerHelperTest {
                         anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
+    private void setUpSuccessfulGetWeakCredentialsCount() {
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> cb = invocation.getArgument(2);
+                            cb.onResult(0);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getWeakCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void setUpSuccessfulGetReusedCredentialsCount() {
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> cb = invocation.getArgument(2);
+                            cb.onResult(0);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getReusedCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
     private void returnErrorWhenRunningPasswordCheckup(Exception error) {
         doAnswer(
                         invocation -> {
@@ -2115,6 +2289,30 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getBreachedCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void returnErrorWhenGettingWeakCredentialsCount(Exception error) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Exception> cb = invocation.getArgument(3);
+                            cb.onResult(error);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getWeakCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void returnErrorWhenGettingReusedCredentialsCount(Exception error) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Exception> cb = invocation.getArgument(3);
+                            cb.onResult(error);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getReusedCredentialsCount(
                         anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
@@ -2165,6 +2363,10 @@ public class PasswordManagerHelperTest {
                 return "GetBreachedCredentialsCount";
             case PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT:
                 return "GetIntent";
+            case PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT:
+                return "GetWeakCredentialsCount";
+            case PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT:
+                return "GetReusedCredentialsCount";
             default:
                 throw new AssertionError();
         }

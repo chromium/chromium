@@ -62,7 +62,9 @@ public class PasswordManagerHelper {
     @IntDef({
         PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
         PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT
+        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
+        PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
+        PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordCheckOperation {
@@ -74,6 +76,12 @@ public class PasswordManagerHelper {
 
         /** Obtain pending intent for launching password checkup UI */
         int GET_PASSWORD_CHECKUP_INTENT = 2;
+
+        /** Obtain the number of weak credentials. */
+        int GET_WEAK_CREDENTIALS_COUNT = 3;
+
+        /** Obtain the number of reused credentials. */
+        int GET_REUSED_CREDENTIALS_COUNT = 4;
     }
 
     // Loading dialog is dismissed with this delay after sending an intent to prevent
@@ -358,6 +366,84 @@ public class PasswordManagerHelper {
         }
 
         checkupClient.getBreachedCredentialsCount(
+                referrer,
+                accountName,
+                result -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    successCallback.onResult(result);
+                },
+                error -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    failureCallback.onResult(error);
+                });
+    }
+
+    /**
+     * Asynchronously returns the number of weak credentials for the provided account.
+     *
+     * @param referrer the place that requested number of weak credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided, the
+     *     local account will be used.
+     * @param successCallback callback called with the number of weak passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    public void getWeakCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {
+        PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(
+                        PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT);
+
+        PasswordCheckupClientHelper checkupClient;
+        try {
+            checkupClient = getPasswordCheckupClientHelper();
+        } catch (Exception exception) {
+            failureCallback.onResult(exception);
+            return;
+        }
+
+        checkupClient.getWeakCredentialsCount(
+                referrer,
+                accountName,
+                result -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    successCallback.onResult(result);
+                },
+                error -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    failureCallback.onResult(error);
+                });
+    }
+
+    /**
+     * Asynchronously returns the number of reused credentials for the provided account.
+     *
+     * @param referrer the place that requested number of reused credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided, the
+     *     local account will be used.
+     * @param successCallback callback called with the number of reused passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    public void getReusedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {
+        PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(
+                        PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT);
+
+        PasswordCheckupClientHelper checkupClient;
+        try {
+            checkupClient = getPasswordCheckupClientHelper();
+        } catch (Exception exception) {
+            failureCallback.onResult(exception);
+            return;
+        }
+
+        checkupClient.getReusedCredentialsCount(
                 referrer,
                 accountName,
                 result -> {

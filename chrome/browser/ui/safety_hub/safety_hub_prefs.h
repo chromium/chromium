@@ -27,6 +27,18 @@ inline constexpr char kPasswordCheckThuWeight[] = "check_thu_weight";
 inline constexpr char kPasswordCheckFriWeight[] = "check_fri_weight";
 inline constexpr char kPasswordCheckSatWeight[] = "check_sat_weight";
 inline constexpr char kPasswordCheckSunWeight[] = "check_sun_weight";
+
+#else   // BUILDFLAG(IS_ANDROID)
+
+// An integer count of how many account-level weak credentials were detected by
+// GMSCore.
+inline constexpr char kWeakCredentialsCount[] =
+    "profile.safety_hub_weak_credentials_count";
+
+// An integer count of how many account-level reused credentials were detected
+// by GMSCore.
+inline constexpr char kReusedCredentialsCount[] =
+    "profile.safety_hub_reused_credentials_count";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Dictionary that holds the notifications in the three-dot menu and their
