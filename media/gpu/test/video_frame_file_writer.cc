@@ -235,19 +235,16 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   }
 
   // Convert the ARGB frame to PNG.
-  std::vector<uint8_t> png_output;
-  const bool png_encode_status = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> png_output = gfx::PNGCodec::Encode(
       argb_out_frame->visible_data(VideoFrame::Plane::kARGB),
       gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(VideoFrame::Plane::kARGB),
-      true, /* discard_transparency */
-      std::vector<gfx::PNGCodec::Comment>(), &png_output);
-  ASSERT_TRUE(png_encode_status);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
 
   // Write the PNG data to file.
   base::FilePath file_path(
       output_folder_.Append(filename).AddExtension(FILE_PATH_LITERAL(".png")));
-  ASSERT_TRUE(base::WriteFile(file_path, png_output));
+  ASSERT_TRUE(base::WriteFile(file_path, png_output.value()));
 }
 
 void VideoFrameFileWriter::WriteVideoFrameYUV(

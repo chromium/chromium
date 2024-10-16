@@ -559,15 +559,14 @@ void FakePhotoDevice::TakePhoto(VideoCaptureDevice::TakePhotoCallback callback,
 #else
       gfx::PNGCodec::FORMAT_BGRA;
 #endif
-  const bool result = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> result = gfx::PNGCodec::Encode(
       buffer.data(), encoding_source_format,
       fake_device_state_->format.frame_size,
-      VideoFrame::RowBytes(0 /* plane */, PIXEL_FORMAT_ARGB,
+      VideoFrame::RowBytes(/*plane=*/0, PIXEL_FORMAT_ARGB,
                            fake_device_state_->format.frame_size.width()),
-      true /* discard_transparency */, std::vector<gfx::PNGCodec::Comment>(),
-      &blob->data);
-  DCHECK(result);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
 
+  blob->data = std::move(result.value());
   blob->mime_type = "image/png";
   std::move(callback).Run(std::move(blob));
 }
@@ -911,12 +910,14 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
   SkPixmap src(info, &sk_n32_buffer_[0],
                VideoFrame::RowBytes(0 /* plane */, PIXEL_FORMAT_ARGB,
                                     device_state()->format.frame_size.width()));
-  bool success = gfx::JPEGCodec::Encode(src, kQuality, &jpeg_buffer_);
-  if (!success) {
+  std::optional<std::vector<uint8_t>> jpeg_buffer =
+      gfx::JPEGCodec::Encode(src, kQuality);
+  if (!jpeg_buffer) {
     DLOG(ERROR) << "Jpeg encoding failed";
     return;
   }
 
+  jpeg_buffer_ = std::move(jpeg_buffer.value());
   const size_t frame_size = jpeg_buffer_.size();
   base::TimeTicks now = base::TimeTicks::Now();
   client()->OnIncomingCapturedData(

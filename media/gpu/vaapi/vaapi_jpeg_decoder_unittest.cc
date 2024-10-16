@@ -172,12 +172,11 @@ std::vector<unsigned char> GenerateJpegImage(
   // size), it will be decoded incorrectly in AMD Stoney Ridge (see
   // b/127874877). When that's resolved, change the quality here to 100 so that
   // the generated JPEG is large.
-  std::vector<unsigned char> jpeg_data;
-  if (gfx::JPEGCodec::Encode(
-          SkPixmap(image_info, rgba_data.data(), stride) /* input */,
-          95 /* quality */, subsampling /* downsample */,
-          &jpeg_data /* output */)) {
-    return jpeg_data;
+  std::optional<std::vector<uint8_t>> jpeg_data = gfx::JPEGCodec::Encode(
+      /*input=*/SkPixmap(image_info, rgba_data.data(), stride),
+      /*quality=*/95, /*downsample=*/subsampling);
+  if (jpeg_data) {
+    return jpeg_data.value();
   }
   return {};
 }

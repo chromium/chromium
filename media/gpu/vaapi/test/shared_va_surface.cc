@@ -211,14 +211,12 @@ void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
   }
   LOG_ASSERT(convert_res == 0) << "Failed to convert to ARGB";
 
-  std::vector<unsigned char> image_buffer;
-  const bool result = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> image_buffer = gfx::PNGCodec::Encode(
       argb_data.get(), gfx::PNGCodec::FORMAT_BGRA, size_, argb_stride,
-      true /* discard_transparency */, std::vector<gfx::PNGCodec::Comment>(),
-      &image_buffer);
-  LOG_ASSERT(result) << "Failed to encode to PNG";
+      true /* discard_transparency */, std::vector<gfx::PNGCodec::Comment>());
+  LOG_ASSERT(image_buffer.has_value()) << "Failed to encode to PNG";
 
-  LOG_ASSERT(base::WriteFile(base::FilePath(path), image_buffer));
+  LOG_ASSERT(base::WriteFile(base::FilePath(path), image_buffer.value()));
 
   // Clean up VA handles.
   VAStatus res = vaUnmapBuffer(va_device_->display(), image.buf);
