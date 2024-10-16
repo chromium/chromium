@@ -1275,6 +1275,12 @@ const char kDesktopPWAsSubAppsDescription[] =
     "Prototype implementation of: "
     "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
 
+const char kDesktopPWAsSyncChangesName[] = "Desktop PWA sync changes";
+const char kDesktopPWAsSyncChangesDescription[] =
+    "Changes the integration of desktop PWAs with sync such that apps that are "
+    "installed while sync is turned off will not be added to sync when sync is "
+    "enabled.";
+
 const char kDesktopPWAsScopeExtensionsName[] = "Desktop PWA Scope Extensions";
 const char kDesktopPWAsScopeExtensionsDescription[] =
     "Enable web app manifests to declare scope extensions to extend app scope "

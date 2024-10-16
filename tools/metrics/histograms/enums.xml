@@ -20525,6 +20525,7 @@ from previous Chrome versions.
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
   <int value="99502850" label="TabGroupSyncServiceDesktopMigration:enabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
+  <int value="100826234" label="WebAppDontAddExistingAppsToSync:disabled"/>
   <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>
   <int value="101364236" label="ParentAccessJelly:enabled"/>
   <int value="101973012" label="OmniboxConsumesImeInsets:enabled"/>
@@ -23484,6 +23485,7 @@ from previous Chrome versions.
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>
   <int value="1302421166" label="NativeNotifications:disabled"/>
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
+  <int value="1304557739" label="WebAppDontAddExistingAppsToSync:enabled"/>
   <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>

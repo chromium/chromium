@@ -718,6 +718,9 @@ extern const char kDesktopPWAsTabStripCustomizationsDescription[];
 extern const char kDesktopPWAsSubAppsName[];
 extern const char kDesktopPWAsSubAppsDescription[];
 
+extern const char kDesktopPWAsSyncChangesName[];
+extern const char kDesktopPWAsSyncChangesDescription[];
+
 extern const char kDesktopPWAsScopeExtensionsName[];
 extern const char kDesktopPWAsScopeExtensionsDescription[];
 
