@@ -81,6 +81,7 @@ bool RendererExtensionRegistry::Insert(
 bool RendererExtensionRegistry::Remove(const ExtensionId& id) {
   DCHECK(content::RenderThread::Get());
   base::AutoLock lock(lock_);
+  worker_activation_tokens_.erase(id);
   return extensions_.Remove(id);
 }
 
