@@ -30,12 +30,6 @@ history::WebHistoryService* WebHistoryServiceGetter(
 }  // namespace
 
 // static
-TabsSearchService* TabsSearchServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 TabsSearchService* TabsSearchServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<TabsSearchService*>(

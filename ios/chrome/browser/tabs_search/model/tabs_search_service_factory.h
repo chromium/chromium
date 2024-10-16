@@ -18,9 +18,6 @@ class TabsSearchServiceFactory : public BrowserStateKeyedServiceFactory {
   TabsSearchServiceFactory(const TabsSearchServiceFactory&) = delete;
   TabsSearchServiceFactory& operator=(const TabsSearchServiceFactory&) = delete;
 
-  // TODO(crbug.com/358301380): remove this method.
-  static TabsSearchService* GetForBrowserState(ProfileIOS* profile);
-
   static TabsSearchService* GetForProfile(ProfileIOS* profile);
   static TabsSearchServiceFactory* GetInstance();
 
