@@ -2620,6 +2620,62 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       NoResourceRecyclingWhenPageHidden) {
+  CreateContext(kNonOpaque);
+
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // be present.
+  CanvasElement().GetOrCreateCcLayerIfNeeded();
+
+  viz::TransferableResource resources[2];
+  viz::ReleaseCallback callbacks[2];
+
+  // Emulate sending the canvas' resource to the display compositor.
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
+      nullptr, &resources[0], &callbacks[0]));
+
+  // Write to the canvas.
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  // Note that the write did not in of itself trigger copy-on-write since
+  // rasterization has not occurred yet.
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+
+  // Emulate sending the canvas' resource to the display compositor, which
+  // forces copy-on-write before rasterization as the display compositor has a
+  // read ref on the first resource.
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
+      nullptr, &resources[1], &callbacks[1]));
+  EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
+
+  // Emulate the display compositor releasing the first resource. The released
+  // resource should be saved for recycling (i.e., it should not be dropped).
+  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
+
+  // Move the page to the background. This should cause resource recycling to be
+  // disabled and the previously-released resource to now be dropped.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+
+  // Emulate the display compositor releasing the second resource. The resource
+  // should not be dropped because it's the current render target for the canvas
+  // and so the canvas itself still has a reference on this resource. This
+  // resource should be dropped only if the canvas is hibernated.
+  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        PushPropertiesAfterVisibilityChange) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({::features::kClearCanvasResourcesInBackground},

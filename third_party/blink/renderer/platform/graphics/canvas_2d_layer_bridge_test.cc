@@ -250,47 +250,6 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   std::move(callbacks[2]).Run(gpu::SyncToken(), false);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
-  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     ->GetCapabilities())
-      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
-
-  viz::TransferableResource resources[2];
-  viz::ReleaseCallback callbacks[2];
-  cc::PaintFlags flags;
-
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  DrawSomething(bridge.get());
-  ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[0],
-                                                  &callbacks[0]));
-  Canvas().drawLine(0, 0, 2, 2, flags);
-  DrawSomething(bridge.get());
-  ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[1],
-                                                  &callbacks[1]));
-  EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
-
-  // Now release the first resource and mark the page hidden. The recycled
-  // resource should be dropped.
-  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
-  Host()->SetPageVisible(false);
-
-  // TODO(crbug.com/1476964): Remove this when done refactoring.
-  bridge->PageVisibilityChanged();
-
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-
-  // Release second frame, this resource is not released because its the current
-  // render target for the canvas. It should only be released if the canvas is
-  // hibernated.
-  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-}
-
 TEST_F(Canvas2DLayerBridgeTest,
        PrepareTransferableResourceTracksCanvasChanges) {
   gfx::Size size(300, 300);
