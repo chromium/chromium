@@ -139,6 +139,8 @@ if (enable_pdf) {
       "pdfium/pdfium_unsupported_features.h",
       "preview_mode_client.cc",
       "preview_mode_client.h",
+      "text_search.cc",
+      "text_search.h",
       "ui/document_properties.cc",
       "ui/document_properties.h",
       "ui/file_name.cc",
