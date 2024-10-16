@@ -54,10 +54,7 @@ import java.io.IOException;
 /** Tests for Incognito reauth view layout in Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
-    ChromeFeatureList.INCOGNITO_SCREENSHOT
-})
+@EnableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
 @DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherIncognitoReauthViewTest {

@@ -1321,9 +1321,6 @@ extern const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationName[];
 extern const char
     kIncrementLocalSurfaceIdForMainframeSameDocNavigationDescription[];
 
-extern const char kIncognitoReauthenticationForAndroidName[];
-extern const char kIncognitoReauthenticationForAndroidDescription[];
-
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 

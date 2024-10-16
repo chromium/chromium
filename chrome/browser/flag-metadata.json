@@ -5286,11 +5286,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "incognito-reauthentication-for-android",
-    "owners": [ "roagarwal@chromium.org", "chrome-incognito@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "incognito-screenshot",
     "owners": [ "zalmashni@google.com", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
     "expiry_milestone": 140

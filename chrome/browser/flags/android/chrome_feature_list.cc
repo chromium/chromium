@@ -258,7 +258,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGtsCloseTabAnimationKillSwitch,
     &kLockBackPressHandlerAtStart,
-    &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kLensOnQuickActionSearchWidget,
     &kLogoPolish,
@@ -759,10 +758,6 @@ BASE_FEATURE(kGtsCloseTabAnimationKillSwitch,
 
 BASE_FEATURE(kLockBackPressHandlerAtStart,
              "LockBackPressHandlerAtStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIncognitoReauthenticationForAndroid,
-             "IncognitoReauthenticationForAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIncognitoScreenshot,
