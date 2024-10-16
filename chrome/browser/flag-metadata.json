@@ -8919,7 +8919,7 @@
   {
     "name": "undo-migration-of-syncing-user-to-signed-in",
     "owners": [ "treib@chromium.org", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 132
+    "expiry_milestone": 134
   },
   {
     "name": "unsafely-treat-insecure-origin-as-secure",
