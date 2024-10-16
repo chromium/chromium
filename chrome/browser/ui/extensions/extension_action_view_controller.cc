@@ -476,11 +476,6 @@ void ExtensionActionViewController::InspectPopup() {
       PopupShowAction::kShowAndInspect, /*by_user*/ true, ShowPopupCallback());
 }
 
-void ExtensionActionViewController::TriggerPopupForAPI() {
-  GetPreferredPopupViewController()->TriggerPopup(
-      PopupShowAction::kShowAndInspect, /*by_user*/ false, ShowPopupCallback());
-}
-
 void ExtensionActionViewController::OnIconUpdated() {
   // We update the view first, so that if the observer relies on its UI it can
   // be ready.

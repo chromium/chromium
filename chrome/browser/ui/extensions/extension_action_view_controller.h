@@ -101,9 +101,6 @@ class ExtensionActionViewController
   // ExtensionContextMenuModel::PopupDelegate:
   void InspectPopup() override;
 
-  // Trigger an extension popup as a result of API call.
-  void TriggerPopupForAPI();
-
   // Populates |command| with the command associated with |extension|, if one
   // exists. Returns true if |command| was populated.
   bool GetExtensionCommand(extensions::Command* command) const;
