@@ -216,7 +216,11 @@ class
   // Support for absl::Hash.
   template <typename H>
   friend H AbslHashValue(H h, uint128 v) {
+#if defined(ABSL_HAVE_INTRINSIC_INT128)
+    return H::combine(std::move(h), static_cast<unsigned __int128>(v));
+#else
     return H::combine(std::move(h), Uint128High64(v), Uint128Low64(v));
+#endif
   }
 
   // Support for absl::StrCat() etc.
@@ -458,7 +462,11 @@ class int128 {
   // Support for absl::Hash.
   template <typename H>
   friend H AbslHashValue(H h, int128 v) {
+#if defined(ABSL_HAVE_INTRINSIC_INT128)
+    return H::combine(std::move(h), v.v_);
+#else
     return H::combine(std::move(h), Int128High64(v), Int128Low64(v));
+#endif
   }
 
   // Support for absl::StrCat() etc.

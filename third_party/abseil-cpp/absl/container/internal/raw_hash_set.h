@@ -255,6 +255,15 @@ namespace container_internal {
 #define ABSL_SWISSTABLE_ENABLE_GENERATIONS
 #endif
 
+#ifdef ABSL_SWISSTABLE_ASSERT
+#error ABSL_SWISSTABLE_ASSERT cannot be directly set
+#else
+// We use this macro for assertions that users may see when the table is in an
+// invalid state that sanitizers may help diagnose.
+#define ABSL_SWISSTABLE_ASSERT(CONDITION) \
+  assert((CONDITION) && "Try enabling sanitizers.")
+#endif
+
 // We use uint8_t so we don't need to worry about padding.
 using GenerationType = uint8_t;
 
@@ -325,7 +334,7 @@ class probe_seq {
   // sequence and `mask` (usually the capacity of the table) as the mask to
   // apply to each value in the progression.
   probe_seq(size_t hash, size_t mask) {
-    assert(((mask + 1) & mask) == 0 && "not a mask");
+    ABSL_SWISSTABLE_ASSERT(((mask + 1) & mask) == 0 && "not a mask");
     mask_ = mask;
     offset_ = hash & mask_;
   }
@@ -455,7 +464,7 @@ class BitMask : public NonIterableBitMask<T, SignificantBits, Shift> {
  public:
   explicit BitMask(T mask) : Base(mask) {
     if (Shift == 3 && !NullifyBitsOnIteration) {
-      assert(this->mask_ == (this->mask_ & kMsbs8Bytes));
+      ABSL_SWISSTABLE_ASSERT(this->mask_ == (this->mask_ & kMsbs8Bytes));
     }
   }
   // BitMask is an iterator over the indices of its abstract bits.
@@ -1118,19 +1127,20 @@ class GrowthInfo {
 
   // Overwrites single empty slot with a full slot.
   void OverwriteEmptyAsFull() {
-    assert(GetGrowthLeft() > 0);
+    ABSL_SWISSTABLE_ASSERT(GetGrowthLeft() > 0);
     --growth_left_info_;
   }
 
   // Overwrites several empty slots with full slots.
   void OverwriteManyEmptyAsFull(size_t cnt) {
-    assert(GetGrowthLeft() >= cnt);
+    ABSL_SWISSTABLE_ASSERT(GetGrowthLeft() >= cnt);
     growth_left_info_ -= cnt;
   }
 
   // Overwrites specified control element with full slot.
   void OverwriteControlAsFull(ctrl_t ctrl) {
-    assert(GetGrowthLeft() >= static_cast<size_t>(IsEmpty(ctrl)));
+    ABSL_SWISSTABLE_ASSERT(GetGrowthLeft() >=
+                           static_cast<size_t>(IsEmpty(ctrl)));
     growth_left_info_ -= static_cast<size_t>(IsEmpty(ctrl));
   }
 
@@ -1200,7 +1210,7 @@ class RawHashSetLayout {
         slot_offset_(
             (generation_offset_ + NumGenerationBytes() + slot_align - 1) &
             (~slot_align + 1)) {
-    assert(IsValidCapacity(capacity));
+    ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
   }
 
   // Returns the capacity of a table.
@@ -1363,7 +1373,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
   void set_control(ctrl_t* c) { heap_or_soo_.control() = c; }
   void* backing_array_start() const {
     // growth_info (and maybe infoz) is stored before control bytes.
-    assert(reinterpret_cast<uintptr_t>(control()) % alignof(size_t) == 0);
+    ABSL_SWISSTABLE_ASSERT(
+        reinterpret_cast<uintptr_t>(control()) % alignof(size_t) == 0);
     return control() - ControlOffset(has_infoz());
   }
 
@@ -1386,11 +1397,11 @@ class CommonFields : public CommonFieldsGenerationInfo {
     size_ = size_t{1} << HasInfozShift();
   }
   void increment_size() {
-    assert(size() < capacity());
+    ABSL_SWISSTABLE_ASSERT(size() < capacity());
     size_ += size_t{1} << HasInfozShift();
   }
   void decrement_size() {
-    assert(size() > 0);
+    ABSL_SWISSTABLE_ASSERT(size() > 0);
     size_ -= size_t{1} << HasInfozShift();
   }
 
@@ -1398,7 +1409,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
   size_t capacity() const { return capacity_; }
   void set_capacity(size_t c) {
     // We allow setting above the max valid capacity for debugging purposes.
-    assert(c == 0 || IsValidCapacity(c) || c > kAboveMaxValidCapacity);
+    ABSL_SWISSTABLE_ASSERT(c == 0 || IsValidCapacity(c) ||
+                           c > kAboveMaxValidCapacity);
     capacity_ = c;
   }
 
@@ -1410,7 +1422,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   GrowthInfo& growth_info() {
     auto* gl_ptr = reinterpret_cast<GrowthInfo*>(control()) - 1;
-    assert(reinterpret_cast<uintptr_t>(gl_ptr) % alignof(GrowthInfo) == 0);
+    ABSL_SWISSTABLE_ASSERT(
+        reinterpret_cast<uintptr_t>(gl_ptr) % alignof(GrowthInfo) == 0);
     return *gl_ptr;
   }
   GrowthInfo growth_info() const {
@@ -1430,7 +1443,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
                : HashtablezInfoHandle();
   }
   void set_infoz(HashtablezInfoHandle infoz) {
-    assert(has_infoz());
+    ABSL_SWISSTABLE_ASSERT(has_infoz());
     *reinterpret_cast<HashtablezInfoHandle*>(backing_array_start()) = infoz;
   }
 
@@ -1490,8 +1503,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
   // We can't assert that SOO is enabled because we don't have SooEnabled(), but
   // we assert what we can.
   void AssertInSooMode() const {
-    assert(capacity() == SooCapacity());
-    assert(!has_infoz());
+    ABSL_SWISSTABLE_ASSERT(capacity() == SooCapacity());
+    ABSL_SWISSTABLE_ASSERT(!has_infoz());
   }
 
   // The number of slots in the backing array. This is always 2^N-1 for an
@@ -1517,7 +1530,7 @@ class raw_hash_set;
 
 // Returns the next valid capacity after `n`.
 inline size_t NextCapacity(size_t n) {
-  assert(IsValidCapacity(n) || n == 0);
+  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(n) || n == 0);
   return n * 2 + 1;
 }
 
@@ -1547,7 +1560,7 @@ inline size_t NormalizeCapacity(size_t n) {
 // Given `capacity`, applies the load factor; i.e., it returns the maximum
 // number of values we should put into the table before a resizing rehash.
 inline size_t CapacityToGrowth(size_t capacity) {
-  assert(IsValidCapacity(capacity));
+  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
   // `capacity*7/8`
   if (Group::kWidth == 8 && capacity == 7) {
     // x-x/8 does not work when x==7.
@@ -1805,7 +1818,7 @@ inline FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
           seq.index()};
     }
     seq.next();
-    assert(seq.index() <= common.capacity() && "full table!");
+    ABSL_SWISSTABLE_ASSERT(seq.index() <= common.capacity() && "full table!");
   }
 }
 
@@ -1837,7 +1850,7 @@ inline void ResetCtrl(CommonFields& common, size_t slot_size) {
 // Sets sanitizer poisoning for slot corresponding to control byte being set.
 inline void DoSanitizeOnSetCtrl(const CommonFields& c, size_t i, ctrl_t h,
                                 size_t slot_size) {
-  assert(i < c.capacity());
+  ABSL_SWISSTABLE_ASSERT(i < c.capacity());
   auto* slot_i = static_cast<const char*>(c.slot_array()) + i * slot_size;
   if (IsFull(h)) {
     SanitizerUnpoisonMemoryRegion(slot_i, slot_size);
@@ -1867,7 +1880,7 @@ inline void SetCtrl(const CommonFields& c, size_t i, h2_t h, size_t slot_size) {
 // setting the cloned control byte.
 inline void SetCtrlInSingleGroupTable(const CommonFields& c, size_t i, ctrl_t h,
                                       size_t slot_size) {
-  assert(is_single_group(c.capacity()));
+  ABSL_SWISSTABLE_ASSERT(is_single_group(c.capacity()));
   DoSanitizeOnSetCtrl(c, i, h, slot_size);
   ctrl_t* ctrl = c.control();
   ctrl[i] = h;
@@ -1907,8 +1920,8 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
     // Small tables capacity fits into portable group, where
     // GroupPortableImpl::MaskFull is more efficient for the
     // capacity <= GroupPortableImpl::kWidth.
-    assert(cap <= GroupPortableImpl::kWidth &&
-           "unexpectedly large small capacity");
+    ABSL_SWISSTABLE_ASSERT(cap <= GroupPortableImpl::kWidth &&
+                           "unexpectedly large small capacity");
     static_assert(Group::kWidth >= GroupPortableImpl::kWidth,
                   "unexpected group width");
     // Group starts from kSentinel slot, so indices in the mask will
@@ -1925,19 +1938,21 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
   ABSL_ATTRIBUTE_UNUSED const size_t original_size_for_assert = remaining;
   while (remaining != 0) {
     for (uint32_t i : GroupFullEmptyOrDeleted(ctrl).MaskFull()) {
-      assert(IsFull(ctrl[i]) && "hash table was modified unexpectedly");
+      ABSL_SWISSTABLE_ASSERT(IsFull(ctrl[i]) &&
+                             "hash table was modified unexpectedly");
       cb(ctrl + i, slot + i);
       --remaining;
     }
     ctrl += Group::kWidth;
     slot += Group::kWidth;
-    assert((remaining == 0 || *(ctrl - 1) != ctrl_t::kSentinel) &&
-           "hash table was modified unexpectedly");
+    ABSL_SWISSTABLE_ASSERT(
+        (remaining == 0 || *(ctrl - 1) != ctrl_t::kSentinel) &&
+        "hash table was modified unexpectedly");
   }
   // NOTE: erasure of the current element is allowed in callback for
   // absl::erase_if specialization. So we use `>=`.
-  assert(original_size_for_assert >= c.size() &&
-         "hash table was modified unexpectedly");
+  ABSL_SWISSTABLE_ASSERT(original_size_for_assert >= c.size() &&
+                         "hash table was modified unexpectedly");
 }
 
 template <typename CharAlloc>
@@ -2008,18 +2023,18 @@ class HashSetResizeHelper {
       // Offset fall on kSentinel or into the mostly occupied first half.
       offset = old_capacity / 2;
     }
-    assert(IsEmpty(c.control()[offset]));
+    ABSL_SWISSTABLE_ASSERT(IsEmpty(c.control()[offset]));
     return FindInfo{offset, 0};
   }
 
   HeapOrSoo& old_heap_or_soo() { return old_heap_or_soo_; }
   void* old_soo_data() { return old_heap_or_soo_.get_soo_data(); }
   ctrl_t* old_ctrl() const {
-    assert(!was_soo_);
+    ABSL_SWISSTABLE_ASSERT(!was_soo_);
     return old_heap_or_soo_.control();
   }
   void* old_slots() const {
-    assert(!was_soo_);
+    ABSL_SWISSTABLE_ASSERT(!was_soo_);
     return old_heap_or_soo_.slot_array().get();
   }
   size_t old_capacity() const { return old_capacity_; }
@@ -2070,7 +2085,7 @@ class HashSetResizeHelper {
                                                ctrl_t soo_slot_h2,
                                                size_t key_size,
                                                size_t value_size) {
-    assert(c.capacity());
+    ABSL_SWISSTABLE_ASSERT(c.capacity());
     HashtablezInfoHandle infoz =
         ShouldSampleHashtablezInfo<Alloc>()
             ? SampleHashtablezInfo<SooEnabled>(SizeOfSlot, key_size, value_size,
@@ -2127,10 +2142,11 @@ class HashSetResizeHelper {
   // 1. GrowIntoSingleGroupShuffleControlBytes was already called.
   template <class PolicyTraits, class Alloc>
   void GrowSizeIntoSingleGroup(CommonFields& c, Alloc& alloc_ref) {
-    assert(old_capacity_ < Group::kWidth / 2);
-    assert(IsGrowingIntoSingleGroupApplicable(old_capacity_, c.capacity()));
+    ABSL_SWISSTABLE_ASSERT(old_capacity_ < Group::kWidth / 2);
+    ABSL_SWISSTABLE_ASSERT(
+        IsGrowingIntoSingleGroupApplicable(old_capacity_, c.capacity()));
     using slot_type = typename PolicyTraits::slot_type;
-    assert(is_single_group(c.capacity()));
+    ABSL_SWISSTABLE_ASSERT(is_single_group(c.capacity()));
 
     auto* new_slots = static_cast<slot_type*>(c.slot_array());
     auto* old_slots_ptr = static_cast<slot_type*>(old_slots());
@@ -2764,14 +2780,14 @@ class raw_hash_set {
     // We don't use `that.is_soo()` here because `that` can have non-SOO
     // capacity but have a size that fits into SOO capacity.
     if (fits_in_soo(size)) {
-      assert(size == 1);
+      ABSL_SWISSTABLE_ASSERT(size == 1);
       common().set_full_soo();
       emplace_at(soo_iterator(), *that.begin());
       const HashtablezInfoHandle infoz = try_sample_soo();
       if (infoz.IsSampled()) resize_with_soo_infoz(infoz);
       return;
     }
-    assert(!that.is_soo());
+    ABSL_SWISSTABLE_ASSERT(!that.is_soo());
     const size_t cap = capacity();
     // Note about single group tables:
     // 1. It is correct to have any order of elements.
@@ -2803,7 +2819,8 @@ class raw_hash_set {
             offset = (offset + shift) & cap;
           }
           const h2_t h2 = static_cast<h2_t>(*that_ctrl);
-          assert(  // We rely that hash is not changed for small tables.
+          ABSL_SWISSTABLE_ASSERT(  // We rely that hash is not changed for small
+                                   // tables.
               H2(PolicyTraits::apply(HashElement{hash_ref()},
                                      PolicyTraits::element(that_slot))) == h2 &&
               "hash function value changed unexpectedly during the copy");
@@ -2889,7 +2906,7 @@ class raw_hash_set {
     iterator it = {control(), common().slots_union(),
                    common().generation_ptr()};
     it.skip_empty_or_deleted();
-    assert(IsFull(*it.control()));
+    ABSL_SWISSTABLE_ASSERT(IsFull(*it.control()));
     return it;
   }
   iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -3123,7 +3140,7 @@ class raw_hash_set {
    public:
     template <class... Args>
     void operator()(Args&&... args) const {
-      assert(*slot_);
+      ABSL_SWISSTABLE_ASSERT(*slot_);
       PolicyTraits::construct(alloc_, *slot_, std::forward<Args>(args)...);
       *slot_ = nullptr;
     }
@@ -3142,7 +3159,7 @@ class raw_hash_set {
     if (res.second) {
       slot_type* slot = res.first.slot();
       std::forward<F>(f)(constructor(&alloc_ref(), &slot));
-      assert(!slot);
+      ABSL_SWISSTABLE_ASSERT(!slot);
     }
     return res.first;
   }
@@ -3303,7 +3320,7 @@ class raw_hash_set {
             resize(kInitialSampledCapacity);
           }
           // This asserts that we didn't lose sampling coverage in `resize`.
-          assert(infoz().IsSampled());
+          ABSL_SWISSTABLE_ASSERT(infoz().IsSampled());
           return;
         }
         alignas(slot_type) unsigned char slot_space[sizeof(slot_type)];
@@ -3557,7 +3574,7 @@ class raw_hash_set {
   // SOO functionality.
   template <class K = key_type>
   iterator find_soo(const key_arg<K>& key) {
-    assert(is_soo());
+    ABSL_SWISSTABLE_ASSERT(is_soo());
     return empty() || !PolicyTraits::apply(EqualElement<K>{key, eq_ref()},
                                            PolicyTraits::element(soo_slot()))
                ? end()
@@ -3566,7 +3583,7 @@ class raw_hash_set {
 
   template <class K = key_type>
   iterator find_non_soo(const key_arg<K>& key, size_t hash) {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     auto seq = probe(common(), hash);
     const ctrl_t* ctrl = control();
     while (true) {
@@ -3579,7 +3596,7 @@ class raw_hash_set {
       }
       if (ABSL_PREDICT_TRUE(g.MaskEmpty())) return end();
       seq.next();
-      assert(seq.index() <= capacity() && "full table!");
+      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
     }
   }
 
@@ -3587,14 +3604,14 @@ class raw_hash_set {
   // insertion into an empty SOO table and in copy construction when the size
   // can fit in SOO capacity.
   inline HashtablezInfoHandle try_sample_soo() {
-    assert(is_soo());
+    ABSL_SWISSTABLE_ASSERT(is_soo());
     if (!ShouldSampleHashtablezInfo<CharAlloc>()) return HashtablezInfoHandle{};
     return Sample(sizeof(slot_type), sizeof(key_type), sizeof(value_type),
                   SooCapacity());
   }
 
   inline void destroy_slots() {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     if (PolicyTraits::template destroy_is_trivial<Alloc>()) return;
     IterateOverFullSlots(
         common(), slot_array(),
@@ -3603,7 +3620,7 @@ class raw_hash_set {
   }
 
   inline void dealloc() {
-    assert(capacity() != 0);
+    ABSL_SWISSTABLE_ASSERT(capacity() != 0);
     // Unpoison before returning the memory to the allocator.
     SanitizerUnpoisonMemoryRegion(slot_array(), sizeof(slot_type) * capacity());
     infoz().Unregister();
@@ -3633,7 +3650,7 @@ class raw_hash_set {
   // This merely updates the pertinent control byte. This can be used in
   // conjunction with Policy::transfer to move the object to another place.
   void erase_meta_only(const_iterator it) {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     EraseMetaOnly(common(), static_cast<size_t>(it.control() - control()),
                   sizeof(slot_type));
   }
@@ -3659,7 +3676,7 @@ class raw_hash_set {
   // SOO tables, since they need to switch from SOO to heap in order to
   // store the infoz.
   void resize_with_soo_infoz(HashtablezInfoHandle forced_infoz) {
-    assert(forced_infoz.IsSampled());
+    ABSL_SWISSTABLE_ASSERT(forced_infoz.IsSampled());
     raw_hash_set::resize_impl(common(), NextCapacity(SooCapacity()),
                               forced_infoz);
   }
@@ -3670,8 +3687,8 @@ class raw_hash_set {
       CommonFields& common, size_t new_capacity,
       HashtablezInfoHandle forced_infoz) {
     raw_hash_set* set = reinterpret_cast<raw_hash_set*>(&common);
-    assert(IsValidCapacity(new_capacity));
-    assert(!set->fits_in_soo(new_capacity));
+    ABSL_SWISSTABLE_ASSERT(IsValidCapacity(new_capacity));
+    ABSL_SWISSTABLE_ASSERT(!set->fits_in_soo(new_capacity));
     const bool was_soo = set->is_soo();
     const bool had_soo_slot = was_soo && !set->empty();
     const ctrl_t soo_slot_h2 =
@@ -3706,7 +3723,7 @@ class raw_hash_set {
       // InitializeSlots did all the work including infoz().RecordRehash().
       return;
     }
-    assert(resize_helper.old_capacity() > 0);
+    ABSL_SWISSTABLE_ASSERT(resize_helper.old_capacity() > 0);
     // Nothing more to do in this case.
     if (was_soo && !had_soo_slot) return;
 
@@ -3882,7 +3899,7 @@ class raw_hash_set {
 
   template <class K>
   std::pair<iterator, bool> find_or_prepare_insert_non_soo(const K& key) {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     prefetch_heap_block();
     auto hash = hash_ref()(key);
     auto seq = probe(common(), hash);
@@ -3905,7 +3922,7 @@ class raw_hash_set {
                 true};
       }
       seq.next();
-      assert(seq.index() <= capacity() && "full table!");
+      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
     }
   }
 
@@ -4032,16 +4049,16 @@ class raw_hash_set {
   //
   // See `CapacityToGrowth()`.
   size_t growth_left() const {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().growth_left();
   }
 
   GrowthInfo& growth_info() {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().growth_info();
   }
   GrowthInfo growth_info() const {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().growth_info();
   }
 
@@ -4049,7 +4066,7 @@ class raw_hash_set {
   // cache misses. This is intended to overlap with execution of calculating the
   // hash for a key.
   void prefetch_heap_block() const {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
 #if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
     __builtin_prefetch(control(), 0, 1);
 #endif
@@ -4059,15 +4076,15 @@ class raw_hash_set {
   const CommonFields& common() const { return settings_.template get<0>(); }
 
   ctrl_t* control() const {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().control();
   }
   slot_type* slot_array() const {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return static_cast<slot_type*>(common().slot_array());
   }
   slot_type* soo_slot() {
-    assert(is_soo());
+    ABSL_SWISSTABLE_ASSERT(is_soo());
     return static_cast<slot_type*>(common().soo_data());
   }
   const slot_type* soo_slot() const {
@@ -4080,7 +4097,7 @@ class raw_hash_set {
     return const_cast<raw_hash_set*>(this)->soo_iterator();
   }
   HashtablezInfoHandle infoz() {
-    assert(!is_soo());
+    ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().infoz();
   }
 
@@ -4153,7 +4170,8 @@ struct HashtableFreeFunctionsAccess {
     if (c->is_soo()) {
       auto it = c->soo_iterator();
       if (!pred(*it)) {
-        assert(c->size() == 1 && "hash table was modified unexpectedly");
+        ABSL_SWISSTABLE_ASSERT(c->size() == 1 &&
+                               "hash table was modified unexpectedly");
         return 0;
       }
       c->destroy(it.slot());
@@ -4173,8 +4191,9 @@ struct HashtableFreeFunctionsAccess {
         });
     // NOTE: IterateOverFullSlots allow removal of the current element, so we
     // verify the size additionally here.
-    assert(original_size_for_assert - num_deleted == c->size() &&
-           "hash table was modified unexpectedly");
+    ABSL_SWISSTABLE_ASSERT(original_size_for_assert - num_deleted ==
+                               c->size() &&
+                           "hash table was modified unexpectedly");
     return num_deleted;
   }
 
@@ -4268,5 +4287,6 @@ ABSL_NAMESPACE_END
 #undef ABSL_SWISSTABLE_ENABLE_GENERATIONS
 #undef ABSL_SWISSTABLE_IGNORE_UNINITIALIZED
 #undef ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN
+#undef ABSL_SWISSTABLE_ASSERT
 
 #endif  // ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
