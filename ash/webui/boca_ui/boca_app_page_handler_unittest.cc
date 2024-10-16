@@ -1165,7 +1165,6 @@ TEST_F(BocaAppPageHandlerTest,
 
 TEST_F(BocaAppPageHandlerTest, UpdateEmptyStudentActivitySucceed) {
   std::map<std::string, ::boca::StudentStatus> activities;
-  // EXPECT_CALL(mock_page(), OnStudentActivityUpdated(_)).Times(1);
   base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
   boca_app_handler()->SetActivityInterceptorCallbackForTesting(
       future.GetCallback());
@@ -1329,5 +1328,50 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentWithNonActiveSession) {
   EXPECT_EQ(mojom::RemoveStudentError::kInvalid, future_1.Get().value());
 }
 
+TEST_F(BocaAppPageHandlerTest, OnSessionEndedSucceed) {
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
+      future.GetCallback());
+  boca_app_handler()->OnSessionEnded("any");
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_error());
+}
+
+TEST_F(BocaAppPageHandlerTest, OnSessionCaptionUpdatedSucceed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
+      future.GetCallback());
+  boca_app_handler()->OnSessionCaptionConfigUpdated("any",
+                                                    ::boca::CaptionsConfig());
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_config());
+}
+
+TEST_F(BocaAppPageHandlerTest, OnSessionBundleUpdatedSucceed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
+      future.GetCallback());
+  boca_app_handler()->OnBundleUpdated(::boca::Bundle());
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_config());
+}
+
+TEST_F(BocaAppPageHandlerTest, OnSessionRosterUpdatedSucceed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<mojom::SessionResultPtr> future;
+  boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
+      future.GetCallback());
+  boca_app_handler()->OnSessionRosterUpdated("any", {});
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_config());
+}
 }  // namespace
 }  // namespace ash::boca

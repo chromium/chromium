@@ -32,6 +32,8 @@ class BocaAppHandler : public mojom::PageHandler,
  public:
   using ActivityInterceptorCallback =
       base::OnceCallback<void(std::vector<mojom::IdentifiedActivityPtr>)>;
+  using SessionConfigInterceptorCallback =
+      base::OnceCallback<void(mojom::SessionResultPtr)>;
   BocaAppHandler(
       BocaUI* boca_ui,
       mojo::PendingReceiver<mojom::PageHandler> receiver,
@@ -64,24 +66,36 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
 
-  void OnSessionConfigUpdated(mojom::ConfigPtr config) override {}
+  void OnSessionConfigUpdated(mojom::SessionResultPtr config) override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
       const std::map<std::string, ::boca::StudentStatus>& activities) override;
-
-  void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
+  // When session start, UI is already most update to date, do
+  // not handle the event
   void OnSessionStarted(const std::string& session_id,
                         const ::boca::UserIdentity& producer) override {}
-  void OnSessionEnded(const std::string& session_id) override {}
+  void OnSessionEnded(const std::string& session_id) override;
+  void OnBundleUpdated(const ::boca::Bundle& bundle) override;
+  void OnSessionCaptionConfigUpdated(
+      const std::string& group_name,
+      const ::boca::CaptionsConfig& config) override;
+  void OnSessionRosterUpdated(
+      const std::string& group_name,
+      const std::vector<::boca::UserIdentity>& consumers) override;
+
+  void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 
   // For testing.
-  // Mojo service binding is not invoked in unit test. So we manually override a
-  // interceptor for testing.
+  // Mojo service binding is not invoked in unit test. So we manually override
+  // a interceptor for testing.
   void SetActivityInterceptorCallbackForTesting(
       ActivityInterceptorCallback callback);
+  void SetSessionConfigInterceptorCallbackForTesting(
+      SessionConfigInterceptorCallback callback);
 
  private:
+  void UpdateSessionConfig();
   void OnUpdatedOnTaskConfig(UpdateOnTaskConfigCallback callback,
                              base::expected<std::unique_ptr<::boca::Session>,
                                             google_apis::ApiErrorCode> result);
@@ -107,6 +121,7 @@ class BocaAppHandler : public mojom::PageHandler,
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
   ActivityInterceptorCallback test_activity_callback_;
+  SessionConfigInterceptorCallback test_config_callback_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};

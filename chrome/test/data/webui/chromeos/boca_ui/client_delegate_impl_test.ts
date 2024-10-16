@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClientDelegateFactory} from 'chrome-untrusted://boca-app/app/client_delegate.js';
+import {ClientDelegateFactory, getSessionConfigMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -356,6 +356,56 @@ suite('ClientDelegateTest', function() {
         },
         result);
   });
+
+  test(
+      'client delegate should properly translate getsession with default value',
+      async () => {
+        const session = {
+          sessionDuration: {
+            microseconds: 120000000n,
+          },
+          sessionStartTime: {
+            msec: 1000000,
+          },
+          students: [],
+          onTaskConfig: {isLocked: false, tabs: []},
+          teacher: {
+            id: '0',
+            name: 'teacher',
+            email: 'teacher@gmail.com',
+            photoUrl: {url: 'cdn0'},
+          },
+          captionConfig: {
+            sessionCaptionEnabled: true,
+            localCaptionEnabled: true,
+            sessionTranslationEnabled: true,
+          },
+        };
+        const result = getSessionConfigMojomToUI(session);
+        assertDeepEquals(
+            {
+              sessionDurationInMinutes: 2,
+              sessionStartTime: new Date(1000000),
+              teacher: {
+                id: '0',
+                name: 'teacher',
+                email: 'teacher@gmail.com',
+                photoUrl: 'cdn0',
+              },
+              students: [],
+              onTaskConfig: {
+                isLocked: false,
+                tabs: [],
+              },
+              captionConfig: {
+                sessionCaptionEnabled: true,
+                localCaptionEnabled: true,
+                sessionTranslationEnabled: true,
+              },
+            },
+
+            result);
+      });
 
   test(
       'client delegate should translate data for update on task config',

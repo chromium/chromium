@@ -4,8 +4,10 @@
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
+import {SessionResult} from '../mojom/boca.mojom-webui.js';
+
 import {ClientApi, IdentifiedActivity} from './boca_app.js';
-import {ClientDelegateFactory} from './client_delegate.js';
+import {ClientDelegateFactory, getSessionConfigMojomToUI} from './client_delegate.js';
 import {callbackRouter, pageHandler} from './mojo_api_bootstrap.js';
 
 /**
@@ -24,6 +26,11 @@ async function initializeApp(app: ClientApi) {
   callbackRouter.onStudentActivityUpdated.addListener(
       (activities: IdentifiedActivity[]) => {
         app.onStudentActivityUpdated(activities);
+      })
+  callbackRouter.onSessionConfigUpdated.addListener(
+      (sessionResult: SessionResult) => {
+        app.onSessionConfigUpdated(
+            getSessionConfigMojomToUI(sessionResult.config));
       })
 }
 

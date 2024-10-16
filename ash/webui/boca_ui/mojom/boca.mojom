@@ -169,7 +169,7 @@ interface Page {
   // Notifies when student activities updated.
   OnStudentActivityUpdated(array<IdentifiedActivity> activities);
   // Notifies when session config updated.
-  OnSessionConfigUpdated(Config config);
+  OnSessionConfigUpdated(SessionResult config);
 };
 
 // Implemented in browser process to set up the communication between the Page

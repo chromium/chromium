@@ -7,10 +7,54 @@ import {Config, ControlledTab as ControlledTabMojom, Course, Identity as Identit
 import {CaptionConfig, ClientApiDelegate, ControlledTab, Identity, OnTaskConfig, SessionConfig} from './boca_app.js';
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
+
+export function getSessionConfigMojomToUI(session: Config|
+                                          undefined): SessionConfig|null {
+  if (!session) {
+    return null;
+  }
+  return {
+  sessionDurationInMinutes:
+    Number(session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
+        sessionStartTime: session.sessionStartTime?.msec ?
+        new Date(session.sessionStartTime.msec) :
+        undefined,
+        teacher: session.teacher ? {
+          id: session.teacher.id,
+          name: session.teacher.name,
+          email: session.teacher.email,
+          photoUrl: session.teacher.photoUrl ? session.teacher.photoUrl.url :
+                                               undefined,
+        } :
+                                   undefined,
+        students: session.students.map((item: IdentityMojom) => {
+          return {
+            id: item.id,
+            name: item.name,
+            email: item.email,
+            photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
+          };
+        }),
+        onTaskConfig: {
+          isLocked: session.onTaskConfig.isLocked,
+          tabs: session.onTaskConfig.tabs.map((item: ControlledTabMojom) => {
+            return {
+              tab: {
+                url: item.tab.url.url,
+                title: item.tab.title,
+                favicon: item.tab.favicon,
+              },
+              navigationType: item.navigationType.valueOf(),
+            };
+          }),
+        },
+        captionConfig: session.captionConfig,
+  }
+};
+
 /**
  * A delegate implementation that provides API via privileged mojom API
  */
-
 export class ClientDelegateFactory {
   private clientDelegateImpl: ClientApiDelegate;
   constructor(pageHandler: PageHandlerRemote) {
@@ -89,50 +133,11 @@ export class ClientDelegateFactory {
         if (!result.config) {
           return null;
         }
-
-        const session = result.config;
         return {
-          sessionConfig: {
-            sessionDurationInMinutes: Number(
-                session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
-            sessionStartTime: session.sessionStartTime?.msec ?
-                new Date(session.sessionStartTime.msec) :
-                undefined,
-            teacher: session.teacher ? {
-              id: session.teacher.id,
-              name: session.teacher.name,
-              email: session.teacher.email,
-              photoUrl: session.teacher.photoUrl ?
-                  session.teacher.photoUrl.url :
-                  undefined,
-            } :
-                                       undefined,
-            students: session.students?.map((item: IdentityMojom) => {
-              return {
-                id: item.id,
-                name: item.name,
-                email: item.email,
-                photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
-              };
-            }),
-            onTaskConfig: {
-              isLocked: session.onTaskConfig?.isLocked,
-              tabs:
-                  session.onTaskConfig?.tabs.map((item: ControlledTabMojom) => {
-                    return {
-                      tab: {
-                        url: item.tab.url.url,
-                        title: item.tab.title,
-                        favicon: item.tab.favicon,
-                      },
-                      navigationType: item.navigationType.valueOf(),
-                    };
-                  }),
-            },
-            captionConfig: session.captionConfig,
-            // TODO(b/365191878): Fill in user activity.
-          },
-          activity: [],
+          sessionConfig: getSessionConfigMojomToUI(result.config) as
+              SessionConfig,
+          // TODO(b/365191878): Fill in user activity.
+          activity: []
         };
       },
       endSession: async () => {
