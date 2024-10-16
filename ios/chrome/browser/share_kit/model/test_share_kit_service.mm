@@ -15,8 +15,3 @@ void TestShareKitService::ShareGroup(const TabGroup* group,
                                      UIViewController* base_view_controller) {
   // TODO(crbug.com/358373145): add fake implementation.
 }
-
-UIViewController* TestShareKitService::FacePile(NSString* collab_id) {
-  // TODO(crbug.com/358373145): add fake implementation.
-  return nil;
-}

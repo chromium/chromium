@@ -18,7 +18,6 @@ class ChromiumShareKitService final : public ShareKitService {
   bool IsSupported() const override { return false; }
   void ShareGroup(const TabGroup* group,
                   UIViewController* base_view_controller) override {}
-  UIViewController* FacePile(NSString* collab_id) override { return nil; }
 };
 
 }  // namespace

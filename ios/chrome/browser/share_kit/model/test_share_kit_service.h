@@ -19,7 +19,6 @@ class TestShareKitService : public ShareKitService {
   bool IsSupported() const override;
   void ShareGroup(const TabGroup* group,
                   UIViewController* base_view_controller) override;
-  UIViewController* FacePile(NSString* collab_id) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_TEST_SHARE_KIT_SERVICE_H_

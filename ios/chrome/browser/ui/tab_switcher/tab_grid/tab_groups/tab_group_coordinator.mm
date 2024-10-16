@@ -10,8 +10,6 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -92,14 +90,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
             incognito:self.browser->GetProfile()->IsOffTheRecord()
                shared:shared
              tabGroup:_tabGroup];
-
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (shareKitService) {
-    _viewController.facePile = nil;
-    //        // TODO(crbug.com/358373145): Use
-    //        shareKitService->FacePile(nil);
-  }
 
   _viewController.gridViewController.delegate = self;
 
