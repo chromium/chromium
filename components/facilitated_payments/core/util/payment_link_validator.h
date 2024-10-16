@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+namespace payments::facilitated {
+
 class PaymentLinkValidator {
  public:
   PaymentLinkValidator();
@@ -21,5 +23,7 @@ class PaymentLinkValidator {
  private:
   const std::vector<std::string> valid_prefixes_;
 };
+
+}  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PAYMENT_LINK_VALIDATOR_H_

@@ -18,7 +18,7 @@ TEST(PaymentLinkValidatorTest, validUrls) {
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd",
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd",
-      "tngditial://tngdigital.com.my?code=https://qr.tngdigital.com.my/"
+      "tngd://tngdigital.com.my?code=https://qr.tngdigital.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd"};
 
   for (const auto& link : kValidUrls) {
