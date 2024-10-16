@@ -71,7 +71,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual void DiscardResourceProvider();
 
   void SetIsDisplayed(bool);
-  bool IsDisplayed() { return is_displayed_; }
+  bool IsDisplayed() const { return is_displayed_; }
 
   virtual bool IsPageVisible() const = 0;
 
