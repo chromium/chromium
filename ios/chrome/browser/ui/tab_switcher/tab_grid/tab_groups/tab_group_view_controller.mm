@@ -314,8 +314,20 @@ constexpr CGFloat kSpace = 8;
   dotsItem.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
+  UIBarButtonItem* facePileButton;
+  UIViewController* facePile = self.facePile;
+  if (facePile) {
+    [self addChildViewController:facePile];
+    facePileButton = [[UIBarButtonItem alloc] initWithCustomView:facePile.view];
+    [facePile didMoveToParentViewController:self];
+  }
+
   if (IsTabGroupIndicatorEnabled()) {
-    navigationItem.rightBarButtonItems = @[ dotsItem ];
+    if (facePileButton) {
+      navigationItem.rightBarButtonItems = @[ dotsItem, facePileButton ];
+    } else {
+      navigationItem.rightBarButtonItems = @[ dotsItem ];
+    }
   } else {
     UIImage* plusImage =
         DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);

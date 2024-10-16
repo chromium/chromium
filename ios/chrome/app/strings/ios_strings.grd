@@ -5074,6 +5074,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT" desc="Button text next to a Set Up List item suggesting to the user to try the action.">
         Try
       </message>
+      <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
+        Share group
+      </message>
       <message name="IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. When selected, the user will be taken to a help article explaining how the highlighting feature works. [Length: 25em]">
         Learn more…
       </message>
