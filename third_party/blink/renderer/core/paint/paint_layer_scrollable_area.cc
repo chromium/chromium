@@ -240,9 +240,7 @@ void PaintLayerScrollableArea::ApplyPendingHistoryRestoreScrollOffset() {
   // TODO(pnoland): attempt to restore the anchor in more places than this.
   // Anchor-based restore should allow for earlier restoration.
   bool did_restore = RestoreScrollAnchor(
-      {pending_view_state_->state.scroll_anchor_data_.selector_,
-       LayoutPoint(pending_view_state_->state.scroll_anchor_data_.offset_),
-       pending_view_state_->state.scroll_anchor_data_.simhash_});
+      {pending_view_state_->state.scroll_anchor_data_, *this});
   if (!did_restore) {
     SetScrollOffset(pending_view_state_->state.scroll_offset_,
                     mojom::blink::ScrollType::kProgrammatic,

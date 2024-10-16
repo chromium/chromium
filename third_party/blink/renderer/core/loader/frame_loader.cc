@@ -334,11 +334,10 @@ void FrameLoader::SaveScrollAnchor() {
     const SerializedAnchor& serialized_anchor =
         scroll_anchor->GetSerializedAnchor();
     if (serialized_anchor.IsValid()) {
-      history_item->SetScrollAnchorData(
-          {serialized_anchor.selector,
-           gfx::PointF(serialized_anchor.relative_offset.X(),
-                       serialized_anchor.relative_offset.Y()),
-           serialized_anchor.simhash});
+      auto offset = serialized_anchor.GetScrollOffset(*layout_scrollable_area);
+      history_item->SetScrollAnchorData({serialized_anchor.selector,
+                                         gfx::PointF(offset.x(), offset.y()),
+                                         serialized_anchor.simhash});
     }
   }
 }
