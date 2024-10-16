@@ -114,7 +114,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
             new TestAwSupervisedUserUrlClassifierDelegate();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
-    private IFrameLoadedListener mIFrameLoadedListener = new IFrameLoadedListener();
+    private IframeLoadedListener mIframeLoadedListener = new IframeLoadedListener();
 
     public AwSupervisedUserTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -136,7 +136,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.addWebMessageListener(
-                            "myObject", new String[] {"*"}, mIFrameLoadedListener);
+                            "myObject", new String[] {"*"}, mIframeLoadedListener);
                 });
         resetNeedsRestriction(true);
     }
@@ -322,7 +322,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private void assertIframeTitle(String expectedTitle) throws Exception {
-        String iFrameTitle = mIFrameLoadedListener.waitForResult();
+        String iFrameTitle = mIframeLoadedListener.waitForResult();
         Assert.assertEquals(expectedTitle, iFrameTitle);
     }
 
@@ -342,7 +342,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
     }
 
-    private static class IFrameLoadedListener implements WebMessageListener {
+    private static class IframeLoadedListener implements WebMessageListener {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
         private volatile String mResult;
 
