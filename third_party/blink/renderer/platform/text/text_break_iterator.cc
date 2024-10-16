@@ -304,7 +304,7 @@ static inline bool ShouldKeepAfterKeepAll(UChar last_ch,
 
 enum class FastBreakResult : uint8_t { kNoBreak, kCanBreak, kUnknown };
 
-template <typename CharacterType, bool use_fast_table>
+template <typename CharacterType>
 struct LazyLineBreakIterator::Context {
   STACK_ALLOCATED();
 
@@ -384,31 +384,6 @@ struct LazyLineBreakIterator::Context {
       }
     }
 
-    if constexpr (!use_fast_table) {
-      // If both `last_ch` and `ch` are ASCII characters, use a lookup table for
-      // enhanced speed and for compatibility with other browsers (see comments
-      // for asciiLineBreakTable for details).
-      if (last_ch <= kAsciiLineBreakTableLastChar &&
-          ch <= kAsciiLineBreakTableLastChar) {
-        const unsigned char* table_row =
-            kAsciiLineBreakTable[last_ch - kAsciiLineBreakTableFirstChar];
-        const unsigned ch_index = ch - kAsciiLineBreakTableFirstChar;
-        return table_row[ch_index / 8] & (1 << (ch_index % 8))
-                   ? FastBreakResult::kCanBreak
-                   : FastBreakResult::kNoBreak;
-      }
-
-      if ((ch == kNoBreakSpaceCharacter &&
-           last_ch <= kAsciiLineBreakTableLastChar) ||
-          (last_ch == kNoBreakSpaceCharacter &&
-           ch <= kAsciiLineBreakTableLastChar)) {
-        return FastBreakResult::kNoBreak;
-      }
-
-      // Otherwise defer to the Unicode algorithm.
-      return FastBreakResult::kUnknown;
-    }
-
     // If both characters are in the fast line break table, use it for enhanced
     // speed. For ASCII characters, it is also for compatibility. The table is
     // generated at the build time, see the `LineBreakData` class.
@@ -441,23 +416,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
     const CharacterType* str,
     unsigned len) const {
-  if (RuntimeEnabledFeatures::BreakIteratorDataGeneratorEnabled()) {
-    return NextBreakablePosition<CharacterType, line_break_type, break_space,
-                                 /*use_fast_table*/ true>(pos, str, len);
-  }
-  return NextBreakablePosition<CharacterType, line_break_type, break_space,
-                               /*use_fast_table*/ false>(pos, str, len);
-}
-
-template <typename CharacterType,
-          LineBreakType line_break_type,
-          BreakSpaceType break_space,
-          bool use_fast_table>
-inline unsigned LazyLineBreakIterator::NextBreakablePosition(
-    unsigned pos,
-    const CharacterType* str,
-    unsigned len) const {
-  Context<CharacterType, use_fast_table> context(str, len, start_offset_, pos);
+  Context<CharacterType> context(str, len, start_offset_, pos);
   unsigned next_break = 0;
   ULineBreak last_line_break;
   if constexpr (line_break_type == LineBreakType::kBreakAll) {

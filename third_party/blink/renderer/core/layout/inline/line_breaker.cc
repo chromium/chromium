@@ -1830,14 +1830,11 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   unsigned next_break = 0;
   unsigned non_hangable_run_end = 0;
   bool can_break_after = false;
-  const bool set_start_offset =
-      RuntimeEnabledFeatures::BreakIteratorSetStartOffsetEnabled();
   while (start_offset < end_offset) {
-    if (set_start_offset) {
-      // TODO(crbug.com/332328872): `following()` scans back to the start of the
-      // string. Resetting the ICU `BreakIterator` is faster than the scanning.
-      break_iterator_.SetStartOffset(start_offset);
-    }
+    // TODO(crbug.com/332328872): `following()` scans back to the start of the
+    // string. Resetting the ICU `BreakIterator` is faster than the scanning.
+    break_iterator_.SetStartOffset(start_offset);
+
     next_break = break_iterator_.NextBreakOpportunity(
         start_offset + 1, std::min(item_end_offset + 1, text.length()));
 
