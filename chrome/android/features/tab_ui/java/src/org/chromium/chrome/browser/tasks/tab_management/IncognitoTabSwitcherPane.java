@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 
 import java.util.function.DoubleConsumer;
 
@@ -248,6 +251,13 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             coordinator.resetWithTabList(null);
             cancelWaitForTabStateInitializedTimer();
         } else {
+            // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
+                    && ChromeFeatureList.isEnabled(
+                            SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                TabUiUtils.updateViewContentSensitivityForTabs(filter.getTabModel(), getRootView());
+            }
             coordinator.resetWithTabList(tabList);
             finishWaitForTabStateInitializedTimer();
         }

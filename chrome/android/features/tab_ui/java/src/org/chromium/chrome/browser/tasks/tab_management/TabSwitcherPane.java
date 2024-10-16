@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -227,6 +229,14 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             cancelWaitForTabStateInitializedTimer();
             coordinator.resetWithTabList(null);
         } else {
+            // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
+                    && ChromeFeatureList.isEnabled(
+                            SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                TabUiUtils.updateViewContentSensitivityForTabs(filter.getTabModel(), getRootView());
+            }
+
             finishWaitForTabStateInitializedTimer();
             coordinator.resetWithTabList(tabList);
         }

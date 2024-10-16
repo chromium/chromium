@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.tab_ui.R;
@@ -357,5 +361,32 @@ public class TabUiUtils {
                         R.string.data_sharing_invitation_failure_button);
             }
         };
+    }
+
+    /**
+     * Mark the {@param tabSwitcherView} as sensitive if at least one of the tabs in {@param
+     * tabList} has sensitive content. Note that if all sensitive tabs are removed from the tab
+     * switcher, the tab switcher will have to be closed and opened again to become not sensitive.
+     *
+     * @param tabList List of all tabs to be checked for sensitive content.
+     * @param tabSwitcherView The {@link View} whose content sensitivity is updated.
+     */
+    // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static void updateViewContentSensitivityForTabs(
+            @Nullable TabList tabList, View tabSwitcherView) {
+        if (tabList == null) {
+            return;
+        }
+
+        for (int i = 0; i < tabList.getCount(); i++) {
+            if (tabList.getTabAt(i).getTabHasSensitiveContent()) {
+                tabSwitcherView.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+                return;
+            }
+        }
+        // If not marked as not sensitive, the tab switcher might remain sensitive from a previous
+        // set of tabs.
+        tabSwitcherView.setContentSensitivity(View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
     }
 }
