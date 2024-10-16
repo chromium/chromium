@@ -21,7 +21,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './item.css.js';
 import {getHtml} from './item.html.js';
-import {ItemMixinLit} from './item_mixin_lit.js';
+import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
 import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
@@ -116,7 +116,7 @@ export interface ExtensionsItemElement {
   };
 }
 
-const ExtensionsItemElementBase = I18nMixinLit(ItemMixinLit(CrLitElement));
+const ExtensionsItemElementBase = I18nMixinLit(ItemMixin(CrLitElement));
 
 export class ExtensionsItemElement extends ExtensionsItemElementBase {
   static get is() {

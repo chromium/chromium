@@ -20,7 +20,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './error_page.css.js';
 import {getHtml} from './error_page.html.js';
 import type {ItemDelegate} from './item.js';
-import {ItemMixinLit} from './item_mixin_lit.js';
+import {ItemMixin} from './item_mixin.js';
 import {navigation, Page} from './navigation_helper.js';
 
 type ManifestError = chrome.developerPrivate.ManifestError;
@@ -74,7 +74,7 @@ export interface ExtensionsErrorPageElement {
   };
 }
 
-const ExtensionsErrorPageElementBase = ItemMixinLit(CrLitElement);
+const ExtensionsErrorPageElementBase = ItemMixin(CrLitElement);
 
 export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {

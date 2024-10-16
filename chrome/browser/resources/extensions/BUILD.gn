@@ -55,7 +55,6 @@ build_webui("build") {
     "drag_and_drop_handler.ts",
     "extensions.ts",
     "item_mixin.ts",
-    "item_mixin_lit.ts",
     "item_util.ts",
     "mv2_deprecation_delegate.ts",
     "mv2_deprecation_util.ts",
@@ -73,6 +72,7 @@ build_webui("build") {
   # Files that are passed as input to css_to_wrapper().
   css_files = [
     "code_section.css",
+    "detail_view.css",
     "drop_overlay.css",
     "error_page.css",
     "host_permissions_toggle_list.css",

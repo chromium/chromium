@@ -272,6 +272,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
   RunTestCase("MV2DeprecationDisabledExtension");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       MV2DeprecationUnsupportedDisabledExtension) {
+  RunTestCase("MV2DeprecationUnsupportedDisabledExtension");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, ClickableElements) {
   RunTestCase("ClickableElements");
 }
