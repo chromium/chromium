@@ -2452,7 +2452,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
 
   // The destructor expects there to be at least one selector in the StyleRule.
   CSSSelector dummy;
-  StyleRule* fake_parent_rule = StyleRule::Create(std::vector{dummy});
+  StyleRule* fake_parent_rule = StyleRule::Create(base::span_from_ref(dummy));
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
   ConsumeRuleListOrNestedDeclarationList(stream,
                                          /*is_nested_group_rule=*/true,
