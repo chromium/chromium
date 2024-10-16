@@ -46,8 +46,10 @@ if (is_android) {
 # build flags.
 config("feature_flags") {
   defines = []
+  rustflags = []
   if (dcheck_always_on) {
     defines += [ "DCHECK_ALWAYS_ON=1" ]
+    rustflags += [ "-Cdebug-assertions" ]
   }
   if (use_udev) {
     # TODO(brettw) should probably be "=1".
