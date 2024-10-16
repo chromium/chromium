@@ -27,7 +27,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void InitializeForRecording(cc::PaintCanvas*) const override {}
   void UpdateMemoryUsage() override {}
   bool PrintedInCurrentTask() const override { return false; }
-  bool IsPageVisible() override { return page_visible_; }
+  bool IsPageVisible() const override { return page_visible_; }
   bool IsHibernating() const override { return is_hibernating_; }
   void SetIsHibernating(bool is_hibernating) {
     is_hibernating_ = is_hibernating;

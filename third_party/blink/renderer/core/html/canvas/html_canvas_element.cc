@@ -465,7 +465,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   return result;
 }
 
-bool HTMLCanvasElement::IsPageVisible() {
+bool HTMLCanvasElement::IsPageVisible() const {
   return GetPage() && GetPage()->IsPageVisible();
 }
 

@@ -141,7 +141,7 @@ class CORE_EXPORT OffscreenCanvas final
   // Because OffscreenCanvas is not tied to a DOM, it's visibility cannot be
   // determined synchronously.
   // TODO(junov): Propagate changes in visibility from the placeholder canvas.
-  bool IsPageVisible() override { return true; }
+  bool IsPageVisible() const override { return true; }
   void SetTransferToGPUTextureWasInvoked() override {
     transfer_to_gpu_texture_was_invoked_ = true;
   }
