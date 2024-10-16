@@ -173,12 +173,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   // Removes an observer.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Registers a delegate.
-  virtual void RegisterArcDelegate(ArcDelegate* delegate) {}
-
-  // Unregisters the delegate.
-  virtual void UnregisterArcDelegate() {}
-
   // Gets the list of disks found.
   virtual const Disks& disks() const = 0;
 
@@ -261,6 +255,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   virtual bool AddDiskForTest(std::unique_ptr<Disk> disk);
   virtual bool AddMountPointForTest(const MountPoint& mount_point);
 
+  // Sets the ARC delegate.
+  void SetArcDelegate(ArcDelegate* delegate) { arc_delegate_ = delegate; }
+
   // Creates the global DiskMountManager instance.
   static void Initialize();
 
@@ -276,6 +273,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   // Returns a pointer to the global DiskMountManager instance.
   // Initialize() should already have been called.
   static DiskMountManager* GetInstance();
+
+ protected:
+  raw_ptr<ArcDelegate> arc_delegate_;
 };
 
 }  // namespace ash::disks

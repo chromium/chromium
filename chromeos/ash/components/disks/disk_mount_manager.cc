@@ -99,14 +99,6 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // DiskMountManager override.
-  void RegisterArcDelegate(DiskMountManager::ArcDelegate* delegate) override {
-    arc_delegate_ = delegate;
-  }
-
-  // DiskMountManager override.
-  void UnregisterArcDelegate() override { arc_delegate_ = nullptr; }
-
-  // DiskMountManager override.
   void MountPath(const std::string& source_path,
                  const std::string& source_format,
                  const std::string& mount_label,
@@ -1144,8 +1136,6 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // Mount event change observers.
   base::ObserverList<Observer> observers_;
-
-  raw_ptr<DiskMountManager::ArcDelegate> arc_delegate_;
 
   const raw_ptr<CrosDisksClient> cros_disks_client_ = CrosDisksClient::Get();
 

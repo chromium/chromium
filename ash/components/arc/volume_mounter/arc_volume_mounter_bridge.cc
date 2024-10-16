@@ -131,9 +131,11 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
   DCHECK(pref_service_);
   arc_bridge_service_->volume_mounter()->AddObserver(this);
   arc_bridge_service_->volume_mounter()->SetHost(this);
-  DCHECK(DiskMountManager::GetInstance());
-  DiskMountManager::GetInstance()->AddObserver(this);
-  DiskMountManager::GetInstance()->RegisterArcDelegate(this);
+
+  DiskMountManager* const manager = DiskMountManager::GetInstance();
+  DCHECK(manager);
+  manager->AddObserver(this);
+  manager->SetArcDelegate(this);
 
   change_registerar_.Init(pref_service_);
   // Start monitoring |kArcVisibleExternalStorages| changes. Note that the
@@ -145,9 +147,11 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
 }
 
 ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
-  DCHECK(DiskMountManager::GetInstance());
-  DiskMountManager::GetInstance()->UnregisterArcDelegate();
-  DiskMountManager::GetInstance()->RemoveObserver(this);
+  DiskMountManager* const manager = DiskMountManager::GetInstance();
+  DCHECK(manager);
+  manager->SetArcDelegate(nullptr);
+  manager->RemoveObserver(this);
+
   arc_bridge_service_->volume_mounter()->SetHost(nullptr);
   arc_bridge_service_->volume_mounter()->RemoveObserver(this);
 }
