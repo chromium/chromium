@@ -18,19 +18,17 @@ BASE_FEATURE(kArcExchangeVersionOnMojoHandshake,
 // action to start it later in an on-demand manner. Already enabled by default
 // for managed users. In V2, it will be expand to more users such as unmanaged
 // users.
-BASE_FEATURE(kArcOnDemandV2,
-             "ArcOnDemandV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kArcOnDemandV2, "ArcOnDemandV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether ARC should be activated on any app launches. If set to
 // false, inactive_interval will be checked.
 const base::FeatureParam<bool> kArcOnDemandActivateOnAppLaunch{
-    &kArcOnDemandV2, "activate_on_app_launch", true};
+    &kArcOnDemandV2, "activate_on_app_launch", false};
 
 // Controls how long of invactivity are allowed before ARC on Demand is
 // triggered.
 const base::FeatureParam<base::TimeDelta> kArcOnDemandInactiveInterval{
-    &kArcOnDemandV2, "inactive_interval", base::Days(0)};
+    &kArcOnDemandV2, "inactive_interval", base::Days(7)};
 
 // Controls whether to start ARC with the GKI kernel.
 BASE_FEATURE(kArcVmGki,
