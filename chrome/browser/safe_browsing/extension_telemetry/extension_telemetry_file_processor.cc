@@ -140,10 +140,14 @@ ExtensionTelemetryFileProcessor::RetrieveFilePaths(
       break;
     }
 
+    // Skip non-applicable type files.
+    if (!IsApplicableType(full_path)) {
+      continue;
+    }
+
+    // Skip invalid and empty files.
     std::optional<int64_t> file_size = base::GetFileSize(full_path);
-    // Skip invalid, empty, and non-applicable type files
-    if (!file_size.has_value() || file_size.value() <= 0 ||
-        !IsApplicableType(full_path)) {
+    if (!file_size.has_value() || file_size.value() <= 0) {
       continue;
     }
 
