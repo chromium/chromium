@@ -220,7 +220,7 @@ public final class PrivacySandboxDialogTest {
     // TODO(crbug.com/369540483): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a")
-    public void testRenderEEAConsentPrivacyPolicyLink() throws IOException {
+    public void testEEAConsentPrivacyPolicyLink() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
         onViewWaiting(withId(R.id.privacy_sandbox_dialog));
@@ -266,7 +266,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
-    public void testRenderEEAConsentPrivacyPolicyPageUrlParams() throws IOException {
+    public void testEEAConsentPrivacyPolicyPageUrlParams() throws IOException {
         Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("fr", "FR"));
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
