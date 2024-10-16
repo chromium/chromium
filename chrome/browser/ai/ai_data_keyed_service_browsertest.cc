@@ -189,4 +189,10 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerTextLimit) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Screenshot) {
+  LoadSimplePageAndData();
+  content::RequestFrame(browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
+}
+
 }  // namespace

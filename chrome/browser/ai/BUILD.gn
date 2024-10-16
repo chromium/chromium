@@ -49,6 +49,7 @@ source_set("impl") {
   deps = [
     ":ai",
     "//chrome/browser/optimization_guide",
+    "//skia",
   ]
   if (!is_android) {
     deps += [

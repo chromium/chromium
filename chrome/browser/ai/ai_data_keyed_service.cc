@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_callbacks.h"
@@ -21,9 +22,13 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -203,6 +208,55 @@ void GetTabDataForModelPrototyping(
 }
 #endif
 
+std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
+  std::vector<unsigned char> data;
+  bool encoded = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data);
+  if (!encoded) {
+    return "";
+  }
+  return base::Base64Encode(data);
+}
+
+void OnEncodePng(AiDataKeyedService::AiDataCallback continue_callback,
+                 std::string base64_result) {
+  auto ai_data = std::make_optional<AiDataKeyedService::BrowserData>();
+  if (base64_result.empty()) {
+    return std::move(continue_callback).Run(std::move(ai_data));
+  }
+
+  ai_data->mutable_page_context()->set_tab_screenshot(base64_result);
+  std::move(continue_callback).Run(std::move(ai_data));
+}
+
+void OnGetTabScreenshotForModelPrototyping(
+    AiDataKeyedService::AiDataCallback continue_callback,
+    const SkBitmap& bitmap) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&EncodePngOnBackgroundThread, base::OwnedRef(bitmap)),
+      base::BindOnce(&OnEncodePng, std::move(continue_callback)));
+}
+
+void GetTabScreenshotForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  content::RenderWidgetHostView* const view =
+      web_contents ? web_contents->GetRenderWidgetHostView() : nullptr;
+  if (!view) {
+    return std::move(continue_callback).Run(std::nullopt);
+  }
+  SkBitmap empty;
+  view->CopyFromSurface(
+      gfx::Rect(),  // Copy entire surface area.
+      gfx::Size(),  // Result contains device-level detail.
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&OnGetTabScreenshotForModelPrototyping,
+                         std::move(continue_callback)),
+          base::OwnedRef(empty)));
+}
+
 // Fills synchronous information and kicks off concurrent tasks to fill an
 // AiData.
 void GetModelPrototypingAiData(int dom_node_id,
@@ -223,6 +277,8 @@ void GetModelPrototypingAiData(int dom_node_id,
                                            concurrent.CreateCallback());
   GetInnerTextForModelPrototyping(dom_node_id, web_contents,
                                   concurrent.CreateCallback());
+  GetTabScreenshotForModelPrototyping(web_contents,
+                                      concurrent.CreateCallback());
 #if !BUILDFLAG(IS_ANDROID)
   GetTabDataForModelPrototyping(web_contents, concurrent);
 #endif
