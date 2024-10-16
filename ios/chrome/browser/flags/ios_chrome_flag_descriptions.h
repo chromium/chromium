@@ -338,6 +338,11 @@ extern const char kEditPasswordsInSettingsDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
+// Title and description for the flag to enable using
+// `ASWebAuthenticationSession` when adding Google accounts to device.
+extern const char kEnableASWebAuthenticationSessionName[];
+extern const char kEnableASWebAuthenticationSessionDescription[];
+
 // Title and description for the flag to enable the discover feed discofeed
 // endpoint.
 extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];

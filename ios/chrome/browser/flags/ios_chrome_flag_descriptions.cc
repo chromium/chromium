@@ -380,6 +380,11 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableASWebAuthenticationSessionName[] =
+    "Enable ASWebAuthenticationSession";
+const char kEnableASWebAuthenticationSessionDescription[] =
+    "Enables using ASWebAuthenticationSession to add Google accounts to device";
+
 const char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 const char kEnableCompromisedPasswordsMutingDescription[] =

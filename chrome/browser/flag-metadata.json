@@ -2569,6 +2569,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "enable-asweb-authentication-session",
+    "owners": [ "jlebel@chromium.org", "msarda@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-async-real-time-check",
     "owners": [ "joemerramos@chromium.org", "ajuma@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 150

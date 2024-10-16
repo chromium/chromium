@@ -125,6 +125,11 @@ BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
 // Features to enable identities in auth error (stale token).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
+
+// Features to enable using the ASWebAuthenticationSession to add accounts to
+// device.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableASWebAuthenticationSession);
 #endif
 
 // Pre-connectes the network socket for the Account Capabilities fetch, after

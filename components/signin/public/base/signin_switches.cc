@@ -148,6 +148,10 @@ BASE_FEATURE(kRemoveSignedInAccountsDialog,
 BASE_FEATURE(kEnableIdentityInAuthError,
              "EnableIdentityInAuthError",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableASWebAuthenticationSession,
+             "EnableASWebAuthenticationSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
