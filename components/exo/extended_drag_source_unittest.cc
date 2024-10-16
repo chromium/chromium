@@ -282,9 +282,6 @@ class WindowObserverHookChecker : public aura::WindowObserver {
     dragged_window_ = surface_window_->GetToplevelWindow();
     dragged_window_->AddObserver(this);
     surface_window_->RemoveObserver(this);
-
-    dragged_window_->SetProperty(chromeos::kAppTypeKey,
-                                 chromeos::AppType::LACROS);
   }
 
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {
