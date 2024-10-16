@@ -21,7 +21,7 @@ BASE_FEATURE(kWebRtcEncodedTransformDirectCallback,
 // doing it via SDP munging is possible, but not recommended.
 BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
              "WebRtcEncryptedRtpHeaderExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features enables the restriction that frames sent to an
 // RTCRtpScriptTransformer's writable must come from the transformer's readable
