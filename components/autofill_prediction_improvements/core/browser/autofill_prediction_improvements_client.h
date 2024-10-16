@@ -24,6 +24,12 @@ class AutofillPredictionImprovementsFillingEngine;
 class AutofillPredictionImprovementsManager;
 
 // An interface for embedder actions, e.g. Chrome on Desktop.
+//
+// A client should be created only if
+// `IsAutofillPredictionImprovementsSupported()`. However,
+// `IsAutofillPredictionImprovementsSupported()` is not necessarily a constant
+// over the lifetime of the client. For example, the user may disable Autofill
+// in the settings while the client is alive.
 class AutofillPredictionImprovementsClient {
  public:
   // The callback to extract the accessibility tree snapshot.

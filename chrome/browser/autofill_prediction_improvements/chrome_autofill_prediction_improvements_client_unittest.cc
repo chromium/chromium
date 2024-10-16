@@ -19,6 +19,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -185,6 +186,27 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, TryToOpenFeedbackPage) {
   client().TryToOpenFeedbackPage("feedback id");
   histogram_tester_.ExpectUniqueSample("Feedback.RequestSource",
                                        feedback::kFeedbackSourceAI, 0);
+}
+
+// Tests that no ChromeAutofillPredictionImprovementsClient is created if
+// IsAutofillPredictionImprovementsSupported() is false.
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       MaybeCreateForWebContents) {
+  ASSERT_TRUE(
+      autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsSupported(profile()->GetPrefs()));
+  EXPECT_TRUE(
+      ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
+          web_contents(), profile()));
+
+  profile()->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                    false);
+  ASSERT_FALSE(
+      autofill_prediction_improvements::
+          IsAutofillPredictionImprovementsSupported(profile()->GetPrefs()));
+  EXPECT_FALSE(
+      ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
+          web_contents(), profile()));
 }
 
 }  // namespace

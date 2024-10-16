@@ -48,6 +48,8 @@ inline constexpr base::FeatureParam<bool> kExtractAXTreeForPredictions{
 
 // Indicates whether Autofill Prediction Improvements are available (but not
 // necessary enabled). This considers the AutofillPredictionSettings policy.
+// If this function returns false, no AutofillPredictionImprovementsClient
+// should be instantiated.
 bool IsAutofillPredictionImprovementsSupported(const PrefService* prefs);
 
 }  // namespace autofill_prediction_improvements

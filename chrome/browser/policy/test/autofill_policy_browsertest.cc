@@ -47,14 +47,25 @@ using ::testing::IsEmpty;
 
 const char kAutofillTestPageURL[] = "/autofill/autofill_address_enabled.html";
 
-class AutofillPolicyTest : public PolicyTest {
+class AutofillPolicyTest : public PolicyTest,
+                           public testing::WithParamInterface<bool> {
  public:
+  bool disabled_by_policy() const { return !GetParam(); }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     autofill::WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+    ASSERT_TRUE(ImportAddress());
 
+    PolicyMap policies;
+    SetPolicy(&policies, key::kAutofillAddressEnabled, base::Value(GetParam()));
+    UpdateProviderPolicy(policies);
+
+    // The base test fixture creates a tab before we set the policy. We create a
+    // new tab so a new ChromeAutofillClient is created.
+    AddBlankTabAndShow(browser());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -174,47 +185,39 @@ class AutofillPolicyTest : public PolicyTest {
   std::unordered_map<std::string, std::u16string> expected_suggestions_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillEnabledByPolicy) {
-  ASSERT_TRUE(ImportAddress());
-  PolicyMap policies;
-  SetPolicy(&policies, key::kAutofillAddressEnabled, base::Value(true));
-  UpdateProviderPolicy(policies);
-  ASSERT_TRUE(NavigateToTestPage());
-  EXPECT_TRUE(autofill_manager()->WaitForFormsSeen());
-  for (const auto& [element, expectation] : GetExpectedSuggestions()) {
-    SCOPED_TRACE(testing::Message() << "element = " << element
-                                    << ", expectation = " << expectation);
-    content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
-    EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
-    // Showing the Autofill Popup is an asynchronous task.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return !autofill_client()->suggestions().empty();
-    })) << "Showing the Autofill Popup timed out.";
-    // There may be more suggestions, but the first one in the vector
-    // should be the expected and shown in the popup.
-    EXPECT_THAT(autofill_client()->suggestions(),
-                Contains(Field(
-                    &autofill::Suggestion::main_text,
-                    Field(&autofill::Suggestion::Text::value, expectation))));
-    autofill_client()->ResetSuggestions();
-  }
-}
+INSTANTIATE_TEST_SUITE_P(, AutofillPolicyTest, testing::Bool());
 
-IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillDisabledByPolicy) {
-  ASSERT_TRUE(ImportAddress());
-  PolicyMap policies;
-  SetPolicy(&policies, key::kAutofillAddressEnabled, base::Value(false));
-  UpdateProviderPolicy(policies);
+IN_PROC_BROWSER_TEST_P(AutofillPolicyTest, AutofillDisabledByPolicy) {
   ASSERT_TRUE(NavigateToTestPage());
   EXPECT_TRUE(autofill_manager()->WaitForFormsSeen());
   for (const auto& [element, expectation] : GetExpectedSuggestions()) {
     SCOPED_TRACE(testing::Message() << "element = " << element
                                     << ", expectation = " << expectation);
     content::SimulateMouseClickOrTapElementWithId(GetWebContents(), element);
-    EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
+
     // Showing the Autofill Popup is an asynchronous task.
-    base::RunLoop().RunUntilIdle();
-    EXPECT_THAT(autofill_client()->suggestions(), IsEmpty());
+    EXPECT_TRUE(autofill_manager()->WaitForAskForValuesToFill());
+    if (disabled_by_policy()) {
+      // Autofill currently does not have the event infrastructure for asserting
+      // that no popup was shown. RunUntilIdle() is not sufficient, so this test
+      // is misleading.
+      // TODO: crbug.com/373703937 - Fix this.
+      base::RunLoop().RunUntilIdle();
+    } else {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return !autofill_client()->suggestions().empty();
+      })) << "Showing the Autofill Popup timed out.";
+    }
+
+    EXPECT_EQ(autofill_client()->suggestions().empty(), disabled_by_policy());
+    if (!disabled_by_policy()) {
+      // There may be more suggestions, but the first one in the vector
+      // should be the expected and shown in the popup.
+      EXPECT_THAT(autofill_client()->suggestions(),
+                  Contains(Field(
+                      &autofill::Suggestion::main_text,
+                      Field(&autofill::Suggestion::Text::value, expectation))));
+    }
     autofill_client()->ResetSuggestions();
   }
 }

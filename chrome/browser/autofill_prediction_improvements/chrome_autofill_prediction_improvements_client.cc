@@ -43,7 +43,10 @@ ChromeAutofillPredictionImprovementsClient::
           this,
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           autofill::StrikeDatabaseFactory::GetForProfile(profile),
-      } {}
+      } {
+  DCHECK(autofill_prediction_improvements::
+             IsAutofillPredictionImprovementsSupported(&*prefs_));
+}
 
 ChromeAutofillPredictionImprovementsClient::
     ~ChromeAutofillPredictionImprovementsClient() = default;

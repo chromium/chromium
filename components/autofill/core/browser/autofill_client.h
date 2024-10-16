@@ -257,10 +257,9 @@ class AutofillClient {
   virtual AutofillComposeDelegate* GetComposeDelegate();
 
   // Returns the `AutofillPredictionImprovementsDelegate` instance for
-  // the tab of this client. This method can return nullptr if the user does not
-  // have the feature available, either because of not being part of the
-  // experiment or because of the current platform (prediction improvements are
-  // only available in Desktop).
+  // the tab of this client.
+  // Returns `nullptr` if, at the time of the AutofillClient's construction, the
+  // Autofill Prediction Improvements feature is unsupported.
   virtual AutofillPredictionImprovementsDelegate*
   GetAutofillPredictionImprovementsDelegate();
 

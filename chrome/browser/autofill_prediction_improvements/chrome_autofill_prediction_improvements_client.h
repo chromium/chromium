@@ -28,7 +28,8 @@ class ChromeAutofillPredictionImprovementsClient
   ~ChromeAutofillPredictionImprovementsClient() override;
 
   // Creates a `ChromeAutofillPredictionImprovementsClient` for `web_contents`
-  // if allowed.
+  // if it is supported, i.e., `autofill_prediction_improvements::
+  // IsAutofillPredictionImprovementsSupported()` is true.
   [[nodiscard]] static std::unique_ptr<
       ChromeAutofillPredictionImprovementsClient>
   MaybeCreateForWebContents(content::WebContents* web_contents,
@@ -49,12 +50,11 @@ class ChromeAutofillPredictionImprovementsClient
   void OpenPredictionImprovementsSettings() override;
   bool IsUserEligible() override;
 
- protected:
+ private:
   explicit ChromeAutofillPredictionImprovementsClient(
       content::WebContents* web_contents,
       Profile* profile);
 
- private:
   const raw_ref<content::WebContents> web_contents_;
   const raw_ref<const PrefService> prefs_;
 
