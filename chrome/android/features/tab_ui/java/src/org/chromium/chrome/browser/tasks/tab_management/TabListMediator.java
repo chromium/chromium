@@ -536,29 +536,29 @@ class TabListMediator implements TabListNotificationHandler {
                 public void onFaviconUpdated(Tab updatedTab, Bitmap icon, GURL iconUrl) {
                     assert mShowingTabs;
 
-                    if (!mActionsOnAllRelatedTabs) {
-                        updateFaviconForTab(updatedTab, icon, iconUrl);
-                        return;
-                    }
-
+                    PropertyModel tabInfo = null;
                     Tab tab = null;
-                    if (isTabInTabGroup(updatedTab)) {
+                    if (mActionsOnAllRelatedTabs && isTabInTabGroup(updatedTab)) {
                         @Nullable
                         Pair<Integer, Tab> indexAndTab =
                                 getIndexAndTabForRootId(updatedTab.getRootId());
                         if (indexAndTab == null) return;
 
+                        tabInfo = mModel.get(indexAndTab.first).model;
                         tab = indexAndTab.second;
 
                         if (mThumbnailProvider != null) {
-                            PropertyModel model = mModel.get(indexAndTab.first).model;
-                            updateThumbnailFetcher(model, tab.getId());
+                            updateThumbnailFetcher(tabInfo, tab.getId());
                         }
                     } else {
+                        int index = mModel.indexFromId(updatedTab.getId());
+                        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+                        tabInfo = mModel.get(index).model;
                         tab = updatedTab;
                     }
 
-                    updateFaviconForTab(tab, icon, iconUrl);
+                    updateFaviconForTab(tabInfo, tab, icon, iconUrl);
                 }
 
                 @Override
@@ -624,7 +624,7 @@ class TabListMediator implements TabListNotificationHandler {
                     Tab tab = indexAndTab.second;
                     PropertyModel model = mModel.get(indexAndTab.first).model;
 
-                    updateFaviconForTab(tab, null, null);
+                    updateFaviconForTab(model, tab, null, null);
                     updateTabGroupColorViewProvider(model, tab, newColor);
                     updateDescriptionString(tab, model);
                     updateActionButtonDescriptionString(tab, model);
@@ -677,20 +677,23 @@ class TabListMediator implements TabListNotificationHandler {
                     TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
                     Tab previousGroupTab = filter.getTabAt(prevFilterIndex);
                     if (mActionsOnAllRelatedTabs) {
-                        final int currentSelectedTabId =
-                                TabModelUtils.getCurrentTabId(filter.getTabModel());
                         // Only add a tab to the model if it represents a new card (new group or new
-                        // singular tab). However, always update the previous group to clean up old
-                        // state. The addition of the new tab to an existing group is handled in
+                        // singular tab). Do this first so that the indices for the filter and the
+                        // model match when doing the update afterwards. When moving a tab between
+                        // groups, the new tab being added to an existing group is handled in
                         // didMergeTabToGroup().
                         if (filter.getRelatedTabCountForRootId(movedTab.getRootId()) == 1
                                 && movedTab != previousGroupTab) {
+                            int currentSelectedTabId =
+                                    TabModelUtils.getCurrentTabId(filter.getTabModel());
                             int filterIndex = filter.indexOf(movedTab);
                             addTabInfoToModel(
                                     movedTab,
                                     mModel.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
                         }
+                        // Always update the previous group to clean up old state e.g. thumbnail,
+                        // title, etc.
                         updateTab(
                                 mModel.indexOfNthTabCard(prevFilterIndex),
                                 previousGroupTab,
@@ -844,7 +847,7 @@ class TabListMediator implements TabListNotificationHandler {
                             @TabGroupColorId
                             int colorId =
                                     filter.getTabGroupColorWithFallback(destinationTab.getRootId());
-                            updateFaviconForTab(groupTab, null, null);
+                            updateFaviconForTab(model, groupTab, null, null);
                             updateTabGroupColorViewProvider(model, destinationTab, colorId);
                         }
                     }
@@ -1617,20 +1620,13 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         model.set(TabProperties.TITLE, getLatestTitleForTab(tab, /* useDefault= */ true));
 
-        // A tab is deemed a tab group card representation if it is part of a tab group and
-        // based in the tab switcher.
-        boolean isTabGroup = isTabInTabGroup(tab) && mActionsOnAllRelatedTabs;
-        // Update the group color icon.
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && isTabGroup) {
-            updateFaviconForTab(tab, null, null);
-        }
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
         model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
 
         setupPersistedTabDataFetcherForTab(tab, index);
 
-        updateFaviconForTab(tab, null, null);
+        updateFaviconForTab(model, tab, null, null);
         boolean forceUpdate = isTabSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
@@ -2045,7 +2041,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         setupPersistedTabDataFetcherForTab(tab, index);
 
-        updateFaviconForTab(tab, null, null);
+        updateFaviconForTab(tabInfo, tab, null, null);
 
         int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
@@ -2244,12 +2240,8 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    @VisibleForTesting
-    void updateFaviconForTab(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-        int modelIndex = mModel.indexFromId(tab.getId());
-        if (modelIndex == Tab.INVALID_TAB_ID) return;
-
-        PropertyModel model = mModel.get(modelIndex).model;
+    private void updateFaviconForTab(
+            PropertyModel model, Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
             List<Tab> relatedTabList = getRelatedTabsForId(tab.getId());
             if (mMode != TabListMode.LIST) {
