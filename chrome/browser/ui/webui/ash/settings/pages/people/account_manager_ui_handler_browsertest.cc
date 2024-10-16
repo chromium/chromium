@@ -135,10 +135,7 @@ class AccountManagerUIHandlerTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
-  AccountManagerUIHandlerTest() {
-    feature_list_.InitWithFeatures(
-        {}, {ash::features::kSecondaryAccountAllowedInArcPolicy});
-  }
+  AccountManagerUIHandlerTest() = default;
   AccountManagerUIHandlerTest(const AccountManagerUIHandlerTest&) = delete;
   AccountManagerUIHandlerTest& operator=(const AccountManagerUIHandlerTest&) =
       delete;
@@ -255,7 +252,6 @@ class AccountManagerUIHandlerTest
   content::TestWebUI web_ui_;
   AccountId primary_account_id_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<AccountAppsAvailability> account_apps_availability_;
 };
 
@@ -270,6 +266,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   base::Value::List args;
   args.Append(kHandleFunctionName);
   web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
+
+  // Wait for the async calls to finish.
+  base::RunLoop().RunUntilIdle();
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -317,6 +316,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   base::Value::List args;
   args.Append(kHandleFunctionName);
   web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
+
+  // Wait for the async calls to finish.
+  base::RunLoop().RunUntilIdle();
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -393,12 +395,7 @@ INSTANTIATE_TEST_SUITE_P(AccountManagerUIHandlerTestSuite,
 class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
     : public AccountManagerUIHandlerTest {
  public:
-  AccountManagerUIHandlerTestWithManagedArcAccountRestriction() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(
-        ash::features::kSecondaryAccountAllowedInArcPolicy);
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  AccountManagerUIHandlerTestWithManagedArcAccountRestriction() = default;
 
   void SetUpOnMainThread() override {
     SetUpEnvironment();
@@ -461,7 +458,6 @@ class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<AccountAppsAvailability> account_apps_availability_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
 };

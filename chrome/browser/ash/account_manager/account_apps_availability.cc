@@ -219,8 +219,7 @@ bool AccountAppsAvailability::IsArcAccountRestrictionsEnabled() {
 }
 
 bool AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled() {
-  return base::FeatureList::IsEnabled(
-      ash::features::kSecondaryAccountAllowedInArcPolicy);
+  return true;
 }
 
 // static

@@ -330,7 +330,7 @@ class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
  public:
   SigninHelperTestSecondaryGoogleAccountUsage() {
     feature_list_.InitWithFeatures(
-        {features::kSecondaryAccountAllowedInArcPolicy},
+        /*enabled_features=*/{},
         /*disabled_features=*/{});
   }
 
