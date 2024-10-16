@@ -28,10 +28,12 @@ BASE_DECLARE_FEATURE(kMostVisitedTilesNewScoring);
 
 // |kMostVisitedTilesNewScoring|: Feature param names.
 extern const char kMvtScoringParamRecencyFactor[];
+extern const char kMvtScoringParamDecayPerDay[];
 extern const char kMvtScoringParamDailyVisitCountCap[];
 
 // |kMvtScoringParamRecencyFactor|: Feature param values.
 extern const char kMvtScoringParamRecencyFactor_Default[];
+extern const char kMvtScoringParamRecencyFactor_Decay[];
 extern const char kMvtScoringParamRecencyFactor_DecayStaircase[];
 
 }  // namespace history
