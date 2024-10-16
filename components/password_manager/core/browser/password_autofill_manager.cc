@@ -100,9 +100,9 @@ bool HasLoadingSuggestion(base::span<const Suggestion> suggestions,
   });
 }
 
-std::string GetBackendId(const Suggestion& suggestion) {
-  return absl::holds_alternative<Suggestion::BackendId>(suggestion.payload)
-             ? suggestion.GetBackendId<Suggestion::Guid>().value()
+std::string GetGuidFromSuggestion(const Suggestion& suggestion) {
+  return absl::holds_alternative<Suggestion::Guid>(suggestion.payload)
+             ? suggestion.GetPayload<Suggestion::Guid>().value()
              : std::string();
 }
 
@@ -287,7 +287,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-          ->SelectPasskey(GetBackendId(suggestion),
+          ->SelectPasskey(GetGuidFromSuggestion(suggestion),
                           base::BindOnce(&PasswordAutofillManager::HidePopup,
                                          weak_ptr_factory_.GetWeakPtr()));
       // Disable all entries and set the `selected_suggestion` in loading state.

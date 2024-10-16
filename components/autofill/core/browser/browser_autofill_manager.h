@@ -205,9 +205,9 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& trigger_field,
       const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
 
-  // Remove the credit card or Autofill profile that matches |backend_id|
+  // Remove the credit card or Autofill profile that matches `guid`
   // from the database. Returns true if deletion is allowed.
-  bool RemoveAutofillProfileOrCreditCard(Suggestion::BackendId backend_id);
+  bool RemoveAutofillProfileOrCreditCard(const Suggestion::Guid& guid);
 
   // Remove the specified suggestion from single field filling.
   // `type` is the SuggestionType of the suggestion.

@@ -125,9 +125,9 @@ struct Suggestion {
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
-  using BackendId = absl::variant<Guid, InstrumentId>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
-  using Payload = absl::variant<BackendId,
+  using Payload = absl::variant<Guid,
+                                InstrumentId,
                                 GURL,
                                 ValueToFill,
                                 PasswordSuggestionDetails,
@@ -288,12 +288,6 @@ struct Suggestion {
     return absl::holds_alternative<T>(payload) ? absl::get<T>(payload) : T{};
   }
 
-  template <typename T>
-  T GetBackendId() const {
-    CHECK(absl::holds_alternative<BackendId>(payload));
-    return absl::get<T>(absl::get<BackendId>(payload));
-  }
-
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (type) {
@@ -302,11 +296,10 @@ struct Suggestion {
         return absl::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
-        // fill in the suggestion's payload. Regular per-domain contain empty
-        // `BackendId`.
-        // TODO(crbug.com/333992198): Use `PasswordSuggestionDetails` for all
-        // suggestions with `SuggestionType::kPasswordEntry`.
-        return absl::holds_alternative<BackendId>(payload) ||
+        // fill in the suggestion's payload.
+        // TODO(crbug.com/333992198): Use `PasswordSuggestionDetails` only for
+        // all suggestions with `SuggestionType::kPasswordEntry`.
+        return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kFillPassword:
       case SuggestionType::kViewPasswordDetails:
@@ -315,7 +308,8 @@ struct Suggestion {
         return absl::holds_alternative<GURL>(payload);
       case SuggestionType::kIbanEntry:
         return absl::holds_alternative<ValueToFill>(payload) ||
-               absl::holds_alternative<BackendId>(payload);
+               absl::holds_alternative<Guid>(payload) ||
+               absl::holds_alternative<InstrumentId>(payload);
       case SuggestionType::kFillPredictionImprovements:
         return absl::holds_alternative<ValueToFill>(payload) ||
                absl::holds_alternative<PredictionImprovementsPayload>(payload);
@@ -324,10 +318,10 @@ struct Suggestion {
         // TODO(crbug.com/367434234): Use `PaymentsPayload` for all credit card
         // suggestions. Only Touch-To-Fill credit card suggestions currently
         // use this.
-        return absl::holds_alternative<BackendId>(payload) ||
+        return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PaymentsPayload>(payload);
       default:
-        return absl::holds_alternative<BackendId>(payload);
+        return absl::holds_alternative<Guid>(payload);
     }
   }
 #endif

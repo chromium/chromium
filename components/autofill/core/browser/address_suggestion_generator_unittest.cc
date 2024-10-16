@@ -1899,7 +1899,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].children[1].type, SuggestionType::kSeparator);
   const Suggestion& test_address_child = suggestions[0].children.back();
   EXPECT_EQ(test_address_child.main_text.value, u"United States");
-  EXPECT_EQ(test_address_child.GetBackendId<Suggestion::Guid>().value(),
+  EXPECT_EQ(test_address_child.GetPayload<Suggestion::Guid>().value(),
             profile.guid());
   EXPECT_EQ(test_address_child.type, SuggestionType::kDevtoolsTestAddressEntry);
 }

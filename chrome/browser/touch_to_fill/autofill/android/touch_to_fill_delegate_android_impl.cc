@@ -335,9 +335,9 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
       ->GetIbanAccessManager()
       ->FetchValue(
           absl::holds_alternative<Iban::Guid>(backend_id)
-              ? Suggestion::BackendId(
+              ? Suggestion::Payload(
                     Suggestion::Guid(absl::get<Iban::Guid>(backend_id).value()))
-              : Suggestion::BackendId(Suggestion::InstrumentId(
+              : Suggestion::Payload(Suggestion::InstrumentId(
                     absl::get<Iban::InstrumentId>(backend_id).value())),
           base::BindOnce(
               [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,

@@ -108,13 +108,11 @@ TEST_F(IbanAccessManagerTest, FetchValue_ExistingLocalIban) {
   local_iban.set_value(kFullIbanValue);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Verify that `FetchValue` does not trigger callback if local IBAN does not
@@ -122,17 +120,15 @@ TEST_F(IbanAccessManagerTest, FetchValue_ExistingLocalIban) {
 TEST_F(IbanAccessManagerTest, FetchValue_NonExistingLocalIban) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   Iban local_iban;
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Verify that an UnmaskIban call won't be triggered if no server IBAN with the
-// same `instrument_id` as BackendId is found.
+// same `instrument_id` as InstrumentId is found.
 TEST_F(IbanAccessManagerTest, NoServerIbanWithBackendId_DoesNotUnmask) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
@@ -146,8 +142,7 @@ TEST_F(IbanAccessManagerTest, NoServerIbanWithBackendId_DoesNotUnmask) {
   EXPECT_CALL(*payments_network_interface(), UnmaskIban).Times(0);
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Verify that a successful `UnmaskIban` call results in the `FetchValue`
@@ -168,8 +163,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Success) {
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Verify that a failed `UnmaskIban` call results in the method `OnIbanFetched`
@@ -185,8 +179,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Failure) {
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   EXPECT_CALL(*payments_network_interface(), UnmaskIban).Times(0);
 }
@@ -198,12 +191,10 @@ TEST_F(IbanAccessManagerTest, FetchValue_LocalIbanNoProgressDialog) {
   local_iban.set_value(kFullIbanValue);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   EXPECT_FALSE(autofill_client_.GetPaymentsAutofillClient()
                    ->autofill_progress_dialog_shown());
@@ -220,8 +211,7 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Success) {
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
@@ -241,8 +231,7 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
@@ -259,13 +248,11 @@ TEST_F(IbanAccessManagerTest, LocalIban_LogUsageMetric) {
   local_iban.set_use_count(kDefaultUseCount);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   task_environment_.FastForwardBy(base::Days(kDaysSinceLastUsed));
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.DaysSinceLastUse.StoredIban.Local", kDaysSinceLastUsed, 1);
@@ -290,8 +277,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_LogUsageMetric) {
 
   task_environment_.FastForwardBy(base::Days(kDaysSinceLastUsed));
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.DaysSinceLastUse.StoredIban.Server", kDaysSinceLastUsed, 1);
@@ -315,8 +301,7 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Success_Metric) {
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Iban.UnmaskIbanDuration.Success", kDefaultUnmaskIbanLatencyMs,
@@ -337,8 +322,7 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Failure_Metric) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Iban.UnmaskIbanDuration.Failure", kDefaultUnmaskIbanLatencyMs,
@@ -358,8 +342,7 @@ TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Success) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", true,
                                       1);
@@ -376,8 +359,7 @@ TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Failure) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
 
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", false,
                                       1);
@@ -423,13 +405,11 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Success) {
   local_iban.set_value(kFullIbanValue);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Tests that retrieving local IBANs does not return the full IBAN value if
@@ -442,13 +422,11 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Fail) {
   local_iban.set_value(kFullIbanValue);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue))).Times(0);
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Tests that retrieving server IBANs works correctly in the context of the
@@ -465,8 +443,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Success) {
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Tests that retrieving server IBANs does not return the full IBAN value if
@@ -483,8 +460,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Fail) {
 
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue))).Times(0);
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), callback.Get());
+  iban_access_manager_->FetchValue(suggestion.payload, callback.Get());
 }
 
 // Tests that `NonInteractivePaymentMethodType` is set to `kLocalIban` on
@@ -499,11 +475,9 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
   Suggestion suggestion(SuggestionType::kIbanEntry);
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   EXPECT_EQ(
       test_api(*autofill_client_.GetFormDataImporter())
@@ -525,8 +499,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
   Suggestion suggestion(SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::InstrumentId(server_iban.instrument_id());
 
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   EXPECT_EQ(
       test_api(*autofill_client_.GetFormDataImporter())
@@ -546,8 +519,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Succcess) {
   local_iban.set_value(kFullIbanValue);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
       .WillByDefault([this](NonInteractivePaymentMethodType
@@ -560,8 +532,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Succcess) {
                 on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
                 NonInteractivePaymentMethodType::kLocalIban, /*success=*/true);
       });
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalIban.Biometric",
@@ -580,8 +551,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Fail) {
   local_iban.set_value(kFullIbanValue);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
-  suggestion.payload =
-      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+  suggestion.payload = Suggestion::Guid(local_iban.guid());
 
   ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
       .WillByDefault([this](NonInteractivePaymentMethodType
@@ -594,8 +564,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Fail) {
                 on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
                 NonInteractivePaymentMethodType::kLocalIban, /*success=*/false);
       });
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalIban.Biometric",
@@ -626,8 +595,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Succcess) {
                 on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
                 NonInteractivePaymentMethodType::kServerIban, /*success=*/true);
       });
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerIban.Biometric",
@@ -660,8 +628,7 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Fail) {
                 NonInteractivePaymentMethodType::kServerIban,
                 /*success=*/false);
       });
-  iban_access_manager_->FetchValue(
-      suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
+  iban_access_manager_->FetchValue(suggestion.payload, base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerIban.Biometric",

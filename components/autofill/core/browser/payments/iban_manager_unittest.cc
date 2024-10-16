@@ -121,11 +121,9 @@ class IbanManagerTest : public testing::Test {
 
     iban_suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kServerIban) {
-      iban_suggestion.payload =
-          Suggestion::BackendId(Suggestion::InstrumentId(iban.instrument_id()));
+      iban_suggestion.payload = Suggestion::InstrumentId(iban.instrument_id());
     } else {
-      iban_suggestion.payload =
-          Suggestion::BackendId(Suggestion::Guid(iban.guid()));
+      iban_suggestion.payload = Suggestion::Guid(iban.guid());
     }
     return iban_suggestion;
   }

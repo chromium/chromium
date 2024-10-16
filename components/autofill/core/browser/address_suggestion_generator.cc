@@ -238,48 +238,48 @@ std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
   return profile.GetInfo(trigger_field_type, app_locale);
 }
 
-Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetEditAddressProfileSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kEditAddressProfile;
   suggestion.icon = Suggestion::Icon::kEdit;
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;
 }
 
 // Creates the suggestion that will open the delete address profile dialog.
-Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetDeleteAddressProfileSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kDeleteAddressProfile;
   suggestion.icon = Suggestion::Icon::kDelete;
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;
 }
 
 // Creates the suggestion that will fill all address related fields.
-Suggestion GetFillFullAddressSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetFillFullAddressSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
   suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.type = SuggestionType::kFillFullAddress;
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED);
   return suggestion;
 }
 
 // Creates the suggestion that will fill all name related fields.
-Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetFillFullNameSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kFillFullName;
   suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
 
@@ -288,7 +288,7 @@ Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
 
 // Creates the suggestion that will fill the whole form for the profile.
 Suggestion GetFillEverythingFromAddressProfileSuggestion(
-    Suggestion::BackendId backend_id) {
+    Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kFillEverythingFromAddressProfile;
@@ -302,7 +302,7 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
     // suggestions.
     suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   }
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;

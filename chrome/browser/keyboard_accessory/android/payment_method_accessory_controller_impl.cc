@@ -530,14 +530,13 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
     return false;
   }
 
-  Suggestion::BackendId backend_id = Suggestion::BackendId(
-      Suggestion::InstrumentId((*iban_iter).instrument_id()));
+  Suggestion::InstrumentId instrument_id(iban_iter->instrument_id());
   GetAutofillManager()
       ->client()
       .GetPaymentsAutofillClient()
       ->GetIbanAccessManager()
       ->FetchValue(
-          backend_id,
+          instrument_id,
           base::BindOnce(&PaymentMethodAccessoryControllerImpl::ApplyToField,
                          weak_ptr_factory_.GetWeakPtr()));
   return true;

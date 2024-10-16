@@ -188,8 +188,7 @@ MATCHER_P(ContainsCreditCardFooterSuggestions, with_gpay_logo, "") {
 // Checks that `arg` is the expected suggestion with `guid`. `arg` has to be of
 // type Suggestion.
 MATCHER_P(SuggestionWithGuidPayload, guid, "") {
-  return arg.template GetPayload<Suggestion::BackendId>() ==
-         Suggestion::BackendId(guid);
+  return arg.template GetPayload<Suggestion::Guid>() == guid;
 }
 
 // TODO(crbug.com/40176273): Move GetSuggestionsForCreditCard tests and
@@ -995,16 +994,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   ASSERT_EQ(suggestions.size(), 5U);
   // The suggestion with card linked offer available should be ranked to the
   // top.
-  EXPECT_EQ(suggestions[0].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000002")));
+  EXPECT_EQ(suggestions[0].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000002"));
   // The other suggestions should have their relative ranking unchanged.
-  EXPECT_EQ(suggestions[1].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000003")));
-  EXPECT_EQ(suggestions[2].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(suggestions[1].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000003"));
+  EXPECT_EQ(suggestions[2].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
@@ -1449,26 +1445,23 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetServerIbanSuggestions) {
   // payment methods settings page.
   ASSERT_EQ(iban_suggestions.size(), 5u);
 
-  EXPECT_THAT(
-      iban_suggestions[0],
-      EqualsIbanSuggestion(server_iban1.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::BackendId(Suggestion::InstrumentId(
-                               server_iban1.instrument_id())),
-                           server_iban1.nickname()));
+  EXPECT_THAT(iban_suggestions[0],
+              EqualsIbanSuggestion(
+                  server_iban1.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban1.instrument_id()),
+                  server_iban1.nickname()));
 
-  EXPECT_THAT(
-      iban_suggestions[1],
-      EqualsIbanSuggestion(server_iban2.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::BackendId(Suggestion::InstrumentId(
-                               server_iban2.instrument_id())),
-                           server_iban2.nickname()));
+  EXPECT_THAT(iban_suggestions[1],
+              EqualsIbanSuggestion(
+                  server_iban2.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban2.instrument_id()),
+                  server_iban2.nickname()));
 
-  EXPECT_THAT(
-      iban_suggestions[2],
-      EqualsIbanSuggestion(server_iban3.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::BackendId(Suggestion::InstrumentId(
-                               server_iban3.instrument_id())),
-                           server_iban3.nickname()));
+  EXPECT_THAT(iban_suggestions[2],
+              EqualsIbanSuggestion(
+                  server_iban3.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban3.instrument_id()),
+                  server_iban3.nickname()));
 
   EXPECT_EQ(iban_suggestions[3].type, SuggestionType::kSeparator);
 
@@ -1492,19 +1485,17 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
   // payment methods settings page.
   ASSERT_EQ(iban_suggestions.size(), 5u);
 
-  EXPECT_THAT(
-      iban_suggestions[0],
-      EqualsIbanSuggestion(server_iban1.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::BackendId(Suggestion::InstrumentId(
-                               server_iban1.instrument_id())),
-                           server_iban1.nickname()));
+  EXPECT_THAT(iban_suggestions[0],
+              EqualsIbanSuggestion(
+                  server_iban1.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban1.instrument_id()),
+                  server_iban1.nickname()));
 
-  EXPECT_THAT(
-      iban_suggestions[1],
-      EqualsIbanSuggestion(server_iban2.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::BackendId(Suggestion::InstrumentId(
-                               server_iban2.instrument_id())),
-                           server_iban2.nickname()));
+  EXPECT_THAT(iban_suggestions[1],
+              EqualsIbanSuggestion(
+                  server_iban2.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban2.instrument_id()),
+                  server_iban2.nickname()));
 
   EXPECT_THAT(
       iban_suggestions[2],
@@ -1550,22 +1541,21 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_TRUE(promo_code_suggestions.size() == 4);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
-  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(Suggestion::Guid("1")));
+  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("1"));
   EXPECT_THAT(promo_code_suggestions[0],
               EqualLabels({{u"test_value_prop_text_1"}}));
-  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(Suggestion::Guid("1")));
+  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("1"));
   EXPECT_EQ(promo_code_suggestions[0].type,
             SuggestionType::kMerchantPromoCodeEntry);
-
   EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
-  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(Suggestion::Guid("2")));
+  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("2"));
   EXPECT_THAT(promo_code_suggestions[1],
               EqualLabels({{u"test_value_prop_text_2"}}));
-  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(Suggestion::Guid("2")));
+  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("2"));
   EXPECT_EQ(promo_code_suggestions[1].type,
             SuggestionType::kMerchantPromoCodeEntry);
 
@@ -2447,9 +2437,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   EXPECT_EQ(virtual_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
                                           fake_image),
             card_art_image_enabled());
@@ -2460,9 +2449,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
       /*card_linked_offer_available=*/false);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
                                           fake_image),
             card_art_image_enabled());
@@ -2479,9 +2467,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
       /*card_linked_offer_available=*/false);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
   EXPECT_TRUE(VerifyCardArtImageExpectation(real_card_suggestion, GURL(),
                                             gfx::Image()));
 }
@@ -2509,9 +2496,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   EXPECT_EQ(virtual_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
                                           fake_image),
             card_art_image_enabled());
@@ -2522,9 +2508,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
       /*card_linked_offer_available=*/false);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000002")));
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000002"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
                                           fake_image),
             card_art_image_enabled());
@@ -2711,9 +2696,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
 
   EXPECT_EQ(virtual_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(virtual_card_suggestion.labels.size(), 1u);
 
   Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
@@ -2722,9 +2706,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
       /*card_linked_offer_available=*/true);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
 
   if (keyboard_accessory_offer_enabled()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -2761,9 +2744,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
 
   EXPECT_EQ(virtual_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
 
   size_t expected_labels_size;
 #if BUILDFLAG(IS_ANDROID)
@@ -2782,9 +2764,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
       /*card_linked_offer_available=*/true);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
-            Suggestion::BackendId(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
+            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
 
   if (keyboard_accessory_offer_enabled()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -2867,13 +2848,13 @@ TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
 
   base::flat_map<Suggestion::Guid,
                  autofill_metrics::SuggestionRankingContext::RelativePosition>
-      expected_ranking_context = {{suggestion1.GetBackendId<Suggestion::Guid>(),
+      expected_ranking_context = {{suggestion1.GetPayload<Suggestion::Guid>(),
                                    autofill_metrics::SuggestionRankingContext::
                                        RelativePosition::kRankedSame},
-                                  {suggestion2.GetBackendId<Suggestion::Guid>(),
+                                  {suggestion2.GetPayload<Suggestion::Guid>(),
                                    autofill_metrics::SuggestionRankingContext::
                                        RelativePosition::kRankedLower},
-                                  {suggestion3.GetBackendId<Suggestion::Guid>(),
+                                  {suggestion3.GetPayload<Suggestion::Guid>(),
                                    autofill_metrics::SuggestionRankingContext::
                                        RelativePosition::kRankedHigher}};
 

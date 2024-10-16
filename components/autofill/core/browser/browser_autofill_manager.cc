@@ -2267,12 +2267,11 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 }
 
 bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
-    Suggestion::BackendId backend_id) {
-  const std::string guid = absl::get<Suggestion::Guid>(backend_id).value();
+    const Suggestion::Guid& guid) {
   PersonalDataManager* pdm = client().GetPersonalDataManager();
 
   if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(guid)) {
+          pdm->payments_data_manager().GetCreditCardByGUID(guid.value())) {
     // Server cards cannot be deleted from within Chrome.
     bool allowed_to_delete = CreditCard::IsLocalCard(credit_card);
     if (allowed_to_delete) {
@@ -2282,7 +2281,7 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
   }
 
   if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(guid)) {
+          pdm->address_data_manager().GetProfileByGUID(guid.value())) {
     pdm->RemoveByGUID(profile->guid());
     return true;
   }

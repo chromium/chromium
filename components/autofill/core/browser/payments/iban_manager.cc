@@ -96,8 +96,8 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected(
     const Suggestion& suggestion) {
   autofill_metrics::LogIbanSelectedCountry(
       Iban::GetCountryCode(suggestion.main_text.value));
-  bool is_local_iban = absl::holds_alternative<Suggestion::Guid>(
-      suggestion.GetPayload<Suggestion::BackendId>());
+  bool is_local_iban =
+      absl::holds_alternative<Suggestion::Guid>(suggestion.payload);
   // We log every time the IBAN suggestion is selected.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
       is_local_iban ? IbanSuggestionsEvent::kLocalIbanSuggestionSelected

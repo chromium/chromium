@@ -63,8 +63,8 @@ enum class SuggestionFeatureForIPH {
 // If specified, shows in-product help for the suggestion.
 @property(assign, nonatomic) SuggestionFeatureForIPH featureForIPH;
 
-// The `Suggestion::BackendId` associated with this suggestion. Would be GUID
-// for the addresses and credit cards where `identifier` > 0.
+// The id associated with this suggestion. Would be GUID for the addresses and
+// credit cards where `identifier` > 0.
 @property(copy, readonly, nonatomic) NSString* backendIdentifier;
 
 // Metadata tied to the suggestion that gives more context.

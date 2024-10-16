@@ -137,9 +137,7 @@ const Suggestion* FindTestSuggestion(AutofillClient& client,
                                      base::span<const Suggestion> suggestions,
                                      int index) {
   auto is_test_suggestion = [&client](const Suggestion& suggestion) {
-    auto* backend_id = absl::get_if<Suggestion::BackendId>(&suggestion.payload);
-    auto* guid =
-        backend_id ? absl::get_if<Suggestion::Guid>(backend_id) : nullptr;
+    auto* guid = absl::get_if<Suggestion::Guid>(&suggestion.payload);
     base::span<const AutofillProfile> test_addresses =
         client.GetTestAddresses();
 
@@ -580,8 +578,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
   ClearPreviewedForm();
 
-  const Suggestion::BackendId backend_id =
-      suggestion.GetPayload<Suggestion::BackendId>();
+  const Suggestion::Guid backend_id = suggestion.GetPayload<Suggestion::Guid>();
 
   switch (suggestion.type) {
     case SuggestionType::kUndoOrClear:
@@ -974,7 +971,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
       return manager_->RemoveAutofillProfileOrCreditCard(
-          suggestion.GetPayload<Suggestion::BackendId>());
+          suggestion.GetPayload<Suggestion::Guid>());
     case SuggestionType::kAutocompleteEntry:
       manager_->RemoveCurrentSingleFieldSuggestion(
           query_field_.name(), suggestion.main_text.value, suggestion.type);
@@ -1149,7 +1146,7 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
   CHECK(suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
         suggestion.type == SuggestionType::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
-  const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
+  const auto guid = suggestion.GetPayload<Suggestion::Guid>().value();
   if (const AutofillProfile* profile = manager_->client()
                                            .GetPersonalDataManager()
                                            ->address_data_manager()
@@ -1169,7 +1166,7 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
   CHECK(suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
         suggestion.type == SuggestionType::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
-  const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
+  const auto guid = suggestion.GetPayload<Suggestion::Guid>().value();
   if (const AutofillProfile* profile = manager_->client()
                                            .GetPersonalDataManager()
                                            ->address_data_manager()
@@ -1311,7 +1308,7 @@ void AutofillExternalDelegate::OnVirtualCreditCardFetched(
 
 void AutofillExternalDelegate::FillAutofillFormData(
     SuggestionType type,
-    Suggestion::BackendId backend_id,
+    Suggestion::Guid guid,
     std::optional<SuggestionMetadata> metadata,
     bool is_preview,
     const AutofillTriggerDetails& trigger_details) {
@@ -1342,17 +1339,15 @@ void AutofillExternalDelegate::FillAutofillFormData(
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
   const AutofillProfile* profile =
       type == SuggestionType::kDevtoolsTestAddressEntry
-          ? GetTestAddressByGUID(
-                manager_->client().GetTestAddresses(),
-                absl::get<Suggestion::Guid>(backend_id).value())
-          : pdm->address_data_manager().GetProfileByGUID(
-                absl::get<Suggestion::Guid>(backend_id).value());
+          ? GetTestAddressByGUID(manager_->client().GetTestAddresses(),
+                                 guid.value())
+          : pdm->address_data_manager().GetProfileByGUID(guid.value());
   if (profile) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                        query_field_, *profile, trigger_details);
   } else if (const CreditCard* credit_card =
                  pdm->payments_data_manager().GetCreditCardByGUID(
-                     absl::get<Suggestion::Guid>(backend_id).value())) {
+                     guid.value())) {
     is_preview
         ? manager_->FillOrPreviewCreditCardForm(
               mojom::ActionPersistence::kPreview, query_form_, query_field_,
@@ -1453,7 +1448,7 @@ void AutofillExternalDelegate::LogRankingContextAfterSuggestionAccepted(
     const Suggestion& accepted_suggestion) {
   CHECK(accepted_suggestion.type == SuggestionType::kCreditCardEntry);
   const Suggestion::Guid& suggestion_guid =
-      accepted_suggestion.GetBackendId<Suggestion::Guid>();
+      accepted_suggestion.GetPayload<Suggestion::Guid>();
   if (suggestion_ranking_context_ &&
       suggestion_ranking_context_->RankingsAreDifferent() &&
       suggestion_ranking_context_->suggestion_rankings_difference_map.contains(
@@ -1483,8 +1478,8 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           FillingMethod::kFullForm, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          metadata, /*is_preview=*/false,
+          suggestion.type, suggestion.GetPayload<Suggestion::Guid>(), metadata,
+          /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
@@ -1498,8 +1493,8 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           filling_method, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          metadata, /*is_preview=*/false,
+          suggestion.type, suggestion.GetPayload<Suggestion::Guid>(), metadata,
+          /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
@@ -1511,24 +1506,22 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       break;
     case SuggestionType::kEditAddressProfile:
       ShowEditAddressProfileDialog(
-          suggestion.GetBackendId<Suggestion::Guid>().value());
+          suggestion.GetPayload<Suggestion::Guid>().value());
       break;
     case SuggestionType::kDeleteAddressProfile:
       ShowDeleteAddressProfileDialog(
-          suggestion.GetBackendId<Suggestion::Guid>().value());
+          suggestion.GetPayload<Suggestion::Guid>().value());
       break;
     case SuggestionType::kDevtoolsTestAddressEntry: {
       const AutofillProfile* profile = GetTestAddressByGUID(
           manager_->client().GetTestAddresses(),
-          absl::get<Suggestion::Guid>(
-              suggestion.GetPayload<Suggestion::BackendId>())
-              .value());
+          suggestion.GetPayload<Suggestion::Guid>().value());
       CHECK(profile);
       autofill_metrics::OnDevtoolsTestAddressesAccepted(
           profile->GetInfo(ADDRESS_HOME_COUNTRY, "en-US"));
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          metadata, /*is_preview=*/false,
+          suggestion.type, suggestion.GetPayload<Suggestion::Guid>(), metadata,
+          /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
@@ -1566,8 +1559,8 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         LogRankingContextAfterSuggestionAccepted(suggestion);
       }
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
-          metadata, /*is_preview=*/false,
+          suggestion.type, suggestion.GetPayload<Suggestion::Guid>(), metadata,
+          /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
@@ -1578,7 +1571,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                     .GetPersonalDataManager()
                     ->payments_data_manager()
                     .GetCreditCardByGUID(
-                        suggestion.GetBackendId<Suggestion::Guid>().value())) {
+                        suggestion.GetPayload<Suggestion::Guid>().value())) {
           CreditCard virtual_card = CreditCard::CreateVirtualCard(*credit_card);
           manager_->GetCreditCardAccessManager().FetchCreditCard(
               &virtual_card,
@@ -1592,7 +1585,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         // In this case, the payload contains the backend id, which is a GUID
         // that identifies the actually chosen credit card.
         FillAutofillFormData(
-            suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
+            suggestion.type, suggestion.GetPayload<Suggestion::Guid>(),
             metadata, /*is_preview=*/false,
             {.trigger_source =
                  TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
@@ -1609,7 +1602,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       manager_->client()
           .GetPaymentsAutofillClient()
           ->GetIbanAccessManager()
-          ->FetchValue(suggestion.GetPayload<Suggestion::BackendId>(),
+          ->FetchValue(suggestion.payload,
                        base::BindOnce(
                            [](base::WeakPtr<AutofillExternalDelegate> delegate,
                               const std::u16string& value) {

@@ -1208,7 +1208,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
               OnSingleFieldSuggestionSelected(suggestion));
   ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
           FetchValue)
-      .WillByDefault([iban](const Suggestion::BackendId& backend_id,
+      .WillByDefault([iban](const Suggestion::Payload& payload,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
       });
@@ -3133,7 +3133,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
           FetchValue)
-      .WillByDefault([iban](const Suggestion::BackendId& backend_id,
+      .WillByDefault([iban](const Suggestion::Payload& payload,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
       });

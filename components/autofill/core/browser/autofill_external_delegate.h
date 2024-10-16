@@ -228,12 +228,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
   const AutofillField* GetQueriedAutofillField() const;
 
-  // Fills the form with the Autofill data corresponding to `backend_id`.
+  // Fills the form with the Autofill data corresponding to `guid`.
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
   void FillAutofillFormData(SuggestionType type,
-                            Suggestion::BackendId backend_id,
+                            Suggestion::Guid guid,
                             std::optional<SuggestionMetadata> metadata,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);

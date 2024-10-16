@@ -1825,7 +1825,7 @@ TEST_F(PasswordAutofillManagerTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
-  EXPECT_EQ(open_args.suggestions[0].GetBackendId<Suggestion::Guid>().value(),
+  EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
             kIdBase64);
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
@@ -1919,7 +1919,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
 #endif  // BUILDFLAG(IS_IOS)
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
-  EXPECT_EQ(open_args.suggestions[0].GetBackendId<Suggestion::Guid>().value(),
+  EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
             kIdBase64);
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
@@ -2188,7 +2188,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
   suggestion.main_text.value =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY);
   suggestion.type = autofill::SuggestionType::kWebauthnSignInWithAnotherDevice;
-  suggestion.payload = autofill::Suggestion::BackendId();
+  suggestion.payload = autofill::Suggestion::Payload();
   password_autofill_manager_->DidAcceptSuggestion(suggestion,
                                                   SuggestionPosition{.row = 0});
 }

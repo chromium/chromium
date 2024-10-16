@@ -553,8 +553,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
-  const Suggestion::BackendId backend_id =
-      suggestions_[index].GetPayload<Suggestion::BackendId>();
+  const Suggestion::Guid& guid =
+      suggestions_[index].GetPayload<Suggestion::Guid>();
 
   if (type == SuggestionType::kAutocompleteEntry) {
     if (title) {
@@ -575,8 +575,7 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
       web_contents_->GetBrowserContext());
 
   if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
+          pdm->payments_data_manager().GetCreditCardByGUID(guid.value())) {
     if (!CreditCard::IsLocalCard(credit_card)) {
       return false;
     }
@@ -591,8 +590,7 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   }
 
   if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
+          pdm->address_data_manager().GetProfileByGUID(guid.value())) {
     if (title) {
       std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
       if (!street_address.empty()) {

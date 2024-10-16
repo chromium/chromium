@@ -367,11 +367,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
       if (!suggestion.backendIdentifier.length) {
-        autofill_suggestion.payload = autofill::Suggestion::BackendId();
+        autofill_suggestion.payload = autofill::Suggestion::Payload();
       } else {
-        autofill_suggestion.payload =
-            autofill::Suggestion::BackendId(autofill::Suggestion::Guid(
-                SysNSStringToUTF8(suggestion.backendIdentifier)));
+        autofill_suggestion.payload = autofill::Suggestion::Guid(
+            SysNSStringToUTF8(suggestion.backendIdentifier));
       }
 
       _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
@@ -674,7 +673,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                                type:popup_suggestion.type
                   backendIdentifier:SysUTF8ToNSString(
                                         popup_suggestion
-                                            .GetBackendId<
+                                            .GetPayload<
                                                 autofill::Suggestion::Guid>()
                                             .value())
         fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed

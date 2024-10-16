@@ -1147,7 +1147,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
                                       current_card_index);
 
       summary.ranking_context.suggestion_rankings_difference_map.insert(
-          {suggestion.GetBackendId<Suggestion::Guid>(), ranking_difference});
+          {suggestion.GetPayload<Suggestion::Guid>(), ranking_difference});
     }
   }
   summary.with_cvc = !std::ranges::all_of(
@@ -1322,11 +1322,10 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
     suggestion.icon = Suggestion::Icon::kIban;
     suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kLocalIban) {
-      suggestion.payload = Suggestion::BackendId(Suggestion::Guid(iban.guid()));
+      suggestion.payload = Suggestion::Guid(iban.guid());
     } else {
       CHECK(iban.record_type() == Iban::kServerIban);
-      suggestion.payload =
-          Suggestion::BackendId(Suggestion::InstrumentId(iban.instrument_id()));
+      suggestion.payload = Suggestion::InstrumentId(iban.instrument_id());
     }
 
     std::u16string iban_identifier =
@@ -1373,8 +1372,8 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
       suggestion.labels = {{Suggestion::Text(base::ASCIIToUTF16(
           promo_code_offer->GetDisplayStrings().value_prop_text))}};
     }
-    suggestion.payload = Suggestion::BackendId(
-        Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId())));
+    suggestion.payload =
+        Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId()));
     suggestion.type = SuggestionType::kMerchantPromoCodeEntry;
 
     // Every offer for a given merchant leads to the same GURL, so we grab the

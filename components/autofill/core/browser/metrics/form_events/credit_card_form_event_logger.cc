@@ -277,7 +277,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
         const CreditCard* suggested_credit_card =
             personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
-                suggestion.GetBackendId<Suggestion::Guid>().value());
+                suggestion.GetPayload<Suggestion::Guid>().value());
         if (!suggested_credit_card) {
           // Ignore non credit card suggestions in the popup like separators,
           // manage payment methods, etc.
