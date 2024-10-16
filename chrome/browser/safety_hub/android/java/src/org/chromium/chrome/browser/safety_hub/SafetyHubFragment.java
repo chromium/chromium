@@ -481,7 +481,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updateAllModules();
 
         // Fetch the passwords again to get the latest result.
-        mSafetyHubFetchService.fetchBreachedCredentialsCount(success -> {});
+        mSafetyHubFetchService.fetchCredentialsCount(success -> {});
     }
 
     @Override
@@ -509,18 +509,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     @Override
-    public void compromisedPasswordCountChanged() {
+    public void passwordCountsChanged() {
         updatePasswordCheckPreference();
-    }
-
-    @Override
-    public void weakPasswordCountChanged() {
-        // TODO(crbug.com/357780273): Implement UI for weak passwords.
-    }
-
-    @Override
-    public void reusedPasswordCountChanged() {
-        // TODO(crbug.com/357780273): Implement UI for reused passwords.
     }
 
     @Override

@@ -18,6 +18,7 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     private Integer mWeakCredentialsCount = 0;
     private Integer mReusedCredentialsCount = 0;
     private Exception mError;
+    private Exception mWeakCredentialsError;
 
     public void setIntentForLocalCheckup(PendingIntent pendingIntent) {
         mPendingIntentForLocalCheckup = pendingIntent;
@@ -41,6 +42,10 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
 
     public void setError(Exception error) {
         mError = error;
+    }
+
+    public void setWeakCredentialsError(Exception error) {
+        mWeakCredentialsError = error;
     }
 
     @Override
@@ -137,6 +142,12 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
             failureCallback.onResult(mError);
             return;
         }
+
+        if (mWeakCredentialsError != null) {
+            failureCallback.onResult(mWeakCredentialsError);
+            return;
+        }
+
         successCallback.onResult(mWeakCredentialsCount);
     }
 
