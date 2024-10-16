@@ -12,7 +12,7 @@
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios_forward.h"
 
 class BrowserPolicyConnectorIOS;
-class BrowserStatePolicyConnector;
+class ProfilePolicyConnector;
 class PrefService;
 
 // Builds the boilerplate enterprise policy configuration and creates a browser
@@ -41,8 +41,8 @@ class EnterprisePolicyTestHelper {
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   // The local state PrefService managed by policy.
   std::unique_ptr<PrefService> local_state_;
-  // The BrowserState-level policy connector. Must outlive `pref_service_`.
-  std::unique_ptr<BrowserStatePolicyConnector> browser_state_policy_connector_;
+  // The Profile-level policy connector. Must outlive `pref_service_`.
+  std::unique_ptr<ProfilePolicyConnector> profile_policy_connector_;
   // The profile configured with the `policy_provider_`.
   std::unique_ptr<TestProfileIOS> profile_;
 

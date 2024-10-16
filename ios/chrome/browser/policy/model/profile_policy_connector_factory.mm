@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector_factory.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector_factory.h"
 
 #import "base/check.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 
-std::unique_ptr<BrowserStatePolicyConnector> BuildBrowserStatePolicyConnector(
+std::unique_ptr<ProfilePolicyConnector> BuildProfilePolicyConnector(
     policy::SchemaRegistry* schema_registry,
     BrowserPolicyConnectorIOS* browser_policy_connector,
     policy::UserCloudPolicyManager* user_policy_manager) {
-  auto connector = std::make_unique<BrowserStatePolicyConnector>();
+  auto connector = std::make_unique<ProfilePolicyConnector>();
 
   // Since extensions are not supported on iOS, the `schema_registry` here has
   // the same registered components as the registry owned by

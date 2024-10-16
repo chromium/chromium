@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_STATE_POLICY_CONNECTOR_H_
-#define IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_STATE_POLICY_CONNECTOR_H_
+#ifndef IOS_CHROME_BROWSER_POLICY_MODEL_PROFILE_POLICY_CONNECTOR_H_
+#define IOS_CHROME_BROWSER_POLICY_MODEL_PROFILE_POLICY_CONNECTOR_H_
 
 #include <memory>
 #include <vector>
@@ -19,19 +19,18 @@ class PolicyService;
 class SchemaRegistry;
 }  // namespace policy
 
-// BrowserStatePolicyConnector creates and manages the per-BrowserState policy
+// ProfilePolicyConnector creates and manages the per-Profile policy
 // components and their integration with PrefService.
-// BrowserStatePolicyConnector isn't a keyed service because the pref service,
+// ProfilePolicyConnector isn't a keyed service because the pref service,
 // which isn't a keyed service, has a hard dependency on the policy
 // infrastructure. In order to outlive the pref service, the policy connector
 // must live outside the keyed services.
-class BrowserStatePolicyConnector {
+class ProfilePolicyConnector {
  public:
-  BrowserStatePolicyConnector();
-  ~BrowserStatePolicyConnector();
-  BrowserStatePolicyConnector(const BrowserStatePolicyConnector&) = delete;
-  BrowserStatePolicyConnector& operator=(const BrowserStatePolicyConnector&) =
-      delete;
+  ProfilePolicyConnector();
+  ~ProfilePolicyConnector();
+  ProfilePolicyConnector(const ProfilePolicyConnector&) = delete;
+  ProfilePolicyConnector& operator=(const ProfilePolicyConnector&) = delete;
 
   // Initializes this connector.
   void Init(policy::SchemaRegistry* schema_registry,
@@ -58,7 +57,7 @@ class BrowserStatePolicyConnector {
   policy::SchemaRegistry* GetSchemaRegistry() const { return schema_registry_; }
 
  private:
-  friend class BrowserStatePolicyConnectorMock;
+  friend class ProfilePolicyConnectorMock;
 
   // `policy_providers_` contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.
@@ -74,11 +73,11 @@ class BrowserStatePolicyConnector {
   raw_ptr<policy::LocalTestPolicyProvider> local_test_policy_provider_ =
       nullptr;
 
-  // The PolicyService that manages policy for this connector's BrowserState.
+  // The PolicyService that manages policy for this connector's Profile.
   std::unique_ptr<policy::PolicyService> policy_service_;
 
-  // The SchemaRegistry associated with this connector's BrowserState.
+  // The SchemaRegistry associated with this connector's Profile.
   raw_ptr<policy::SchemaRegistry> schema_registry_;
 };
 
-#endif  // IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_STATE_POLICY_CONNECTOR_H_
+#endif  // IOS_CHROME_BROWSER_POLICY_MODEL_PROFILE_POLICY_CONNECTOR_H_

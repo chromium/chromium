@@ -17,10 +17,10 @@
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
 
-class BrowserStatePolicyConnector;
 class PrefProxyConfigTracker;
 class PrefService;
 class ProfileIOSIOData;
+class ProfilePolicyConnector;
 
 namespace base {
 class SequencedTaskRunner;
@@ -114,9 +114,9 @@ class ProfileIOS : public web::BrowserState {
   // one exists.
   virtual void DestroyOffTheRecordProfile() = 0;
 
-  // Retrieves a pointer to the BrowserStatePolicyConnector that manages policy
+  // Retrieves a pointer to the ProfilePolicyConnector that manages policy
   // for this BrowserState. May return nullptr if policy is disabled.
-  virtual BrowserStatePolicyConnector* GetPolicyConnector() = 0;
+  virtual ProfilePolicyConnector* GetPolicyConnector() = 0;
 
   // Returns a pointer to the UserCloudPolicyManager that is a facade for the
   // user cloud policy system.

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_service_impl.h"
 #import "components/policy/core/common/schema_registry.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 
-BrowserStatePolicyConnector::BrowserStatePolicyConnector() = default;
-BrowserStatePolicyConnector::~BrowserStatePolicyConnector() = default;
+ProfilePolicyConnector::ProfilePolicyConnector() = default;
+ProfilePolicyConnector::~ProfilePolicyConnector() = default;
 
-void BrowserStatePolicyConnector::Init(
+void ProfilePolicyConnector::Init(
     policy::SchemaRegistry* schema_registry,
     BrowserPolicyConnectorIOS* browser_policy_connector,
     policy::ConfigurationPolicyProvider* user_policy_provider) {
@@ -37,8 +37,9 @@ void BrowserStatePolicyConnector::Init(
 
   // Put `user_policy_provider` at the end of the list because it is the
   // provider with the lowest priority.
-  if (user_policy_provider)
+  if (user_policy_provider) {
     policy_providers_.push_back(user_policy_provider);
+  }
 
   if (browser_policy_connector->local_test_policy_provider()) {
     local_test_policy_provider_ =
@@ -49,7 +50,7 @@ void BrowserStatePolicyConnector::Init(
       policy_providers_, policy::PolicyServiceImpl::ScopeForMetrics::kMachine);
 }
 
-void BrowserStatePolicyConnector::UseLocalTestPolicyProvider() {
+void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
   for (policy::ConfigurationPolicyProvider* provider : policy_providers_) {
     provider->set_active(false);
   }
@@ -61,7 +62,7 @@ void BrowserStatePolicyConnector::UseLocalTestPolicyProvider() {
                                    policy::PolicyFetchReason::kTest);
 }
 
-void BrowserStatePolicyConnector::RevertUseLocalTestPolicyProvider() {
+void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   for (policy::ConfigurationPolicyProvider* provider : policy_providers_) {
     provider->set_active(true);
   }
@@ -74,4 +75,4 @@ void BrowserStatePolicyConnector::RevertUseLocalTestPolicyProvider() {
                                    policy::PolicyFetchReason::kTest);
 }
 
-void BrowserStatePolicyConnector::Shutdown() {}
+void ProfilePolicyConnector::Shutdown() {}

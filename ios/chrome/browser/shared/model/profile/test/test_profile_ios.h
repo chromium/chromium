@@ -16,7 +16,7 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/net/model/net_types.h"
-#include "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -105,7 +105,7 @@ class TestProfileIOS final : public ProfileIOS {
   void DestroyOffTheRecordProfile() override;
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
-  BrowserStatePolicyConnector* GetPolicyConnector() override;
+  ProfilePolicyConnector* GetPolicyConnector() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
   const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
       const override;
@@ -206,7 +206,7 @@ class TestProfileIOS final : public ProfileIOS {
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
 
     Builder& SetPolicyConnector(
-        std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
+        std::unique_ptr<ProfilePolicyConnector> policy_connector);
 
     // Sets a UserCloudPolicyManager for test.
     Builder& SetUserCloudPolicyManager(
@@ -229,7 +229,7 @@ class TestProfileIOS final : public ProfileIOS {
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
 
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+    std::unique_ptr<ProfilePolicyConnector> policy_connector_;
 
     TestingFactories testing_factories_;
   };
@@ -242,7 +242,7 @@ class TestProfileIOS final : public ProfileIOS {
                  std::string_view profile_name,
                  std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
                  TestingFactories testing_factories,
-                 std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
+                 std::unique_ptr<ProfilePolicyConnector> policy_connector,
                  std::unique_ptr<policy::UserCloudPolicyManager>
                      user_cloud_policy_manager);
 
@@ -262,7 +262,7 @@ class TestProfileIOS final : public ProfileIOS {
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_;
 
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
-  std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+  std::unique_ptr<ProfilePolicyConnector> policy_connector_;
 
   // A SharedURLLoaderFactory for test.
   scoped_refptr<network::SharedURLLoaderFactory>

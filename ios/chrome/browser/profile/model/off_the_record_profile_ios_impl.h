@@ -36,7 +36,7 @@ class OffTheRecordProfileIOSImpl final : public ProfileIOS {
   ProfileIOS* GetOffTheRecordProfile() override;
   void DestroyOffTheRecordProfile() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
-  BrowserStatePolicyConnector* GetPolicyConnector() override;
+  ProfilePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
   const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()

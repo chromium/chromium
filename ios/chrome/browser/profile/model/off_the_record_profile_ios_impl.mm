@@ -79,7 +79,7 @@ void OffTheRecordProfileIOSImpl::DestroyOffTheRecordProfile() {
   NOTREACHED_IN_MIGRATION();
 }
 
-BrowserStatePolicyConnector* OffTheRecordProfileIOSImpl::GetPolicyConnector() {
+ProfilePolicyConnector* OffTheRecordProfileIOSImpl::GetPolicyConnector() {
   // Forward the call to the original (non-OTR) profile.
   return GetOriginalProfile()->GetPolicyConnector();
 }

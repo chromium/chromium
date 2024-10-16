@@ -69,7 +69,7 @@ class FakeProfileIOS : public ProfileIOS {
   bool HasOffTheRecordProfile() const override { NOTREACHED(); }
   ProfileIOS* GetOffTheRecordProfile() override { NOTREACHED(); }
   void DestroyOffTheRecordProfile() override { NOTREACHED(); }
-  BrowserStatePolicyConnector* GetPolicyConnector() override { NOTREACHED(); }
+  ProfilePolicyConnector* GetPolicyConnector() override { NOTREACHED(); }
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override {
     NOTREACHED();
   }

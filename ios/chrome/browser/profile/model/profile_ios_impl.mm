@@ -36,8 +36,8 @@
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector_factory.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector_factory.h"
 #import "ios/chrome/browser/policy/model/schema_registry_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/profile/model/constants.h"
@@ -187,8 +187,8 @@ ProfileIOSImpl::ProfileIOSImpl(
                           base::Unretained(GetApplicationContext())));
 
   policy_connector_ =
-      BuildBrowserStatePolicyConnector(policy_schema_registry_.get(), connector,
-                                       user_cloud_policy_manager_.get());
+      BuildProfilePolicyConnector(policy_schema_registry_.get(), connector,
+                                  user_cloud_policy_manager_.get());
 
   // Register Profile preferences.
   RegisterProfilePrefs(pref_registry_.get());
@@ -300,7 +300,7 @@ void ProfileIOSImpl::DestroyOffTheRecordProfile() {
   otr_state_.reset();
 }
 
-BrowserStatePolicyConnector* ProfileIOSImpl::GetPolicyConnector() {
+ProfilePolicyConnector* ProfileIOSImpl::GetPolicyConnector() {
   return policy_connector_.get();
 }
 

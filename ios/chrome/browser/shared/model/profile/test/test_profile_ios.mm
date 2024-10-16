@@ -106,7 +106,7 @@ TestProfileIOS::TestProfileIOS(
     std::string_view profile_name,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
+    std::unique_ptr<ProfilePolicyConnector> policy_connector,
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
     : ProfileIOS(
           state_path,
@@ -259,7 +259,7 @@ PrefProxyConfigTracker* TestProfileIOS::GetProxyConfigTracker() {
   return nullptr;
 }
 
-BrowserStatePolicyConnector* TestProfileIOS::GetPolicyConnector() {
+ProfilePolicyConnector* TestProfileIOS::GetPolicyConnector() {
   return policy_connector_.get();
 }
 
@@ -359,7 +359,7 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::SetPrefService(
 }
 
 TestProfileIOS::Builder& TestProfileIOS::Builder::SetPolicyConnector(
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector) {
+    std::unique_ptr<ProfilePolicyConnector> policy_connector) {
   policy_connector_ = std::move(policy_connector);
   return *this;
 }

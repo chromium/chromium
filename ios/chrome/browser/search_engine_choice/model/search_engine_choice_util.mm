@@ -12,7 +12,7 @@
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -53,7 +53,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
   // Getting data needed to check condition.
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
       ios::SearchEngineChoiceServiceFactory::GetForProfile(original_profile);
-  BrowserStatePolicyConnector* policy_connector =
+  ProfilePolicyConnector* policy_connector =
       original_profile->GetPolicyConnector();
   const policy::PolicyService& policy_service =
       *policy_connector->GetPolicyService();

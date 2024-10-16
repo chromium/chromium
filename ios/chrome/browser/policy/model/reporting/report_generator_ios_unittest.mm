@@ -13,7 +13,7 @@
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector_mock.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -38,9 +38,8 @@ class ReportGeneratorIOSTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    builder.SetPolicyConnector(
-        std::make_unique<BrowserStatePolicyConnectorMock>(
-            CreateMockPolicyService(), &schema_registry_));
+    builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
+        CreateMockPolicyService(), &schema_registry_));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForProfile(
