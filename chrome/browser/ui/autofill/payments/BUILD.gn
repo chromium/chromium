@@ -104,7 +104,6 @@ source_set("impl") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/page_action:icon_type",
     "//components/autofill/content/browser",
-    "//components/infobars/core",
     "//components/strings:components_strings_grit",
     "//components/user_prefs",
   ]
@@ -120,6 +119,7 @@ source_set("impl") {
       "//chrome/browser/mandatory_reauth/android/internal:jni",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/touch_to_fill/autofill/android",
+      "//components/infobars/core",
       "//components/signin/public/identity_manager",
       "//components/webauthn/android",
       "//ui/android",
