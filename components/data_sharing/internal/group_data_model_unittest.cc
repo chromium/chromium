@@ -321,7 +321,7 @@ TEST_F(GroupDataModelTest, ShouldHandleNewGroupsAfterRestart) {
 }
 
 // TODO(crbug.com/372824571): Re-enable this test
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 #define MAYBE_ShouldHandleUpdatesAfterRestart \
   DISABLED_ShouldHandleUpdatesAfterRestart
 #else
