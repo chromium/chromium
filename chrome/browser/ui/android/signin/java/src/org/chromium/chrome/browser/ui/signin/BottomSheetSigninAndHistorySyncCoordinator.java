@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -52,7 +53,8 @@ import java.util.List;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
 public class BottomSheetSigninAndHistorySyncCoordinator
-        implements SigninAccountPickerCoordinator.Delegate,
+        implements SigninAndHistorySyncCoordinator,
+                SigninAccountPickerCoordinator.Delegate,
                 HistorySyncCoordinator.HistorySyncDelegate {
     private final WindowAndroid mWindowAndroid;
     private final ComponentActivity mActivity;
@@ -211,9 +213,27 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     }
 
     /**
-     * Called when an Google Play Services "add account" flow started at the activity level has
-     * finished without being completed.
+     * Implements {@link SigninAndHistorySyncCoordinator}. Call the child coordinators' `destroy`
+     * method to release resources, should be called when the hosting activity is destroyed.
      */
+    @Override
+    public void destroy() {
+        if (mAccountPickerCoordinator != null) {
+            mAccountPickerCoordinator.destroy();
+            mAccountPickerCoordinator = null;
+        }
+
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
+        }
+    }
+
+    /**
+     * Implements {@link SigninAndHistorySyncCoordinator}. Called when an Google Play Services "add
+     * account" flow started at the activity level has finished without being completed.
+     */
+    @Override
     public void onAddAccountCanceled() {
         // If the activity was killed during the add account flow (reason why the flow is not yet
         // initialized), proceed as if the user started the sign-in flow for the first time.
@@ -230,9 +250,10 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     }
 
     /**
-     * Called when an account is added via Google Play Services "add account" flow started at the
-     * activity level.
+     * Implements {@link SigninAndHistorySyncCoordinator}. Called when an account is added via
+     * Google Play Services "add account" flow started at the activity level.
      */
+    @Override
     public void onAccountAdded(@NonNull String accountEmail) {
         // If the activity was killed during the add account flow (reason why the flow is not yet
         // initialized), proceed as if the user started the sign-in flow for the first time.
@@ -248,6 +269,30 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         if (mAccountPickerCoordinator != null) {
             mAccountPickerCoordinator.onAccountAdded(accountEmail);
         }
+    }
+
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
+    public @NonNull View getView() {
+        assert mContainerView != null;
+        return mContainerView;
+    }
+
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
+    public void onConfigurationChange() {
+        if (mHistorySyncCoordinator != null) {
+            Profile profile = mProfileSupplier.get();
+            assert profile != null;
+            mHistorySyncCoordinator.maybeRecreateView();
+            showDialogContentView();
+        }
+    }
+
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
+    public @BackPressResult int handleBackPress() {
+        return BackPressResult.UNKNOWN;
     }
 
     /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
@@ -303,37 +348,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
         if (mDelegate.isHistorySyncShownFullScreen()) {
             mDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
-        }
-    }
-
-    /** Provides the root view of the sign-in and history opt-in flow. */
-    public @NonNull ViewGroup getView() {
-        assert mContainerView != null;
-        return mContainerView;
-    }
-
-    /**
-     * Call the child coordinators' `destroy` method to release resources, should be called when the
-     * hosting activity is destroyed.
-     */
-    public void destroy() {
-        if (mAccountPickerCoordinator != null) {
-            mAccountPickerCoordinator.destroy();
-            mAccountPickerCoordinator = null;
-        }
-
-        if (mHistorySyncCoordinator != null) {
-            mHistorySyncCoordinator.destroy();
-            mHistorySyncCoordinator = null;
-        }
-    }
-
-    public void switchHistorySyncLayout() {
-        if (mHistorySyncCoordinator != null) {
-            Profile profile = mProfileSupplier.get();
-            assert profile != null;
-            mHistorySyncCoordinator.maybeRecreateView();
-            showDialogContentView();
         }
     }
 

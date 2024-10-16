@@ -71,6 +71,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninAccountPickerCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninAndHistorySyncActivityLauncher.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SigninAndHistorySyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninScrollView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninUtils.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninView.java",

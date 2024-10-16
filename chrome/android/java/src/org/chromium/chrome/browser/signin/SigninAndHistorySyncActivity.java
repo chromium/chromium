@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -91,12 +92,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     // TODO(crbug.com/349787455): Move this to FirstRunActivityBase.
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
-    // These two coordinators are mutually exclusive: if one is initialized the other should be
-    // null.
-    // TODO(b/326019991): Consider making each of these implement a common interface to skip the
-    // redundancy.
-    private BottomSheetSigninAndHistorySyncCoordinator mBottomSheetSigninCoordinator;
-    private FullscreenSigninAndHistorySyncCoordinator mFullscreenSigninCoordinator;
+    private SigninAndHistorySyncCoordinator mCoordinator;
 
     // Set to true when the add account activity is started, and is not persisted in saved instance
     // state. Therefore when onActivityResultWithNavitve is called with the add account activity's
@@ -120,7 +116,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         Intent intent = getIntent();
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();
-            mFullscreenSigninCoordinator =
+            mCoordinator =
                     new FullscreenSigninAndHistorySyncCoordinator(
                             this,
                             getModalDialogManager(),
@@ -128,7 +124,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                             PrivacyPreferencesManagerImpl.getInstance(),
                             this);
 
-            setInitialContentView(mFullscreenSigninCoordinator.getView());
+            setInitialContentView(mCoordinator.getView());
             onInitialLayoutInflationComplete();
             return;
         }
@@ -161,7 +157,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
         @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
 
-        mBottomSheetSigninCoordinator =
+        mCoordinator =
                 new BottomSheetSigninAndHistorySyncCoordinator(
                         getWindowAndroid(),
                         this,
@@ -177,7 +173,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         isHistorySyncDedicatedFlow,
                         accountId == null ? null : new CoreAccountId(accountId));
 
-        setInitialContentView(mBottomSheetSigninCoordinator.getView());
+        setInitialContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
     }
 
@@ -250,11 +246,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
-        if (mBottomSheetSigninCoordinator != null) {
-            mBottomSheetSigninCoordinator.switchHistorySyncLayout();
-        } else {
-            mFullscreenSigninCoordinator.recreateLayoutAfterConfigurationChange();
-        }
+        mCoordinator.onConfigurationChange();
     }
 
     @Override
@@ -283,23 +275,14 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
     @Override
     protected void onDestroy() {
-        if (mBottomSheetSigninCoordinator != null) {
-            mBottomSheetSigninCoordinator.destroy();
-        }
-        if (mFullscreenSigninCoordinator != null) {
-            mFullscreenSigninCoordinator.destroy();
-        }
+        mCoordinator.destroy();
         super.onDestroy();
     }
 
     /** Implements {@link FirstRunActivityBase} */
     @Override
     public @BackPressResult int handleBackPress() {
-        if (mFullscreenSigninCoordinator != null) {
-            mFullscreenSigninCoordinator.handleBackPress();
-            return BackPressResult.SUCCESS;
-        }
-        return BackPressResult.UNKNOWN;
+        return mCoordinator.handleBackPress();
     }
 
     @Override
@@ -431,9 +414,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
 
         if (resultCode != Activity.RESULT_OK || accountEmail == null) {
-            if (mBottomSheetSigninCoordinator != null) {
-                mBottomSheetSigninCoordinator.onAddAccountCanceled();
-            }
+            mCoordinator.onAddAccountCanceled();
 
             // Record NULL_ACCOUNT_NAME if the add account activity successfully returns but
             // contains a null account name.
@@ -446,11 +427,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         }
 
         SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
-        if (mFullscreenSigninCoordinator != null) {
-            mFullscreenSigninCoordinator.onAccountSelected(accountEmail);
-        } else {
-            assert mBottomSheetSigninCoordinator != null;
-            mBottomSheetSigninCoordinator.onAccountAdded(accountEmail);
-        }
+        mCoordinator.onAccountAdded(accountEmail);
     }
 }

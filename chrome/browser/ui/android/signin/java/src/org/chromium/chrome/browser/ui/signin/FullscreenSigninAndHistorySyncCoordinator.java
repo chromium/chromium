@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -40,7 +41,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Parent coordinator for the re-FRE promo */
 public final class FullscreenSigninAndHistorySyncCoordinator
-        implements HistorySyncCoordinator.HistorySyncDelegate,
+        implements SigninAndHistorySyncCoordinator,
+                HistorySyncCoordinator.HistorySyncDelegate,
                 FullscreenSigninCoordinator.Delegate {
     public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */
@@ -130,6 +132,8 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         }
     }
 
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
     public void destroy() {
         mViewHolder.removeAllViews();
         if (mSigninCoordinator != null) {
@@ -143,8 +147,55 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         }
     }
 
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
+    public void onAddAccountCanceled() {}
+
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
+    public void onAccountAdded(String accountName) {
+        mSigninCoordinator.onAccountSelected(accountName);
+    }
+
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
     public View getView() {
         return mViewHolder;
+    }
+
+    /**
+     * Implements {@link SigninAndHistorySyncCoordinator}. Removes existing views from the view
+     * switcher and re-inflates them with the correct layout after a configuration change.
+     */
+    @Override
+    public void onConfigurationChange() {
+        mViewHolder.removeAllViews();
+        inflateViewBundle();
+        showChildView(mCurrentView);
+    }
+
+    /** Implements {@link SigninAndHistorySyncCoordinator}. */
+    @Override
+    public @BackPressResult int handleBackPress() {
+        switch (mCurrentView) {
+            case ChildView.SIGNIN:
+                if (isSignedIn()) {
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(mProfileSupplier.get().getOriginalProfile());
+                    signinManager.signOut(SignoutReason.ABORT_SIGNIN);
+                }
+                mDelegate.onFlowComplete();
+                break;
+            case ChildView.HISTORY_SYNC:
+                if (!mDidShowSignin) {
+                    mDelegate.onFlowComplete();
+                    return BackPressResult.SUCCESS;
+                }
+                showChildView(ChildView.SIGNIN);
+                mSigninCoordinator.reset();
+        }
+        return BackPressResult.SUCCESS;
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
@@ -226,41 +277,6 @@ public final class FullscreenSigninAndHistorySyncCoordinator
             mHistorySyncCoordinator = null;
         }
         mDelegate.onFlowComplete();
-    }
-
-    /**
-     * Removes existing views from the view switcher and re-inflates them with the correct layout
-     * after a configuration change.
-     */
-    public void recreateLayoutAfterConfigurationChange() {
-        mViewHolder.removeAllViews();
-        inflateViewBundle();
-        showChildView(mCurrentView);
-    }
-
-    public void onAccountSelected(String accountName) {
-        mSigninCoordinator.onAccountSelected(accountName);
-    }
-
-    public void handleBackPress() {
-        switch (mCurrentView) {
-            case ChildView.SIGNIN:
-                if (isSignedIn()) {
-                    SigninManager signinManager =
-                            IdentityServicesProvider.get()
-                                    .getSigninManager(mProfileSupplier.get().getOriginalProfile());
-                    signinManager.signOut(SignoutReason.ABORT_SIGNIN);
-                }
-                mDelegate.onFlowComplete();
-                break;
-            case ChildView.HISTORY_SYNC:
-                if (!mDidShowSignin) {
-                    mDelegate.onFlowComplete();
-                    return;
-                }
-                showChildView(ChildView.SIGNIN);
-                mSigninCoordinator.reset();
-        }
     }
 
     private void inflateViewBundle() {
