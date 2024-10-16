@@ -63,9 +63,7 @@ class PLATFORM_EXPORT ExceptionState {
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
   // If `isolate` is nullptr, this ExceptionState will ignore all exceptions.
-  explicit ExceptionState(v8::Isolate* isolate)
-      : context_(v8::ExceptionContext::kUnknown, nullptr, String()),
-        isolate_(isolate) {}
+  explicit ExceptionState(v8::Isolate* isolate) : isolate_(isolate) {}
 
   ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
       : context_(context), isolate_(isolate) {}
@@ -86,18 +84,6 @@ class PLATFORM_EXPORT ExceptionState {
                  const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
-
-  // This constructor opts in to special handling for a dynamic `property_name`,
-  // which is only needed for named and indexed interceptors.
-  enum ForInterceptor { kForInterceptor };
-  ExceptionState(v8::Isolate* isolate,
-                 v8::ExceptionContext context_type,
-                 const char* interface_name,
-                 const AtomicString& property_name,
-                 ExceptionState::ForInterceptor)
-      : ExceptionState(
-            isolate,
-            ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
@@ -161,7 +147,10 @@ class PLATFORM_EXPORT ExceptionState {
   }
 
   // Returns the context of what Web API is currently being executed.
-  const ExceptionContext& GetContext() const { return context_; }
+  const ExceptionContext& GetContext() const {
+    DCHECK(context_);
+    return *context_;
+  }
 
   ExceptionState& ReturnThis() { return *this; }
 
@@ -169,7 +158,9 @@ class PLATFORM_EXPORT ExceptionState {
   // Delegated constructor for NonThrowableExceptionState
   enum ForNonthrowable { kNonthrowable };
   ExceptionState(const char* file, int line, ForNonthrowable)
-      : context_(v8::ExceptionContext::kUnknown, nullptr, String()),
+      : context_(ExceptionContext(v8::ExceptionContext::kUnknown,
+                                  nullptr,
+                                  String())),
         isolate_(nullptr) {
 #if DCHECK_IS_ON()
     file_ = file;
@@ -186,8 +177,8 @@ class PLATFORM_EXPORT ExceptionState {
   // order to create a DOMException in platform/.
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
 
-  // The main context represents what Web API is currently being executed.
-  ExceptionContext context_;
+  // The context represents what Web API is currently being executed.
+  std::optional<ExceptionContext> context_;
 
   v8::Isolate* isolate_;
   ExceptionCode code_ = 0;
@@ -234,7 +225,11 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
 class PLATFORM_EXPORT DummyExceptionStateForTesting final
     : public ExceptionState {
  public:
-  DummyExceptionStateForTesting() : ExceptionState(nullptr) {}
+  DummyExceptionStateForTesting()
+      : ExceptionState(nullptr,
+                       v8::ExceptionContext::kUnknown,
+                       nullptr,
+                       nullptr) {}
 };
 
 class PLATFORM_EXPORT TryRethrowScope {
@@ -262,7 +257,7 @@ class PLATFORM_EXPORT TryRethrowScope {
 // This can be used as a default value of an ExceptionState parameter like this:
 //
 //     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION);
-#define IGNORE_EXCEPTION (::blink::ExceptionState(nullptr).ReturnThis())
+#define IGNORE_EXCEPTION (::blink::DummyExceptionStateForTesting().ReturnThis())
 #define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
 
 // Syntax sugar for NonThrowableExceptionState.

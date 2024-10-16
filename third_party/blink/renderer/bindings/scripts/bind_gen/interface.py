@@ -400,26 +400,13 @@ def bind_callback_local_vars(code_node, cg_context):
     def create_exception_state(symbol_node):
         node = SymbolDefinitionNode(symbol_node)
 
-        pattern = ("{exception_state_type} ${exception_state}({init_args});")
-        exception_state_type = "ExceptionState"
-        init_args = ["${isolate}", "${exception_context_type}"]
-        if cg_context.is_legacy_factory_function:
-            init_args.append("\"{}\"".format(cg_context.property_.identifier))
-        else:
+        init_args = ["${isolate}"]
+        if cg_context.is_return_type_promise_type:
+            init_args.append("${exception_context_type}")
             init_args.append("${class_like_name}")
-        if cg_context.indexed_interceptor_kind:
-            init_args.append("${blink_property_index}")
-            init_args.append("ExceptionState::kForInterceptor")
-        elif (cg_context.named_interceptor_kind
-              and cg_context.named_interceptor_kind != "Enumerator"):
-            init_args.append("${blink_property_name}")
-            init_args.append("ExceptionState::kForInterceptor")
-        elif (cg_context.property_ and cg_context.property_.identifier
-              and not cg_context.constructor_group):
             init_args.append("${property_name}")
         node.append(
-            F(pattern,
-              exception_state_type=exception_state_type,
+            F("ExceptionState ${exception_state}({init_args});",
               init_args=", ".join(init_args)))
         return node
 
