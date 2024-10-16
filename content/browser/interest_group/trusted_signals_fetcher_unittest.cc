@@ -107,7 +107,6 @@ class TrustedSignalsFetcherTest : public testing::Test {
   //     {
   //       "compressionGroupId": 0,
   //       "id": 0,
-  //       "metadata": {},
   //       "arguments": [
   //         {
   //           "tags": [ "interestGroupNames" ],
@@ -122,12 +121,12 @@ class TrustedSignalsFetcherTest : public testing::Test {
   //   ]
   // }
   const std::string_view kBasicBiddingSignalsRequestBody =
-      "00000000B3A3686D65746164617461A168686F73746E616D6569686F73742E746573746A"
-      "706172746974696F6E7381A462696400686D65746164617461A069617267756D656E7473"
-      "82A26464617461816667726F75703164746167738172696E74657265737447726F75704E"
-      "616D6573A2646461746181646B657931647461677381646B65797372636F6D7072657373"
-      "696F6E47726F757049640071616363657074436F6D7072657373696F6E82646E6F6E6564"
-      "677A69700000000000000000000000000000000000";
+      "00000000A9A3686D65746164617461A168686F73746E616D6569686F73742E746573746A"
+      "706172746974696F6E7381A36269640069617267756D656E747382A26464617461816667"
+      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
+      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
+      "0071616363657074436F6D7072657373696F6E82646E6F6E6564677A6970000000000000"
+      "000000000000000000000000000000000000000000";
 
   TrustedSignalsFetcherTest() {
     embedded_test_server_.SetSSLConfig(
@@ -522,7 +521,6 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -564,7 +562,6 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -600,7 +597,6 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -719,7 +715,6 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
              {
                "compressionGroupId": 3,
                "id": 7,
-               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -766,16 +761,15 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
     size_t expected_body_length;
     size_t expected_padding;
   } kTestCases[] = {
-      {22, 256, 201, 1},
-      {23, 256, 201, 0},
-      // This is 254 rather than 255 because the length prefix is 1 byte longer
-      // for a 24-character string than a 23-character one.
-      {24, 512, 457, 254},
+      {31, 256, 201, 1},
+      {32, 256, 201, 0},
+      {33, 512, 457, 255},
 
-      // 276 is less than 22+256 because strings in cbor are length-prefixed.
-      {276, 512, 457, 1},
-      {277, 512, 457, 0},
-      {278, 1024, 969, 511},
+      // 286 is less than 31+256 because strings in cbor have variable-length
+      // length prefixes.
+      {286, 512, 457, 1},
+      {287, 512, 457, 0},
+      {288, 1024, 969, 511},
   };
 
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
@@ -799,15 +793,13 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
     // copied from TrustedSignalsFetcher.
     EXPECT_EQ(request_body, auction_worklet::test::CreateKVv2RequestBody(
                                 auction_worklet::test::ToCborString(JsReplace(
-                                    R"(
-                                    {
+                                    R"({
                                       "acceptCompression": [ "none", "gzip" ],
                                       "metadata": { "hostname": "host.test" },
                                       "partitions": [
                                         {
                                           "compressionGroupId": 0,
                                           "id": 0,
-                                          "metadata": {},
                                           "arguments": [
                                             {
                                               "tags": [ "interestGroupNames" ],
@@ -1359,7 +1351,6 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1469,7 +1460,6 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
              {
                "compressionGroupId": 0,
                "id": 0,
-               "metadata": {},
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
@@ -1581,56 +1571,55 @@ TEST_F(TrustedSignalsFetcherTest,
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "metadata": {},
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             },
-             {
-               "compressionGroupId": 1,
-               "id": 0,
-               "metadata": { "foo": "bar" },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group2" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key2" ]
-                 }
-               ]
-             },
-             {
-               "compressionGroupId": 2,
-               "id": 0,
-               "metadata": { "foo2": "bar2" },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1", "group2", "group3" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1", "key2", "key3" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          },
+          {
+            "compressionGroupId": 1,
+            "id": 0,
+            "metadata": { "foo": "bar" },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group2" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key2" ]
+              }
+            ]
+          },
+          {
+            "compressionGroupId": 2,
+            "id": 0,
+            "metadata": { "foo2": "bar2" },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1", "group2", "group3" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1", "key2", "key3" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({

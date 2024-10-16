@@ -879,17 +879,19 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
                                  cbor::Value(compression_group_id));
 
   // metadata
-  cbor::Value::MapValue metadata;
-  for (const auto param : partition.additional_params) {
-    CHECK(param.second.is_string());
-    // TODO(xtlsheep): The slot size param probably will be changed to a new
-    // format in the future. Check if these are still the right types if the
-    // spec is changed.
-    metadata.try_emplace(cbor::Value(param.first),
-                         cbor::Value(param.second.GetString()));
+  if (!partition.additional_params.empty()) {
+    cbor::Value::MapValue metadata;
+    for (const auto param : partition.additional_params) {
+      CHECK(param.second.is_string());
+      // TODO(xtlsheep): The slot size param probably will be changed to a new
+      // format in the future. Check if these are still the right types if the
+      // spec is changed.
+      metadata.try_emplace(cbor::Value(param.first),
+                           cbor::Value(param.second.GetString()));
+    }
+    partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                   cbor::Value(std::move(metadata)));
   }
-  partition_cbor_map.try_emplace(cbor::Value("metadata"),
-                                 cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(
@@ -962,14 +964,16 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
                                  cbor::Value(compression_group_id));
 
   // metadata
-  cbor::Value::MapValue metadata;
-  for (const auto param : partition.additional_params) {
-    CHECK(param.second.is_string());
-    metadata.try_emplace(cbor::Value(param.first),
-                         cbor::Value(param.second.GetString()));
+  if (!partition.additional_params.empty()) {
+    cbor::Value::MapValue metadata;
+    for (const auto param : partition.additional_params) {
+      CHECK(param.second.is_string());
+      metadata.try_emplace(cbor::Value(param.first),
+                           cbor::Value(param.second.GetString()));
+    }
+    partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                   cbor::Value(std::move(metadata)));
   }
-  partition_cbor_map.try_emplace(cbor::Value("metadata"),
-                                 cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument("renderUrls", partition.render_urls));

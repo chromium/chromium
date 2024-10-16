@@ -424,7 +424,6 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
             "partitions": [
               {
                 "id": 0,
-                "metadata": {},
                 "arguments": [
                   {
                     "data": [
@@ -765,7 +764,6 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
               {
                 "compressionGroupId": 0,
                 "id": 0,
-                "metadata": {},
                 "arguments": [
                   {
                     "data": [

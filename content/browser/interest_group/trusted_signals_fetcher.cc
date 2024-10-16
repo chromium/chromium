@@ -126,21 +126,23 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
   partition_cbor_map.try_emplace(cbor::Value("id"),
                                  cbor::Value(bidding_partition.partition_id));
 
-  cbor::Value::MapValue metadata;
-  for (const auto param : *bidding_partition.additional_params) {
-    // TODO(crbug.com/333445540): Consider switching to taking
-    // `additional_params` as a cbor::Value, for greater flexibility. The
-    // `slotSizes` parameter, in particular, might be best represented as an
-    // array. cbor::Value doesn't have operator<, having a Less comparator
-    // instead, so would need to add that.
-    //
-    // Alternatively, could split this up into the data used to construct it.
-    CHECK(param.second.is_string());
-    metadata.try_emplace(cbor::Value(param.first),
-                         cbor::Value(param.second.GetString()));
+  if (!bidding_partition.additional_params->empty()) {
+    cbor::Value::MapValue metadata;
+    for (const auto param : *bidding_partition.additional_params) {
+      // TODO(crbug.com/333445540): Consider switching to taking
+      // `additional_params` as a cbor::Value, for greater flexibility. The
+      // `slotSizes` parameter, in particular, might be best represented as an
+      // array. cbor::Value doesn't have operator<, having a Less comparator
+      // instead, so would need to add that.
+      //
+      // Alternatively, could split this up into the data used to construct it.
+      CHECK(param.second.is_string());
+      metadata.try_emplace(cbor::Value(param.first),
+                           cbor::Value(param.second.GetString()));
+    }
+    partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                   cbor::Value(std::move(metadata)));
   }
-  partition_cbor_map.try_emplace(cbor::Value("metadata"),
-                                 cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument("interestGroupNames",
