@@ -140,10 +140,7 @@ if (enable_remoting_host) {
     defines = []
     libs = []
 
-    sources = [
-      "test/codec_perftest.cc",
-      "test/protocol_perftest.cc",
-    ]
+    sources = [ "test/codec_perftest.cc" ]
 
     configs += [ "//remoting/build/config:version" ]
 
