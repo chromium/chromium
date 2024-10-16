@@ -2116,8 +2116,7 @@
                     "enable_features": [
                         "AutofillUseAUAddressModel",
                         "AutofillUseCAAddressModel",
-                        "AutofillUseDEAddressModel",
-                        "AutofillUsePLAddressModel"
+                        "AutofillUseDEAddressModel"
                     ]
                 }
             ]
