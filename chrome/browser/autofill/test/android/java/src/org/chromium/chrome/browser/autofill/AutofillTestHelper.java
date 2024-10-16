@@ -33,6 +33,7 @@ import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.url.GURL;
 
@@ -484,6 +485,10 @@ public class AutofillTestHelper {
         runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().addMaskedBankAccount(bankAccount));
     }
 
+    public static void addEwallet(Ewallet ewallet) {
+        runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().addEwallet(ewallet));
+    }
+
     private void registerDataObserver() {
         try {
             int callCount = mOnPersonalDataChangedHelper.getCallCount();
@@ -648,5 +653,7 @@ public class AutofillTestHelper {
         void setSyncService();
 
         void addMaskedBankAccount(BankAccount bankAccount);
+
+        void addEwallet(Ewallet ewallet);
     }
 }

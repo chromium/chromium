@@ -17,6 +17,8 @@ class PrefService;
 
 namespace autofill {
 
+class PaymentInstrument;
+
 // Android wrapper of the PersonalDataManager which provides access from the
 // Java layer. Note that on Android, there's only a single profile, and
 // therefore a single instance of this wrapper.
@@ -262,6 +264,19 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jbank_account);
 
+  // Returns an array of Ewallet objects retrieved from the PersonalDataManager.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetEwallets(JNIEnv* env);
+
+  // Create an object of Java Ewallet from native Ewallet.
+  static base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
+      JNIEnv* env,
+      const Ewallet& ewallet);
+
+  // Create an object of native Ewallet from Java Ewallet.
+  static Ewallet CreateNativeEwalletFromJava(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jewallet);
+
  private:
   ~PersonalDataManagerAndroid() override;
 
@@ -289,6 +304,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       bool include_organization_in_label,
       bool include_country_in_label,
       std::vector<const AutofillProfile*> profiles);
+
+  // Shared method used when creating Java PaymentInstrument.
+  static std::vector<int> GetPaymentRailsFromPaymentInstrument(
+      const PaymentInstrument& payment_instrument);
 
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;

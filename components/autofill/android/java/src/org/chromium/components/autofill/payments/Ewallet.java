@@ -59,11 +59,13 @@ public class Ewallet extends PaymentInstrument {
     }
 
     /** Returns the name of the eWallet provider. */
+    @CalledByNative
     public String getEwalletName() {
         return mEwalletName;
     }
 
     /** Returns the account display name that can be used to identify the eWallet account. */
+    @CalledByNative
     public String getAccountDisplayName() {
         return mAccountDisplayName;
     }

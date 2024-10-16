@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
@@ -186,6 +187,17 @@ void JNI_AutofillTestHelper_AddMaskedBankAccount(
       GetPersonalDataManagerForLastUsedProfile();
   personal_data_manager->payments_data_manager().AddMaskedBankAccountForTest(
       bank_account);
+  personal_data_manager->NotifyPersonalDataObserver();
+}
+
+// static
+void JNI_AutofillTestHelper_AddEwallet(JNIEnv* env,
+                                       const JavaParamRef<jobject>& jewallet) {
+  Ewallet ewallet =
+      PersonalDataManagerAndroid::CreateNativeEwalletFromJava(env, jewallet);
+  PersonalDataManager* personal_data_manager =
+      GetPersonalDataManagerForLastUsedProfile();
+  personal_data_manager->payments_data_manager().AddEwalletForTest(ewallet);
   personal_data_manager->NotifyPersonalDataObserver();
 }
 

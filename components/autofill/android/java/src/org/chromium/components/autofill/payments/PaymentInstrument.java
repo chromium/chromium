@@ -61,6 +61,7 @@ public class PaymentInstrument {
     }
 
     /** Returns whether the device is enrolled in FIDO for this payment instrument. */
+    @CalledByNative
     public boolean getIsFidoEnrolled() {
         return mIsFidoEnrolled;
     }

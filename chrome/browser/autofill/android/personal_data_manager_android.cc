@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -52,6 +53,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "components/autofill/android/payments_jni_headers/BankAccount_jni.h"
+#include "components/autofill/android/payments_jni_headers/Ewallet_jni.h"
 #include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"
 
 namespace autofill {
@@ -477,18 +479,8 @@ ScopedJavaLocalRef<jobject>
 PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
     JNIEnv* env,
     const BankAccount& bank_account) {
-  // Create an integer vector of PaymentRails which can be used to create a Java
-  // array to be passed via JNI.
-  DenseSet<PaymentInstrument::PaymentRail> payment_instrument_supported_rails =
-      bank_account.payment_instrument().supported_rails();
-  std::vector<int> supported_payment_rails_array(
-      bank_account.payment_instrument().supported_rails().size());
-  std::transform(payment_instrument_supported_rails.begin(),
-                 payment_instrument_supported_rails.end(),
-                 supported_payment_rails_array.begin(),
-                 [](PaymentInstrument::PaymentRail rail) {
-                   return static_cast<int>(rail);
-                 });
+  std::vector<int> supported_payment_rails_array =
+      GetPaymentRailsFromPaymentInstrument(bank_account.payment_instrument());
   ScopedJavaLocalRef<jstring> jnickname = nullptr;
   if (!bank_account.payment_instrument().nickname().empty()) {
     jnickname = ConvertUTF16ToJavaString(
@@ -561,6 +553,102 @@ BankAccount PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
                      account_number_suffix, bank_account_type);
 }
 
+ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetEwallets(
+    JNIEnv* env) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> jewallets_list;
+  std::ranges::transform(
+      personal_data_manager_->payments_data_manager().GetEwalletAccounts(),
+      std::back_inserter(jewallets_list), [env](const Ewallet& ewallet) {
+        return CreateJavaEwalletFromNative(env, ewallet);
+      });
+  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
+      env, "org/chromium/components/autofill/payments/Ewallet");
+  return base::android::ToTypedJavaArrayOfObjects(env, jewallets_list,
+                                                  type.obj());
+}
+
+// static
+ScopedJavaLocalRef<jobject>
+PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
+    JNIEnv* env,
+    const Ewallet& ewallet) {
+  std::vector<int> supported_payment_rails_array =
+      GetPaymentRailsFromPaymentInstrument(ewallet.payment_instrument());
+
+  ScopedJavaLocalRef<jstring> jnickname = nullptr;
+  if (!ewallet.payment_instrument().nickname().empty()) {
+    jnickname =
+        ConvertUTF16ToJavaString(env, ewallet.payment_instrument().nickname());
+  }
+
+  ScopedJavaLocalRef<jobject> jdisplay_icon_url = nullptr;
+  if (!ewallet.payment_instrument().display_icon_url().is_empty()) {
+    jdisplay_icon_url = url::GURLAndroid::FromNativeGURL(
+        env, ewallet.payment_instrument().display_icon_url());
+  }
+
+  ScopedJavaLocalRef<jstring> jewallet_name = nullptr;
+  if (!ewallet.ewallet_name().empty()) {
+    jewallet_name = ConvertUTF16ToJavaString(env, ewallet.ewallet_name());
+  }
+
+  ScopedJavaLocalRef<jstring> jaccount_display_name = nullptr;
+  if (!ewallet.account_display_name().empty()) {
+    jaccount_display_name =
+        ConvertUTF16ToJavaString(env, ewallet.account_display_name());
+  }
+
+  return Java_Ewallet_create(
+      env, static_cast<jlong>(ewallet.payment_instrument().instrument_id()),
+      jnickname, jdisplay_icon_url,
+      ToJavaIntArray(env, supported_payment_rails_array),
+      static_cast<jboolean>(ewallet.payment_instrument().is_fido_enrolled()),
+      jewallet_name, jaccount_display_name);
+}
+
+// static
+Ewallet PersonalDataManagerAndroid::CreateNativeEwalletFromJava(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jewallet) {
+  int64_t instrument_id = static_cast<int64_t>(
+      Java_PaymentInstrument_getInstrumentId(env, jewallet));
+
+  const ScopedJavaLocalRef<jstring>& jnickname =
+      Java_PaymentInstrument_getNickname(env, jewallet);
+  std::u16string nickname;
+  if (!jnickname.is_null()) {
+    nickname = ConvertJavaStringToUTF16(jnickname);
+  }
+
+  const ScopedJavaLocalRef<jobject>& jdisplay_icon_url =
+      Java_PaymentInstrument_getDisplayIconUrl(env, jewallet);
+  GURL display_icon_url = GURL();
+  if (!jdisplay_icon_url.is_null()) {
+    display_icon_url = url::GURLAndroid::ToNativeGURL(env, jdisplay_icon_url);
+  }
+
+  bool is_fido_enrolled = static_cast<bool>(
+      Java_PaymentInstrument_getIsFidoEnrolled(env, jewallet));
+
+  const ScopedJavaLocalRef<jstring>& jewallet_name =
+      Java_Ewallet_getEwalletName(env, jewallet);
+  std::u16string ewallet_name;
+  if (!jewallet_name.is_null()) {
+    ewallet_name = ConvertJavaStringToUTF16(jewallet_name);
+  }
+
+  const ScopedJavaLocalRef<jstring>& jaccount_display_name =
+      Java_Ewallet_getAccountDisplayName(env, jewallet);
+  std::u16string account_display_name;
+  if (!jaccount_display_name.is_null()) {
+    account_display_name = ConvertJavaStringToUTF16(jaccount_display_name);
+  }
+
+  return Ewallet(instrument_id, nickname, display_icon_url, ewallet_name,
+                 account_display_name, /*supported_payment_link_uris=*/{},
+                 is_fido_enrolled);
+}
+
 ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileGUIDs(
     JNIEnv* env,
     const std::vector<const AutofillProfile*>& profiles) {
@@ -621,6 +709,23 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
       minimal_fields_shown, g_browser_process->GetApplicationLocale(), &labels);
 
   return base::android::ToJavaArrayOfStrings(env, labels);
+}
+
+// static
+std::vector<int>
+PersonalDataManagerAndroid::GetPaymentRailsFromPaymentInstrument(
+    const PaymentInstrument& payment_instrument) {
+  DenseSet<PaymentInstrument::PaymentRail> payment_instrument_supported_rails =
+      payment_instrument.supported_rails();
+  std::vector<int> supported_payment_rails_array(
+      payment_instrument.supported_rails().size());
+  std::transform(payment_instrument_supported_rails.begin(),
+                 payment_instrument_supported_rails.end(),
+                 supported_payment_rails_array.begin(),
+                 [](PaymentInstrument::PaymentRail rail) {
+                   return static_cast<int>(rail);
+                 });
+  return supported_payment_rails_array;
 }
 
 ScopedJavaLocalRef<jobject>

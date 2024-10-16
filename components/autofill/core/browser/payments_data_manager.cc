@@ -1936,6 +1936,10 @@ void PaymentsDataManager::AddMaskedBankAccountForTest(
   masked_bank_accounts_.push_back(bank_account);
 }
 
+void PaymentsDataManager::AddEwalletForTest(const Ewallet& ewallet) {
+  ewallet_accounts_.push_back(ewallet);
+}
+
 void PaymentsDataManager::AddServerCreditCardForTest(
     std::unique_ptr<CreditCard> credit_card) {
   server_credit_cards_.push_back(std::move(credit_card));

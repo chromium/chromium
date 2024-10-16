@@ -47,6 +47,7 @@ import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
@@ -1362,5 +1363,46 @@ public class PersonalDataManagerTest {
                                         AutofillTestHelper
                                                 .getPersonalDataManagerForLastUsedProfile()
                                                 .getMaskedBankAccounts()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testGetEwallet() throws TimeoutException {
+        Ewallet ewallet1 =
+                new Ewallet.Builder()
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setSupportedPaymentRails(new int[] {2})
+                                        .setIsFidoEnrolled(true)
+                                        .build())
+                        .setEwalletName("eWallet name 1")
+                        .setAccountDisplayName("account display name 1")
+                        .build();
+        Ewallet ewallet2 =
+                new Ewallet.Builder()
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(200)
+                                        .setNickname("nickname2")
+                                        .setSupportedPaymentRails(new int[] {2})
+                                        .setDisplayIconUrl(new GURL("http://example.com"))
+                                        .setIsFidoEnrolled(false)
+                                        .build())
+                        .setEwalletName("eWallet name 2")
+                        .setAccountDisplayName("account display name 2")
+                        .build();
+        AutofillTestHelper.addEwallet(ewallet1);
+        AutofillTestHelper.addEwallet(ewallet2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertThat(new Ewallet[] {ewallet1, ewallet2})
+                                .isEqualTo(
+                                        AutofillTestHelper
+                                                .getPersonalDataManagerForLastUsedProfile()
+                                                .getEwallets()));
     }
 }

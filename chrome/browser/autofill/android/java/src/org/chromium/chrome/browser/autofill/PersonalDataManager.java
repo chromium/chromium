@@ -25,6 +25,7 @@ import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -929,6 +930,11 @@ public class PersonalDataManager implements Destroyable {
         return PersonalDataManagerJni.get().getMaskedBankAccounts(mPersonalDataManagerAndroid);
     }
 
+    public Ewallet[] getEwallets() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get().getEwallets(mPersonalDataManagerAndroid);
+    }
+
     /**
      * Records the use of the profile associated with the specified {@code guid}. Effectively
      * increments the use count of the profile and sets its use date to the current time. Also logs
@@ -1272,5 +1278,7 @@ public class PersonalDataManager implements Destroyable {
         boolean shouldShowAddIbanButtonOnSettingsPage(long nativePersonalDataManagerAndroid);
 
         BankAccount[] getMaskedBankAccounts(long nativePersonalDataManagerAndroid);
+
+        Ewallet[] getEwallets(long nativePersonalDataManagerAndroid);
     }
 }

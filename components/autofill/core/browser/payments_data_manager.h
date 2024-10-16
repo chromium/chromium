@@ -477,6 +477,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // PaymentsDataManager.
   void AddMaskedBankAccountForTest(const BankAccount& bank_account);
 
+  // Add an eWallet account to the cached list of eWallet accounts in
+  // PaymentsDataManager.
+  void AddEwalletForTest(const Ewallet& ewallet);
+
   // Sets a server credit card for test.
   //
   // TODO(crbug.com/330865438): This method currently sets `server_cards_`
