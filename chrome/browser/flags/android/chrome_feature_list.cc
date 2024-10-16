@@ -139,7 +139,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kLoadingPredictorLimitPreconnectSocketCount,
     &features::kNotificationOneTapUnsubscribe,
     &features::kPrivacyGuideAndroid3,
-    &features::kPrivacyGuidePreloadAndroid,
     &features::kPrefetchBrowserInitiatedTriggers,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,

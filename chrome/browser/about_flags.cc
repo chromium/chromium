@@ -9250,13 +9250,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrivacyGuideAndroid3)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"privacy-guide-preload-android",
-     flag_descriptions::kPrivacyGuidePreloadAndroidName,
-     flag_descriptions::kPrivacyGuidePreloadAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kPrivacyGuidePreloadAndroid)},
-#endif
-
     {"prerender2", flag_descriptions::kPrerender2Name,
      flag_descriptions::kPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerender2)},

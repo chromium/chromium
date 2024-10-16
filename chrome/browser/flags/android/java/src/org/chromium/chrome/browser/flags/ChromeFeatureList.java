@@ -420,7 +420,6 @@ public abstract class ChromeFeatureList {
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
     public static final String PRICE_INSIGHTS = "PriceInsights";
     public static final String PRIVACY_GUIDE_ANDROID_3 = "PrivacyGuideAndroid3";
-    public static final String PRIVACY_GUIDE_PRELOAD_ANDROID = "PrivacyGuidePreloadAndroid";
     public static final String PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE =
             "PrivacySandboxActivityTypeStorage";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
@@ -696,8 +695,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
             newCachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
-    public static final CachedFlag sPrivacyGuidePreloadAndroid =
-            newCachedFlag(PRIVACY_GUIDE_PRELOAD_ANDROID, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             newCachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
@@ -829,7 +826,6 @@ public abstract class ChromeFeatureList {
                     sPriceChangeModule,
                     sPriceInsights,
                     sPrivacyGuideAndroid3,
-                    sPrivacyGuidePreloadAndroid,
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
                     sPostGetMyMemoryStateToBackground,

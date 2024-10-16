@@ -1792,9 +1792,6 @@ extern const char kPriceChangeModuleDescription[];
 extern const char kPrivacyGuideAndroid3Name[];
 extern const char kPrivacyGuideAndroid3Description[];
 
-extern const char kPrivacyGuidePreloadAndroidName[];
-extern const char kPrivacyGuidePreloadAndroidDescription[];
-
 extern const char kPrivacySandboxAdsAPIsOverrideName[];
 extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
