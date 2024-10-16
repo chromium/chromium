@@ -1907,7 +1907,7 @@
       // Add Request.bytes() and Response.bytes()
       // https://chromestatus.com/feature/5239268180754432
       name: "FetchBodyBytes",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The Blink runtime-enabled feature name for the API's IDL.
