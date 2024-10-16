@@ -57,6 +57,12 @@ class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
                      }).SetDescription("EnsureHandle()"));
   }
 
+  auto SetShown() {
+    return std::move(Do([this]() {
+                       notice_handle_.SetShown();
+                     }).SetDescription("SetShown()"));
+  }
+
   auto ReleaseHandle() {
     return std::move(Do([this]() {
                        notice_handle_.Release();
@@ -76,6 +82,6 @@ IN_PROC_BROWSER_TEST_F(ProductMessagingControllerUiTest, NoticeBlocksIPH) {
       QueueNotice(),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
                      user_education::FeaturePromoResult::kBlockedByPromo),
-      EnsureHandle(), ReleaseHandle(),
+      EnsureHandle(), SetShown(), ReleaseHandle(),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature));
 }

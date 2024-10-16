@@ -7,6 +7,7 @@
 
 #include <map>
 #include <ostream>
+#include <set>
 #include <string>
 
 #include "base/time/time.h"
@@ -124,6 +125,19 @@ struct NewBadgeData {
 
   // The first time the promoted feature is enabled.
   base::Time feature_enabled_time;
+};
+
+// Data used by the ProductMessagingController.
+struct ProductMessagingData {
+  ProductMessagingData();
+  ProductMessagingData(const ProductMessagingData&);
+  ProductMessagingData(ProductMessagingData&&) noexcept;
+  ProductMessagingData& operator=(const ProductMessagingData&);
+  ProductMessagingData& operator=(ProductMessagingData&&) noexcept;
+  ~ProductMessagingData();
+
+  // Notices that were shown this session.
+  std::set<std::string> shown_notices;
 };
 
 }  // namespace user_education

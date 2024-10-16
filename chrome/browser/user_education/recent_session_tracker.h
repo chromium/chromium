@@ -31,7 +31,7 @@ class RecentSessionTracker {
       base::RepeatingCallback<void(const RecentSessionData&)>;
 
   RecentSessionTracker(
-      user_education::FeaturePromoSessionManager& session_manager,
+      user_education::FeaturePromoSessionProvider& session_provider,
       user_education::FeaturePromoStorageService& feature_promo_storage,
       RecentSessionDataStorageService& recent_session_storage);
   RecentSessionTracker(const RecentSessionTracker&) = delete;

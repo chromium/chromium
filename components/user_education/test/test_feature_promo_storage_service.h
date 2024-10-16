@@ -33,17 +33,22 @@ class TestFeaturePromoStorageService : public FeaturePromoStorageService {
   FeaturePromoPolicyData ReadPolicyData() const override;
   void SavePolicyData(const FeaturePromoPolicyData& policy_data) override;
   void ResetPolicy() override;
-  user_education::NewBadgeData ReadNewBadgeData(
+  NewBadgeData ReadNewBadgeData(
       const base::Feature& new_badge_feature) const override;
   void SaveNewBadgeData(const base::Feature& new_badge_feature,
                         const NewBadgeData& new_badge_data) override;
   void ResetNewBadge(const base::Feature& new_badge_feature) override;
+  ProductMessagingData ReadProductMessagingData() const override;
+  void SaveProductMessagingData(
+      const ProductMessagingData& product_messaging_data) override;
+  void ResetProductMessagingData() override;
 
  private:
   std::map<const base::Feature*, FeaturePromoData> promo_data_;
   FeaturePromoSessionData session_data_;
   FeaturePromoPolicyData policy_data_;
   std::map<const base::Feature*, NewBadgeData> new_badge_data_;
+  ProductMessagingData product_messaging_data_;
 };
 
 }  // namespace user_education::test

@@ -62,6 +62,10 @@ FeaturePromoSessionManager::AddNewSessionCallback(
   return new_session_callbacks_.Add(std::move(new_session_callback));
 }
 
+bool FeaturePromoSessionManager::GetNewSessionSinceStartup() const {
+  return new_session_since_startup_;
+}
+
 void FeaturePromoSessionManager::OnNewSession(
     const base::Time old_start_time,
     const base::Time old_active_time,

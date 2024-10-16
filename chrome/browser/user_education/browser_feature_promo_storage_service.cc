@@ -72,6 +72,10 @@ constexpr char kNewBadgeUsedCountPath[] = "used_count";
 // The time the promoted feature was first enabled.
 constexpr char kNewBadgeFeatureEnabledTimePath[] = "feature_enabled_time";
 
+// Path to the shown notices in the current session.
+constexpr char kProductMessagingShownNoticesPath[] =
+    "in_product_help.shown_notices";
+
 // Base path to recent session start times.
 constexpr char kRecentSessionStartTimesPath[] =
     "in_product_help.recent_session_start_times";
@@ -167,6 +171,7 @@ void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
   registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time(),
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
+  registry->RegisterListPref(kProductMessagingShownNoticesPath);
   registry->RegisterListPref(kRecentSessionStartTimesPath);
   registry->RegisterTimePref(kRecentSessionEnabledTimePath, base::Time());
 }
@@ -389,6 +394,34 @@ void BrowserFeaturePromoStorageService::SaveNewBadgeData(
   pref_data.SetByDottedPath(
       path_prefix + kNewBadgeFeatureEnabledTimePath,
       base::TimeToValue(new_badge_data.feature_enabled_time));
+}
+
+user_education::ProductMessagingData
+BrowserFeaturePromoStorageService::ReadProductMessagingData() const {
+  const auto& pref_data =
+      profile_->GetPrefs()->GetList(kProductMessagingShownNoticesPath);
+  user_education::ProductMessagingData data;
+  for (const auto& entry : pref_data) {
+    if (const auto* value = entry.GetIfString()) {
+      data.shown_notices.insert(*value);
+    }
+  }
+  return data;
+}
+
+void BrowserFeaturePromoStorageService::SaveProductMessagingData(
+    const user_education::ProductMessagingData& product_messaging_data) {
+  ScopedListPrefUpdate update(profile_->GetPrefs(),
+                              kProductMessagingShownNoticesPath);
+  auto& pref_data = update.Get();
+  pref_data.clear();
+  for (const auto& shown : product_messaging_data.shown_notices) {
+    pref_data.Append(shown);
+  }
+}
+
+void BrowserFeaturePromoStorageService::ResetProductMessagingData() {
+  profile_->GetPrefs()->ClearPref(kProductMessagingShownNoticesPath);
 }
 
 RecentSessionData BrowserFeaturePromoStorageService::ReadRecentSessionData()

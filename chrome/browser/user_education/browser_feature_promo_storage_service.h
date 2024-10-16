@@ -74,6 +74,11 @@ class BrowserFeaturePromoStorageService
       const base::Feature& new_badge_feature,
       const user_education::NewBadgeData& new_badge_data) override;
   void ResetNewBadge(const base::Feature& new_badge_feature) override;
+  user_education::ProductMessagingData ReadProductMessagingData()
+      const override;
+  void SaveProductMessagingData(const user_education::ProductMessagingData&
+                                    product_messaging_data) override;
+  void ResetProductMessagingData() override;
 
   // RecentSessionDataStorageService:
   RecentSessionData ReadRecentSessionData() const override;

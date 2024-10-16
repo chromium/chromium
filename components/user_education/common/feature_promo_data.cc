@@ -86,4 +86,15 @@ FeaturePromoPolicyData& FeaturePromoPolicyData::operator=(
     FeaturePromoPolicyData&&) noexcept = default;
 FeaturePromoPolicyData::~FeaturePromoPolicyData() = default;
 
+ProductMessagingData::ProductMessagingData() = default;
+ProductMessagingData::ProductMessagingData(const ProductMessagingData&) =
+    default;
+ProductMessagingData::ProductMessagingData(ProductMessagingData&&) noexcept =
+    default;
+ProductMessagingData& ProductMessagingData::operator=(
+    const ProductMessagingData&) = default;
+ProductMessagingData& ProductMessagingData::operator=(
+    ProductMessagingData&&) noexcept = default;
+ProductMessagingData::~ProductMessagingData() = default;
+
 }  // namespace user_education

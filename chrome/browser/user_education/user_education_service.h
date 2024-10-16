@@ -92,12 +92,12 @@ class UserEducationService : public KeyedService {
   user_education::HelpBubbleFactoryRegistry help_bubble_factory_registry_;
   user_education::FeaturePromoRegistry feature_promo_registry_;
   BrowserTutorialService tutorial_service_;
-  user_education::ProductMessagingController product_messaging_controller_;
   std::unique_ptr<BrowserFeaturePromoStorageService>
       feature_promo_storage_service_;
   user_education::FeaturePromoSessionManager feature_promo_session_manager_;
   std::unique_ptr<user_education::FeaturePromoSessionPolicy>
       feature_promo_session_policy_;
+  user_education::ProductMessagingController product_messaging_controller_;
   std::unique_ptr<user_education::NewBadgeRegistry> new_badge_registry_;
   std::unique_ptr<user_education::NewBadgeController> new_badge_controller_;
   std::unique_ptr<RecentSessionTracker> recent_session_tracker_;

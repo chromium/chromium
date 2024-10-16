@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/user_education/recent_session_tracker.h"
+
 #include <algorithm>
 #include <functional>
 
@@ -10,18 +11,19 @@
 #include "base/time/time.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/feature_promo_session_manager.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 
 RecentSessionTracker::RecentSessionTracker(
-    user_education::FeaturePromoSessionManager& session_manager,
+    user_education::FeaturePromoSessionProvider& session_provider,
     user_education::FeaturePromoStorageService& feature_promo_storage,
     RecentSessionDataStorageService& recent_session_storage)
-    : subscription_(session_manager.AddNewSessionCallback(
+    : subscription_(session_provider.AddNewSessionCallback(
           base::BindRepeating(&RecentSessionTracker::OnSessionStart,
                               base::Unretained(this)))),
       feature_promo_storage_(feature_promo_storage),
       recent_session_storage_(recent_session_storage) {
-  if (session_manager.new_session_since_startup()) {
+  if (session_provider.GetNewSessionSinceStartup()) {
     OnSessionStart();
   }
 }

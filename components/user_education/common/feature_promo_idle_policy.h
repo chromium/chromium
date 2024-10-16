@@ -11,6 +11,7 @@
 namespace user_education {
 
 class FeaturePromoSessionManager;
+class FeaturePromoSessionProvider;
 class FeaturePromoStorageService;
 
 // Used to determine when the session is active or not based on periods of
@@ -26,7 +27,7 @@ class FeaturePromoIdlePolicy {
   virtual ~FeaturePromoIdlePolicy();
 
   // Called by FeaturePromoSessionManager to initialize required data members.
-  void Init(const FeaturePromoSessionManager* session_manager,
+  void Init(const FeaturePromoSessionProvider* session_provider,
             const FeaturePromoStorageService* storage_service);
 
   // Determines if a new session should start based on the start of the last
@@ -68,7 +69,7 @@ class FeaturePromoIdlePolicy {
   // the old session can be discarded and a new one started immediately.
   const base::TimeDelta minimum_valid_session_length_;
 
-  raw_ptr<const FeaturePromoSessionManager> session_manager_ = nullptr;
+  raw_ptr<const FeaturePromoSessionProvider> session_provider_ = nullptr;
   raw_ptr<const FeaturePromoStorageService> storage_service_ = nullptr;
 };
 

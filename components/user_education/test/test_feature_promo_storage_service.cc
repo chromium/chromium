@@ -55,7 +55,7 @@ void TestFeaturePromoStorageService::ResetPolicy() {
   policy_data_ = FeaturePromoPolicyData();
 }
 
-user_education::NewBadgeData TestFeaturePromoStorageService::ReadNewBadgeData(
+NewBadgeData TestFeaturePromoStorageService::ReadNewBadgeData(
     const base::Feature& new_badge_feature) const {
   const auto it = new_badge_data_.find(&new_badge_feature);
   return it == new_badge_data_.end() ? NewBadgeData() : it->second;
@@ -70,6 +70,20 @@ void TestFeaturePromoStorageService::SaveNewBadgeData(
 void TestFeaturePromoStorageService::ResetNewBadge(
     const base::Feature& new_badge_feature) {
   new_badge_data_.erase(&new_badge_feature);
+}
+
+ProductMessagingData TestFeaturePromoStorageService::ReadProductMessagingData()
+    const {
+  return product_messaging_data_;
+}
+
+void TestFeaturePromoStorageService::SaveProductMessagingData(
+    const ProductMessagingData& product_messaging_data) {
+  product_messaging_data_ = product_messaging_data;
+}
+
+void TestFeaturePromoStorageService::ResetProductMessagingData() {
+  product_messaging_data_ = ProductMessagingData();
 }
 
 }  // namespace user_education::test

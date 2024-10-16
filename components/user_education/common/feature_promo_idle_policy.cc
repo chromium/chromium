@@ -26,9 +26,9 @@ FeaturePromoIdlePolicy::FeaturePromoIdlePolicy(
 FeaturePromoIdlePolicy::~FeaturePromoIdlePolicy() = default;
 
 void FeaturePromoIdlePolicy::Init(
-    const FeaturePromoSessionManager* session_manager,
+    const FeaturePromoSessionProvider* session_provider,
     const FeaturePromoStorageService* storage_service) {
-  session_manager_ = session_manager;
+  session_provider_ = session_provider;
   storage_service_ = storage_service;
 }
 

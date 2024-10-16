@@ -117,7 +117,7 @@ TEST_F(FeaturePromoSessionManagerTest, CheckCallbackNoInitialSession) {
   manager.Init(&storage_service(), std::move(observer_ptr),
                std::move(policy_ptr));
 
-  EXPECT_FALSE(manager.new_session_since_startup());
+  EXPECT_FALSE(manager.GetNewSessionSinceStartup());
   auto subscription = manager.AddNewSessionCallback(new_session_callback.Get());
 }
 
@@ -141,7 +141,7 @@ TEST_F(FeaturePromoSessionManagerTest, CheckCallbackWithInitialSession) {
   clock().SetNow(kMuchLaterNow);
   observer->SetLastActiveTime(kMuchLater, /*send_update=*/true);
 
-  EXPECT_TRUE(manager.new_session_since_startup());
+  EXPECT_TRUE(manager.GetNewSessionSinceStartup());
   auto subscription = manager.AddNewSessionCallback(new_session_callback.Get());
 }
 

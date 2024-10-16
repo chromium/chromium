@@ -35,6 +35,9 @@ UserEducationService::UserEducationService(
               : std::make_unique<user_education::FeaturePromoSessionPolicy>()) {
   feature_promo_session_policy_->Init(&feature_promo_session_manager_,
                                       feature_promo_storage_service_.get());
+  product_messaging_controller_.Init(feature_promo_session_manager_,
+                                     *feature_promo_storage_service_);
+
   if (allows_promos) {
     new_badge_registry_ = std::make_unique<user_education::NewBadgeRegistry>();
     new_badge_controller_ =

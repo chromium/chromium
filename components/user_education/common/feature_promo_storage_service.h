@@ -61,7 +61,7 @@ class FeaturePromoStorageService {
   // Reset the policy data.
   virtual void ResetPolicy() = 0;
 
-  virtual user_education::NewBadgeData ReadNewBadgeData(
+  virtual NewBadgeData ReadNewBadgeData(
       const base::Feature& new_badge_feature) const = 0;
 
   virtual void SaveNewBadgeData(const base::Feature& new_badge_feature,
@@ -69,6 +69,13 @@ class FeaturePromoStorageService {
 
   // Resets the state of `new_badge_feature`.
   virtual void ResetNewBadge(const base::Feature& new_badge_feature) = 0;
+
+  virtual ProductMessagingData ReadProductMessagingData() const = 0;
+
+  virtual void SaveProductMessagingData(
+      const ProductMessagingData& product_messaging_data) = 0;
+
+  virtual void ResetProductMessagingData() = 0;
 
   // Returns the set of apps that `iph_feature` has been shown for.
   KeyedFeaturePromoDataMap GetKeyedPromoData(

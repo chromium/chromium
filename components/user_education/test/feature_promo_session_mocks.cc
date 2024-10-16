@@ -32,6 +32,26 @@ std::optional<base::Time> TestIdleObserver::MaybeGetNewLastActiveTime() const {
 MockIdlePolicy::MockIdlePolicy() = default;
 MockIdlePolicy::~MockIdlePolicy() = default;
 
+TestFeaturePromoSessionProvider::TestFeaturePromoSessionProvider(
+    bool has_new_session)
+    : has_new_session_(has_new_session) {}
+TestFeaturePromoSessionProvider::~TestFeaturePromoSessionProvider() = default;
+
+base::CallbackListSubscription
+TestFeaturePromoSessionProvider::AddNewSessionCallback(
+    base::RepeatingClosure new_session_callback) {
+  return callbacks_.Add(std::move(new_session_callback));
+}
+
+bool TestFeaturePromoSessionProvider::GetNewSessionSinceStartup() const {
+  return has_new_session_;
+}
+
+void TestFeaturePromoSessionProvider::StartNewSession() {
+  has_new_session_ = true;
+  callbacks_.Notify();
+}
+
 MockFeaturePromoSessionManager::MockFeaturePromoSessionManager() = default;
 MockFeaturePromoSessionManager::~MockFeaturePromoSessionManager() = default;
 

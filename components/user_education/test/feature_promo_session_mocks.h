@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_USER_EDUCATION_TEST_FEATURE_PROMO_SESSION_MOCKS_H_
 #define COMPONENTS_USER_EDUCATION_TEST_FEATURE_PROMO_SESSION_MOCKS_H_
 
+#include "base/callback_list.h"
 #include "components/user_education/common/feature_promo_idle_observer.h"
 #include "components/user_education/common/feature_promo_idle_policy.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_education::test {
@@ -42,6 +42,25 @@ class MockIdlePolicy : public FeaturePromoIdlePolicy {
               IsNewSession,
               (base::Time, base::Time, base::Time),
               (const, override));
+};
+
+// Fakes the behavior of a session provider.
+class TestFeaturePromoSessionProvider : public FeaturePromoSessionProvider {
+ public:
+  explicit TestFeaturePromoSessionProvider(bool has_new_session);
+  ~TestFeaturePromoSessionProvider() override;
+
+  // FeaturePromoSessionProvider:
+  base::CallbackListSubscription AddNewSessionCallback(
+      base::RepeatingClosure new_session_callback) override;
+  bool GetNewSessionSinceStartup() const override;
+
+  // Starts a new session.
+  void StartNewSession();
+
+ private:
+  base::RepeatingClosureList callbacks_;
+  bool has_new_session_;
 };
 
 // Mock version of `FeaturePromoSessionManager` that can monitor when updates or

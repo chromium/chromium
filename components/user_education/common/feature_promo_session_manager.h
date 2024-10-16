@@ -18,15 +18,31 @@ namespace user_education {
 class FeaturePromoIdlePolicy;
 class FeaturePromoStorageService;
 
+// Provides session state to clients of the session manager.
+class FeaturePromoSessionProvider {
+ public:
+  FeaturePromoSessionProvider() = default;
+  virtual ~FeaturePromoSessionProvider() = default;
+
+  // Registers a callback that will be called whenever a new session happens.
+  // To avoid a race condition at startup, you should also check
+  // `new_session_since_startup()`.
+  virtual base::CallbackListSubscription AddNewSessionCallback(
+      base::RepeatingClosure new_session_callback) = 0;
+
+  // Returns whether there has been a new session since application startup.
+  virtual bool GetNewSessionSinceStartup() const = 0;
+};
+
 // Governs sessions for user education. May use cues such as application open
 // and close times as well as active and inactive periods to determine when a
 // session should start or end.
-class FeaturePromoSessionManager {
+class FeaturePromoSessionManager : public FeaturePromoSessionProvider {
  public:
   FeaturePromoSessionManager();
   FeaturePromoSessionManager(const FeaturePromoSessionManager&) = delete;
   void operator=(const FeaturePromoSessionManager&) = delete;
-  virtual ~FeaturePromoSessionManager();
+  ~FeaturePromoSessionManager() override;
 
   // Initialize the session manager. If overridden, the base class must be
   // called. In derived classes, internal data should be set up or restored
@@ -39,14 +55,10 @@ class FeaturePromoSessionManager {
   // session.
   void MaybeUpdateSessionState();
 
-  // Registers a callback that will be called whenever a new session happens.
-  // To avoid a race condition at startup, you should also check
-  // `new_session_since_startup()`.
+  // FeaturePromoSessionProvider:
   base::CallbackListSubscription AddNewSessionCallback(
-      base::RepeatingClosure new_session_callback);
-
-  // Returns whether there has been a new session since application startup.
-  bool new_session_since_startup() const { return new_session_since_startup_; }
+      base::RepeatingClosure new_session_callback) override;
+  bool GetNewSessionSinceStartup() const override;
 
   // Test-only methods.
   FeaturePromoStorageService* storage_service_for_testing() {

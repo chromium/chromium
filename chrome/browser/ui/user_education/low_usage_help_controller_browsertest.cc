@@ -56,7 +56,7 @@ class LowUsageHelpControllerBrowsertest : public InteractiveFeaturePromoTest {
         Do([this]() {
           auto& session_manager =
               GetUserEducationService().feature_promo_session_manager();
-          if (session_manager.new_session_since_startup()) {
+          if (session_manager.GetNewSessionSinceStartup()) {
             SendSessionEvent();
           } else {
             session_subscription_ =
