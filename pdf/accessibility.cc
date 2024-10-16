@@ -47,6 +47,7 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   page_info.page_index = page_index;
   page_info.bounds = page->rect();
   page_info.char_count = char_count;
+  page_info.is_searchified = page->IsPageSearchified();
 
   chars.resize(page_info.char_count);
   for (uint32_t i = 0; i < char_count; ++i) {

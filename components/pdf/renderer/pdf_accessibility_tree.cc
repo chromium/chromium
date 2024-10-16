@@ -554,6 +554,18 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     return;
   }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  did_searchify_run_ |= page_info.is_searchified;
+  if (!was_text_converted_from_image_) {
+    for (const auto& text_run : text_runs) {
+      if (text_run.is_searchified) {
+        was_text_converted_from_image_ = true;
+        break;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
   // If unsanitized data is found, don't trust it and stop creation of the
   // accessibility tree. Now that we already created the initial tree with the
   // root node and the status node, destroy the existing tree as well.
@@ -600,6 +612,22 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (page_index == page_count_ - 1) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+      if (did_searchify_run_) {
+        SetStatusMessage(was_text_converted_from_image_
+                             ? IDS_PDF_OCR_COMPLETED
+                             : IDS_PDF_OCR_NO_RESULT);
+        UnserializeNodes();
+        return;
+      }
+      if (!did_get_a_text_run_ && did_have_an_image_) {
+        SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
+        UnserializeNodes();
+        return;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     if (!PdfOcrInRenderer() || did_get_a_text_run_ || !did_have_an_image_) {
       // In this case, PDF OCR doesn't run. Thus, set the status node to notify
       // users that the PDF content has been loaded into an accessibility tree.

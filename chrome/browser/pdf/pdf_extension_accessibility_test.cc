@@ -1392,16 +1392,9 @@ class PdfOcrIntegrationTest
   }
 
   int GetExpectedStatus(bool has_content) {
-    // TODO(crbug.com/360803943): Update `PdfAccessibilityTree` to send the same
-    // notifications when searchify is enabled.
-    if (IsSearchifyEnabled()) {
-      return IDS_PDF_LOADED_TO_A11Y_TREE;
-    }
-
     if (!IsOcrAvailable()) {
       return IDS_PDF_OCR_FEATURE_ALERT;
     }
-
     return has_content ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_NO_RESULT;
   }
 
@@ -1456,30 +1449,31 @@ class PdfOcrIntegrationTest
         GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
     std::string ax_tree_dump =
         DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
-    std::string expected_tree_dump =
-        GetExpectedAXTreeDumpForPdf(test_pdf_path, IsOcrAvailable());
+    std::string expected_tree_dump = GetExpectedAXTreeDumpForPdf(
+        test_pdf_path, IsOcrAvailable(), IsSearchifyEnabled());
     ASSERT_NE("", expected_tree_dump);
-
-    // TODO(crbug.com/360803943): Update `PdfAccessibilityTree` to add header
-    // and footer to the searchify extracted text, similar to the enabled OCR
-    // case.
-    if (IsSearchifyEnabled()) {
-      return;
-    }
 
     ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
   }
 
  private:
   std::string GetExpectedAXTreeDumpForPdf(const base::FilePath& pdf_path,
-                                          bool is_ocr_available) {
+                                          bool is_ocr_available,
+                                          bool is_searchify_enabled) {
     // If the given `pdf_path` contains a filename, "test.pdf", an expected
     // file path will have a filename, "test-expected-with-pdfocr.txt", when
     // PDF OCR is on. `expected_file_suffix` will be created based on whether
     // PDF OCR is on and whether it has a separate output for Windows.
-    base::FilePath::StringType expected_file_suffix =
-        is_ocr_available ? FILE_PATH_LITERAL("-expected-with-pdfocr")
-                         : FILE_PATH_LITERAL("-expected-without-pdfocr");
+    base::FilePath::StringType expected_file_suffix;
+
+    if (is_ocr_available) {
+      expected_file_suffix =
+          is_searchify_enabled
+              ? FILE_PATH_LITERAL("-expected-with-pdf-searchify")
+              : FILE_PATH_LITERAL("-expected-with-pdfocr");
+    } else {
+      expected_file_suffix = FILE_PATH_LITERAL("-expected-without-pdfocr");
+    }
 #if BUILDFLAG(IS_WIN)
     // When OCR is unavailable, each test input has a separate expected output
     // for Windows. Otherwise, only "blank_image.pdf" has a separate expected
@@ -1551,6 +1545,8 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
             screen_ai::ScreenAIInstallState::GetInstance()->get_state());
 }
 
+// TODO(crbug.com/360803943): Add a test case with more than one image.
+
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
   RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
                        GetExpectedStatus(/*has_content=*/true));
@@ -1562,6 +1558,10 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, TestBatchingWithTwentyPagePDF) {
+  if (IsSearchifyEnabled()) {
+    GTEST_SKIP()
+        << "PDF Searchify does not use batching, this test is redundant.";
+  }
   RunPDFAXTreeDumpTest("inaccessible-text-in-twenty-page.pdf",
                        GetExpectedStatus(/*has_content=*/true));
 }

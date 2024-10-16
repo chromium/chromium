@@ -31,6 +31,7 @@ struct AccessibilityPageInfo {
   gfx::Rect bounds;
   uint32_t text_run_count = 0;
   uint32_t char_count = 0;
+  bool is_searchified = false;
 };
 
 // See PDF Reference 1.7, page 402, table 5.3.
