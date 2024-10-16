@@ -41,74 +41,50 @@ const CGFloat kBiggerIconPointSize = 22;
 }
 
 + (instancetype)myDriveItem {
-  static DriveFilePickerItem* item;
-  static dispatch_once_t onceToken;
-  // TODO(crbug.com/344812548): Add a11y title.
-  dispatch_once(&onceToken, ^{
-    item = [[DriveFilePickerItem alloc]
-        initWithIdentifier:kDriveFilePickerMyDriveItemIdentifier
-                     title:l10n_util::GetNSString(
-                               IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE)
-                  subtitle:nil
-                      icon:CustomSymbolWithPointSize(kMyDriveSymbol,
-                                                     kIconPointSize)
-                      type:DriveItemType::kMyDrive];
-  });
-  return item;
+  return [[DriveFilePickerItem alloc]
+      initWithIdentifier:kDriveFilePickerMyDriveItemIdentifier
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE)
+                subtitle:nil
+                    icon:CustomSymbolWithPointSize(kMyDriveSymbol,
+                                                   kIconPointSize)
+                    type:DriveItemType::kMyDrive];
 }
 
 + (instancetype)sharedDrivesItem {
-  static DriveFilePickerItem* item;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    item = [[DriveFilePickerItem alloc]
-        initWithIdentifier:kDriveFilePickerSharedDrivesItemIdentifier
-                     title:l10n_util::GetNSString(
-                               IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES)
-                  subtitle:nil
-                      icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
-                                                     kIconPointSize)
-                      type:DriveItemType::kSharedDrives];
-  });
-  return item;
+  return [[DriveFilePickerItem alloc]
+      initWithIdentifier:kDriveFilePickerSharedDrivesItemIdentifier
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES)
+                subtitle:nil
+                    icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
+                                                   kIconPointSize)
+                    type:DriveItemType::kSharedDrives];
 }
 
 + (instancetype)starredItem {
-  static DriveFilePickerItem* item;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    item = [[DriveFilePickerItem alloc]
-        initWithIdentifier:kDriveFilePickerStarredItemIdentifier
-                     title:l10n_util::GetNSString(
-                               IDS_IOS_DRIVE_FILE_PICKER_STARRED)
-                  subtitle:nil
-                      icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
-                                                      kIconPointSize)
-                      type:DriveItemType::kStarred];
-  });
-  return item;
+  return [[DriveFilePickerItem alloc]
+      initWithIdentifier:kDriveFilePickerStarredItemIdentifier
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_STARRED)
+                subtitle:nil
+                    icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+                                                    kIconPointSize)
+                    type:DriveItemType::kStarred];
 }
 
 + (instancetype)recentItem {
-  static DriveFilePickerItem* item;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    item = [[DriveFilePickerItem alloc]
-        initWithIdentifier:kDriveFilePickerRecentItemIdentifier
-                     title:l10n_util::GetNSString(
-                               IDS_IOS_DRIVE_FILE_PICKER_RECENT)
-                  subtitle:nil
-                      icon:DefaultSymbolWithPointSize(kClockSymbol,
-                                                      kIconPointSize)
-                      type:DriveItemType::kRecent];
-  });
-  return item;
+  return [[DriveFilePickerItem alloc]
+      initWithIdentifier:kDriveFilePickerRecentItemIdentifier
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_DRIVE_FILE_PICKER_RECENT)
+                subtitle:nil
+                    icon:DefaultSymbolWithPointSize(kClockSymbol,
+                                                    kIconPointSize)
+                    type:DriveItemType::kRecent];
 }
 
 + (instancetype)sharedWithMeItem {
-  static DriveFilePickerItem* item;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
     UIImageConfiguration* drive_symbol_configuration =
         [UIImageSymbolConfiguration
             configurationWithPointSize:kBiggerIconPointSize
@@ -117,15 +93,13 @@ const CGFloat kBiggerIconPointSize = 22;
     UIImage* drive_symbol = DefaultSymbolWithConfiguration(
         kPersonTwoSymbol, drive_symbol_configuration);
 
-    item = [[DriveFilePickerItem alloc]
+    return [[DriveFilePickerItem alloc]
         initWithIdentifier:kDriveFilePickerSharedWithMeItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME)
                   subtitle:nil
                       icon:drive_symbol
                       type:DriveItemType::kSharedWithMe];
-  });
-  return item;
 }
 
 @end

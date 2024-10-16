@@ -158,6 +158,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   UIActivityIndicatorView* _loadingIndicator;
 
   // Background views.
+  UIView* _backgroundViewWrapper;
   UIActivityIndicatorView* _backgroundLoadingIndicator;
   UIView* _backgroundEmptyFolderView;
   UIView* _backgroundNoMatchingResultView;
@@ -224,6 +225,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   self.tableView.tableHeaderView =
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+  self.tableView.backgroundView = [[UIView alloc] init];
+  [self.tableView.backgroundView addSubview:_backgroundViewWrapper];
+  AddSameConstraints(_backgroundViewWrapper, self.view.safeAreaLayoutGuide);
 
   self.navigationController.toolbarHidden = NO;
 
@@ -509,11 +513,28 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 // Initializes background views.
 - (void)initBackgroundViews {
+  _backgroundViewWrapper = [[UIView alloc] init];
+  _backgroundViewWrapper.translatesAutoresizingMaskIntoConstraints = NO;
+  // Initialize background loading indicator view.
   _backgroundLoadingIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _backgroundLoadingIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  [_backgroundLoadingIndicator startAnimating];
+  [_backgroundViewWrapper addSubview:_backgroundLoadingIndicator];
+  AddSameCenterConstraints(_backgroundViewWrapper, _backgroundLoadingIndicator);
+  // Initialize background empty folder view.
   _backgroundEmptyFolderView = [DriveFilePickerEmptyView emptyDriveFolderView];
+  _backgroundEmptyFolderView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_backgroundViewWrapper addSubview:_backgroundEmptyFolderView];
+  AddSameCenterConstraints(_backgroundViewWrapper, _backgroundEmptyFolderView);
+  // Initialize background no matching results view.
   _backgroundNoMatchingResultView =
       [DriveFilePickerEmptyView noMatchingResultView];
+  _backgroundNoMatchingResultView.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [_backgroundViewWrapper addSubview:_backgroundNoMatchingResultView];
+  AddSameCenterConstraints(_backgroundViewWrapper,
+                           _backgroundNoMatchingResultView);
 }
 
 // Returns the action corresponding to a given `sortingCriteria`.
@@ -692,31 +713,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setBackground:(DriveFilePickerBackground)background {
-  UIView* newBackgroundView;
-  switch (background) {
-    case DriveFilePickerBackground::kNoBackground:
-      newBackgroundView = nil;
-      break;
-    case DriveFilePickerBackground::kLoadingIndicator:
-      newBackgroundView = _backgroundLoadingIndicator;
-      break;
-    case DriveFilePickerBackground::kEmptyFolder:
-      newBackgroundView = _backgroundEmptyFolderView;
-      break;
-    case DriveFilePickerBackground::kNoMatchingResults:
-      newBackgroundView = _backgroundNoMatchingResultView;
-      break;
-  }
-  if (self.tableView.backgroundView == newBackgroundView) {
-    return;
-  }
-  if (self.tableView.backgroundView == _backgroundLoadingIndicator) {
-    [_backgroundLoadingIndicator stopAnimating];
-  }
-  self.tableView.backgroundView = newBackgroundView;
-  if (self.tableView.backgroundView == _backgroundLoadingIndicator) {
-    [_backgroundLoadingIndicator startAnimating];
-  }
+  _backgroundLoadingIndicator.hidden =
+      background != DriveFilePickerBackground::kLoadingIndicator;
+  _backgroundEmptyFolderView.hidden =
+      background != DriveFilePickerBackground::kEmptyFolder;
+  _backgroundNoMatchingResultView.hidden =
+      background != DriveFilePickerBackground::kNoMatchingResults;
 }
 
 - (void)populatePrimaryItems:(NSArray<DriveFilePickerItem*>*)primaryItems
