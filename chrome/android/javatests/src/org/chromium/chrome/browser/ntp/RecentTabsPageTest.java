@@ -64,7 +64,6 @@ import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -84,8 +83,6 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class RecentTabsPageTest {
-    private static final String EMAIL = "email@gmail.com";
-    private static final String NAME = "Email Emailson";
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
     private static final int COLOR_ID_2 = TabGroupColorId.RED;
 
@@ -571,28 +568,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testEmptyStateView_replaceSyncWithSignInDisabled() {
-        // Sign in and enable sync.
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        SigninTestUtil.signinAndEnableSync(
-                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
-                SyncTestUtil.getSyncServiceForLastUsedProfile());
-
-        // Open an empty recent tabs page and confirm empty view shows.
-        mPage = loadRecentTabsPage();
-        onView(
-                        allOf(
-                                withId(R.id.empty_state_container),
-                                withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RecentTabsPage"})
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testEmptyStateView() {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         SigninTestUtil.signinAndEnableHistorySync(
