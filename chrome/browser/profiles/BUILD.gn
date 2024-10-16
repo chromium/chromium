@@ -102,14 +102,25 @@ source_set("profile_util") {
     "profile_attributes_storage.h",
     "profile_attributes_storage_observer.h",
     "profile_avatar_icon_util.h",
+    "profile_statistics.h",
+    "profile_statistics_aggregator.h",
+    "profile_statistics_common.h",
+    "profile_statistics_factory.h",
     "reporting_util.h",
   ]
 
   public_deps = [
+    ":profile",
     "//base",
     "//build:chromeos_buildflags",
     "//components/account_id",
+    "//components/autofill/core/browser",
+    "//components/browsing_data/core",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/user_annotations:user_annotations",
+    "//device/fido:fido",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",
     "//skia",
@@ -126,6 +137,10 @@ source_set("profile_util_impl") {
     "profile_attributes_init_params.cc",
     "profile_attributes_storage.cc",
     "profile_avatar_icon_util.cc",
+    "profile_statistics.cc",
+    "profile_statistics_aggregator.cc",
+    "profile_statistics_common.cc",
+    "profile_statistics_factory.cc",
     "reporting_util.cc",
   ]
 
@@ -141,11 +156,13 @@ source_set("profile_util_impl") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/account_id",
+    "//components/browsing_data/core",
     "//components/embedder_support:browser_util",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/content",
@@ -174,7 +191,10 @@ source_set("profile_util_impl") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_list" ]
+    deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/user_annotations:user_annotations",
+    ]
   }
 
   if (is_chromeos) {
@@ -183,52 +203,6 @@ source_set("profile_util_impl") {
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
     ]
-  }
-}
-
-source_set("profile_statistics") {
-  sources = [
-    "profile_statistics.h",
-    "profile_statistics_aggregator.h",
-    "profile_statistics_common.h",
-    "profile_statistics_factory.h",
-  ]
-
-  public_deps = [
-    ":profile",
-    "//base",
-    "//components/browsing_data/core",
-    "//components/keyed_service/core",
-  ]
-
-  deps = [
-    "//components/autofill/core/browser",
-    "//components/password_manager/core/browser/password_store:password_store_interface",
-    "//components/user_annotations:user_annotations",
-    "//device/fido:fido",
-  ]
-}
-
-source_set("profile_statistics_impl") {
-  sources = [
-    "profile_statistics.cc",
-    "profile_statistics_aggregator.cc",
-    "profile_statistics_common.cc",
-    "profile_statistics_factory.cc",
-  ]
-
-  deps = [
-    ":profile",
-    ":profile_statistics",
-    "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/autofill",
-    "//components/browsing_data/core",
-    "//content/public/browser",
-  ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/user_annotations:user_annotations" ]
   }
 }
 
@@ -242,7 +216,7 @@ source_set("profiles_extra_parts_impl") {
   sources = [ "chrome_browser_main_extra_parts_profiles.cc" ]
 
   deps = [
-    ":profile_statistics",
+    ":profile_util",
     ":profiles_extra_parts",
     "//base",
     "//chrome/browser:browser_process",
@@ -363,7 +337,7 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (!is_chromeos && !is_android) {
-    deps += [ ":profile_statistics" ]
+    deps += [ ":profile_util" ]
   }
 
   if (enable_extensions_core) {

@@ -1800,7 +1800,6 @@ static_library("browser") {
 
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/profiles:profile_util_impl",
-    "//chrome/browser/profiles:profile_statistics_impl",
     "//chrome/browser/signin:impl",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/prefs:impl",
@@ -1922,8 +1921,6 @@ static_library("browser") {
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_statistics",
-    "//chrome/browser/profiles:profile_statistics_impl",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiles:profiles",
