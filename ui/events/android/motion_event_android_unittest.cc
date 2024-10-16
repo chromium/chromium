@@ -8,15 +8,21 @@
 #include <cmath>
 #include <limits>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/android/motion_event_android_native.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 
 namespace ui {
 
@@ -210,6 +216,37 @@ TEST(MotionEventAndroidTest, ActionIndexForPointerDown) {
 
   EXPECT_EQ(MotionEvent::Action::POINTER_DOWN, event.GetAction());
   EXPECT_EQ(action_index, event.GetActionIndex());
+}
+
+TEST(MotionEventAndroidTest, NativeBackedConstructor) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_S) {
+    GTEST_SKIP()
+        << "AMotionEvent_fromJava used in test is only available on S+";
+  }
+
+  const float x = 100;
+  const float y = 200;
+  const jlong down_time = 0;
+  const jlong event_time = 0;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_motion_event =
+      JNI_MotionEvent::Java_MotionEvent_obtain(env, down_time, event_time,
+                                               kAndroidActionDown, x, y,
+                                               kAndroidAltKeyDown);
+  const AInputEvent* native_event = nullptr;
+  if (__builtin_available(android 31, *)) {
+    native_event = AMotionEvent_fromJava(env, java_motion_event.obj());
+  }
+  CHECK(native_event != nullptr);
+  std::unique_ptr<MotionEventAndroid> event =
+      MotionEventAndroidNative::Create(native_event, kPixToDip,
+                                       /* y_offset_pix= */ 0);
+
+  EXPECT_EQ(event->GetX(0), x * kPixToDip);
+  EXPECT_EQ(event->GetY(0), y * kPixToDip);
+  EXPECT_EQ(event->GetAction(), MotionEvent::Action::DOWN);
+  EXPECT_EQ(event->GetFlags(), ui::EF_ALT_DOWN);
 }
 
 }  // namespace ui
