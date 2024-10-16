@@ -1,4 +1,20 @@
 /**
+ * Returns a promise resolving to a GPUDevice.
+ */
+async function getWebGPUDevice() {
+  const adapter = await navigator.gpu.requestAdapter();
+  if (!(adapter instanceof GPUAdapter)) {
+    throw new Error('Failed to request WebGPU adapter.');
+  }
+
+  const device = await adapter.requestDevice();
+  if (!(device instanceof GPUDevice)) {
+    throw new Error('Failed to request WebGPU device.');
+  }
+  return device;
+}
+
+/**
  * Invokes `callback` with a valid GPUAdapter, GPUAdapterInfo and GPUDevice, or
  * causes an assertion.
  */

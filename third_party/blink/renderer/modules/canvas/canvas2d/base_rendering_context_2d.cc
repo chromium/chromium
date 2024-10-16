@@ -4026,6 +4026,9 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   // We are finished with the WebGPU texture and its associated device.
   webgpu_access_texture_ = nullptr;
+
+  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
+           CanvasPerformanceMonitor::DrawType::kOther);
 }
 
 }  // namespace blink
