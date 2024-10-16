@@ -432,6 +432,6 @@ int GetWallpaperSearchButtonAnimationShownThreshold() {
 int GetWallpaperSearchButtonHideCondition() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kNtpWallpaperSearchButtonHideCondition,
-      kNtpWallpaperSearchButtonHideConditionParam, 0);
+      kNtpWallpaperSearchButtonHideConditionParam, 2);
 }
 }  // namespace ntp_features
