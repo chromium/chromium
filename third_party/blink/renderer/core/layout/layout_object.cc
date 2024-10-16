@@ -2555,13 +2555,19 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
       if (IsInline() && IsAtomicInlineLevel())
         return StyleRef();
       return FirstLineStyleRef();
-    case StyleVariant::kEllipsis:
+    case StyleVariant::kStandardEllipsis:
       // The ellipsis is styled according to the line style.
       // https://www.w3.org/TR/css-overflow-3/#ellipsing-details
-      // Use first-line style if exists since most cases it is the first line.
       DCHECK(IsInline());
-      if (LayoutObject* block = ContainingBlock())
+      if (const LayoutObject* block = ContainingBlock()) {
+        return block->StyleRef();
+      }
+      return StyleRef();
+    case StyleVariant::kFirstLineEllipsis:
+      DCHECK(IsInline());
+      if (const LayoutObject* block = ContainingBlock()) {
         return block->FirstLineStyleRef();
+      }
       return FirstLineStyleRef();
   }
   NOTREACHED_IN_MIGRATION();

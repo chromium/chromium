@@ -1260,8 +1260,11 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
     case StyleVariant::kFirstLine:
       ostream << "FirstLine";
       break;
-    case StyleVariant::kEllipsis:
-      ostream << "Ellipsis";
+    case StyleVariant::kStandardEllipsis:
+      ostream << "StandardEllipsis";
+      break;
+    case StyleVariant::kFirstLineEllipsis:
+      ostream << "FirstLineEllipsis";
       break;
   }
   return ostream << "}";

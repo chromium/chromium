@@ -35,7 +35,8 @@ bool IsRightMostOffset(const ShapeResult& shape_result, unsigned offset) {
 LineTruncator::LineTruncator(const LineInfo& line_info)
     : line_style_(&line_info.LineStyle()),
       available_width_(line_info.AvailableWidth() - line_info.TextIndent()),
-      line_direction_(line_info.BaseDirection()) {}
+      line_direction_(line_info.BaseDirection()),
+      use_first_line_style_(line_info.UseFirstLineStyle()) {}
 
 const ComputedStyle& LineTruncator::EllipsisStyle() const {
   // The ellipsis is styled according to the line style.
@@ -87,7 +88,9 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   DCHECK(ellipsis_text_);
   DCHECK(ellipsis_shape_result_);
   line_box->AddChild(
-      *ellipsized_layout_object, StyleVariant::kEllipsis,
+      *ellipsized_layout_object,
+      use_first_line_style_ ? StyleVariant::kFirstLineEllipsis
+                            : StyleVariant::kStandardEllipsis,
       ellipsis_shape_result_, ellipsis_text_,
       LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
                   ellipsis_width_, ellipsis_metrics.LineHeight()),
