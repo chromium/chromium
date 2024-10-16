@@ -1788,6 +1788,10 @@
     // auto
     // none
 
+    // view-transition-capture-mode
+    "layered",
+    // flat
+
     // container-type
     // inline-size,
     // normal,

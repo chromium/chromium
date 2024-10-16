@@ -506,6 +506,7 @@ viewTimeline
 viewTimelineAxis
 viewTimelineInset
 viewTimelineName
+viewTransitionCaptureMode
 viewTransitionClass
 viewTransitionGroup
 viewTransitionName

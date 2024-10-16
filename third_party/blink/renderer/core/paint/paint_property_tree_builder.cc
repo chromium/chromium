@@ -3255,7 +3255,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     // of the view transition capture. The corresponding CSS is copied to the
     // view-transition pseudo-elements instead of being captured into the
     // texture as content.
-    if (!RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled()) {
+
+    const bool delegate_effects_to_view_transition = ViewTransitionUtils::
+        ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(object_);
+    if (!delegate_effects_to_view_transition) {
       UpdateViewTransitionEffect();
       UpdateViewTransitionClip();
     }
@@ -3265,7 +3268,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateFilter();
 
     // See comment above in inverse condition.
-    if (RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled()) {
+    if (delegate_effects_to_view_transition) {
       UpdateViewTransitionEffect();
       UpdateViewTransitionClip();
     }

@@ -2395,6 +2395,24 @@ StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
       ConvertCustomIdent(state, value)->GetName());
 }
 
+StyleViewTransitionCaptureMode
+StyleBuilderConverter::ConvertViewTransitionCaptureMode(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (ident->GetValueID()) {
+      case CSSValueID::kLayered:
+        return StyleViewTransitionCaptureMode::kLayered;
+      case CSSValueID::kFlat:
+        return StyleViewTransitionCaptureMode::kFlat;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  return StyleViewTransitionCaptureMode::kLayered;
+}
+
 StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(
     StyleResolverState& state,
     const CSSValue& value) {

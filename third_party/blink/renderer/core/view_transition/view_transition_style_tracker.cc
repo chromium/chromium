@@ -1441,7 +1441,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       capture_property(id);
     }
 
-    if (RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled()) {
+    if (RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
+        layout_object->StyleRef().ViewTransitionCaptureMode() ==
+            StyleViewTransitionCaptureMode::kLayered) {
       for (CSSPropertyID id : kLayeredCaptureProperties) {
         capture_property(id);
       }
@@ -2176,7 +2178,9 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     // coordinate space.
     auto rect = box.EnclosingLayer()
                     ->LocalBoundingBoxIncludingSelfPaintingDescendants();
-    if (!RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled()) {
+    if (!RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
+        box.StyleRef().ViewTransitionCaptureMode() ==
+            StyleViewTransitionCaptureMode::kLayered) {
       rect = box.ApplyFiltersToRect(rect);
     }
 

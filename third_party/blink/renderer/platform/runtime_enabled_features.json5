@@ -4466,7 +4466,8 @@
     },
     {
       name: "ViewTransitionLayeredCapture",
-      status: "test",
+      status: "experimental",
+      implied_by: ["NestedViewTransition"],
     },
     {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
@@ -4485,7 +4486,8 @@
     },
     {
       name: "ViewTransitionOverflowRectFromSurface",
-      status: "test",
+      status: "experimental",
+      implied_by: ["ViewTransitionLayeredCapture"],
     },
     {
       name: "ViewTransitionTreeScopedNames",
