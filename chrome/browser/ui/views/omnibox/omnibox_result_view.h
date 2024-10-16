@@ -86,6 +86,9 @@ class OmniboxResultView : public views::View {
   void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
+  // Helper to emit accessibility events (may only emit if conditions are met).
+  void EmitTextChangedAccessiblityEvent();
+
   void UpdateAccessibilityProperties();
 
   // views::View:
@@ -94,6 +97,7 @@ class OmniboxResultView : public views::View {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
  private:
@@ -119,9 +123,6 @@ class OmniboxResultView : public views::View {
   // not the view is selected.
   void UpdateAccessibilitySelectedState();
 
-  // Updates the accessible name based on the current state.
-  void UpdateAccessibleName();
-
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
@@ -133,6 +134,9 @@ class OmniboxResultView : public views::View {
 
   // The data this class is built to display (the "Omnibox Result").
   AutocompleteMatch match_;
+
+  // Accessible name (enables to emit certain events).
+  std::u16string accessible_name_;
 
   // Weak pointers for easy reference.
 

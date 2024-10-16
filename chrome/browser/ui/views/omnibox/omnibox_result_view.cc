@@ -303,7 +303,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
-  UpdateAccessibleName();
   GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
 
@@ -487,9 +486,13 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 void OmniboxResultView::OnSelectionStateChanged() {
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
-  UpdateAccessibleName();
   UpdateAccessibilitySelectedState();
   if (GetMatchSelected()) {
+    // Immediately before notifying screen readers that the selected item has
+    // changed, we want to update the name of the newly-selected item so that
+    // any cached values get updated prior to the selection change.
+    EmitTextChangedAccessiblityEvent();
+
     auto selection_state = popup_view_->GetSelection().state;
 
     // The text is also accessible via text/value change events in the omnibox
@@ -635,9 +638,66 @@ void OmniboxResultView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateHoverState();
 }
 
+void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // Get the label without the ", n of m" positional text appended.
+  // The positional info is provided via
+  // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
+  // well would result in duplicate announcements.
+
+  const auto* autocomplete_controller =
+      popup_view_->controller()->autocomplete_controller();
+
+  // TODO(tommycli): We re-fetch the original match from the popup model,
+  // because |match_| already has its contents and description swapped by this
+  // class, and we don't want that for the bubble. We should improve this.
+  bool is_selected = GetMatchSelected();
+  if (model_index_ < autocomplete_controller->result().size()) {
+    AutocompleteMatch raw_match =
+        autocomplete_controller->result().match_at(model_index_);
+    // The selected match can have a special name, e.g. when is one or more
+    // buttons that can be tabbed to.
+    std::u16string label;
+    if (is_selected) {
+      // The selected match can have a special name, e.g. when is one or more
+      // buttons that can be tabbed to.
+      label =
+          popup_view_->model()->GetPopupAccessibilityLabelForCurrentSelection(
+              raw_match.contents, false);
+
+      // If the line immediately after the current selection is the
+      // informational IPH row, append its accessibility label at the end of
+      // this selection's accessibility label.
+      label += popup_view_->model()
+                   ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
+    } else {
+      label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
+                                                          raw_match.contents);
+    }
+    node_data->SetName(label);
+  }
+}
+
 void OmniboxResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ApplyThemeAndRefreshIcons(/*force_reapply_styles=*/true);
+}
+
+void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
+  if (!popup_view_->IsOpen()) {
+    return;
+  }
+
+  // The omnibox results list reuses the same items, but the text displayed for
+  // these items is updated as the value of omnibox changes. The displayed text
+  // for a given item is exposed to screen readers as the item's name/label.
+  ui::AXNodeData node_data;
+  GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::u16string current_name =
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+  if (accessible_name_ != current_name) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+    accessible_name_ = current_name;
+  }
 }
 
 void OmniboxResultView::UpdateAccessibilityProperties() {
@@ -714,46 +774,6 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
 
 void OmniboxResultView::UpdateAccessibilitySelectedState() {
   GetViewAccessibility().SetIsSelected(GetMatchSelected());
-}
-
-void OmniboxResultView::UpdateAccessibleName() {
-  // Get the label without the ", n of m" positional text appended.
-  // The positional info is provided via
-  // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
-  // well would result in duplicate announcements.
-  std::u16string label;
-  const auto* autocomplete_controller =
-      popup_view_->controller()->autocomplete_controller();
-
-  // TODO(tommycli): We re-fetch the original match from the popup model,
-  // because |match_| already has its contents and description swapped by this
-  // class, and we don't want that for the bubble. We should improve this.
-  bool is_selected = GetMatchSelected();
-
-  if (model_index_ < autocomplete_controller->result().size()) {
-    AutocompleteMatch raw_match =
-        autocomplete_controller->result().match_at(model_index_);
-    // The selected match can have a special name, e.g. when is one or more
-    // buttons that can be tabbed to.
-
-    if (is_selected) {
-      // The selected match can have a special name, e.g. when is one or more
-      // buttons that can be tabbed to.
-      label =
-          popup_view_->model()->GetPopupAccessibilityLabelForCurrentSelection(
-              raw_match.contents, false);
-
-      // If the line immediately after the current selection is the
-      // informational IPH row, append its accessibility label at the end of
-      // this selection's accessibility label.
-      label += popup_view_->model()
-                   ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
-    } else {
-      label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
-                                                          raw_match.contents);
-    }
-    GetViewAccessibility().SetName(label);
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
