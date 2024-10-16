@@ -12,21 +12,9 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "base/types/expected.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
-
-// Opens the browser to the Google Calendar event creation page, with some
-// fields pre-set.
-struct ASH_PUBLIC_EXPORT NewCalendarEventAction {
-  std::string title;
-
-  explicit NewCalendarEventAction(std::string title);
-
-  NewCalendarEventAction(const NewCalendarEventAction&);
-  NewCalendarEventAction& operator=(const NewCalendarEventAction&);
-
-  ~NewCalendarEventAction();
-};
 
 // Opens the browser to the Google Contacts contact creation page, with some
 // fields pre-set.
@@ -101,7 +89,7 @@ struct ASH_PUBLIC_EXPORT CopyToClipboardAction {
 
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
-using ScannerAction = std::variant<NewCalendarEventAction,
+using ScannerAction = std::variant<manta::proto::NewEventAction,
                                    NewContactAction,
                                    NewGoogleDocAction,
                                    NewGoogleSheetAction,

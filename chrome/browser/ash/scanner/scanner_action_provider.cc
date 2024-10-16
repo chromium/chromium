@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
+#include "components/manta/proto/scanner.pb.h"
 
 ScannerActionProvider::ScannerActionProvider() = default;
 
@@ -21,6 +22,8 @@ void ScannerActionProvider::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     OnActionsResolved callback) {
   // TODO(b/363100868): Fetch available actions from service
-  std::move(callback).Run(base::ok(std::vector<ash::ScannerAction>{
-      ash::NewCalendarEventAction("Event title")}));
+  manta::proto::NewEventAction action;
+  action.set_title("Event title");
+  std::move(callback).Run(
+      base::ok(std::vector<ash::ScannerAction>{std::move(action)}));
 }

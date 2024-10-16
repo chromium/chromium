@@ -5,6 +5,7 @@
 #include "ash/scanner/scanner_controller.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -19,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,10 +60,10 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
 
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
+
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
-      ->SendFakeActionsResponse(base::ok(std::vector<ScannerAction>{
-          NewCalendarEventAction("Event title"),
-      }));
+      ->SendFakeActionsResponse(
+          base::ok(std::vector<ScannerAction>{manta::proto::NewEventAction()}));
 
   EXPECT_THAT(actions_future.Take(), SizeIs(1));
 }

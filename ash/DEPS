@@ -15,6 +15,7 @@ include_rules = [
   "+components/language/core/browser/pref_names.h",
   "+components/language/core/common/locale_util.h",
   "+components/live_caption",
+  "+components/manta",
   "+components/media_message_center",
   "+components/metrics/structured/structured_events.h",
   "+components/metrics/structured/structured_metrics_client.h",

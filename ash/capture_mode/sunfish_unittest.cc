@@ -35,6 +35,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -571,8 +572,8 @@ TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
   ASSERT_TRUE(scanner_controller);
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
       ->SendFakeActionsResponse(base::ok(std::vector<ScannerAction>{
-          NewCalendarEventAction("Event 1"),
-          NewCalendarEventAction("Event 2"),
+          manta::proto::NewEventAction(),
+          manta::proto::NewEventAction(),
       }));
 
   const CaptureModeSessionTestApi session_test_api(

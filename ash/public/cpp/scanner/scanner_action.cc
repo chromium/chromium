@@ -9,15 +9,6 @@
 
 namespace ash {
 
-NewCalendarEventAction::NewCalendarEventAction(std::string title)
-    : title(std::move(title)) {}
-
-NewCalendarEventAction::NewCalendarEventAction(const NewCalendarEventAction&) =
-    default;
-NewCalendarEventAction& NewCalendarEventAction::operator=(
-    const NewCalendarEventAction&) = default;
-NewCalendarEventAction::~NewCalendarEventAction() = default;
-
 NewContactAction::NewContactAction(std::string given_name)
     : given_name(std::move(given_name)) {}
 

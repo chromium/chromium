@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "base/check.h"

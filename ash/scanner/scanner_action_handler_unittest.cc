@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_command.h"
@@ -17,6 +18,7 @@
 #include "components/drive/drive_api_util.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "components/drive/service/fake_drive_service.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,9 +60,9 @@ constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 constexpr std::string_view kGoogleContactsHost = "contacts.google.com";
 constexpr std::string_view kGoogleContactsNewPath = "/new";
 
-TEST(ScannerActionToCommandTest, NewCalendarEventWithNoFields) {
+TEST(ScannerActionToCommandTest, NewEvent) {
   ScannerCommand command =
-      ScannerActionToCommand(NewCalendarEventAction(/*title=*/""));
+      ScannerActionToCommand(manta::proto::NewEventAction());
 
   EXPECT_THAT(
       command,
@@ -70,9 +72,10 @@ TEST(ScannerActionToCommandTest, NewCalendarEventWithNoFields) {
           Property("query_piece", &GURL::query_piece, "action=TEMPLATE")))));
 }
 
-TEST(ScannerActionToCommandTest, NewCalendarEventWithTitle) {
-  ScannerCommand command =
-      ScannerActionToCommand(NewCalendarEventAction("Test title?"));
+TEST(ScannerActionToCommandTest, NewEventWithTitle) {
+  manta::proto::NewEventAction action;
+  action.set_title("Test title?");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,

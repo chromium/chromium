@@ -33,6 +33,7 @@
 #include "components/drive/drive_api_util.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -56,12 +57,12 @@ const GURL& GetGoogleContactsNewUrl() {
   return kGoogleContactsNewUrl;
 }
 
-GURL GetCalendarEventUrl(const NewCalendarEventAction& event) {
+GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
   std::string query = GetCalendarEventTemplateUrl().query();
   CHECK(!query.empty());
-  if (!event.title.empty()) {
+  if (!event.title().empty()) {
     query += "&text=";
-    query += base::EscapeQueryParamValue(event.title, /*use_plus=*/true);
+    query += base::EscapeQueryParamValue(event.title(), /*use_plus=*/true);
   }
 
   GURL::Replacements replacements;
@@ -230,7 +231,7 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromAction(
 ScannerCommand ScannerActionToCommand(ScannerAction action) {
   return std::visit(
       base::Overloaded{
-          [&](NewCalendarEventAction& action) -> ScannerCommand {
+          [&](manta::proto::NewEventAction& action) -> ScannerCommand {
             return OpenUrlCommand(GetCalendarEventUrl(action));
           },
           [&](NewContactAction& action) -> ScannerCommand {
