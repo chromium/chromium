@@ -951,9 +951,16 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertNotEqual(None, new_window_handle)
     self._driver.SwitchToWindow(new_window_handle)
     self.assertEqual(new_window_handle, self._driver.GetCurrentWindowHandle())
-    self.assertRaises(chromedriver.NoSuchElement,
-                      self._driver.FindElement, 'css selector', '#link')
-    self._driver.ExecuteScript('window.close()')
+    with self.assertRaises(chromedriver.NoSuchElement):
+      self._driver.FindElement('css selector', '#link')
+    try:
+      self._driver.ExecuteScript('window.close()')
+    except chromedriver.ScriptTimeout:
+      # Scripts making navigation or closing the window are not guaranteed to
+      # exit on the browser side. ChromeDriver can only make sure that such
+      # scripts are deemed as timed out. Still the code below verifies that the
+      # side effect has taken place.
+      pass
     with self.assertRaises(chromedriver.NoSuchWindow):
       self._driver.GetTitle()
     with self.assertRaises(chromedriver.NoSuchWindow):
@@ -5563,7 +5570,12 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
         timeout=1)
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
-      self._driver.ExecuteScript('location.href=arguments[0]', local2_url)
+      try:
+        self._driver.ExecuteScript('location.href=arguments[0]', local2_url)
+      except chromedriver.ScriptTimeout:
+        # Presumably it has timed out due to the navigation.
+        # The checks below verify this assumption.
+        pass
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
@@ -5591,7 +5603,12 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
         timeout=1)
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
-      self._driver.ExecuteScript('location.href=arguments[0]', remote_url)
+      try:
+        self._driver.ExecuteScript('location.href=arguments[0]', remote_url)
+      except chromedriver.ScriptTimeout:
+        # Presumably it has timed out due to the navigation.
+        # The checks below verify this assumption.
+        pass
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
@@ -5622,7 +5639,12 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
         timeout=1)
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
-      self._driver.ExecuteScript('location.href=arguments[0]', remote2_url)
+      try:
+        self._driver.ExecuteScript('location.href=arguments[0]', remote2_url)
+      except chromedriver.ScriptTimeout:
+        # Presumably it has timed out due to the navigation.
+        # The checks below verify this assumption.
+        pass
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
@@ -5648,9 +5670,16 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="%s">' % remote_url, 'utf-8'))
-    # The first iteration after session creation frequently succeeds.
-    # Therefore we make two iterations.
-    for _ in range(0, 2):
+    # It was reproted that the test with 2 internal iterations fails twice in a
+    # row with 2% rate on some Mac builders. This corresponds to 0.92 success
+    # rate for a single iteration.
+    # If we make 15 internal iterations the chance that two consecutive runs
+    # will fail rises to 0.5:
+    # 0.92 ^ 15 - is the probability that single test run will succeed.
+    # 1 - 0.92 ^ 15 - the probability that single test run fails.
+    # (1 - 0.92 ^ 15) ** 2 == 0.509 - the probability the two consecutive runs
+    # fail.
+    for _ in range(0, 15):
       self._driver.SwitchToMainFrame()
       self._driver.Load(self.GetHttpUrlForFile('/main.html'))
       self.WaitForCondition(
@@ -5658,7 +5687,12 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
         timeout=1)
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
-      self._driver.ExecuteScript('location.href=arguments[0]', local_url)
+      try:
+        self._driver.ExecuteScript('location.href=arguments[0]', local_url)
+      except chromedriver.ScriptTimeout:
+        # Presumably it has timed out due to the navigation.
+        # The checks below verify this assumption.
+        pass
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
