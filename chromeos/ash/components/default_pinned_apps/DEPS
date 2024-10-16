@@ -1,0 +1,6 @@
+include_rules = [
+  "+ash/components/arc/app",
+  "+chromeos/ash/components/file_manager",
+  "+chromeos/ash/components/scalable_iph",
+  "+content/public/browser",
+]

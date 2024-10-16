@@ -6,7 +6,9 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-static_library("default_pinned_apps") {
+component("default_pinned_apps") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DEFAULT_PINNED_APPS_IMPL" ]
+
   sources = [
     "default_pinned_apps.cc",
     "default_pinned_apps.h",
