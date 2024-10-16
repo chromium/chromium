@@ -27,8 +27,11 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -40,6 +43,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -54,6 +58,11 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({
+    ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED,
+    ChromeFeatureList.PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE,
+    ChromeFeatureList.PLUS_ADDRESS_ANDROID_SETTINGS_ENTRY
+})
 public class PlusAddressCreationRenderTest {
     private static final String MANAGE_PLUS_ADDRESSES_DESCRIPTION = "For example@gmail.com.";
     private static final String PROPOSED_PLUS_ADDRESS = "example.foo@gmail.com";
@@ -93,6 +102,9 @@ public class PlusAddressCreationRenderTest {
     private PlusAddressCreationCoordinator mCoordinator;
 
     public PlusAddressCreationRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
+        // Disabling animations is necessary to avoid running into issues with
+        // delayed hiding of loading views.
+        LoadingView.setDisableAnimationForTest(true);
         setRtlForTesting(useRtlLayout);
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -155,6 +167,11 @@ public class PlusAddressCreationRenderTest {
     public void testShowBottomSheet() throws IOException {
         openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule
+                                .getActivity()
+                                .findViewById(R.id.proposed_plus_address_loading_view)
+                        ::isShown);
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
@@ -167,6 +184,11 @@ public class PlusAddressCreationRenderTest {
     public void testShowBottomSheet_RefreshSupported() throws IOException {
         openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ true);
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule
+                                .getActivity()
+                                .findViewById(R.id.proposed_plus_address_loading_view)
+                        ::isShown);
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
@@ -178,11 +200,16 @@ public class PlusAddressCreationRenderTest {
     @Feature({"RenderTest"})
     public void testShowProposedPlusAddress() throws IOException {
         openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
                 });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // The task to hide the loading view is posted to the event loop. The proposed plus address
+        // is updated only after the loading view is hidden.
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.getActivity().findViewById(R.id.proposed_plus_address_logo)
+                        ::isShown);
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
@@ -195,11 +222,16 @@ public class PlusAddressCreationRenderTest {
     public void testShowProposedPlusAddress_UiRedesignEnabled_RefreshSupported()
             throws IOException {
         openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ true);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
                 });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // The task to hide the loading view is posted to the event loop. The proposed plus address
+        // is updated only after the loading view is hidden.
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.getActivity().findViewById(R.id.proposed_plus_address_logo)
+                        ::isShown);
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);
@@ -212,11 +244,16 @@ public class PlusAddressCreationRenderTest {
     @Feature({"RenderTest"})
     public void testReserveErrorMessageContent() throws IOException {
         openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showError(ERROR_STATE);
                 });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // The task to hide the loading view is posted to the event loop. Poll the UI thead to make
+        // sure the error screen is visible.
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.getActivity().findViewById(R.id.plus_address_error_container)
+                        ::isShown);
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.plus_address_dialog);

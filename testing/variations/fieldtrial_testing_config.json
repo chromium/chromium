@@ -17218,9 +17218,13 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "PlusAddressAndroidEnhancedLoadingStatesEnabled",
+                        "PlusAddressAndroidOpenGmsCoreManagementPage",
+                        "PlusAddressAndroidSettingsEntry",
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressGlobalToggle",
+                        "PlusAddressIOSErrorAndLoadingStatesEnabled",
                         "PlusAddressIOSManualFallbackEnabled",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
                         "PlusAddressPreallocation",
