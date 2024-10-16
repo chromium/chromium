@@ -30,7 +30,7 @@ public interface BackActionDelegate {
     int getBackActionType(Tab tab);
 
     /** Performs an action upon back gesture. */
-    void onBackGesture();
+    void onBackGesture(Tab tab);
 
     /**
      * Called when user performs a gesture but nothing is expected to occur, like trying to forward

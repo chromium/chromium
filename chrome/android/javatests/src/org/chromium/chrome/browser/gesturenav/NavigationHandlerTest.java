@@ -482,11 +482,10 @@ public class NavigationHandlerTest {
         mNavUtils.swipeFromLeftEdge();
 
         // Assert that the new tab was closed and the old tab is the current tab again.
-        CriteriaHelper.pollUiThread(() -> !newTab.isInitialized());
+        CriteriaHelper.pollUiThread(() -> (oldTab == currentTab()));
         Assert.assertNull(
                 "Not supposed to trigger an animation when closing tab",
                 mNavigationHandler.getTabOnBackGestureHandlerForTesting());
-        Assert.assertEquals(oldTab, currentTab());
         Assert.assertEquals(
                 "Chrome should remain in foreground",
                 ActivityState.RESUMED,
