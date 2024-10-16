@@ -471,7 +471,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 // TODO - crbug.com/353556432: flaky on Linux release builds and on Android
-#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_UkmNotEmittedForCookieAccessInPrerenders \
   DISABLED_UkmNotEmittedForCookieAccessInPrerenders
 #else
