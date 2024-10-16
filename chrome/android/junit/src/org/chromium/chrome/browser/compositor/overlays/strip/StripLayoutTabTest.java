@@ -23,9 +23,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -109,7 +107,6 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING})
     public void testGetTint_Startup() {
         @ColorInt int expectedColor;
 

@@ -947,7 +947,7 @@ public class StripLayoutHelper
         // If the tabs are still restoring and the refactoring experiment is enabled, we'll create a
         // placeholder strip. This means we don't need to call computeAndUpdateTabOrders() to
         // generate "real" strip tabs.
-        if (!mTabStateInitialized && ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
+        if (!mTabStateInitialized) {
             // If the placeholder strip is ready, replace the matching placeholders for the tabs
             // that have already been restored.
             mSelectedOnStartup = mModel.isActiveModel();
@@ -965,7 +965,7 @@ public class StripLayoutHelper
     protected void onTabStateInitialized() {
         mTabStateInitialized = true;
 
-        if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled() && mPlaceholderStripReady) {
+        if (mPlaceholderStripReady) {
             int numLeftoverPlaceholders = 0;
             for (int i = 0; i < mStripTabs.length; i++) {
                 if (mStripTabs[i].getIsPlaceholder()) numLeftoverPlaceholders++;
@@ -1283,7 +1283,7 @@ public class StripLayoutHelper
         if (findTabById(id) != null) return;
 
         // 1. If tab state is still initializing, replace the matching placeholder tab.
-        if (!mTabStateInitialized && ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
+        if (!mTabStateInitialized) {
             replaceNextPlaceholder(id, selected, onStartup);
 
             return;
@@ -1353,8 +1353,6 @@ public class StripLayoutHelper
      */
     protected void setTabModelStartupInfo(
             int tabCountOnStartup, int activeTabIndexOnStartup, boolean createdTabOnStartup) {
-        if (!ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) return;
-
         mTabCountOnStartup = tabCountOnStartup;
         mActiveTabIndexOnStartup = activeTabIndexOnStartup;
         mCreatedTabOnStartup = createdTabOnStartup;

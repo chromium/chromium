@@ -2365,10 +2365,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         tabMergingEnabled,
                         getLifecycleDispatcher(),
                         CipherLazyHolder.sCipherInstance);
-        if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
-            mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
-            mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
-        }
+        mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
+        mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
         return mTabModelOrchestrator;
     }
 

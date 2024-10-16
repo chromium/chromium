@@ -7351,11 +7351,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabletToolbarReorderingAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabletToolbarReordering)},
 
-    {"enable-tab-strip-startup-refactoring",
-     flag_descriptions::kTabStripStartupRefactoringName,
-     flag_descriptions::kTabStripStartupRefactoringDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripStartupRefactoring)},
-
     {"enable-delay-temp-strip-removal",
      flag_descriptions::kDelayTempStripRemovalName,
      flag_descriptions::kDelayTempStripRemovalDescription, kOsAndroid,

@@ -2131,9 +2131,6 @@ extern const char kTabletToolbarReorderingAndroidDescription[];
 extern const char kTabResumptionModuleAndroidName[];
 extern const char kTabResumptionModuleAndroidDescription[];
 
-extern const char kTabStripStartupRefactoringName[];
-extern const char kTabStripStartupRefactoringDescription[];
-
 extern const char kDelayTempStripRemovalName[];
 extern const char kDelayTempStripRemovalDescription[];
 

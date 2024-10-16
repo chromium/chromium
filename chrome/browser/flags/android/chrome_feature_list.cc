@@ -315,7 +315,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripGroupContextMenuAndroid,
     &kTabStripIncognitoMigration,
     &kTabStripLayoutOptimization,
-    &kTabStripStartupRefactoring,
     &kTabStripTransitionInDesktopWindow,
     &kTabWindowManagerIndexReassignmentActivityFinishing,
     &kTabWindowManagerIndexReassignmentActivityInSameTask,
@@ -986,10 +985,6 @@ BASE_FEATURE(kTabStripGroupContextMenuAndroid,
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStripStartupRefactoring,
-             "TabStripStartupRefactoring",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripTransitionInDesktopWindow,
              "TabStripTransitionInDesktopWindow",

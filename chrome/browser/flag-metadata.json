@@ -4050,11 +4050,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-tab-strip-startup-refactoring",
-    "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-tablet-toolbar-reordering",
     "owners": [ "zheliooo@google.com", "twellington@google.com", "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 125
