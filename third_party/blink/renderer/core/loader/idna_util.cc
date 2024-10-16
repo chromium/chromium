@@ -53,8 +53,9 @@ String UnsafeASCIIToIDNA(const StringView& hostname_ascii) {
       output_utf8_length > kMaximumDomainNameLengthForIDNADecoding) {
     return String();
   }
-  return String::FromUTF8(output_utf8.data(),
-                          static_cast<wtf_size_t>(output_utf8_length));
+  return String::FromUTF8(
+      base::as_byte_span(output_utf8)
+          .first(base::checked_cast<size_t>(output_utf8_length)));
 }
 
 }  // namespace

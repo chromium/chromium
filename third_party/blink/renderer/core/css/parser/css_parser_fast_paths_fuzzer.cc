@@ -33,10 +33,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         static_cast<blink::CSSParserMode>(parser_mode),
         blink::SecureContextMode::kInsecureContext);
     blink::CSSParserFastPaths::MaybeParseValue(
-        property_id,
-        String::FromUTF8WithLatin1Fallback(data_string.data(),
-                                           data_string.length()),
-        context);
+        property_id, String::FromUTF8WithLatin1Fallback(data_string), context);
   }
 
   return 0;

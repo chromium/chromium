@@ -48,7 +48,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(
       Close();
       return Result::kDone;
     case Command::kError: {
-      Error e(String::FromUTF8(command.Body().data(), command.Body().size()));
+      Error e(String::FromUTF8(base::as_byte_span(command.Body())));
       commands_.pop_front();
       MakeErrored(std::move(e));
       return Result::kError;

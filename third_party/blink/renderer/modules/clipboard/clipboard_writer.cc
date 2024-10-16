@@ -133,8 +133,7 @@ class ClipboardTextWriter final : public ClipboardWriter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     DCHECK(!IsMainThread());
 
-    String wtf_string = String::FromUTF8(
-        reinterpret_cast<const LChar*>(raw_data.Data()), raw_data.DataLength());
+    String wtf_string = String::FromUTF8(raw_data.ByteSpan());
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
         CrossThreadBindOnce(&ClipboardTextWriter::Write,
@@ -171,11 +170,9 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     if (!local_frame || !execution_context) {
       return;
     }
-    String html_string =
-        String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
-                         html_data->ByteLength());
     const KURL& url = local_frame->GetDocument()->Url();
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
+    String html_string = String::FromUTF8(html_data->ByteSpan());
     const Document* doc = dom_parser->parseFromString(
         html_string, V8SupportedType(V8SupportedType::Enum::kTextHtml));
     DCHECK(doc);
@@ -204,16 +201,13 @@ class ClipboardSvgWriter final : public ClipboardWriter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    String svg_string =
-        String::FromUTF8(reinterpret_cast<const LChar*>(svg_data->Data()),
-                         svg_data->ByteLength());
-
     LocalFrame* local_frame = promise_->GetLocalFrame();
     if (!local_frame) {
       return;
     }
 
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
+    String svg_string = String::FromUTF8(svg_data->ByteSpan());
     const Document* doc = dom_parser->parseFromString(
         svg_string, V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
     Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));

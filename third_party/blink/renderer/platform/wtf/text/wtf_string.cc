@@ -481,7 +481,11 @@ String String::Make16BitFrom8BitSource(base::span<const LChar> source) {
   return result;
 }
 
-String String::FromUTF8(const LChar* string_start, size_t string_length) {
+String String::FromUTF8(base::span<const uint8_t> bytes) {
+  return FromUTF8(bytes.data(), bytes.size());
+}
+
+String String::FromUTF8(const uint8_t* string_start, size_t string_length) {
   wtf_size_t length = base::checked_cast<wtf_size_t>(string_length);
 
   if (!string_start)
@@ -511,25 +515,22 @@ String String::FromUTF8(const LChar* string_start, size_t string_length) {
   return StringImpl::Create(buffer_start, utf16_length);
 }
 
-String String::FromUTF8(const LChar* string) {
-  if (!string)
+String String::FromUTF8WithLatin1Fallback(base::span<const uint8_t> bytes) {
+  return FromUTF8WithLatin1Fallback(bytes.data(), bytes.size());
+}
+
+String String::FromUTF8(const char* s) {
+  if (!s) {
     return String();
-  return FromUTF8(string, strlen(reinterpret_cast<const char*>(string)));
+  }
+  return FromUTF8(std::string_view(s));
 }
 
-String String::FromUTF8(std::string_view s) {
-  return FromUTF8(reinterpret_cast<const LChar*>(s.data()), s.size());
-}
-
-String String::FromUTF8WithLatin1Fallback(const LChar* string, size_t size) {
+String String::FromUTF8WithLatin1Fallback(const uint8_t* string, size_t size) {
   String utf8 = FromUTF8(string, size);
   if (!utf8)
     return String(string, base::checked_cast<wtf_size_t>(size));
   return utf8;
-}
-
-String String::FromUTF8WithLatin1Fallback(std::string_view s) {
-  return FromUTF8WithLatin1Fallback(s.data(), s.size());
 }
 
 std::ostream& operator<<(std::ostream& out, const String& string) {

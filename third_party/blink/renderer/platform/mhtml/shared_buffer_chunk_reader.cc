@@ -102,7 +102,7 @@ String SharedBufferChunkReader::NextChunkAsUTF8StringWithLatin1Fallback(
     return String();
 
   return data.size()
-             ? String::FromUTF8WithLatin1Fallback(data.data(), data.size())
+             ? String::FromUTF8WithLatin1Fallback(base::as_byte_span(data))
              : g_empty_string;
 }
 

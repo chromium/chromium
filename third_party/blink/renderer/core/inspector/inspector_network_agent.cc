@@ -297,8 +297,8 @@ class InspectorPostBodyParser
       const FormDataElement& data = request_body->Elements()[i];
       switch (data.type_) {
         case FormDataElement::kData:
-          parts_[i] = String::FromUTF8WithLatin1Fallback(data.data_.data(),
-                                                         data.data_.size());
+          parts_[i] = String::FromUTF8WithLatin1Fallback(
+              base::as_byte_span(data.data_));
           break;
         case FormDataElement::kEncodedBlob:
           ReadDataBlob(data.optional_blob_data_handle_, &parts_[i]);
@@ -327,8 +327,8 @@ class InspectorPostBodyParser
                         std::optional<SegmentedBuffer> raw_data) {
     if (raw_data) {
       Vector<char> flattened_data = std::move(*raw_data).CopyAs<Vector<char>>();
-      *destination = String::FromUTF8WithLatin1Fallback(flattened_data.data(),
-                                                        flattened_data.size());
+      *destination = String::FromUTF8WithLatin1Fallback(
+          base::as_byte_span(flattened_data));
     } else {
       error_ = true;
     }
@@ -664,7 +664,7 @@ std::unique_ptr<protocol::Network::WebSocketFrame> WebSocketMessageToProtocol(
       .setMask(masked)
       // Only interpret the payload as UTF-8 when it's a text message
       .setPayloadData(op_code == 1 ? String::FromUTF8WithLatin1Fallback(
-                                         payload.data(), payload.size())
+                                         base::as_bytes(payload))
                                    : Base64Encode(base::as_bytes(payload)))
       .build();
 }
@@ -828,7 +828,7 @@ static bool FormDataToString(
 
   Vector<char> bytes;
   body->Flatten(bytes);
-  *content = String::FromUTF8WithLatin1Fallback(bytes.data(), bytes.size());
+  *content = String::FromUTF8WithLatin1Fallback(base::as_byte_span(bytes));
   return true;
 }
 

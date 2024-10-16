@@ -299,8 +299,7 @@ String FontCustomPlatformData::FamilyNameForInspector() const {
     }
   }
   font_family_iterator->unref();
-  return String::FromUTF8(localized_string.fString.c_str(),
-                          localized_string.fString.size());
+  return String::FromUTF8(base::as_byte_span(localized_string.fString));
 }
 
 FontCustomPlatformData* FontCustomPlatformData::Create(

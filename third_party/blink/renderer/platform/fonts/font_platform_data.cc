@@ -209,8 +209,7 @@ String FontPlatformData::FontFamilyName() const {
          !localized_string.fString.size()) {
   }
   font_family_iterator->unref();
-  return String::FromUTF8(localized_string.fString.c_str(),
-                          localized_string.fString.size());
+  return String::FromUTF8(base::as_byte_span(localized_string.fString));
 }
 
 bool FontPlatformData::IsAhem() const {

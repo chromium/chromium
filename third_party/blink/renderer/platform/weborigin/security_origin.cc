@@ -739,7 +739,7 @@ String SecurityOrigin::CanonicalizeHost(const String& host,
                                          url::Component(0, host.length()),
                                          canon_output, out_host);
   }
-  return String::FromUTF8(canon_output.data(), canon_output.length());
+  return String::FromUTF8(canon_output.view());
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::GetOriginForAgentCluster(

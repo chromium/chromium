@@ -41,7 +41,7 @@ class CORE_EXPORT StringUtil {
 
  public:
   static String fromUTF8(const uint8_t* data, size_t length) {
-    return String::FromUTF8(reinterpret_cast<const char*>(data), length);
+    return String::FromUTF8(data, length);
   }
 
   static String fromUTF16LE(const uint16_t* data, size_t length);
