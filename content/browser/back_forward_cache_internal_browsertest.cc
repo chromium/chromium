@@ -3846,11 +3846,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   updates_and_events.events.emplace_back(
       /*id=*/0, ax::mojom::Event::kChildrenChanged);
   // If any events are generated and fired, they will be fired synchronously
-  // in the same task of |HandleAXEventsForTests()| and and result in a test
+  // in the same task of |HandleAXEventsForTesting()| and and result in a test
   // fail.
-  rfh_a->HandleAXEventsForTests(rfh_a->GetAXTreeID(),
-                                std::move(updates_and_events),
-                                ui::AXLocationAndScrollUpdates());
+  rfh_a->HandleAXEventsForTesting(rfh_a->GetAXTreeID(),
+                                  std::move(updates_and_events),
+                                  ui::AXLocationAndScrollUpdates());
 
   // Reset the callback before restoring the page so that we will not fail when
   // events are generated.

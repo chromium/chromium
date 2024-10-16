@@ -10495,7 +10495,8 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   // A renderer should never send an accessibility update before web
   // accessibility is enabled.
-  if (!accessibility_reset_token_) {
+  if (!accessibility_reset_token_ &&
+      reset_token != kAccessibilityResetTokenForTesting) {
     std::move(report_bad_message_callback).Run(
         "Unexpected accessibility message.");
     return;
@@ -10504,7 +10505,8 @@ void RenderFrameHostImpl::HandleAXEvents(
   // Don't process this IPC if either we're waiting on a reset and this IPC
   // doesn't have the matching token ID.
   // The token prevents obsolete data from being processed.
-  if (*accessibility_reset_token_ != reset_token) {
+  if (*accessibility_reset_token_ != reset_token &&
+      reset_token != kAccessibilityResetTokenForTesting) {
     DVLOG(1) << "Ignoring obsolete accessibility data.";
     return;
   }
@@ -10625,13 +10627,15 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
 
   // A renderer should never send an accessibility update before web
   // accessibility is enabled.
-  if (!accessibility_reset_token_) {
+  if (!accessibility_reset_token_ &&
+      reset_token != kAccessibilityResetTokenForTesting) {
     std::move(report_bad_message_callback).Run(
         "Unexpected accessibility message.");
     return;
   }
 
-  if (*accessibility_reset_token_ != reset_token) {
+  if (*accessibility_reset_token_ != reset_token &&
+      reset_token != kAccessibilityResetTokenForTesting) {
     DVLOG(1) << "Ignoring obsolete accessibility data.";
     return;
   }

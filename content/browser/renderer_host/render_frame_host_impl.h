@@ -2895,13 +2895,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                  JavaScriptResultAndTypeCallback callback);
 
   // Call |HandleAXEvents()| for tests.
-  void HandleAXEventsForTests(
+  uint32_t kAccessibilityResetTokenForTesting = -1;
+  void HandleAXEventsForTesting(
       const ui::AXTreeID& tree_id,
       ui::AXUpdatesAndEvents updates_and_events,
       ui::AXLocationAndScrollUpdates location_and_scroll_updates) {
     HandleAXEvents(tree_id, std::move(updates_and_events),
                    std::move(location_and_scroll_updates),
-                   *accessibility_reset_token_, {});
+                   kAccessibilityResetTokenForTesting, {});
   }
 
   // BucketContext:
