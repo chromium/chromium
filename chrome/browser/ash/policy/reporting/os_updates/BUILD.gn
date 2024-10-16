@@ -17,6 +17,7 @@ static_library("os_updates") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting",
+    "//chrome/browser/ash/policy/reporting/event_based_logs:utils",
     "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/dbus/session_manager",

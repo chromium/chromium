@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
+#include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -168,7 +168,7 @@ std::optional<std::string> OsUpdatesReporter::NotifyOsUpdateFailed() {
   if (observers_.empty()) {
     return std::nullopt;
   }
-  std::string upload_id = policy::EventBasedLogUploader::GenerateUploadId();
+  std::string upload_id = policy::GenerateEventBasedLogUploadId();
   for (auto& observer : observers_) {
     observer.OnOsUpdateFailed(upload_id);
   }
