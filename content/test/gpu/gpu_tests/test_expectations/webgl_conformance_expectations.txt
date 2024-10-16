@@ -684,6 +684,7 @@ crbug.com/365680832 [ angle-swiftshader graphite-enabled oop-c passthrough rende
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
 crbug.com/328102507 [ mac angle-opengl graphite-disabled ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/373823901 [ mac ] conformance/glsl/misc/shader-with-two-initializer-types.html [ Failure ]
 
 ## Mac AMD failures ##
 
