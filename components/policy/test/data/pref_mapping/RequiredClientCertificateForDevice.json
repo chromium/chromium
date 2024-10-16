@@ -44,7 +44,7 @@
         }
       },
       {
-        "note": "Simple value with dynamic protocol",
+        "note": "Simple value with dynamic protocol and RSA keys",
         "policies": {
           "RequiredClientCertificateForUser": [
             {
@@ -65,6 +65,37 @@
                 "cert_profile_id": "cert_profile_id_1",
                 "enable_remote_attestation_check": true,
                 "key_algorithm": "rsa",
+                "name": "Certificate Profile 1",
+                "policy_version": "some_hash",
+                "protocol_version": 2,
+                "renewal_period_seconds": 2592000
+              }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Simple value with dynamic protocol and EC keys",
+        "policies": {
+          "RequiredClientCertificateForUser": [
+            {
+              "cert_profile_id": "cert_profile_id_1",
+              "enable_remote_attestation_check": true,
+              "key_algorithm": "ec",
+              "name": "Certificate Profile 1",
+              "policy_version": "some_hash",
+              "protocol_version": 2,
+              "renewal_period_seconds": 2592000
+            }
+          ]
+        },
+        "prefs": {
+          "required_client_certificate_for_user": {
+            "value": [
+              {
+                "cert_profile_id": "cert_profile_id_1",
+                "enable_remote_attestation_check": true,
+                "key_algorithm": "ec",
                 "name": "Certificate Profile 1",
                 "policy_version": "some_hash",
                 "protocol_version": 2,

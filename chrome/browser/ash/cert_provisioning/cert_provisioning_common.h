@@ -177,10 +177,10 @@ enum class ProtocolVersion {
 };
 
 // The type of key the device should generate.
-// TODO(b/364893005): After the client-side implementation is done, update the
-// values in YAML files and mention those files here (same as for
-// ProtocolVersion above). They are also used in serialization so they should
-// not be renumbered.
+// The values must match the description in
+// RequiredClientCertificateForDevice.yaml and
+// RequiredClientCertificateForUser.yaml.
+// They are also used in serialization so they should not be renumbered.
 enum class KeyType {
   // 2048-bit RSA keys.
   kRsa = 1,
