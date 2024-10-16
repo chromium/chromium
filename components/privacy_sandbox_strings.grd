@@ -456,7 +456,7 @@
       </if>
 
       <!-- Privacy Sandbox Ads Notice -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java" translateable="false">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java">
         Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data.">
@@ -502,10 +502,10 @@
         </else>
       </if>
       <!--Privacy Sandbox Privacy Policy-->
-      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." translateable="false" formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." formatter_data="android_java">
         Google Privacy Policy
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." translateable="false" formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." formatter_data="android_java">
         Back
       </message>
 
