@@ -20,17 +20,19 @@ FencedFrameTask::FencedFrameTask(content::RenderFrameHost* render_frame_host,
           /*title=*/u"",
           /*icon=*/nullptr,
           /*subframe=*/render_frame_host),
-      site_instance_(render_frame_host->GetSiteInstance()),
-      embedder_task_(embedder_task) {
+      site_instance_(render_frame_host->GetSiteInstance()) {
+  embedder_task_ = embedder_task->AsWeakPtr();
   set_title(GetTitle());
 }
+
+FencedFrameTask::~FencedFrameTask() {}
 
 void FencedFrameTask::Activate() {
   embedder_task_->Activate();
 }
 
 const task_manager::Task* FencedFrameTask::GetParentTask() const {
-  return embedder_task_;
+  return embedder_task_.get();
 }
 
 void FencedFrameTask::UpdateTitle() {
