@@ -176,7 +176,8 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                   return ai_mojom::AggregatableHistogramContribution::New(
                       attribution_reporting::HexEncodeAggregationKey(
                           contribution.bucket),
-                      base::checked_cast<uint32_t>(contribution.value));
+                      base::checked_cast<uint32_t>(contribution.value),
+                      contribution.filtering_id.value_or(0));
                 });
 
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
@@ -196,7 +197,8 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
             contributions.push_back(
                 ai_mojom::AggregatableHistogramContribution::New(
                     attribution_reporting::HexEncodeAggregationKey(0),
-                    /*value=*/0));
+                    /*value=*/0,
+                    /*filtering_id=*/0));
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),

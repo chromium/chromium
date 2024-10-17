@@ -33,6 +33,7 @@ struct AggregatableHistogramContribution {
   // Hex-encoded unsigned 128-bit integer.
   string key;
   uint32 value;
+  uint64 filtering_id;
 };
 
 // Contains aggregatable attribution data to be displayed.

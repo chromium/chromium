@@ -1140,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions{blink::mojom::AggregatableReportHistogramContribution(
-          1, 2, /*filtering_id=*/std::nullopt)};
+          /*bucket=*/1, /*value=*/2, /*filtering_id=*/3)};
 
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1204,14 +1204,14 @@ IN_PROC_BROWSER_TEST_F(
             table.rows[0].cells[1]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
             table.rows[0].cells[0]?.innerText === 'Pending' &&
-            table.rows[0].cells[4]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
+            table.rows[0].cells[4]?.innerText === '[ {  "key": "0x1",  "value": 2,  "filteringId": "3" }]' &&
             table.rows[0].cells[5]?.innerText === 'https://aws.example.test' &&
             table.rows[0].cells[6]?.innerText === 'false' &&
             table.rows[1].cells[0]?.innerText === 'Sent: HTTP 200' &&
             table.rows[2].cells[0]?.innerText === 'Prohibited by browser policy' &&
             table.rows[3].cells[0]?.innerText === 'Dropped due to assembly failure' &&
             table.rows[4].cells[0]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
-            table.rows[5].cells[4]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
+            table.rows[5].cells[4]?.innerText === '[ {  "key": "0x0",  "value": 0,  "filteringId": "0" }]' &&
             table.rows[5].cells[6]?.innerText === 'true') {
           if (obs) {
             obs.disconnect();
