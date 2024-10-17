@@ -70,6 +70,7 @@ struct ValueWithPolicy {
 using DiyAppCount = base::StrongAlias<class DiyAppCountTag, int>;
 using InstallableAppCount =
     base::StrongAlias<class InstallableAppCountTag, int>;
+using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
 
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar {
@@ -676,8 +677,9 @@ class WebAppRegistrar {
   int CountUserInstalledNotLocallyInstalledApps() const;
 
   // Count number of all apps which are installed by user, including DIY apps.
+  // Also counts which ones of these are not included in sync.
   // Requires app registry to be in a ready state.
-  std::tuple<DiyAppCount, InstallableAppCount>
+  std::tuple<DiyAppCount, InstallableAppCount, NonSyncingAppCount>
   CountTotalUserInstalledAppsIncludingDiy() const;
 
   const raw_ptr<Profile> profile_;
