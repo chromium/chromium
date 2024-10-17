@@ -1446,7 +1446,6 @@ crbug.com/326619067 [ Mac ] external/wpt/css/css-scroll-snap-2/scrollsnapchangin
 crbug.com/332903033 [ Mac ] external/wpt/css/css-scroll-snap-2/scrollsnapchanging/scrollsnapchanging-on-user-scroll.tentative.html [ Slow ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/* [ Slow ]
 
-crbug.com/328860404 virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 crbug.com/328849073 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 
 crbug.com/350628679 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Slow ]

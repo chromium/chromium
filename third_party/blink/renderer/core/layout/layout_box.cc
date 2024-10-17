@@ -3558,9 +3558,6 @@ void LayoutBox::CopyVisualOverflowFromFragments() {
   const PhysicalRect visual_overflow = VisualOverflowRect();
   if (visual_overflow == previous_visual_overflow)
     return;
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
   SetShouldCheckForPaintInvalidation();
 }
 

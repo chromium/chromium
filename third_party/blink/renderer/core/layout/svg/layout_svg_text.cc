@@ -256,11 +256,6 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
     result.bounds_changed = true;
   }
-
-  if (result.bounds_changed) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
-
   return result;
 }
 

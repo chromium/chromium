@@ -309,8 +309,6 @@ crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip Timeout ]
 crbug.com/1078927 fast/multicol/table-row-height-increase.html [ Failure ]
 
-crbug.com/40895558 virtual/disable-intersection-optimization/external/wpt/intersection-observer/grow-height-and-scrolled.html [ Failure ]
-
 # View transition failures
 crbug.com/1351556 virtual/threaded/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/view-transition-wide-gamut/view-transition/capture-callback-exception.html [ Failure ]
@@ -6514,7 +6512,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/runtime/runtime-localStorage-getProperties.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure ]
 [ Debug Mac13 ] media/video-source.html [ Failure ]
-[ Debug Mac13 ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] fast/forms/focus-rect/radio-focus-ring.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.optional.sub.html [ Skip Timeout ]
@@ -7290,7 +7287,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] transforms/2d/hindi-rotated.html [ Failure ]
 [ Mac14-arm64 ] virtual/dark-color-scheme/fast/forms/color-scheme/search/search-appearance-basic.html [ Failure ]
 [ Mac14-arm64 ] virtual/dark-color-scheme/fast/forms/color-scheme/text/input-basic-box-appearance-basic.html [ Failure ]
-[ Mac14-arm64 ] virtual/disable-intersection-optimization/http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure ]
 [ Mac14-arm64 ] virtual/exotic-color-space/images/color-profile-border-image.html [ Failure ]
 [ Mac14-arm64 ] virtual/exotic-color-space/images/color-profile-munsell-adobe-to-srgb-webgl.html [ Skip Timeout ]
 [ Mac14-arm64 ] virtual/exotic-color-space/images/jpeg-yuv-image-decoding.html [ Failure ]

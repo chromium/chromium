@@ -45,9 +45,6 @@ class CORE_EXPORT ElementIntersectionObserverData final
   // element is target.
   void ComputeIntersectionsForTarget();
   bool NeedsOcclusionTracking() const;
-  // Indicates that geometry information cached during the previous run of the
-  // algorithm is invalid and must be recomputed.
-  void InvalidateCachedRects();
 
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override {

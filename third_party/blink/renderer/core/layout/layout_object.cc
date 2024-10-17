@@ -1707,23 +1707,6 @@ void LayoutObject::InvalidateSubtreeLayoutForFontUpdates() {
   }
 }
 
-void LayoutObject::DeprecatedInvalidateIntersectionObserverCachedRects() {
-  NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    InvalidateIntersectionObserverCachedRects();
-  }
-}
-
-void LayoutObject::InvalidateIntersectionObserverCachedRects() {
-  NOT_DESTROYED();
-  if (const auto* element = DynamicTo<Element>(GetNode())) {
-    if (auto* data = element->IntersectionObserverData()) {
-      data->InvalidateCachedRects();
-    }
-  }
-  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
-}
-
 static inline bool ShouldInvalidateBeyond(LayoutObject* o) {
   // We don't work on individual inline objects, instead at an IFC level. We
   // never clear these bits on inline elements so invalidate past them.
@@ -3968,22 +3951,13 @@ void LayoutObject::WillBeRemovedFromTree() {
     FindReferencingScrollAnchors(this, kClear);
   }
 
-  if (LocalFrameView* frame_view = GetFrameView())
+  if (LocalFrameView* frame_view = GetFrameView()) {
     frame_view->GetPaintTimingDetector().LayoutObjectWillBeDestroyed(*this);
-
-  InvalidateIntersectionObserverCachedRects();
+    frame_view->SetIntersectionObservationState(LocalFrameView::kDesired);
+  }
 }
 
 void LayoutObject::SetNeedsPaintPropertyUpdate() {
-  NOT_DESTROYED();
-  if (bitfields_.NeedsPaintPropertyUpdate()) {
-    return;
-  }
-  SetNeedsPaintPropertyUpdatePreservingCachedRects();
-  DeprecatedInvalidateIntersectionObserverCachedRects();
-}
-
-void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
   NOT_DESTROYED();
   DCHECK(!GetDocument().InvalidationDisallowed());
   if (bitfields_.NeedsPaintPropertyUpdate())
@@ -4657,7 +4631,6 @@ void LayoutObject::SetShouldDoFullPaintInvalidation(
   DCHECK(IsLayoutFullPaintInvalidationReason(reason));
   SetShouldCheckForPaintInvalidation();
   SetShouldDoFullPaintInvalidationWithoutLayoutChangeInternal(reason);
-  DeprecatedInvalidateIntersectionObserverCachedRects();
 }
 
 void LayoutObject::SetShouldDoFullPaintInvalidationWithoutLayoutChange(

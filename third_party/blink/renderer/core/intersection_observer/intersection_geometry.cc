@@ -224,13 +224,7 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
   zoom = root->StyleRef().EffectiveZoom();
   pre_margin_local_root_rect = InitializeRootRect(root);
   UpdateMargin(margin);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    root_to_view_transform = ObjectToViewTransform(*root);
-  } else {
-    TransformState transform_state(TransformState::kApplyTransformDirection);
-    root->MapLocalToAncestor(nullptr, transform_state, 0);
-    root_to_view_transform = transform_state.AccumulatedTransform();
-  }
+  root_to_view_transform = ObjectToViewTransform(*root);
 }
 
 void IntersectionGeometry::RootGeometry::UpdateMargin(
@@ -359,30 +353,26 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
     relationship = kTargetInSubFrame;
     DCHECK(root->IsScrollContainer());
     DCHECK(root->IsLayoutView());
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      root_scrolls_target = To<LayoutView>(root)->HasScrollableOverflow();
-      if (root_scrolls_target) {
-        // Check if target's ancestor container under root is fixed-position.
-        // If yes, reset root_scroll_target to false.
-        const LayoutObject* container = target;
-        while (container->GetFrame() != root->GetFrame()) {
-          container = container->GetFrame()->OwnerLayoutObject();
-          if (!container) {
-            relationship = kInvalid;
-            return;
-          }
-        }
-        while (true) {
-          const LayoutObject* next_container = container->Container();
-          if (next_container == root) {
-            root_scrolls_target = !container->IsFixedPositioned();
-            break;
-          }
-          container = next_container;
+    root_scrolls_target = To<LayoutView>(root)->HasScrollableOverflow();
+    if (root_scrolls_target) {
+      // Check if target's ancestor container under root is fixed-position.
+      // If yes, reset root_scroll_target to false.
+      const LayoutObject* container = target;
+      while (container->GetFrame() != root->GetFrame()) {
+        container = container->GetFrame()->OwnerLayoutObject();
+        if (!container) {
+          relationship = kInvalid;
+          return;
         }
       }
-    } else {
-      root_scrolls_target = true;
+      while (true) {
+        const LayoutObject* next_container = container->Container();
+        if (next_container == root) {
+          root_scrolls_target = !container->IsFixedPositioned();
+          break;
+        }
+        container = next_container;
+      }
     }
 
     if (!has_scroll_margin) {
@@ -464,14 +454,10 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   }
 
   DCHECK(previous_container);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    root_scrolls_target =
-        root->IsScrollContainer() &&
-        To<LayoutBox>(root)->HasScrollableOverflow() &&
-        !(root->IsLayoutView() && previous_container->IsFixedPositioned());
-  } else {
-    root_scrolls_target = root->IsScrollContainer();
-  }
+  root_scrolls_target =
+      root->IsScrollContainer() &&
+      To<LayoutBox>(root)->HasScrollableOverflow() &&
+      !(root->IsLayoutView() && previous_container->IsFixedPositioned());
 
   if (have_crossed_frame_boundary) {
     DCHECK_EQ(relationship, kTargetInSubFrame);
@@ -512,37 +498,18 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
     return;
   }
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    if (!(flags_ & kScrollAndVisibilityOnly)) {
-      return;
-    }
-    // Cached rects can only be used if there are no scrollable objects in the
-    // hierarchy between target and root (a scrollable root is ok). The reason
-    // is that a scroll change in an intermediate scroller would change the
-    // intersection geometry, but we intentionally don't invalidate cached
-    // rects and schedule intersection update to enable the minimul-scroll-
-    // delta-to-update optimization.
-    if (root_and_target.relationship != RootAndTarget::kNotScrollable &&
-        root_and_target.relationship != RootAndTarget::kScrollableByRootOnly) {
-      return;
-    }
-  } else {
-    if (RootIsImplicit()) {
-      return;
-    }
-    // Cached rects can only be used if there are no scrollable objects in the
-    // hierarchy between target and root (a scrollable root is ok). The reason
-    // is that a scroll change in an intermediate scroller would change the
-    // intersection geometry, but it would not properly trigger an invalidation
-    // of the cached rects.
-    PaintLayer* root_layer = root_and_target.target->View()->Layer();
-    if (!root_layer) {
-      return;
-    }
-    if (root_and_target.target->DeprecatedEnclosingScrollableBox() !=
-        root_and_target.root) {
-      return;
-    }
+  if (!(flags_ & kScrollAndVisibilityOnly)) {
+    return;
+  }
+  // Cached rects can only be used if there are no scrollable objects in the
+  // hierarchy between target and root (a scrollable root is ok). The reason
+  // is that a scroll change in an intermediate scroller would change the
+  // intersection geometry, but we intentionally don't invalidate cached
+  // rects and schedule intersection update to enable the minimul-scroll-
+  // delta-to-update optimization.
+  if (root_and_target.relationship != RootAndTarget::kNotScrollable &&
+      root_and_target.relationship != RootAndTarget::kScrollableByRootOnly) {
+    return;
   }
 
   flags_ |= kShouldUseCachedRects;
@@ -792,8 +759,7 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* target,
     does_intersect = target->MapToVisualRectInAncestorSpace(
         local_ancestor, unclipped_intersection_rect,
         static_cast<VisualRectFlags>(flags));
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-        local_ancestor && local_ancestor->IsScrollContainer() &&
+    if (local_ancestor && local_ancestor->IsScrollContainer() &&
         !root_scrolls_target) {
       // Convert the rect from the scrolling contents space to the border box
       // space, so that we can use cached rects and avoid update on scroll of
@@ -889,10 +855,6 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
     const gfx::Transform& root_to_view_transform,
     const Vector<float>& thresholds,
     const Vector<Length>& scroll_margin) const {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return gfx::Vector2dF();
-  }
-
   if (!scroll_margin.empty()) {
     return gfx::Vector2dF();
   }

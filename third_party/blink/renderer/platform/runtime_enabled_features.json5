@@ -2454,10 +2454,6 @@
       status: "stable",
     },
     {
-      name: "IntersectionOptimization",
-      status: "stable",
-    },
-    {
       name: "InvertedColors",
       status: "experimental",
     },

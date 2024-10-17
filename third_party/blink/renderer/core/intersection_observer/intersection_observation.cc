@@ -20,16 +20,6 @@
 
 namespace blink {
 
-namespace {
-
-Document& TrackingDocument(const IntersectionObservation* observation) {
-  if (observation->Observer()->RootIsImplicit())
-    return observation->Target()->GetDocument();
-  return (observation->Observer()->root()->GetDocument());
-}
-
-}  // namespace
-
 IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
                                                  Element& target)
     : observer_(observer), target_(&target) {}
@@ -74,8 +64,7 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      !has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
+  if (!has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
       cached_rects_.min_scroll_delta_to_update.x() > 0 &&
       cached_rects_.min_scroll_delta_to_update.y() > 0) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
@@ -211,13 +200,7 @@ bool IntersectionObservation::MaybeDelayAndReschedule(
   base::TimeDelta delay = observer_->GetEffectiveDelay() -
                           (context.GetMonotonicTime() - last_run_time_);
   if (delay.is_positive()) {
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      context.UpdateNextRunDelay(delay);
-    } else {
-      // TODO(crbug.com/40873583): Handle the case that the frame becomes
-      // throttled during the delay,
-      TrackingDocument(this).View()->ScheduleAnimation(delay);
-    }
+    context.UpdateNextRunDelay(delay);
     return true;
   }
   return false;

@@ -98,10 +98,8 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     // If any change needs a more significant intersection update in a frame
     // view, we should have set the state on that frame view during the tree
     // walk or earlier.
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      root_frame_view.SetIntersectionObservationState(
-          LocalFrameView::kScrollAndVisibilityOnly);
-    }
+    root_frame_view.SetIntersectionObservationState(
+        LocalFrameView::kScrollAndVisibilityOnly);
   }
 }
 

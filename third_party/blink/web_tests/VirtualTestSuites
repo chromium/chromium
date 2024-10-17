@@ -175,19 +175,6 @@
     ],
     "expires": "never"
   },
-  {
-    "prefix": "disable-intersection-optimization",
-    "platforms": ["Linux", "Mac"],
-    "bases": ["external/wpt/intersection-observer",
-              "external/wpt/html/semantics/embedded-content/the-img-element",
-              "external/wpt/html/semantics/embedded-content/the-iframe-element",
-              "http/tests/intersection-observer",
-              "intersection-observer",
-              "wpt_internal/display-lock"],
-    "args": ["--disable-features=IntersectionOptimization"],
-    "owners": ["wangxianzhu@chromium.org"],
-    "expires": "Jul 30, 2024"
-  },
 
   "Exclusive tests due to crbug.com/349939555",
   {

@@ -56,17 +56,8 @@ using html_names::kStyleAttr;
 
 // NOTE: This test uses <iframe sandbox> to create cross origin iframes.
 
-// This should not conflict with the existing PaintTestConfiguration bits.
-enum { kIntersectionOptimization = 1 << 20 };
-
-class FrameThrottlingTest : public PaintTestConfigurations,
-                            public SimTest,
-                            private ScopedIntersectionOptimizationForTest {
+class FrameThrottlingTest : public PaintTestConfigurations, public SimTest {
  protected:
-  FrameThrottlingTest()
-      : ScopedIntersectionOptimizationForTest(GetParam() &
-                                              kIntersectionOptimization) {}
-
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(640, 480));
@@ -100,10 +91,7 @@ class FrameThrottlingTest : public PaintTestConfigurations,
   };
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FrameThrottlingTest,
-                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
-                                           kIntersectionOptimization));
+INSTANTIATE_PAINT_TEST_SUITE_P(FrameThrottlingTest);
 
 TEST_P(FrameThrottlingTest, ThrottleInvisibleFrames) {
   SimRequest main_resource("https://example.com/", "text/html");

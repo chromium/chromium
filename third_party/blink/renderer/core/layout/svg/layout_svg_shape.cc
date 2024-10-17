@@ -362,10 +362,6 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     result.bounds_changed = true;
   }
 
-  if (result.bounds_changed) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
-
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);

@@ -26,7 +26,6 @@
 
 namespace blink {
 
-class ComputeIntersectionsContext;
 class Document;
 class Element;
 class ExceptionState;
@@ -183,9 +182,6 @@ class CORE_EXPORT IntersectionObserver final
 
   Vector<Length> ScrollMargin() const { return scroll_margin_; }
 
-  // Returns the number of IntersectionObservations that recomputed geometry.
-  int64_t ComputeIntersections(unsigned flags, ComputeIntersectionsContext&);
-
   bool IsInternal() const;
   // The metric id for tracking update time via UpdateTime metrics, or null for
   // internal intersection observers without explicit metrics.
@@ -200,7 +196,6 @@ class CORE_EXPORT IntersectionObserver final
   // Returns false if this observer has an explicit root node which has been
   // deleted; true otherwise.
   bool RootIsValid() const;
-  void InvalidateCachedRects();
 
   bool UseOverflowClipEdge() const { return use_overflow_clip_edge_ == 1; }
 

@@ -3156,10 +3156,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
       if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea())
         scrollable_area->PositionOverflowControls();
     }
-    if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      object_.GetMutableForPainting()
-          .InvalidateIntersectionObserverCachedRects();
-    }
   }
 
   if (paint_offset_translation)
@@ -3666,14 +3662,13 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
     }
   }
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      (properties_changed_.transform_changed >
-           (properties_changed_.transform_change_is_scroll_translation_only
-                ? PaintPropertyChangeType::kChangedOnlySimpleValues
-                : PaintPropertyChangeType::kUnchanged) ||
-       properties_changed_.clip_changed > PaintPropertyChangeType::kUnchanged ||
-       properties_changed_.scroll_changed >
-           PaintPropertyChangeType::kUnchanged)) {
+  if (properties_changed_.transform_changed >
+          (properties_changed_.transform_change_is_scroll_translation_only
+               ? PaintPropertyChangeType::kChangedOnlySimpleValues
+               : PaintPropertyChangeType::kUnchanged) ||
+      properties_changed_.clip_changed > PaintPropertyChangeType::kUnchanged ||
+      properties_changed_.scroll_changed >
+          PaintPropertyChangeType::kUnchanged) {
     object_.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
   }
@@ -3765,8 +3760,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
       std::move(transform_and_origin), animation_state);
   DirectlyUpdateCcTransform(*transform, object, effective_change_type);
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      effective_change_type > PaintPropertyChangeType::kUnchanged) {
+  if (effective_change_type > PaintPropertyChangeType::kUnchanged) {
     object.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
   }

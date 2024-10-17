@@ -435,10 +435,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
   // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
-  // Intersection observation cached rects affected by the scroll are not
-  // invalidated because it's hard to find all of them. Validity of cached
-  // rects is checked in IntersectionGeometry::PrepareComputeGeometry().
-  GetLayoutBox()->SetNeedsPaintPropertyUpdatePreservingCachedRects();
+  GetLayoutBox()->SetNeedsPaintPropertyUpdate();
   frame_view->UpdateIntersectionObservationStateOnScroll(new_offset -
                                                          scroll_offset_);
 
