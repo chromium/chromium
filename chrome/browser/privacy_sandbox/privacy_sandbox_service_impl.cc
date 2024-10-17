@@ -617,25 +617,25 @@ bool PrivacySandboxServiceImpl::IsRestrictedNoticeEnabled() {
   return privacy_sandbox_settings_->IsRestrictedNoticeEnabled();
 }
 
-void PrivacySandboxServiceImpl::SetFirstPartySetsDataAccessEnabled(
+void PrivacySandboxServiceImpl::SetRelatedWebsiteSetsDataAccessEnabled(
     bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                             enabled);
 }
 
-bool PrivacySandboxServiceImpl::IsFirstPartySetsDataAccessEnabled() const {
+bool PrivacySandboxServiceImpl::IsRelatedWebsiteSetsDataAccessEnabled() const {
   return privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled();
 }
 
-bool PrivacySandboxServiceImpl::IsFirstPartySetsDataAccessManaged() const {
+bool PrivacySandboxServiceImpl::IsRelatedWebsiteSetsDataAccessManaged() const {
   return pref_service_->IsManagedPreference(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
-PrivacySandboxServiceImpl::GetSampleFirstPartySets() const {
+PrivacySandboxServiceImpl::GetSampleRelatedWebsiteSets() const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
-      IsFirstPartySetsDataAccessEnabled()) {
+      IsRelatedWebsiteSetsDataAccessEnabled()) {
     return {{net::SchemefulSite(GURL("https://youtube.com")),
              net::SchemefulSite(GURL("https://google.com"))},
             {net::SchemefulSite(GURL("https://google.com")),
@@ -656,9 +656,10 @@ PrivacySandboxServiceImpl::GetSampleFirstPartySets() const {
 }
 
 std::optional<net::SchemefulSite>
-PrivacySandboxServiceImpl::GetFirstPartySetOwner(const GURL& site_url) const {
-  // If FPS is not affecting cookie access, then there are effectively no
-  // first party sets.
+PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwner(
+    const GURL& site_url) const {
+  // If RWS is not affecting cookie access, then there are effectively no
+  // related website sets.
   if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
         cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK &&
         base::FeatureList::IsEnabled(
@@ -669,7 +670,7 @@ PrivacySandboxServiceImpl::GetFirstPartySetOwner(const GURL& site_url) const {
   // Return the owner according to the sample sets if they're provided.
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
     const base::flat_map<net::SchemefulSite, net::SchemefulSite> sets =
-        GetSampleFirstPartySets();
+        GetSampleRelatedWebsiteSets();
     net::SchemefulSite schemeful_site(site_url);
 
     base::flat_map<net::SchemefulSite, net::SchemefulSite>::const_iterator
@@ -691,10 +692,10 @@ PrivacySandboxServiceImpl::GetFirstPartySetOwner(const GURL& site_url) const {
 }
 
 std::optional<std::u16string>
-PrivacySandboxServiceImpl::GetFirstPartySetOwnerForDisplay(
+PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwnerForDisplay(
     const GURL& site_url) const {
   std::optional<net::SchemefulSite> site_owner =
-      GetFirstPartySetOwner(site_url);
+      GetRelatedWebsiteSetOwner(site_url);
   if (!site_owner.has_value()) {
     return std::nullopt;
   }
@@ -702,11 +703,11 @@ PrivacySandboxServiceImpl::GetFirstPartySetOwnerForDisplay(
   return url_formatter::IDNToUnicode(site_owner->GetURL().host());
 }
 
-bool PrivacySandboxServiceImpl::IsPartOfManagedFirstPartySet(
+bool PrivacySandboxServiceImpl::IsPartOfManagedRelatedWebsiteSet(
     const net::SchemefulSite& site) const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
-    return IsFirstPartySetsDataAccessManaged() ||
-           GetSampleFirstPartySets()[site] ==
+    return IsRelatedWebsiteSetsDataAccessManaged() ||
+           GetSampleRelatedWebsiteSets()[site] ==
                net::SchemefulSite(GURL("https://chromium.org"));
   }
 
@@ -966,14 +967,14 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
     return;
   }
 
-  auto fps_status = FirstPartySetsState::kFpsNotRelevant;
+  auto rws_status = FirstPartySetsState::kFpsNotRelevant;
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
       cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
-    fps_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
+    rws_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
                      ? FirstPartySetsState::kFpsEnabled
                      : FirstPartySetsState::kFpsDisabled;
   }
-  RecordFirstPartySetsStateHistogram(fps_status);
+  RecordFirstPartySetsStateHistogram(rws_status);
 
   RecordPrivacySandbox4StartupMetrics();
 
@@ -1371,7 +1372,7 @@ void PrivacySandboxServiceImpl::MaybeInitializeFirstPartySetsPref() {
     return;
   }
 
-  // If the user blocks 3P cookies, disable the FPS data access preference.
+  // If the user blocks 3P cookies, disable the RWS data access preference.
   // As this logic relies on checking synced preference state, it is possible
   // that synced state is available when this decision is made. To err on the
   // side of privacy, this init logic is run per-device (the pref recording that

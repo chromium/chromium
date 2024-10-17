@@ -933,7 +933,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void SetupDefaultRelatedWebsiteSets(MockPrivacySandboxService* mock_service) {
-    EXPECT_CALL(*mock_service, GetFirstPartySetOwner(_))
+    EXPECT_CALL(*mock_service, GetRelatedWebsiteSetOwner(_))
         .WillRepeatedly(
             [&](const GURL& url) -> std::optional<net::SchemefulSite> {
               auto related_website_sets = GetTestRelatedWebsiteSets();
@@ -6531,12 +6531,13 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
 TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
 
-  EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(_))
       .Times(1)
       .WillOnce(Return(false));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("example.com")))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(
+                  ConvertEtldToSchemefulSite("example.com")))
       .Times(2)
       .WillRepeatedly(Return(true));
 
@@ -6586,12 +6587,13 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
 TEST_F(SiteSettingsHandlerTest, RelatedWebsiteSetsMembership) {
   SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
 
-  EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(_))
       .Times(2)
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("example.com")))
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsPartOfManagedRelatedWebsiteSet(
+                  ConvertEtldToSchemefulSite("example.com")))
       .Times(1)
       .WillOnce(Return(true));
 

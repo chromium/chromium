@@ -1388,7 +1388,8 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   void OpenPageInfoAndGoToCookiesSubpage(
       std::optional<std::u16string> rws_owner) {
     EXPECT_FALSE(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened));
-    EXPECT_CALL(*mock_service(), GetFirstPartySetOwnerForDisplay(testing::_))
+    EXPECT_CALL(*mock_service(),
+                GetRelatedWebsiteSetOwnerForDisplay(testing::_))
         .WillRepeatedly(testing::Return(rws_owner));
     base::RunLoop run_loop;
     GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();

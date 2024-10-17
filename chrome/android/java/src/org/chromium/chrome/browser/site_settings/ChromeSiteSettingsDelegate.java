@@ -315,17 +315,17 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public boolean isRelatedWebsiteSetsDataAccessEnabled() {
-        return mPrivacySandboxBridge.isFirstPartySetsDataAccessEnabled();
+        return mPrivacySandboxBridge.isRelatedWebsiteSetsDataAccessEnabled();
     }
 
     @Override
     public boolean isRelatedWebsiteSetsDataAccessManaged() {
-        return mPrivacySandboxBridge.isFirstPartySetsDataAccessManaged();
+        return mPrivacySandboxBridge.isRelatedWebsiteSetsDataAccessManaged();
     }
 
     @Override
     public boolean isPartOfManagedRelatedWebsiteSet(String origin) {
-        return mPrivacySandboxBridge.isPartOfManagedFirstPartySet(origin);
+        return mPrivacySandboxBridge.isPartOfManagedRelatedWebsiteSet(origin);
     }
 
     @Override
@@ -365,12 +365,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled) {
-        mPrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
+        mPrivacySandboxBridge.setRelatedWebsiteSetsDataAccessEnabled(enabled);
     }
 
     @Override
     public String getRelatedWebsiteSetOwner(String memberOrigin) {
-        return mPrivacySandboxBridge.getFirstPartySetOwner(memberOrigin);
+        return mPrivacySandboxBridge.getRelatedWebsiteSetOwner(memberOrigin);
     }
 
     @Override

@@ -47,23 +47,29 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
   MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override));
-  MOCK_METHOD(void, SetFirstPartySetsDataAccessEnabled, (bool), (override));
-  MOCK_METHOD(bool, IsFirstPartySetsDataAccessEnabled, (), (const, override));
-  MOCK_METHOD(bool, IsFirstPartySetsDataAccessManaged, (), (const, override));
+  MOCK_METHOD(void, SetRelatedWebsiteSetsDataAccessEnabled, (bool), (override));
+  MOCK_METHOD(bool,
+              IsRelatedWebsiteSetsDataAccessEnabled,
+              (),
+              (const, override));
+  MOCK_METHOD(bool,
+              IsRelatedWebsiteSetsDataAccessManaged,
+              (),
+              (const, override));
   MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),
-              GetSampleFirstPartySets,
+              GetSampleRelatedWebsiteSets,
               (),
               (const, override));
   MOCK_METHOD(std::optional<net::SchemefulSite>,
-              GetFirstPartySetOwner,
+              GetRelatedWebsiteSetOwner,
               (const GURL& site_url),
               (const, override));
   MOCK_METHOD(std::optional<std::u16string>,
-              GetFirstPartySetOwnerForDisplay,
+              GetRelatedWebsiteSetOwnerForDisplay,
               (const GURL& site_url),
               (const, override));
   MOCK_METHOD(bool,
-              IsPartOfManagedFirstPartySet,
+              IsPartOfManagedRelatedWebsiteSet,
               (const net::SchemefulSite& site),
               (const, override));
   MOCK_METHOD(void,

@@ -191,40 +191,40 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsRestrictedNoticeEnabled() = 0;
 
   // Toggles the RelatedWebsiteSets preference.
-  virtual void SetFirstPartySetsDataAccessEnabled(bool enabled) = 0;
+  virtual void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) = 0;
 
   // Returns whether the RelatedWebsiteSets preference is enabled.
-  virtual bool IsFirstPartySetsDataAccessEnabled() const = 0;
+  virtual bool IsRelatedWebsiteSetsDataAccessEnabled() const = 0;
 
   // Returns whether the RelatedWebsiteSets preference is managed.
-  virtual bool IsFirstPartySetsDataAccessManaged() const = 0;
+  virtual bool IsRelatedWebsiteSetsDataAccessManaged() const = 0;
 
   // DEPRECATED - Do not use in new code. It will be replaced with queries to
-  // the First-Party Sets that are in the browser-process.
+  // the Related Website Sets that are in the browser-process.
   // Virtual for mocking in tests.
   virtual base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetSampleFirstPartySets() const = 0;
+  GetSampleRelatedWebsiteSets() const = 0;
 
-  // Returns the owner domain of the first party set that `site_url` is a member
-  // of, or std::nullopt if `site_url` is not recognised as a member of an FPS.
-  // Encapsulates logic about whether FPS information should be shown, if it
-  // should not, std::nullopt is always returned.
-  // Virtual for mocking in tests.
-  virtual std::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  // Returns the owner domain of the related website set that `site_url` is a
+  // member of, or std::nullopt if `site_url` is not recognised as a member of
+  // an RWS. Encapsulates logic about whether RWS information should be shown,
+  // if it should not, std::nullopt is always returned. Virtual for mocking in
+  // tests.
+  virtual std::optional<net::SchemefulSite> GetRelatedWebsiteSetOwner(
       const GURL& site_url) const = 0;
 
-  // Same as GetFirstPartySetOwner but returns a formatted string.
-  virtual std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  // Same as GetRelatedWebsiteSetOwner but returns a formatted string.
+  virtual std::optional<std::u16string> GetRelatedWebsiteSetOwnerForDisplay(
       const GURL& site_url) const = 0;
 
-  // Returns true if `site`'s membership in an FPS is being managed by policy or
-  // if FirstPartySets preference is managed. Virtual for mocking in tests.
+  // Returns true if `site`'s membership in an RWS is being managed by policy or
+  // if RelatedWebsiteSets preference is managed. Virtual for mocking in tests.
   //
-  // Note: Enterprises can use the First-Party Set Overrides policy to either
-  // add or remove a site from a First-Party Set. This method returns true only
-  // if `site` is being added into a First-Party Set since there's no UI use for
-  // whether `site` is being removed by an enterprise yet.
-  virtual bool IsPartOfManagedFirstPartySet(
+  // Note: Enterprises can use the Related Website Set Overrides policy to
+  // either add or remove a site from a Related Website Set. This method returns
+  // true only if `site` is being added into a Related Website Set since there's
+  // no UI use for whether `site` is being removed by an enterprise yet.
+  virtual bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const = 0;
 
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE

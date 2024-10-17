@@ -175,35 +175,36 @@ static void JNI_PrivacySandboxBridge_PromptActionOccurred(
       static_cast<PrivacySandboxService::SurfaceType>(surface_type));
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessEnabled(
+static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
-      ->IsFirstPartySetsDataAccessEnabled();
+      ->IsRelatedWebsiteSetsDataAccessEnabled();
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessManaged(
+static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
-      ->IsFirstPartySetsDataAccessManaged();
+      ->IsRelatedWebsiteSetsDataAccessManaged();
 }
 
-static void JNI_PrivacySandboxBridge_SetFirstPartySetsDataAccessEnabled(
+static void JNI_PrivacySandboxBridge_SetRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean enabled) {
-  GetPrivacySandboxService(j_profile)->SetFirstPartySetsDataAccessEnabled(
+  GetPrivacySandboxService(j_profile)->SetRelatedWebsiteSetsDataAccessEnabled(
       enabled);
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
+JNI_PrivacySandboxBridge_GetRelatedWebsiteSetOwner(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& memberOrigin) {
-  auto rwsOwner = GetPrivacySandboxService(j_profile)->GetFirstPartySetOwner(
-      GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
+  auto rwsOwner =
+      GetPrivacySandboxService(j_profile)->GetRelatedWebsiteSetOwner(
+          GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
 
   if (!rwsOwner.has_value()) {
     return nullptr;
@@ -212,14 +213,14 @@ JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
   return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().host());
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
+static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& origin) {
   auto schemefulSite = net::SchemefulSite(
       GURL(base::android::ConvertJavaStringToUTF8(env, origin)));
 
-  return GetPrivacySandboxService(j_profile)->IsPartOfManagedFirstPartySet(
+  return GetPrivacySandboxService(j_profile)->IsPartOfManagedRelatedWebsiteSet(
       schemefulSite);
 }
 

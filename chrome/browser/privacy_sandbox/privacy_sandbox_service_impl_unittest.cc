@@ -119,7 +119,7 @@ using privacy_sandbox_test_util::TestState;
 
 const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
 
-const base::Version kFirstPartySetsVersion("1.2.3");
+const base::Version kRelatedWebsiteSetsVersion("1.2.3");
 
 constexpr int kTestTaxonomyVersion = 1;
 
@@ -192,10 +192,12 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   std::vector<InterestGroupDataKey> data_keys_;
 };
 
-// Remove any user preference settings for First Party Set related preferences,
-// returning them to their default value.
-void ClearFpsUserPrefs(
+// Remove any user preference settings for Related Website Set related
+// preferences, returning them to their default value.
+void ClearRwsUserPrefs(
     sync_preferences::TestingPrefServiceSyncable* pref_service) {
+  // TODO(crbug.com/372939948): Migrate First Party Sets (FPS) to Related
+  // Website Sets (RWS) in PrivacySandboxPrefs
   pref_service->RemoveUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
   pref_service->RemoveUserPref(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
@@ -1080,7 +1082,7 @@ TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       FirstPartySetsNotRelevantMetricAllowedCookies) {
+       RelatedWebsiteSetsNotRelevantMetricAllowedCookies) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
@@ -1096,7 +1098,7 @@ TEST_F(PrivacySandboxServiceTest,
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       FirstPartySetsNotRelevantMetricBlockedCookies) {
+       RelatedWebsiteSetsNotRelevantMetricBlockedCookies) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
@@ -1112,7 +1114,7 @@ TEST_F(PrivacySandboxServiceTest,
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsNotRelevant, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
+TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsEnabledMetric) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
@@ -1127,7 +1129,7 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsEnabled, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
+TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsDisabledMetric) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(false));
@@ -1142,7 +1144,7 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsDisabled, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
+TEST_F(PrivacySandboxServiceTest, SampleRwsData) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
       {{"use-sample-sets", "true"}});
@@ -1153,22 +1155,22 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://mail.google.com.au")),
             u"google.com");
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://youtube.com")),
             u"google.com");
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://muenchen.de")),
             u"münchen.de");
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://example.com")),
             std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledWhen3pcAllowed) {
+       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhen3pcAllowed) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1177,7 +1179,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1189,12 +1191,12 @@ TEST_F(PrivacySandboxServiceTest,
       {});
 
   // Simulate 3PC are allowed while:
-  // - FPS pref is enabled
+  // - RWS pref is enabled
   // - FPS UI Feature is enabled
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
@@ -1204,13 +1206,15 @@ TEST_F(PrivacySandboxServiceTest,
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
 
   first_party_sets_policy_service()->InitForTesting();
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
-TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledWhenAllCookiesBlocked) {
+TEST_F(
+    PrivacySandboxServiceTest,
+    GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhenAllCookiesBlocked) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1219,7 +1223,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1231,7 +1235,7 @@ TEST_F(PrivacySandboxServiceTest,
       {});
 
   // Simulate all cookies are blocked while:
-  // - FPS pref is enabled
+  // - RWS pref is enabled
   // - FPS UI Feature is enabled
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
@@ -1241,20 +1245,21 @@ TEST_F(PrivacySandboxServiceTest,
           content_settings::CookieControlsMode::kBlockThirdParty)));
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
 
   first_party_sets_policy_service()->InitForTesting();
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsUiFeature) {
+       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledByFpsUiFeature) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1263,7 +1268,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1275,7 +1280,7 @@ TEST_F(PrivacySandboxServiceTest,
       {});
 
   // Simulate FPS UI feature disabled while:
-  // - FPS pref is enabled
+  // - RWS pref is enabled
   // - 3PC are being blocked
   feature_list()->InitWithFeatures(
       {}, {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
@@ -1284,7 +1289,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
@@ -1292,13 +1297,14 @@ TEST_F(PrivacySandboxServiceTest,
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsPref) {
+       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledByRwsPref) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1307,7 +1313,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1318,7 +1324,7 @@ TEST_F(PrivacySandboxServiceTest,
       },
       {});
 
-  // Simulate FPS pref disabled while:
+  // Simulate RWS pref disabled while:
   // - FPS UI Feature is enabled
   // - 3PC are being blocked
   feature_list()->InitWithFeatures(
@@ -1328,7 +1334,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(false));
 
@@ -1336,13 +1342,14 @@ TEST_F(PrivacySandboxServiceTest,
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       SimulatedFpsData_FpsEnabled_WithoutGlobalSets) {
+       SimulatedRwsData_RwsEnabled_WithoutGlobalSets) {
   GURL primary_gurl("https://primary.test");
   GURL associate1_gurl("https://associate1.test");
   GURL associate2_gurl("https://associate2.test");
@@ -1351,7 +1358,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate2_site(associate2_gurl);
 
   // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI feature and the FPS enabled pref.
+  // and enabling the FPS UI feature and the RWS enabled pref.
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   prefs()->SetUserPref(
@@ -1359,20 +1366,22 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Verify `GetFirstPartySetOwner` returns empty if FPS is enabled but the
+  // Verify `GetRelatedWebsiteSetOwner` returns empty if RWS is enabled but the
   // Global sets are not ready yet.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
-            std::nullopt);
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate2_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       SimulatedFpsData_FpsEnabled_WithGlobalSetsAndProfileSets) {
+       SimulatedRwsData_RwsEnabled_WithGlobalSetsAndProfileSets) {
   GURL primary_gurl("https://primary.test");
   GURL associate1_gurl("https://associate1.test");
   GURL associate2_gurl("https://associate2.test");
@@ -1381,7 +1390,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate2_site(associate2_gurl);
 
   // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI feature and the FPS enabled pref.
+  // and enabling the FPS UI feature and the RWS enabled pref.
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   prefs()->SetUserPref(
@@ -1389,7 +1398,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
@@ -1397,7 +1406,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1421,16 +1430,18 @@ TEST_F(PrivacySandboxServiceTest,
   first_party_sets_policy_service()->InitForTesting();
 
   // Verify that primary owns associate1, but no longer owns associate2.
+  EXPECT_EQ(privacy_sandbox_service()
+                ->GetRelatedWebsiteSetOwner(associate1_gurl)
+                .value(),
+            primary_site);
   EXPECT_EQ(
-      privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl).value(),
-      primary_site);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
-            std::nullopt);
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate2_gurl),
+      std::nullopt);
 }
 
-TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
-  // Check that the init of the FPS pref occurs correctly.
-  ClearFpsUserPrefs(prefs());
+TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
+  // Check that the init of the RWS pref occurs correctly.
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -1448,7 +1459,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
 
   // If the UI is available, the user blocks 3PC, and the pref has not been
   // previously init, it should be.
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   feature_list()->Reset();
   feature_list()->InitAndEnableFeature(
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
@@ -1461,7 +1472,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
 
   // Once the pref has been init, it should not be re-init, and updated user
   // cookie settings should not impact it.
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
@@ -1482,8 +1493,8 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
-  // Blocking all cookies should also init the FPS pref to off.
-  ClearFpsUserPrefs(prefs());
+  // Blocking all cookies should also init the RWS pref to off.
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
@@ -1513,7 +1524,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
@@ -1527,7 +1538,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
   net::SchemefulSite youtube_site(youtube_gurl);
 
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {youtube_primary_site,
            {net::FirstPartySetEntry(youtube_primary_site,
@@ -1549,14 +1560,15 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // Expect queries to be resolved based on the FPS sample sets.
-  EXPECT_GT(privacy_sandbox_service()->GetSampleFirstPartySets().size(), 0u);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(
+  // Expect queries to be resolved based on the RWS sample sets.
+  EXPECT_GT(privacy_sandbox_service()->GetSampleRelatedWebsiteSets().size(),
+            0u);
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(
                 GURL("https://youtube.com")),
             net::SchemefulSite(GURL("https://google.com")));
-  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://googlesource.com"))));
-  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://google.de"))));
 
   feature_list()->Reset();
@@ -1567,17 +1579,18 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Expect queries to be resolved based on the FPS backend.
-  EXPECT_EQ(privacy_sandbox_service()->GetSampleFirstPartySets().size(), 0u);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(youtube_gurl),
+  // Expect queries to be resolved based on the RWS backend.
+  EXPECT_EQ(privacy_sandbox_service()->GetSampleRelatedWebsiteSets().size(),
+            0u);
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(youtube_gurl),
             youtube_primary_site);
-  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://googlesource.com"))));
-  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://google.de"))));
 }
 

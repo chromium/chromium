@@ -81,16 +81,16 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   void ForceChromeBuildForTests(bool force_chrome_build) override;
   bool IsPrivacySandboxRestricted() override;
   bool IsRestrictedNoticeEnabled() override;
-  void SetFirstPartySetsDataAccessEnabled(bool enabled) override;
-  bool IsFirstPartySetsDataAccessEnabled() const override;
-  bool IsFirstPartySetsDataAccessManaged() const override;
+  void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) override;
+  bool IsRelatedWebsiteSetsDataAccessEnabled() const override;
+  bool IsRelatedWebsiteSetsDataAccessManaged() const override;
   base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetSampleFirstPartySets() const override;
-  std::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  GetSampleRelatedWebsiteSets() const override;
+  std::optional<net::SchemefulSite> GetRelatedWebsiteSetOwner(
       const GURL& site_url) const override;
-  std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  std::optional<std::u16string> GetRelatedWebsiteSetOwnerForDisplay(
       const GURL& site_url) const override;
-  bool IsPartOfManagedFirstPartySet(
+  bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const override;
   void GetFledgeJoiningEtldPlusOneForDisplay(
       base::OnceCallback<void(std::vector<std::string>)> callback) override;
@@ -164,13 +164,13 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
                            PrivacySandboxNoPromptEnabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, PrivacySandboxRestricted);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           FirstPartySetsNotRelevantMetricAllowedCookies);
+                           RelatedWebsiteSetsNotRelevantMetricAllowedCookies);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           FirstPartySetsNotRelevantMetricBlockedCookies);
+                           RelatedWebsiteSetsNotRelevantMetricBlockedCookies);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           FirstPartySetsEnabledMetric);
+                           RelatedWebsiteSetsEnabledMetric);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           FirstPartySetsDisabledMetric);
+                           RelatedWebsiteSetsDisabledMetric);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceTest,
       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly);
@@ -325,6 +325,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 
   // Checks to see if initialization of the user's FPS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
+  // TODO(crbug.com/372939948): Migrate First Party Sets (FPS) to Related
+  // Website Sets (RWS) in PrivacySandboxPrefs
   void MaybeInitializeFirstPartySetsPref();
 
   // Updates the preferences which store the current Topics consent information.
