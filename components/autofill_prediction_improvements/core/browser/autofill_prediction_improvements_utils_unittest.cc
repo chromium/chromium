@@ -93,7 +93,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
   FormStructure form(form_data);
   FormStructureTestApi form_test_api(form);
 
-  EXPECT_FALSE(IsFormEligibleForFillingByFieldCriteria(form));
+  EXPECT_FALSE(IsFormEligibleForFilling(form));
 }
 
 // Test that a form with a single UNKNOWN_TYPE field is not eligible.
@@ -120,7 +120,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
   AutofillField& address_field = form_test_api.PushField();
   address_field.set_heuristic_type(GetActiveHeuristicSource(),
                                    autofill::NAME_FIRST);
-  EXPECT_TRUE(IsFormEligibleForFillingByFieldCriteria(form));
+  EXPECT_TRUE(IsFormEligibleForFilling(form));
 }
 
 // Test that a form with an eligible field is overall eligible.
@@ -132,7 +132,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 
   AutofillField& prediction_improvement_field = form_test_api.PushField();
   AddImprovedPredictionType(prediction_improvement_field);
-  EXPECT_TRUE(IsFormEligibleForFillingByFieldCriteria(form));
+  EXPECT_TRUE(IsFormEligibleForFilling(form));
 }
 
 // Test that a form with an eligible but unfocusable field is not eligible.
@@ -146,7 +146,7 @@ TEST(
   AutofillField& prediction_improvement_field = form_test_api.PushField();
   AddImprovedPredictionType(prediction_improvement_field);
   prediction_improvement_field.set_is_focusable(false);
-  EXPECT_FALSE(IsFormEligibleForFillingByFieldCriteria(form));
+  EXPECT_FALSE(IsFormEligibleForFilling(form));
 }
 
 // Test that a form with an eligible field is overall eligible.
@@ -161,7 +161,7 @@ TEST(
   AddImprovedPredictionType(prediction_improvement_field);
   prediction_improvement_field.set_value(u"prefilled_value");
 
-  EXPECT_FALSE(IsFormEligibleForFillingByFieldCriteria(form));
+  EXPECT_FALSE(IsFormEligibleForFilling(form));
 }
 
 // Test that a form with an eligible field is overall eligible.
@@ -181,9 +181,29 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 
   AutofillField& prediction_improvement_field = form_test_api.PushField();
   AddImprovedPredictionType(prediction_improvement_field);
-  EXPECT_TRUE(IsFormEligibleForFillingByFieldCriteria(form));
+  EXPECT_TRUE(IsFormEligibleForFilling(form));
 }
 
+// Test that a form with an eligible field is overall eligible.
+TEST(AutofillPredictionImprovementsUtilsTest, SetFieldFillingEligibility) {
+  FormData form_data;
+  FormStructure form(form_data);
+  FormStructureTestApi form_test_api(form);
+
+  AutofillField& address_field = form_test_api.PushField();
+  address_field.set_heuristic_type(GetActiveHeuristicSource(),
+                                   autofill::NAME_FIRST);
+
+  AutofillField& credit_card_field = form_test_api.PushField();
+  credit_card_field.set_heuristic_type(GetActiveHeuristicSource(),
+                                       autofill::CREDIT_CARD_NUMBER);
+
+  SetFieldFillingEligibility(form);
+  EXPECT_EQ(form.fields()[0]->field_is_eligible_for_prediction_improvements(),
+            true);
+  EXPECT_EQ(form.fields()[1]->field_is_eligible_for_prediction_improvements(),
+            false);
+}
 }  // namespace
 
 }  // namespace autofill_prediction_improvements

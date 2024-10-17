@@ -39,14 +39,21 @@ class AutofillPredictionImprovementsFillingEngineImpl
   ~AutofillPredictionImprovementsFillingEngineImpl() override;
 
   // AutofillPredictionImprovementsFillingEngine:
-  void GetPredictions(autofill::FormData form_data,
-                      optimization_guide::proto::AXTreeUpdate ax_tree_update,
-                      PredictionsReceivedCallback callback) override;
+  void GetPredictions(
+      autofill::FormData form_data,
+      base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
+      base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
+      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      PredictionsReceivedCallback callback) override;
 
  private:
   // Invokes `callback` when user annotations were retrieved.
   void OnUserAnnotationsRetrieved(
       autofill::FormData form_data,
+      const base::flat_map<autofill::FieldGlobalId, bool>&
+          field_eligibility_map,
+      const base::flat_map<autofill::FieldGlobalId, bool>&
+          field_sensitivity_map,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback,
       user_annotations::UserAnnotationsEntries user_annotations);

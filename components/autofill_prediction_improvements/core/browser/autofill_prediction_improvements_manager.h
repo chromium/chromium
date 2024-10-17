@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGER_H_
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -100,6 +101,12 @@ class AutofillPredictionImprovementsManager
   bool IsFormBlockedForImport(const autofill::FormStructure& form) const;
   void AddStrikeForImportFromForm(const autofill::FormStructure& form);
   void RemoveStrikesForImportFromForm(const autofill::FormStructure& form);
+
+  base::flat_map<autofill::FieldGlobalId, bool> GetFieldFillingEligibilityMap(
+      const autofill::FormData& form_data);
+
+  base::flat_map<autofill::FieldGlobalId, bool> GetFieldValueSensitivityMap(
+      const autofill::FormData& form_data);
 
  private:
   friend class AutofillPredictionImprovementsManagerTestApi;

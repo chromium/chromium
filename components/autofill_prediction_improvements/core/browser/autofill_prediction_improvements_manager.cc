@@ -41,8 +41,7 @@ constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
 
 bool IsFormAndFieldEligible(const autofill::FormStructure& form,
                             const autofill::AutofillField& field) {
-  return IsFieldEligibleByTypeCriteria(field) &&
-         IsFormEligibleForFillingByFieldCriteria(form);
+  return IsFieldEligibleByTypeCriteria(field) && IsFormEligibleForFilling(form);
 }
 
 // Define `field_types_to_fill` as Autofill address types +
@@ -216,6 +215,43 @@ void AutofillPredictionImprovementsManager::RemoveStrikesForImportFromForm(
   user_annotation_prompt_strike_database_->ClearStrikes(
       AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
           form.form_signature()));
+}
+
+base::flat_map<autofill::FieldGlobalId, bool>
+AutofillPredictionImprovementsManager::GetFieldFillingEligibilityMap(
+    const autofill::FormData& form_data) {
+  autofill::FormStructure* form_structure =
+      client_->GetCachedFormStructure(form_data);
+
+  if (!form_structure) {
+    return base::flat_map<autofill::FieldGlobalId, bool>();
+  }
+
+  return base::MakeFlatMap<autofill::FieldGlobalId, bool>(
+      form_structure->fields(), {}, [](const auto& field) {
+        return std::make_pair(field->global_id(),
+                              IsFieldEligibleForFilling(*field));
+      });
+}
+
+base::flat_map<autofill::FieldGlobalId, bool>
+AutofillPredictionImprovementsManager::GetFieldValueSensitivityMap(
+    const autofill::FormData& form_data) {
+  autofill::FormStructure* form_structure =
+      client_->GetCachedFormStructure(form_data);
+
+  if (!form_structure) {
+    return base::flat_map<autofill::FieldGlobalId, bool>();
+  }
+
+  FilterSensitiveValues(*form_structure);
+
+  return base::MakeFlatMap<autofill::FieldGlobalId, bool>(
+      form_structure->fields(), {}, [](const auto& field) {
+        return std::make_pair(
+            field->global_id(),
+            field->value_identified_as_potentially_sensitive());
+      });
 }
 
 AutofillPredictionImprovementsManager::
@@ -468,7 +504,8 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTree(
     const autofill::FormFieldData& trigger_field,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetFillingEngine()->GetPredictions(
-      form, std::move(ax_tree_update),
+      form, GetFieldFillingEligibilityMap(form),
+      GetFieldValueSensitivityMap(form), std::move(ax_tree_update),
       base::BindOnce(
           &AutofillPredictionImprovementsManager::OnReceivedPredictions,
           weak_ptr_factory_.GetWeakPtr(), form, trigger_field));

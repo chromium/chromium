@@ -18,6 +18,8 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -172,4 +174,16 @@ void ChromeAutofillPredictionImprovementsClient::
 bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
   return autofill_prediction_improvements::IsUserEligible(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+}
+
+autofill::FormStructure*
+ChromeAutofillPredictionImprovementsClient::GetCachedFormStructure(
+    const autofill::FormData& form_data) {
+  autofill::ContentAutofillDriver* driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents_->GetPrimaryMainFrame());
+  if (!driver) {
+    return nullptr;
+  }
+  return driver->GetAutofillManager().FindCachedFormById(form_data.global_id());
 }

@@ -49,6 +49,8 @@ class ChromeAutofillPredictionImprovementsClient
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
   void OpenPredictionImprovementsSettings() override;
   bool IsUserEligible() override;
+  autofill::FormStructure* GetCachedFormStructure(
+      const autofill::FormData& form_data) override;
 
  private:
   explicit ChromeAutofillPredictionImprovementsClient(

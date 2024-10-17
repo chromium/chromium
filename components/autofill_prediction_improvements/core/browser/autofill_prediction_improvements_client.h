@@ -77,6 +77,12 @@ class AutofillPredictionImprovementsClient {
   // Returns whether the current user is eligible for the improved prediction
   // experience.
   virtual bool IsUserEligible() = 0;
+
+  // Returns a pointer to a FormStructure for the corresponding `form_data`
+  // from the Autofill cache. Can be a `nullptr` when the structure was not
+  // found or if the driver is not available.
+  virtual autofill::FormStructure* GetCachedFormStructure(
+      const autofill::FormData& form_data) = 0;
 };
 
 }  // namespace autofill_prediction_improvements
