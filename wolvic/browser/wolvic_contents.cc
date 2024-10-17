@@ -65,7 +65,7 @@ WolvicContents::DidFinishNavigation(content::NavigationHandle* navigation_handle
     return;
 
   auto* browser_context =
-      content::WolvicBrowserContext::FromWebContents(*web_contents());
+      WolvicBrowserContext::FromWebContents(*web_contents());
 
   // Do not record visited links in incognito mode.
   if (browser_context->IsOffTheRecord())

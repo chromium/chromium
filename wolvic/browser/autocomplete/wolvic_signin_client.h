@@ -13,7 +13,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace content {
+namespace wolvic {
 class WolvicBrowserContext;
 }
 
@@ -21,7 +21,7 @@ namespace wolvic {
 
 class WolvicSigninClient : public SigninClient {
  public:
-  explicit WolvicSigninClient(content::WolvicBrowserContext* context);
+  explicit WolvicSigninClient(WolvicBrowserContext* context);
 
   WolvicSigninClient(const WolvicSigninClient&) = delete;
   WolvicSigninClient& operator=(const WolvicSigninClient&) = delete;
@@ -72,7 +72,7 @@ class WolvicSigninClient : public SigninClient {
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
 
-  raw_ptr<content::WolvicBrowserContext> context_;
+  raw_ptr<WolvicBrowserContext> context_;
 
   // Stored callback from PreSignOut();
   base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached_;

@@ -32,6 +32,6 @@ class WolvicContents : public content::WebContentsObserver {
   std::unique_ptr<WolvicWebContentsDelegate> web_contents_delegate_;
 };
 
-}  // namespace content
+}  // namespace wolvic
 
 #endif  // WOLVIC_BROWSER_WOLVIC_CONTENTS_H_

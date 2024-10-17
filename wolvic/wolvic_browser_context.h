@@ -32,10 +32,10 @@ namespace visitedlink {
 class VisitedLinkWriter;
 }
 
-namespace content {
+namespace wolvic {
 
-class WolvicBrowserContext : public BrowserContext,
-			     public visitedlink::VisitedLinkDelegate {
+class WolvicBrowserContext : public content::BrowserContext,
+                             public visitedlink::VisitedLinkDelegate {
  public:
   // If |delay_services_creation| is true, the owner is responsible for calling
   // CreateBrowserContextServices() for this BrowserContext.
@@ -50,29 +50,34 @@ class WolvicBrowserContext : public BrowserContext,
 
   // BrowserContext implementation.
   base::FilePath GetPath() override;
-  std::unique_ptr<ZoomLevelDelegate> CreateZoomLevelDelegate(
+  std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
   bool IsOffTheRecord() override;
-  DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  BrowserPluginGuestManager* GetGuestManager() override;
+  content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
+  content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
-  PlatformNotificationService* GetPlatformNotificationService() override;
-  PushMessagingService* GetPushMessagingService() override;
-  StorageNotificationService* GetStorageNotificationService() override;
-  SSLHostStateDelegate* GetSSLHostStateDelegate() override;
-  PermissionControllerDelegate* GetPermissionControllerDelegate() override;
-  BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
-  BackgroundSyncController* GetBackgroundSyncController() override;
-  BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
-  ContentIndexProvider* GetContentIndexProvider() override;
-  ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
-  FederatedIdentityApiPermissionContextDelegate*
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
+  content::PushMessagingService* GetPushMessagingService() override;
+  content::StorageNotificationService* GetStorageNotificationService() override;
+  content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
+  content::PermissionControllerDelegate* GetPermissionControllerDelegate()
+      override;
+  content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
+  content::BackgroundSyncController* GetBackgroundSyncController() override;
+  content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
+      override;
+  content::ContentIndexProvider* GetContentIndexProvider() override;
+  content::ClientHintsControllerDelegate* GetClientHintsControllerDelegate()
+      override;
+  content::FederatedIdentityApiPermissionContextDelegate*
   GetFederatedIdentityApiPermissionContext() override;
-  FederatedIdentityPermissionContextDelegate*
+  content::FederatedIdentityPermissionContextDelegate*
   GetFederatedIdentityPermissionContext() override;
-  ReduceAcceptLanguageControllerDelegate*
+  content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
-  OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
+  content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
+      override;
 
   static WolvicBrowserContext* FromWebContents(content::WebContents& web_contents);
   void AddVisitedURLs(const std::vector<GURL>&);
@@ -84,15 +89,15 @@ class WolvicBrowserContext : public BrowserContext,
   password_manager::PasswordStore* GetPasswordStore();
   password_manager::FieldInfoManager* GetFieldInfoManager();
   signin::IdentityManager* GetIdentityManager();
-  wolvic::WolvicSigninClient* GetSigninClient();
+  WolvicSigninClient* GetSigninClient();
 
  protected:
-  std::unique_ptr<BackgroundSyncController> background_sync_controller_;
-  std::unique_ptr<ContentIndexProvider> content_index_provider_;
-  std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
+  std::unique_ptr<content::BackgroundSyncController>
+      background_sync_controller_;
+  std::unique_ptr<content::ContentIndexProvider> content_index_provider_;
+  std::unique_ptr<content::ReduceAcceptLanguageControllerDelegate>
       reduce_accept_lang_controller_delegate_;
-  std::unique_ptr<wolvic::WolvicDownloadManagerDelegate>
-      download_manager_delegate_;
+  std::unique_ptr<WolvicDownloadManagerDelegate> download_manager_delegate_;
 
  private:
   friend class password_manager::PasswordStore;
@@ -122,9 +127,9 @@ class WolvicBrowserContext : public BrowserContext,
   scoped_refptr<password_manager::PasswordStore> password_store_;
   std::unique_ptr<password_manager::FieldInfoManager> field_info_manager_;
   std::unique_ptr<signin::IdentityManager> identity_manager_;
-  std::unique_ptr<wolvic::WolvicSigninClient> signin_client_;
+  std::unique_ptr<WolvicSigninClient> signin_client_;
 };
 
-}  // namespace content
+}  // namespace wolvic
 
 #endif  // WOLVIC_WOLVIC_BROWSER_CONTEXT_H_

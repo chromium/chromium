@@ -23,7 +23,7 @@
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
 
-namespace content {
+namespace wolvic {
 
 namespace {
 
@@ -89,12 +89,12 @@ WolvicContentBrowserClient::off_the_record_browser_context() {
   return browser_main_parts_->off_the_record_browser_context();
 }
 
-std::unique_ptr<BrowserMainParts>
+std::unique_ptr<content::BrowserMainParts>
 WolvicContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
   CHECK(!browser_main_parts_);
   browser_main_parts_ = new WolvicMainParts();
-  return std::unique_ptr<BrowserMainParts>(browser_main_parts_);
+  return std::unique_ptr<content::BrowserMainParts>(browser_main_parts_);
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>
@@ -107,30 +107,30 @@ std::unique_ptr<content::LoginDelegate>
 WolvicContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
-    BrowserContext* browser_context,
+    content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     LoginAuthRequiredCallback auth_required_callback) {
-  return std::make_unique<wolvic::HttpAuthManager>(
-      auth_info, web_contents, first_auth_attempt,
-      std::move(auth_required_callback));
+  return std::make_unique<HttpAuthManager>(auth_info, web_contents,
+                                           first_auth_attempt,
+                                           std::move(auth_required_callback));
 }
 
 #if BUILDFLAG(ENABLE_VR)
-XrIntegrationClient* WolvicContentBrowserClient::GetXrIntegrationClient() {
+content::XrIntegrationClient*
+WolvicContentBrowserClient::GetXrIntegrationClient() {
   if (!xr_integration_client_)
-    xr_integration_client_ =
-        std::make_unique<wolvic::WolvicXrIntegrationClient>(
-            base::PassKey<WolvicContentBrowserClient>());
+    xr_integration_client_ = std::make_unique<WolvicXrIntegrationClient>(
+        base::PassKey<WolvicContentBrowserClient>());
   return xr_integration_client_.get();
 }
 #endif
 
 std::string WolvicContentBrowserClient::GetUserAgent() {
-  auto* settings = wolvic::SessionSettings::Get();
+  auto* settings = SessionSettings::Get();
   if (auto user_agent_override = settings->GetUserAgentOverride())
     return *user_agent_override;
 
@@ -138,10 +138,10 @@ std::string WolvicContentBrowserClient::GetUserAgent() {
 }
 
 blink::UserAgentMetadata WolvicContentBrowserClient::GetUserAgentMetadata() {
-  typedef wolvic::SessionSettings::UserAgentMode UserAgentMode;
+  typedef SessionSettings::UserAgentMode UserAgentMode;
 
   auto metadata = embedder_support::GetUserAgentMetadata();
-  auto user_agent_mode = wolvic::SessionSettings::Get()->GetUserAgentMode();
+  auto user_agent_mode = SessionSettings::Get()->GetUserAgentMode();
   switch (user_agent_mode) {
     case UserAgentMode::kMobile:
     case UserAgentMode::kMobileVR:
@@ -155,21 +155,21 @@ blink::UserAgentMetadata WolvicContentBrowserClient::GetUserAgentMetadata() {
 }
 
 void WolvicContentBrowserClient::ConfigureNetworkContextParams(
-    BrowserContext* context,
+    content::BrowserContext* context,
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
     cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
   base::FilePath user_data_path;
-  base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_path);
+  base::PathService::Get(content::SHELL_DIR_USER_DATA, &user_data_path);
   network_context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
   network_context_params->file_paths->http_cache_directory =
       user_data_path.Append(FILE_PATH_LITERAL("Cache"));
 }
 
 void WolvicContentBrowserClient::BindMediaServiceReceiver(
-    RenderFrameHost* render_frame_host,
+    content::RenderFrameHost* render_frame_host,
     mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<media::mojom::MediaDrmStorage>()) {
     CreateMediaDrmStorage(render_frame_host, std::move(r));
@@ -191,4 +191,4 @@ void WolvicContentBrowserClient::
       &render_frame_host));
 }
 
-}  // namespace content
+}  // namespace wolvic

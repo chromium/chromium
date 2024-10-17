@@ -9,7 +9,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "wolvic/browser/media/wolvic_media_drm_bridge_client.h"
 
-namespace content {
+namespace wolvic {
 
 // Copied from //content/shell/common/shell_content_client.cc
 
@@ -58,7 +58,7 @@ void WolvicContentClient::AddContentDecryptionModules(
 media::MediaDrmBridgeClient* WolvicContentClient::GetMediaDrmBridgeClient() {
   // This is stored as a global variable in browser_main_loop, so we don't need
   // to manage this pointer.
-  return new wolvic::WolvicMediaDrmBridgeClient();
+  return new WolvicMediaDrmBridgeClient();
 }
 
-}  // namespace content
+}  // namespace wolvic

@@ -39,7 +39,7 @@ ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
     JNIEnv* env,
     jboolean is_off_the_record) {
   // TODO(wolvic-chromium#6): Consider handling browser profiles.
-  auto* browser_client = content::WolvicContentBrowserClient::Get();
+  auto* browser_client = WolvicContentBrowserClient::Get();
   CHECK(browser_client->browser_context() != nullptr);
 
   std::unique_ptr<WebContents> web_contents =

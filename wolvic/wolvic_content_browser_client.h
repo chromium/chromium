@@ -11,11 +11,13 @@
 #include "wolvic/browser/vr/wolvic_xr_integration_client.h"
 
 namespace content {
-
 class BrowserContext;
+}
+namespace wolvic {
+
 class WolvicMainParts;
 
-class WolvicContentBrowserClient : public ContentBrowserClient {
+class WolvicContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit WolvicContentBrowserClient();
 
@@ -35,30 +37,31 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   std::string GetUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void ConfigureNetworkContextParams(
-      BrowserContext* context,
+      content::BrowserContext* context,
       bool in_memory,
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params) override;
-  std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
+  std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
-  std::unique_ptr<LoginDelegate> CreateLoginDelegate(
+  std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
-      WebContents* web_contents,
-      BrowserContext* browser_context,
-      const GlobalRequestID& request_id,
+      content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
+      const content::GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       LoginAuthRequiredCallback auth_required_callback) override;
 #if BUILDFLAG(ENABLE_VR)
-  XrIntegrationClient* GetXrIntegrationClient() override;
+  content::XrIntegrationClient* GetXrIntegrationClient() override;
 #endif
-  void BindMediaServiceReceiver(RenderFrameHost *render_frame_host, mojo::GenericPendingReceiver receiver) override;
+  void BindMediaServiceReceiver(content::RenderFrameHost* render_frame_host,
+                                mojo::GenericPendingReceiver receiver) override;
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override;
@@ -66,10 +69,10 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
  private:
   raw_ptr<WolvicMainParts> browser_main_parts_;
 #if BUILDFLAG(ENABLE_VR)
-  std::unique_ptr<wolvic::WolvicXrIntegrationClient> xr_integration_client_;
+  std::unique_ptr<WolvicXrIntegrationClient> xr_integration_client_;
 #endif
 };
 
-}  // namespace content
+}  // namespace wolvic
 
 #endif  // WOLVIC_WOLVIC_CONTENT_BROWSER_CLIENT_H_

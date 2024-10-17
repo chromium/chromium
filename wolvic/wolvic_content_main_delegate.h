@@ -20,11 +20,15 @@ class PrefService;
 
 namespace content {
 class WebContents;
+}
+
+namespace wolvic {
+
 class WolvicContentBrowserClient;
 class WolvicContentClient;
 class WolvicContentMainDelegate;
 
-class WolvicContentMainDelegate : public ContentMainDelegate {
+class WolvicContentMainDelegate : public content::ContentMainDelegate {
  public:
   explicit WolvicContentMainDelegate();
 
@@ -41,16 +45,16 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;
   void PreSandboxStartup() override;
-  absl::variant<int, MainFunctionParams> RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      MainFunctionParams main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   absl::optional<int> PreBrowserMain() override;
   absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
-  ContentClient* CreateContentClient() override;
-  ContentBrowserClient* CreateContentBrowserClient() override;
-  ContentGpuClient* CreateContentGpuClient() override;
-  ContentRendererClient* CreateContentRendererClient() override;
-  ContentUtilityClient* CreateContentUtilityClient() override;
+  content::ContentClient* CreateContentClient() override;
+  content::ContentBrowserClient* CreateContentBrowserClient() override;
+  content::ContentGpuClient* CreateContentGpuClient() override;
+  content::ContentRendererClient* CreateContentRendererClient() override;
+  content::ContentUtilityClient* CreateContentUtilityClient() override;
 
   static void InitializeResourceBundle();
 
@@ -64,15 +68,15 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
   std::unique_ptr<PrefService> CreateLocalState();
   void SetUpFieldTrials();
 
-  std::unique_ptr<wolvic::SessionSettings> session_settings_;
+  std::unique_ptr<SessionSettings> session_settings_;
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<WolvicContentBrowserClient> browser_client_;
-  std::unique_ptr<ContentGpuClient> gpu_client_;
-  std::unique_ptr<ContentRendererClient> renderer_client_;
-  std::unique_ptr<ContentUtilityClient> utility_client_;
+  std::unique_ptr<content::ContentGpuClient> gpu_client_;
+  std::unique_ptr<content::ContentRendererClient> renderer_client_;
+  std::unique_ptr<content::ContentUtilityClient> utility_client_;
   std::unique_ptr<WolvicContentClient> content_client_;
 };
 
-}  // namespace content
+}  // namespace wolvic
 
 #endif  //  WOLVIC_WOLVIC_CONTENT_MAIN_DELEGATE_H_

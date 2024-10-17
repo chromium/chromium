@@ -313,24 +313,24 @@ WolvicPasswordManagerClient::GetNetworkContext() const {
 }
 
 PrefService* WolvicPasswordManagerClient::GetPrefs() const {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetPrefService();
 }
 
 PrefService* WolvicPasswordManagerClient::GetLocalStatePrefs() const {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetPrefService();
 }
 
 password_manager::PasswordStoreInterface*
 WolvicPasswordManagerClient::GetProfilePasswordStore() const {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetPasswordStore();
 }
 
 password_manager::FieldInfoManager*
-WolvicPasswordManagerClient::GetFieldInfoManager() const { 
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+WolvicPasswordManagerClient::GetFieldInfoManager() const {
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetFieldInfoManager();
 }
 
@@ -379,7 +379,7 @@ WolvicPasswordManagerClient::GetMetricsRecorder() { return nullptr; }
 
 signin::IdentityManager*
 WolvicPasswordManagerClient::GetIdentityManager() {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetIdentityManager();
 }
 

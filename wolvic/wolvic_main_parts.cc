@@ -10,7 +10,7 @@
 #include "net/base/network_change_notifier.h"
 #include "wolvic/wolvic_browser_context.h"
 
-namespace content {
+namespace wolvic {
 
 WolvicMainParts::WolvicMainParts() {}
 
@@ -26,12 +26,13 @@ int WolvicMainParts::PreEarlyInitialization() {
 int WolvicMainParts::PreMainMessageLoopRun() {
   set_browser_context(new WolvicBrowserContext(false));
   set_off_the_record_browser_context(new WolvicBrowserContext(true));
-  ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
+  content::ShellDevToolsManagerDelegate::StartHttpHandler(
+      browser_context_.get());
   return 0;
 }
 
 void WolvicMainParts::PostMainMessageLoopRun() {
-  ShellDevToolsManagerDelegate::StopHttpHandler();
+  content::ShellDevToolsManagerDelegate::StopHttpHandler();
 }
 
 void WolvicMainParts::set_browser_context(WolvicBrowserContext* context) {
@@ -43,4 +44,4 @@ void WolvicMainParts::set_off_the_record_browser_context(
   off_the_record_browser_context_.reset(context);
 }
 
-}  // namespace content
+}  // namespace wolvic

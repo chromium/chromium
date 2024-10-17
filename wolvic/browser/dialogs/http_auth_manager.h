@@ -9,7 +9,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/login_delegate.h"
 
-namespace content {
+namespace wolvic {
 class WebContents;
 }
 

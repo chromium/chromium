@@ -91,17 +91,17 @@ autofill::PersonalDataManager* WolvicAutofillClient::GetPersonalDataManager() {
 
 autofill::AutocompleteHistoryManager*
 WolvicAutofillClient::GetAutocompleteHistoryManager() {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetAutocompleteHistoryManager();
 }
 
 PrefService* WolvicAutofillClient::GetPrefs() {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetPrefService();
 }
 
 const PrefService* WolvicAutofillClient::GetPrefs() const {
-  return content::WolvicBrowserContext::FromWebContents(*web_contents())
+  return WolvicBrowserContext::FromWebContents(*web_contents())
       ->GetPrefService();
 }
 

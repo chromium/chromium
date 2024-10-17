@@ -24,6 +24,8 @@
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
 #include "components/origin_trials/common/features.h"
+#include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/json_pref_store.h"
@@ -31,11 +33,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "components/user_prefs/user_prefs.h"
-#include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,7 +58,7 @@
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 #include "wolvic/wolvic_permission_manager.h"
 
-namespace content {
+namespace wolvic {
 
 WolvicBrowserContext::WolvicBrowserContext(bool off_the_record)
     : off_the_record_(off_the_record) {
@@ -84,7 +84,7 @@ WolvicBrowserContext::~WolvicBrowserContext() {
 }
 
 void WolvicBrowserContext::InitWhileIOAllowed() {
-  CHECK(base::PathService::Get(SHELL_DIR_USER_DATA, &path_));
+  CHECK(base::PathService::Get(content::SHELL_DIR_USER_DATA, &path_));
   LOG(ERROR) << "ShellBrowserContext data path=" << path_;
 
   FinishInitWhileIOAllowed();
@@ -101,7 +101,7 @@ void WolvicBrowserContext::FinishInitWhileIOAllowed() {
 }
 
 void WolvicBrowserContext::CreateSigninClient() {
-  signin_client_ = std::make_unique<wolvic::WolvicSigninClient>(this);
+  signin_client_ = std::make_unique<WolvicSigninClient>(this);
 }
 
 void WolvicBrowserContext::CreateAutocompleteHistoryManager() {
@@ -121,7 +121,7 @@ void WolvicBrowserContext::CreatePasswordStore() {
   auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   password_store_ = new password_manager::PasswordStore(
-      std::make_unique<wolvic::WolvicPasswordStoreBackend>());
+      std::make_unique<WolvicPasswordStoreBackend>());
   password_store_->Init(GetPrefService(), nullptr);
 }
 
@@ -133,7 +133,7 @@ void WolvicBrowserContext::CreateIdentityManger() {
   params.network_connection_tracker = content::GetNetworkConnectionTracker();
   params.pref_service = GetPrefService();
   params.profile_path = GetPrefStorePath();
-  params.image_decoder = std::make_unique<wolvic::WolvicImageDecoder>();
+  params.image_decoder = std::make_unique<WolvicImageDecoder>();
   identity_manager_ = signin::BuildIdentityManager(&params);
 }
 
@@ -181,7 +181,7 @@ void WolvicBrowserContext::RegisterPrefs(
   safe_browsing::RegisterProfilePrefs(registry);
 }
 
-std::unique_ptr<ZoomLevelDelegate>
+std::unique_ptr<content::ZoomLevelDelegate>
 WolvicBrowserContext::CreateZoomLevelDelegate(const base::FilePath&) {
   return nullptr;
 }
@@ -194,15 +194,16 @@ bool WolvicBrowserContext::IsOffTheRecord() {
   return off_the_record_;
 }
 
-DownloadManagerDelegate* WolvicBrowserContext::GetDownloadManagerDelegate() {
+content::DownloadManagerDelegate*
+WolvicBrowserContext::GetDownloadManagerDelegate() {
   if (!download_manager_delegate_) {
     download_manager_delegate_ =
-        std::make_unique<wolvic::WolvicDownloadManagerDelegate>();
+        std::make_unique<WolvicDownloadManagerDelegate>();
   }
   return download_manager_delegate_.get();
 }
 
-BrowserPluginGuestManager* WolvicBrowserContext::GetGuestManager() {
+content::BrowserPluginGuestManager* WolvicBrowserContext::GetGuestManager() {
   return nullptr;
 }
 
@@ -210,39 +211,41 @@ storage::SpecialStoragePolicy* WolvicBrowserContext::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
-PlatformNotificationService*
+content::PlatformNotificationService*
 WolvicBrowserContext::GetPlatformNotificationService() {
   return nullptr;
 }
 
-PushMessagingService* WolvicBrowserContext::GetPushMessagingService() {
+content::PushMessagingService* WolvicBrowserContext::GetPushMessagingService() {
   return nullptr;
 }
 
-StorageNotificationService*
+content::StorageNotificationService*
 WolvicBrowserContext::GetStorageNotificationService() {
   return nullptr;
 }
 
-SSLHostStateDelegate* WolvicBrowserContext::GetSSLHostStateDelegate() {
+content::SSLHostStateDelegate* WolvicBrowserContext::GetSSLHostStateDelegate() {
   return nullptr;
 }
 
-PermissionControllerDelegate*
+content::PermissionControllerDelegate*
 WolvicBrowserContext::GetPermissionControllerDelegate() {
-  return wolvic::WolvicPermissionManager::GetInstance(off_the_record_);
+  return WolvicPermissionManager::GetInstance(off_the_record_);
 }
 
-ClientHintsControllerDelegate*
+content::ClientHintsControllerDelegate*
 WolvicBrowserContext::GetClientHintsControllerDelegate() {
   return nullptr;
 }
 
-BackgroundFetchDelegate* WolvicBrowserContext::GetBackgroundFetchDelegate() {
+content::BackgroundFetchDelegate*
+WolvicBrowserContext::GetBackgroundFetchDelegate() {
   return nullptr;
 }
 
-BackgroundSyncController* WolvicBrowserContext::GetBackgroundSyncController() {
+content::BackgroundSyncController*
+WolvicBrowserContext::GetBackgroundSyncController() {
   // if (!background_sync_controller_) {
   // background_sync_controller_ =
   // std::make_unique<MockBackgroundSyncController>();
@@ -251,26 +254,26 @@ BackgroundSyncController* WolvicBrowserContext::GetBackgroundSyncController() {
   return nullptr;
 }
 
-BrowsingDataRemoverDelegate*
+content::BrowsingDataRemoverDelegate*
 WolvicBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-ContentIndexProvider* WolvicBrowserContext::GetContentIndexProvider() {
+content::ContentIndexProvider* WolvicBrowserContext::GetContentIndexProvider() {
   return nullptr;
 }
 
-FederatedIdentityApiPermissionContextDelegate*
+content::FederatedIdentityApiPermissionContextDelegate*
 WolvicBrowserContext::GetFederatedIdentityApiPermissionContext() {
   return nullptr;
 }
 
-FederatedIdentityPermissionContextDelegate*
+content::FederatedIdentityPermissionContextDelegate*
 WolvicBrowserContext::GetFederatedIdentityPermissionContext() {
   return nullptr;
 }
 
-ReduceAcceptLanguageControllerDelegate*
+content::ReduceAcceptLanguageControllerDelegate*
 WolvicBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   // if (!reduce_accept_lang_controller_delegate_) {
   // reduce_accept_lang_controller_delegate_ =
@@ -281,7 +284,7 @@ WolvicBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;
 }
 
-OriginTrialsControllerDelegate*
+content::OriginTrialsControllerDelegate*
 WolvicBrowserContext::GetOriginTrialsControllerDelegate() {
   return nullptr;
 }
@@ -331,10 +334,10 @@ signin::IdentityManager* WolvicBrowserContext::GetIdentityManager() {
   return identity_manager_.get();
 }
 
-wolvic::WolvicSigninClient* WolvicBrowserContext::GetSigninClient() {
+WolvicSigninClient* WolvicBrowserContext::GetSigninClient() {
   if (!signin_client_)
     CreateSigninClient();
   return signin_client_.get();
 }
 
-}  // namespace content
+}  // namespace wolvic

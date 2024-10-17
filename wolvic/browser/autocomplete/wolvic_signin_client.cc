@@ -19,7 +19,8 @@
 
 namespace wolvic {
 
-WolvicSigninClient::WolvicSigninClient(content::WolvicBrowserContext* context) : context_(context) {}
+WolvicSigninClient::WolvicSigninClient(WolvicBrowserContext* context)
+    : context_(context) {}
 
 WolvicSigninClient::~WolvicSigninClient() = default;
 

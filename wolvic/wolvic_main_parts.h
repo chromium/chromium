@@ -7,11 +7,11 @@
 
 #include "content/public/browser/browser_main_parts.h"
 
-namespace content {
+namespace wolvic {
 
 class WolvicBrowserContext;
 
-class WolvicMainParts : public BrowserMainParts {
+class WolvicMainParts : public content::BrowserMainParts {
  public:
   WolvicMainParts();
 
@@ -38,6 +38,6 @@ class WolvicMainParts : public BrowserMainParts {
   std::unique_ptr<WolvicBrowserContext> off_the_record_browser_context_;
 };
 
-}  // namespace content
+}  // namespace wolvic
 
-#endif  // CONTENT_PUBLIC_ANDROID_WOLVIC_MAIN_PARTS_H_
+#endif  // WOLVIC_WOLVIC_MAIN_PARTS_H_

@@ -9,9 +9,9 @@
 
 #include "content/public/common/content_client.h"
 
-namespace content {
+namespace wolvic {
 
-class WolvicContentClient : public ContentClient {
+class WolvicContentClient : public content::ContentClient {
  public:
   WolvicContentClient();
   ~WolvicContentClient() override;
@@ -30,6 +30,6 @@ class WolvicContentClient : public ContentClient {
   media::MediaDrmBridgeClient* GetMediaDrmBridgeClient() override;
 };
 
-}  // namespace content
+}  // namespace wolvic
 
 #endif  // WOLVIC_WOLVIC_CONTENT_CLIENT_H_

@@ -265,8 +265,8 @@ const blink::MediaStreamDevice* GetDeviceByIdOrFirstAvailable(
   return &devices[0];
 }
 
-wolvic::WolvicPermissionManager* g_instance = nullptr;
-wolvic::WolvicPermissionManager* g_off_the_record_instance = nullptr;
+WolvicPermissionManager* g_instance = nullptr;
+WolvicPermissionManager* g_off_the_record_instance = nullptr;
 
 std::vector<content::PermissionStatus> CombineStatuses(
     const std::vector<content::PermissionStatus>& content_statuses,

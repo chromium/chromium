@@ -11,16 +11,14 @@
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/xr_integration_client.h"
 
-namespace content {
-class WolvicContentBrowserClient;
-}
-
 namespace wolvic {
+
+class WolvicContentBrowserClient;
 
 class WolvicXrIntegrationClient : public content::XrIntegrationClient {
  public:
   explicit WolvicXrIntegrationClient(
-      base::PassKey<content::WolvicContentBrowserClient>) {}
+      base::PassKey<WolvicContentBrowserClient>) {}
   ~WolvicXrIntegrationClient() override = default;
   WolvicXrIntegrationClient(const WolvicXrIntegrationClient&) = delete;
   WolvicXrIntegrationClient& operator=(const WolvicXrIntegrationClient&) =

@@ -98,7 +98,7 @@ void InitLogging(const base::CommandLine& command_line) {
 
 }  // namespace
 
-namespace content {
+namespace wolvic {
 
 // TODO(crbug/1219642): Consider not needing VariationsServiceClient just to use
 // VariationsFieldTrialCreator.
@@ -136,7 +136,7 @@ std::string GetShellFullUserAgent() {
   if (command_line->HasSwitch(switches::kUseMobileUserAgent)) {
     product += " Mobile";
   }
-  return BuildUserAgentFromProduct(product);
+  return content::BuildUserAgentFromProduct(product);
 }
 
 // Returns the reduced user agent string for the content shell.
@@ -159,23 +159,23 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
 }
 
 WolvicContentMainDelegate::WolvicContentMainDelegate()
-    : session_settings_(std::make_unique<wolvic::SessionSettings>()) {}
+    : session_settings_(std::make_unique<SessionSettings>()) {}
 
 WolvicContentMainDelegate::~WolvicContentMainDelegate() {}
 
 // static
 WolvicContentMainDelegate* WolvicContentMainDelegate::Get() {
   return static_cast<WolvicContentMainDelegate*>(
-      GetContentMainDelegateForTesting());
+      content::GetContentMainDelegateForTesting());
 }
 
 absl::optional<int> WolvicContentMainDelegate::BasicStartupComplete() {
-  Compositor::Initialize();
+  content::Compositor::Initialize();
 
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   InitLogging(command_line);
   LOG(INFO) << "Command line: " << command_line.GetCommandLineString();
-  RegisterShellPathProvider();
+  content::RegisterShellPathProvider();
 
   return absl::nullopt;
 }
@@ -198,9 +198,10 @@ void WolvicContentMainDelegate::PreSandboxStartup() {
   InitializeResourceBundle();
 }
 
-absl::variant<int, MainFunctionParams> WolvicContentMainDelegate::RunProcess(
+absl::variant<int, content::MainFunctionParams>
+WolvicContentMainDelegate::RunProcess(
     const std::string& process_type,
-    MainFunctionParams main_function_params) {
+    content::MainFunctionParams main_function_params) {
   // For non-browser process, return and have the caller run the main loop.
   if (!process_type.empty()) {
     return std::move(main_function_params);
@@ -209,13 +210,14 @@ absl::variant<int, MainFunctionParams> WolvicContentMainDelegate::RunProcess(
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_BROWSER);
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventBrowserProcessSortIndex);
+      content::kTraceEventBrowserProcessSortIndex);
   //
   // On Android, we defer to the system message loop when the stack unwinds.
   // So here we only create (and leak) a BrowserMainRunner. The shutdown
   // of BrowserMainRunner doesn't happen in Chrome Android and doesn't work
   // properly on Android at all.
-  std::unique_ptr<BrowserMainRunner> main_runner = BrowserMainRunner::Create();
+  std::unique_ptr<content::BrowserMainRunner> main_runner =
+      content::BrowserMainRunner::Create();
   // In browser tests, the |main_function_params| contains a |ui_task| which
   // will execute the testing. The task will be executed synchronously inside
   // Initialize() so we don't depend on the BrowserMainRunner being Run().
@@ -284,34 +286,36 @@ absl::optional<int> WolvicContentMainDelegate::PostEarlyInitialization(
     CreateFeatureListAndFieldTrials();
   }
   if (!ShouldInitializeMojo(invoked_in)) {
-    InitializeMojoCore();
+    content::InitializeMojoCore();
   }
   return absl::nullopt;
 }
 
-ContentClient* WolvicContentMainDelegate::CreateContentClient() {
+content::ContentClient* WolvicContentMainDelegate::CreateContentClient() {
   content_client_ = std::make_unique<WolvicContentClient>();
   return content_client_.get();
 }
 
-ContentBrowserClient* WolvicContentMainDelegate::CreateContentBrowserClient() {
+content::ContentBrowserClient*
+WolvicContentMainDelegate::CreateContentBrowserClient() {
   browser_client_ = std::make_unique<WolvicContentBrowserClient>();
   return browser_client_.get();
 }
 
-ContentGpuClient* WolvicContentMainDelegate::CreateContentGpuClient() {
-  gpu_client_ = std::make_unique<ContentGpuClient>();
+content::ContentGpuClient* WolvicContentMainDelegate::CreateContentGpuClient() {
+  gpu_client_ = std::make_unique<content::ContentGpuClient>();
   return gpu_client_.get();
 }
 
-ContentRendererClient*
+content::ContentRendererClient*
 WolvicContentMainDelegate::CreateContentRendererClient() {
-  renderer_client_ = std::make_unique<wolvic::WolvicContentRendererClient>();
+  renderer_client_ = std::make_unique<WolvicContentRendererClient>();
   return renderer_client_.get();
 }
 
-ContentUtilityClient* WolvicContentMainDelegate::CreateContentUtilityClient() {
-  utility_client_ = std::make_unique<ContentUtilityClient>();
+content::ContentUtilityClient*
+WolvicContentMainDelegate::CreateContentUtilityClient() {
+  utility_client_ = std::make_unique<content::ContentUtilityClient>();
   return utility_client_.get();
 }
 
@@ -330,7 +334,7 @@ std::unique_ptr<PrefService> WolvicContentMainDelegate::CreateLocalState() {
   variations::VariationsService::RegisterPrefs(pref_registry.get());
 
   base::FilePath path;
-  CHECK(base::PathService::Get(SHELL_DIR_USER_DATA, &path));
+  CHECK(base::PathService::Get(content::SHELL_DIR_USER_DATA, &path));
   path = path.AppendASCII("Local State");
 
   PrefServiceFactory pref_service_factory;
@@ -341,9 +345,9 @@ std::unique_ptr<PrefService> WolvicContentMainDelegate::CreateLocalState() {
 }
 
 void WolvicContentMainDelegate::SetUpFieldTrials() {
-  wolvic::WolvicEnabledStateProvider enabled_state_provider;
+  WolvicEnabledStateProvider enabled_state_provider;
   base::FilePath path;
-  base::PathService::Get(SHELL_DIR_USER_DATA, &path);
+  base::PathService::Get(content::SHELL_DIR_USER_DATA, &path);
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
       metrics::MetricsStateManager::Create(
           local_state_.get(), &enabled_state_provider, std::wstring(),
@@ -394,4 +398,4 @@ void WolvicContentMainDelegate::SetUpFieldTrials() {
       /*add_entropy_source_to_variations_ids=*/false);
 }
 
-}  // namespace content
+}  // namespace wolvic

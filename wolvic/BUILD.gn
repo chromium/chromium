@@ -5,8 +5,8 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//device/vr/buildflags/buildflags.gni")
-import("//tools/grit/repack.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//tools/grit/repack.gni")
 
 assert(enable_vr)
 assert(is_android)
@@ -44,22 +44,22 @@ shared_library("libcontent_native") {
     "browser/autocomplete/wolvic_password_store_backend.h",
     "browser/autocomplete/wolvic_signin_client.cc",
     "browser/autocomplete/wolvic_signin_client.h",
-    "browser/downloads/wolvic_download_manager_delegate.cc",
-    "browser/downloads/wolvic_download_manager_delegate.h",
-    "browser/media/wolvic_media_drm_bridge_client.cc",
-    "browser/media/wolvic_media_drm_bridge_client.h",
-    "browser/metrics/wolvic_enabled_state_provider.cc",
-    "browser/metrics/wolvic_enabled_state_provider.h",
     "browser/dialogs/color_chooser_manager.cc",
     "browser/dialogs/color_chooser_manager.h",
     "browser/dialogs/file_select_manager.cc",
     "browser/dialogs/file_select_manager.h",
     "browser/dialogs/http_auth_manager.cc",
     "browser/dialogs/http_auth_manager.h",
-    "browser/dialogs/wolvic_javascript_dialog_manager.cc",
-    "browser/dialogs/wolvic_javascript_dialog_manager.h",
     "browser/dialogs/user_dialog_manager_bridge.cc",
     "browser/dialogs/user_dialog_manager_bridge.h",
+    "browser/dialogs/wolvic_javascript_dialog_manager.cc",
+    "browser/dialogs/wolvic_javascript_dialog_manager.h",
+    "browser/downloads/wolvic_download_manager_delegate.cc",
+    "browser/downloads/wolvic_download_manager_delegate.h",
+    "browser/media/wolvic_media_drm_bridge_client.cc",
+    "browser/media/wolvic_media_drm_bridge_client.h",
+    "browser/metrics/wolvic_enabled_state_provider.cc",
+    "browser/metrics/wolvic_enabled_state_provider.h",
     "browser/session_settings.cc",
     "browser/session_settings.h",
     "browser/session_settings_jni.cc",
@@ -106,8 +106,8 @@ shared_library("libcontent_native") {
   deps = [
     ":content_native_lib",
     ":jni_headers",
-    "//components/zoom",
     "//components/crash/content/browser",
+    "//components/zoom",
     "//device/vr:vr_util",
     "//media",
     "//services/network/public/mojom",
@@ -202,12 +202,14 @@ static_library("content_native_lib") {
     "//services/network:network_service",
   ]
   deps = [
-   ":pak",
+    ":pak",
     "//base",
     "//base:base_static",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/base",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/renderer",
     "//components/cdm/browser",
     "//components/cdm/common",
     "//components/cdm/renderer",
@@ -222,19 +224,17 @@ static_library("content_native_lib") {
     "//components/network_session_configurator/common",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
-    "//components/autofill/content/renderer",
-    "//components/autofill/content/browser",
-    "//components/password_manager/content/common",
     "//components/password_manager/content/browser",
+    "//components/password_manager/content/common",
     "//components/performance_manager",
     "//components/permissions",
     "//components/prefs",
+    "//components/strings",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
     "//components/visitedlink/browser",
     "//components/visitedlink/renderer",
-    "//components/strings",
     "//components/web_cache/renderer",
     "//components/webxr:webxr",
     "//content:content_resources",
@@ -362,13 +362,12 @@ dist_aar("content_aar") {
     "//media/base/android:media_java",
     "//services/data_decoder/public/cpp/android:safe_json_java",
     "//services/device/public/java:nfc_java",
-    "//ui/android:ui_full_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_full_java",
   ]
   native_libraries = [
     "$root_build_dir/libcontent_native.so",
-
     # TODO: Replace with shared library
     # "$root_build_dir/obj/device/vr/libdevice_vr.a",
   ]
