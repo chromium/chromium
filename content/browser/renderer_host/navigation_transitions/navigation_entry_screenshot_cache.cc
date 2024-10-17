@@ -129,9 +129,22 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     return;
   }
 
+  // Should never capture the last committed entry.
+  if (entry == nav_controller_->GetLastCommittedEntry()) {
+    SCOPED_CRASH_KEY_BOOL("dnt", "is_copied_from_embedder",
+                          is_copied_from_embedder);
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   // A navigation entry without a screenshot will be removed from the cache
   // first (thus not tracked). Impossible to overwrite for a cached entry.
-  CHECK(!entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
+  // TODO(crbug.com/373893401): Find out why this happens.
+  if (entry->GetUserData(NavigationEntryScreenshot::kUserDataKey)) {
+    base::debug::DumpWithoutCrashing();
+    RemoveScreenshot(entry);
+  }
+
   CHECK(cached_screenshots_.find(entry->GetUniqueID()) ==
         cached_screenshots_.end());
   CHECK(!screenshot->is_cached());
@@ -145,6 +158,8 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
       .SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
   entry->navigation_transition_data().set_cache_hit_or_miss_reason(
       NavigationTransitionData::CacheHitOrMissReason::kCacheHit);
+  // Tentative fix for crbug.com/373893401.
+  entry->navigation_transition_data().increment_copy_output_request_sequence();
 
   cached_screenshots_[entry->GetUniqueID()] = size;
   manager_->OnScreenshotCached(this, size);
