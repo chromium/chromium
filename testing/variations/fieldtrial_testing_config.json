@@ -9030,6 +9030,21 @@
             ]
         }
     ],
+    "EnableChromeFatalCrashEventsObserver": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableChromeFatalCrashEventsObserver"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableConfigurableThreadCacheMultiplier": [
         {
             "platforms": [
@@ -9163,6 +9178,21 @@
                     "name": "Enabled_20230404",
                     "enable_features": [
                         "EnableFallbackFontsCrashReporting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableFatalCrashEventsObserver": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFatalCrashEventsObserver"
                     ]
                 }
             ]
@@ -9357,6 +9387,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableTcpPortRandomization"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableUserSessionActivityReporting": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableUserSessionActivityReporting"
                     ]
                 }
             ]
