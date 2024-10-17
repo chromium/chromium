@@ -18,4 +18,11 @@ if (target_os == "ios") {
   build_gn_logs += [ "" ]
 }
 
+if (target_os == "win") {
+  import("//build/config/win/visual_studio_version.gni")
+  build_gn_logs +=
+      [ "### visual_studio_version.gni ###" ] + visual_studio_version_logs
+  build_gn_logs += [ "" ]
+}
+
 build_gn_logs += [ "#### get_concurrent_links.py ####" ] + concurrent_links_logs
