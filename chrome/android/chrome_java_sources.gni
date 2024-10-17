@@ -501,6 +501,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabColorProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabIntentDataProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabSnapshotController.java",
+  "java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java",
   "java/src/org/chromium/chrome/browser/customtabs/NavigationInfoCaptureTrigger.java",
   "java/src/org/chromium/chrome/browser/customtabs/PageLoadMetricsObserver.java",
   "java/src/org/chromium/chrome/browser/customtabs/ReparentingTaskProvider.java",
