@@ -16,6 +16,7 @@ import org.jni_zero.JniType;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -92,6 +93,19 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     @CalledByNative
     public boolean requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
         return mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+    }
+
+    /**
+     * Requests to show an eWallet FOP selector in a bottom sheet.
+     *
+     * @param ewallets User's eWallet accounts which passed from facilitated payments client.
+     * @return True if shown. False if it was suppressed. Content is suppressed if higher priority
+     *     content is in the sheet, the sheet is expanded beyond the peeking state, or the browser
+     *     is in a mode that does not support showing the sheet.
+     */
+    @CalledByNative
+    public boolean requestShowContentForEwallet(@JniType("std::vector") Object[] eWallets) {
+        return mComponent.showSheetForEwallet((List<Ewallet>) (List<?>) Arrays.asList(eWallets));
     }
 
     /**

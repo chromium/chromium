@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
@@ -84,6 +86,11 @@ bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
   return facilitated_payments_controller_->Show(
       std::move(bank_account_suggestions),
       std::move(on_user_decision_callback));
+}
+
+bool ChromeFacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
+    base::span<const autofill::Ewallet> ewallet_suggestions) {
+  return facilitated_payments_controller_->ShowForEwallet(ewallet_suggestions);
 }
 
 void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {

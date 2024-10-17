@@ -8,9 +8,11 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "ui/android/window_android.h"
 
 class FacilitatedPaymentsController;
@@ -44,6 +46,12 @@ class FacilitatedPaymentsBottomSheetBridge {
   // false.
   virtual bool RequestShowContent(
       base::span<const autofill::BankAccount> bank_account_suggestions);
+
+  // Show the payment prompt containing user's `ewallet_suggestions`.
+  // Return true if a new bottom sheet is created and shown. Otherwise, return
+  // false.
+  virtual bool RequestShowContentForEwallet(
+      base::span<const autofill::Ewallet> ewallet_suggestions);
 
   // Triggers showing the progress screen. Virtual for overriding in tests.
   virtual void ShowProgressScreen();

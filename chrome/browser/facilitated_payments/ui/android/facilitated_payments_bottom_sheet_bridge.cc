@@ -5,9 +5,12 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/containers/span.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -49,6 +52,24 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
   }
   return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
       env, GetJavaBridge(), std::move(bank_accounts_array));
+}
+
+bool FacilitatedPaymentsBottomSheetBridge::RequestShowContentForEwallet(
+    base::span<const autofill::Ewallet> ewallet_suggestions) {
+  if (!GetJavaBridge()) {
+    return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> ewallet_vector;
+  ewallet_vector.reserve(ewallet_suggestions.size());
+  for (const autofill::Ewallet& ewallet : ewallet_suggestions) {
+    ewallet_vector.push_back(
+        autofill::PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
+            env, ewallet));
+  }
+  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContentForEwallet(
+      env, GetJavaBridge(), std::move(ewallet_vector));
 }
 
 void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen() {

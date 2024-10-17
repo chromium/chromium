@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -1011,6 +1012,13 @@ BankAccount CreatePixBankAccount(int64_t instrument_id) {
       instrument_id, u"nickname", GURL("http://www.example.com"), u"bank_name",
       u"account_number", BankAccount::AccountType::kChecking);
   return bank_account;
+}
+
+Ewallet CreateEwalletAccount(int64_t instrument_id) {
+  Ewallet ewallet(instrument_id, u"nickname", GURL("http://www.example.com"),
+                  u"ewallet_name", u"account_display_name",
+                  {u"supported_payment_link_uri"}, true);
+  return ewallet;
 }
 
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(

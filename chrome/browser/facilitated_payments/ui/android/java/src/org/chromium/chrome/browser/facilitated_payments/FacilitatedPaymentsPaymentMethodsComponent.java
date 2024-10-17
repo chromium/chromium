@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -47,8 +48,11 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
      */
     boolean isInLandscapeMode();
 
-    /** Displays a FOP selector in a bottom sheet. */
+    /** Displays a Pix FOP selector in a bottom sheet. */
     boolean showSheet(List<BankAccount> bankAccounts);
+
+    /** Displays an eWallet FOP selector in a bottom sheet. */
+    boolean showSheetForEwallet(List<Ewallet> eWallets);
 
     /** Displays a progress screen in a bottom sheet. */
     void showProgressScreen();

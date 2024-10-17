@@ -37,6 +37,10 @@ class MockFacilitatedPaymentsBottomSheetBridge
       RequestShowContent,
       (base::span<const autofill::BankAccount> bank_account_suggestions),
       (override));
+  MOCK_METHOD(bool,
+              RequestShowContentForEwallet,
+              (base::span<const autofill::Ewallet> ewallet_suggestions),
+              (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
@@ -68,6 +72,9 @@ class FacilitatedPaymentsControllerTest
   const std::vector<autofill::BankAccount> bank_accounts_ = {
       autofill::test::CreatePixBankAccount(100L),
       autofill::test::CreatePixBankAccount(200L)};
+  const std::vector<autofill::Ewallet> ewallets_ = {
+      autofill::test::CreateEwalletAccount(100L),
+      autofill::test::CreateEwalletAccount(200L)};
 };
 
 // Test Show method returns true when FacilitatedPaymentsBottomSheetBridge
@@ -178,4 +185,44 @@ TEST_F(FacilitatedPaymentsControllerTest, IsInLandscapeMode) {
   EXPECT_CALL(*mock_view_, IsInLandscapeMode);
 
   controller_->IsInLandscapeMode();
+}
+
+// Test ShowForEwallet method returns true when
+// FacilitatedPaymentsBottomSheetBridge is able to show.
+TEST_F(FacilitatedPaymentsControllerTest, ShowForEwallet_BridgeWasAbleToShow) {
+  ON_CALL(*mock_view_, RequestShowContentForEwallet)
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(*mock_view_, RequestShowContentForEwallet(
+                               testing::ElementsAreArray(ewallets_)));
+
+  // Verify that the `ShowForEwallet` returns true when the bridge is able to
+  // show the bottom sheet.
+  EXPECT_TRUE(controller_->ShowForEwallet(ewallets_));
+}
+
+// Test ShowForEwallet method returns false when
+// FacilitatedPaymentsBottomSheetBridge returns false.
+TEST_F(FacilitatedPaymentsControllerTest,
+       ShowForEwallet_BridgeWasNotAbleToShow) {
+  ON_CALL(*mock_view_, RequestShowContentForEwallet)
+      .WillByDefault(Return(false));
+
+  // The bottom sheet could not be shown, verify that the view is informed about
+  // this failure.
+  EXPECT_CALL(*mock_view_, RequestShowContentForEwallet(
+                               testing::ElementsAreArray(ewallets_)));
+  EXPECT_CALL(*mock_view_, OnDismissed);
+
+  // The call should return false when bridge fails to show a bottom sheet.
+  EXPECT_FALSE(controller_->ShowForEwallet(ewallets_));
+}
+
+// Test ShowForEwallet method returns false when there are no eWallet
+// suggestions to show.
+TEST_F(FacilitatedPaymentsControllerTest, Show_NoEwalletAccounts) {
+  EXPECT_CALL(*mock_view_, RequestShowContentForEwallet).Times(0);
+
+  // The call should return false when there's no bank account.
+  EXPECT_FALSE(controller_->ShowForEwallet({}));
 }

@@ -5,10 +5,16 @@
 #ifndef CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
+#include "base/containers/span.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace autofill {
+class BankAccount;
+class Ewallet;
+}  // namespace autofill
 
 namespace content {
 class WebContents;
@@ -62,6 +68,8 @@ class ChromeFacilitatedPaymentsClient
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
       override;
+  bool ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions) override;
   void ShowProgressScreen() override;
   void ShowErrorScreen() override;
   void DismissPrompt() override;

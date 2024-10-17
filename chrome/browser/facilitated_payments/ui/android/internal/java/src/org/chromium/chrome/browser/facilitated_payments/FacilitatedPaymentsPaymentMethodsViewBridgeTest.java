@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -68,6 +69,31 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
                 .setBankName("bankName2")
                 .setAccountNumberSuffix("2222")
                 .setAccountType(AccountType.CHECKING)
+                .build()
+    };
+
+    private static final Ewallet[] EWALLETS = {
+        new Ewallet.Builder()
+                .setPaymentInstrument(
+                        new PaymentInstrument.Builder()
+                                .setInstrumentId(100)
+                                .setNickname("nickname")
+                                .setSupportedPaymentRails(new int[] {2})
+                                .setIsFidoEnrolled(true)
+                                .build())
+                .setEwalletName("eWallet name 1")
+                .setAccountDisplayName("account display name 1")
+                .build(),
+        new Ewallet.Builder()
+                .setPaymentInstrument(
+                        new PaymentInstrument.Builder()
+                                .setInstrumentId(200)
+                                .setNickname("nickname2")
+                                .setSupportedPaymentRails(new int[] {2})
+                                .setIsFidoEnrolled(false)
+                                .build())
+                .setEwalletName("eWallet name 2")
+                .setAccountDisplayName("account display name 2")
                 .build()
     };
 
@@ -164,5 +190,17 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         assertThat(
                 content.getSheetClosedAccessibilityStringId(),
                 equalTo(R.string.pix_payment_methods_bottom_sheet_closed));
+    }
+
+    @Test
+    @SmallTest
+    public void requestShowContentForEwallet_callsControllerRequestShowContent() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        mViewBridge.requestShowContentForEwallet(EWALLETS);
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
     }
 }

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -387,6 +388,9 @@ Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
 
 // Returns a bank account enabled for Pix with fake data.
 BankAccount CreatePixBankAccount(int64_t instrument_id);
+
+// Returns an eWallet account with fake data.
+Ewallet CreateEwalletAccount(int64_t instrument_id);
 
 // Returns a payment instrument with a bank account filled with fake data.
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(

@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/containers/span.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
@@ -49,6 +52,21 @@ bool FacilitatedPaymentsController::Show(
   }
 
   on_user_decision_callback_ = std::move(on_user_decision_callback);
+  return true;
+}
+
+bool FacilitatedPaymentsController::ShowForEwallet(
+    base::span<const autofill::Ewallet> ewallet_suggestions) {
+  if (ewallet_suggestions.empty()) {
+    return false;
+  }
+
+  if (!view_->RequestShowContentForEwallet(ewallet_suggestions)) {
+    view_->OnDismissed();
+    java_object_.Reset();
+    return false;
+  }
+
   return true;
 }
 

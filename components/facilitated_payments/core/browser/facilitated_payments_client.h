@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -54,6 +55,12 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual bool ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Shows the user's eWallet accounts from their Google Wallet, and prompts to
+  // pay. If the UI was shown, then returns true. If the UI was not shown, then
+  // returns false.
+  virtual bool ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions);
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.

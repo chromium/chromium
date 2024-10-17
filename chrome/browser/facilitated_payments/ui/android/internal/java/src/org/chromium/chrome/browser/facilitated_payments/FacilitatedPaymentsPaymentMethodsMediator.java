@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.InputProtector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -106,6 +107,19 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
+
+        return true;
+    }
+
+    boolean showSheetForEwallet(List<Ewallet> eWallets) {
+        if (eWallets == null || eWallets.isEmpty()) {
+            return false;
+        }
+
+        // TODO(crbug.com/40280186): Implement the content of eWallet FOP selector.
+        mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
+        mModel.set(SCREEN, FOP_SELECTOR);
+        mModel.set(VISIBLE_STATE, SHOWN);
 
         return true;
     }

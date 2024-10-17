@@ -4,7 +4,10 @@
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 
 namespace payments::facilitated {
 
@@ -13,6 +16,11 @@ FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
 bool FacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+  return false;
+}
+
+bool FacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
+    base::span<const autofill::Ewallet> ewallet_suggestions) {
   return false;
 }
 

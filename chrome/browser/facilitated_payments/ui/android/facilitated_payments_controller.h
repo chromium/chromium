@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 
 namespace content {
 class WebContents;
@@ -30,11 +32,16 @@ class FacilitatedPaymentsController {
   // Returns true if the device is being used in the landscape mode.
   virtual bool IsInLandscapeMode();
 
-  // Asks the `view_` to show the FOP selector. Returns whether the surface was
-  // successfully shown.
+  // Shows the PIX FOP selector. Returns whether the surface was successfully
+  // shown.
   virtual bool Show(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Shows the eWallet FOP selector. Returns whether the surface was
+  // successfully shown.
+  virtual bool ShowForEwallet(
+      base::span<const autofill::Ewallet> ewallet_suggestions);
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in
   // tests.

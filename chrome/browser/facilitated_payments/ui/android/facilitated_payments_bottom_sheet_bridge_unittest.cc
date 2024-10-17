@@ -43,5 +43,18 @@ TEST_F(FacilitatedPaymentsBottomSheetBridgeTest, RequestShowContent) {
   EXPECT_FALSE(bridge.RequestShowContent(bank_accounts_));
 }
 
+TEST_F(FacilitatedPaymentsBottomSheetBridgeTest, RequestShowContentForEwallet) {
+  FacilitatedPaymentsController controller(web_contents());
+  FacilitatedPaymentsBottomSheetBridge bridge =
+      FacilitatedPaymentsBottomSheetBridge(web_contents(), &controller);
+  const std::vector<autofill::Ewallet> ewallets_accounts_ = {
+      autofill::test::CreateEwalletAccount(100L),
+      autofill::test::CreateEwalletAccount(200L)};
+
+  // A Java BottomSheetController can't be initialized from the native side. So
+  // no bottom sheet is shown.
+  EXPECT_FALSE(bridge.RequestShowContentForEwallet(ewallets_accounts_));
+}
+
 }  // namespace
 }  // namespace payments::facilitated
