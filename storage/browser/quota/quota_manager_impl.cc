@@ -829,14 +829,14 @@ class QuotaManagerImpl::BucketSetDataDeleter {
   void ScheduleBucketsDeletion() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (const auto& bucket : buckets_) {
-      // base::Unretained() is safe here because `this` is guaranteed to outlive
-      // the callback, thanks to an indirect ownership chain. `this` owns the
-      // BucketDataDeleter created here, which guarantees it will only use the
-      // callback when it's alive.
+      // Weak pointer is used here because the callback will be invoked when
+      // `bucket_deleters_` is being destroyed during `BucketSetDataDeleter`
+      // destruction. In this case, we don't need `DidDeleteBucketData` to be
+      // called. See crbug.com/373754859
       auto bucket_deleter = std::make_unique<BucketDataDeleter>(
           manager_, bucket, AllQuotaClientTypes(), /*commit_immediately=*/false,
           base::BindOnce(&BucketSetDataDeleter::DidDeleteBucketData,
-                         base::Unretained(this)));
+                         weak_factory_.GetWeakPtr()));
       auto* bucket_deleter_ptr = bucket_deleter.get();
       bucket_deleters_[bucket_deleter_ptr] = std::move(bucket_deleter);
       bucket_deleter_ptr->Run();
