@@ -48,16 +48,14 @@ import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningPropert
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.AccountCapabilitiesConstants;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -65,39 +63,11 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Tests for {@link PasswordMigrationWarningMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PasswordMigrationWarningMediatorTest {
-    private static final String TEST_EMAIL = "user@domain.com";
-    private static final String FULL_NAME = "full name";
-    private static final AccountInfo ACCOUNT_INFO =
-            new AccountInfo(
-                    new CoreAccountId("gaia-id-user"),
-                    TEST_EMAIL,
-                    "gaia-id-user",
-                    FULL_NAME,
-                    "given name",
-                    null,
-                    new AccountCapabilities(new HashMap<>()));
-    private static final AccountInfo NON_DISPLAYABLE_EMAIL_ACCOUNT_INFO =
-            new AccountInfo(
-                    new CoreAccountId("gaia-id-user"),
-                    TEST_EMAIL,
-                    "gaia-id-user",
-                    FULL_NAME,
-                    "given name",
-                    null,
-                    new AccountCapabilities(
-                            new HashMap<>(
-                                    Map.of(
-                                            AccountCapabilitiesConstants
-                                                    .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
-                                            false))));
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -342,24 +312,25 @@ public class PasswordMigrationWarningMediatorTest {
     public void testGetAccountDisplayNameReturnsEmail() {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL, "0"));
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(TEST_EMAIL))
-                .thenReturn(ACCOUNT_INFO);
+                .thenReturn(TestAccounts.ACCOUNT1);
+        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(
+                        TestAccounts.ACCOUNT1.getEmail()))
+                .thenReturn(TestAccounts.ACCOUNT1);
 
         mMediator.showWarning(ScreenType.INTRO_SCREEN);
-        assertEquals(TEST_EMAIL, mModel.get(ACCOUNT_DISPLAY_NAME));
+        assertEquals(TestAccounts.ACCOUNT1.getEmail(), mModel.get(ACCOUNT_DISPLAY_NAME));
     }
 
     @Test
     public void testGetAccountDisplayNameReturnsFullName() {
+        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL, "0"));
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(TEST_EMAIL))
-                .thenReturn(NON_DISPLAYABLE_EMAIL_ACCOUNT_INFO);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
+        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
+                .thenReturn(account);
 
         mMediator.showWarning(ScreenType.INTRO_SCREEN);
-        assertEquals(FULL_NAME, mModel.get(ACCOUNT_DISPLAY_NAME));
+        assertEquals(account.getFullName(), mModel.get(ACCOUNT_DISPLAY_NAME));
     }
 
     @Test
