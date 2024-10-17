@@ -30,8 +30,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT extern const char kDrawQuadSplit[];
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawQuadSplitLimit);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawQuadSplitLimit);
 
 enum class DelegatedCompositingMode {
   // Enable delegated compositing.
@@ -143,9 +144,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchResourceRelease);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseDCompSurfacesForDelegatedInk();
