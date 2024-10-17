@@ -227,11 +227,12 @@ def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
         extra_args = []
     filtered_input_files = []
     for f in input_files:
-        if os.path.getsize(f) <= 1 * 1024 * 1024:
+        size_in_bytes = os.path.getsize(f)
+        if size_in_bytes <= 1 * 1024 * 1024:
             # A valid profile on android is usually 108MB, and typically 2-3 of
             # those are produced, so this would be less than 0.5% ignored. These
             # small ones need to be ignored since otherwise they fail the merge.
-            _LOGGER.warning(f'Skipping due to size <1MB: {f}')
+            _LOGGER.warning(f'Skipping due to size={size_in_bytes} <1MB: {f}')
         else:
             filtered_input_files.append(f)
 
