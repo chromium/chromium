@@ -276,12 +276,17 @@ void ArCoreGl::Initialize(
   enabled_features_ = maybe_initialize_result->enabled_features;
   depth_configuration_ = maybe_initialize_result->depth_configuration;
 
+  // Set whether or not the session produces frames with WebGPU based on in the
+  // 'webgpu' feature was requested.
+  const bool webgpu_session =
+      enabled_features_.contains(device::mojom::XRSessionFeature::WEBGPU);
+
   DVLOG(3) << "ar_image_transport_->Initialize()...";
   ar_image_transport_->Initialize(
       webxr_.get(),
       base::BindOnce(&ArCoreGl::OnArImageTransportReady,
                      weak_ptr_factory_.GetWeakPtr()),
-      false);
+      webgpu_session);
 
   if (use_ar_compositor_) {
     InitializeArCompositor(main_thread_task_runner, surface_handle, root_window,
@@ -1355,11 +1360,16 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
   webxr_->GetAnimatingFrame()->camera_image_shared_buffer->sync_token =
       sync_token;
 
+  const ArCompositorFrameSink::FrameType frame_type =
+      ar_image_transport_->IsWebGPUSession()
+          ? ArCompositorFrameSink::FrameType::kHasWebGpuContent
+          : ArCompositorFrameSink::FrameType::kHasWebGlContent;
+
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.
-  webxr_->ProcessOrDefer(base::BindOnce(
-      &ArCoreGl::SubmitVizFrame, weak_ptr_factory_.GetWeakPtr(), frame_index,
-      ArCompositorFrameSink::FrameType::kHasWebXrContent));
+  webxr_->ProcessOrDefer(base::BindOnce(&ArCoreGl::SubmitVizFrame,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        frame_index, frame_type));
 }
 
 void ArCoreGl::SubmitVizFrame(int16_t frame_index,
@@ -1385,7 +1395,7 @@ void ArCoreGl::SubmitVizFrame(int16_t frame_index,
   }
 
   if (submit_client_ &&
-      frame_type == ArCompositorFrameSink::FrameType::kHasWebXrContent) {
+      frame_type != ArCompositorFrameSink::FrameType::kMissingWebXrContent) {
     // Create a local GpuFence and pass it to the Renderer via IPC.
     std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
     std::unique_ptr<gfx::GpuFence> gpu_fence2 = gl_fence->GetGpuFence();

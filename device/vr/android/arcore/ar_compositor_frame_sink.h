@@ -53,7 +53,8 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   // applicable), will be composited into a frame.
   enum FrameType {
     kMissingWebXrContent,
-    kHasWebXrContent,
+    kHasWebGlContent,
+    kHasWebGpuContent,
   };
 
   // Used when the compositor acknowledges that it is ready to begin processing

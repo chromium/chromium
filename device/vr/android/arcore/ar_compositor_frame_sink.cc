@@ -429,7 +429,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   // Setup some variables for the SharedQuadState that are the same for the
   // Camera/Renderer
   // Next add the Renderer Content
-  if (frame_type == FrameType::kHasWebXrContent) {
+  if (frame_type != FrameType::kMissingWebXrContent) {
     WebXrSharedBuffer* renderer_buffer = xr_frame->shared_buffer.get();
     renderer_buffer->id = resource_id_generator_.GenerateNextId();
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -455,7 +455,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*uv_top_left=*/xr_frame->bounds_left.origin(),
         /*uv_bottom_right=*/xr_frame->bounds_left.bottom_right(),
         /*background_color=*/SkColors::kTransparent,
-        /*y_flipped=*/true,
+        /*y_flipped=*/frame_type == FrameType::kHasWebGlContent,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
