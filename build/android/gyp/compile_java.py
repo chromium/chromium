@@ -34,6 +34,12 @@ _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
 # Use this when trying to enable more checks.
 ERRORPRONE_CHECKS_TO_APPLY = []
 
+# Checks to disable in tests.
+TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
+    # Too much effort to enable.
+    'UnusedVariable',
+]
+
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InlineMeInliner',
@@ -98,8 +104,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'CollectionToArraySafeParameter',
     # Triggers on private methods that are @CalledByNative.
     'UnusedMethod',
-    # Triggers on generated R.java files.
-    'UnusedVariable',
     # Not that useful.
     'UnsafeReflectiveConstructionCast',
     # Not that useful.
@@ -637,10 +641,12 @@ def _ParseOptions(argv):
       '--enable-errorprone',
       action='store_true',
       help='Enable errorprone checks')
-  parser.add_option(
-      '--warnings-as-errors',
-      action='store_true',
-      help='Treat all warnings as errors.')
+  parser.add_option('--testonly',
+                    action='store_true',
+                    help='Disable some Error Prone checks')
+  parser.add_option('--warnings-as-errors',
+                    action='store_true',
+                    help='Treat all warnings as errors.')
   parser.add_option('--jar-path', help='Jar output path.')
   parser.add_option(
       '--javac-arg',
@@ -740,11 +746,19 @@ def main(argv):
                             for x in ERRORPRONE_WARNINGS_TO_DISABLE)
     errorprone_flags.extend('-Xep:{}:WARN'.format(x)
                             for x in ERRORPRONE_WARNINGS_TO_ENABLE)
+    if options.testonly:
+      errorprone_flags.extend('-Xep:{}:OFF'.format(x)
+                              for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
 
     if ERRORPRONE_CHECKS_TO_APPLY:
+      to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
+      if options.testonly:
+        to_apply = [
+            x for x in to_apply
+            if x not in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE
+        ]
       errorprone_flags += [
-          '-XepPatchLocation:IN_PLACE',
-          '-XepPatchChecks:,' + ','.join(ERRORPRONE_CHECKS_TO_APPLY)
+          '-XepPatchLocation:IN_PLACE', '-XepPatchChecks:,' + ','.join(to_apply)
       ]
 
     # These are required to use JDK 16, and are taken directly from

@@ -3242,6 +3242,9 @@ if (enable_java_templates) {
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
           "//tools/android/errorprone_plugin/OWNERS",
         ]
+        if (defined(testonly) && testonly) {
+          args += [ "--testonly" ]
+        }
       }
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
         # Nocompile tests need lint to fail through ninja.
