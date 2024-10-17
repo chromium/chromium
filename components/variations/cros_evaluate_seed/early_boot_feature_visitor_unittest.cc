@@ -36,7 +36,8 @@ TEST(EarlyBootFeatureVisitor, FeatureWithNoFieldTrial) {
   feature_list.InitAndEnableFeature(kEarlyBootFeatureOffByDefault);
 
   EarlyBootFeatureVisitor visitor;
-  base::FeatureList::VisitFeaturesAndParams(visitor);
+  base::FeatureList::VisitFeaturesAndParams(visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       visitor.release_overrides();
 
@@ -64,7 +65,8 @@ TEST(EarlyBootFeatureVisitor, InvalidFeatureName) {
   initialized_field_feature_list.InitWithFeatureList(std::move(feature_list));
 
   EarlyBootFeatureVisitor visitor;
-  base::FeatureList::VisitFeaturesAndParams(visitor);
+  base::FeatureList::VisitFeaturesAndParams(visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       visitor.release_overrides();
 
@@ -86,7 +88,8 @@ TEST(EarlyBootFeatureVisitor, FeatureOverrideUseDefault) {
   initialized_field_feature_list.InitWithFeatureList(std::move(feature_list));
 
   EarlyBootFeatureVisitor visitor;
-  base::FeatureList::VisitFeaturesAndParams(visitor);
+  base::FeatureList::VisitFeaturesAndParams(visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       visitor.release_overrides();
 
@@ -113,7 +116,8 @@ TEST(EarlyBootFeatureVisitor, FeatureOverrideUseDisabled) {
   initialized_field_feature_list.InitWithFeatureList(std::move(feature_list));
 
   EarlyBootFeatureVisitor visitor;
-  base::FeatureList::VisitFeaturesAndParams(visitor);
+  base::FeatureList::VisitFeaturesAndParams(visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       visitor.release_overrides();
 
@@ -140,7 +144,8 @@ TEST(EarlyBootFeatureVisitor, FeatureOverrideUseEnabled) {
   initialized_field_feature_list.InitWithFeatureList(std::move(feature_list));
 
   EarlyBootFeatureVisitor visitor;
-  base::FeatureList::VisitFeaturesAndParams(visitor);
+  base::FeatureList::VisitFeaturesAndParams(visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       visitor.release_overrides();
 
@@ -163,7 +168,8 @@ TEST(EarlyBootFeatureVisitor, FeatureHasParams) {
       /*disabled_features=*/"");
 
   EarlyBootFeatureVisitor visitor;
-  base::FeatureList::VisitFeaturesAndParams(visitor);
+  base::FeatureList::VisitFeaturesAndParams(visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
 
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       visitor.release_overrides();

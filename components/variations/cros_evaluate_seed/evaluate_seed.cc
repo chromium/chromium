@@ -130,7 +130,8 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
   // We also do not want to mark the trial as active yet, but given that
   // evaluate_seed will not report anything to UMA that isn't urgent.
   EarlyBootFeatureVisitor feature_visitor;
-  base::FeatureList::VisitFeaturesAndParams(feature_visitor);
+  base::FeatureList::VisitFeaturesAndParams(feature_visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       feature_visitor.release_overrides();
   computed_state->mutable_overrides()->Assign(overrides.begin(),
