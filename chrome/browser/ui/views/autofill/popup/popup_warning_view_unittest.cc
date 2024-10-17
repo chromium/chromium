@@ -52,7 +52,7 @@ TEST_F(PopupWarningViewTest, AccessibleProperties) {
   ui::AXNodeData node_data;
 
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(ax::mojom::Role::kAlert, node_data.role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, node_data.role);
   EXPECT_EQ(kText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }

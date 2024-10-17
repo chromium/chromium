@@ -273,16 +273,6 @@ bool PopupViewViews::Show(
     }
   }
 
-  // Check for the special "warning bubble" mode: single warning suggestion
-  // which content should be just announced to the user. Triggering
-  // Event::kAlert on such a row makes screen readers read its content out.
-  // TODO(crbug.com/40281426): Consider supporting "warning mode" explicitly.
-  if (rows_.size() == 1 &&
-      absl::holds_alternative<PopupWarningView*>(rows_[0])) {
-    absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(
-        ax::mojom::Event::kAlert, true);
-  }
-
   // Compose has separate on show announcements.
   // TODO(crbug.com/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
@@ -320,6 +310,8 @@ bool PopupViewViews::Show(
         NOTREACHED();
     }
   }
+
+  MaybeA11yFocusInformationalSuggestion();
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
 }
@@ -689,6 +681,8 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
 
   CreateSuggestionViews();
   DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side);
+
+  MaybeA11yFocusInformationalSuggestion();
 }
 
 bool PopupViewViews::OverlapsWithPictureInPictureWindow() const {
@@ -1415,6 +1409,27 @@ bool PopupViewViews::SelectParentPopupContentCell() {
                   AutoselectFirstSuggestion(false),
                   /*suppress_popup=*/true);
   return true;
+}
+
+void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
+  if (rows_.size() != 1) {
+    return;
+  }
+
+  RowPointer first_row = rows_[0];
+  views::View* view_to_focus = nullptr;
+  if (auto* loading_view =
+          absl::get_if<autofill_prediction_improvements::
+                           PredictionImprovementsLoadingStateView*>(
+              &first_row)) {
+    view_to_focus = *loading_view;
+  } else if (auto* warning_view = absl::get_if<PopupWarningView*>(&first_row)) {
+    view_to_focus = *warning_view;
+  }
+  if (view_to_focus) {
+    NotifyAXSelection(*view_to_focus);
+    view_to_focus->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  }
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
