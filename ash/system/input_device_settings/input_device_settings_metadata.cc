@@ -1045,7 +1045,7 @@ GetGraphicsTabletMetadataList() {
             mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly,
             "One by Wacom S"}},
           // One by Wacom M
-          {{0x056a, 0x0301},
+          {{0x056a, 0x037b},
            {mojom::CustomizationRestriction::kAllowCustomizations,
             mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly,
             "One by Wacom M"}},
@@ -1504,11 +1504,23 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
           // Wacom Intuos S (Bluetooth -> USB)
           {{0x056a, 0x0376}, {0x056a, 0x0374}},
           // Wacom Intuos S (Bluetooth -> USB)
+          {{0x056a, 0x0377}, {0x056a, 0x0374}},
+          // Wacom Intuos S (Bluetooth -> USB)
           {{0x056a, 0x03c5}, {0x056a, 0x0374}},
+          // Wacom Intuos S (Bluetooth -> USB)
+          {{0x056a, 0x03c6}, {0x056a, 0x0374}},
           // Wacom Intuos M (Bluetooth -> USB)
           {{0x056a, 0x0378}, {0x056a, 0x0375}},
           // Wacom Intuos M (Bluetooth -> USB)
+          {{0x056a, 0x0379}, {0x056a, 0x0375}},
+          // Wacom Intuos M (Bluetooth -> USB)
           {{0x056a, 0x03c7}, {0x056a, 0x0375}},
+          // Wacom Intuos M (Bluetooth -> USB)
+          {{0x056a, 0x03c8}, {0x056a, 0x0375}},
+          // Wacom One Pen tablet M (Bluetooth -> USB)
+          {{0x0531, 0x0103}, {0x0531, 0x0102}},
+          // Wacom One Pen tablet S (Bluetooth -> USB)
+          {{0x0531, 0x0101}, {0x0531, 0x0100}},
           // SteelSeries Aerox 9 WL (USB Dongle -> USB)
           {{0x1038, 0x1858}, {0x1038, 0x185a}},
           // SteelSeries Aerox 9 WL (Bluetooth -> USB)
