@@ -21,6 +21,7 @@ public class StylusWritingController {
     private final Context mContext;
     private WebContents mCurrentWebContents;
     @Nullable private PointerIcon mHandwritingIcon;
+    @Nullable private StylusApiOption mStylusHandler;
     private boolean mIconFetched;
     private boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
@@ -72,7 +73,7 @@ public class StylusWritingController {
      * Returns the appropriate StylusWritingHandler - this may change at runtime if the user
      * enables/disables the stylus writing feature in their Android settings.
      */
-    private StylusApiOption getHandler() {
+    private StylusApiOption chooseHandler() {
         if (DirectWritingSettingsHelper.isEnabled(mContext)) {
             // Lazily initialize the various handlers since a lot of the time only one will be used.
             if (mDirectWritingTrigger == null) {
@@ -98,6 +99,24 @@ public class StylusWritingController {
         }
 
         return mDisabledStylusWritingHandler;
+    }
+
+    /*
+     * Returns the currently selected handler, initializing it lazily if it has not been initialized
+     * already.
+     */
+    private StylusApiOption getHandler() {
+        // If the feature is enabled, we listen to settings changes and re-run the handler selection
+        // logic if stylus related settings changed. If the feature is disabled, we re-run the
+        // handler selection logic every time.
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            if (mStylusHandler == null) {
+                mStylusHandler = chooseHandler();
+            }
+            return mStylusHandler;
+        }
+        return chooseHandler();
     }
 
     /**
@@ -131,6 +150,7 @@ public class StylusWritingController {
 
     /** Notify stylus related settings changed. */
     public void onSettingsChange() {
+        mStylusHandler = chooseHandler();
         updateStylusState();
     }
 
