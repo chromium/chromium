@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_DISMISSED;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_QUERY_TEXT_CHANGE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
-import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.QUERY_HINT;
-import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
-import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.WARNING;
 
 import androidx.annotation.Nullable;
 
@@ -37,9 +34,6 @@ class AllPlusAddressesBottomSheetMediator {
     void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
         mProfiles = uiInfo.getPlusProfiles();
 
-        mModel.set(TITLE, uiInfo.getTitle());
-        mModel.set(WARNING, uiInfo.getWarning());
-        mModel.set(QUERY_HINT, uiInfo.getQueryHint());
         mModel.set(ON_QUERY_TEXT_CHANGE, this::onQueryTextChanged);
         mModel.set(ON_DISMISSED, this::onDismissed);
 

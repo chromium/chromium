@@ -321,13 +321,13 @@ if we want to translate this file.
         </message>
 
         <!-- All plus addresses bottom sheet strings -->
-        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID" desc="The title text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID" desc="The title text of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
           Select Plus Address placeholder
         </message>
-        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID" desc="The user warning text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID" desc="The user warning text of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
           Select Plus Address warning placeholder.
         </message>
-        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
           Search hint placeholder
         </message>
 

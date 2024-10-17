@@ -60,6 +60,19 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
                 (LinearLayout)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.all_plus_addresses_bottom_sheet, null);
+        TextView title = mContentView.findViewById(R.id.sheet_title);
+        TextView warning = mContentView.findViewById(R.id.sheet_warning);
+        SearchView searchView = mContentView.findViewById(R.id.all_plus_addresses_search_view);
+        title.setText(
+                context.getString(
+                        R.string.plus_address_all_plus_addresses_bottomsheet_title_android));
+        warning.setText(
+                context.getString(
+                        R.string.plus_address_all_plus_addresses_bottomsheet_warning_android));
+        searchView.setQueryHint(
+                context.getString(
+                        R.string.plus_address_all_plus_addresses_bottomsheet_query_hint_android));
+
         mSheetItemListView = mContentView.findViewById(R.id.sheet_item_list);
         mSheetItemListView.setLayoutManager(
                 new LinearLayoutManager(
@@ -84,19 +97,6 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
         } else {
             mBottomSheetController.hideContent(this, true);
         }
-    }
-
-    void setTitle(String title) {
-        ((TextView) mContentView.findViewById(R.id.sheet_title)).setText(title);
-    }
-
-    void setWarning(String warning) {
-        ((TextView) mContentView.findViewById(R.id.sheet_warning)).setText(warning);
-    }
-
-    void setQueryHint(String queryHint) {
-        ((SearchView) mContentView.findViewById(R.id.all_plus_addresses_search_view))
-                .setQueryHint(queryHint);
     }
 
     void setOnQueryChangedCallback(Callback<String> callback) {

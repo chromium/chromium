@@ -13,45 +13,14 @@ import java.util.List;
 
 @JNINamespace("plus_addresses")
 class AllPlusAddressesBottomSheetUIInfo {
-    private String mTitle;
-    // The message displayed below the bottom sheet title.
-    private String mWarning;
-    private String mQueryHint;
     private List<PlusProfile> mProfiles;
 
     @CalledByNative
     AllPlusAddressesBottomSheetUIInfo() {}
 
     @CalledByNative
-    void setTitle(@JniType("std::u16string") String title) {
-        mTitle = title;
-    }
-
-    @CalledByNative
-    void setWarning(@JniType("std::u16string") String warning) {
-        mWarning = warning;
-    }
-
-    @CalledByNative
-    void setQueryHint(@JniType("std::u16string") String queryHint) {
-        mQueryHint = queryHint;
-    }
-
-    @CalledByNative
     void setPlusProfiles(@JniType("std::vector") List<PlusProfile> profiles) {
         mProfiles = profiles;
-    }
-
-    String getTitle() {
-        return mTitle;
-    }
-
-    String getWarning() {
-        return mWarning;
-    }
-
-    String getQueryHint() {
-        return mQueryHint;
     }
 
     List<PlusProfile> getPlusProfiles() {
