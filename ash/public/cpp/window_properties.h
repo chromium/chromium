@@ -73,9 +73,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<int32_t>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kExcludeInMruKey;
 
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kFrameRateThrottleKey;
-
 // A property key to indicate whether we should hide this window in overview
 // mode and Alt + Tab.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const

@@ -3839,22 +3839,6 @@ TEST_F(ShellSurfaceTest, Reparent) {
   EXPECT_TRUE(widget2->ShouldPaintAsActive());
 }
 
-TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
-  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
-  SurfaceObserverForTest observer(
-      shell_surface->root_surface()->window()->GetOcclusionState());
-  shell_surface->root_surface()->AddSurfaceObserver(&observer);
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-
-  EXPECT_CALL(observer, ThrottleFrameRate(true));
-  window->SetProperty(ash::kFrameRateThrottleKey, true);
-
-  EXPECT_CALL(observer, ThrottleFrameRate(false));
-  window->SetProperty(ash::kFrameRateThrottleKey, false);
-
-  shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
-}
-
 // Tests raster scale changes happen before occlusion changes on entering
 // overview mode, and raster scale changes happen after occlusion changes on
 // exiting overview mode. This to ensure windows that become visible do not get
@@ -3955,9 +3939,6 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
             : testing::UnorderedElementsAreArray<viz::FrameSinkId>({});
     EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
                 should_throttle_set);
-
-    // ash::kFrameRateThrottleKey is not set.
-    EXPECT_FALSE(window->GetProperty(ash::kFrameRateThrottleKey));
   }
 }
 
