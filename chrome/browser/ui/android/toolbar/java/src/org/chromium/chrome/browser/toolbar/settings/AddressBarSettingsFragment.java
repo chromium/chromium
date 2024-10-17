@@ -16,6 +16,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Fragment for address bar settings. */
 public class AddressBarSettingsFragment extends ChromeBaseSettingsFragment {
+    @VisibleForTesting public static final String PREF_ADDRESS_BAR_HEADER = "address_bar_header";
+
     @VisibleForTesting
     public static final String PREF_ADDRESS_BAR_PREFERENCE = "address_bar_preference";
 

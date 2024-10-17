@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
@@ -41,6 +43,8 @@ public class AddressBarSettingsFragmentUnitTest {
     private AddressBarSettingsFragment mSettings;
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;
+    private ImageView mToolbarOnTopImage;
+    private ImageView mToolbarOnBottomImage;
 
     @Before
     public void setUp() {
@@ -79,6 +83,13 @@ public class AddressBarSettingsFragmentUnitTest {
                                 AddressBarSettingsFragment.PREF_ADDRESS_BAR_PREFERENCE);
         mTopButton = (RadioButtonWithDescription) addressBarPreference.getTopRadioButton();
         mBottomButton = (RadioButtonWithDescription) addressBarPreference.getBottomRadioButton();
+
+        AddressBarHeaderPreference addressBarHeaderPreference =
+                (AddressBarHeaderPreference)
+                        mSettings.findPreference(
+                                AddressBarSettingsFragment.PREF_ADDRESS_BAR_HEADER);
+        mToolbarOnTopImage = addressBarHeaderPreference.getToolbarOnTopImage();
+        mToolbarOnBottomImage = addressBarHeaderPreference.getToolbarOnBottomImage();
     }
 
     @Test
@@ -89,6 +100,8 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
+        assertEquals(View.VISIBLE, mToolbarOnTopImage.getVisibility());
+        assertEquals(View.GONE, mToolbarOnBottomImage.getVisibility());
 
         mBottomButton.performClick();
 
@@ -97,6 +110,8 @@ public class AddressBarSettingsFragmentUnitTest {
         assertFalse(
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
+        assertEquals(View.GONE, mToolbarOnTopImage.getVisibility());
+        assertEquals(View.VISIBLE, mToolbarOnBottomImage.getVisibility());
     }
 
     @Test
@@ -107,6 +122,8 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
+        assertEquals(View.GONE, mToolbarOnTopImage.getVisibility());
+        assertEquals(View.VISIBLE, mToolbarOnBottomImage.getVisibility());
 
         mTopButton.performClick();
 
@@ -115,5 +132,7 @@ public class AddressBarSettingsFragmentUnitTest {
         assertTrue(
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
+        assertEquals(View.VISIBLE, mToolbarOnTopImage.getVisibility());
+        assertEquals(View.GONE, mToolbarOnBottomImage.getVisibility());
     }
 }

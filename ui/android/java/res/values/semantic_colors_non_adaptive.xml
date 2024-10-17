@@ -168,4 +168,11 @@ found in the LICENSE file.
     <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_30</color>
     <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_40</color>
     <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_80</color>
+
+    <!-- Address Bar preference Colors -->
+    <color name="address_bar_preference_header_background_light">@color/material_primary_95</color>
+    <color name="address_bar_preference_header_background_dark">@color/material_primary_20</color>
+    <color name="address_bar_preference_header_primary_light">@color/material_primary_40</color>
+    <color name="address_bar_preference_header_primary_dark">@color/material_primary_80</color>
+
 </resources>
