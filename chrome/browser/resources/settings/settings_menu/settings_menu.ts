@@ -22,8 +22,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -84,8 +82,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private routes_: SettingsRoutes;
   private aiPageIcon_: string;
   private aiPageTitle_: string;
-  private metricsBrowserProxy_: MetricsBrowserProxy =
-      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -164,13 +160,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
-  }
-
-  private onAiPageClick_() {
-    if (this.enableAiSettingsPageRefresh_) {
-      this.metricsBrowserProxy_.recordAction(
-          'SettingsMenu_AiPageEntryPointClicked');
-    }
   }
 }
 
