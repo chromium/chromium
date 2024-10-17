@@ -114,12 +114,13 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
     AppendBlock(block_types->mask_type, std::move(bytes.a));
   } else {
     DCHECK(block_types->png_type != 0);
-    std::vector<uint8_t> png_data;
-    if (!gfx::PNGCodec::EncodeBGRASkBitmap(
-            bitmap, /*discard_transparancy=*/false, &png_data)) {
+    std::optional<std::vector<uint8_t>> png_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                          /*discard_transparency=*/false);
+    if (!png_data) {
       return false;
     }
-    AppendBlock(block_types->png_type, std::move(png_data));
+    AppendBlock(block_types->png_type, std::move(png_data).value());
   }
   return true;
 }

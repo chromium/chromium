@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -500,10 +501,8 @@ IconBitmapsOrError ParseOfflineManifestIconBitmaps(
           {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
            " ", icon_file.DebugString(), " failed to read."}));
     }
-    SkBitmap bitmap;
-    if (!gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-            icon_data.size(), &bitmap)) {
+    SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
+    if (bitmap.isNull()) {
       return base::unexpected(base::StrCat(
           {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
            " ", icon_file.DebugString(), " failed to decode."}));

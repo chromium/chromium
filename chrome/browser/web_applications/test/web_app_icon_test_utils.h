@@ -55,9 +55,7 @@ base::FilePath GetAppIconsMaskableDir(Profile* profile,
 base::FilePath GetOtherIconsDir(Profile* profile, const webapps::AppId& app_id);
 
 // Performs blocking IO and decompression.
-bool ReadBitmap(FileUtilsWrapper* utils,
-                const base::FilePath& file_path,
-                SkBitmap* bitmap);
+SkBitmap ReadBitmap(FileUtilsWrapper* utils, const base::FilePath& file_path);
 
 base::span<const int> GetIconSizes();
 
