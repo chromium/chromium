@@ -33,6 +33,8 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -46,12 +48,27 @@ class WTF_EXPORT StringUTF8Adaptor final {
   DISALLOW_NEW();
 
  public:
+  using iterator = base::CheckedContiguousIterator<const char>;
+
   explicit StringUTF8Adaptor(StringView string,
                              UTF8ConversionMode mode = kLenientUTF8Conversion);
   ~StringUTF8Adaptor();
 
   const char* data() const { return data_; }
   wtf_size_t size() const { return size_; }
+
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  iterator begin() const {
+    // SAFETY: `data()` points to at least `size()` contiguous characters, so
+    // the computed value here is no further than just-past-the-end of the
+    // allocation.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+  }
+  iterator end() const {
+    // SAFETY: As in `begin()` above.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+  }
 
   std::string_view AsStringView() const {
     return std::string_view(data_, size_);

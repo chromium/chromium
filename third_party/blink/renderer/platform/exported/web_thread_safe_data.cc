@@ -30,6 +30,8 @@
 
 #include "third_party/blink/public/platform/web_thread_safe_data.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 
 namespace blink {
@@ -48,15 +50,22 @@ void WebThreadSafeData::Assign(const WebThreadSafeData& other) {
 }
 
 size_t WebThreadSafeData::size() const {
-  if (private_.IsNull())
-    return 0;
-  return private_->size();
+  return private_.IsNull() ? 0 : private_->size();
 }
 
 const char* WebThreadSafeData::data() const {
-  if (private_.IsNull())
-    return nullptr;
-  return private_->data();
+  return private_.IsNull() ? nullptr : private_->data();
+}
+
+WebThreadSafeData::iterator WebThreadSafeData::begin() const {
+  // SAFETY: `data()` never points to fewer than `size()` bytes, so this is
+  // never further than one-past-the-end.
+  return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+}
+
+WebThreadSafeData::iterator WebThreadSafeData::end() const {
+  // SAFETY: As in `begin()` above.
+  return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
 }
 
 WebThreadSafeData::WebThreadSafeData(scoped_refptr<RawData> data)

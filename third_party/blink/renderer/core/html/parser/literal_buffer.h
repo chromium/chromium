@@ -17,6 +17,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -43,6 +44,8 @@ class LiteralBufferBase {
                 "T must be a character type");
 
  public:
+  using iterator = base::CheckedContiguousIterator<const T>;
+
   ~LiteralBufferBase() {
     if (!is_stored_inline())
       WTF::Partitions::BufferFree(begin_);
@@ -52,6 +55,11 @@ class LiteralBufferBase {
   ALWAYS_INLINE wtf_size_t size() const {
     return base::checked_cast<wtf_size_t>(end_ - begin_);
   }
+
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  ALWAYS_INLINE iterator begin() const { return iterator(begin_, end_); }
+  ALWAYS_INLINE iterator end() const { return iterator(begin_, end_, end_); }
 
   ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
 

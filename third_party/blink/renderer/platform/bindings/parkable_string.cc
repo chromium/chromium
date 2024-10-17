@@ -13,6 +13,8 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -144,6 +146,8 @@ class NullableCharBuffer final {
   STACK_ALLOCATED();
 
  public:
+  using iterator = base::CheckedContiguousIterator<const char>;
+
   explicit NullableCharBuffer(size_t size) {
     data_ = reinterpret_cast<char*>(
         WTF::Partitions::BufferPartition()
@@ -161,8 +165,22 @@ class NullableCharBuffer final {
   }
 
   // May return nullptr.
-  char* data() const { return data_; }
+  char* data() { return data_; }
+  const char* data() const { return data_; }
   size_t size() const { return size_; }
+
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  iterator begin() const {
+    // SAFETY: The constructor allocates `size_` bytes at `data_`, which are not
+    // freed until destruction, and the members are not changed after
+    // construction.
+    return UNSAFE_BUFFERS(iterator(data_, data_ + size_));
+  }
+  iterator end() const {
+    // SAFETY: As in `begin()` above.
+    return UNSAFE_BUFFERS(iterator(data_, data_ + size_, data_ + size_));
+  }
 
  private:
   char* data_;

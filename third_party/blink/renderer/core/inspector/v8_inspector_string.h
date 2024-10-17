@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -65,10 +67,26 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
  public:
   class Impl : public RefCounted<Impl> {
    public:
+    using iterator = base::CheckedContiguousIterator<const uint8_t>;
+
     Impl() = default;
     virtual ~Impl() = default;
+
     virtual const uint8_t* data() const = 0;
     virtual size_t size() const = 0;
+
+    // Iterators, so this type meets the requirements of
+    // `std::ranges::contiguous_range`.
+    iterator begin() const {
+      // SAFETY: `data()` points to at least `size()` valid bytes, so the
+      // computed value here is no further than just-past-the-end of the
+      // allocation.
+      return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+    }
+    iterator end() const {
+      // SAFETY: As in `begin()` above.
+      return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+    }
   };
 
   Binary() = default;

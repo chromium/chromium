@@ -88,6 +88,12 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
 
   const char* data() const { return data_.data(); }
   size_t size() const { return data_.size(); }
+
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  auto begin() const { return data_.begin(); }
+  auto end() const { return data_.end(); }
+
   Vector<char>* MutableData() { return &data_; }
 
  private:
