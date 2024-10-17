@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
     enum="AccessoryAction" expires_after="2025-03-30">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records whenever users faces an action in the accessory bar or
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="KeyboardAccessory.AccessoryActionSelected"
     enum="AccessoryAction" expires_after="2025-03-30">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records whenever users select an action in the accessory bar
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="KeyboardAccessory.AccessorySheetSuggestionsSelected"
     enum="AccessorySuggestionType" expires_after="2025-03-30">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records which type of suggestion was selected from an open
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="KeyboardAccessory.AccessorySheetTriggered"
     enum="AccessorySheetTrigger" expires_after="2025-03-30">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records how often the bottom sheet was opened or closed by a
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="KeyboardAccessory.AccessoryToggleClicked"
     enum="AccessoryToggleType" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Android only. Records how often the user clicks on a certain toggle when
     opening an accessory sheet together with the state the toggle was in before
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="KeyboardAccessory.AccessoryToggleImpression"
     enum="AccessoryToggleType" expires_after="2025-01-26">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Android only. Records how often the user sees a certain toggle when opening
     an accessory sheet together with the state the toggle was in.
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="KeyboardAccessory.DisabledSavingAccessoryImpressions"
     enum="BooleanShown" expires_after="2025-01-26">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Android only. Records the number of times that the keyboard accessory was
     shown on a form for which saving is disabled (with a crossed-out key icon).
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="KeyboardAccessory.TouchEventFiltered" enum="BooleanYesNo"
     expires_after="2025-04-22">
   <owner>tchudakov@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Android only. Records if the Keyboard Accessory filtered at least one touch
     event because the Chrome window was fully or partially obscured. The metric
@@ -913,7 +913,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
     enum="DeviceAuthFinalResult" expires_after="2024-10-28">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records the result of the attempt to re-auth the user via biometrics when
     filling a password or signing in from the account chooser dialog. From M97,
@@ -925,7 +925,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.BiometricAuthPwdFill.CanAuthenticate"
     enum="BiometricsAvailability" expires_after="2025-02-10">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded whenever a password filling surface or the account chooser dialog
     checks whether it can use biometrics to re-authenticate the user.
@@ -995,7 +995,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid"
     units="credentials" expires_after="2024-09-01">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Count of compromised credentials shown in the UI, recorded whenever a bulk
     leak check finished successfully. As opposed to 'BulkCheck.LeaksFound', this
@@ -1058,7 +1058,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2"
     enum="PasswordCheckReferrerAndroid" expires_after="2025-04-13">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Referrer of a navigation to the Password Check UI Settings view. Recorded
     when the user enters the view. Replaces
@@ -1127,7 +1127,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.BulkCheck.UserActionAndroid"
     enum="PasswordCheckUIUserActionAndroid" expires_after="2025-04-13">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschigg@chromium.org</owner>
+  <owner>friedrichhg@chromium.org</owner>
   <summary>User actions performed on the Password Check settings view.</summary>
 </histogram>
 
@@ -1229,7 +1229,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
     enum="CredentialEntryAction" expires_after="2025-04-13">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records actions performed by the users in the {CredentialEntryType} view.
     Android-only for now.
@@ -1274,7 +1274,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Error"
     enum="CredentialManagerError" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records the error encountered while attempting to fetch the Credential
     Manager launch intent from Google Play Services for the {ProfileType}. This
@@ -1288,7 +1288,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Latency"
     units="ms" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records the time(ms) elapsed between asking Google Play Services for the
     intent used to open the Credential Manager for the {ProfileType} and
@@ -1303,7 +1303,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Success"
     enum="BooleanSuccess" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records whether fetching the Credential Manager launch intent from Google
     Play Services for the {ProfileType} was successful or not. Recorded when the
@@ -1316,7 +1316,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.CredentialManager.{ProfileType}.Launch.Success"
     enum="BooleanSuccess" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records whether the provided intent to launch the Credential Manager for the
     {ProfileType} could be used successfully. This is recorded right after
@@ -1329,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.CredentialsCountFromAccountStoreAfterUnlock"
     units="credentials" expires_after="2025-04-13">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     Recorded after unlocking the account store from the password filling flow.
@@ -1370,7 +1370,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.CredMan.PasswordFormSubmissionTriggered"
     enum="Boolean" expires_after="2025-04-13">
   <owner>derinel@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records whether the password form is submitted right after being filled by
     Android Credential Manager UI. The filled username and password are coming
@@ -2908,7 +2908,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.PasswordStore.OnLoginsRetained"
     enum="LoginsChangedTrigger" expires_after="2025-04-13">
   <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Android only. |OnLoginsRetained| replaces |OnLoginsChanged| and this metric
     records potential calls of |OnLoginsRetained| to measure differences in
@@ -2924,7 +2924,7 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-03-09">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded on Android when the password store backend is created. This happens
     on startup and once per profile. It logs whether the user is enrolled in
@@ -3147,7 +3147,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core ChromeSync 1P API{Function}.
     Recorded when the asynchronous job has returned. This is an overall
@@ -3203,7 +3203,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     This metric reports the error observed when {Function} the PasswordStore
     Android backend. Recorded when the asynchronous job has returned.
@@ -3267,7 +3267,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records each {Function} call by the PasswordStore {Backend}. Recorded twice:
     1) when the store issues the request, and 2) as the asynchronous job has
@@ -3288,7 +3288,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous call to {Function} in {Backend}.
     Recorded when the asynchronous job has returned. In case of Android backend,
@@ -3308,7 +3308,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records whether {Function} succeeded in {Backend}. Recorded when the
     asynchronous job has returned. False is emitted if an error occurs;
@@ -3923,7 +3923,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.TouchToFill.CredentialIndex" units="index"
     expires_after="2025-04-13">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     The index of a selected credential in the Touch To Fill sheet. Only recorded
     when the sheet showed at least two entries.
@@ -3933,7 +3933,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.TouchToFill.DismissalReason"
     enum="BottomSheet.StateChangeReason" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     The reason why a user dismissed the Touch To Fill sheet. Recorded once for
     each dismissal.
@@ -3943,7 +3943,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.TouchToFill.Outcome"
     enum="TouchToFill.Outcome" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     The final outcome that closes the Touch To Fill sheet (e.g. credentials
     filling, settings opened, failed reauth, sheet dismissal). Recorded once for
@@ -3983,7 +3983,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.TouchToFill.SubmissionReadiness"
     enum="TouchToFill.SubmissionReadiness" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     A given form's state (e.g. there are empty fields in the form, or there are
     only two fields and they both are filled by Chrome) that indicates whether
@@ -3995,7 +3995,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved"
     enum="Boolean" expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Measures whether a credential filling by Touch To Fill leads to a successful
     submission or not (submission failed, or the submission could not be
@@ -4014,7 +4014,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.TouchToFill.TimeToSuccessfulLogin" units="ms"
     expires_after="2025-03-30">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     The time in milliseconds between filling by the Touch To Fill and a
     successful submission (To ensure filling and submitting correspond to each
@@ -4050,7 +4050,7 @@ chromium-metrics-reviews@google.com.
     enum="UnifiedPasswordManagerActiveStatus" expires_after="2024-12-29">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded on profile open after the sync service is initialized and once per
     regular profile. It is recorded for clients that have UPM enabled and logs
@@ -4095,7 +4095,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.Latency"
     units="ms" expires_after="2025-03-30">
   <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Real-time duration of MigrationForLocalUsers. Recorded when all operations
     are completed and migration is finished.
@@ -4153,7 +4153,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.Success"
     enum="BooleanSuccess" expires_after="2025-03-30">
   <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records success of MigrationForLocalUsers. Recorded when the migration is
     finished.
@@ -4194,7 +4194,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
     enum="BooleanSuccess" expires_after="2025-04-13">
   <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Records whether passwords were successfully migrated from built in backed to
     android backed and the current migration version stored in pref is

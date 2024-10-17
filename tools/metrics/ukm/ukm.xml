@@ -22027,7 +22027,7 @@ be describing additional metrics about the same event.
 
 <event name="TouchToFill.Shown">
   <owner>kazinova@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
     Recorded when a user takes an action on the Touch To Fill sheet.
@@ -22041,7 +22041,7 @@ be describing additional metrics about the same event.
 
 <event name="TouchToFill.SubmissionReadiness">
   <owner>kolos@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded when the Touch To Fill sheet is shown to the user.
   </summary>
@@ -22057,7 +22057,7 @@ be describing additional metrics about the same event.
 
 <event name="TouchToFill.TimeToSuccessfulLogin">
   <owner>kolos@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded when a successful login is detected after filling by the Touch To
     Fill.

@@ -23906,7 +23906,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileNTPOpenedInNewTab">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <description>
     The user manually created a New Tab Page (NTP) in a new tab that has not
     been shown before. This includes the initial tab (when starting Chrome).

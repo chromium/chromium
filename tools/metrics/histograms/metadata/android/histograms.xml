@@ -1079,7 +1079,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.DeviceAuthenticator.AuthSource"
     enum="DeviceAuthSource" expires_after="2025-03-02">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>theocristea@google.com</owner>
   <owner>clhager@google.com</owner>
   <summary>
@@ -1092,7 +1092,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.DeviceAuthenticator.CanAuthenticateWithBiometrics"
     enum="BiometricsAvailability" expires_after="2025-01-01">
   <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
     Recorded when a UI surface/flow in Chrome on Android checks whether

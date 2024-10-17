@@ -872,7 +872,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.AndroidAutofillAvailabilityStatus"
     enum="AndroidAutofillAvailabilityStatus" expires_after="2024-12-14">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Clank only. Logs whether Android Autofill was available. If not, it splits
@@ -4926,7 +4926,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.ResetAutofillPrefToChrome" enum="Boolean"
     expires_after="2024-12-14">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Clank only. Logs whether the user decided to use 3P password managers but a
@@ -5282,7 +5282,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.Settings.AutofillOptionsReferrerAndroid"
     enum="AutofillOptionsReferrer" expires_after="2025-03-23">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records which entry point opened the Autofill Options screen. Recorded on
@@ -5304,7 +5304,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.Settings.ToggleUseThirdPartyFilling" enum="Boolean"
     expires_after="2025-03-30">
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records true whenever the user opts into the third party autofill

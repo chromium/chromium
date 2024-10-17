@@ -2002,10 +2002,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="custom_links" label="User customized links."/>
   <suffix name="explore" label="Explore sites related entry points."/>
   <suffix name="homepage" label="The currently set home page."/>
-<!-- TODO(fhorschig): Add <obsolete> tag as soon as M-62 is rolled out. -->
-
-  <suffix name="popular"
-      label="Deprecated with M-62! Non-personalized, popular suggestions."/>
   <suffix name="popular_baked_in" label="Baked-in, popular suggestions."/>
   <suffix name="popular_fetched"
       label="Non-personalized, popular suggestions (fetched from the server)."/>

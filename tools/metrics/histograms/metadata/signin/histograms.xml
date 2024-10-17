@@ -2760,7 +2760,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 name="TransactionalReauthEntryPoint" -->
 
   <owner>alexilin@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
+  <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded whenever the user interacts with reauthentication to complete a
     transaction (like interacting with the account store for passwords) and
