@@ -112,7 +112,7 @@ const base::FeatureParam<bool> kEnableImagesForResults(&kHistoryEmbeddings,
 
 const base::FeatureParam<bool> kOmniboxScoped(&kHistoryEmbeddings,
                                               "OmniboxScoped",
-                                              false);
+                                              true);
 
 const base::FeatureParam<bool> kOmniboxUnscoped(&kHistoryEmbeddings,
                                                 "OmniboxUnscoped",
