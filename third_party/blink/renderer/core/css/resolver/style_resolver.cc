@@ -2564,10 +2564,8 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
 
-    is_inherited_cache_hit =
-        state.ParentStyle()->InheritedDataShared(
-            *cached_matched_properties->parent_computed_style) &&
-        !IsAtShadowBoundary(&element);
+    is_inherited_cache_hit = state.ParentStyle()->InheritedDataShared(
+        *cached_matched_properties->parent_computed_style);
     is_non_inherited_cache_hit =
         !IsForcedColorsModeEnabled() || is_inherited_cache_hit;
 
