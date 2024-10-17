@@ -1,0 +1,12 @@
+Tests grant permissions.
+- Granting geolocation permission
+- Granted: ["geolocation"]
+- Resetting all permissions
+[
+    [0] : INITIAL 'geolocation': prompt
+    [1] : CHANGED 'geolocation': granted
+    [2] : CHANGED 'geolocation': prompt
+]
+[
+    [0] : {"name":"geolocation"}: granted
+]
