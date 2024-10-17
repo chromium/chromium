@@ -50,6 +50,14 @@ class BASE_EXPORT TaskAnnotator {
 
   static void MarkCurrentTaskAsInterestingForTracing();
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  //  TRACE_EVENT argument helper, writing the task start time into
+  //  EventContext.
+  //  NOTE: Should only be used with TRACE_EVENT or TRACE_EVENT_BEGIN since the
+  //          function records the timestamp for event start at call time.
+  static void EmitTaskTimingDetails(perfetto::EventContext& ctx);
+#endif
+
   TaskAnnotator();
 
   TaskAnnotator(const TaskAnnotator&) = delete;
@@ -150,7 +158,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
  public:
   explicit LongTaskTracker(const TickClock* tick_clock,
                            PendingTask& pending_task,
-                           TaskAnnotator* task_annotator);
+                           TaskAnnotator* task_annotator,
+                           TimeTicks task_start_time);
 
   LongTaskTracker(const LongTaskTracker&) = delete;
 
@@ -168,6 +177,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
   // calculating scroll jank metrics.
   bool is_interesting_task = false;
 
+  TimeTicks GetTaskStartTime() const { return task_start_time_; }
+
  private:
   void EmitReceivedIPCDetails(perfetto::EventContext& ctx);
 
@@ -178,14 +189,13 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
   // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
   // profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
+
+  // Task start time, sampled before the LongTaskTracker instance
+  // is created.
   TimeTicks task_start_time_;
   TimeTicks task_end_time_;
 
   // Tracing variables.
-
-  // Use this to ensure that tracing and NowTicks() are not called
-  // unnecessarily.
-  bool is_tracing_;
   const char* ipc_interface_name_ = nullptr;
   uint32_t ipc_hash_ = 0;
 

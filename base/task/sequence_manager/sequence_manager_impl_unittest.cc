@@ -634,12 +634,13 @@ TEST_P(SequenceManagerTest, NowNotCalledIfUnneeded) {
 
   RunLoop().RunUntilIdle();
 
-  // In the absence of calls to Now() for TimeObserver the only calls will
-  // come from metrics. There will be one call when the ThreadController
-  // becomes active and one when it becomes idle.
-  int extra_call_count = 0;
+  // Now is called for each task when it starts running for a non-mock task
+  // runner. Two extra calls will come from metrics. There will be one call when
+  // the ThreadController becomes active and one when it becomes idle.
+  int extra_call_count =
+      GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner ? 0 : 6;
   if (GetSampling() == MetricsSampling::kMetricsOn) {
-    extra_call_count = 2;
+    extra_call_count += 2;
   }
   EXPECT_EQ(0 + extra_call_count, GetNowTicksCallCount());
 }
@@ -660,9 +661,15 @@ TEST_P(SequenceManagerTest,
   queues[2]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   RunLoop().RunUntilIdle();
-  // Now is called when we start work and then for each task when it's
-  // completed. 1 + 6  = 7 calls.
-  EXPECT_EQ(7 + GetExtraNowSampleCount(), GetNowTicksCallCount());
+  // Now is called when we start work and then for each task:
+  // - when it starts running for a non-mock task runner;
+  // - when it's completed.
+  // 1 + 6  = 7 calls for a mock runner or 1 + 6 + 6 = 13 calls for a non-mock
+  // runner.
+  int task_start_now_samples =
+      GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner ? 0 : 6;
+  EXPECT_EQ(7 + GetExtraNowSampleCount() + task_start_now_samples,
+            GetNowTicksCallCount());
   sequence_manager()->RemoveTaskTimeObserver(&time_observer);
 }
 
@@ -686,9 +693,15 @@ TEST_P(SequenceManagerTest,
   queues[2]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   RunLoop().RunUntilIdle();
-  // Now is called each time a task is queued, when first task is started
-  // running, and when a task is completed. 1 + 6 * 2 = 13 calls.
-  EXPECT_EQ(13 + GetExtraNowSampleCount(), GetNowTicksCallCount());
+  // Now is called when we start work and then for each task:
+  // - when it starts running for a non-mock task runner;
+  // - when it's completed.
+  // 1 + 6 * 2 = 13 calls for a mock runner or 1 + 6 * 2 + 6 = 19 calls for a
+  // non-mock runner.
+  int task_start_now_samples =
+      GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner ? 0 : 6;
+  EXPECT_EQ(13 + GetExtraNowSampleCount() + task_start_now_samples,
+            GetNowTicksCallCount());
   sequence_manager()->RemoveTaskTimeObserver(&time_observer);
 }
 

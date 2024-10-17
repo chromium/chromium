@@ -86,6 +86,7 @@ void CallCallback(
   int64_t trace_id = latency_info.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_HANDLED_INPUT_EVENT_IMPL);
@@ -991,6 +992,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   TRACE_EVENT(
       "input,benchmark,latencyInfo", "LatencyInfo.Flow",
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         ui::LatencyInfo::FillTraceEvent(
             ctx, trace_id,
             ChromeLatencyInfo2::Step::STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
@@ -1131,6 +1133,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
   TRACE_EVENT(
       "input,benchmark,latencyInfo", "LatencyInfo.Flow",
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         ui::LatencyInfo::FillTraceEvent(
             ctx, trace_id,
             ChromeLatencyInfo2::Step::STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);

@@ -31,6 +31,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -1154,6 +1155,7 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
     int64_t trace_id = swap_promise->GetTraceId();
     TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
                 [&](perfetto::EventContext ctx) {
+                  base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                   ui::LatencyInfo::FillTraceEvent(
                       ctx, trace_id,
                       perfetto::protos::pbzero::ChromeLatencyInfo2::Step::

@@ -1990,6 +1990,15 @@ message MainFramePipeline {
   optional BeginFrameId last_begin_frame_id_during_first_draw = 5;
 }
 
+message CurrentTask {
+  // t1 - t0, where t1 is the start timestamp of this slice and t0 is the start
+  // timestamp of the task containing this slice.
+  optional uint64 event_offset_from_task_start_time_us = 1;
+
+  // Timestamp in microseconds of the start of the task containing this slice.
+  optional uint64 task_start_time_us = 2;
+}
+
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
@@ -2238,7 +2247,7 @@ message AndroidChoreographerFrameCallbackData {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1071
+  // Next ID: 1072
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2389,5 +2398,7 @@ message ChromeTrackEvent {
 
     optional AndroidChoreographerFrameCallbackData
         android_choreographer_frame_callback_data = 1070;
+
+    optional CurrentTask current_task = 1071;
   }
 }

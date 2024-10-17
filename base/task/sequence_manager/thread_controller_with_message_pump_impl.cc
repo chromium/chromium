@@ -462,7 +462,8 @@ std::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     {
       // Always track the start of the task, as this is low-overhead.
       TaskAnnotator::LongTaskTracker long_task_tracker(
-          time_source_, selected_task->task, &task_annotator_);
+          time_source_, selected_task->task, &task_annotator_,
+          lazy_now_task_selected.Now());
 
       // Note: all arguments after task are just passed to a TRACE_EVENT for
       // logging so lambda captures are safe as lambda is executed inline.

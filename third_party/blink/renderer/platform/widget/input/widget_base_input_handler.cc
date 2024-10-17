@@ -310,6 +310,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   int64_t trace_id = coalesced_event.latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
                 ui::LatencyInfo::FillTraceEvent(
                     ctx, trace_id,
                     perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
