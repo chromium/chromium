@@ -99,7 +99,6 @@ class AudioSinkAudioTrackImpl {
     private static final long USEC_IN_NSEC = 1000L;
 
     private static final long TIMESTAMP_UPDATE_PERIOD = 250 * MSEC_IN_NSEC;
-    private static final long UNDERRUN_LOG_THROTTLE_PERIOD = SEC_IN_NSEC;
 
     private static long sInstanceCounter;
 
@@ -128,7 +127,6 @@ class AudioSinkAudioTrackImpl {
 
     private String mTag;
 
-    private ThrottledLog mBufferLevelWarningLog;
     private ThrottledLog mUnderrunWarningLog;
     private ThrottledLog mTStampJitterWarningLog;
 
@@ -307,7 +305,6 @@ class AudioSinkAudioTrackImpl {
         mTag = TAG + "(" + castContentType + ":" + sInstanceCounter++ + ")";
 
         // Setup throttled logs: pass the first 5, then every 1sec, reset after 5.
-        mBufferLevelWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
         mUnderrunWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
         mTStampJitterWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
 
@@ -761,16 +758,21 @@ class AudioSinkAudioTrackImpl {
                     return;
                 }
                 // First stable timestamp.
-                mRefNanoTimeAtFramePos0 = prevRefNanoTimeAtFramePos0 = newNanoTimeAtFramePos0;
+                mRefNanoTimeAtFramePos0 = newNanoTimeAtFramePos0;
+                prevRefNanoTimeAtFramePos0 = newNanoTimeAtFramePos0;
                 mReferenceTimestampState = ReferenceTimestampState.STABLE;
-                Log.i(mTag,
-                        "First stable timestamp [" + mTimestampStabilityCounter + "/"
-                                + elapsedNsec(mTimestampStabilityStartTimeNsec) / 1000000 + "ms]");
+                Log.i(
+                        mTag,
+                        "First stable timestamp ["
+                                + mTimestampStabilityCounter
+                                + "/"
+                                + elapsedNsec(mTimestampStabilityStartTimeNsec) / 1000000
+                                + "ms]");
                 break;
             case ReferenceTimestampState.RESYNCING_AFTER_PAUSE:
-            // fall-through
+                // fall-through
             case ReferenceTimestampState.RESYNCING_AFTER_EXCESSIVE_TIMESTAMP_DRIFT:
-            // fall-through
+                // fall-through
             case ReferenceTimestampState.RESYNCING_AFTER_UNDERRUN:
                 // Resyncing happens after we hit a pause, underrun or excessive drift in the
                 // AudioTrack. This causes the Android Audio stack to insert additional samples,

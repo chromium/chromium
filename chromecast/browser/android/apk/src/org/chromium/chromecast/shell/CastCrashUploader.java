@@ -36,8 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CastCrashUploader {
     private static final String TAG = "CastCrashUploader";
-    private static final String CRASH_REPORT_HOST = "clients2.google.com";
-    private static final String CAST_SHELL_USER_AGENT = android.os.Build.MODEL + "/CastShell";
+
     // Multipart dump filename has format "[random string].dmp[pid]", e.g.
     // 20597a65-b822-008e-31f8fc8e-02bb45c0.dmp18169
     private static final String DUMP_FILE_REGEX = ".*\\.dmp\\d*";

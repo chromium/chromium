@@ -15,13 +15,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 
-/**
- * Manager for Cast settings.
- */
+/** Manager for Cast settings. */
 public final class CastSettingsManager {
     private static final String TAG = "CastSettingsManager";
-
-    private static final String PREFS_FILE_NAME = "CastSettings";
 
     /** The default device name, which is the model name. */
     private static final String DEFAULT_DEVICE_NAME = Build.MODEL;

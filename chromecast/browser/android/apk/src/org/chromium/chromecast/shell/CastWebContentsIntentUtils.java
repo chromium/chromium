@@ -118,14 +118,8 @@ public class CastWebContentsIntentUtils {
     static final String INTENT_EXTRA_VISIBILITY_PRIORITY =
             "com.google.android.apps.castshell.intent.extra.content_visibility_priority";
 
-    /** Key of extra value of the intent to start a web content, value is true is touch is enabled.
-     */
-    private static final String INTENT_EXTRA_KEY_CODE =
-            "com.google.android.apps.castshell.intent.extra.KEY_CODE";
-
     /**
-     * Key of extra value of the intent ACTION_ON_VISIBILITY_CHANGE, value is visibility type
-     * (int).
+     * Key of extra value of the intent ACTION_ON_VISIBILITY_CHANGE, value is visibility type (int).
      */
     private static final String INTENT_EXTRA_VISIBILITY_TYPE =
             "com.google.android.apps.castshell.intent.extra.VISIBILITY_TYPE";
