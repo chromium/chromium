@@ -58,7 +58,10 @@ AutofillMlPredictionModelServiceFactory::BuildServiceInstanceForBrowserContext(
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  return std::make_unique<AutofillMlPredictionModelHandler>(optimization_guide);
+  return std::make_unique<AutofillMlPredictionModelHandler>(
+      optimization_guide,
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
 }
 
 }  // namespace autofill

@@ -532,7 +532,9 @@ class HeuristicClassificationTests
 
   // Infrastructure for ML classifications.
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
-  AutofillMlPredictionModelHandler ml_predictions_handler_{&model_provider_};
+  AutofillMlPredictionModelHandler ml_predictions_handler_{
+      &model_provider_, optimization_guide::proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION};
 };
 
 void HeuristicClassificationTests::SetUp() {

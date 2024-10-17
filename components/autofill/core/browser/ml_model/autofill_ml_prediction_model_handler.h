@@ -35,8 +35,9 @@ class AutofillMlPredictionModelHandler
   // version will be used by the server.
   static constexpr int64_t kAutofillModelInputVersion = 3;
 
-  explicit AutofillMlPredictionModelHandler(
-      optimization_guide::OptimizationGuideModelProvider* model_provider);
+  AutofillMlPredictionModelHandler(
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      optimization_guide::proto::OptimizationTarget optimization_target);
   ~AutofillMlPredictionModelHandler() override;
 
   // This function asynchronously queries predictions for the `form_structure`
@@ -84,6 +85,9 @@ class AutofillMlPredictionModelHandler
   // Initialized once the model was loaded and successfully initialized using
   // the model's metadata.
   std::optional<ModelState> state_;
+
+  // Specifies the model to load and execute.
+  const optimization_guide::proto::OptimizationTarget optimization_target_;
 
   base::WeakPtrFactory<AutofillMlPredictionModelHandler> weak_ptr_factory_{
       this};

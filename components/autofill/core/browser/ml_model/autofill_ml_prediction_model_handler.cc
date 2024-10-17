@@ -43,7 +43,8 @@ std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
 }  // anonymous namespace
 
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
-    optimization_guide::OptimizationGuideModelProvider* model_provider)
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    optimization_guide::proto::OptimizationTarget optimization_target)
     : optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
                                        const AutofillModelEncoder::ModelInput&>(
           model_provider,
@@ -51,9 +52,9 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<AutofillModelExecutor>(),
           /*model_inference_timeout=*/std::nullopt,
-          optimization_guide::proto::OptimizationTarget::
-              OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-          CreateModelMetadata()) {
+          optimization_target,
+          CreateModelMetadata()),
+      optimization_target_(optimization_target) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
   // TODO(crbug.com/40276177): Maybe change both back to default behavior if we
@@ -103,9 +104,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
 void AutofillMlPredictionModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  CHECK_EQ(optimization_target,
-           optimization_guide::proto::OptimizationTarget::
-               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
+  CHECK_EQ(optimization_target, optimization_target_);
   optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
                                    const AutofillModelEncoder::ModelInput&>::
       OnModelUpdated(optimization_target, model_info);

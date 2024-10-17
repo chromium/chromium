@@ -50,7 +50,9 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     model_handler_ = std::make_unique<AutofillMlPredictionModelHandler>(
-        model_provider_.get());
+        model_provider_.get(),
+        optimization_guide::proto::OptimizationTarget::
+            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
     task_environment_.RunUntilIdle();
   }
 

@@ -72,7 +72,10 @@ class MockAutofillMlPredictionModelHandler
  public:
   explicit MockAutofillMlPredictionModelHandler(
       optimization_guide::OptimizationGuideModelProvider* provider)
-      : AutofillMlPredictionModelHandler(provider) {}
+      : AutofillMlPredictionModelHandler(
+            provider,
+            optimization_guide::proto::OptimizationTarget::
+                OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION) {}
   ~MockAutofillMlPredictionModelHandler() override = default;
 
   MOCK_METHOD(
