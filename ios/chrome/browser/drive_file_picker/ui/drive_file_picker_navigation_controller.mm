@@ -6,6 +6,11 @@
 
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ui/base/device_form_factor.h"
+
+@interface DriveFilePickerNavigationController () <
+    UINavigationControllerDelegate>
+@end
 
 @implementation DriveFilePickerNavigationController
 
@@ -14,6 +19,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kDriveFilePickerAccessibilityIdentifier;
+  self.delegate = self;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -36,6 +42,15 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController*)navigationController
+       didShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  // Layout `self.view` to account for new additional safe area insets.
+  [self.view setNeedsLayout];
+}
+
 #pragma mark - Private
 
 // Called when a `UIKeyboardWillChangeFrameNotification` is received.
@@ -45,6 +60,7 @@
   CGRect keyboardFrameEnd =
       [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   if (CGRectGetMinY(keyboardFrameBegin) > CGRectGetMinY(keyboardFrameEnd)) {
+    // If keyboard is going up, do nothing for now.
     return;
   }
   // Update the additional safe area inset asynchronously to ensure the view has
@@ -61,7 +77,14 @@
   CGRect keyboardFrameEnd =
       [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   if (CGRectGetMinY(keyboardFrameBegin) < CGRectGetMinY(keyboardFrameEnd)) {
+    // If the keyboard is going down, then `keyboardWillChangeFrame:` already
+    // updated the additional safe area insets to account for the keyboard.
     return;
+  }
+  // Since the keyboard went up, switch to a large detent on phones.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    self.sheetPresentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
   }
   // Update the additional safe area inset asynchronously to ensure the view has
   // already moved to its new position, as it might move in reaction to the
