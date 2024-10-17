@@ -75,10 +75,6 @@ class OptionsNamespace(argparse.Namespace):
     keep_temps: bool
     android_browser: Optional[str]
     android_device_path: Optional[str]
-    # TODO(https://crbug.com/40272686): Remove this option after the bots use
-    #     this script. This is necessary for now to match the script to the
-    #     existing broken way that the bots run benchmarks.
-    run_all_android_stories: bool
     skip_profdata: bool
     run_public_benchmarks_only: bool
     temporal_trace_length: Optional[int]
@@ -119,11 +115,6 @@ def parse_args():
         'default this is /data_mirror/data_ce/null/0/<package>'
         '/cache/pgo_profiles/ but you can override it for your '
         'device if needed.')
-    parser.add_argument(
-        '--run-all-android-stories',
-        action='store_true',
-        default=False,
-        help='By default on android, only the last story is run.')
     parser.add_argument('--skip-profdata',
                         action='store_true',
                         default=False,
@@ -425,13 +416,6 @@ def run_benchmarks(benchmarks: List[List[str]], args: OptionsNamespace):
             fail_count += run_benchmark_with_repeats(benchmark_args, args)
         else:
             stories = get_stories(benchmark_args, args)
-            if not args.run_all_android_stories:
-                # This is necessary to match the script to what the bots
-                # currently run (only the last story matters). By matching the
-                # bot's current method in this script, we separate the effect of
-                # using this script on the bot from the effect of fixing this
-                # bug on the bots.
-                stories = [stories[-1]]
             for story in stories:
                 _LOGGER.info(f"Running story: {story}")
                 per_story_args = [benchmark_args[0], f'--story={story}']
