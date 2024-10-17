@@ -78,6 +78,10 @@ struct GL_EXPORT DCLayerOverlayParams {
 
     gfx::HDRMetadata hdr_metadata;
 
+    // P010 pixel format is used for 10-bit YUV video frames, either HDR or
+    // SDR.
+    bool is_p010_content = false;
+
     // Indication of the overlay to be detected as possible full screen
     // letterboxing.
     // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for

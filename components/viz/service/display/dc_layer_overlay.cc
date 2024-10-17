@@ -197,6 +197,9 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   dc_layer->uv_rect =
       gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
   dc_layer->display_rect = gfx::RectF(quad->rect);
+  dc_layer->format =
+      resource_provider->GetSharedImageFormat(quad->resource_id());
+
   // Quad rect is in quad content space so both quad to target, and target to
   // root transforms must be applied to it.
   gfx::Transform quad_to_root_transform;

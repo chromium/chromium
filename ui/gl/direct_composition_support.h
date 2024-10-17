@@ -71,6 +71,9 @@ GL_EXPORT bool VideoProcessorAutoHDRSupported();
 // Returns true if video processor support handling the given format.
 GL_EXPORT bool CheckVideoProcessorFormatSupport(DXGI_FORMAT format);
 
+// Returns true if the given P010 video format is displayable.
+GL_EXPORT bool CheckDisplayableSupportForP010();
+
 // Returns overlay support flags for the given format.
 // Caller should check for DXGI_OVERLAY_SUPPORT_FLAG_DIRECT and
 // DXGI_OVERLAY_SUPPORT_FLAG_SCALING bits.

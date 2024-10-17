@@ -1791,7 +1791,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   std::optional<gl::DCLayerOverlayImage> overlay_image =
       scoped_read_access->GetDCLayerOverlayImage();
   ASSERT_TRUE(overlay_image);
-  EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Texture);
+  EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kD3D11Texture);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       shared_image_factory_->GetDeviceForTesting();
@@ -1809,7 +1809,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   d3d11_device->GetImmediateContext(&device_context);
 
   device_context->CopyResource(staging_texture.Get(),
-                               overlay_image->nv12_texture());
+                               overlay_image->d3d11_video_texture());
   D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
   hr = device_context->Map(staging_texture.Get(), 0, D3D11_MAP_READ, 0,
                            &mapped_resource);
@@ -1981,9 +1981,9 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
     std::optional<gl::DCLayerOverlayImage> overlay_image =
         scoped_read_access->GetDCLayerOverlayImage();
     ASSERT_TRUE(overlay_image);
-    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
+    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kShMemPixmap);
 
-    CheckNV12(overlay_image->nv12_pixmap(), overlay_image->pixmap_stride(),
+    CheckNV12(overlay_image->shm_video_pixmap(), overlay_image->pixmap_stride(),
               size, kYClearValue, kUClearValue, kVClearValue);
   }
 }

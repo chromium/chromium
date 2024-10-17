@@ -45,6 +45,11 @@ BASE_FEATURE(kDisableVPBLTUpscale,
              "DisableVPBLTUpscale",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This flag attempts to enable MPO for P010 SDR video content. The feature
+// should only enabled when P010 pixel format is detected as displayable
+// surface at the same time.
+BASE_FEATURE(kP010MPOForSDR, "P010MPOForSDR", base::FEATURE_ENABLED_BY_DEFAULT);
+
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
                                     bool is_yuv_swapchain) {
   gfx::ColorSpace output_color_space =
@@ -123,6 +128,8 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
       return "YUY2";
     case DXGI_FORMAT_NV12:
       return "NV12";
+    case DXGI_FORMAT_P010:
+      return "P010";
     default:
       NOTREACHED_IN_MIGRATION();
       return "UNKNOWN";
@@ -130,8 +137,10 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
 }
 
 bool IsYUVSwapChainFormat(DXGI_FORMAT format) {
-  if (format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2)
+  if (format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2 ||
+      format == DXGI_FORMAT_P010) {
     return true;
+  }
   return false;
 }
 
@@ -490,11 +499,21 @@ SwapChainPresenter::~SwapChainPresenter() {
 
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     gfx::ProtectedVideoType protected_video_type,
-    bool content_is_hdr) {
-  // Prefer RGB10A2 swapchain when playing HDR content.
-  // Only use rgb10a2 overlay when the hdr monitor is available.
-  if (content_is_hdr && DirectCompositionSystemHDREnabled()) {
+    bool use_hdr_swap_chain,
+    bool use_p010_for_sdr_swap_chain) {
+  // Prefer RGB10A2 swapchain when playing HDR content and system HDR being
+  // enabled. Another scenario is that AutoHDR is enabled even with SDR
+  // content, RGB10A2 is also preferred.
+  // Note that only use RGB10A2 overlay when the hdr monitor is available.
+  if (use_hdr_swap_chain) {
     return DXGI_FORMAT_R10G10B10A2_UNORM;
+  }
+
+  // Prefer P010 swapchain when playing P010 SDR content on SDR system with
+  // P010 displayable.
+  if (base::FeatureList::IsEnabled(kP010MPOForSDR) &&
+      use_p010_for_sdr_swap_chain) {
+    return DXGI_FORMAT_P010;
   }
 
   DXGI_FORMAT yuv_overlay_format = GetDirectCompositionSDROverlayFormat();
@@ -516,7 +535,6 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
   // It's more efficient to use a BGRA backbuffer instead of YUV if overlays
   // aren't being used, as otherwise DWM will use the video processor a second
   // time to convert it to BGRA before displaying it on screen.
-
   if (swap_chain_format_ == yuv_overlay_format) {
     // Switch to BGRA once 3/4 of presents are composed.
     if (composition_count >= (PresentationHistory::kPresentsToStore * 3 / 4)) {
@@ -540,9 +558,9 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
 
 Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     const gfx::Size& texture_size,
-    const uint8_t* nv12_pixmap,
+    const uint8_t* shm_video_pixmap,
     size_t pixmap_stride) {
-  if (!nv12_pixmap) {
+  if (!shm_video_pixmap) {
     DLOG(ERROR) << "Invalid NV12 pixmap data.";
     return nullptr;
   }
@@ -625,7 +643,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
         dest_stride * (texture_size.height() / 2 - 1) + texture_size.width();
   }
   base::span<const uint8_t> src =
-      UNSAFE_TODO(base::span(nv12_pixmap, src_size));
+      UNSAFE_TODO(base::span(shm_video_pixmap, src_size));
   // SAFETY: required from Map() call result.
   base::span<uint8_t> dest = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<uint8_t*>(mapped_resource.pData), dest_size));
@@ -1208,7 +1226,7 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   }
 
   // 4:2:2 subsampled formats like YUY2 must have an even width, and 4:2:0
-  // subsampled formats like NV12 must have an even width and height..
+  // subsampled formats like NV12 or P010 must have an even width and height.
   gfx::Size swap_chain_size_rounded = gfx::ToRoundedSize(swap_chain_size);
   if (swap_chain_size_rounded.width() % 2 == 1) {
     swap_chain_size.set_width(swap_chain_size.width() + 1);
@@ -1498,13 +1516,13 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   gfx::Size swap_chain_size = CalculateSwapChainSize(
       params, visual_transform, visual_clip_rect, &dest_size, &target_rect);
 
-  if (overlay_type == DCLayerOverlayType::kNV12Texture &&
-      !params.overlay_image->nv12_texture()) {
+  if (overlay_type == DCLayerOverlayType::kD3D11Texture &&
+      !params.overlay_image->d3d11_video_texture()) {
     // We can't proceed if overlay image has no underlying d3d11 texture.  It's
     // unclear how we get into this state, but we do observe crashes due to it.
     // Just stop here instead, and render incorrectly.
     // https://crbug.com/1077645
-    DLOG(ERROR) << "Video NV12 texture is missing";
+    DLOG(ERROR) << "Video D3D11 texture is missing";
     ReleaseSwapChainResources();
     return true;
   }
@@ -1536,11 +1554,20 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       enable_vp_auto_hdr_ && !is_on_battery_power_;
 
   bool use_hdr_swap_chain =
+      DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
       ((content_is_hdr && params.video_params.hdr_metadata.IsValid()) ||
        use_vp_auto_hdr);
 
-  DXGI_FORMAT swap_chain_format = GetSwapChainFormat(
-      params.video_params.protected_video_type, use_hdr_swap_chain);
+  // Try to use P010 swapchain when playing 10-bit content on SDR monitor where
+  // P010 pixel format is also detected as displayable surface, due to the
+  // better quality over 8-bit swapchain.
+  bool use_p010_for_sdr_swap_chain =
+      !DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
+      CheckDisplayableSupportForP010() && params.video_params.is_p010_content;
+
+  DXGI_FORMAT swap_chain_format =
+      GetSwapChainFormat(params.video_params.protected_video_type,
+                         use_hdr_swap_chain, use_p010_for_sdr_swap_chain);
 
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
   bool toggle_protected_video = swap_chain_protected_video_type_ !=
@@ -1563,7 +1590,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
-      params.overlay_image->nv12_texture();
+      params.overlay_image->d3d11_video_texture();
   unsigned input_level = params.overlay_image->texture_array_slice();
 
   if (TryPresentToDecodeSwapChain(input_texture, input_level, input_color_space,
@@ -1599,8 +1626,10 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     staging_texture_.Reset();
     copy_texture_.Reset();
   } else {
+    // TODO: Add P010 overlay for software decoder frame pixmap from
+    // crbug.com/338686911.
     input_texture = UNSAFE_TODO(UploadVideoImage(
-        params.overlay_image->size(), params.overlay_image->nv12_pixmap(),
+        params.overlay_image->size(), params.overlay_image->shm_video_pixmap(),
         params.overlay_image->pixmap_stride()));
     input_level = 0;
   }
@@ -2408,7 +2437,9 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
   // Restore the SDR swap chain and output view
   if (!ReallocateSwapChain(
           gfx::Size(swap_chain_size_),
-          GetSwapChainFormat(swap_chain_protected_video_type_, /*hdr=*/false),
+          GetSwapChainFormat(swap_chain_protected_video_type_,
+                             /*use_hdr_swap_chain=*/false,
+                             /*use_p010_for_sdr_swap_chain=*/false),
           swap_chain_protected_video_type_)) {
     ReleaseSwapChainResources();
     return false;

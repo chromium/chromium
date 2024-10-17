@@ -360,6 +360,8 @@ void UpdateOverlaySupport() {
       overlay_format_used = DXGI_FORMAT_YUY2;
     } else if (override_format == kSwapChainFormatBGRA) {
       overlay_format_used = DXGI_FORMAT_B8G8R8A8_UNORM;
+    } else if (override_format == kSwapChainFormatP010) {
+      overlay_format_used = DXGI_FORMAT_P010;
     } else {
       LOG(ERROR) << "Invalid value for switch "
                  << switches::kDirectCompositionVideoSwapChainFormat;
@@ -742,6 +744,8 @@ bool DirectCompositionScaledOverlaysSupported() {
            (SupportsOverlays() && SupportsSoftwareOverlays());
   } else if (g_overlay_format_used == DXGI_FORMAT_YUY2) {
     return !!(g_yuy2_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING);
+  } else if (g_overlay_format_used == DXGI_FORMAT_P010) {
+    return !!(g_p010_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING);
   } else {
     DCHECK_EQ(g_overlay_format_used, DXGI_FORMAT_B8G8R8A8_UNORM);
     // Assume scaling is supported for BGRA overlays.
@@ -813,6 +817,39 @@ bool CheckVideoProcessorFormatSupport(DXGI_FORMAT dxgi_format) {
   video_enumerator.Reset();
   return (enumerator & D3D11_VIDEO_PROCESSOR_FORMAT_SUPPORT_OUTPUT) &&
          (device & D3D11_FORMAT_SUPPORT_VIDEO_PROCESSOR_OUTPUT);
+}
+
+bool CheckDisplayableSupportForP010() {
+  static const bool p010_displayable = [] {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
+    if (!d3d11_device) {
+      DLOG(ERROR) << "Failed to retrieve D3D11 device";
+      return false;
+    }
+
+    // According to the document:
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d11/displayable-surfaces#formats
+    // DXGI_FORMAT_P010 display feature is optional and provided by platform
+    // driver.
+    D3D11_FEATURE_DATA_FORMAT_SUPPORT2 supported_format;
+    supported_format.InFormat = DXGI_FORMAT_P010;
+
+    if (!SUCCEEDED(d3d11_device->CheckFeatureSupport(
+            D3D11_FEATURE_FORMAT_SUPPORT2, &supported_format,
+            sizeof(supported_format)))) {
+      DLOG(ERROR) << "Failed to check supported feature";
+      return false;
+    }
+
+    if (supported_format.OutFormatSupport2 &
+        D3D11_FORMAT_SUPPORT2_DISPLAYABLE) {
+      return true;
+    }
+
+    return false;
+  }();
+
+  return p010_displayable;
 }
 
 UINT GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT format) {
@@ -893,7 +930,7 @@ void SetDirectCompositionScaledOverlaysSupportedForTesting(bool supported) {
 
 void SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT format) {
   DCHECK(format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2 ||
-         format == DXGI_FORMAT_B8G8R8A8_UNORM);
+         format == DXGI_FORMAT_B8G8R8A8_UNORM || format == DXGI_FORMAT_P010);
   UpdateOverlaySupport();
   g_overlay_format_used = format;
   DCHECK_EQ(format, GetDirectCompositionSDROverlayFormat());
