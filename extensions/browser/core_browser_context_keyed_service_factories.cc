@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/image_loader_factory.h"
+#include "extensions/browser/message_tracker.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -59,6 +60,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   UserScriptWorldConfigurationManager::GetFactory();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   WebRequestEventRouterFactory::GetInstance();
+  MessageTracker::GetFactory();
 #endif
 }
 
