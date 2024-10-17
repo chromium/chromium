@@ -30,6 +30,7 @@
 #include "components/user_annotations/form_submission_handler.h"
 #include "components/user_annotations/user_annotations_database.h"
 #include "components/user_annotations/user_annotations_features.h"
+#include "components/user_annotations/user_annotations_switches.h"
 #include "components/user_annotations/user_annotations_types.h"
 
 namespace user_annotations {
@@ -133,6 +134,18 @@ UserAnnotationsService::UserAnnotationsService(
     encryptor_ready_subscription_ = os_crypt_async->GetInstance(
         base::BindOnce(&UserAnnotationsService::OnOsCryptAsyncReady,
                        weak_ptr_factory_.GetWeakPtr(), storage_dir));
+  }
+
+  std::optional<optimization_guide::proto::FormsAnnotationsResponse>
+      manual_entries = switches::ParseFormsAnnotationsFromCommandLine();
+  if (manual_entries) {
+    entries_.clear();
+    entry_id_counter_ = 0;
+    for (auto entry : manual_entries->upserted_entries()) {
+      EntryID entry_id = ++entry_id_counter_;
+      entries_.push_back(
+          {.entry_id = entry_id, .entry_proto = std::move(entry)});
+    }
   }
 
   if (optimization_guide_decider_) {

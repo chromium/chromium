@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/base64.h"
+#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -29,6 +31,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_annotations/user_annotations_features.h"
+#include "components/user_annotations/user_annotations_switches.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -616,5 +619,50 @@ TEST_P(UserAnnotationsServiceTest, SaveAutofillProfile) {
 
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
 
+class UserAnnotationsServiceSeededAnnotationTest
+    : public UserAnnotationsServiceTest {
+ public:
+  void SetUp() override {
+    const std::vector<Entry>& response_upserted_entries = {
+        {0, "label", "whatever"},
+        {0, "nolabel", "value"},
+    };
+    optimization_guide::proto::FormsAnnotationsResponse response;
+    for (const auto& entry : response_upserted_entries) {
+      optimization_guide::proto::UserAnnotationsEntry* new_entry =
+          response.add_upserted_entries();
+      new_entry->set_entry_id(entry.entry_id);
+      new_entry->set_key(entry.key);
+      new_entry->set_value(entry.value);
+    }
+
+    std::string encoded_annotations;
+    response.SerializeToString(&encoded_annotations);
+    encoded_annotations = base::Base64Encode(encoded_annotations);
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kFormsAnnotationsOverride, encoded_annotations);
+
+    UserAnnotationsServiceTest::SetUp();
+  }
+};
+
+TEST_P(UserAnnotationsServiceSeededAnnotationTest, SeedAnnotations) {
+  auto entries = GetAllUserAnnotationsEntries();
+  if (ShouldPersistAnnotations()) {
+    // If persistence is on, no annotations are seeded.
+    EXPECT_EQ(0u, entries.size());
+    return;
+  }
+  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(entries[0].key(), "label");
+  EXPECT_EQ(entries[0].value(), "whatever");
+  EXPECT_EQ(entries[1].key(), "nolabel");
+  EXPECT_EQ(entries[1].value(), "value");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserAnnotationsServiceSeededAnnotationTest,
+                         ::testing::Bool());
 }  // namespace
 }  // namespace user_annotations

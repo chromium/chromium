@@ -20,6 +20,9 @@ static_library("user_annotations") {
     "user_annotations_features.h",
     "user_annotations_service.cc",
     "user_annotations_service.h",
+    "user_annotations_switches.cc",
+    "user_annotations_switches.h",
+    "user_annotations_types.h",
   ]
 
   public_deps = [
@@ -56,6 +59,7 @@ source_set("unit_tests") {
     "user_annotations_database_unittest.cc",
     "user_annotations_features_unittest.cc",
     "user_annotations_service_unittest.cc",
+    "user_annotations_switches_unittest.cc",
   ]
   deps = [
     ":test_support",
