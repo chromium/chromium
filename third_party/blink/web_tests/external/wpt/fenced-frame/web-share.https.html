@@ -4,6 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 <script src="resources/utils.js"></script>
 <script src="/common/utils.js"></script>
 
@@ -13,8 +14,10 @@
 promise_test(async t => {
   const navigator_share_key = token();
 
-  attachFencedFrame(generateURL('resources/web-share-inner.html',
+  const fenced_frame = attachFencedFrame(
+      generateURL('resources/web-share-inner.html',
       [navigator_share_key]));
+  await multiClick(10, 10, fenced_frame);
   const result = await nextValueFromServer(navigator_share_key);
 
   assert_equals(
