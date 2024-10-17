@@ -104,16 +104,19 @@ interface PageHandler {
                   pending_remote<ModelStateMonitor> monitor)
       => (ModelState state);
 
-  // Adds a new monitor for SODA state change.
+  // Adds a new monitor for SODA state change. `language` is a localized
+  // language in BCP-47 format e.g. "en-US".
   // Returns the current state.
-  AddSodaMonitor(pending_remote<ModelStateMonitor> monitor)
+  AddSodaMonitor(string language, pending_remote<ModelStateMonitor> monitor)
       => (ModelState state);
 
-  // Requests installation for SODA.
-  InstallSoda() => ();
+  // Requests installation for SODA library and the language pack. `language` is
+  // a localized language in BCP-47 format e.g. "en-US".
+  InstallSoda(string language) => ();
 
   // Loads speech recognizer with the given SodaClient and SodaRecognizer
-  // interface. Returns false when there's error loading the speech recognizer.
+  // interface. `language` is a localized language in BCP-47 format e.g.
+  // "en-US". Returns false when there's error loading the speech recognizer.
   //
   // SODA should be installed before calling this, otherwise false will be
   // returned.
@@ -124,9 +127,8 @@ interface PageHandler {
   // TODO(pihsun): Move the enum to a separate mojom file and return the full
   // enum, or have our own enum if different error needs to be treated
   // differently in frontend.
-  // TODO(pihsun): i18n for selecting the model language. It's always en-US
-  // now.
   LoadSpeechRecognizer(
+      string language,
       pending_remote<chromeos.machine_learning.mojom.SodaClient> soda_client,
       pending_receiver<chromeos.machine_learning.mojom.SodaRecognizer>
           soda_recognizer) => (bool result);

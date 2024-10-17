@@ -45,6 +45,8 @@ import {
 } from './types.js';
 
 const CRASH_SERVER_PRODUCT_NAME = 'ChromeOS_RecorderApp';
+// TODO(hsuanling): Expose language parameter to platform handler interface.
+const DEFAULT_LANGUAGE = 'en-US';
 
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
@@ -106,6 +108,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     // return the cached state here, but we await here to avoid UI showing
     // temporary unavailabe state.
     const {state} = await this.remote.addSodaMonitor(
+      DEFAULT_LANGUAGE,
       monitor.$.bindNewPipeAndPassRemote(),
     );
     update(state);
@@ -127,7 +130,7 @@ export class PlatformHandler extends PlatformHandlerBase {
   override installSoda(): void {
     // We don't care about the returned promise as long as the request goes
     // through. The install progress is separately tracked in `sodaState`.
-    void this.remote.installSoda();
+    void this.remote.installSoda(DEFAULT_LANGUAGE);
   }
 
   override async newSodaSession(): Promise<SodaSession> {
@@ -135,6 +138,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     const session = new MojoSodaSession(recognizer);
     const client = new SodaClientReceiver(session);
     const {result} = await this.remote.loadSpeechRecognizer(
+      DEFAULT_LANGUAGE,
       client.$.bindNewPipeAndPassRemote(),
       recognizer.$.bindNewPipeAndPassReceiver(),
     );
