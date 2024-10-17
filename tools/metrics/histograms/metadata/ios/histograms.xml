@@ -2600,6 +2600,18 @@ the generic promo launch. -->
   <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
 </histogram>
 
+<histogram
+    name="IOS.Notifications.PriceTracking.ClientStatus.Enabled.ByProvider"
+    enum="Boolean" expires_after="2025-10-15">
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.come</owner>
+  <summary>
+    Logs the permission status, stored in iOS settings, the user has given for
+    receiving price tracking notifications on the device. Logged every time the
+    metrics provider reports filter metrics.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.SafetyCheck.Dismissed"
     enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
   <owner>bwwilliams@google.com</owner>
