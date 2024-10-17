@@ -1292,6 +1292,29 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     return;
   }
 
+  if (op->image.IsDeferredPaintRecord()) {
+    ImageProvider::ScopedResult result =
+        params.image_provider->GetRasterContent(DrawImage(op->image));
+
+    // Check that we are not using loopers with paint worklets, since converting
+    // PaintFlags to SkPaint drops loopers.
+    DCHECK(!flags->getLooper());
+
+    DCHECK(IsScaleAdjustmentIdentity(op->scale_adjustment));
+    SkAutoCanvasRestore save_restore(canvas, true);
+    canvas->translate(op->left, op->top);
+
+    // Compositor thread animations can cause PaintWorklet jobs to be dispatched
+    // to the worklet thread even after main has torn down the worklet (e.g.
+    // because a navigation is happening). In that case the PaintWorklet jobs
+    // will fail and there will be no result to raster here. This state is
+    // transient as the next main frame commit will remove the PaintWorklets.
+    if (result && result.has_paint_record()) {
+      result.ReleaseAsRecord().Playback(canvas, params);
+    }
+    return;
+  }
+
   // Dark mode is applied only for OOP raster during serialization.
   DrawImage draw_image(
       op->image, false, SkIRect::MakeWH(op->image.width(), op->image.height()),
