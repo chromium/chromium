@@ -355,7 +355,6 @@ class RenderViewContextMenu
   bool IsVideoFrameItemEnabled(int id) const;
 
   // Command execution functions.
-  void ExecSearchWebInCompanionSidePanel(const GURL& url);
   void ExecOpenWebApp();
   void ExecOpenLinkPreview();
   void ExecProtocolHandler(int event_flags, int handler_index);

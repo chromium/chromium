@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -1676,70 +1675,6 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
-
-// Verify that the adding the companion image search option to the menu
-// issues a preconnection request to lens.google.com.
-TEST_F(RenderViewContextMenuPrefsTest,
-       CompanionImageSearchIssuesGoogleLensPreconnect) {
-  BeginPreresolveListening();
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}}},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
-
-  base::RunLoop run_loop;
-  preresolved_finished_closure() = run_loop.QuitClosure();
-  run_loop.Run();
-  ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
-}
-
-// Verify that the adding the companion region search option to the menu
-// issues a preconnection request to lens.google.com.
-TEST_F(RenderViewContextMenuPrefsTest,
-       CompanionRegionSearchIssuesGoogleLensPreconnect) {
-  BeginPreresolveListening();
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}}},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
-
-  base::RunLoop run_loop;
-  preresolved_finished_closure() = run_loop.QuitClosure();
-  run_loop.Run();
-  ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
-}
-
 // Verify that the adding the Lens image search option to the menu
 // issues a preconnection request to lens.google.com.
 TEST_F(RenderViewContextMenuPrefsTest,
@@ -1797,63 +1732,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
   preresolved_finished_closure() = run_loop.QuitClosure();
   run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
-}
-
-TEST_F(RenderViewContextMenuPrefsTest,
-       CompanionImageSearchIssuesProcessPrewarming) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}}},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-
-  unsigned int initial_num_processes =
-      mock_rph_factory().GetProcesses()->size();
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
-
-  ASSERT_EQ(initial_num_processes + 1,
-            mock_rph_factory().GetProcesses()->size());
-}
-
-TEST_F(RenderViewContextMenuPrefsTest,
-       CompanionRegionSearchIssuesProcessPrewarming) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"}}}},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-
-  unsigned int initial_num_processes =
-      mock_rph_factory().GetProcesses()->size();
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
-
-  ASSERT_EQ(initial_num_processes + 1,
-            mock_rph_factory().GetProcesses()->size());
 }
 
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchIssuesProcessPrewarming) {
@@ -1923,41 +1801,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
-}
-
-TEST_F(RenderViewContextMenuPrefsTest,
-       CompanionPrewarmingFlagDisablesProcessPrewarming) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{companion::features::internal::kSidePanelCompanion,
-        {{"open-companion-for-image-search", "true"},
-         {"companion-issue-process-prewarming", "false"}}}},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-
-  unsigned int initial_num_processes =
-      mock_rph_factory().GetProcesses()->size();
-
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Companion feature is force disabled on ChromeOS.
-  ASSERT_EQ(initial_num_processes + 1,
-            mock_rph_factory().GetProcesses()->size());
-#else
-  ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(RenderViewContextMenuPrefsTest,

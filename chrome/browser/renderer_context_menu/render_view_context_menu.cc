@@ -44,8 +44,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/companion/core/features.h"
-#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -106,8 +104,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
@@ -2437,21 +2433,6 @@ void RenderViewContextMenu::AppendSearchProvider() {
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
                                    default_provider->short_name(),
                                    printable_selection_text));
-    if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
-      // Add an "in new tab" item performing the non-side panel behavior.
-      if (base::FeatureList::IsEnabled(
-              companion::features::
-                  kCompanionEnableSearchWebInNewTabContextMenuItem) &&
-          selection_navigation_url_ != params_.link_url &&
-          ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-              selection_navigation_url_.scheme())) {
-        menu_model_.AddItem(
-            IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
-            l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
-                                       default_provider->short_name(),
-                                       printable_selection_text));
-      }
-    }
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
         ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
@@ -3525,11 +3506,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR: {
       RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
-      if (companion::IsSearchWebInCompanionSidePanelSupported(
-              chrome::FindBrowserWithTab(embedder_web_contents_))) {
-        ExecSearchWebInCompanionSidePanel(selection_navigation_url_);
-        break;
-      }
       ABSL_FALLTHROUGH_INTENDED;
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
@@ -4509,15 +4485,6 @@ void RenderViewContextMenu::ExecRegionSearch(
   bool force_open_in_new_tab =
       lens_overlay_for_region_search_enabled && entered_through_keyboard;
 
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(embedder_web_contents_);
-  if (companion_helper &&
-      companion::IsSearchImageInCompanionSidePanelSupported(browser)) {
-    companion_helper->StartRegionSearch(
-        embedder_web_contents_, use_fullscreen_capture, force_open_in_new_tab);
-    return;
-  }
-
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>();
@@ -4550,15 +4517,6 @@ void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
       lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB);
   core_tab_helper->SearchByImage(render_frame_host, params().src_url,
                                  is_image_translate);
-}
-
-void RenderViewContextMenu::ExecSearchWebInCompanionSidePanel(const GURL& url) {
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(embedder_web_contents_);
-  if (!companion_helper) {
-    return;
-  }
-  companion_helper->ShowCompanionSidePanelForSearchURL(url);
 }
 
 void RenderViewContextMenu::ExecLoadImage() {
@@ -4905,20 +4863,6 @@ bool RenderViewContextMenu::CanPartiallyTranslateTargetLanguage() {
 
 void RenderViewContextMenu::MaybePrepareForLensQuery() {
   if (!search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    return;
-  }
-
-  // Chrome Search Companion preparation
-  if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
-    if (companion::GetShouldIssuePreconnectForCompanion()) {
-      IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
-                              companion::GetImageUploadURLForCompanion());
-    }
-    if (companion::GetShouldIssueProcessPrewarmingForCompanion() &&
-        !base::SysInfo::IsLowEndDevice()) {
-      content::SpareRenderProcessHostManager::Get().WarmupSpare(
-          browser_context_);
-    }
     return;
   }
 
