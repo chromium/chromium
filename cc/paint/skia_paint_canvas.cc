@@ -105,8 +105,9 @@ int SkiaPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
   return canvas_->saveLayerAlphaf(&bounds, alpha);
 }
 
-int SkiaPaintCanvas::saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
-                                      const PaintFlags& flags) {
+int SkiaPaintCanvas::saveLayerFilters(
+    base::span<const sk_sp<PaintFilter>> filters,
+    const PaintFlags& flags) {
   SkPaint paint = flags.ToSkPaint();
   return canvas_->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
       /*bounds=*/nullptr, &paint, /*backdrop=*/nullptr, /*backdropScale=*/1.0f,

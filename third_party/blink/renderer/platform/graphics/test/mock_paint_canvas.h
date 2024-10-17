@@ -36,7 +36,7 @@ class MockPaintCanvas : public cc::PaintCanvas {
   MOCK_METHOD2(saveLayerAlphaf, int(const SkRect& bounds, float alpha));
   MOCK_METHOD(int,
               saveLayerFilters,
-              (base::span<sk_sp<cc::PaintFilter>> filters,
+              (base::span<const sk_sp<cc::PaintFilter>> filters,
                const cc::PaintFlags& flags));
   MOCK_METHOD0(restore, void());
   MOCK_CONST_METHOD0(getSaveCount, int());

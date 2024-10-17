@@ -82,8 +82,8 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual int saveLayerAlphaf(const SkRect& bounds, float alpha) = 0;
   // Opens a layer whose output texture is composited multiple times to the
   // canvas, once for every filter in `filters`. Useful to draw a foreground and
-  // its shadow. Implementations may consume `filters` by moving the `sk_sp`.
-  virtual int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+  // its shadow.
+  virtual int saveLayerFilters(base::span<const sk_sp<PaintFilter>> filters,
                                const PaintFlags& flags) = 0;
 
   virtual void restore() = 0;

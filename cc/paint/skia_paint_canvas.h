@@ -78,7 +78,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
-  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+  int saveLayerFilters(base::span<const sk_sp<PaintFilter>> filters,
                        const PaintFlags& flags) override;
 
   void restore() override;

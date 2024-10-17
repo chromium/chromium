@@ -10,7 +10,6 @@
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
-#include <iterator>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -2606,11 +2605,10 @@ DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
 
 DrawSlugOp::~DrawSlugOp() = default;
 
-SaveLayerFiltersOp::SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
-                                       const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags),
-      filters(std::make_move_iterator(filters.begin()),
-              std::make_move_iterator(filters.end())) {}
+SaveLayerFiltersOp::SaveLayerFiltersOp(
+    base::span<const sk_sp<PaintFilter>> filters,
+    const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags), filters(filters.begin(), filters.end()) {}
 
 SaveLayerFiltersOp::SaveLayerFiltersOp() : PaintOpWithFlags(kType) {}
 

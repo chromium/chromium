@@ -1152,7 +1152,7 @@ class CC_PAINT_EXPORT SaveLayerAlphaOp final : public PaintOp {
 class CC_PAINT_EXPORT SaveLayerFiltersOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::kSaveLayerFilters;
-  explicit SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
+  explicit SaveLayerFiltersOp(base::span<const sk_sp<PaintFilter>> filters,
                               const PaintFlags& flags);
   ~SaveLayerFiltersOp();
   static void RasterWithFlags(const SaveLayerFiltersOp* op,

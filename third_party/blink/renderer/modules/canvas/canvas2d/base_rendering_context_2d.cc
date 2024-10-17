@@ -545,11 +545,7 @@ BaseRenderingContext2D::SaveLayerForState(
       sk_sp<PaintFilter> shadow_filter =
           CombineFilters(state.ShadowOnlyImageFilter(), context_filter);
       canvas.saveLayerFilters(
-          std::array{
-              std::move(shadow_filter),   // Shadow.
-              std::move(context_filter),  // Foreground.
-          },
-          flags);
+          {{std::move(shadow_filter), std::move(context_filter)}}, flags);
     } else if (should_draw_shadow) {
       ScopedResetCtm scoped_reset_ctm(state, canvas);
       cc::PaintFlags flags;

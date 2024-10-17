@@ -110,8 +110,9 @@ int RecordPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
   return save_count_++;
 }
 
-int RecordPaintCanvas::saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
-                                        const PaintFlags& flags) {
+int RecordPaintCanvas::saveLayerFilters(
+    base::span<const sk_sp<PaintFilter>> filters,
+    const PaintFlags& flags) {
   push<SaveLayerFiltersOp>(filters, flags);
   return save_count_++;
 }
@@ -449,7 +450,7 @@ int InspectableRecordPaintCanvas::saveLayerAlphaf(const SkRect& bounds,
 }
 
 int InspectableRecordPaintCanvas::saveLayerFilters(
-    base::span<sk_sp<PaintFilter>> filters,
+    base::span<const sk_sp<PaintFilter>> filters,
     const PaintFlags& flags) {
   SkPaint paint = flags.ToSkPaint();
   device_clip_bounds_.reset();
