@@ -1014,6 +1014,15 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('WallpaperSearch', () => {
+    setup(async () => {
+      // Set a theme with no background image and a baseline color to avoid
+      // potential conflicts with the ToT value for
+      // `wallpaperSearchHideCondition`.
+      callbackRouterRemote.setTheme(createTheme({isBaseline: true}));
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+    });
+
     suite('ButtonDisabled', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
@@ -1269,18 +1278,12 @@ suite('NewTabPageAppTest', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
           wallpaperSearchButtonEnabled: true,
-          // A non-zero hide condition will hide the wallpaper search button
-          // whenever the background image is set.
           wallpaperSearchButtonHideCondition: /*NONE*/ 0,
           wallpaperSearchButtonAnimationEnabled: true,
         });
       });
 
       test('hide condition 0 shows button unconditonally', async () => {
-        loadTimeData.overrideValues({
-          wallpaperSearchButtonHideCondition: /*NONE*/ 0,
-        });
-
         assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
         assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
 

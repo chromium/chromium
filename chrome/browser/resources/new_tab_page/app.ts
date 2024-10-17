@@ -721,28 +721,19 @@ export class AppElement extends AppElementBase {
     this.updateBackgroundImagePath_();
   }
 
-
   private onThemeLoaded_(theme: Theme) {
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         'NewTabPage.Collections.IdOnLoad',
         theme.backgroundImageCollectionId ?? '');
 
-    if (!theme.backgroundImage || !theme.backgroundImage.imageSource) {
+    if (!theme.backgroundImage) {
       chrome.metricsPrivate.recordEnumerationValue(
           'NewTabPage.BackgroundImageSource', NtpBackgroundImageSource.kNoImage,
           NtpBackgroundImageSource.MAX_VALUE + 1);
-      return;
     } else {
       chrome.metricsPrivate.recordEnumerationValue(
           'NewTabPage.BackgroundImageSource', theme.backgroundImage.imageSource,
           NtpBackgroundImageSource.MAX_VALUE + 1);
-    }
-
-    if (theme.backgroundImage.imageSource ===
-            NtpBackgroundImageSource.kWallpaperSearch ||
-        theme.backgroundImage.imageSource ===
-            NtpBackgroundImageSource.kWallpaperSearchInspiration) {
-      this.wallpaperSearchButtonAnimationEnabled_ = false;
     }
   }
 
@@ -764,9 +755,18 @@ export class AppElement extends AppElementBase {
    */
   private updateBackgroundImagePath_() {
     const backgroundImage = this.theme_ && this.theme_.backgroundImage;
+    if (!backgroundImage) {
+      return;
+    }
 
-    if (backgroundImage) {
-      this.backgroundManager_.setBackgroundImage(backgroundImage);
+    this.backgroundManager_.setBackgroundImage(backgroundImage);
+
+    if (this.wallpaperSearchButtonAnimationEnabled_ &&
+            backgroundImage.imageSource ===
+                NtpBackgroundImageSource.kWallpaperSearch ||
+        backgroundImage.imageSource ===
+            NtpBackgroundImageSource.kWallpaperSearchInspiration) {
+      this.wallpaperSearchButtonAnimationEnabled_ = false;
     }
   }
 
