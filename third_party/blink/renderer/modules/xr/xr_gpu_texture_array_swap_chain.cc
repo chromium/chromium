@@ -15,8 +15,7 @@ XRGPUTextureArraySwapChain::XRGPUTextureArraySwapChain(
     GPUDevice* device,
     XRGPUSwapChain* wrapped_swap_chain,
     uint32_t layers)
-    : device_(device), wrapped_swap_chain_(wrapped_swap_chain) {
-  CHECK(device_);
+    : XRGPUSwapChain(device), wrapped_swap_chain_(wrapped_swap_chain) {
   CHECK(wrapped_swap_chain_);
 
   // Copy the wrapped swap chain's descriptor and divide its width by the
@@ -32,12 +31,10 @@ XRGPUTextureArraySwapChain::XRGPUTextureArraySwapChain(
           wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc,
   }};
   descriptor_.nextInChain = &texture_internal_usage_;
-
-  texture_ = GPUTexture::Create(device, &descriptor_);
 }
 
-GPUTexture* XRGPUTextureArraySwapChain::GetCurrentTexture() {
-  return texture_;
+GPUTexture* XRGPUTextureArraySwapChain::ProduceTexture() {
+  return GPUTexture::Create(device(), &descriptor_);
 }
 
 void XRGPUTextureArraySwapChain::SetLayer(XRCompositionLayer* layer) {
@@ -50,7 +47,13 @@ void XRGPUTextureArraySwapChain::OnFrameStart() {
 }
 
 void XRGPUTextureArraySwapChain::OnFrameEnd() {
+  if (!texture_was_queried()) {
+    wrapped_swap_chain_->OnFrameEnd();
+    return;
+  }
+
   // Copy the texture layers into the wrapped swap chain
+  GPUTexture* source_texture = GetCurrentTexture();
   GPUTexture* wrapped_texture = wrapped_swap_chain_->GetCurrentTexture();
 
   wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc = {{
@@ -61,10 +64,10 @@ void XRGPUTextureArraySwapChain::OnFrameEnd() {
       .label = "XRGPUTextureArraySwapChain Copy",
   };
   wgpu::CommandEncoder command_encoder =
-      device_->GetHandle().CreateCommandEncoder(&command_encoder_desc);
+      device()->GetHandle().CreateCommandEncoder(&command_encoder_desc);
 
   wgpu::ImageCopyTexture source = {
-      .texture = texture_->GetHandle(),
+      .texture = source_texture->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };
   wgpu::ImageCopyTexture destination = {
@@ -72,58 +75,32 @@ void XRGPUTextureArraySwapChain::OnFrameEnd() {
       .aspect = wgpu::TextureAspect::All,
   };
   wgpu::Extent3D copy_size = {
-      .width = texture_->width(),
-      .height = texture_->height(),
+      .width = source_texture->width(),
+      .height = source_texture->height(),
       .depthOrArrayLayers = 1,
   };
 
-  const uint32_t layers = descriptor_.size.depthOrArrayLayers;
-  for (uint32_t i = 0; i < layers; ++i) {
+  for (uint32_t i = 0; i < source_texture->depthOrArrayLayers(); ++i) {
     source.origin.z = i;
-    destination.origin.x = texture_->width() * i;
+    destination.origin.x = source_texture->width() * i;
     command_encoder.CopyTextureToTexture(&source, &destination, &copy_size);
   }
 
-  // Clear the texture array.
-  for (uint32_t i = 0; i < layers; ++i) {
-    wgpu::TextureViewDescriptor view_desc = {
-        .dimension = wgpu::TextureViewDimension::e2D,
-        .baseArrayLayer = i,
-        .arrayLayerCount = 1,
-    };
-
-    wgpu::TextureView view = texture_->GetHandle().CreateView(&view_desc);
-
-    wgpu::RenderPassColorAttachment color_attachment = {
-        .view = view,
-        .loadOp = wgpu::LoadOp::Clear,
-        .storeOp = wgpu::StoreOp::Store,
-        .clearValue = {0, 0, 0, 0},
-    };
-
-    wgpu::RenderPassDescriptor render_pass_desc = {
-        .colorAttachmentCount = 1,
-        .colorAttachments = &color_attachment,
-    };
-
-    // Begin and immediately end the render pass to clear the texture.
-    wgpu::RenderPassEncoder render_pass =
-        command_encoder.BeginRenderPass(&render_pass_desc);
-    render_pass.End();
-  }
+  ClearCurrentTexture(command_encoder);
 
   wgpu::CommandBuffer command_buffer = command_encoder.Finish();
   command_encoder = nullptr;
 
-  device_->GetHandle().GetQueue().Submit(1u, &command_buffer);
+  device()->GetHandle().GetQueue().Submit(1u, &command_buffer);
   command_buffer = nullptr;
 
   wrapped_swap_chain_->OnFrameEnd();
+
+  // Intentionally not calling ResetCurrentTexture() here to keep the previously
+  // produced texture for the next frame.
 }
 
 void XRGPUTextureArraySwapChain::Trace(Visitor* visitor) const {
-  visitor->Trace(device_);
-  visitor->Trace(texture_);
   visitor->Trace(wrapped_swap_chain_);
   XRGPUSwapChain::Trace(visitor);
 }

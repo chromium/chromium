@@ -32,39 +32,6 @@ namespace {
 
 const double kMinScaleFactor = 0.2;
 
-// A texture swap chain that is not communicated back to the compositor, used
-// for things like depth/stencil attachments that don't assist reprojection.
-class XRGPUStaticSwapChain : public XRGPUSwapChain {
- public:
-  XRGPUStaticSwapChain(GPUDevice* device, const wgpu::TextureDescriptor& desc) {
-    texture_ = GPUTexture::Create(device, &desc);
-    descriptor_ = desc;
-  }
-
-  GPUTexture* GetCurrentTexture() override { return texture_; }
-
-  void OnFrameEnd() override {
-    // TODO(crbug.com/5818595): Prior to shipping the spec needs to determine
-    // if texture re-use is appropriate or not. If re-use is not specified then
-    // it should at the very least be detached from the JavaScript wrapper and
-    // reattached to a new one here. In both cases the texture should be
-    // cleared.
-  }
-
-  const wgpu::TextureDescriptor& descriptor() const override {
-    return descriptor_;
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(texture_);
-    XRGPUSwapChain::Trace(visitor);
-  }
-
- private:
-  Member<GPUTexture> texture_;
-  wgpu::TextureDescriptor descriptor_;
-};
-
 }  // namespace
 
 XRGPUBinding* XRGPUBinding::Create(XRSession* session,

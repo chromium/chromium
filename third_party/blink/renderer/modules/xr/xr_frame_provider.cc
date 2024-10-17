@@ -785,6 +785,10 @@ void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
     return;
   }
 
+  // TODO(crbug.com/359418629): This should be handled somewhere else and only
+  // called when the viewports actually change.
+  UpdateWebGPULayerViewports(layer);
+
   frame_transport_->FramePreImageWebGPU(device->GetDawnControlClient());
 
   if (!frame_transport_->DrawingIntoSharedBuffer()) {
@@ -825,9 +829,7 @@ void XRFrameProvider::UpdateWebGPULayerViewports(XRGPUProjectionLayer* layer) {
   // texture array-capable mailboxes.
   float width = layer->textureWidth() * layer->textureArrayLength();
   float height = layer->textureHeight();
-  float eye_width =
-      1.0f /
-      float(layer->textureArrayLength());  // To account for single-view AR.
+  right.set_x(right.x() + layer->textureWidth());
 
   // We may only have one eye view, i.e. in smartphone immersive AR mode.
   // Use all-zero bounds for unused views.
@@ -839,10 +841,10 @@ void XRFrameProvider::UpdateWebGPULayerViewports(XRGPUProjectionLayer* layer) {
   gfx::RectF right_coords =
       layer->textureArrayLength() > 1
           ? gfx::RectF(
-                (static_cast<float>(right.x()) / width) + eye_width,
+                (static_cast<float>(right.x()) / width),
                 static_cast<float>(height - (right.y() + right.height())) /
                     height,
-                (static_cast<float>(right.width()) / width) + eye_width,
+                (static_cast<float>(right.width()) / width),
                 static_cast<float>(right.height()) / height)
           : gfx::RectF();
 

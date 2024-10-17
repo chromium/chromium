@@ -16,14 +16,14 @@ namespace blink {
 // would be ideal if we could use the wrapped swap chains directly, but that
 // isn't possible until we add texture array support to SharedImages/Mailboxes.
 // TODO(crbug.com/359418629): Remove once array Mailboxes are available.
-class XRGPUTextureArraySwapChain : public XRGPUSwapChain {
+class XRGPUTextureArraySwapChain final : public XRGPUSwapChain {
  public:
   XRGPUTextureArraySwapChain(GPUDevice* device,
                              XRGPUSwapChain* wrapped_swap_chain,
                              uint32_t layers);
   ~XRGPUTextureArraySwapChain() override = default;
 
-  GPUTexture* GetCurrentTexture() override;
+  GPUTexture* ProduceTexture() override;
 
   void OnFrameStart() override;
   void OnFrameEnd() override;
@@ -37,8 +37,6 @@ class XRGPUTextureArraySwapChain : public XRGPUSwapChain {
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<GPUDevice> device_;
-  Member<GPUTexture> texture_;
   Member<XRGPUSwapChain> wrapped_swap_chain_;
   wgpu::TextureDescriptor descriptor_;
   wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
