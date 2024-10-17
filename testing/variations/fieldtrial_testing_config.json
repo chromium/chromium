@@ -11632,6 +11632,36 @@
             ]
         }
     ],
+    "IOSDefaultBrowserBlueDotOnToolsMenuButton": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BlueDotOnToolsMenuButton"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSDefaultBrowserRemindMeLater": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSPromoDefaultBrowserReminder"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDockingPromo": [
         {
             "platforms": [
