@@ -132,8 +132,14 @@ class HttpStreamPool::Group {
   // Closes one idle stream socket. Returns true if it closed a stream.
   bool CloseOneIdleStreamSocket();
 
+  // Returns the number of handed out streams.
+  size_t HandedOutStreamSocketCount() const { return handed_out_stream_count_; }
+
   // Returns the number of idle streams.
   size_t IdleStreamSocketCount() const { return idle_stream_sockets_.size(); }
+
+  // Returns the number of connecting streams.
+  size_t ConnectingStreamSocketCount() const;
 
   // Returns the number of active streams.
   size_t ActiveStreamSocketCount() const;

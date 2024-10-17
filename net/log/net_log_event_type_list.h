@@ -1371,6 +1371,16 @@ EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND)
 // HttpStreamPool
 // ------------------------------------------------------------------------
 
+// Emitted when the HttpStreamPool checks stream counts consistency.
+// The event parameters are:
+//   {
+//      "pool_total_counts": <Total counts from the pool>,
+//      "group_total_counts": <Sum of total counts from each group>,
+//      "groups": <Per-group information>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_CONSISTENCY_CHECK_OK)
+EVENT_TYPE(HTTP_STREAM_POOL_CONSISTENCY_CHECK_FAIL)
+
 // Logged when the HttpStreamPool is closing a StreamSocket:
 //   {
 //      "reason": <Reason the socket was closed>,

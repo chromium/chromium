@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
@@ -93,6 +94,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "max_stream_per_pool";
   static constexpr std::string_view kMaxStreamSocketsPerGroupParamName =
       "max_stream_per_group";
+
+  // FeatureParam name for enabling consistency checks.
+  static constexpr std::string_view kEnableConsistencyCheckParamName =
+      "enable_consistency_check";
 
   // The time to wait between connection attempts.
   static constexpr base::TimeDelta kConnectionAttemptDelay =
@@ -273,6 +278,13 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   void OnPooledStreamRequestComplete(PooledStreamRequestHelper* helper);
 
+  // Periodically checks the total active/idle/handed-out streams are consistent
+  // with per-group streams. Only used when the kEnableConsistencyCheckParamName
+  // FeatureParam is enabled.
+  // TODO(crbug.com/346835898): Remove this when we stabilize the
+  // implementation.
+  void CheckConsistency();
+
   const raw_ptr<HttpNetworkSession> http_network_session_;
 
   // Set to true when this is in the process of being destructed. When true,
@@ -282,6 +294,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   const StreamAttemptParams stream_attempt_params_;
 
   const bool cleanup_on_ip_address_change_;
+
+  const NetLogWithSource net_log_;
 
   size_t max_stream_sockets_per_pool_;
   size_t max_stream_sockets_per_group_;
@@ -305,6 +319,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       job_controllers_;
 
   std::unique_ptr<TestDelegate> delegate_for_testing_;
+
+  base::WeakPtrFactory<HttpStreamPool> weak_ptr_factory_{this};
 };
 
 }  // namespace net

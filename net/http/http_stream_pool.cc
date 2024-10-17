@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <set>
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -52,6 +54,37 @@ constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerGroup{
     &features::kHappyEyeballsV3,
     HttpStreamPool::kMaxStreamSocketsPerGroupParamName.data(),
     HttpStreamPool::kDefaultMaxStreamSocketsPerGroup};
+
+constexpr base::FeatureParam<bool> kEnableConsistencyCheck{
+    &features::kHappyEyeballsV3,
+    HttpStreamPool::kEnableConsistencyCheckParamName.data(), false};
+
+#if DCHECK_IS_ON()
+
+// Represents total stream counts in the pool. Only used for consistency check.
+struct StreamCounts {
+  size_t handed_out = 0;
+  size_t idle = 0;
+  size_t connecting = 0;
+
+  auto operator<=>(const StreamCounts&) const = default;
+
+  base::Value::Dict ToValue() const {
+    base::Value::Dict dict;
+    dict.Set("handed_out", static_cast<int>(handed_out));
+    dict.Set("idle", static_cast<int>(idle));
+    dict.Set("connecting", static_cast<int>(connecting));
+    return dict;
+  }
+};
+
+std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
+  return os << "{ handed_out: " << counts.handed_out
+            << ", idle: " << counts.idle
+            << ", connecting: " << counts.connecting << " }";
+}
+
+#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -143,6 +176,8 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
       stream_attempt_params_(
           StreamAttemptParams::FromHttpNetworkSession(http_network_session_)),
       cleanup_on_ip_address_change_(cleanup_on_ip_address_change),
+      net_log_(NetLogWithSource::Make(http_network_session_->net_log(),
+                                      NetLogSourceType::HTTP_STREAM_POOL)),
       max_stream_sockets_per_pool_(kHttpStreamPoolMaxStreamPerPool.Get()),
       // Ensure that the per-group limit is less than or equals to the per-pool
       // limit.
@@ -155,6 +190,10 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
   }
 
   http_network_session_->ssl_client_context()->AddObserver(this);
+
+  if (kEnableConsistencyCheck.Get()) {
+    CheckConsistency();
+  }
 }
 
 HttpStreamPool::~HttpStreamPool() {
@@ -548,6 +587,52 @@ void HttpStreamPool::OnPooledStreamRequestComplete(
   auto it = pooled_stream_request_helpers_.find(helper);
   CHECK(it != pooled_stream_request_helpers_.end());
   pooled_stream_request_helpers_.erase(it);
+}
+
+void HttpStreamPool::CheckConsistency() {
+#if DCHECK_IS_ON()
+  CHECK(kEnableConsistencyCheck.Get());
+
+  const StreamCounts pool_total_counts = {
+      .handed_out = total_handed_out_stream_count_,
+      .idle = total_idle_stream_count_,
+      .connecting = total_connecting_stream_count_};
+
+  if (groups_.empty()) {
+    VLOG_IF(1, pool_total_counts == StreamCounts())
+        << "Total stream counts are not zero: " << pool_total_counts;
+  } else {
+    StreamCounts groups_total_counts;
+    base::Value::Dict groups;
+    for (const auto& [key, group] : groups_) {
+      groups_total_counts.handed_out += group->HandedOutStreamSocketCount();
+      groups_total_counts.idle += group->IdleStreamSocketCount();
+      groups_total_counts.connecting += group->ConnectingStreamSocketCount();
+      groups.Set(key.ToString(), group->GetInfoAsValue());
+    }
+
+    const bool ok = pool_total_counts == groups_total_counts;
+    NetLogEventType event_type =
+        ok ? NetLogEventType::HTTP_STREAM_POOL_CONSISTENCY_CHECK_OK
+           : NetLogEventType::HTTP_STREAM_POOL_CONSISTENCY_CHECK_FAIL;
+    net_log_.AddEvent(event_type, [&] {
+      base::Value::Dict dict;
+      dict.Set("pool_total_counts", pool_total_counts.ToValue());
+      dict.Set("groups_total_counts", groups_total_counts.ToValue());
+      dict.Set("groups", std::move(groups));
+      return dict;
+    });
+    VLOG_IF(1, !ok) << "Stream counts mismatch: pool=" << pool_total_counts
+                    << ", groups=" << groups_total_counts;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&HttpStreamPool::CheckConsistency,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(3));
+
+#endif  // DCHECK_IS_ON()
 }
 
 }  // namespace net

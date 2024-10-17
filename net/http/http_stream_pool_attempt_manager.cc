@@ -520,6 +520,8 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   dict.Set("pending_job_count", static_cast<int>(PendingJobCount()));
   dict.Set("pending_preconnect_count",
            static_cast<int>(PendingPreconnectCount()));
+  dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
+  dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
   dict.Set("is_stalled", IsStalledByPoolLimit());
   return dict;
 }

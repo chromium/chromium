@@ -285,9 +285,13 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
   return true;
 }
 
+size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
+  return attempt_manager_ ? attempt_manager_->InFlightAttemptCount() : 0;
+}
+
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
   return handed_out_stream_count_ + idle_stream_sockets_.size() +
-         (attempt_manager_ ? attempt_manager_->InFlightAttemptCount() : 0);
+         ConnectingStreamSocketCount();
 }
 
 bool HttpStreamPool::Group::ReachedMaxStreamLimit() const {
