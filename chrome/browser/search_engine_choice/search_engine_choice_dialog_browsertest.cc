@@ -791,8 +791,16 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }
 
+// TODO(crbug.com/373890422): Flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SearchEngineChoiceIsShownOnEachGuestSession \
+  DISABLED_SearchEngineChoiceIsShownOnEachGuestSession
+#else
+#define MAYBE_SearchEngineChoiceIsShownOnEachGuestSession \
+  SearchEngineChoiceIsShownOnEachGuestSession
+#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       SearchEngineChoiceIsShownOnEachGuestSession) {
+                       MAYBE_SearchEngineChoiceIsShownOnEachGuestSession) {
 #if !BUILDFLAG(IS_MAC)
   // This initial browser is sometimes missing on mac. We don't really need that
   // browser, so if the guest browser works, then the test might still succeed.
