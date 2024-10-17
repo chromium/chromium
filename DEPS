@@ -2007,7 +2007,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'XJ7_doI-Qt7GFaSQ9BNo-3qF7Gv2--9Sa8GEUdjxMTUC',
+              'version': 'GZfc1ccCuUiPClAH-BsZeCiyd1qck3V__IA7CtK9HF4C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
