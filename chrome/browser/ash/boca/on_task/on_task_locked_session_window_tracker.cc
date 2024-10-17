@@ -179,6 +179,7 @@ void LockedSessionWindowTracker::OnTabWillBeRemoved(
     content::WebContents* contents,
     int index) {
   on_task_blocklist()->RemoveParentFilter(contents);
+  on_task_blocklist()->RemoveChildFilter(contents);
 }
 
 void LockedSessionWindowTracker::WillCloseAllTabs(

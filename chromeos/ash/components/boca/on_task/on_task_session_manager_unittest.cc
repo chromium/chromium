@@ -460,5 +460,44 @@ TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnUnlock) {
   session_manager_->OnBundleUpdated(bundle);
 }
 
+TEST_F(OnTaskSessionManagerTest, ShouldUpdateRestrictionsToTabOnBundleUpdated) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl1),
+                  OnTaskBlocklist::RestrictionLevel::kNoRestrictions))
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      RemoveTabsWithTabIds(kWindowId, base::flat_set<SessionID>{kTabId_1}))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl1),
+                  OnTaskBlocklist::RestrictionLevel::kLimitedNavigation))
+      .InSequence(s)
+      .WillOnce(Return(kTabId_1));
+  ::boca::Bundle bundle;
+  ::boca::ContentConfig* const content_config_1 =
+      bundle.mutable_content_configs()->Add();
+  content_config_1->set_url(kTestUrl1);
+  content_config_1->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  session_manager_->OnBundleUpdated(bundle);
+
+  ::boca::Bundle bundle_2;
+  ::boca::ContentConfig* const content_config_2 =
+      bundle_2.mutable_content_configs()->Add();
+  content_config_2->set_url(kTestUrl1);
+  content_config_2->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions::BLOCK_NAVIGATION);
+  session_manager_->OnBundleUpdated(bundle_2);
+}
+
 }  // namespace
 }  // namespace ash::boca

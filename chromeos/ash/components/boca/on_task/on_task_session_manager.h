@@ -80,7 +80,9 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
   };
 
   // Callback triggered when a tab is added.
-  void OnTabAdded(GURL url, SessionID tab_id);
+  void OnTabAdded(GURL url,
+                  OnTaskBlocklist::RestrictionLevel restriction_level,
+                  SessionID tab_id);
 
   // Callback triggered when a tab is removed.
   void OnTabRemoved(GURL url);
@@ -98,6 +100,11 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
   // map allows to remove all the related tabs to the url.
   base::flat_map<GURL, base::flat_set<SessionID>> provider_url_tab_ids_map_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maps the url that providers send to the restriction levels it is currently
+  // set to. This map allows for tracking restriction level updates.
+  base::flat_map<GURL, OnTaskBlocklist::RestrictionLevel>
+      provider_url_restriction_level_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const std::unique_ptr<OnTaskExtensionsManager> extensions_manager_;
 

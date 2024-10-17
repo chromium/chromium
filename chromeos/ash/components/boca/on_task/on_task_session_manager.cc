@@ -90,6 +90,7 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
   }
   provider_url_tab_ids_map_.clear();
+  provider_url_restriction_level_map_.clear();
 
   // Re-enable extensions on session end to prepare for subsequent sessions.
   extensions_manager_->ReEnableExtensions();
@@ -105,6 +106,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       !window_id.is_valid()) {
     provider_url_tab_ids_map_.clear();
+    provider_url_restriction_level_map_.clear();
     system_web_app_launch_helper_->LaunchBocaSWA();
   }
 
@@ -115,11 +117,6 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     const GURL url(content_config.url());
     current_urls_set.insert(url);
 
-    // No need to add the tab if the tab is already tracked as opened in the
-    // SWA.
-    if (provider_url_tab_ids_map_.contains(url)) {
-      continue;
-    }
     OnTaskBlocklist::RestrictionLevel restriction_level;
     if (content_config.has_locked_navigation_options()) {
       ::boca::LockedNavigationOptions_NavigationType navigation_type =
@@ -128,10 +125,27 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     } else {
       restriction_level = OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
     }
+
+    // No need to add the tab if the tab is already tracked as opened in the
+    // SWA and the restriction levels are the same.
+    if (provider_url_tab_ids_map_.contains(url)) {
+      if (provider_url_restriction_level_map_[url] == restriction_level) {
+        continue;
+      }
+
+      // Close the tab and any child tabs associated with the given url.
+      // TODO(crbug.com/373961026): Remove tabs for restriction updates that
+      // went to a stricter setting.
+      system_web_app_launch_helper_->RemoveTab(
+          provider_url_tab_ids_map_[url],
+          base::BindOnce(&OnTaskSessionManager::OnTabRemoved,
+                         weak_ptr_factory_.GetWeakPtr(), url));
+    }
+
     system_web_app_launch_helper_->AddTab(
         url, restriction_level,
         base::BindOnce(&OnTaskSessionManager::OnTabAdded,
-                       weak_ptr_factory_.GetWeakPtr(), url));
+                       weak_ptr_factory_.GetWeakPtr(), url, restriction_level));
   }
   for (auto const& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     if (!current_urls_set.contains(provider_sent_url)) {
@@ -259,11 +273,15 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
   }
 }
 
-void OnTaskSessionManager::OnTabAdded(GURL url, SessionID tab_id) {
+void OnTaskSessionManager::OnTabAdded(
+    GURL url,
+    OnTaskBlocklist::RestrictionLevel restriction_level,
+    SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (tab_id.is_valid()) {
     base::flat_set<SessionID>& tab_ids = provider_url_tab_ids_map_[url];
     tab_ids.insert(tab_id);
+    provider_url_restriction_level_map_[url] = restriction_level;
   }
 }
 
@@ -272,6 +290,7 @@ void OnTaskSessionManager::OnTabRemoved(GURL url) {
   if (provider_url_tab_ids_map_.contains(url)) {
     // TODO(b/368105857): Remove child tabs.
     provider_url_tab_ids_map_.erase(url);
+    provider_url_restriction_level_map_.erase(url);
   }
 }
 
