@@ -975,8 +975,35 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     delegate->MaybeImportForm(
         std::move(submitted_form),
         base::BindOnce(
-            &BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound,
-            weak_ptr_factory_.GetWeakPtr(), form, source,
+            [](base::WeakPtr<AutofillClient> client,
+               base::WeakPtr<BrowserAutofillManager> manager,
+               const FormData& form, SubmissionSource source,
+               base::TimeTicks form_submitted_timestamp,
+               std::unique_ptr<FormStructure> submitted_form,
+               std::vector<optimization_guide::proto::UserAnnotationsEntry>
+                   to_be_upserted_entries,
+               user_annotations::PromptAcceptanceCallback
+                   prompt_acceptance_callback) {
+              // The manager may have been destroyed already.
+              // See crbug.com/373831707#comment5.
+              const bool should_show_prediction_improvements_bubble =
+                  !to_be_upserted_entries.empty();
+              if (client && should_show_prediction_improvements_bubble) {
+                client->ShowSaveAutofillPredictionImprovementsBubble(
+                    std::move(to_be_upserted_entries),
+                    std::move(prompt_acceptance_callback));
+              }
+              if (manager) {
+                manager->MaybeImportFromSubmittedForm(
+                    form, submitted_form.get(),
+                    /*attempt_to_import_into_form_data_importer=*/
+                    !should_show_prediction_improvements_bubble);
+                manager->OnFormSubmittedAfterImport(
+                    form, std::move(submitted_form), source,
+                    form_submitted_timestamp);
+              }
+            },
+            client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(), form, source,
             form_submitted_timestamp));
   } else {
     // TODO(crbug.com/40100455): Refactor this:
@@ -1157,28 +1184,6 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 
   MaybeStartVoteUploadProcess(std::move(upload_form),
                               /*observed_submission=*/false);
-}
-
-void BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound(
-    const FormData& form,
-    SubmissionSource source,
-    base::TimeTicks form_submitted_timestamp,
-    std::unique_ptr<FormStructure> submitted_form,
-    std::vector<optimization_guide::proto::UserAnnotationsEntry>
-        to_be_upserted_entries,
-    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
-  const bool should_show_prediction_improvements_bubble =
-      !to_be_upserted_entries.empty();
-  if (should_show_prediction_improvements_bubble) {
-    client().ShowSaveAutofillPredictionImprovementsBubble(
-        std::move(to_be_upserted_entries),
-        std::move(prompt_acceptance_callback));
-  }
-  MaybeImportFromSubmittedForm(form, submitted_form.get(),
-                               /*attempt_to_import_into_form_data_importer=*/
-                               !should_show_prediction_improvements_bubble);
-  OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
-                             form_submitted_timestamp);
 }
 
 void BrowserAutofillManager::MaybeImportFromSubmittedForm(

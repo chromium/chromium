@@ -52,6 +52,10 @@ AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
 }
 
+base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool AndroidAutofillClient::IsOffTheRecord() const {
   auto* mutable_this = const_cast<AndroidAutofillClient*>(this);
   return mutable_this->GetWebContents().GetBrowserContext()->IsOffTheRecord();

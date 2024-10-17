@@ -74,6 +74,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   ~AndroidAutofillClient() override;
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
@@ -142,6 +143,8 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
 
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
+
+  base::WeakPtrFactory<AndroidAutofillClient> weak_ptr_factory_{this};
 };
 
 }  // namespace android_autofill

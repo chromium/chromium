@@ -55,6 +55,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   ~WebViewAutofillClientIOS() override;
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;
@@ -127,6 +128,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSWebViewPaymentsAutofillClient payments_autofill_client_{
       this, bridge_, web_state_};
+
+  base::WeakPtrFactory<WebViewAutofillClientIOS> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

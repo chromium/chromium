@@ -91,6 +91,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   ~ChromeAutofillClient() override;
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
   version_info::Channel GetChannel() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
@@ -239,7 +240,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       SuggestionUiSessionId session_id,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
-  base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
 
   std::unique_ptr<LogManager> log_manager_;
 
