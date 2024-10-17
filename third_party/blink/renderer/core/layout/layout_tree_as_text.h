@@ -45,6 +45,7 @@ class Element;
 class LocalFrame;
 class LayoutBlockFlow;
 class LayoutObject;
+struct PhysicalRect;
 
 enum LayoutAsTextBehaviorFlags {
   kLayoutAsTextBehaviorNormal = 0,
@@ -85,6 +86,7 @@ void Write(WTF::TextStream&,
            LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
 String QuoteAndEscapeNonPrintables(const String&);
 WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
+WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::PointF&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::RectF&);

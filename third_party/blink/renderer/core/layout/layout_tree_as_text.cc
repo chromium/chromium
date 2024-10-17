@@ -118,6 +118,17 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
   return ts << c.NameForLayoutTreeAsText();
 }
 
+WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r) {
+  ts << "at ("
+     << WTF::TextStream::FormatNumberRespectingIntegers(r.X().ToFloat());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.Y().ToFloat());
+  ts << ") size "
+     << WTF::TextStream::FormatNumberRespectingIntegers(r.Width().ToFloat());
+  ts << "x"
+     << WTF::TextStream::FormatNumberRespectingIntegers(r.Height().ToFloat());
+  return ts;
+}
+
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
   return ts << "(" << p.x() << "," << p.y() << ")";
 }
