@@ -3300,31 +3300,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.SystemLogUploader.LogSize.{LogName}" units="KB"
-    expires_after="2025-06-01">
-  <owner>nedol@google.com</owner>
-  <owner>iremuguz@google.com</owner>
-  <summary>
-    Records the total size in kilobytes of all the &quot;{LogName}&quot; log
-    files uploaded during the periodic log upload.
-  </summary>
-  <token key="LogName">
-    <variant name="BiosInfo"
-        summary="Messages from components before Linux kernel starts."/>
-    <variant name="Chrome"
-        summary="Messages that are written before user logs in."/>
-    <variant name="Eventlog" summary="Messages about system events."/>
-    <variant name="Extensions"
-        summary="Messages from extension acting as system extensions."/>
-    <variant name="Messages"
-        summary="Messages written by services such as session_manager,
-                 cryptohomed and cros-disks."/>
-    <variant name="Net" summary="Network-related messages."/>
-    <variant name="UI" summary="Data written to stdout and stderr by Chrome."/>
-    <variant name="UpdateEngine" summary="Messages from update_engine."/>
-  </token>
-</histogram>
-
 <histogram name="Enterprise.SystemSignals.Collection.WMI.{Signal}.ParsingError"
     enum="DeviceSignalsWmiParsingError" expires_after="2025-03-20">
   <owner>seblalancette@chromium.org</owner>
