@@ -76,17 +76,27 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
 
   StreamAttempt* attempt() { return attempt_.get(); }
 
+  const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
+
   bool is_slow() const { return is_slow_; }
   void set_is_slow(bool is_slow) { is_slow_ = is_slow; }
 
   base::OneShotTimer& slow_timer() { return slow_timer_; }
+
+  // Set to true when the attempt is aborted. When true, the attempt will fail
+  // but not be considered as an actual failure.
+  bool is_aborted() const { return is_aborted_; }
+  void set_is_aborted(bool is_aborted) { is_aborted_ = is_aborted; }
 
   // TlsStreamAttempt::SSLConfigProvider implementation:
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
     return manager_->WaitForSSLConfigReady(std::move(callback));
   }
 
-  SSLConfig GetSSLConfig() override { return manager_->GetSSLConfig(); }
+  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
+      override {
+    return manager_->GetSSLConfig(this);
+  }
 
  private:
   const raw_ptr<AttemptManager> manager_;
@@ -95,6 +105,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   // attempt but `this` is not timed out yet.
   base::OneShotTimer slow_timer_;
   bool is_slow_ = false;
+  bool is_aborted_ = false;
 };
 
 // Represents a preconnect request.
@@ -262,6 +273,20 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
   ProcessServiceEndpointChanges();
 }
 
+bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
+  CHECK(service_endpoint_request_);
+  CHECK(pool()->stream_attempt_params()->ssl_client_context);
+
+  // Optional when the destination is not a SVCB-capable or ECH is disabled.
+  if (!UsingTls() || !IsEchEnabled()) {
+    return true;
+  }
+
+  base::span<const ServiceEndpoint> endpoints =
+      service_endpoint_request_->GetEndpointResults();
+  return !HostResolver::AllProtocolEndpointsHaveEch(endpoints);
+}
+
 int HttpStreamPool::AttemptManager::WaitForSSLConfigReady(
     CompletionOnceCallback callback) {
   if (ssl_config_.has_value()) {
@@ -272,9 +297,33 @@ int HttpStreamPool::AttemptManager::WaitForSSLConfigReady(
   return ERR_IO_PENDING;
 }
 
-SSLConfig HttpStreamPool::AttemptManager::GetSSLConfig() {
+base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
+HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
   CHECK(ssl_config_.has_value());
-  return *ssl_config_;
+  CHECK(service_endpoint_request_);
+  CHECK(!attempt->is_aborted());
+
+  if (!IsEchEnabled()) {
+    return *ssl_config_;
+  }
+
+  const bool svcb_optional = IsSvcbOptional();
+  for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
+    if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
+      continue;
+    }
+    const std::vector<IPEndPoint>& ip_endpoints =
+        attempt->ip_endpoint().address().IsIPv4() ? endpoint.ipv4_endpoints
+                                                  : endpoint.ipv6_endpoints;
+    if (base::Contains(ip_endpoints, attempt->ip_endpoint())) {
+      SSLConfig ssl_config = *ssl_config_;
+      ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
+      return ssl_config;
+    }
+  }
+
+  attempt->set_is_aborted(true);
+  return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
 
 void HttpStreamPool::AttemptManager::ProcessPendingJob() {
@@ -679,8 +728,6 @@ void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
   ssl_config.network_anonymization_key =
       stream_key().network_anonymization_key();
 
-  // TODO(crbug.com/346835898): Support ECH.
-
   ssl_config_.emplace(std::move(ssl_config));
 
   // Restart slow timer for in-flight attempts that have already completed
@@ -937,8 +984,13 @@ HttpStreamPool::AttemptManager::GetIPEndPointToAttempt() {
     return std::nullopt;
   }
 
+  const bool svcb_optional = IsSvcbOptional();
+
   // Look for an IPEndPoint from the preferred address family first.
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
+    if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
+      continue;
+    }
     std::optional<IPEndPoint> ip_endpoint =
         prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv6_endpoints)
                      : FindPreferredIPEndpoint(endpoint.ipv4_endpoints);
@@ -950,6 +1002,9 @@ HttpStreamPool::AttemptManager::GetIPEndPointToAttempt() {
   // If there is no IPEndPoint from the preferred address family, check the
   // another address family.
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
+    if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
+      continue;
+    }
     std::optional<IPEndPoint> ip_endpoint =
         prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv4_endpoints)
                      : FindPreferredIPEndpoint(endpoint.ipv6_endpoints);
@@ -1241,8 +1296,6 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
   pool()->DecrementTotalConnectingStreamCount();
 
   if (rv != OK) {
-    connection_attempts_.emplace_back(
-        in_flight_attempt->attempt()->ip_endpoint(), rv);
     HandleAttemptFailure(std::move(in_flight_attempt), rv);
     return;
   }
@@ -1327,7 +1380,13 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     std::unique_ptr<InFlightAttempt> in_flight_attempt,
     int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
+  connection_attempts_.emplace_back(in_flight_attempt->ip_endpoint(), rv);
   failed_ip_endpoints_.emplace(in_flight_attempt->attempt()->ip_endpoint());
+
+  if (in_flight_attempt->is_aborted()) {
+    CHECK_EQ(rv, ERR_ABORTED);
+    return;
+  }
 
   ProcessPreconnectsAfterAttemptComplete(rv);
 
@@ -1414,6 +1473,34 @@ bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() {
   return pool()->CanUseExistingQuicSession(stream_key(), quic_session_key(),
                                            enable_ip_based_pooling_,
                                            enable_alternative_services_);
+}
+
+bool HttpStreamPool::AttemptManager::IsEchEnabled() const {
+  return pool()
+      ->stream_attempt_params()
+      ->ssl_client_context->config()
+      .ech_enabled;
+}
+
+bool HttpStreamPool::AttemptManager::IsEndpointUsableForTcpBasedAttempt(
+    const ServiceEndpoint& endpoint,
+    bool svcb_optional) {
+  // No ALPNs means that the endpoint is an authority A/AAAA endpoint, even if
+  // we are still in the middle of DNS resolution.
+  if (endpoint.metadata.supported_protocol_alpns.empty()) {
+    return svcb_optional;
+  }
+
+  // See https://www.rfc-editor.org/rfc/rfc9460.html#section-9.3. Endpoints are
+  // usable if there is an overlap between the endpoint's ALPNs and the
+  // configured ones.
+  for (const auto& alpn : endpoint.metadata.supported_protocol_alpns) {
+    if (base::Contains(http_network_session()->GetAlpnProtos(),
+                       NextProtoFromString(alpn))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {

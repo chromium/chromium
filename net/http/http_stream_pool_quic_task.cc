@@ -143,9 +143,10 @@ HttpStreamPool::QuicTask::service_endpoint_request() {
 
 std::optional<QuicEndpoint>
 HttpStreamPool::QuicTask::GetQuicEndpointToAttempt() {
+  const bool svcb_optional = manager_->IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request()->GetEndpointResults()) {
     std::optional<QuicEndpoint> quic_endpoint =
-        GetQuicEndpointFromServiceEndpoint(endpoint);
+        GetQuicEndpointFromServiceEndpoint(endpoint, svcb_optional);
     if (quic_endpoint.has_value()) {
       return quic_endpoint;
     }
@@ -156,11 +157,11 @@ HttpStreamPool::QuicTask::GetQuicEndpointToAttempt() {
 
 std::optional<QuicEndpoint>
 HttpStreamPool::QuicTask::GetQuicEndpointFromServiceEndpoint(
-    const ServiceEndpoint& service_endpoint) {
-  // TODO(crbug.com/346835898): Support ECH.
+    const ServiceEndpoint& service_endpoint,
+    bool svcb_optional) {
   quic::ParsedQuicVersion endpoint_quic_version =
       quic_session_pool()->SelectQuicVersion(
-          quic_version_, service_endpoint.metadata, /*svcb_optional=*/true);
+          quic_version_, service_endpoint.metadata, svcb_optional);
   if (!endpoint_quic_version.IsKnown()) {
     return std::nullopt;
   }

@@ -58,8 +58,10 @@
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/test_ssl_config_service.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
@@ -473,11 +475,22 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     session_deps_.quic_crypto_client_stream_factory =
         std::move(mock_crypto_client_stream_factory);
 
+    SSLContextConfig config;
+    config.ech_enabled = true;
+    session_deps_.ssl_config_service =
+        std::make_unique<TestSSLConfigService>(config);
+
     http_network_session_ =
         SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   }
 
   void DestroyHttpNetworkSession() { http_network_session_.reset(); }
+
+  void SetEchEnabled(bool ech_enabled) {
+    SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
+    config.ech_enabled = ech_enabled;
+    ssl_config_service()->UpdateSSLConfigAndNotify(config);
+  }
 
   HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
@@ -490,8 +503,9 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     return session_deps_.socket_factory.get();
   }
 
-  SSLConfigService* ssl_config_service() {
-    return session_deps_.ssl_config_service.get();
+  TestSSLConfigService* ssl_config_service() {
+    return static_cast<TestSSLConfigService*>(
+        session_deps_.ssl_config_service.get());
   }
 
   MockCryptoClientStreamFactory* crypto_client_stream_factory() {
@@ -4808,6 +4822,185 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Resume the QUIC attempt. This should not detect a dangling pointer.
   quic_completer.Complete(OK);
   requester2.WaitForResult();
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, EchOk) {
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("www.example.org", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_ech_config_list = ech_config_list;
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v4("192.0.2.1")
+                         .set_alpns({"http/1.1"})
+                         .set_ech_config_list(ech_config_list)
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, EchDisabled) {
+  SetEchEnabled(false);
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("www.example.org", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  // ECH config list should not be set since ECH is disabled.
+  ssl.expected_ech_config_list = std::vector<uint8_t>();
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v4("192.0.2.1")
+                         .set_alpns({"http/1.1"})
+                         .set_ech_config_list(ech_config_list)
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, EchSvcbOptional) {
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("www.example.org", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  // The first endpoint provides ECH config list. The second endpoint doesn't.
+  // This makes attempts SVCB-optional.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v4("192.0.2.1")
+                         .set_alpns({"http/1.1"})
+                         .set_ech_config_list(ech_config_list)
+                         .endpoint())
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_v4("192.0.2.2")
+                        .set_alpns({"http/1.1"})
+                        .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // The first endpoint fails.
+  SequencedSocketData data1;
+  data1.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_FAILED));
+  socket_factory()->AddSocketDataProvider(&data1);
+
+  // The second endpoint succeeds.
+  SequencedSocketData data2;
+  socket_factory()->AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl2);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, EchSvcbReliant) {
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("www.example.org", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  // All endpoints have ECH config list. The first endpoint only accepts H3. The
+  // second endpoint only accepts HTTP/1.1. This makes attempts SVCB-relient.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v4("192.0.2.1")
+                         .set_alpns({"h3"})
+                         .set_ech_config_list(ech_config_list)
+                         .endpoint())
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_v4("192.0.2.2")
+                        .set_alpns({"http/1.1"})
+                        .set_ech_config_list(ech_config_list)
+                        .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // The first endpoint (H3) fails.
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  // The second endpoint succeeds.
+  SequencedSocketData tcp_data;
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_ech_config_list = ech_config_list;
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       EchSvcbReliantQuicOnlyAbortTcpAttempt) {
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("www.example.org", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  AddQuicData();
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Simulate A record resolution. This starts a TCP attempt.
+  endpoint_request
+      ->set_endpoints({ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint()})
+      .CallOnServiceEndpointsUpdated();
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  EXPECT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Simulate HTTPS record resolution. We now know that the endpoint is QUIC
+  // only and SVCB-reliant.
+  endpoint_request
+      ->set_endpoints({ServiceEndpointBuilder()
+                           .add_v4("192.0.2.1")
+                           .set_alpns({"h3"})
+                           .set_ech_config_list(ech_config_list)
+                           .endpoint()})
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  // The TCP attempt should be aborted.
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+  EXPECT_EQ(group.ActiveStreamSocketCount(), 0u);
 }
 
 }  // namespace net

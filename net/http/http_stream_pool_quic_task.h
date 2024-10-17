@@ -62,7 +62,8 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   // endpoint.
   std::optional<QuicEndpoint> GetQuicEndpointToAttempt();
   std::optional<QuicEndpoint> GetQuicEndpointFromServiceEndpoint(
-      const ServiceEndpoint& service_endpoint);
+      const ServiceEndpoint& service_endpoint,
+      bool svcb_optional);
   std::optional<IPEndPoint> GetPreferredIPEndPoint(
       const std::vector<IPEndPoint>& ip_endpoints);
 
