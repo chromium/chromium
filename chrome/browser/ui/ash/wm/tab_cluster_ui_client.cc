@@ -89,6 +89,10 @@ void TabClusterUIClient::OnTabStripModelChanged(
 void TabClusterUIClient::TabChangedAt(content::WebContents* contents,
                                       int index,
                                       TabChangeType change_type) {
+  if (change_type == TabChangeType::kLoadingOnly) {
+    return;
+  }
+
   DCHECK(base::Contains(contents_item_map_, contents));
   auto* item = contents_item_map_[contents].get();
   item->Init(GenerateTabItemInfo(contents));
