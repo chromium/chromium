@@ -1625,7 +1625,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
-  CHECK(!params->widget_params->previous_frame_token_for_compositor_reuse);
+  CHECK(!params->widget_params->reuse_compositor);
 
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1699,10 +1699,10 @@ void RenderFrameImpl::CreateFrame(
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider,
     blink::WebView* web_view,
-    const std::optional<blink::FrameToken>& previous_frame_token,
-    const std::optional<blink::FrameToken>& opener_frame_token,
-    const std::optional<blink::FrameToken>& parent_frame_token,
-    const std::optional<blink::FrameToken>& previous_sibling_frame_token,
+    base::optional_ref<const blink::FrameToken> previous_frame_token,
+    base::optional_ref<const blink::FrameToken> opener_frame_token,
+    base::optional_ref<const blink::FrameToken> parent_frame_token,
+    base::optional_ref<const blink::FrameToken> previous_sibling_frame_token,
     const base::UnguessableToken& devtools_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
@@ -3811,12 +3811,7 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
 
 void RenderFrameImpl::MaybeInitializeWidget(
     mojom::CreateFrameWidgetParamsPtr widget_params) {
-  if (!PreviousWidgetForLazyCompositorInitialization(
-          widget_params->previous_frame_token_for_compositor_reuse)) {
-    InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
-                                  std::move(widget_params),
-                                  is_for_nested_main_frame_);
-  } else {
+  if (widget_params->reuse_compositor) {
     // Initializing the widget is deferred until commit if this RenderFrame
     // will be replacing a previous RenderFrame. This enables reuse of the
     // compositing setup which is expensive.
@@ -3830,45 +3825,23 @@ void RenderFrameImpl::MaybeInitializeWidget(
     // the GPU process) is not done until the frame is made visible, which
     // happens at commit.
     widget_params_for_lazy_widget_creation_ = std::move(widget_params);
-  }
-}
-
-void RenderFrameImpl::EnsureWidgetInitialized() {
-  if (!widget_params_for_lazy_widget_creation_) {
-    CHECK(GetLocalRootWebFrameWidget());
     return;
   }
 
-  auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
-      widget_params_for_lazy_widget_creation_
-          ->previous_frame_token_for_compositor_reuse);
-  CHECK(previous_widget);
-
-  InitializeFrameWidgetForFrame(
-      *frame_, previous_widget,
-      std::move(widget_params_for_lazy_widget_creation_),
-      is_for_nested_main_frame_);
+  InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
+                                std::move(widget_params),
+                                is_for_nested_main_frame_);
 }
 
-blink::WebFrameWidget*
-RenderFrameImpl::PreviousWidgetForLazyCompositorInitialization(
-    const std::optional<blink::FrameToken>& previous_frame_token) const {
-  if (!previous_frame_token) {
-    return nullptr;
-  }
+void RenderFrameImpl::InitializeWidgetAtSwap(
+    blink::WebLocalFrame& frame_for_compositor_reuse) {
+  CHECK(widget_params_for_lazy_widget_creation_);
+  DCHECK(widget_params_for_lazy_widget_creation_->reuse_compositor);
 
-  auto* previous_web_frame = WebFrame::FromFrameToken(*previous_frame_token);
-
-  CHECK(previous_web_frame);
-  CHECK(previous_web_frame->IsWebLocalFrame());
-
-  auto* previous_render_frame =
-      RenderFrameImpl::FromWebFrame(previous_web_frame);
-  CHECK(previous_render_frame);
-  CHECK_EQ(previous_render_frame->is_for_nested_main_frame_,
-           is_for_nested_main_frame_);
-
-  return previous_web_frame->ToWebLocalFrame()->FrameWidget();
+  InitializeFrameWidgetForFrame(
+      *frame_, frame_for_compositor_reuse.FrameWidget(),
+      std::move(widget_params_for_lazy_widget_creation_),
+      is_for_nested_main_frame_);
 }
 
 void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
@@ -3878,11 +3851,19 @@ void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
       navigation_client_impl_->ResetWithoutCancelling();
     }
 
-    // Defer initializing the new widget until the previous Document has been
-    // torn down. Script handles like unload dispatched during tear down can
-    // access the compositor.
+    // If `provisional_frame_for_local_root_swap_` is set by `Swap()`, the
+    // widget for the frame being swapped in needs to be initialized now. At
+    // this point, the compositor can be passed off safely since the `Document`
+    // has already been torn down.
+    //
+    // TODO(dcheng): This mechanism could probably be used for passing off the
+    // unique name as well...
     if (provisional_frame_for_local_root_swap_) {
-      provisional_frame_for_local_root_swap_->EnsureWidgetInitialized();
+      CHECK_EQ(
+          provisional_frame_for_local_root_swap_->is_for_nested_main_frame_,
+          is_for_nested_main_frame_);
+      provisional_frame_for_local_root_swap_->InitializeWidgetAtSwap(
+          CHECK_DEREF(GetWebFrame()));
       provisional_frame_for_local_root_swap_ = nullptr;
     }
   }
@@ -5429,7 +5410,16 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
   // Swapping out a frame can dispatch JS event handlers, causing `this` to be
   // deleted.
   bool is_main_frame = is_main_frame_;
-  if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame)) {
+  if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame);
+      render_frame && widget_params_for_lazy_widget_creation_) {
+    // For local -> local swaps that lazily initialize the widget, tell the
+    // previous RenderFrame (i.e. the frame being swapped out) about `this`
+    // (i.e. the frame being swapped in), so `WillDetach()` on the previous
+    // RenderFrame can pass off its compositor to `this` for reuse.
+    //
+    // TODO(dcheng): Blink should already know the provisional frame internally;
+    // consider exposing that through the public API to avoid having to plumb
+    // state at a distance like this.
     render_frame->provisional_frame_for_local_root_swap_ = GetWeakPtr();
   }
   if (!previous_web_frame->Swap(frame_)) {
@@ -5438,6 +5428,12 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
     DCHECK(!is_main_frame);
     return false;
   }
+
+  // For local roots, whether the frame widget is created eagerly or lazily, it
+  // must be initialized by this point.
+  //
+  // For non local roots, they must have a local root ancestor which already has
+  // a frame widget.
   CHECK(GetLocalRootWebFrameWidget());
 
   // `previous_web_frame` is now detached, and should no longer be referenced.

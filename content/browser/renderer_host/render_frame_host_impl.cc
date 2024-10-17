@@ -3951,11 +3951,11 @@ bool RenderFrameHostImpl::CreateRenderFrame(
                 previous_rfh->GetFrameSize().value_or(gfx::Size()), 1.f / dsf);
       }
 
-      if (frame_tree_node_->current_frame_host()->ShouldReuseCompositing(
-              *GetSiteInstance())) {
+      params->widget_params->reuse_compositor =
+          frame_tree_node_->current_frame_host()->ShouldReuseCompositing(
+              *GetSiteInstance());
+      if (params->widget_params->reuse_compositor) {
         waiting_for_renderer_widget_creation_after_commit_ = true;
-        params->widget_params->previous_frame_token_for_compositor_reuse =
-            previous_rfh->GetFrameToken();
       }
     }
   }
