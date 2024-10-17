@@ -27,8 +27,10 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
@@ -158,10 +160,23 @@ class PinSetupScreenTest : public OobeBaseTest {
         LoginDisplayHost::default_host()->GetWizardContextForTesting();
     context->skip_post_login_screens_for_tests = true;
 
-    login_manager_mixin_.LoginAsNewRegularUser();
+    if (login_as_enterprise_) {
+      ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
+      login_manager_mixin_.LoginAsNewEnterpriseUser();
+    } else {
+      login_manager_mixin_.LoginAsNewRegularUser();
+    }
 
     ASSERT_TRUE(cryptohome_recovery_setup_result_waiter_.Wait());
     context->skip_post_login_screens_for_tests = false;
+  }
+
+  void SetAllowPinUnlockPolicyForEnterpriseUsers() {
+    enterprise_management::CloudPolicySettings* policy =
+        user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
+    policy->mutable_quickunlockmodeallowlist()->mutable_value()->add_entries(
+        "PIN");
+    policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);
   }
 
   void CryptohomeRecoverySetupContinue() {
@@ -320,6 +335,14 @@ class PinSetupScreenTest : public OobeBaseTest {
   std::optional<FingerprintSetupScreen::Result> fingerprint_screen_result_;
   base::HistogramTester histogram_tester_;
   bool screen_exited_ = false;
+
+  bool login_as_enterprise_ = false;
+  EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
+  UserPolicyMixin user_policy_mixin_{
+      &mixin_host_,
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      &policy_server_};
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   CryptohomeMixin cryptohome_{&mixin_host_};
@@ -729,6 +752,45 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorWithoutLoginSupport,
       PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
   OobeScreenWaiter(PasswordSelectionScreenHandler::kScreenId).Wait();
   CheckCredentialsArePresent();
+}
+
+class PinSetupScreenTestAsMainFactorEnterprise
+    : public PinSetupScreenTestAsMainFactor {
+ public:
+  PinSetupScreenTestAsMainFactorEnterprise() { login_as_enterprise_ = true; }
+  ~PinSetupScreenTestAsMainFactorEnterprise() override = default;
+
+  // Set PINs as allowed for unlock.
+  void SetUpOnMainThread() override {
+    PinSetupScreenTestAsMainFactor::SetUpOnMainThread();
+    SetAllowPinUnlockPolicyForEnterpriseUsers();
+  }
+};
+
+// Tests that the screen is not shown as a main factor for enterprise users even
+// when PIN is allowed by policy. It is only offered as a secondary factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorEnterprise,
+                       SkippedForEnterpriseUsers) {
+  LoginAndWaitForCryptohomeSetupScreenExit();
+  CryptohomeRecoverySetupContinue();
+
+  // PIN will not be offered as a main factor for enterprise users.
+  WaitForScreenExit();
+  ExpectSkipReason(
+      PinSetupScreen::SkipReason::kNotSupportedAsPrimaryFactorForManagedUsers);
+  ExpectExitResultAndMetric(
+      PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
+
+  // No password selection screen for enterprise users. They must use their
+  // online password which is set by `apply-online-password`.
+  WaitForFingerprintScreenExit();
+  ExpectFingerprintScreenExitedAndContinue();
+
+  // PIN should be offered as a secondary factor instead.
+  WaitForScreenShown();
+  TapSkipButton();
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+  CheckCredentialsWereCleared();
 }
 
 }  // namespace ash

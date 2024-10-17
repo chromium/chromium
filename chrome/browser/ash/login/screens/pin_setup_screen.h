@@ -44,6 +44,7 @@ class PinSetupScreen : public BaseScreen {
     kManagedGuestSessionOrEphemeralLogin,
     kUsupportedHardware,
     kNotSupportedAsPrimaryFactor,
+    kNotSupportedAsPrimaryFactorForManagedUsers,
     kPinAlreadySet,
   };
 

@@ -89,6 +89,13 @@ bool IsInSetupMode(PinSetupMode mode, WizardContext& context) {
   }
 }
 
+// Returns `true` if the active Profile is enterprise managed.
+bool IsUserEnterpriseManaged() {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  return profile->GetProfilePolicyConnector()->IsManaged() &&
+         !profile->IsChild();
+}
+
 }  // namespace
 
 // static
@@ -173,7 +180,10 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
     if (!has_login_support) {
       return SkipReason::kNotSupportedAsPrimaryFactor;
     }
-    // TODO(b/365059362): Skip for managed users.
+
+    if (IsUserEnterpriseManaged()) {
+      return SkipReason::kNotSupportedAsPrimaryFactorForManagedUsers;
+    }
   }
 
   // Second surfacing of the PIN setup screen after setting a PIN as primary.
