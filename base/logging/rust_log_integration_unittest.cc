@@ -20,7 +20,13 @@ class RustLogIntegrationTest : public testing::Test {
   base::test::MockLog log_;
 };
 
-TEST_F(RustLogIntegrationTest, CheckAllSeverity) {
+// TODO(crbug.com/374023535): Re-enable test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_CheckAllSeverity DISABLED_CheckAllSeverity
+#else
+#define MAYBE_CheckAllSeverity CheckAllSeverity
+#endif
+TEST_F(RustLogIntegrationTest, MAYBE_CheckAllSeverity) {
 #if DCHECK_IS_ON()
   // Debug and Trace logs from Rust are discarded when DCHECK_IS_ON() is false;
   // otherwise, they are logged as info.
