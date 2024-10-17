@@ -16,7 +16,6 @@
 
 // This class listens to various signin events and updates the signin-related
 // fields of ProfileAttributesStorageIOS.
-// TODO(crbug.com/361040177): Rename this class to SigninProfileInfoUpdater.
 class SigninProfileInfoUpdater : public KeyedService,
                                  public SigninErrorController::Observer,
                                  public signin::IdentityManager::Observer {
