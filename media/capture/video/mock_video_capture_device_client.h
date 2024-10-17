@@ -35,8 +35,8 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
                int frame_feedback_id),
               (override));
   MOCK_METHOD(void,
-              OnIncomingCapturedImage,
-              (scoped_refptr<gpu::ClientSharedImage> shared_image,
+              OnIncomingCapturedGfxBuffer,
+              (gfx::GpuMemoryBuffer * buffer,
                const VideoCaptureFormat& frame_format,
                int clockwise_rotation,
                base::TimeTicks reference_time,

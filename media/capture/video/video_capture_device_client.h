@@ -29,10 +29,6 @@
 #include "media/capture/video/video_capture_effects_processor.h"
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
-namespace gpu {
-class ClientSharedImage;
-}
-
 namespace media {
 class VideoCaptureBufferPool;
 class VideoFrameReceiver;
@@ -118,8 +114,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
       int frame_feedback_id) override;
-  void OnIncomingCapturedImage(
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
+  void OnIncomingCapturedGfxBuffer(
+      gfx::GpuMemoryBuffer* buffer,
       const VideoCaptureFormat& frame_format,
       int clockwise_rotation,
       base::TimeTicks reference_time,

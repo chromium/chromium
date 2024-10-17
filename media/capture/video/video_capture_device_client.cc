@@ -539,8 +539,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
       capture_begin_timestamp, gfx::Rect(dimensions), VideoFrameMetadata());
 }
 
-void VideoCaptureDeviceClient::OnIncomingCapturedImage(
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
+void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
+    gfx::GpuMemoryBuffer* buffer,
     const VideoCaptureFormat& frame_format,
     int clockwise_rotation,
     base::TimeTicks reference_time,
@@ -563,8 +563,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
     return;
   }
 
-  int destination_width = shared_image->size().width();
-  int destination_height = shared_image->size().height();
+  int destination_width = buffer->GetSize().width();
+  int destination_height = buffer->GetSize().height();
   if (clockwise_rotation == 90 || clockwise_rotation == 270)
     std::swap(destination_width, destination_height);
 
@@ -590,25 +590,23 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
   GetI420BufferAccess(output_buffer, dimensions, &y_plane_data, &u_plane_data,
                       &v_plane_data, &y_plane_stride, &uv_plane_stride);
 
-  auto scoped_mapping = shared_image->Map();
-  if (!scoped_mapping) {
-    LOG(ERROR) << "Failed to map shared image.";
+  if (!buffer->Map()) {
+    LOG(ERROR) << "Failed to map GPU memory buffer";
     receiver_->OnFrameDropped(
         VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
     return;
   }
+  absl::Cleanup scoped_unmap = [buffer] { buffer->Unmap(); };
 
   int ret = -EINVAL;
   switch (frame_format.pixel_format) {
     case PIXEL_FORMAT_NV12:
       ret = libyuv::NV12ToI420Rotate(
-          scoped_mapping->GetMemoryForPlane(0).data(),
-          scoped_mapping->Stride(0),
-          scoped_mapping->GetMemoryForPlane(1).data(),
-          scoped_mapping->Stride(1), y_plane_data, y_plane_stride, u_plane_data,
-          uv_plane_stride, v_plane_data, uv_plane_stride,
-          scoped_mapping->Size().width(), scoped_mapping->Size().height(),
-          rotation_mode);
+          reinterpret_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
+          reinterpret_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1),
+          y_plane_data, y_plane_stride, u_plane_data, uv_plane_stride,
+          v_plane_data, uv_plane_stride, buffer->GetSize().width(),
+          buffer->GetSize().height(), rotation_mode);
       break;
 
     default:

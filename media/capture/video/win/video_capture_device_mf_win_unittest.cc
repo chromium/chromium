@@ -77,8 +77,8 @@ class MockClient : public VideoCaptureDevice::Client {
                               std::optional<base::TimeTicks> capture_begin_time,
                               int frame_feedback_id) override {}
 
-  void OnIncomingCapturedImage(
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
+  void OnIncomingCapturedGfxBuffer(
+      gfx::GpuMemoryBuffer* buffer,
       const VideoCaptureFormat& frame_format,
       int clockwise_rotation,
       base::TimeTicks reference_time,
