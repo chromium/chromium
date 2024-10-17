@@ -55,6 +55,8 @@
 
 namespace {
 
+using ::testing::_;
+
 static constexpr std::string_view kUmaReauthenticationHistogramName =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
 
@@ -106,6 +108,12 @@ class SupervisedUserPendingStateNavigationTest
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
+
+  MOCK_METHOD(void,
+              ClassifyUrlRequestMonitor,
+              (const net::test_server::HttpRequest& request_content));
+
+  base::CallbackListSubscription request_monitor_subscription_;
 
  protected:
   void PreRunTestOnMainThread() override {
@@ -520,6 +528,72 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 
   // UKM should not be recorded for the subframe interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
+}
+
+// This matcher accepts a net::test_server::HttpRequest and checks if the google
+// api key is present in its headers.
+MATCHER(ContainsGoogleApiKey, "") {
+  return base::Contains(arg.headers, "X-Goog-Api-Key");
+}
+
+// Tests that when the user doesn't have a valid access token the request is
+// sent with an api key and not an access token (i.e an anonymous request).
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
+                       TestPendingStateRequestHasGoogleApiInHeader) {
+  // TODO(crbug.com/365529863): Move the methods SetAutomaticIssueOfAccessTokens
+  // and WaitForAccessTokenRequestIfNecessaryAndRespondWithError to
+  // supervisionMixin::SetPendingStateForPrimaryAccount.
+  supervision_mixin_.GetIdentityTestEnvironment()
+      ->SetAutomaticIssueOfAccessTokens(false);
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+  // Invalidates any pending access token requests.
+  supervision_mixin_.GetIdentityTestEnvironment()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+          supervision_mixin_.GetIdentityTestEnvironment()
+              ->identity_manager()
+              ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          GoogleServiceAuthError(
+              GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
+  // When a request is made ClassifyUrlRequestMonitor will verify if the
+  // google_api is available.
+  request_monitor_subscription_ =
+      kids_management_api_mock().Subscribe(base::BindRepeating(
+          &SupervisedUserPendingStateNavigationTest::ClassifyUrlRequestMonitor,
+          base::Unretained(this)));
+
+  ASSERT_TRUE(
+      supervision_mixin_.GetIdentityTestEnvironment()
+          ->identity_manager()
+          ->HasAccountWithRefreshTokenInPersistentErrorState(
+              supervision_mixin_.GetIdentityTestEnvironment()
+                  ->identity_manager()
+                  ->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
+
+  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(ContainsGoogleApiKey()))
+      .Times(1);
+
+  content::TestNavigationObserver observer(contents());
+  observer.set_expected_initial_url(GURL("https://example.com/"));
+
+  contents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(
+          GURL("https://example.com/")));
+
+  // Any pending access token requests should respond with an error since the
+  // access token is invalidated.
+  supervision_mixin_.GetIdentityTestEnvironment()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+          supervision_mixin_.GetIdentityTestEnvironment()
+              ->identity_manager()
+              ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          GoogleServiceAuthError(
+              GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+
+  observer.Wait();
 }
 
 }  // namespace

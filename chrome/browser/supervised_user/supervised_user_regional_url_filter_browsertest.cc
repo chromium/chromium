@@ -36,6 +36,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -80,7 +81,7 @@ class SupervisedUserRegionalURLFilterTest
  protected:
   MOCK_METHOD(void,
               ClassifyUrlRequestMonitor,
-              (std::string_view, std::string_view));
+              (const net::test_server::HttpRequest& request));
 
   static const TestCase GetTestCase() { return TestCase(GetParam()); }
 
@@ -128,6 +129,12 @@ class SupervisedUserRegionalURLFilterTest
       }};
 };
 
+// This matcher accepts a net::test_server::HttpRequest and checks if the path
+// is the same as the expected path.
+MATCHER_P(VerifyRequestPath, expected_path, "") {
+  return arg.GetURL().path() == expected_path;
+}
+
 // Verifies that the regional setting is passed to the RPC backend.
 IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
   std::string url_to_classify =
@@ -146,12 +153,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
         .Times(number_of_expected_calls);
   }
   // Ignore all extra calls to other methods
-  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(_, _))
+  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(_))
       .Times(::testing::AnyNumber());
   // Last expectation takes precedence.
   EXPECT_CALL(*this,
-              ClassifyUrlRequestMonitor(kClassifyUrlConfig.StaticServicePath(),
-                                        expected.SerializeAsString()))
+              ClassifyUrlRequestMonitor(testing::AllOf(
+                  testing::Field(&net::test_server::HttpRequest::content,
+                                 expected.SerializeAsString()),
+                  VerifyRequestPath(kClassifyUrlConfig.StaticServicePath()))))
       .Times(number_of_expected_calls);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url_to_classify)));

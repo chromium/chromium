@@ -120,13 +120,14 @@ KidsManagementApiServerMock::ClassifyUrl(
 }
 
 base::CallbackListSubscription KidsManagementApiServerMock::Subscribe(
-    base::RepeatingCallback<RequestMonitor> monitor) {
+    base::RepeatingCallback<void(const net::test_server::HttpRequest& request)>
+        monitor) {
   return request_monitors_.Add(monitor);
 }
 
 void KidsManagementApiServerMock::RequestMonitorDispatcher(
     const net::test_server::HttpRequest& request) {
-  request_monitors_.Notify(request.GetURL().path(), request.content);
+  request_monitors_.Notify(request);
 }
 
 void KidsManagementApiServerMock::AllowSubsequentClassifyUrl() {

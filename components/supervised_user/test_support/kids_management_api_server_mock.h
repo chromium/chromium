@@ -61,10 +61,6 @@ class KidsManagementClassifyUrlMock {
 // serve as request handlers for the net::test_server::EmbeddedTestServer.
 class KidsManagementApiServerMock {
  public:
-  // Introduce a signature that is nicer to use with gtest/gmock expectations.
-  using RequestMonitor = void(std::string_view request_path,
-                              std::string_view request_content);
-
   KidsManagementApiServerMock();
   KidsManagementApiServerMock(KidsManagementApiServerMock&& other) = delete;
   KidsManagementApiServerMock& operator=(KidsManagementApiServerMock&& other) =
@@ -79,7 +75,8 @@ class KidsManagementApiServerMock {
   // Subscribes a monitor to this api server. The monitor will be notified about
   // every request, to all of its endpoints.
   base::CallbackListSubscription Subscribe(
-      base::RepeatingCallback<RequestMonitor> monitor);
+      base::RepeatingCallback<
+          void(const net::test_server::HttpRequest& request)> monitor);
 
   // Set the mock to respond with allow or restrict url for all subsequent
   // requests to ClassifyUrl.
@@ -100,7 +97,9 @@ class KidsManagementApiServerMock {
 
   void RequestMonitorDispatcher(const net::test_server::HttpRequest& request);
 
-  base::RepeatingCallbackList<RequestMonitor> request_monitors_;
+  base::RepeatingCallbackList<void(
+      const net::test_server::HttpRequest& request)>
+      request_monitors_;
 
   KidsManagementClassifyUrlMock classify_url_mock_;
 };
