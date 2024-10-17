@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
+import java.util.function.BooleanSupplier;
+
 /** The default strategy for setting the height of the custom tab. */
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     /** A callback to be called once the Custom Tab has been resized. */
@@ -48,6 +50,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             CustomTabsConnection connection,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
+            BooleanSupplier isEnteringPip,
             boolean isTablet) {
         if (!intentData.isPartialCustomTab()) {
             return new CustomTabHeightStrategy();
@@ -68,6 +71,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                 layoutCallback,
                 lifecycleDispatcher,
                 fullscreenManager,
+                isEnteringPip,
                 isTablet);
     }
 

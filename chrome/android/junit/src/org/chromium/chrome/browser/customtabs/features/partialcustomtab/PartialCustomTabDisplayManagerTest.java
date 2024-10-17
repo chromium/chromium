@@ -98,6 +98,7 @@ public class PartialCustomTabDisplayManagerTest {
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
                         mPCCTTestRule.mFullscreenManager,
+                        /* isEnteringPip= */ () -> false,
                         /* isTablet= */ false);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =

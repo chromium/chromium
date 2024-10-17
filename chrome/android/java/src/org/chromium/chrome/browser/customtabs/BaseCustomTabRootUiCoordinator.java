@@ -515,6 +515,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         CustomTabsConnection.getInstance(),
                         mActivityLifecycleDispatcher,
                         mFullscreenManager,
+                        () -> mMinimizeDelegateSupplier.get().isMinimized(),
                         DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
     }
 
