@@ -131,8 +131,8 @@ void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
 
   // Hash the pin, as only hashed secrets appear at the userdataauth
   // level.
-  Key key(std::move(pin));
-  key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, pin_salt);
+  Key key(pin);
+  key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, pin_salt);
 
   // Add the pin key to the user.
   user_data_auth::AuthFactor auth_factor;
@@ -141,7 +141,7 @@ void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
   auth_factor.set_label(ash::kCryptohomePinLabel);
   auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
 
-  auth_input.mutable_password_input()->set_secret(key.GetSecret());
+  auth_input.mutable_pin_input()->set_secret(key.GetSecret());
 
   // Add the password key to the user.
   FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
