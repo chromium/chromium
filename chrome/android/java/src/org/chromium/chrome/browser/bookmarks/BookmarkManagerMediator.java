@@ -1183,9 +1183,6 @@ class BookmarkManagerMediator
                 BookmarkListEntry.createSyncPromoHeader(promoHeaderType);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(BookmarkManagerProperties.ALL_KEYS)
-                        .with(
-                                BookmarkManagerProperties.PROMO_TOP_MARGIN_RES,
-                                R.dimen.bookmark_promo_top_margin_with_search_box)
                         .with(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry)
                         .with(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER, mPromoHeaderManager);
         return new ListItem(bookmarkListEntry.getViewType(), builder.build());

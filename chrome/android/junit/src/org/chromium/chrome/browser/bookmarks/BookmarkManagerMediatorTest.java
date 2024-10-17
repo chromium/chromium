@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +30,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
@@ -1409,9 +1407,6 @@ public class BookmarkManagerMediatorTest {
                 ViewType.PERSONALIZED_SYNC_PROMO,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
-        assertNotEquals(
-                Resources.ID_NULL,
-                mModelList.get(1).model.get(BookmarkManagerProperties.PROMO_TOP_MARGIN_RES));
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         mMediator.getPromoHeaderManager().syncStateChanged();
@@ -1420,23 +1415,6 @@ public class BookmarkManagerMediatorTest {
                 ViewType.SEARCH_BOX,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
-    }
-
-    @Test
-    public void testPromoHeaderDefaultMargin() {
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
-        mMediator.getPromoHeaderManager().syncStateChanged();
-        finishLoading();
-        mMediator.openFolder(mFolderId1);
-
-        verifyCurrentViewTypes(
-                ViewType.SEARCH_BOX,
-                ViewType.PERSONALIZED_SYNC_PROMO,
-                ViewType.IMPROVED_BOOKMARK_COMPACT,
-                ViewType.IMPROVED_BOOKMARK_COMPACT);
-        assertEquals(
-                Resources.ID_NULL,
-                mModelList.get(2).model.get(BookmarkManagerProperties.PROMO_TOP_MARGIN_RES));
     }
 
     @Test
