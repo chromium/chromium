@@ -2463,16 +2463,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabArchived.AfterNDays" units="days"
-    expires_after="2025-03-02">
-  <owner>wylieb@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    (Android only) Records how old, in days, a tab is when it's archived. Age is
-    calculated based on the last used time.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabArchived.FoundDuplicateInRegularModel" units="count"
     expires_after="2025-03-02">
   <owner>wylieb@chromium.org</owner>
@@ -2480,6 +2470,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     (Android only) Records how many tabs were found in the regular model which
     have already been archvied. Recorded on each declutter pass.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabArchived.TabCount" units="tabs"
+    expires_after="2025-03-02">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how many tabs were archived from the normal tab model
+    selector during an archive pass.
   </summary>
 </histogram>
 

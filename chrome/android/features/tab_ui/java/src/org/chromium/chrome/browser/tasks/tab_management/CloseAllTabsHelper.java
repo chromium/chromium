@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,12 +83,14 @@ public class CloseAllTabsHelper {
                 ArchivedTabModelOrchestrator.getForProfile(profile);
         TabArchiver archiver = orchestrator.getTabArchiver();
         TabModel archivedTabModel = orchestrator.getTabModel();
-        while (archivedTabModel.getCount() > 0) {
-            Tab archivedTab = archivedTabModel.getTabAt(0);
+        for (int i = 0; i < archivedTabModel.getCount(); i++) {
+            Tab archivedTab = archivedTabModel.getTabAt(i);
             previouslyArchivedTabIds.add(archivedTab.getId());
-            archiver.unarchiveAndRestoreTab(
-                    regularTabCreator, archivedTab, /* updateTimestamp= */ false);
         }
+        archiver.unarchiveAndRestoreTabs(
+                regularTabCreator,
+                TabModelUtils.convertTabListToListOfTabs(archivedTabModel),
+                /* updateTimestamp= */ true);
         return previouslyArchivedTabIds;
     }
 
@@ -96,13 +99,14 @@ public class CloseAllTabsHelper {
         ArchivedTabModelOrchestrator orchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(profile);
         TabArchiver archiver = orchestrator.getTabArchiver();
-        for (int i = 0; i < regularTabModel.getCount(); ) {
+        List<Tab> tabsToArchive = new ArrayList<>();
+        for (int i = 0; i < regularTabModel.getCount(); i++) {
             Tab tab = regularTabModel.getTabAt(i);
             if (previouslyArchivedTabIds.contains(tab.getId())) {
-                archiver.archiveAndRemoveTab(regularTabModel, tab);
-            } else {
-                i++;
+                tabsToArchive.add(tab);
             }
         }
+
+        archiver.archiveAndRemoveTabs(regularTabModel, tabsToArchive);
     }
 }

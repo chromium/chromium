@@ -567,7 +567,10 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     public void testRestoreAndOpenSingleTab() throws Exception {
-        Tab tab = addArchivedTab(new GURL("https://www.google.com"), "test 1");
+        GURL archivedUrl = new GURL("https://www.google.com");
+        Tab tab = addArchivedTab(archivedUrl, "test 1");
+        int tabId = tab.getId();
+
         addArchivedTab(new GURL("https://test.com"), "test 2");
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
@@ -581,7 +584,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         Tab activityTab = mActivityTestRule.getActivity().getActivityTabProvider().get();
-        assertEquals(tab, activityTab);
+        CriteriaHelper.pollUiThread(() -> activityTab.getId() == tabId);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreSingleTab"));
     }
 
