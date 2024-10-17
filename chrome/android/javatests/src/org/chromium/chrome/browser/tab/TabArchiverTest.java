@@ -79,6 +79,7 @@ public class TabArchiverTest {
     private @Mock Clock mClock;
     private @Mock TabModelSelector mSelector;
     private @Mock TabWindowManager mTabWindowManager;
+    private @Mock Tab mTab;
 
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private TabArchiver mTabArchiver;
@@ -501,5 +502,25 @@ public class TabArchiverTest {
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testPersistedTabDataNull() throws Exception {
+        doReturn(false).when(mTab).isInitialized();
+        // This shouldn't NPE when the persisted tab data is null.
+        runOnUiThreadBlocking(() -> mTabArchiver.initializePersistedTabData(mTab));
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        runOnUiThreadBlocking(
+                () -> {
+                    ArchivePersistedTabData.from(
+                            mTab,
+                            (tabPersistedData) -> {
+                                assertNull(tabPersistedData);
+                                callbackHelper.notifyCalled();
+                            });
+                });
+        callbackHelper.waitForNext();
     }
 }
