@@ -121,6 +121,8 @@ source_set("unit_tests") {
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
     "//ui/base:base",
     "//ui/display:test_support",
@@ -134,9 +136,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/apps/app_service",
-      "//chrome/test:test_support",
       "//components/prefs:test_support",
-      "//content/test:test_support",
     ]
   }
 }

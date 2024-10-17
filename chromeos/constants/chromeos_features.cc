@@ -193,6 +193,12 @@ BASE_FEATURE(kNotificationWidthIncrease,
              "NotificationWidthIncrease",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the Navigation Capturing Reimpl for the Office
+// PWA.
+BASE_FEATURE(kOfficeNavigationCapturingReimpl,
+             "OfficeNavigationCapturingReimpl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -489,6 +495,10 @@ bool IsPompanoEnabled() {
 
 bool IsNotificationWidthIncreaseEnabled() {
   return base::FeatureList::IsEnabled(kNotificationWidthIncrease);
+}
+
+bool IsOfficeNavigationCapturingReimplEnabled() {
+  return base::FeatureList::IsEnabled(kOfficeNavigationCapturingReimpl);
 }
 
 bool IsOrcaEnabled() {

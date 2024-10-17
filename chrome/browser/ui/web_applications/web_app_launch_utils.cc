@@ -96,6 +96,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -305,6 +306,33 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
     web_app::NavigationCapturingInformationForwarder::CreateForWebContents(
         web_contents, redirection_info);
   }
+}
+
+bool IsNavigationCapturingReimplExperimentEnabled(
+    const std::optional<webapps::AppId>& current_browser_app_id,
+    const GURL& url,
+    const std::optional<webapps::AppId>& controlling_app_id) {
+  // Enabling the generic flag turns it on for all navigations.
+  if (apps::features::IsNavigationCapturingReimplEnabled()) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Check application-specific flags.
+  if (controlling_app_id.has_value() &&
+      ::web_app::ChromeOsWebAppExperiments::
+          IsNavigationCapturingReimplEnabledForTargetApp(*controlling_app_id)) {
+    return true;
+  }
+  if (current_browser_app_id.has_value() &&
+      ::web_app::ChromeOsWebAppExperiments::
+          IsNavigationCapturingReimplEnabledForSourceApp(
+              *current_browser_app_id, url)) {
+    return true;
+  }
+#endif
+
+  return false;
 }
 
 }  // namespace
@@ -1075,23 +1103,29 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
-  if (!apps::features::IsNavigationCapturingReimplEnabled() ||
-      params.started_from_context_menu) {
+  if (params.started_from_context_menu) {
     return {.redirection_info = redirection_info};
   }
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    return {.redirection_info = redirection_info};
+  }
   web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-
-  auto OpensInStandaloneExperience =
-      [&registrar](const webapps::AppId& app_id) -> bool {
-    return registrar.GetAppEffectiveDisplayMode(app_id) !=
-           DisplayMode::kBrowser;
-  };
 
   std::optional<webapps::AppId> controlling_app_id =
       registrar.FindAppThatCapturesLinksInScope(params.url);
+
+  // Only proceed as below if the navigation capturing is enabled. The flag in
+  // the redirection info has to store the result of this check, so that the
+  // logic in `OnWebAppNavigationAfterWebContentsCreation()` is skipped when not
+  // needed.
+  if (!IsNavigationCapturingReimplExperimentEnabled(
+          current_browser_app_id, params.url, controlling_app_id)) {
+    return {.redirection_info = redirection_info};
+  }
+  redirection_info.capturing_enabled = true;
 
   debug_data.Set("controlling_app_id", controlling_app_id.value_or("<none>"));
   debug_data.Set("params.browser", base::ToString(params.browser.get()));
@@ -1135,6 +1169,12 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
     return {.redirection_info = redirection_info};
   }
   debug_data.Set("is_auxiliary_browsing_context", false);
+
+  auto OpensInStandaloneExperience =
+      [&registrar](const webapps::AppId& app_id) -> bool {
+    return registrar.GetAppEffectiveDisplayMode(app_id) !=
+           DisplayMode::kBrowser;
+  };
 
   // Case: User-modified clicks.
   if (is_user_modified_click) {
@@ -1346,6 +1386,12 @@ void OnWebAppNavigationAfterWebContentsCreation(
     web_app::AppNavigationResult app_navigation_result,
     const NavigateParams& params,
     base::WeakPtr<content::NavigationHandle> navigation_handle) {
+  if (!app_navigation_result.redirection_info.capturing_enabled) {
+    // Don't attach info for redirects nor perform any other logic below if the
+    // capturing wasn't enabled for the navigation.
+    return;
+  }
+
   MaybePopulateNavigationHandlingInfoForRedirects(
       navigation_handle, params.navigated_or_inserted_contents,
       app_navigation_result.redirection_info);

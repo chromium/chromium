@@ -69,6 +69,10 @@ struct NavigationCapturingRedirectionInfo {
   NavigationCapturingRedirectionInfo(
       const NavigationCapturingRedirectionInfo& navigation_info);
 
+  // If false, then `OnWebAppNavigationAfterWebContentsCreation()` exits early
+  // and this object will not be attached to the NavigationHandle (via
+  // `NavigationCapturingRedirectionInfo`).
+  bool capturing_enabled = false;
   std::optional<webapps::AppId> app_id_initial_browser;
   NavigationHandlingInitialResult initial_nav_handling_result =
       NavigationHandlingInitialResult::kBrowserTab;

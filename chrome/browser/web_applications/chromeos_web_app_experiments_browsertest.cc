@@ -146,17 +146,15 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
 class ChromeOsWebAppExperimentsNavigationBrowserTest
     : public ChromeOsWebAppExperimentsBrowserTest {
  protected:
-  ChromeOsWebAppExperimentsNavigationBrowserTest() {
-    // TODO(crbug.com/319142353): Use an app-specific feature flag instead.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kPwaNavigationCapturing,
-        {{"link_capturing_state", "reimpl_default_on"}});
-  }
+  ChromeOsWebAppExperimentsNavigationBrowserTest() = default;
 
   ~ChromeOsWebAppExperimentsNavigationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ChromeOsWebAppExperimentsBrowserTest::SetUpOnMainThread();
+
+    // Turn on link capturing for the web app.
+    apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_);
 
     // Launch the app in a window.
     Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
@@ -196,7 +194,8 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
                                 blink::WebMouseEvent::Button::kLeft);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kOfficeNavigationCapturingReimpl};
   raw_ptr<content::WebContents> app_web_contents_ = nullptr;
 };
 

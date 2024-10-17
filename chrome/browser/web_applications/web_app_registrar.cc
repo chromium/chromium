@@ -1096,7 +1096,12 @@ WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
 
 bool WebAppRegistrar::CanCaptureLinksInScope(
     const webapps::AppId& app_id) const {
-  if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)) {
+  if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)
+#if BUILDFLAG(IS_CHROMEOS)
+      && !ChromeOsWebAppExperiments::
+             IsNavigationCapturingReimplEnabledForTargetApp(app_id)
+#endif
+  ) {
     return false;
   }
   if (!IsInstallState(app_id,

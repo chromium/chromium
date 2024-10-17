@@ -109,9 +109,6 @@ bool ShouldAlwaysOpenNewAppWindow(WebAppRegistrar& registrar,
 std::unique_ptr<content::NavigationThrottle>
 NavigationCapturingRedirectionThrottle::MaybeCreate(
     content::NavigationHandle* handle) {
-  if (!apps::features::IsNavigationCapturingReimplEnabled()) {
-    return nullptr;
-  }
   return base::WrapUnique(new NavigationCapturingRedirectionThrottle(handle));
 }
 
@@ -129,6 +126,16 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
 }
 
 ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
+  // Bail out if there's no Navigation Capturing data attached. Note: this
+  // cannot be checked in `MaybeCreate()` since the data might get attached
+  // after it's executed.
+  NavigationCapturingNavigationHandleUserData* handle_user_data =
+      NavigationCapturingNavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle());
+  if (!handle_user_data) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   // See https://bit.ly/pwa-navigation-capturing and
   // https://bit.ly/pwa-navigation-handling-dd for more context.
   // Exit early if:
@@ -148,13 +155,6 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
 
   // Only http-style schemes are allowed.
   if (!final_url.SchemeIsHTTPOrHTTPS()) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
-  NavigationCapturingNavigationHandleUserData* handle_user_data =
-      NavigationCapturingNavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle());
-  if (!handle_user_data) {
     return content::NavigationThrottle::PROCEED;
   }
 

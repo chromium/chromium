@@ -13,6 +13,8 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 
@@ -119,6 +121,24 @@ bool ChromeOsWebAppExperiments::IgnoreManifestColor(
     const webapps::AppId& app_id) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
   return IsExperimentEnabled(app_id);
+}
+
+bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForTargetApp(
+    const webapps::AppId& target_app_id) {
+  return ::chromeos::features::IsOfficeNavigationCapturingReimplEnabled() &&
+         IsExperimentEnabled(target_app_id);
+}
+
+bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForSourceApp(
+    const webapps::AppId& source_app_id,
+    const GURL& url) {
+  // Until Navigation Capturing Reimplementation is fully enabled, hardcode
+  // specific destination URLs for the typical scenarios in which we want the
+  // user to stay inside the Office PWA (note that URLs that are already within
+  // the PWA's scope are covered by
+  // `IsNavigationCapturingReimplEnabledForTargetApp()`).
+  return ::chromeos::features::IsOfficeNavigationCapturingReimplEnabled() &&
+         IsExperimentEnabled(source_app_id) && url == url::kAboutBlankURL;
 }
 
 void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {

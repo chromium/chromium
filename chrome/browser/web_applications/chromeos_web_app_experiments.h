@@ -53,6 +53,16 @@ class ChromeOsWebAppExperiments {
   // `app_id`.
   static bool IgnoreManifestColor(const webapps::AppId& app_id);
 
+  // Whether the Navigation Capturing Reimplementation behavior should be
+  // enabled when navigating to a URL controlled by the given app.
+  static bool IsNavigationCapturingReimplEnabledForTargetApp(
+      const webapps::AppId& target_app_id);
+  // Whether the Navigation Capturing Reimplementation behavior should be
+  // enabled when navigating from the given app's window to the given URL.
+  static bool IsNavigationCapturingReimplEnabledForSourceApp(
+      const webapps::AppId& source_app_id,
+      const GURL& url);
+
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(
       std::vector<const char*> scope_extensions_override);
