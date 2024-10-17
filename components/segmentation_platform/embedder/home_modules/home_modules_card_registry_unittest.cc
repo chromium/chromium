@@ -68,7 +68,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCard) {
   ASSERT_EQ(8u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(4u, registry_->get_label_index(kTipsLensSearchVariation));
-  ASSERT_EQ(11u, registry_->all_cards_input_size());
+  ASSERT_EQ(12u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   ASSERT_EQ(1u, all_cards.size());

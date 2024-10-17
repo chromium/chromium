@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
+#import "ui/base/device_form_factor.h"
 
 using segmentation_platform::TipIdentifier;
 using segmentation_platform::home_modules::TipIdentifierForOutputLabel;
@@ -453,6 +454,13 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             _localState->GetBoolean(
                 prefs::kLensCameraAssistedSearchPolicyAllowed)));
+
+    // Miscellaneous signals
+    BOOL isPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsPhoneFormFactor,
+        segmentation_platform::processing::ProcessedValue::FromFloat(isPhone));
   }
 
   __weak MagicStackRankingModel* weakSelf = self;

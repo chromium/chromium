@@ -63,6 +63,7 @@ source_set("ranking_model") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/browser/ui/content_suggestions/tips",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

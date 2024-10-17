@@ -17,6 +17,7 @@ const char kPasswordManagerAllowedByEnterprisePolicy[] =
     "password_manager_allowed_by_enterprise_policy";
 const char kEnhancedSafeBrowsingAllowedByEnterprisePolicy[] =
     "enhanced_safe_browsing_allowed_by_enterprise_policy";
+const char kIsPhoneFormFactor[] = "is_phone_form_factor";
 
 // Placeholder output label for segmentation model executor.
 const char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
