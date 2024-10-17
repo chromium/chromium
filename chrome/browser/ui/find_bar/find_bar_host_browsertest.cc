@@ -1046,8 +1046,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_FALSE(fully_visible);
 }
 
+// TODO(crbug.com/353259716): Test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FindMovesWhenObscuring DISABLED_FindMovesWhenObscuring
+#else
+#define MAYBE_FindMovesWhenObscuring FindMovesWhenObscuring
+#endif
 // Make sure Find box moves out of the way if it is obscuring the active match.
-IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindMovesWhenObscuring) {
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_FindMovesWhenObscuring) {
   GURL url = GetURL(kMoveIfOver);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
