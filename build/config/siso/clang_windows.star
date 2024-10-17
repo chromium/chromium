@@ -96,11 +96,6 @@ def __step_config(ctx, step_config):
                 win_toolchain_headers = [
                     win_toolchain_dir + ":headers-ci",
                 ]
-                if ctx.fs.exists(path.join(win_toolchain_dir, "VC/Tools/MSVC/14.34.31933")):
-                    win_toolchain_headers.extend([
-                        # third_party/libc++ includes "DelayIMP.h"
-                        path.join(win_toolchain_dir, "VC/Tools/MSVC/14.34.31933/include/DelayIMP.h"),
-                    ])
                 sdk_version = __win_sdk_version(ctx)
                 if sdk_version:
                     win_toolchain_headers.extend([
