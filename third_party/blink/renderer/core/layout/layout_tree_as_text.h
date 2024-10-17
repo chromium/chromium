@@ -77,29 +77,12 @@ ExternalRepresentation(LocalFrame*,
 CORE_EXPORT String
 ExternalRepresentation(Element*,
                        LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
+
+// Helper function shared with SVGLayoutTreeAsText (so they are not exported).
 void Write(WTF::TextStream&,
            const LayoutObject&,
            int indent = 0,
            LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
-
-class LayoutTreeAsText {
-  STATIC_ONLY(LayoutTreeAsText);
-  // FIXME: This is a cheesy hack to allow easy access to ComputedStyle colors.
-  // It won't be needed if we convert it to use visitedDependentColor instead.
-  // (This just involves rebaselining many results though, so for now it's
-  // not being done).
- public:
-  static void WriteLayoutObject(WTF::TextStream&,
-                                const LayoutObject&,
-                                LayoutAsTextBehavior);
-  static void WriteLayers(WTF::TextStream&,
-                          PaintLayer*,
-                          int indent = 0,
-                          LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal,
-                          const PaintLayer* marked_layer = nullptr);
-};
-
-// Helper function shared with SVGLayoutTreeAsText (so they are not exported).
 String QuoteAndEscapeNonPrintables(const String&);
 WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);

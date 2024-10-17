@@ -65,6 +65,12 @@
 
 namespace blink {
 
+static void WriteLayers(WTF::TextStream&,
+                        PaintLayer*,
+                        int indent = 0,
+                        LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal,
+                        const PaintLayer* marked_layer = nullptr);
+
 static void PrintBorderStyle(WTF::TextStream& ts,
                              const EBorderStyle border_style) {
   ts << getValueName(PlatformEnumToCSSValueID(border_style)) << " ";
@@ -130,9 +136,9 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::RectF& r) {
   return ts;
 }
 
-void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
-                                         const LayoutObject& o,
-                                         LayoutAsTextBehavior behavior) {
+void WriteLayoutObject(WTF::TextStream& ts,
+                       const LayoutObject& o,
+                       LayoutAsTextBehavior behavior) {
   ts << o.DecoratedName();
 
   if (behavior & kLayoutAsTextShowAddresses)
@@ -372,7 +378,7 @@ void Write(WTF::TextStream& ts,
 
   WriteIndent(ts, indent);
 
-  LayoutTreeAsText::WriteLayoutObject(ts, o, behavior);
+  WriteLayoutObject(ts, o, behavior);
   ts << "\n";
 
   if (behavior & kLayoutAsTextShowPaintProperties) {
@@ -406,7 +412,7 @@ void Write(WTF::TextStream& ts,
           layout_view->GetDocument().UpdateStyleAndLayout(
               DocumentUpdateReason::kTest);
           if (auto* layer = layout_view->Layer()) {
-            LayoutTreeAsText::WriteLayers(ts, layer, indent + 1, behavior);
+            WriteLayers(ts, layer, indent + 1, behavior);
           }
         }
       }
@@ -502,11 +508,11 @@ static HeapVector<Member<PaintLayer>> ChildLayers(
   return vector;
 }
 
-void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
-                                   PaintLayer* layer,
-                                   int indent,
-                                   LayoutAsTextBehavior behavior,
-                                   const PaintLayer* marked_layer) {
+void WriteLayers(WTF::TextStream& ts,
+                 PaintLayer* layer,
+                 int indent,
+                 LayoutAsTextBehavior behavior,
+                 const PaintLayer* marked_layer) {
   const LayoutObject& layer_object = layer->GetLayoutObject();
   PhysicalOffset layer_offset =
       layer_object.LocalToAbsolutePoint(PhysicalOffset());
@@ -639,7 +645,7 @@ static String ExternalRepresentation(LayoutBox* layout_object,
     return ts.Release();
 
   PaintLayer* layer = layout_object->Layer();
-  LayoutTreeAsText::WriteLayers(ts, layer, 0, behavior, marked_layer);
+  WriteLayers(ts, layer, 0, behavior, marked_layer);
   WriteSelection(ts, layout_object);
   return ts.Release();
 }
