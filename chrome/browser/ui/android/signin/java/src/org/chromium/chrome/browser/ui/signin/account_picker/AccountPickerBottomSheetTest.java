@@ -560,10 +560,9 @@ public class AccountPickerBottomSheetTest {
     public void testProfileDataUpdateOnExpandedSheet() {
         buildAndShowCollapsedThenExpandedBottomSheet();
         String newFullName = "New Full Name1";
-        String newGivenName = "New Given Name1";
 
         mFakeAccountInfoService.addAccountInfo(
-                TestAccounts.ACCOUNT1.getEmail(), newFullName, newGivenName, null);
+                new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
         onViewFullyShownInParent(
                         withText(TestAccounts.ACCOUNT1.getEmail()),
@@ -584,7 +583,8 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
         String newFullName = "New Full Name1";
 
-        mFakeAccountInfoService.addAccountInfo(TestAccounts.ACCOUNT1);
+        mFakeAccountInfoService.addAccountInfo(
+                new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
         onViewFullyShownInParent(
                         withText(TestAccounts.ACCOUNT1.getEmail()),
@@ -1709,9 +1709,7 @@ public class AccountPickerBottomSheetTest {
                         "All values of AccountPickerLaunchMode should be handled.");
         }
 
-        CriteriaHelper.pollUiThread(
-                mCoordinator.getBottomSheetViewForTesting().findViewById(expectedLayoutId)
-                        ::isShown);
+        onViewWaiting(allOf(withId(expectedLayoutId), isCompletelyDisplayed()));
     }
 
     private void buildAndShowBottomSheet(@AccountPickerLaunchMode int launchMode) {
