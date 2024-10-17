@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -1013,10 +1014,8 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
     proto::UrlRestriction url_restriction;
     url_restriction.set_block_for_sync(true);
     url_restriction.set_block_for_share(true);
-    optimization_guide::proto::Any any;
-    any.set_type_url(url_restriction.GetTypeName());
-    url_restriction.SerializeToString(any.mutable_value());
-    metadata.set_any_metadata(any);
+    metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(url_restriction));
     EXPECT_CALL(
         *decider_,
         CanApplyOptimization(
