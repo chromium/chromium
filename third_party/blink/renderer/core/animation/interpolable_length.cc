@@ -415,6 +415,10 @@ void InterpolableLength::SubtractFromOneHundredPercent() {
           hundred_percent, expression_, CSSMathOperator::kSubtract));
 }
 
+bool InterpolableLength::IsNeutralValue() const {
+  return IsLengthArray() && length_array_.type_flags.none();
+}
+
 static double ClampToRange(double x, Length::ValueRange range) {
   return (range == Length::ValueRange::kNonNegative && x < 0) ? 0 : x;
 }

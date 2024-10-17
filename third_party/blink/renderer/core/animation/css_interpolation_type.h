@@ -51,18 +51,6 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
     return nullptr;
   }
 
- protected:
-  CSSInterpolationType(PropertyHandle, const PropertyRegistration* = nullptr);
-
-  const CSSProperty& CssProperty() const {
-    return GetProperty().GetCSSProperty();
-  }
-
-  InterpolationValue MaybeConvertSingle(const PropertySpecificKeyframe&,
-                                        const InterpolationEnvironment&,
-                                        const InterpolationValue& underlying,
-                                        ConversionCheckers&) const final;
-
   // The interpolation stack has an optimization where we perform compositing
   // after interpolation. This is against spec, but it works for simple addition
   // cases and halves the amount of computation needed. Some types require
@@ -78,6 +66,19 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
       ConversionCheckers&) const {
     return value;
   }
+
+ protected:
+  explicit CSSInterpolationType(PropertyHandle,
+                                const PropertyRegistration* = nullptr);
+
+  const CSSProperty& CssProperty() const {
+    return GetProperty().GetCSSProperty();
+  }
+
+  InterpolationValue MaybeConvertSingle(const PropertySpecificKeyframe&,
+                                        const InterpolationEnvironment&,
+                                        const InterpolationValue& underlying,
+                                        ConversionCheckers&) const final;
 
   InterpolationValue MaybeConvertUnderlyingValue(
       const InterpolationEnvironment&) const override;

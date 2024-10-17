@@ -59,6 +59,8 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   bool HasPercentage() const;
   void SubtractFromOneHundredPercent();
 
+  bool IsNeutralValue() const;
+
   InterpolableLength* Clone() const { return RawClone(); }
   InterpolableLength* CloneAndZero() const { return RawCloneAndZero(); }
 
