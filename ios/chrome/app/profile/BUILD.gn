@@ -36,8 +36,8 @@ source_set("profile_controller") {
     ":first_run_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
+    ":search_engine_choice_profile_agent",
     "//base",
-    "//ios/chrome/app:search_engine_choice_profile_agent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
@@ -106,6 +106,27 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
+  ]
+}
+
+source_set("search_engine_choice_profile_agent") {
+  sources = [
+    "search_engine_choice_profile_agent.h",
+    "search_engine_choice_profile_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ios/chrome/browser/ui/search_engine_choice",
   ]
 }
 

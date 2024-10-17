@@ -12,7 +12,7 @@
 #import "ios/chrome/app/profile/post_restore_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/app/search_engine_choice_profile_agent.h"
+#import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

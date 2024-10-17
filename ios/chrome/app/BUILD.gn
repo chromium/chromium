@@ -364,27 +364,6 @@ source_set("enterprise_app_agent_ui") {
   ]
 }
 
-source_set("search_engine_choice_profile_agent") {
-  sources = [
-    "search_engine_choice_profile_agent.h",
-    "search_engine_choice_profile_agent.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/search_engines",
-    "//ios/chrome/app/profile",
-    "//ios/chrome/browser/search_engine_choice/model",
-    "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/signin/model:signin_util",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
-    "//ios/chrome/browser/ui/search_engine_choice",
-  ]
-}
-
 source_set("app_internal") {
   sources = [
     "application_storage_metrics.h",
