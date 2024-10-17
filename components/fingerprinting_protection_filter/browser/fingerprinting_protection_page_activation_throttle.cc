@@ -8,11 +8,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -34,9 +37,8 @@ FingerprintingProtectionPageActivationThrottle::
         PrefService* prefs,
         bool is_incognito)
     : NavigationThrottle(handle),
-      profile_interaction_manager_(std::make_unique<ProfileInteractionManager>(
-          tracking_protection_settings,
-          prefs)),
+      tracking_protection_settings_(tracking_protection_settings),
+      prefs_(prefs),
       is_incognito_(is_incognito) {}
 
 FingerprintingProtectionPageActivationThrottle::
@@ -49,7 +51,7 @@ FingerprintingProtectionPageActivationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 FingerprintingProtectionPageActivationThrottle::WillProcessResponse() {
-  NotifyResult(GetActivationDecision());
+  NotifyResult(GetActivation());
   return PROCEED;
 }
 
@@ -58,17 +60,59 @@ FingerprintingProtectionPageActivationThrottle::GetNameForLogging() {
   return kPageActivationThrottleNameForLogging;
 }
 
-ActivationDecision
-FingerprintingProtectionPageActivationThrottle::GetActivationDecision() const {
+GetActivationResult
+FingerprintingProtectionPageActivationThrottle::GetActivation() const {
   if (!features::IsFingerprintingProtectionFeatureEnabled()) {
-    return ActivationDecision::UNKNOWN;
+    // Feature flag disabled.
+    return {.level = ActivationLevel::kDisabled,
+            .decision = ActivationDecision::UNKNOWN};
   }
-  if (fingerprinting_protection_filter::features::kActivationLevel.Get() ==
-      ActivationLevel::kDisabled) {
-    return ActivationDecision::ACTIVATION_DISABLED;
+
+  if (features::kActivationLevel.Get() == ActivationLevel::kDisabled) {
+    // Feature flag enabled, but disabled by feature param.
+    return {.level = ActivationLevel::kDisabled,
+            .decision = ActivationDecision::ACTIVATION_DISABLED};
   }
-  // Either enabled or dry_run
-  return ActivationDecision::ACTIVATED;
+
+  if (features::kActivationLevel.Get() == ActivationLevel::kDryRun) {
+    // Activated for dry run
+    return {.level = ActivationLevel::kDryRun,
+            .decision = ActivationDecision::ACTIVATED};
+  }
+  // At this point, we know that
+  // features::IsFingerprintingProtectionFeatureEnabled() and that
+  // features::kActivationLevel.Get() is ActivationLevel::kEnabled.
+
+  if (prefs_ != nullptr) {
+    // We use prefs::kCookieControlsMode to check third-party cookie blocking
+    // rather than TrackingProtectionSettings API because the latter only covers
+    // the 3PCD case, whereas the pref covers both the 3PCD case and the case
+    // where the user blocks 3PC.
+    bool is_3pc_blocked =
+        static_cast<content_settings::CookieControlsMode>(
+            prefs_->GetInteger(prefs::kCookieControlsMode)) ==
+        content_settings::CookieControlsMode::kBlockThirdParty;
+
+    if (features::kEnableOnlyIf3pcBlocked.Get() && !is_3pc_blocked) {
+      // FP disabled by only_if_3pc_blocked param.
+      return {.level = ActivationLevel::kDisabled,
+              .decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET};
+    }
+  }
+
+  // If we have a reference to TrackingProtectionSettings, use it to check for
+  // a URL-level exclusion.
+  if (tracking_protection_settings_ != nullptr &&
+      tracking_protection_settings_->GetTrackingProtectionSetting(
+          navigation_handle()->GetURL()) == CONTENT_SETTING_ALLOW) {
+    // FP disabled by a Tracking Protection exception for the current URL.
+    return {.level = ActivationLevel::kDisabled,
+            .decision = ActivationDecision::URL_ALLOWLISTED};
+  }
+
+  // FP enabled
+  return {.level = ActivationLevel::kEnabled,
+          .decision = ActivationDecision::ACTIVATED};
 }
 
 void FingerprintingProtectionPageActivationThrottle::
@@ -86,27 +130,23 @@ void FingerprintingProtectionPageActivationThrottle::
 }
 
 void FingerprintingProtectionPageActivationThrottle::NotifyResult(
-    ActivationDecision decision) {
-  // The ActivationDecision should only be UNKNOWN when the flag is disabled.
-  if (decision == ActivationDecision::UNKNOWN) {
+    GetActivationResult activation_result) {
+  // The ActivationDecision is only UNKNOWN when the feature flag is disabled.
+  if (activation_result.decision == ActivationDecision::UNKNOWN) {
     return;
-  }
-  ActivationLevel activation_level = features::kActivationLevel.Get();
-  if (profile_interaction_manager_.get()) {
-    activation_level = profile_interaction_manager_->OnPageActivationComputed(
-        navigation_handle(), activation_level, &decision);
   }
 
   // Populate ActivationState.
   ActivationState activation_state;
-  activation_state.activation_level = activation_level;
+  activation_state.activation_level = activation_result.level;
   activation_state.measure_performance =
       GetEnablePerformanceMeasurements(is_incognito_);
   activation_state.enable_logging =
       features::IsFingerprintingProtectionConsoleLoggingEnabled();
 
-  NotifyPageActivationComputed(activation_state, decision);
-  LogMetricsOnChecksComplete(decision, activation_level);
+  NotifyPageActivationComputed(activation_state, activation_result.decision);
+  LogMetricsOnChecksComplete(activation_result.decision,
+                             activation_result.level);
 }
 
 void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(

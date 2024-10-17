@@ -5,12 +5,9 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_PAGE_ACTIVATION_THROTTLE_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_PAGE_ACTIVATION_THROTTLE_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -29,16 +26,16 @@ enum class ActivationLevel;
 
 namespace fingerprinting_protection_filter {
 
-class ProfileInteractionManager;
+struct GetActivationResult {
+  subresource_filter::mojom::ActivationLevel level;
+  subresource_filter::ActivationDecision decision;
+};
 
 // Navigation throttle responsible for activating subresource filtering on page
 // loads that match the Fingerprinting Protection Filtering criteria.
 class FingerprintingProtectionPageActivationThrottle
     : public content::NavigationThrottle {
  public:
-  // `profile_interaction_manager` is allowed to be null, in which case the
-  // client creating this throttle will not be able to adjust activation
-  // decisions made by the throttle.
   FingerprintingProtectionPageActivationThrottle(
       content::NavigationHandle* handle,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
@@ -62,11 +59,17 @@ class FingerprintingProtectionPageActivationThrottle
   bool GetEnablePerformanceMeasurements(bool is_incognito) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FingerprintingProtectionPageActivationThrottleTest,
-                           FlagEnabledDefaultActivatedParams_IsAllowlisted);
+  FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestGetActivationTest,
+                           GetActivationComputesLevelAndDecision);
+
+  // Computes the ActivationLevel and ActivationDecision for the current URL
+  // based on feature flags/params and prefs. This function is necessary because
+  // there is some interaction between flags/params and prefs.
+  GetActivationResult GetActivation() const;
 
   void CheckCurrentUrl();
-  virtual void NotifyResult(subresource_filter::ActivationDecision decision);
+
+  virtual void NotifyResult(GetActivationResult activation_result);
 
   // Helper function to abstract getting the WebContentsHelper dependency.
   // This structure is useful for testing.
@@ -78,9 +81,9 @@ class FingerprintingProtectionPageActivationThrottle
       subresource_filter::ActivationDecision decision,
       subresource_filter::mojom::ActivationLevel level) const;
 
-  subresource_filter::ActivationDecision GetActivationDecision() const;
-
-  std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
+  raw_ptr<PrefService> prefs_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in
   // WillProcessResponse. If deferral was not necessary, will remain null.
