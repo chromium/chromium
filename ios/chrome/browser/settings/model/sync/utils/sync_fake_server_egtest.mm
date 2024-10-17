@@ -342,10 +342,12 @@ void ClearRelevantData() {
   const GURL whileSyncURL = self.testServer->GetURL("/pony.html");
   const GURL postSyncURL = self.testServer->GetURL("/destination.html");
 
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   // Visit a URL before turning on Sync.
   [ChromeEarlGrey loadURL:preSyncURL];
@@ -379,10 +381,12 @@ void ClearRelevantData() {
 - (void)testSyncHistoryDownload {
   const GURL mockURL("http://not-a-real-site/");
 
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   // Inject a history visit on the server.
   [ChromeEarlGrey addFakeSyncServerHistoryVisit:mockURL];
@@ -1026,10 +1030,12 @@ void ClearRelevantData() {
 
   // Clear browsing history before and after the test to avoid conflicting with
   // other tests.
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly not empty");
@@ -1119,10 +1125,12 @@ void ClearRelevantData() {
 
   // Clear browsing history before and after the test to avoid conflicting with
   // other tests.
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly not empty");

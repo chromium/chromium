@@ -162,7 +162,10 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 }
 
 - (void)addURLToHistory {
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
   // Set server up.
   _visitCounter = 0;
   self.testServer->RegisterRequestHandler(

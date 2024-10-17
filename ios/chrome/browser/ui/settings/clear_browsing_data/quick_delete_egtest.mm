@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
@@ -42,6 +43,7 @@
 
 namespace {
 
+using base::test::ios::kWaitForClearBrowsingDataTimeout;
 using browsing_data::DeleteBrowsingDataDialogAction;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ClearBrowsingDataButton;
@@ -227,10 +229,12 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to default value.");
 
-  [AutofillAppInterface clearCreditCardStore];
-  [PasswordSettingsAppInterface clearPasswordStores];
-  [ChromeEarlGrey clearBrowsingHistory];
-  [ChromeEarlGrey resetBrowsingDataPrefs];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [AutofillAppInterface clearCreditCardStore];
+    [PasswordSettingsAppInterface clearPasswordStores];
+    [ChromeEarlGrey clearBrowsingHistory];
+    [ChromeEarlGrey resetBrowsingDataPrefs];
+  }
 
   // Disable tab selection so the tab closure animation is not ran in all the
   // tests.
@@ -348,7 +352,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Wait for Quick Delete to disappear marking that the deletion has finished.
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()];
+      waitForUIElementToDisappearWithMatcher:ClearBrowsingDataView()
+                                     timeout:
+                                         base::test::ios::
+                                             kWaitForClearBrowsingDataTimeout];
 
   // Wait for the tabs closure animation to finish if it's trigger by the
   // deletion.
@@ -1528,7 +1535,9 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // types, that the placeholder summary for no data is shown.
 - (void)testNoDataForDeletion {
   // Make sure there isn't any history items.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   // Set pref to keep browsing history.
   [ChromeEarlGrey setBoolValue:false

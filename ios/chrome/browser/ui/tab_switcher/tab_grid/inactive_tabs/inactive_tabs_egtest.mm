@@ -117,9 +117,11 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [super setUp];
   [self setUpTestServer];
 
-  // Just have an NTP, no other previous tabs.
-  [[self class] closeAllTabs];
-  [ChromeEarlGrey openNewTab];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    // Just have an NTP, no other previous tabs.
+    [[self class] closeAllTabs];
+    [ChromeEarlGrey openNewTab];
+  }
 
   // Ensure that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0

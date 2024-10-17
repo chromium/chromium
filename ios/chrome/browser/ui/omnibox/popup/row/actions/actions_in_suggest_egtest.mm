@@ -80,8 +80,9 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 
 - (void)setUp {
   [super setUp];
-
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestion_actions.json"];

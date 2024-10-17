@@ -296,7 +296,10 @@ NSString* const kDomain2 = @"domain2.com";
   const std::string pageText = "pony";
 
   // Set history to a clean state and verify it is clean.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
   [ChromeEarlGrey resetBrowsingDataPrefs];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly non-empty");

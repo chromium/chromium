@@ -62,7 +62,10 @@ id<GREYMatcher> TileWithText(NSString* text) {
   web::test::SetUpSimpleHttpServer(responses);
 
   // Clear history and verify that the tile does not exist.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 

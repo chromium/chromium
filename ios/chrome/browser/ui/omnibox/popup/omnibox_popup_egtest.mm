@@ -147,7 +147,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   _URL2 = self.testServer->GetURL(kPage2URL);
   _URL3 = self.testServer->GetURL(kPage3URL);
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 }
 
 // Tests that tapping the switch to open tab button, switch to the open tab,
@@ -434,7 +436,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that selecting a suggestion in the omnibox and successfully navigating
 // to it adds an entry in the shortcuts database.
 - (void)testShortcutsDatabasePopulation {
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   // Ensure the database is initialized and empty.
   [OmniboxEarlGrey waitForShortcutsBackendInitialization];
   [OmniboxEarlGrey waitForNumberOfShortcutsInDatabase:0];
@@ -476,7 +480,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];
@@ -565,7 +571,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];

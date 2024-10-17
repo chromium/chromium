@@ -131,11 +131,15 @@ void TapSecondaryActionButton() {
 }
 
 + (void)setUpHelper {
-  [self closeAllTabs];
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    [self closeAllTabs];
+  }
 }
 
 + (void)tearDown {
-  [self closeAllTabs];
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    [self closeAllTabs];
+  }
 
   [super tearDown];
 }
@@ -497,7 +501,9 @@ void TapSecondaryActionButton() {
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
 
   // Clear history and verify that the tile does not exist.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
 
@@ -562,7 +568,9 @@ void TapSecondaryActionButton() {
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
 
   // Clear history and verify that the tile does not exist.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
 

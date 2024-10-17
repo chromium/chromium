@@ -67,9 +67,9 @@ void TapMenuItem(int labelId) {
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey writeFirstRunSentinel];
   [ChromeEarlGrey clearDefaultBrowserPromoData];
   [ChromeEarlGrey
@@ -79,6 +79,7 @@ void TapMenuItem(int labelId) {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [NewTabPageAppInterface resetSetUpListPrefs];
+  [ChromeEarlGrey openNewTab];
 }
 
 - (void)tearDownHelper {

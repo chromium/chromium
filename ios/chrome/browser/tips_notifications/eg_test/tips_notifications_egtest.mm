@@ -131,14 +131,11 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-  [ChromeEarlGrey writeFirstRunSentinel];
-}
-
 - (void)setUp {
   [super setUp];
 
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey writeFirstRunSentinel];
   [ChromeEarlGrey clearDefaultBrowserPromoData];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
@@ -147,6 +144,7 @@ XCUIElement* GetElementMatchingLabel(XCUIElement* parent,
   [NewTabPageAppInterface resetSetUpListPrefs];
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
+  [ChromeEarlGrey openNewTab];
 }
 
 - (void)tearDownHelper {

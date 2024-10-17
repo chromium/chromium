@@ -142,7 +142,9 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndEnableHistorySync();
   [NewTabPageAppInterface disableSetUpList];

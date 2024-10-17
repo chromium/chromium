@@ -199,6 +199,9 @@
 // Tests enabling/disabling features through [AppLaunchManager
 // ensureAppLaunchedWithFeaturesEnabled]
 - (void)testAppLaunchManagerLaunchWithFeatures {
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    EARL_GREY_TEST_SKIPPED(@"NoForceRelaunchAndResetState being removed.");
+  }
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kTestFeature}
                                   disabled:{}
@@ -276,6 +279,9 @@
 
 // Tests running resets after relaunch through AppLaunchManager.
 - (void)testAppLaunchManagerNoForceRelaunchAndResetState {
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    EARL_GREY_TEST_SKIPPED(@"NoForceRelaunchAndResetState being removed.");
+  }
   [self disableMockAuthentication];
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager]
@@ -288,6 +294,9 @@
 
 // Tests no force relaunch.
 - (void)testAppLaunchManagerNoForceRelaunchAndKeepState {
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    EARL_GREY_TEST_SKIPPED(@"NoForceRelaunchAndKeepState being removed.");
+  }
   [self disableMockAuthentication];
   [ChromeEarlGrey openNewTab];
   // No relauch when feature list isn't changed.

@@ -35,7 +35,9 @@
       base::BindRepeating(&omnibox::OmniboxHTTPResponses));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -133,7 +135,9 @@
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestions_sample.json"];
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 }
 
 - (void)tearDownHelper {

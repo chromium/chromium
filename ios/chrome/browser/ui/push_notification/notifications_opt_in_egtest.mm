@@ -55,12 +55,14 @@ id<GREYMatcher> OptInScreenMatcher() {
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey writeFirstRunSentinel];
   [NewTabPageAppInterface resetSetUpListPrefs];
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
+  [ChromeEarlGrey openNewTab];
 }
 
 - (void)tearDownHelper {

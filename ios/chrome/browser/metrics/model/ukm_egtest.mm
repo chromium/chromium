@@ -43,7 +43,9 @@ using chrome_test_util::SettingsDoneButton;
   // tabs in the list, the button at the bottom of the view is offscreen and its
   // animation causes tests to hang for the same reasons as crbug.com/640977.
   // Clear browsing history to ensure that there are no recent tabs.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO

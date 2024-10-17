@@ -41,7 +41,9 @@ NSString* kDinoSearchString = @"dino game";
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];

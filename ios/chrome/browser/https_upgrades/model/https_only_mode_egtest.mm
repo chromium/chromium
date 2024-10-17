@@ -75,8 +75,10 @@ enum class TestType {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
-  [HttpsUpgradeAppInterface clearAllowlist];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+    [HttpsUpgradeAppInterface clearAllowlist];
+  }
 
   if ([self testType] == TestType::kHttpsOnlyMode) {
     [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];

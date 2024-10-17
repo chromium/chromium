@@ -172,7 +172,10 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   _URL2 = self.testServer->GetURL(kURL2);
   _URL3 = self.testServer->GetURL(kURL3);
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
   // Some tests rely on a clean state for the "Clear Browsing Data" settings
   // screen.
   [ChromeEarlGrey resetBrowsingDataPrefs];
