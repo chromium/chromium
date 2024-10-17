@@ -375,8 +375,9 @@ WebInputEventResult GestureManager::HandleGestureTap(
 
   if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled() &&
       current_hit_test.InnerNodeFrame()) {
-    current_hit_test.InnerNodeFrame()->View()->UpdateLifecycleToPrePaintClean(
-        DocumentUpdateReason::kHitTest);
+    current_hit_test.InnerNodeFrame()
+        ->View()
+        ->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kHitTest);
     current_hit_test = event_handling_util::HitTestResultInFrame(
         frame_, HitTestLocation(adjusted_point), hit_type);
     if (TextFragmentHandler::IsOverTextFragment(current_hit_test) &&

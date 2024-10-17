@@ -300,7 +300,7 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
   // property set by the UA stylesheet is queried.
   if (IsTransitionPseudoElement(styled_element->GetPseudoId())) {
     if (auto* view = document.View()) {
-      view->UpdateLifecycleToPrePaintClean(
+      view->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kComputedStyle);
     }
     return;

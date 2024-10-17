@@ -549,7 +549,7 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kAnimateTagDiscovery:
         DCHECK(!in_main_lifecycle_update_);
-        document_->View()->UpdateLifecycleToPrePaintClean(
+        document_->View()->UpdateAllLifecyclePhasesExceptPaint(
             DocumentUpdateReason::kViewTransition);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);

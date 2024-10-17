@@ -671,7 +671,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   // If there is a text fragment at the same location as the click indicate that
   // the context menu is being opened from an existing highlight.
   if (result.InnerNodeFrame()) {
-    result.InnerNodeFrame()->View()->UpdateLifecycleToPrePaintClean(
+    result.InnerNodeFrame()->View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kHitTest);
     if (TextFragmentHandler::IsOverTextFragment(result)) {
       data.opened_from_highlight = true;

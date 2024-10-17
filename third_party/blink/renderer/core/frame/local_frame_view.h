@@ -371,9 +371,6 @@ class CORE_EXPORT LocalFrameView final
   // throttle frames for printing.
   void UpdateLifecyclePhasesForPrinting();
 
-  // TODO(pdr): Remove this in favor of |UpdateAllLifecyclePhasesExceptPaint|.
-  bool UpdateLifecycleToPrePaintClean(DocumentUpdateReason reason);
-
   // Computes the style, layout, and compositing inputs lifecycle stages if
   // needed. After calling this method, all frames will be in a lifecycle state
   // >= CompositingInputsClean, unless the frame was throttled (if frame

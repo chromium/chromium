@@ -1552,7 +1552,7 @@ void Page::UpdateLifecycle(LocalFrame& root,
   if (requested_update == WebLifecycleUpdate::kLayout) {
     Animator().UpdateLifecycleToLayoutClean(root, reason);
   } else if (requested_update == WebLifecycleUpdate::kPrePaint) {
-    Animator().UpdateLifecycleToPrePaintClean(root, reason);
+    Animator().UpdateAllLifecyclePhasesExceptPaint(root, reason);
   } else {
     Animator().UpdateAllLifecyclePhases(root, reason);
   }

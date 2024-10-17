@@ -1036,7 +1036,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
   // update; but we can't wait for a lifecycle update to run them, because a
   // hidden frame won't run lifecycle updates. Force layout and run them now.
   DisallowThrottlingScope disallow_throttling(*this);
-  UpdateLifecycleToPrePaintClean(
+  UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kIntersectionObservation);
   ComputeIntersectionsContext context;
   UpdateViewportIntersectionsForSubtree(
@@ -1935,12 +1935,6 @@ bool LocalFrameView::UpdateAllLifecyclePhasesForTest() {
   bool result = UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   RunPostLifecycleSteps();
   return result;
-}
-
-bool LocalFrameView::UpdateLifecycleToPrePaintClean(
-    DocumentUpdateReason reason) {
-  return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
-      DocumentLifecycle::kPrePaintClean, reason);
 }
 
 bool LocalFrameView::UpdateLifecycleToCompositingInputsClean(

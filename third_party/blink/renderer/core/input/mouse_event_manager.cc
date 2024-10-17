@@ -709,8 +709,10 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|. |FocusDocumentView| above is the last possible
   // modifications before we call |SelectionController|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   Node* inner_node = event.InnerNode();
 
@@ -747,8 +749,10 @@ WebInputEventResult MouseEventManager::HandleMouseReleaseEvent(
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|. |FocusDocumentView| above is the last possible
   // modifications before we call |SelectionController|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   return frame_->GetEventHandler()
                  .GetSelectionController()
@@ -858,8 +862,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
 
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   mouse_down_may_start_drag_ = false;
 

@@ -145,7 +145,7 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   if (!layout_view)
     return;
 
-  if (!layout_view->GetFrameView()->UpdateLifecycleToPrePaintClean(
+  if (!layout_view->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kInspector)) {
     return;
   }

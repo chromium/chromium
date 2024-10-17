@@ -541,7 +541,7 @@ TEST_F(IntersectionObserverTest, DirectlyUpdateTransform) {
   EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(LocalFrameView::kDesired,
             GetDocument().View()->GetIntersectionObservationStateForTesting());
@@ -554,7 +554,7 @@ TEST_F(IntersectionObserverTest, DirectlyUpdateTransform) {
   EXPECT_FALSE(target_observer_delegate->LastEntry()->isIntersecting());
 
   container->SetInlineStyleProperty(CSSPropertyID::kColor, "yellow");
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(LocalFrameView::kNotNeeded,
             GetDocument().View()->GetIntersectionObservationStateForTesting());
@@ -1221,7 +1221,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithScrollers) {
   root->scrollTo(0, 100);
   target2->parentElement()->scrollTo(0, 100);
   target3->parentElement()->scrollTo(0, 100);
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(CanUseCachedRects(*observation1));
   EXPECT_FALSE(CanUseCachedRects(*observation2));
@@ -1234,7 +1234,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithScrollers) {
   root->scrollTo(0, 200);
   target2->parentElement()->scrollTo(0, 200);
   target3->parentElement()->scrollTo(0, 200);
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(CanUseCachedRects(*observation1));
   EXPECT_FALSE(CanUseCachedRects(*observation2));
@@ -1244,7 +1244,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithScrollers) {
   target1->parentElement()->SetInlineStyleProperty(CSSPropertyID::kMarginLeft,
                                                    "10px");
   // Invalidation happens during compositing inputs update, so force it here.
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation1));
   EXPECT_FALSE(CanUseCachedRects(*observation2));
@@ -1341,7 +1341,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   root->scrollTo(0, 100);
   target2->parentElement()->scrollTo(0, 100);
   target3->parentElement()->scrollTo(0, 100);
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation1));
   EXPECT_FALSE(CanUseCachedRects(*observation2));
@@ -1355,7 +1355,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   root->scrollTo(0, 200);
   target2->parentElement()->scrollTo(0, 200);
   target3->parentElement()->scrollTo(0, 200);
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation3));
   EXPECT_FALSE(CanUseCachedRects(*observation2));
@@ -1365,7 +1365,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   target1->parentElement()->SetInlineStyleProperty(CSSPropertyID::kMarginLeft,
                                                    "10px");
   // Invalidation happens during compositing inputs update, so force it here.
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation3));
   EXPECT_FALSE(CanUseCachedRects(*observation2));
@@ -1498,7 +1498,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
 
   IntersectionObservation* observation =
       target->IntersectionObserverData()->GetObservationFor(*observer);
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation));
 
@@ -1509,12 +1509,12 @@ TEST_F(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
 
   // Change of opacity doesn't invalidate cached rects.
   container->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0.6");
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(CanUseCachedRects(*observation));
   container->SetInlineStyleProperty(CSSPropertyID::kTransform,
                                     "translateY(20px)");
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation));
 }
@@ -1553,7 +1553,7 @@ TEST_F(IntersectionObserverTest, CachedRectsDisplayNone) {
   EXPECT_TRUE(CanUseCachedRects(*observation));
 
   target->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(CanUseCachedRects(*observation));
 }
@@ -1604,7 +1604,7 @@ TEST_F(IntersectionObserverTest, CachedRectsWithFixedPosition) {
   EXPECT_TRUE(CanUseCachedRects(*observation2));
 
   GetDocument().domWindow()->scrollTo(0, 100);
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(CanUseCachedRects(*observation1));
   EXPECT_TRUE(CanUseCachedRects(*observation2));

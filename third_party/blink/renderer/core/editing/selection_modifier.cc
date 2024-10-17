@@ -805,7 +805,7 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   if (granularity == TextGranularity::kLine ||
       granularity == TextGranularity::kParagraph)
-    UpdateLifecycleToPrePaintClean();
+    UpdateAllLifecyclePhasesExceptPaint();
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetFrame().GetDocument()->Lifecycle());
 
@@ -930,7 +930,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
     return false;
 
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
-  UpdateLifecycleToPrePaintClean();
+  UpdateAllLifecyclePhasesExceptPaint();
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetFrame().GetDocument()->Lifecycle());
 
@@ -1073,11 +1073,12 @@ LayoutUnit SelectionModifier::LineDirectionPointForBlockDirectionNavigation(
   return x;
 }
 
-void SelectionModifier::UpdateLifecycleToPrePaintClean() {
+void SelectionModifier::UpdateAllLifecyclePhasesExceptPaint() {
   LocalFrameView* const frame_view = frame_->View();
   if (!frame_view)
     return;
-  frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kSelection);
+  frame_view->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kSelection);
 }
 
 }  // namespace blink
