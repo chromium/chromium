@@ -167,8 +167,8 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
     return SkipReason::kUsupportedHardware;
   }
 
-  // Further checks for the PIN-only setup mode. It needs to login support and
-  // it is only available for consumers.
+  // Further checks for the PIN-only setup mode. It needs to have login support
+  // and it is only available for consumers.
   if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, context)) {
     if (!has_login_support) {
       return SkipReason::kNotSupportedAsPrimaryFactor;
@@ -191,6 +191,7 @@ bool PinSetupScreen::MaybeSkip(WizardContext& context) {
   // TODO(b/365059362): Create new metric to track the detailed skip reason.
   const auto skip_reason = GetSkipReason(context);
   if (skip_reason.has_value()) {
+    skip_reason_for_testing_ = skip_reason;
     if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, context)) {
       exit_callback_.Run(Result::kNotApplicableAsPrimaryFactor);
       return true;

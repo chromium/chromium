@@ -85,6 +85,10 @@ class PinSetupScreen : public BaseScreen {
     return exit_callback_;
   }
 
+  std::optional<SkipReason> get_skip_reason_for_testing() const {
+    return skip_reason_for_testing_;
+  }
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -118,6 +122,11 @@ class PinSetupScreen : public BaseScreen {
 
   // For keeping the AuthSession while offering PIN as a main factor.
   std::unique_ptr<ScopedSessionRefresher> session_refresher_;
+
+  // For ensuring that the screen is being skipped due to expected reasons. This
+  // is necessary because the screens yields a Result::NotApplicable when
+  // skipped.
+  std::optional<SkipReason> skip_reason_for_testing_;
 
   base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 };
