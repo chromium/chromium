@@ -862,7 +862,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
   // process), so other devices with the group open in the Tabstrip can react to
   // the deletion appropriately (i.e. We do not have to determine if a tab
   // deletion was part of a group deletion).
-  // TODO(crbug.com/319521964): consider if this is required for shared tab
+  // TODO(crbug.com/372210380): consider if this is required for shared tab
   // groups.
   RemoveEntitySpecifics(removed_group.saved_guid(), write_batch.get());
 
