@@ -60,22 +60,6 @@ std::ostream& operator<<(std::ostream& os, TimestampRange range) {
 }
 
 // SiteDataAccessType:
-
-std::string_view SiteDataAccessTypeToString(SiteDataAccessType type) {
-  switch (type) {
-    case SiteDataAccessType::kUnknown:
-      return "Unknown";
-    case SiteDataAccessType::kNone:
-      return "None";
-    case SiteDataAccessType::kRead:
-      return "Read";
-    case SiteDataAccessType::kWrite:
-      return "Write";
-    case SiteDataAccessType::kReadWrite:
-      return "ReadWrite";
-  }
-}
-
 std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type) {
   return os << SiteDataAccessTypeToString(access_type);
 }
@@ -99,15 +83,6 @@ std::string_view GetHistogramSuffix(DIPSCookieMode mode) {
   return std::string_view();
 }
 
-const char* DIPSCookieModeToString(DIPSCookieMode mode) {
-  switch (mode) {
-    case DIPSCookieMode::kBlock3PC:
-      return "Block3PC";
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
-      return "OffTheRecord_Block3PC";
-  }
-}
-
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode) {
   return os << DIPSCookieModeToString(mode);
 }
@@ -124,15 +99,6 @@ std::string_view GetHistogramPiece(DIPSRedirectType type) {
   }
   DCHECK(false) << "Invalid DIPSRedirectType";
   return std::string_view();
-}
-
-const char* DIPSRedirectTypeToString(DIPSRedirectType type) {
-  switch (type) {
-    case DIPSRedirectType::kClient:
-      return "Client";
-    case DIPSRedirectType::kServer:
-      return "Server";
-  }
 }
 
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type) {

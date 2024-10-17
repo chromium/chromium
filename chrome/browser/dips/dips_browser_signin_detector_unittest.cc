@@ -20,7 +20,6 @@
 #include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
-#include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"

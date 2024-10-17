@@ -5,6 +5,40 @@
 #include "chrome/browser/dips/dips_redirect_info.h"
 
 #include "base/rand_util.h"
+#include "chrome/browser/dips/dips_utils.h"
+
+const char* DIPSCookieModeToString(DIPSCookieMode mode) {
+  switch (mode) {
+    case DIPSCookieMode::kBlock3PC:
+      return "Block3PC";
+    case DIPSCookieMode::kOffTheRecord_Block3PC:
+      return "OffTheRecord_Block3PC";
+  }
+}
+
+const char* DIPSRedirectTypeToString(DIPSRedirectType type) {
+  switch (type) {
+    case DIPSRedirectType::kClient:
+      return "Client";
+    case DIPSRedirectType::kServer:
+      return "Server";
+  }
+}
+
+std::string_view SiteDataAccessTypeToString(SiteDataAccessType type) {
+  switch (type) {
+    case SiteDataAccessType::kUnknown:
+      return "Unknown";
+    case SiteDataAccessType::kNone:
+      return "None";
+    case SiteDataAccessType::kRead:
+      return "Read";
+    case SiteDataAccessType::kWrite:
+      return "Write";
+    case SiteDataAccessType::kReadWrite:
+      return "ReadWrite";
+  }
+}
 
 DIPSRedirectChainInfo::DIPSRedirectChainInfo(const UrlAndSourceId& initial_url,
                                              const UrlAndSourceId& final_url,

@@ -18,8 +18,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_test_utils.h"
-#include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"

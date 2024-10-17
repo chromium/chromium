@@ -5,14 +5,33 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_REDIRECT_INFO_H_
 #define CHROME_BROWSER_DIPS_DIPS_REDIRECT_INFO_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
-#include "chrome/browser/dips/dips_utils.h"
+enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
+
+enum class DIPSRedirectType { kClient, kServer };
+
+// SiteDataAccessType:
+// NOTE: We use this type as a bitfield and log it. Don't
+// change the values or add additional members.
+enum class SiteDataAccessType {
+  kUnknown = -1,
+  kNone = 0,
+  kRead = 1,
+  kWrite = 2,
+  kReadWrite = 3
+};
+
+const char* DIPSCookieModeToString(DIPSCookieMode mode);
+const char* DIPSRedirectTypeToString(DIPSRedirectType type);
+std::string_view SiteDataAccessTypeToString(SiteDataAccessType type);
 
 struct UrlAndSourceId {
   GURL url;
