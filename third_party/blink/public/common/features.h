@@ -64,14 +64,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowDatapipeDrainedAsBytesConsumerInBFCache);
 
-// If enabled, allows MediaStreamVideoSource objects to be restarted by a
-// successful source switch. Normally, switching the source would only allowed
-// on streams that are in started state. However, changing the source also first
-// stops the stream before performing the switch and sometimes it can be useful
-// to do a change directly on a paused stream.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAllowSourceSwitchOnPausedVideoMediaStream);
-
 // Enables URN URLs like those produced by FLEDGE auctions to be displayed by
 // iframes (instead of requiring fenced frames). This is only intended to be
 // enabled as part of the FLEDGE origin trial.

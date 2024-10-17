@@ -81,10 +81,6 @@ BASE_FEATURE(kAllowDevToolsMainThreadDebuggerForMultipleMainFrames,
              "AllowDevToolsMainThreadDebuggerForMultipleMainFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAllowSourceSwitchOnPausedVideoMediaStream,
-             "AllowSourceSwitchOnPausedVideoMediaStream",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables URN URLs like those produced by Protected Audience auctions to be
 // displayed by iframes (instead of requiring fenced frames).
 BASE_FEATURE(kAllowURNsInIframes,
