@@ -7,6 +7,7 @@
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
 #include "ui/aura/env.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -25,6 +26,8 @@ class ChromecastGraphicsTestSuite : public base::TestSuite {
     gl::GLSurfaceTestSupport::InitializeOneOff();
 
     env_ = aura::Env::CreateInstance();
+    testing::UnitTest::GetInstance()->listeners().Append(
+        new ui::ProvideAXPlatformForTests());
   }
 
   void Shutdown() override {

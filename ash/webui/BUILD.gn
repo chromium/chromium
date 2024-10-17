@@ -50,6 +50,7 @@ test("ash_webui_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
+    "//ui/accessibility:test_support",
     "//ui/base:base",
     "//ui/color:color",
     "//ui/gl",
