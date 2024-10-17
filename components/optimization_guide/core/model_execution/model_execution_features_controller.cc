@@ -226,12 +226,6 @@ bool ModelExecutionFeaturesController::
     ShouldFeatureBeCurrentlyAllowedForLogging(
         const MqlsFeatureMetadata* metadata) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::optional<UserVisibleFeatureKey> feature_key =
-      metadata->user_visible_feature_key();
-  if (feature_key && !ShouldFeatureBeCurrentlyEnabledForUser(*feature_key)) {
-    return false;
-  }
-
   // For dogfood users only, allow the relevant chrome://flags option to
   // override the default enterprise policy.
   bool has_logging_force_enabled =

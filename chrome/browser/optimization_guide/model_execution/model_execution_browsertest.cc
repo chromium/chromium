@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kCompose));
 
   // Disable via the enterprise policy.
@@ -943,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kTabOrganization));
@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       optimization_guide::ModelQualityLogsUploadStatus::
-          kFeatureNotEnabledForUser,
+          kDisabledDueToEnterprisePolicy,
       1);
 
   // Enable via the enterprise policy and check upload.
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       optimization_guide::ModelQualityLogsUploadStatus::
-          kFeatureNotEnabledForUser,
+          kDisabledDueToEnterprisePolicy,
       1);
 }
 
@@ -1195,7 +1195,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 

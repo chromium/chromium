@@ -37,8 +37,7 @@ class MqlsFeatureMetadata {
       // TODO(b/354705998): add network annotation.
       EnterprisePolicyPref enterprise_policy,
       const base::Feature* field_trial_feature,
-      UserFeedbackCallback get_user_feedback_callback,
-      std::optional<UserVisibleFeatureKey> user_visible_feature_key);
+      UserFeedbackCallback get_user_feedback_callback);
 
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
   ~MqlsFeatureMetadata();
@@ -55,10 +54,6 @@ class MqlsFeatureMetadata {
 
   proto::LogAiDataRequest::FeatureCase logging_feature_case() const {
     return logging_feature_case_;
-  }
-
-  std::optional<UserVisibleFeatureKey> user_visible_feature_key() const {
-    return user_visible_feature_key_;
   }
 
   const base::Feature* field_trial_feature() const {
@@ -90,12 +85,6 @@ class MqlsFeatureMetadata {
   // in a different way, so this function allows the logging code to collect
   // data for a generic user feedback histogram.
   UserFeedbackCallback get_user_feedback_callback_;
-
-  // If the feature relies on the chrome://settings/ai page, this contains the
-  // UserVisibleFeatureKey enum value for that feature. This makes sure logging
-  // is disabled if the user disables the feature via the chrome://settings/ai
-  // page.
-  std::optional<UserVisibleFeatureKey> user_visible_feature_key_;
 };
 
 class MqlsFeatureRegistry {

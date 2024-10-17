@@ -1551,11 +1551,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       histogram_tester()->GetAllSamples(
           "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus."
           "Compose"),
-      ElementsAre(
-          base::Bucket(
-              ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1),
-          base::Bucket(ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser,
-                       1)));
+      ElementsAre(base::Bucket(
+          ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2)));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1641,11 +1638,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       histogram_tester()->GetAllSamples(
           "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus."
           "Compose"),
-      ElementsAre(
-          base::Bucket(
-              ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1),
-          base::Bucket(ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser,
-                       1)));
+      ElementsAre(base::Bucket(
+          ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2)));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1747,18 +1741,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   SetIsDogfoodClient(true);
 
   EXPECT_TRUE(service()->ShouldFeatureBeCurrentlyAllowedForFeedback(
-      proto::LogAiDataRequest::FeatureCase::kCompose));
-}
-
-IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
-                       FeedbackIsDisabledWhenFeatureIsDisabled_Dogfood) {
-  // Note: Unlike the tests above, do not enable the feature; leave it in the
-  // default state.
-  SetEnterprisePolicy(policy::key::kHelpMeWriteSettings,
-                      ModelExecutionEnterprisePolicyValue::kDisable);
-  SetIsDogfoodClient(true);
-
-  EXPECT_FALSE(service()->ShouldFeatureBeCurrentlyAllowedForFeedback(
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 

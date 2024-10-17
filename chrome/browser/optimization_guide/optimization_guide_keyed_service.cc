@@ -770,16 +770,7 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(
   // Otherwise, feedback is disabled, with one exception: On dogfood clients,
   // feedback is always enabled (as long as the feature is enabled).
   auto* variations_service = g_browser_process->variations_service();
-  bool is_dogfood_client =
-      !!variations_service && variations_service->IsLikelyDogfoodClient();
-  std::optional<optimization_guide::UserVisibleFeatureKey> feature_key =
-      metadata->user_visible_feature_key();
-  if (!feature_key) {
-    // This isn't a user-visible feature, so we shouldn't show the feedback UI.
-    return false;
-  }
-  return is_dogfood_client &&
-         ShouldFeatureBeCurrentlyEnabledForUser(*feature_key);
+  return !!variations_service && variations_service->IsLikelyDogfoodClient();
 }
 
 bool OptimizationGuideKeyedService::ShouldModelExecutionBeAllowedForUser()

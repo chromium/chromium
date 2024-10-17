@@ -416,7 +416,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   const MqlsFeatureMetadata* metadata =
       MqlsFeatureRegistry::GetInstance().GetFeature(
           proto::LogAiDataRequest::FeatureCase::kCompose);
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 

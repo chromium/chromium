@@ -17,14 +17,12 @@ MqlsFeatureMetadata::MqlsFeatureMetadata(
     proto::LogAiDataRequest::FeatureCase logging_feature_case,
     EnterprisePolicyPref enterprise_policy,
     const base::Feature* field_trial_feature,
-    UserFeedbackCallback get_user_feedback_callback,
-    std::optional<UserVisibleFeatureKey> user_visible_feature_key)
+    UserFeedbackCallback get_user_feedback_callback)
     : name_(name),
       logging_feature_case_(logging_feature_case),
       enterprise_policy_(enterprise_policy),
       field_trial_feature_(field_trial_feature),
-      get_user_feedback_callback_(get_user_feedback_callback),
-      user_visible_feature_key_(user_visible_feature_key) {
+      get_user_feedback_callback_(get_user_feedback_callback) {
   CHECK(base::IsStringASCII(name));
   CHECK(field_trial_feature_);
   CHECK(get_user_feedback_callback);
