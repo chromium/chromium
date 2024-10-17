@@ -1643,6 +1643,78 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
   EXPECT_EQ(CcNodeId(*fixed_transform), layer_b->transform_tree_index());
 }
 
+TEST_P(PaintArtifactCompositorTest, NonScrollingChildUnderFixedPosition) {
+  auto scroll_state_a = ScrollState1();
+  auto& scroll_a = *scroll_state_a.Transform().ScrollNode();
+
+  auto scroll_state_b = ScrollState2(scroll_state_a);
+  auto& scroll_b = *scroll_state_b.Transform().ScrollNode();
+
+  auto* fixed_transform = CreateFixedPositionTranslation(
+      scroll_state_b.Transform(), 100, 200, scroll_state_a.Transform());
+  PropertyTreeState fixed_state(*fixed_transform, scroll_state_a.Clip(),
+                                scroll_state_a.Effect());
+  // Use kActiveOpacityAnimation to avoid being decomposited with parent
+  // transform.
+  auto* child_transform = CreateTransform(
+      *fixed_transform, MakeTranslationMatrix(50, 50),
+      gfx::Point3F(100, 100, 0), CompositingReason::kActiveOpacityAnimation);
+  // Use a different effect to get a different layer.
+  auto* child_effect = CreateOpacityEffect(fixed_state.Effect(), 0.5f);
+  PropertyTreeState child_state(*child_transform, fixed_state.Clip(),
+                                *child_effect);
+
+  Update(TestPaintArtifact()
+             .ScrollHitTestChunk(scroll_state_a)
+             .ScrollHitTestChunk(scroll_state_b)
+             .Chunk(fixed_state)
+             .RectDrawing(gfx::Rect(50, 100), Color::kBlack)
+             .Chunk(child_state)
+             .RectDrawing(gfx::Rect(100, 150), Color::kBlack)
+             .Build());
+
+  auto& scroll_tree = GetPropertyTrees().scroll_tree();
+  auto& transform_tree = GetPropertyTrees().transform_tree();
+  // Scroll node #0 reserved for null, #1 for root render surface, #2 is for
+  // scroll_a, and #3 for scroll_b. Transform ids depend on the order in the
+  // painted_scroll_translations_ HashMap so are not deterministic.
+  ASSERT_EQ(4u, LayerCount());
+  ASSERT_EQ(4u, scroll_tree.size());
+  ASSERT_EQ(6u, transform_tree.size());
+
+  auto* scroll_node_a = scroll_tree.Node(2);
+  auto* layer_a = LayerAt(0);
+  EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a->element_id);
+  EXPECT_EQ(1, scroll_node_a->parent_id);
+  EXPECT_EQ(CcNodeId(scroll_state_a.Transform()), scroll_node_a->transform_id);
+  EXPECT_EQ(2, layer_a->scroll_tree_index());
+  EXPECT_EQ(1, layer_a->transform_tree_index());
+
+  auto* scroll_node_b = scroll_tree.Node(3);
+  auto* layer_b = LayerAt(1);
+  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b->element_id);
+  EXPECT_EQ(2, scroll_node_b->parent_id);
+  EXPECT_EQ(CcNodeId(scroll_state_b.Transform()), scroll_node_b->transform_id);
+  EXPECT_EQ(3, layer_b->scroll_tree_index());
+  EXPECT_EQ(2, layer_b->transform_tree_index());
+
+  auto* fixed_layer = LayerAt(2);
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_EQ(2, fixed_layer->scroll_tree_index());
+  } else {
+    EXPECT_EQ(3, fixed_layer->scroll_tree_index());
+  }
+  EXPECT_EQ(CcNodeId(*fixed_transform), fixed_layer->transform_tree_index());
+  auto* fixed_transform_node = transform_tree.Node(4);
+  EXPECT_EQ(3, fixed_transform_node->parent_id);
+
+  auto* child_layer = LayerAt(3);
+  EXPECT_EQ(child_layer->scroll_tree_index(), fixed_layer->scroll_tree_index());
+  EXPECT_EQ(CcNodeId(*child_transform), child_layer->transform_tree_index());
+  auto* child_transform_node = transform_tree.Node(5);
+  EXPECT_EQ(4, child_transform_node->parent_id);
+}
+
 TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {
   TestPaintArtifact test_artifact;
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
