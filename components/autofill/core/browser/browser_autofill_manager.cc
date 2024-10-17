@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include "autofill_client.h"
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -1464,10 +1465,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // IMPORTANT NOTE: If there's no data stored in user annotations,
   // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
   // flow will continue.
-  if (AutofillPredictionImprovementsDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate();
-      delegate && form_structure && autofill_field &&
-      delegate->IsFormAndFieldEligible(*form_structure, *autofill_field)) {
+  AutofillPredictionImprovementsDelegate* delegate =
+      client().GetAutofillPredictionImprovementsDelegate();
+
+  if (delegate && form_structure && autofill_field &&
+      delegate->IsPredictionImprovementsEligible(*form_structure,
+                                                 *autofill_field)) {
     delegate->HasDataStored(base::BindOnce(
         &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
         weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
@@ -1568,10 +1571,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     }
     return;
   }
-
-  if (AutofillPredictionImprovementsDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate();
-      delegate && has_prediction_improvements_data &&
+  AutofillPredictionImprovementsDelegate* delegate =
+      client().GetAutofillPredictionImprovementsDelegate();
+  if (delegate && has_prediction_improvements_data &&
       (trigger_source ==
            AutofillSuggestionTriggerSource::kPredictionImprovements ||
        trigger_source ==
@@ -1584,6 +1586,11 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                               /*ranking_context=*/std::nullopt);
       return;
     }
+  } else if (delegate &&
+             delegate->ShouldDisplayIph(*form_structure, *autofill_field)) {
+    client().ShowAutofillFieldIphForFeature(
+        field, AutofillClient::IphFeature::kPredictionImprovements);
+    return;
   }
 
   const bool form_element_was_clicked =

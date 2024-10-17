@@ -1183,4 +1183,20 @@ void AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::
   Respond(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  client->NotifyIphFeatureUsed(
+      autofill::AutofillClient::IphFeature::kPredictionImprovements);
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

@@ -439,6 +439,9 @@ namespace autofillPrivate {
 
     // Deletes all user annotations entries.
     static void deleteAllUserAnnotationsEntries();
+
+    // Notifies autofill client about the prediction improvements pre changing.
+    static void predictionImprovementsIphFeatureUsed();
   };
 
   interface Events {

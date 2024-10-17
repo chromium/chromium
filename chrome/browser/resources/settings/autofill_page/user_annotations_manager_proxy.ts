@@ -33,6 +33,11 @@ export interface UserAnnotationsManagerProxy {
    * Returns whether the user is eligible for autofill prediction improvements.
    */
   isUserEligible(): Promise<boolean>;
+
+  /*
+   * Notifies user education that the user used the pref.
+   */
+  predictionImprovementsIphFeatureUsed(): void;
 }
 
 export class UserAnnotationsManagerProxyImpl implements
@@ -55,6 +60,10 @@ export class UserAnnotationsManagerProxyImpl implements
 
   isUserEligible(): Promise<boolean> {
     return chrome.autofillPrivate.isUserEligibleForAutofillImprovements();
+  }
+
+  predictionImprovementsIphFeatureUsed(): void {
+    chrome.autofillPrivate.predictionImprovementsIphFeatureUsed();
   }
 
   static getInstance(): UserAnnotationsManagerProxy {

@@ -70,7 +70,7 @@ class AutofillPredictionImprovementsManager
       const std::vector<autofill::Suggestion>& autofill_suggestions,
       const autofill::FormData& form,
       const autofill::FormFieldData& field) override;
-  bool IsFormAndFieldEligible(
+  bool IsPredictionImprovementsEligible(
       const autofill::FormStructure& form,
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
@@ -168,6 +168,13 @@ class AutofillPredictionImprovementsManager
       std::unique_ptr<autofill::FormStructure> form,
       user_annotations::ImportFormCallback callback,
       optimization_guide::proto::AXTreeUpdate ax_tree_update);
+
+  // Returns true if the user has the flag enabled and is overall eligible for
+  // the feature, such as signin state (check the implementation for details).
+  // It also checks whether the `url` is eligible. Note that differently from
+  // `ShouldProvidePredictionImprovements()` this method does not check whether
+  // the pref is enabled.
+  bool IsURLEligibleForPredictionImprovements(const GURL& url) const;
 
   // Creates a suggestion that calls `OnClickedTriggerSuggestion()` when
   // invoked.

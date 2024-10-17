@@ -17,6 +17,7 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
       'deleteAllEntries',
       'hasEntries',
       'isUserEligible',
+      'predictionImprovementsIphFeatureUsed',
     ]);
   }
 
@@ -49,5 +50,9 @@ export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
   isUserEligible(): Promise<boolean> {
     this.methodCalled('isUserEligible');
     return Promise.resolve(this.eligible);
+  }
+
+  predictionImprovementsIphFeatureUsed(): void {
+    this.methodCalled('predictionImprovementsIphFeatureUsed');
   }
 }

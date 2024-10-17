@@ -48,8 +48,9 @@ class AutofillPredictionImprovementsDelegate {
 
   // Returns whether `form` and `field` are eligible for the improved prediction
   // experience.
-  virtual bool IsFormAndFieldEligible(const FormStructure& form,
-                                      const AutofillField& field) const = 0;
+  virtual bool IsPredictionImprovementsEligible(
+      const FormStructure& form,
+      const AutofillField& field) const = 0;
 
   // Returns whether the current user is eligible for the improved prediction
   // experience.

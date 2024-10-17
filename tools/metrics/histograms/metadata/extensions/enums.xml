@@ -2773,6 +2773,8 @@ Called by update_extension_histograms.py.-->
   <int value="1907" label="AUTOFILLPRIVATE_HASUSERANNOTATIONSENTRIES"/>
   <int value="1908"
       label="AUTOFILLPRIVATE_ISUSERELIGIBLEFORAUTOFILLIMPROVEMENTS"/>
+  <int value="1909"
+      label="AUTOFILLPRIVATE_PREDICTIONIMPROVEMENTSIPHFFEATUREUSED"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
