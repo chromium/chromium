@@ -284,6 +284,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   action.title = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE);
   action.accessibilityIdentifier = kPriceTrackingSettingsAccessibilityID;
+  action.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE);
 
   MDCSnackbarMessage* message = CreateSnackbarMessage(l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE));

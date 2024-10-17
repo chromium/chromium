@@ -180,6 +180,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestGetSnackbarMessage) {
   MDCSnackbarMessage* snackbarMessage = [mediator() snackbarMessageForTesting];
   EXPECT_NSEQ(@"Price tracking notifications turned on", snackbarMessage.text);
   EXPECT_NSEQ(@"Manage", snackbarMessage.action.title);
+  EXPECT_NSEQ(@"Manage", snackbarMessage.action.accessibilityLabel);
 }
 
 TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingSettings) {
