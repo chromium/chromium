@@ -78,7 +78,12 @@
 
 // Fake ScreenAI library returns empty results for all queries, so testing with
 // it is not helpful.
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+// The tests are disabled on Linux due to the flakiness of notifications on
+// Linux screen reader (crbug.com/348626870).
+// TODO(crbug.com/360803943): Try to enable on Linux with pdf-searchify without
+// relying on notifications.
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && \
+    !BUILDFLAG(USE_FAKE_SCREEN_AI) && !BUILDFLAG(IS_LINUX)
 #define PDF_OCR_INTEGRATION_TEST_ENABLED
 #endif
 
