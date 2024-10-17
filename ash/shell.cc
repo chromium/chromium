@@ -703,7 +703,11 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       locale_update_controller_(std::make_unique<LocaleUpdateControllerImpl>()),
       parent_access_controller_(std::make_unique<ParentAccessControllerImpl>()),
       local_authentication_request_controller_(
-          std::make_unique<LocalAuthenticationRequestControllerImpl>()),
+          features::IsLocalAuthenticationWithPinEnabled()
+              ? std::unique_ptr<LocalAuthenticationRequestController>(
+                    new LocalAuthenticationWithPinControllerImpl())
+              : std::unique_ptr<LocalAuthenticationRequestController>(
+                    new LocalAuthenticationRequestControllerImpl())),
       active_session_auth_controller_(
           std::make_unique<ActiveSessionAuthControllerImpl>()),
       session_controller_(std::make_unique<SessionControllerImpl>()),
@@ -1061,6 +1065,7 @@ Shell::~Shell() {
   accessibility_focus_ring_controller_.reset();
   policy_recommendation_restorer_.reset();
   active_session_auth_controller_.reset();
+  local_authentication_request_controller_.reset();
   ime_controller_.reset();
   back_gesture_event_handler_.reset();
 

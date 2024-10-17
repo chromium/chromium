@@ -5392,11 +5392,17 @@ No devices connected.
       <message name="IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT" desc="Text shown in the auth dialog to tell the user that incorrect password was entered">
         Incorrect password
       </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_PASSWORD_INVALID" desc="Error message displayed when the password contains characters that are not UTF-8 encoded">
+        Password must contain only valid characters
+      </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PIN_PLACEHOLDER" desc="Text to display as placeholder in the PIN input field when PIN autosubmit is disabled.">
         PIN
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT" desc="Text shown in the auth dialog to tell the user that incorrect PIN was entered">
         Incorrect PIN
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_PIN_INVALID" desc="Error message displayed when the PIN contains characters that are not UTF-8 encoded">
+        PIN must contain only valid characters
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS" desc="Text shown in the auth dialog to tell the user that PIN auth has reached maximum attempts">
         Too many PIN attempts

@@ -111,6 +111,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static void CancelLocalAuthenticationDialog();
   static void SubmitPasswordLocalAuthenticationDialog(
       const std::string& password);
+  static void SubmitPinLocalAuthenticationDialog(const std::string& pin);
 
   // AuthErrorBubble methods.
   static bool IsAuthErrorBubbleShown();

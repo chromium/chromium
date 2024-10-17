@@ -220,6 +220,7 @@ component("cpp") {
     "lock_screen_widget_factory.h",
     "login/local_authentication_request_controller.cc",
     "login/local_authentication_request_controller.h",
+    "login/local_authentication_test_api.h",
     "login/login_utils.cc",
     "login/login_utils.h",
     "login_accelerators.cc",

@@ -33,6 +33,9 @@ class ASH_PUBLIC_EXPORT LocalAuthenticationRequestController {
   virtual bool ShowWidget(LocalAuthenticationCallback callback,
                           std::unique_ptr<UserContext> user_context) = 0;
 
+  virtual bool IsDialogVisible() const = 0;
+  virtual bool IsPinSupported() const = 0;
+
  protected:
   LocalAuthenticationRequestController();
 };

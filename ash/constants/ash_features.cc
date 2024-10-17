@@ -1869,6 +1869,11 @@ BASE_FEATURE(kLocalImageSearchOnCore,
              "LocalImageSearchOnCore",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables local authentication controller with PIN support.
+BASE_FEATURE(kLocalAuthenticationWithPin,
+             "LocalAuthenticationWithPin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables cross device supported reports within the feedback tool.
 // (This feature is only available for dogfooders)
 BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
@@ -5012,6 +5017,10 @@ bool IsUseAuthPanelInSessionEnabled() {
 
 bool IsAllowPasswordlessSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
+}
+
+bool IsLocalAuthenticationWithPinEnabled() {
+  return base::FeatureList::IsEnabled(kLocalAuthenticationWithPin);
 }
 
 bool IsAllowPinTimeoutSetupEnabled() {
