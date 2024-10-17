@@ -51,6 +51,7 @@ include_rules = [
   "+ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/prerender/model",
+  "+ios/chrome/browser/print/coordinator",
   "+ios/chrome/browser/promos_manager/model/features.h",
   "+ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h",
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
