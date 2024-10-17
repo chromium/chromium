@@ -381,9 +381,10 @@ class CORE_EXPORT LineBreaker {
   // True when the line should be non-empty if |IsLastLine|..
   bool force_non_empty_if_last_line_ = false;
 
-  // Set when the line ended with a forced break. Used to setup the states for
-  // the next line.
-  bool is_after_forced_break_ = false;
+  // Set when the line ended with a forced break, one for the current line and
+  // another for the previous line.
+  bool is_forced_break_ = false;
+  bool previous_line_had_forced_break_ = false;
 
   // Set in quirks mode when we're not supposed to break inside table cells
   // between images, and between text and images.
@@ -426,7 +427,6 @@ class CORE_EXPORT LineBreaker {
   LazyLineBreakIterator break_iterator_;
   HarfBuzzShaper shaper_;
   ShapeResultSpacing<String> spacing_;
-  bool previous_line_had_forced_break_ = false;
   const Hyphenation* hyphenation_ = nullptr;
 
   std::optional<wtf_size_t> hyphen_index_;

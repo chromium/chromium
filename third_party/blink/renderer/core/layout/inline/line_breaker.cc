@@ -516,14 +516,14 @@ LineBreaker::LineBreaker(InlineNode node,
     DCHECK_EQ(break_token->StartTextOffset(), 0u);
     DCHECK(!break_token->IsForcedBreak());
     DCHECK_EQ(current_, break_token->Start());
-    DCHECK_EQ(is_after_forced_break_, break_token->IsForcedBreak());
+    DCHECK_EQ(is_forced_break_, break_token->IsForcedBreak());
     return;
   }
 
   current_ = break_token->Start();
   ruby_break_token_ = break_token->RubyData();
   break_iterator_.SetStartOffset(current_.text_offset);
-  is_after_forced_break_ = break_token->IsForcedBreak();
+  is_forced_break_ = break_token->IsForcedBreak();
   items_data_->AssertOffset(current_);
   SetCurrentStyle(*line_initial_style);
 }
@@ -770,14 +770,14 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   if (parent_breaker_) {
     previous_line_had_forced_break_ =
         parent_breaker_->previous_line_had_forced_break_;
-    is_after_forced_break_ = parent_breaker_->is_after_forced_break_;
+    is_forced_break_ = parent_breaker_->is_forced_break_;
     is_first_formatted_line_ = parent_breaker_->is_first_formatted_line_;
     use_first_line_style_ = parent_breaker_->use_first_line_style_;
     items_data_ = parent_breaker_->items_data_;
   } else if (!current_.IsZero()) {
     // We're past the first line
-    previous_line_had_forced_break_ = is_after_forced_break_;
-    is_after_forced_break_ = false;
+    previous_line_had_forced_break_ = is_forced_break_;
+    is_forced_break_ = false;
     // If we resumed at a break token, and we're past the resume point stored
     // there, we're also past the first formatted line (otherwise, there may be
     // lines solely consisting of leading floats, and those don't count as
@@ -2465,8 +2465,9 @@ void LineBreaker::RewindTrailingOpenTags(LineInfo* line_info) {
 void LineBreaker::RemoveTrailingCollapsibleSpace(LineInfo* line_info) {
   // Rewind trailing open-tags to wrap before them, except when this line ends
   // with a forced break, including the one implied by block-in-inline.
-  if (!is_after_forced_break_)
+  if (!is_forced_break_) {
     RewindTrailingOpenTags(line_info);
+  }
 
   ComputeTrailingCollapsibleSpace(line_info);
   if (!trailing_collapsible_space_.has_value()) {
@@ -2762,7 +2763,7 @@ void LineBreaker::HandleForcedLineBreak(const InlineItem* item,
   if (HasHyphen()) [[unlikely]] {
     position_ -= RemoveHyphen(line_info->MutableResults());
   }
-  is_after_forced_break_ = true;
+  is_forced_break_ = true;
   line_info->SetHasForcedBreak();
   line_info->SetIsLastLine(true);
   state_ = LineBreakState::kDone;
@@ -3110,7 +3111,7 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
   position_ += item_result->inline_size;
   line_info->SetIsBlockInInline();
   line_info->SetHasForcedBreak();
-  is_after_forced_break_ = true;
+  is_forced_break_ = true;
   trailing_whitespace_ = WhitespaceState::kNone;
 
   // If there's no break inside the block, or if the break inside the block is
@@ -4512,9 +4513,9 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
   bool is_past_first_formatted_line =
       !is_first_formatted_line_ || !line_info.IsEmptyLine();
 
-  DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);
+  DCHECK_EQ(line_info.HasForcedBreak(), is_forced_break_);
   unsigned flags =
-      (is_after_forced_break_ ? InlineBreakToken::kIsForcedBreak : 0) |
+      (is_forced_break_ ? InlineBreakToken::kIsForcedBreak : 0) |
       (line_info.UseFirstLineStyle() ? InlineBreakToken::kUseFirstLineStyle
                                      : 0) |
       (cloned_box_decorations_count_
