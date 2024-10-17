@@ -7,6 +7,8 @@
 
 #include <type_traits>
 
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -269,6 +271,7 @@ template <typename T>
 class ArrayDataView : public internal::ArrayDataViewImpl<T> {
  public:
   using Element = T;
+  using const_iterator = base::CheckedContiguousIterator<const T>;
   using Data_ = typename internal::ArrayDataViewImpl<T>::Data_;
 
   ArrayDataView() : internal::ArrayDataViewImpl<T>(nullptr, nullptr) {}
@@ -280,12 +283,33 @@ class ArrayDataView : public internal::ArrayDataViewImpl<T> {
 
   size_t size() const { return this->data_->size(); }
 
+  // For specializations that expose `data()`, also supply `begin()` and `end()`
+  // to satisfy `std::ranges::contiguous_range`. This allows implicit conversion
+  // to `base::span`.
+  const_iterator begin() const
+    requires requires { this->data(); }
+  {
+    // SAFETY: `data()` must point to at least `size()` elements, so the
+    // computed value here must be no further than just-past-the-end of the
+    // allocation.
+    return UNSAFE_BUFFERS(const_iterator(this->data(), this->data() + size()));
+  }
+  const_iterator end() const
+    requires requires { this->data(); }
+  {
+    // SAFETY: As in `begin()` above.
+    return UNSAFE_BUFFERS(const_iterator(this->data(), this->data() + size(),
+                                         this->data() + size()));
+  }
+
   // Methods to access elements are different for different element types. They
   // are inherited from internal::ArrayDataViewImpl:
 
   // POD types except boolean and enums:
   //   T operator[](size_t index) const;
   //   const T* data() const;
+  //   const_iterator begin() const;
+  //   const_iterator end() const;
 
   // Boolean:
   //   bool operator[](size_t index) const;
