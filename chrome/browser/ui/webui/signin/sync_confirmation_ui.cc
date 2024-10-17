@@ -90,6 +90,12 @@ bool ShouldShowAppsDisclaimerInLacros(Profile* profile) {
 #endif
 }  // namespace
 
+bool SyncConfirmationUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
+
 // static
 std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
     const syncer::SyncService* sync_service) {

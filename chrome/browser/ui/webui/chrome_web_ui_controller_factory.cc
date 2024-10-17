@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -303,10 +302,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (!DevToolsUIBindings::IsValidFrontendURL(url))
       return nullptr;
     return &NewWebUI<DevToolsUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUISyncConfirmationHost &&
-      !profile->IsOffTheRecord()) {
-    return &NewWebUI<SyncConfirmationUI>;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
