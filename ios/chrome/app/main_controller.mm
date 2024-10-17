@@ -342,11 +342,9 @@ void MainControllerAuthenticationServiceDelegate::
 
 }  // namespace
 
-@interface MainController () <PrefObserverDelegate,
-                              BlockingSceneCommands,
+@interface MainController () <BlockingSceneCommands,
+                              PrefObserverDelegate,
                               SceneStateObserver> {
-  IBOutlet UIWindow* _window;
-
   // The object that drives the Chrome startup/shutdown logic.
   std::unique_ptr<IOSChromeMain> _chromeMain;
 
