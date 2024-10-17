@@ -142,7 +142,6 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable_replaceSyncBySigninEnabled()
             throws Throwable {
         ProfileDataCache profileDataCache =
@@ -182,7 +181,6 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable_replaceSyncBySigninEnabled()
             throws Throwable {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -471,7 +469,6 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailableLaunchesSigninFlow()
             throws Throwable {
         ProfileDataCache profileDataCache =
@@ -519,7 +516,6 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testRecentTabsSyncPromoViewSignedOutAndAccountAvailableLaunchesSigninFlow()
             throws Throwable {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -563,7 +559,6 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testRecentTabsSyncPromoViewSignedInAndNotSyncingLaunchesSigninFlow()
             throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
@@ -646,7 +641,6 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeParams.class)
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testNTPSyncPromoViewSignedOutAndNoAccountAvailable_replaceSyncBySigninEnabled(
             boolean nightModeEnabled) throws Throwable {
         setUpNightMode(nightModeEnabled);
