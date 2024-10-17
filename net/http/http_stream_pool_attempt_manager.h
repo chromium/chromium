@@ -342,7 +342,7 @@ class HttpStreamPool::AttemptManager
   // or not attempted.
   void MaybeMarkQuicBroken();
 
-  void AddStatesToNetLogParams(base::Value::Dict& dict);
+  base::Value::Dict GetStatesAsNetLogParams();
 
   void MaybeComplete();
 
