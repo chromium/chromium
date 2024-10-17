@@ -27,6 +27,9 @@
 
 namespace policy {
 
+// Empty list.
+constexpr const char* kPolicyJsonEmpty = "[]";
+
 class DeviceRestrictionScheduleControllerTest : public ash::LoginManagerTest {
  public:
   DeviceRestrictionScheduleControllerTest() {
@@ -150,6 +153,25 @@ IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
   SetRestrictionSchedule(-base::Minutes(20), base::Hours(2));
 
   ash::OobeScreenWaiter(ash::DeviceDisabledScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
+                       RestrictedScheduleEnds) {
+  // Restriction schedule started 20 minutes ago and lasts for 2 hours.
+  SetRestrictionSchedule(-base::Minutes(20), base::Hours(2));
+
+  // DeviceDisabledScreen is shown.
+  ash::OobeScreenWaiter(ash::DeviceDisabledScreenView::kScreenId).Wait();
+
+  // Reset the policy, restriction schedule ends.
+  UpdatePolicy(kPolicyJsonEmpty);
+
+  // In order to reset state and stop showing the DeviceDisabledScreen, Chrome
+  // is restarted back to the login screen here.
+  base::test::TestFuture<void> future;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 }  // namespace policy
