@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -169,6 +170,25 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     @Test
+    public void testCollaborationUserJoined_FallbackTitle() {
+        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
+        InstantMessage message = newInstantMessage(UserAction.COLLABORATION_USER_JOINED);
+        message.attribution.tabGroupMetadata.lastKnownTitle = "";
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        verify(mSuccessCallback).onResult(true);
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+        @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
+        assertEquals(MessageIdentifier.COLLABORATION_USER_JOINED, messageIdentifier);
+        String title = propertyModel.get(TITLE);
+        assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(Integer.toString(13)));
+    }
+
+    @Test
     public void testCollaborationRemoved() {
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(UserAction.COLLABORATION_REMOVED), mSuccessCallback);
@@ -181,5 +201,23 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(TAB_GROUP_TITLE));
+    }
+
+    @Test
+    public void testCollaborationRemoved_FallbackTitle() {
+        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
+        InstantMessage message = newInstantMessage(UserAction.COLLABORATION_REMOVED);
+        message.attribution.tabGroupMetadata.lastKnownTitle = "";
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        verify(mSuccessCallback).onResult(true);
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+        @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
+        assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
+        String title = propertyModel.get(TITLE);
+        assertTrue(title.contains(Integer.toString(13)));
     }
 }

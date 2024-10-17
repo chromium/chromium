@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -86,6 +88,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 @Nullable Pair<WindowAndroid, TabGroupModelFilter> attach = getAttach(message);
                 if (attach == null) return;
                 @NonNull WindowAndroid windowAndroid = attach.first;
+                @NonNull TabGroupModelFilter tabGroupModelFilter = attach.second;
                 @Nullable
                 MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
                 @Nullable Context context = windowAndroid.getContext().get();
@@ -97,9 +100,11 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 } else if (userAction == UserAction.TAB_NAVIGATED) {
                     showTabChange(message, context, messageDispatcher);
                 } else if (userAction == UserAction.COLLABORATION_USER_JOINED) {
-                    showCollaborationUserJoined(message, context, messageDispatcher);
+                    showCollaborationUserJoined(
+                            message, context, messageDispatcher, tabGroupModelFilter);
                 } else if (userAction == UserAction.COLLABORATION_REMOVED) {
-                    showCollaborationRemoved(message, context, messageDispatcher);
+                    showCollaborationRemoved(
+                            message, context, messageDispatcher, tabGroupModelFilter);
                 }
                 success = true;
             }
@@ -177,10 +182,12 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     private void showCollaborationUserJoined(
-            InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
+            InstantMessage message,
+            Context context,
+            MessageDispatcher messageDispatcher,
+            TabGroupModelFilter tabGroupModelFilter) {
         String givenName = MessageUtils.extractGivenName(message);
-        // TODO(https://crbug.com/369163940): Fall back to default title if needed.
-        String tabGroupTitle = MessageUtils.extractTabGroupTitle(message);
+        String tabGroupTitle = getTabGroupTitle(message, context, tabGroupModelFilter);
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_joined_tab_group,
@@ -199,9 +206,11 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     private void showCollaborationRemoved(
-            InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
-        // TODO(https://crbug.com/369163940): Fall back to default title if needed.
-        String tabGroupTitle = MessageUtils.extractTabGroupTitle(message);
+            InstantMessage message,
+            Context context,
+            MessageDispatcher messageDispatcher,
+            TabGroupModelFilter tabGroupModelFilter) {
+        String tabGroupTitle = getTabGroupTitle(message, context, tabGroupModelFilter);
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_not_available, tabGroupTitle);
@@ -237,5 +246,19 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimary)
                         .build();
         messageDispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
+    }
+
+    private String getTabGroupTitle(
+            InstantMessage message, Context context, TabGroupModelFilter tabGroupModelFilter) {
+        String messageTitle = MessageUtils.extractTabGroupTitle(message);
+        if (TextUtils.isEmpty(messageTitle)) {
+            // Shouldn't need to check for any failure cases, should claim 1 tab if not found.
+            Token token = MessageUtils.extractTabGroupId(message);
+            int rootId = tabGroupModelFilter.getRootIdFromStableId(token);
+            int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
+            return TabGroupTitleUtils.getDefaultTitle(context, tabCount);
+        } else {
+            return messageTitle;
+        }
     }
 }
