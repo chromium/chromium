@@ -4,7 +4,8 @@
 
 source_set("ui") {
   sources = [
-    "docking_promo_consumer.h",
+    "animated_promo_view_controller.h",
+    "animated_promo_view_controller.mm",
     "docking_promo_display_handler.h",
     "docking_promo_display_handler.mm",
     "docking_promo_metrics.h",

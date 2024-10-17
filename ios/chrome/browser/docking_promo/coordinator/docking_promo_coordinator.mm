@@ -93,14 +93,11 @@
 
   if (_firstRun) {
     self.viewController = [[DockingPromoViewController alloc] init];
-    self.mediator.consumer = self.viewController;
     self.mediator.tracker = feature_engagement::TrackerFactory::GetForProfile(
         self.browser->GetProfile());
     self.viewController.actionHandler = self;
     self.viewController.presentationController.delegate = self;
     self.viewController.modalInPresentation = YES;
-
-    [self.mediator configureConsumer];
 
     BOOL animated = self.baseNavigationController.topViewController != nil;
     [self.baseNavigationController setViewControllers:@[ self.viewController ]
@@ -135,13 +132,10 @@
   }
 
   self.viewController = [[DockingPromoViewController alloc] init];
-  self.mediator.consumer = self.viewController;
   self.mediator.tracker = feature_engagement::TrackerFactory::GetForProfile(
       self.browser->GetProfile());
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
-
-  [self.mediator configureConsumer];
 
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES

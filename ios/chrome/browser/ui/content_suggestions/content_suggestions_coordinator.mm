@@ -145,6 +145,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -170,6 +171,7 @@ using segmentation_platform::TipIdentifier;
     MagicStackHalfSheetTableViewControllerDelegate,
     MagicStackModuleContainerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
+    TipsPasswordsCoordinatorDelegate,
     NotificationsModuleDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
@@ -195,7 +197,6 @@ using segmentation_platform::TipIdentifier;
 @end
 
 @implementation ContentSuggestionsCoordinator {
-
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
   SetUpListDefaultBrowserPromoCoordinator* _defaultBrowserPromoCoordinator;
@@ -210,6 +211,9 @@ using segmentation_platform::TipIdentifier;
 
   // The Show More Menu presented from the Set Up List in the Magic Stack.
   SetUpListShowMoreViewController* _setUpListShowMoreViewController;
+
+  // The coordinator for displaying tips related to Passwords.
+  TipsPasswordsCoordinator* _tipsPasswordsCoordinator;
 
   // The edit half sheet for toggling all Magic Stack modules.
   MagicStackHalfSheetTableViewController*
@@ -671,10 +675,18 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case TipIdentifier::kSavePasswords:
-    case TipIdentifier::kAutofillPasswords:
-      // TODO(crbug.com/372491399): Implement animated promo screens for
-      // `kSavePasswords` and `kAutofillPasswords`.
+    case TipIdentifier::kAutofillPasswords: {
+      _tipsPasswordsCoordinator = [[TipsPasswordsCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                          identifier:_tipsMediator.state.identifier];
+
+      _tipsPasswordsCoordinator.delegate = self;
+
+      [_tipsPasswordsCoordinator start];
+
       break;
+    }
   }
 
   [self.NTPActionsDelegate tipsOpened];
@@ -969,6 +981,15 @@ using segmentation_platform::TipIdentifier;
              completionAction:nil];
 }
 
+#pragma mark - TipsPasswordsCoordinatorDelegate
+
+- (void)tipsPasswordsCoordinatorDidFinish:
+    (TipsPasswordsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _tipsPasswordsCoordinator);
+  [_tipsPasswordsCoordinator stop];
+  _tipsPasswordsCoordinator = nil;
+}
+
 #pragma mark - SafetyCheckViewDelegate
 
 // Called when a Safety Check item is selected by the user. Depending on the
@@ -1030,15 +1051,15 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
-    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
-      [_magicStackRankingModel
-          logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                             kCompactedSetUpList];
-    } else {
-      [_magicStackRankingModel
-          logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
-                                             type)];
-    }
+  if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
+    [_magicStackRankingModel
+        logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                           kCompactedSetUpList];
+  } else {
+    [_magicStackRankingModel
+        logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
+                                           type)];
+  }
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
   [self.NTPActionsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();

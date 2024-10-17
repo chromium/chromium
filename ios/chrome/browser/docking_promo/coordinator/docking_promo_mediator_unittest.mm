@@ -13,7 +13,6 @@
 #import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
-#import "ios/chrome/browser/docking_promo/ui/docking_promo_consumer.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -64,28 +63,10 @@ class DockingPromoMediatorTest : public PlatformTest {
 
   void CreateDockingPromoMediator(base::TimeDelta time_since_last_foreground) {
     promos_manager_ = std::make_unique<MockPromosManager>();
-    consumer_ = OCMProtocolMock(@protocol(DockingPromoConsumer));
 
     mediator_ = [[DockingPromoMediator alloc]
           initWithPromosManager:promos_manager_.get()
         timeSinceLastForeground:time_since_last_foreground];
-
-    mediator_.consumer = consumer_;
-  }
-
-  void ExpectConsumerSetFieldsForPromo() {
-    NSString* title_string =
-        l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_TITLE);
-    NSString* primary_action_string =
-        l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE);
-    NSString* secondary_action_string =
-        l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE);
-    NSString* animation_name = @"docking_promo";
-
-    OCMExpect([consumer_ setTitleString:title_string
-                    primaryActionString:primary_action_string
-                  secondaryActionString:secondary_action_string
-                          animationName:animation_name]);
   }
 
   // Sets the First Run occurred `days_ago`.
@@ -121,7 +102,6 @@ class DockingPromoMediatorTest : public PlatformTest {
   DockingPromoMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  id consumer_;
 };
 
 // Tests that promo is eligible for display if:
@@ -201,15 +181,4 @@ TEST_F(DockingPromoMediatorTest,
   SetFirstRunRecency(18);
 
   EXPECT_FALSE([mediator_ canShowDockingPromo]);
-}
-
-// Tests the Docking Promo consumer is correctly configured.
-TEST_F(DockingPromoMediatorTest, DockingPromoConsumerProperlyConfigured) {
-  CreateDockingPromoMediator(base::Days(3));
-
-  ExpectConsumerSetFieldsForPromo();
-
-  [mediator_ configureConsumer];
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
 }

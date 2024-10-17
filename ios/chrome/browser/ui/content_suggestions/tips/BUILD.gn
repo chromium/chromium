@@ -13,11 +13,16 @@ source_set("tips") {
     "tips_module_state.mm",
     "tips_module_view.h",
     "tips_module_view.mm",
+    "tips_passwords_coordinator.h",
+    "tips_passwords_coordinator.mm",
     "tips_prefs.h",
     "tips_prefs.mm",
   ]
-  public_deps =
-      [ "//ios/chrome/browser/ui/content_suggestions/magic_stack:public" ]
+  public_deps = [
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
   deps = [
     "//base",
     "//components/bookmarks/browser",
@@ -38,6 +43,7 @@ source_set("tips") {
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/content_suggestions/tips/ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
