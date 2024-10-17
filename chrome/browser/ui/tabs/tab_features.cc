@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
-#include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -101,10 +100,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     permission_indicators_tab_data_ =
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             tab.GetContents());
-
-    user_annotations_web_contents_observer_ =
-        user_annotations::UserAnnotationsWebContentsObserver::
-            MaybeCreateForWebContents(tab.GetContents());
 
     chrome_autofill_prediction_improvements_client_ =
         ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
@@ -213,11 +208,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(new_contents, profile);
-  }
-  if (user_annotations_web_contents_observer_) {
-    user_annotations_web_contents_observer_ =
-        user_annotations::UserAnnotationsWebContentsObserver::
-            MaybeCreateForWebContents(new_contents);
   }
   if (chrome_autofill_prediction_improvements_client_) {
     chrome_autofill_prediction_improvements_client_ =
