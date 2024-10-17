@@ -32,7 +32,7 @@ sys.path.append(
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 RUST_REVISION = 'eb4e2346748e1760f74fcaa27b42431e0b95f8f3'
-RUST_SUB_REVISION = 1
+RUST_SUB_REVISION = 2
 
 # The revision of Crubit to use from https://github.com/google/crubit
 #
