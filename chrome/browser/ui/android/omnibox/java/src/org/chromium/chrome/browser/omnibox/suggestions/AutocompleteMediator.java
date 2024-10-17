@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -905,7 +906,9 @@ class AutocompleteMediator
         if (!mAutocompleteResult.map(r -> r.equals(autocompleteResult)).orElse(false)) {
             mAutocompleteResult = Optional.of(autocompleteResult);
             var viewInfoList =
-                    mDropdownViewInfoListBuilder.buildDropdownViewInfoList(autocompleteResult);
+                    mDropdownViewInfoListBuilder.buildDropdownViewInfoList(
+                            new AutocompleteInput(mPageClassification.getAsInt()),
+                            autocompleteResult);
             mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
             if (mIsActive) {
                 mDelegate.onSuggestionsChanged(defaultMatch);

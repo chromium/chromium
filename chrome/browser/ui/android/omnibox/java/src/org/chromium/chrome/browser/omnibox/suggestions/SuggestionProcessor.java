@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -24,10 +25,14 @@ public interface SuggestionProcessor extends DropdownItemProcessor {
     /**
      * Populate a model for the given suggestion.
      *
+     * @param input The input to produce the suggestions
      * @param suggestion The suggestion to populate the model for.
      * @param model The model to populate.
      * @param position The position of the suggestion in the list.
      */
     void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position);
+            @NonNull AutocompleteInput input,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            int position);
 }

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -52,8 +53,11 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
+            AutocompleteInput input,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
 
         model.set(TailSuggestionViewProperties.ALIGNMENT_MANAGER, mAlignmentManager);
         model.set(TailSuggestionViewProperties.FILL_INTO_EDIT, suggestion.getFillIntoEdit());
@@ -63,7 +67,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyHighlightToMatchRegions(text, suggestion.getDisplayTextClassifications());
         model.set(TailSuggestionViewProperties.TEXT, text);
 
-        setTabSwitchOrRefineAction(model, suggestion, position);
+        setTabSwitchOrRefineAction(model, input, suggestion, position);
     }
 
     @Override

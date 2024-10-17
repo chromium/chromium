@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -82,8 +83,12 @@ public class BaseSuggestionProcessorUnitTest {
         }
 
         @Override
-        public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
-            super.populateModel(suggestion, model, position);
+        public void populateModel(
+                AutocompleteInput input,
+                AutocompleteMatch suggestion,
+                PropertyModel model,
+                int position) {
+            super.populateModel(input, suggestion, model, position);
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
     }
@@ -95,6 +100,7 @@ public class BaseSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Bitmap mBitmap;
+    private @Mock AutocompleteInput mInput;
 
     private Context mContext;
     private TestBaseSuggestionProcessor mProcessor;
@@ -113,7 +119,7 @@ public class BaseSuggestionProcessorUnitTest {
     private void createSuggestion(int type, boolean isSearch, GURL url) {
         mSuggestion = new AutocompleteMatchBuilder(type).setIsSearch(isSearch).setUrl(url).build();
         mModel = mProcessor.createModel();
-        mProcessor.populateModel(mSuggestion, mModel, 0);
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
 
     @Test
@@ -189,7 +195,7 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     public void setTabSwitchOrRefineAction_refineActionForSearch() {
         createSuggestion(OmniboxSuggestionType.SEARCH_HISTORY, /* isSearch= */ true, TEST_URL);
-        mProcessor.setTabSwitchOrRefineAction(mModel, mSuggestion, 0);
+        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());
@@ -216,7 +222,7 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     public void setTabSwitchOrRefineAction_refineActionForUrl() {
         createSuggestion(OmniboxSuggestionType.HISTORY_URL, /* isSearch= */ false, TEST_URL);
-        mProcessor.setTabSwitchOrRefineAction(mModel, mSuggestion, 0);
+        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());
@@ -251,7 +257,7 @@ public class BaseSuggestionProcessorUnitTest {
         mModel.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, true);
         mModel.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, 43);
 
-        mProcessor.populateModel(mSuggestion, mModel, 0);
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
         Assert.assertEquals(mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), false);
         Assert.assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),

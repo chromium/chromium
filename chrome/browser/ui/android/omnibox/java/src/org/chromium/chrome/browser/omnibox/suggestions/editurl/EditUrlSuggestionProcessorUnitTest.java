@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -103,6 +104,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
+    private @Mock AutocompleteInput mInput;
 
     // The original (real) ClipboardManager to be restored after a test run.
     private Context mContext;
@@ -235,7 +237,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void populateModel_showInformationFromLoadedTab() {
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
 
         assertEquals(3, mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
         assertEquals(TAB_TITLE, mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
@@ -247,7 +249,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Test
     public void populateModel_substituteMatchInformationForLoadingTab() {
         doReturn(true).when(mTab).isLoading();
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
         assertEquals(MATCH_TITLE, mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
     }
 
@@ -260,7 +262,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
                         .setUrl(SEARCH_URL_1)
                         .build();
         doReturn(true).when(mTab).isLoading();
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
         assertEquals(
                 mContext.getResources().getText(R.string.tab_loading_default_title),
                 mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
@@ -268,7 +270,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void shareButton_click() {
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
 
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
@@ -288,7 +290,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public void shareButton_click_reportsUkmEvent() {
         doReturn(mWebContents).when(mTab).getWebContents();
 
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
         verify(mSuggestionHost).finishInteraction();
 
@@ -300,7 +302,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void suggestionView_clickReloadsPage() {
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
 
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
@@ -314,7 +316,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void copyButton_click() {
-        mProcessor.populateModel(mMatch, mModel, 0);
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
 

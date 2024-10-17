@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -110,8 +111,11 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
+            @NonNull AutocompleteInput input,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
         final boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         SuggestionSpannable textLine2 = null;
         boolean urlHighlighted = false;
@@ -145,7 +149,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                         .getTextWithoutAutocomplete()
                         .trim()
                         .equalsIgnoreCase(suggestion.getDisplayText())) {
-            setTabSwitchOrRefineAction(model, suggestion, position);
+            setTabSwitchOrRefineAction(model, input, suggestion, position);
         }
     }
 

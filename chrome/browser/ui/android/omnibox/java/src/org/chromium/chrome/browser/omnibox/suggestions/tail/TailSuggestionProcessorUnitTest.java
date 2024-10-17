@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -27,7 +28,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TailSuggestionProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private @Mock SuggestionHost mSuggestionHost;
+    private @Mock AutocompleteInput mInput;
 
     private TailSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -46,7 +49,7 @@ public class TailSuggestionProcessorUnitTest {
                         .setFillIntoEdit("fill into edit: " + title)
                         .build();
         mModel = mProcessor.createModel();
-        mProcessor.populateModel(mSuggestion, mModel, 0);
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
 
     @Test

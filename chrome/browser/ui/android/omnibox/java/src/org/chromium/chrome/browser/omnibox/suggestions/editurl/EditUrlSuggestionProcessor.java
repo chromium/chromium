@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -95,8 +96,11 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
+            AutocompleteInput input,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
 
         var tab = mTabSupplier.get();
         var title = suggestion.getDescription();

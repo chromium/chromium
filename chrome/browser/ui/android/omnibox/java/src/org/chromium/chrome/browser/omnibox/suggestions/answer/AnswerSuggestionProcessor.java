@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -63,13 +64,19 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
-        setStateForSuggestion(model, suggestion, position);
+            AutocompleteInput input,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
+        setStateForSuggestion(model, input, suggestion, position);
     }
 
     private void setStateForSuggestion(
-            PropertyModel model, AutocompleteMatch suggestion, int position) {
+            PropertyModel model,
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            int position) {
         AnswerType answerType =
                 suggestion.getAnswer() == null
                         ? suggestion.getAnswerType()
@@ -128,7 +135,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (shouldShowCardUi) {
             setActionButtons(model, null);
         } else {
-            setTabSwitchOrRefineAction(model, suggestion, position);
+            setTabSwitchOrRefineAction(model, input, suggestion, position);
         }
         if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
             fetchImage(model, new GURL(suggestion.getAnswer().getSecondLine().getImage()));

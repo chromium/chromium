@@ -51,6 +51,7 @@ import org.chromium.components.omnibox.AnswerDataProto.Image;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -96,6 +97,7 @@ public class AnswerSuggestionProcessorUnitTest {
     private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Bitmap mBitmap;
+    private @Mock AutocompleteInput mInput;
 
     private AnswerSuggestionProcessor mProcessor;
     private Locale mDefaultLocale;
@@ -117,7 +119,7 @@ public class AnswerSuggestionProcessorUnitTest {
             mSuggestion = suggestion;
             mModel = model;
             when(mUrlStateProvider.getTextWithoutAutocomplete()).thenReturn(userQuery);
-            mProcessor.populateModel(mSuggestion, mModel, 0);
+            mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
         }
 
         /** Check the content of first suggestion line. */
