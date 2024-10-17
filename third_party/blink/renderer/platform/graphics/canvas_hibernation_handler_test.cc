@@ -285,17 +285,18 @@ TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
+  CanvasHibernationHandler handler;
+  FakeCanvasResourceHost host(gfx::Size(300, 200));
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  auto& handler = bridge->GetHibernationHandler();
+  Draw(host);
+
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
   // Background -> Foreground -> Background
-  SetPageVisible(Host(), &handler, platform, false);
-  SetPageVisible(Host(), &handler, platform, true);
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, true);
+  SetPageVisible(&host, &handler, platform, false);
 
   // 2 delayed task that will potentially trigger encoding.
   EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
