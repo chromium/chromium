@@ -179,6 +179,9 @@ class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
 struct TokenLimits {
   // The full combined limit for input and output tokens.
   uint32_t max_tokens = 0;
+  // The number of context tokens guaranteed to be processed before context
+  // processing can be cancelled to begin execution.
+  uint32_t min_context_tokens = 0;
   // The maximum number of tokens that can be used by AddContext.
   uint32_t max_context_tokens = 0;
   // The maximum number of tokens that can be used by ExecuteModel.

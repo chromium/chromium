@@ -655,6 +655,12 @@ int GetOnDeviceModelMaxTokensForOutput() {
   return kOnDeviceModelMaxTokensForOutput.Get();
 }
 
+uint32_t GetOnDeviceModelMaxTokens() {
+  return static_cast<uint32_t>(GetOnDeviceModelMaxTokensForContext() +
+                               GetOnDeviceModelMaxTokensForExecute() +
+                               GetOnDeviceModelMaxTokensForOutput());
+}
+
 int GetOnDeviceModelCrashCountBeforeDisable() {
   static const base::FeatureParam<int> kOnDeviceModelDisableCrashCount{
       &kOptimizationGuideOnDeviceModel, "on_device_model_disable_crash_count",
