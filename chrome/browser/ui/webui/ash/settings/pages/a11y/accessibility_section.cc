@@ -970,6 +970,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_REMOVE_ACTION_LABEL},
       {"faceGazeActionsAssignGestureLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGN_GESTURE_LABEL},
+      {"faceGazeActionsAssignedGestureAlert",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGNED_GESTURE_ALERT},
       {"faceGazeActionsDialogTitle",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_TITLE},
       {"faceGazeActionsDialogSelectedItemInstruction",

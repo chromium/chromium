@@ -54,6 +54,22 @@ suite('<facegaze-actions-card>', () => {
     return row;
   }
 
+  async function addAndRemoveCommandPair(commandPair: FaceGazeCommandPair) {
+    await openAddDialogAndFireCommandPairAddedEvent(commandPair);
+    flush();
+    const reassignRow = assertActionSettingsRow(commandPair);
+    const removeButton =
+        reassignRow.querySelector<CrIconButtonElement>('.icon-clear');
+    assertTrue(!!removeButton);
+    removeButton.click();
+    await flushTasks();
+  }
+
+  function getAlert(): HTMLSpanElement|null {
+    return faceGazeActionsCard.shadowRoot!.querySelector<HTMLSpanElement>(
+        '#faceGazeActionsAlert');
+  }
+
   let faceGazeActionsCard: FaceGazeActionsCardElement;
   let prefElement: SettingsPrefsElement;
 
@@ -230,6 +246,31 @@ suite('<facegaze-actions-card>', () => {
     assertFalse(isGestureToMacroPrefSet(expectedCommandPair));
     await openAddDialogAndFireCommandPairAddedEvent(expectedCommandPair);
     assertTrue(isGestureToMacroPrefSet(expectedCommandPair));
+  });
+
+  test('actions alert updates appropriately when action added', async () => {
+    await initPage();
+
+    let alert = getAlert();
+    assertFalse(!!alert);
+
+    const expectedCommandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    await openAddDialogAndFireCommandPairAddedEvent(expectedCommandPair);
+
+    alert = getAlert();
+    assertTrue(!!alert);
+    assertEquals(
+        alert!.innerText,
+        'Assigned gesture Blink both eyes to Left-click the mouse');
+
+    const addButton = getAddButton();
+    assertFalse(addButton.disabled);
+    addButton.click();
+    flush();
+
+    alert = getAlert();
+    assertFalse(!!alert);
   });
 
   test(
@@ -478,9 +519,11 @@ suite('<facegaze-actions-card>', () => {
       async () => {
         await initPage();
 
-        await openAddDialogAndFireCommandPairAddedEvent(
-            new FaceGazeCommandPair(MacroName.MOUSE_CLICK_LEFT, null));
+        await openAddDialogAndFireCommandPairAddedEvent(new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT_DOUBLE, FacialGesture.EYES_BLINK));
         flush();
+        await addAndRemoveCommandPair(new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_RIGHT, FacialGesture.EYES_BLINK));
 
         const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
         assertTrue(!!chip);
@@ -498,8 +541,8 @@ suite('<facegaze-actions-card>', () => {
       async () => {
         await initPage();
 
-        const commandPair =
-            new FaceGazeCommandPair(MacroName.CUSTOM_KEY_COMBINATION, null);
+        const keyComboCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.EYES_BLINK);
         const keyCombo: KeyCombination = {
           key: 67,
           keyDisplay: 'c',
@@ -507,11 +550,15 @@ suite('<facegaze-actions-card>', () => {
             ctrl: true,
           },
         };
-        commandPair.assignedKeyCombo =
+        keyComboCommandPair.assignedKeyCombo =
             new AssignedKeyCombo(JSON.stringify(keyCombo));
 
-        await openAddDialogAndFireCommandPairAddedEvent(commandPair);
+        await openAddDialogAndFireCommandPairAddedEvent(keyComboCommandPair);
         flush();
+
+        const reassignGestureCommandPair = new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT_DOUBLE, FacialGesture.EYES_BLINK);
+        await addAndRemoveCommandPair(reassignGestureCommandPair);
 
         const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
         assertTrue(!!chip);

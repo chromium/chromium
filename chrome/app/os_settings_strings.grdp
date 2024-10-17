@@ -1337,6 +1337,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGN_GESTURE_LABEL" desc="Label description for button to assign a gesture to an action in the action settings.">
     Assign a gesture
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGNED_GESTURE_ALERT" desc="Spoken feedback for when a user has assigned a gesture to an action in the action settings." is_accessibility_with_no_ui="true">
+    Assigned gesture <ph name="GESTURE">$1<ex>Blink both eyes</ex></ph> to <ph name="ACTION">$2<ex>Click a mouse button</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_TITLE" desc="Title for dialog page to add an action in the action settings.">
     Add an action
   </message>

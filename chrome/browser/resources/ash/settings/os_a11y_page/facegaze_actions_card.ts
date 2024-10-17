@@ -50,6 +50,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private leftClickGestures_: FacialGesture[] = [];
   private dialogPageToShow_: AddDialogPage;
   private commandPairToConfigure_: FaceGazeCommandPair|null = null;
+  private faceGazeActionsAlert_ = '';
 
   // This field stores the current state of gestures assigned to macros and
   // custom key combinations.
@@ -97,7 +98,20 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       commandPairToConfigure_: {
         type: Object,
       },
+
+      shouldAnnounceA11yActionFeedback_: {
+        type: Boolean,
+        computed: 'shouldAnnounceAlert_(faceGazeActionsAlert_)',
+      },
+
+      faceGazeActionsAlert_: {
+        type: String,
+      },
     };
+  }
+
+  private shouldAnnounceAlert_(): boolean {
+    return this.faceGazeActionsAlert_ !== '';
   }
 
   override ready(): void {
@@ -133,6 +147,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.dialogPageToShow_ = AddDialogPage.SELECT_ACTION;
     this.leftClickGestures_ = this.computeLeftClickGestures_();
     this.showAddActionDialog_ = true;
+    this.faceGazeActionsAlert_ = '';
   }
 
   private onAddActionDialogClose_(): void {
@@ -153,6 +168,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.leftClickGestures_ = this.computeLeftClickGestures_();
     this.commandPairToConfigure_ = e.model.item;
     this.showAddActionDialog_ = true;
+    this.faceGazeActionsAlert_ = '';
   }
 
   private getActionDisplayText_(action: MacroName): string {
@@ -291,6 +307,23 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         this.addNewCommandPair_(newCommandPair);
       }
     }
+
+    this.faceGazeActionsAlert_ = this.getAlertText_(newCommandPair);
+  }
+
+  private getAlertText_(commandPair: FaceGazeCommandPair): string {
+    let actionDisplayText =
+        this.i18n(FaceGazeUtils.getMacroDisplayTextName(commandPair.action));
+    if (commandPair.action === MacroName.CUSTOM_KEY_COMBINATION &&
+        commandPair.assignedKeyCombo) {
+      const keyComboDisplayText = this.getKeyComboDisplayText_(commandPair);
+      actionDisplayText = keyComboDisplayText!;
+    }
+
+    return this.i18n(
+        'faceGazeActionsAssignedGestureAlert',
+        this.i18n(FaceGazeUtils.getGestureDisplayTextName(commandPair.gesture)),
+        actionDisplayText);
   }
 
   private addCommandPairToPref_(newCommandPair: FaceGazeCommandPair): void {

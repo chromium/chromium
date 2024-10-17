@@ -16,6 +16,16 @@
   .settings-box .action-row {
     align-items: flex-start;
   }
+
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
 </style>
 
 <template is="dom-if" if="[[showAddActionDialog_]]" restamp>
@@ -79,6 +89,12 @@
     </template>
   </dom-repeat>
   <div class="settings-box">
+    <template is="dom-if" if="[[shouldAnnounceA11yActionFeedback_]]"
+        restamp>
+      <span id="faceGazeActionsAlert" role="alert" class="visually-hidden">
+        [[faceGazeActionsAlert_]]
+      </span>
+    </template>
     <cr-button
         id="addActionButton"
         class="button"
