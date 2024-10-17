@@ -440,7 +440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PromptHelperEvent"
-    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2024-11-03">
+    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2025-11-03">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
