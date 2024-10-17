@@ -42,9 +42,9 @@ namespace gfx {
 #if !BUILDFLAG(IS_IOS)
 
 Image ImageFrom1xJPEGEncodedData(base::span<const uint8_t> input) {
-  std::optional<SkBitmap> bitmap = gfx::JPEGCodec::Decode(input);
-  if (bitmap) {
-    return Image::CreateFrom1xBitmap(bitmap.value());
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(input);
+  if (!bitmap.isNull()) {
+    return Image::CreateFrom1xBitmap(bitmap);
   }
 
   return Image();

@@ -20,9 +20,12 @@
 namespace gfx {
 
 static std::string GetPNGDataUrl(const SkBitmap& bitmap) {
-  std::vector<unsigned char> png_data;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_data);
-  return base::StrCat({"data:image/png;base64,", base::Base64Encode(png_data)});
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                        /*discard_transparency=*/false);
+  return base::StrCat(
+      {"data:image/png;base64,",
+       base::Base64Encode(png_data.value_or(std::vector<uint8_t>()))});
 }
 
 void ExpectRedWithGreenRect(const SkBitmap& bitmap,
