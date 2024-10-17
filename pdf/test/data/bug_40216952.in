@@ -1,0 +1,66 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+  /MediaBox [0 0 200 200]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 4 0 R
+  /Resources <<
+    /ExtGState <<
+      /GS1 5 0 R
+    >>
+    /XObject <<
+      /Fm1 6 0 R
+    >>
+  >>
+>>
+endobj
+{{object 4 0}} <<
+  {{streamlen}}
+>>
+stream
+q
+/GS1 gs
+/Fm1 Do
+Q
+endstream
+endobj
+{{object 5 0}} <<
+  /Type /ExtGState
+  /AIS false
+  /BM /SoftLight
+  /CA 1
+  /OP false
+  /OPM 1
+  /SA true
+  /SMask /None
+  /ca 1
+  /op false
+>>
+endobj
+{{object 6 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [50 50 150 150]
+  {{streamlen}}
+>>
+stream
+q
+60 80 50 30 re B*
+Q
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
