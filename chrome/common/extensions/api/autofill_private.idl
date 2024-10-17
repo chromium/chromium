@@ -316,6 +316,7 @@ namespace autofillPrivate {
   callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
   callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
+  callback annotationsBootstrappingCallback = void(boolean bootstrapped);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -442,6 +443,10 @@ namespace autofillPrivate {
 
     // Notifies autofill client about the prediction improvements pre changing.
     static void predictionImprovementsIphFeatureUsed();
+
+    // Triggers bootstrapping of user annotations. Returns true if
+    // bootstrapping was successful (entries were added), false otherwise.
+    static void triggerAnnotationsBootstrapping(annotationsBootstrappingCallback callback);
   };
 
   interface Events {

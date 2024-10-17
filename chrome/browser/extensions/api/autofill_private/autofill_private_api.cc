@@ -1119,6 +1119,59 @@ void AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted() {
   Respond(NoArguments());
 }
 
+// Triggers bootstarping using `UserAnnotationsService`. On completion if
+// entries were added returns `true` and triggers `maybeShowHelpBubble`,
+// otherwise return `false`.
+ExtensionFunction::ResponseAction
+AutofillPrivateTriggerAnnotationsBootstrappingFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(WithArguments(false));
+  }
+
+  const autofill::PersonalDataManager* personal_data_manager =
+      client->GetPersonalDataManager();
+  if (!personal_data_manager) {
+    return RespondNow(WithArguments(false));
+  }
+
+  std::vector<const autofill::AutofillProfile*> autofill_profiles =
+      personal_data_manager->address_data_manager().GetProfiles(
+          autofill::AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
+  if (autofill_profiles.size() == 0u) {
+    return RespondNow(WithArguments(false));
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
+  user_annotations::UserAnnotationsService* user_annotations_service =
+      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
+  if (!user_annotations_service) {
+    return RespondNow(WithArguments(false));
+  }
+
+  user_annotations_service->SaveAutofillProfile(
+      *autofill_profiles[0],
+      base::BindOnce(&AutofillPrivateTriggerAnnotationsBootstrappingFunction::
+                         OnBootstrappingComplete,
+                     this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateTriggerAnnotationsBootstrappingFunction::
+    OnBootstrappingComplete(
+        user_annotations::UserAnnotationsExecutionResult result) {
+  if (result == user_annotations::UserAnnotationsExecutionResult::kSuccess) {
+    Respond(WithArguments(true));
+    // TODO(crbug.com/372167437): Trigger IPH on success if there are entries in
+    // the UserAnnotationsService.
+    return;
+  }
+  Respond(WithArguments(false));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateHasUserAnnotationsEntriesFunction
 

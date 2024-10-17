@@ -233,6 +233,7 @@ declare global {
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
       export function hasUserAnnotationsEntries(): Promise<boolean>;
+      export function triggerAnnotationsBootstrapping(): Promise<boolean>;
       export function isUserEligibleForAutofillImprovements(): Promise<boolean>;
       export function getUserAnnotationsEntries():
           Promise<UserAnnotationsEntry[]>;

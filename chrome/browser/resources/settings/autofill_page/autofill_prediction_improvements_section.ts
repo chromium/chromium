@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons_lit.html.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
@@ -19,11 +20,13 @@ import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
@@ -35,12 +38,12 @@ type UserAnnotationsEntry = chrome.autofillPrivate.UserAnnotationsEntry;
 
 export interface SettingsAutofillPredictionImprovementsSectionElement {
   $: {
-    prefToggle: HTMLElement,
+    prefToggle: SettingsToggleButtonElement,
   };
 }
 
 const SettingsAutofillPredictionImprovementsSectionElementBase =
-    I18nMixin(PolymerElement);
+    PrefsMixin(I18nMixin(PolymerElement));
 
 export class SettingsAutofillPredictionImprovementsSectionElement extends
     SettingsAutofillPredictionImprovementsSectionElementBase {
@@ -54,11 +57,6 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       disabled: {
         type: Boolean,
         reflectToAttribute: true,
@@ -78,7 +76,6 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     };
   }
 
-  prefs: {[key: string]: any};
   disabled: boolean = false;
   private userAnnotationsEntries_: UserAnnotationsEntry[] = [];
   private userAnnotationsManager_: UserAnnotationsManagerProxy =
@@ -99,6 +96,22 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
   private onToggleSubLabelLinkClick_(): void {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('addressesAndPaymentMethodsLearnMoreURL'));
+  }
+
+  private async onPrefToggleChanged_() {
+    this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
+
+    if (this.disabled || !this.$.prefToggle.checked) {
+      return;
+    }
+
+    const entriesAdded =
+        await this.userAnnotationsManager_.triggerBootstrapping();
+    // Refresh the list if bootstrapping resulted in new entries being added.
+    if (entriesAdded) {
+      this.userAnnotationsEntries_ =
+          await this.userAnnotationsManager_.getEntries();
+    }
   }
 
   private onDeleteEntryCick_(e: DomRepeatEvent<UserAnnotationsEntry>): void {
@@ -140,10 +153,6 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     }
 
     this.deleteAllEntriesConfirmationShown_ = false;
-  }
-
-  private onPredictionImprovementsPrefChanged_() {
-    this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
   }
 
   private getDeleteEntryConfirmationText_(entry?: UserAnnotationsEntry):
