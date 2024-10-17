@@ -245,6 +245,7 @@ AutofillPredictionImprovementsManager::GetFieldValueSensitivityMap(
   }
 
   FilterSensitiveValues(*form_structure);
+  SetFieldFillingEligibility(*form_structure);
 
   return base::MakeFlatMap<autofill::FieldGlobalId, bool>(
       form_structure->fields(), {}, [](const auto& field) {
