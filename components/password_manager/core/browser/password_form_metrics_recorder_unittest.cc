@@ -2143,6 +2143,8 @@ struct ClassificationCorrectnessTestCase {
 
 void CheckClassificationCorrectnessTestCase(
     const ClassificationCorrectnessTestCase& test_case) {
+  SCOPED_TRACE(testing::Message("Test description: ")
+               << test_case.description_for_logging);
   base::HistogramTester histogram_tester;
   sync_preferences::TestingPrefServiceSyncable pref_service;
   PasswordManager::RegisterProfilePrefs(pref_service.registry());
@@ -2153,6 +2155,10 @@ void CheckClassificationCorrectnessTestCase(
   PasswordForm parsed_form;
   parsed_form.username_element_renderer_id = test_case.username_field_id;
   parsed_form.password_element_renderer_id = test_case.password_field_id;
+  parsed_form.new_password_element_renderer_id =
+      test_case.new_password_field_id;
+  parsed_form.confirmation_password_element_renderer_id =
+      test_case.confirm_password_field_id;
   recorder->CacheParsingResultInFillingMode(parsed_form);
 
   if (test_case.submission_detected) {
@@ -2173,7 +2179,8 @@ void CheckClassificationCorrectnessTestCase(
   }
   recorder.reset();
 
-  for (const auto& field_type : {"Username", "CurrentPassword"}) {
+  for (const auto& field_type :
+       {"Username", "CurrentPassword", "NewPassword", "ConfirmationPassword"}) {
     const std::string metric_name = base::StrCat(
         {"PasswordManager.ClassificationCorrectness.", field_type});
     if (test_case.expectation.find(field_type) != test_case.expectation.end()) {
