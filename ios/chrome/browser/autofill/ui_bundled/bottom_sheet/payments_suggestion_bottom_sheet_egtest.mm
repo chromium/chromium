@@ -212,8 +212,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the Payments Bottom Sheet appears when tapping on a credit card
 // related field.
-// TODO(crbug.com/370679361) re-enable it.
-- (void)DISABLED_testOpenPaymentsBottomSheetUseCreditCard {
+- (void)testOpenPaymentsBottomSheetUseCreditCard {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
