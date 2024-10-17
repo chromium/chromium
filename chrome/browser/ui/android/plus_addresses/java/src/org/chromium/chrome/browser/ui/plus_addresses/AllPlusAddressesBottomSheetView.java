@@ -182,25 +182,22 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO: crbug.com/327838324 - Implement accessibility strings.
-        return R.string.ok;
+        return R.string.plus_address_all_plus_addresses_bottomsheet_ax_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO: crbug.com/327838324 - Implement accessibility strings.
-        return R.string.ok;
+        assert false : "This method should not be called";
+        return 0;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO: crbug.com/327838324 - Implement accessibility strings.
-        return R.string.ok;
+        return R.string.plus_address_all_plus_addresses_bottomsheet_is_opened_ax_description;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO: crbug.com/327838324 - Implement accessibility strings.
-        return R.string.ok;
+        return R.string.plus_address_all_plus_addresses_bottomsheet_is_closed_ax_description;
     }
 }

@@ -330,6 +330,15 @@ if we want to translate this file.
         <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
           Search hint placeholder
         </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_AX_DESCRIPTION" desc="Accessibility string read when the bottom sheet for manual plus address selection is opened." formatter_data="android_java" translateable="false">
+          Select plus address sheet
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_IS_OPENED_AX_DESCRIPTION" desc="Accessibility string read when the bottom sheet for manual plus address selection is opened." formatter_data="android_java" translateable="false">
+          Select plus address sheet opened
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_IS_CLOSED_AX_DESCRIPTION" desc="Accessibility string read when the bottom sheet for manual plus address selection is closed." formatter_data="android_java" translateable="false">
+          Select plus address sheet closed
+        </message>
 
         <!-- Android settings management entry -->
         <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_TITLE" desc="Settings entry title for the setting preference that opens plus address management UI on Android." translateable="false" formatter_data="android_java">
