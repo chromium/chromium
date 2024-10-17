@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
@@ -140,13 +141,17 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void setTabSwitchOrRefineAction(
             @NonNull PropertyModel model,
-            AutocompleteInput input,
+            @NonNull AutocompleteInput input,
             @NonNull AutocompleteMatch suggestion,
             int position) {
         @DrawableRes int icon;
         String iconString;
         Runnable action;
         if (suggestion.hasTabMatch()) {
+            // Hub doesn't have refine icons for switch-to-tab.
+            if (input.getPageClassification() == PageClassification.ANDROID_HUB_VALUE) {
+                return;
+            }
             icon = R.drawable.switch_to_tab;
             iconString =
                     OmniboxResourceProvider.getString(

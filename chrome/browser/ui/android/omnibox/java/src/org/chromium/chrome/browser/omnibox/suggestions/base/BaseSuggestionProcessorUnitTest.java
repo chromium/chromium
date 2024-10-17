@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -116,8 +118,13 @@ public class BaseSuggestionProcessorUnitTest {
     }
 
     /** Create Suggestion for test. */
-    private void createSuggestion(int type, boolean isSearch, GURL url) {
-        mSuggestion = new AutocompleteMatchBuilder(type).setIsSearch(isSearch).setUrl(url).build();
+    private void createSuggestion(int type, boolean isSearch, boolean hasTabMatch, GURL url) {
+        mSuggestion =
+                new AutocompleteMatchBuilder(type)
+                        .setIsSearch(isSearch)
+                        .setUrl(url)
+                        .setHasTabMatch(hasTabMatch)
+                        .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
@@ -125,7 +132,11 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     public void suggestionFavicons_showFaviconWhenAvailable() {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ false,
+                TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
@@ -141,7 +152,11 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ false,
+                TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
@@ -156,7 +171,11 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH})
     public void touchDownForPrefetch_featureDisabled() {
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, true, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ true,
+                /* hasTabMatch= */ false,
+                TEST_URL);
 
         Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         Assert.assertNull(touchDownListener);
@@ -165,7 +184,11 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH})
     public void touchDownForPrefetch_featureEnabled() {
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, true, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ true,
+                /* hasTabMatch= */ false,
+                TEST_URL);
 
         Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         Assert.assertNotNull(touchDownListener);
@@ -186,7 +209,11 @@ public class BaseSuggestionProcessorUnitTest {
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH})
     public void touchDownForPrefetch_nonSearchSuggestion() {
         // The touch down listener is only added for search suggestions.
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ false,
+                TEST_URL);
 
         Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         Assert.assertNull(touchDownListener);
@@ -194,7 +221,11 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     public void setTabSwitchOrRefineAction_refineActionForSearch() {
-        createSuggestion(OmniboxSuggestionType.SEARCH_HISTORY, /* isSearch= */ true, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.SEARCH_HISTORY,
+                /* isSearch= */ true,
+                /* hasTabMatch= */ false,
+                TEST_URL);
         mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
@@ -221,7 +252,11 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     public void setTabSwitchOrRefineAction_refineActionForUrl() {
-        createSuggestion(OmniboxSuggestionType.HISTORY_URL, /* isSearch= */ false, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.HISTORY_URL,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ false,
+                TEST_URL);
         mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
@@ -248,7 +283,11 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     public void decorationAndActionChipSpacingDefaults() {
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ false,
+                TEST_URL);
         Assert.assertEquals(mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), false);
         Assert.assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
@@ -262,5 +301,45 @@ public class BaseSuggestionProcessorUnitTest {
         Assert.assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+    }
+
+    @Test
+    public void setTabSwitchOrRefineAction_refineSwitchToTab() {
+        createSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ true,
+                TEST_URL);
+        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(1, actions.size());
+
+        var action = actions.get(0);
+
+        var expectedDescription =
+                mContext.getResources()
+                        .getString(
+                                R.string.accessibility_omnibox_switch_to_tab,
+                                mSuggestion.getFillIntoEdit());
+        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
+        Assert.assertEquals(
+                R.drawable.switch_to_tab, shadowOf(action.icon.drawable).getCreatedFromResId());
+    }
+
+    @Test
+    public void setTabSwitchOrRefineAction_refineSwitchToTab_HubPageClassificationSkipsIcon() {
+        // When the ANDROID_HUB PageClassification is seen, the switch to tab refine icon is
+        // intentionally skipped.
+        doReturn(PageClassification.ANDROID_HUB_VALUE).when(mInput).getPageClassification();
+        createSuggestion(
+                OmniboxSuggestionType.OPEN_TAB,
+                /* isSearch= */ false,
+                /* hasTabMatch= */ true,
+                TEST_URL);
+        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(null, actions);
     }
 }
