@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.components.browser_ui.widget;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 import android.widget.CheckBox;
@@ -16,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 import androidx.core.util.Function;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,11 +27,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationDialog.ConfirmationDialogResult;
-import org.chromium.chrome.browser.tasks.tab_management.StrictButtonPressController.ButtonClickResult;
-import org.chromium.ui.base.TestActivity;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogResult;
+import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -44,25 +44,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ActionConfirmationDialogUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ConfirmationDialogResult mConfirmationDialogResult;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
 
-    private Activity mActivity;
+    private Context mContext;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-    }
-
-    private void onActivity(TestActivity activity) {
-        mActivity = activity;
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_AppCompat);
+        mContext = activity;
     }
 
     private Function<Resources, String> noSyncResolver(@StringRes int stringRes) {
@@ -76,11 +69,11 @@ public class ActionConfirmationDialogUnitTest {
     @Test
     public void testShowNoSync() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
@@ -89,23 +82,22 @@ public class ActionConfirmationDialogUnitTest {
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
 
-        assertEquals("Delete tab group?", propertyModel.get(ModalDialogProperties.TITLE));
-        assertEquals("Delete group", propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals("Title", propertyModel.get(ModalDialogProperties.TITLE));
+        assertEquals("Confirm", propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
-        assertEquals(
-                descriptionTextView.getText(),
-                "This will permanently delete the group from your device");
+        assertEquals(descriptionTextView.getText(), "Learn more");
     }
 
     @Test
     public void testShowWithSync() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        // chip_remove_icon_content_description can be any string with formal args.
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                syncResolver(R.string.delete_tab_group_description, "test@gmail.com"),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                syncResolver(R.string.chip_remove_icon_content_description, "test@gmail.com"),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
@@ -116,19 +108,17 @@ public class ActionConfirmationDialogUnitTest {
 
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
-        assertEquals(
-                descriptionTextView.getText(),
-                "This will delete the group from all devices signed into test@gmail.com");
+        assertEquals("Remove 'test@gmail.com'", descriptionTextView.getText());
     }
 
     @Test
     public void testPositiveDismiss() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
@@ -146,11 +136,11 @@ public class ActionConfirmationDialogUnitTest {
     @Test
     public void testNegativeDismiss() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
@@ -168,11 +158,11 @@ public class ActionConfirmationDialogUnitTest {
     @Test
     public void testPositiveStopShowing() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
@@ -194,11 +184,11 @@ public class ActionConfirmationDialogUnitTest {
     @Test
     public void testNegativeStopShowing() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
@@ -220,11 +210,11 @@ public class ActionConfirmationDialogUnitTest {
     @Test
     public void testNoStopShowing() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.delete_tab_group_action,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ false,
                 mConfirmationDialogResult);
@@ -241,12 +231,12 @@ public class ActionConfirmationDialogUnitTest {
     @Test
     public void testDefaultDismiss_CustomNegativeAction() {
         ActionConfirmationDialog dialog =
-                new ActionConfirmationDialog(mActivity, mModalDialogManager);
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                noSyncResolver(R.string.delete_tab_group_dialog_title),
-                noSyncResolver(R.string.delete_tab_group_no_sync_description),
-                R.string.tab_grid_dialog_toolbar_delete_group,
-                R.string.tab_grid_dialog_toolbar_close_group,
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
+                R.string.cancel,
                 /* supportStopShowing= */ true,
                 mConfirmationDialogResult);
 

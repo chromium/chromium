@@ -749,9 +749,6 @@
       <message name="IDS_DELETE_TAB_GROUP_NO_SYNC_DESCRIPTION" desc="Description of the action of deleting a tab group, shown in a confirmation dialog.">
         This will permanently delete the group from your device
       </message>
-      <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
-        Don&apos;t ask again
-      </message>
       <message name="IDS_DELETE_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will delete a tab group.">
         Delete group
       </message>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.components.browser_ui.widget;
 
 import androidx.annotation.IntDef;
 
@@ -27,7 +27,7 @@ public class StrictButtonPressController implements ModalDialogProperties.Contro
         ButtonClickResult.NEGATIVE,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface ButtonClickResult {
+    public @interface ButtonClickResult {
         int NO_CLICK = 0;
         int POSITIVE = 1;
         int NEGATIVE = 2;

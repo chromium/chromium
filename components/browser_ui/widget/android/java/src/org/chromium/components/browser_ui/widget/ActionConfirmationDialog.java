@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -16,8 +16,7 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.tasks.tab_management.StrictButtonPressController.ButtonClickResult;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;

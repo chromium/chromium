@@ -1216,6 +1216,11 @@
       <message name="IDS_IPH_DRAG_AND_DROP_CONTENT" desc="This text shows on the in-product help dialog for drag-and-drop. It gives instructions on how to drag and drop to create a group.">
         To group tabs, touch &amp; hold a tab. Then, drag it onto another tab.
       </message>
+
+      <!-- Action confirmation dialog strings -->
+      <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
+        Don&apos;t ask again
+      </message>
     </messages>
   </release>
 </grit>

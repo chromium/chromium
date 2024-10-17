@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/widget/ActionConfirmationDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/AlwaysDismissedDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/BrowserUiListMenuUtils.java",
@@ -42,6 +43,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerImageView.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProvider.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGenerator.java",
+    "java/src/org/chromium/components/browser_ui/widget/StrictButtonPressController.java",
     "java/src/org/chromium/components/browser_ui/widget/SurfaceColorDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/TintedDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/TouchEventObserver.java",
@@ -236,6 +238,7 @@ android_resources("java_resources") {
     "java/res/drawable/search_toolbar_modern_bg.xml",
     "java/res/drawable/tile_view_highlight.xml",
     "java/res/drawable/tile_view_highlight_mask.xml",
+    "java/res/layout/action_confirmation_dialog.xml",
     "java/res/layout/app_menu_layout.xml",
     "java/res/layout/automotive_layout_with_horizontal_back_button_toolbar.xml",
     "java/res/layout/automotive_layout_with_vertical_back_button_toolbar.xml",
@@ -405,10 +408,12 @@ android_resources("java_test_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.components.browser_ui.widget"
   sources = [
+    "java/src/org/chromium/components/browser_ui/widget/ActionConfirmationDialogUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/ChromeTransitionDrawableTest.java",
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegateUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialogUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/StrictButtonPressControllerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/ViewResizerUtilTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardCoordinatorUnitTest.java",
