@@ -76,6 +76,7 @@
     [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy, MeasureAs=OffscreenCanvasMeasureText] TextMetrics measureText(DOMString text);
+    [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, optional double x = 0, optional double y = 0);
 
     // drawing images
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);

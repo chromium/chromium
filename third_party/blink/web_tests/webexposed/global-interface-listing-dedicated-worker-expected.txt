@@ -1573,6 +1573,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fill
 [Worker]     method fillRect
 [Worker]     method fillText
+[Worker]     method fillTextCluster
 [Worker]     method getImageData
 [Worker]     method getLineDash
 [Worker]     method getTextureFormat

@@ -85,6 +85,8 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
       ExceptionState& exception_state);
   HeapVector<Member<TextCluster>> getTextClusters(const TextClusterOptions* options);
 
+  const Font& GetFont() const { return font_; }
+
   void Trace(Visitor*) const override;
 
   struct RunWithOffset {

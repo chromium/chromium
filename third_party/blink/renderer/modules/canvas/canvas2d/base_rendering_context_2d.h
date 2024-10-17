@@ -114,6 +114,7 @@ class Path;
 class Path2D;
 class ScriptState;
 class SimpleFontData;
+class TextCluster;
 class TextMetrics;
 class V8GPUTextureFormat;
 class V8UnionCanvasFilterOrString;
@@ -487,6 +488,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void strokeText(const String& text, double x, double y);
   void strokeText(const String& text, double x, double y, double max_width);
   TextMetrics* measureText(const String& text);
+  // Renders a TextCluster returned by TextMetrics::getTextClusters(). If
+  // possible, the align, baseline, and font from the TextCluster will be used.
+  // The x and y parameters are added to the values from the TextCluster to
+  // position the cluster.
+  void fillTextCluster(const TextCluster* text_cluster, double x, double y);
 
   void Trace(Visitor*) const override;
 
@@ -725,7 +731,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         double x,
                         double y,
                         CanvasRenderingContext2DState::PaintType paint_type,
-                        double* max_width = nullptr);
+                        double* max_width = nullptr,
+                        const TextCluster* text_cluster = nullptr);
 
   // Returns the color from a string. This may return a cached value as well
   // as updating the cache (if possible).

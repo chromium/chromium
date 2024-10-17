@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -3414,6 +3415,14 @@ void BaseRenderingContext2D::fillText(const String& text,
                    &max_width);
 }
 
+void BaseRenderingContext2D::fillTextCluster(const TextCluster* text_cluster,
+                                             double x,
+                                             double y) {
+  DrawTextInternal(
+      text_cluster->text(), text_cluster->x() + x, text_cluster->y() + y,
+      CanvasRenderingContext2DState::kFillPaintType, nullptr, text_cluster);
+}
+
 void BaseRenderingContext2D::strokeText(const String& text,
                                         double x,
                                         double y) {
@@ -3444,7 +3453,8 @@ void BaseRenderingContext2D::DrawTextInternal(
     double x,
     double y,
     CanvasRenderingContext2DState::PaintType paint_type,
-    double* max_width) {
+    double* max_width,
+    const TextCluster* text_cluster) {
   HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
   if (canvas) {
     // The style resolution required for fonts is not available in frame-less
@@ -3483,7 +3493,12 @@ void BaseRenderingContext2D::DrawTextInternal(
     identifiability_study_helper_.set_encountered_sensitive_ops();
   }
 
-  const Font& font = AccessFont(canvas);
+  // If rendering a TextCluster that contains a TextMetrics object, use the font
+  // stored on that object to recreate the text accurately.
+  const Font& font =
+      (text_cluster != nullptr && text_cluster->textMetrics() != nullptr)
+          ? text_cluster->textMetrics()->GetFont()
+          : AccessFont(canvas);
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
@@ -3503,15 +3518,25 @@ void BaseRenderingContext2D::DrawTextInternal(
   TextRun text_run(text, direction, bidi_override);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
-  gfx::PointF location(ClampTo<float>(x),
-                       ClampTo<float>(y + GetFontBaseline(*font_data)));
+  gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
-  double font_width = font.Width(text_run, &bounds);
+  double font_width = 0;
+  unsigned run_start = 0, run_end = 0;
+  if (text_cluster == nullptr) [[likely]] {
+    run_start = 0;
+    run_end = text.length();
+    font_width = font.Width(text_run, &bounds);
+  } else {
+    run_start = text_cluster->begin();
+    run_end = text_cluster->end();
+    font_width = font.SubRunWidth(text_run, run_start, run_end, &bounds);
+  }
 
   bool use_max_width = (max_width && *max_width < font_width);
   double width = use_max_width ? *max_width : font_width;
 
-  TextAlign align = state.GetTextAlign();
+  TextAlign align = (text_cluster == nullptr) ? state.GetTextAlign()
+                                              : text_cluster->GetTextAlign();
   if (align == kStartTextAlign) {
     align = is_rtl ? kRightTextAlign : kLeftTextAlign;
   } else if (align == kEndTextAlign) {
@@ -3527,6 +3552,15 @@ void BaseRenderingContext2D::DrawTextInternal(
       break;
     default:
       break;
+  }
+
+  if (text_cluster == nullptr) [[likely]] {
+    // Use the current ctx baseline.
+    location.Offset(0, GetFontBaseline(*font_data));
+  } else {
+    // Use the baseline passed in the TextCluster.
+    location.Offset(0, TextMetrics::GetFontBaseline(
+                           text_cluster->GetTextBaseline(), *font_data));
   }
 
   bounds.Offset(location.x(), location.y());
@@ -3545,12 +3579,15 @@ void BaseRenderingContext2D::DrawTextInternal(
   }
 
   Draw<OverdrawOp::kNone>(
-      [this, text = std::move(text), direction, bidi_override, location,
+      [font, text = std::move(text), direction, bidi_override, location,
+       run_start, run_end,
        canvas](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
         TextRun text_run(text, direction, bidi_override);
         text_run.SetNormalizeSpace(true);
         TextRunPaintInfo text_run_paint_info(text_run);
+        text_run_paint_info.from = run_start;
+        text_run_paint_info.to = run_end;
         // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
         // otherwise the character to glyph mapping will not be reversible,
         // which prevents text data from being extracted from PDF files or
@@ -3563,9 +3600,8 @@ void BaseRenderingContext2D::DrawTextInternal(
         Font::DrawType draw_type = (canvas && canvas->IsPrinting())
                                        ? Font::DrawType::kGlyphsAndClusters
                                        : Font::DrawType::kGlyphsOnly;
-        this->AccessFont(canvas).DrawBidiText(c, text_run_paint_info, location,
-                                              Font::kUseFallbackIfFontNotReady,
-                                              *flags, draw_type);
+        font.DrawBidiText(c, text_run_paint_info, location,
+                          Font::kUseFallbackIfFontNotReady, *flags, draw_type);
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
