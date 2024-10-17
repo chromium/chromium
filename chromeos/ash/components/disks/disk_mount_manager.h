@@ -275,7 +275,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   static DiskMountManager* GetInstance();
 
  protected:
-  raw_ptr<ArcDelegate> arc_delegate_;
+  raw_ptr<ArcDelegate> arc_delegate_ = nullptr;
 };
 
 }  // namespace ash::disks
