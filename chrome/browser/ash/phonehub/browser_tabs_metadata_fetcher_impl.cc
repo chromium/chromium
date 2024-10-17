@@ -17,8 +17,8 @@
 #include "components/ukm/scheme_constants.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 std::vector<BrowserTabsModel::BrowserTabMetadata>
@@ -126,5 +126,4 @@ void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
   std::move(done_closure).Run();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

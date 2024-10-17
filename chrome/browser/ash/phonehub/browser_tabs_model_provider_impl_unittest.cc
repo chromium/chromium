@@ -34,8 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -330,5 +329,4 @@ TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
             session_b.get());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

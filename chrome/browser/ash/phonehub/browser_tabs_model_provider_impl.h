@@ -22,8 +22,7 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Gets the browser tab model info by finding a SyncedSession (provided lazily
 // by a SessionService) with a |session_name| that matches the |pii_free_name|
@@ -75,7 +74,6 @@ class BrowserTabsModelProviderImpl
   base::WeakPtrFactory<BrowserTabsModelProviderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_MODEL_PROVIDER_IMPL_H_
