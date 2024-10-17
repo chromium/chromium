@@ -41,7 +41,7 @@ TEST_F(ManualFillAddressFormAutofilliOSTest, CreationWithMiddleName) {
   NSString* city = @"Springfield";
   NSString* state = @"State";
   NSString* country = @"US";
-  NSString* phoneNumber = @"6502345678";
+  NSString* phoneNumber = @"16502345678";
   NSString* emailAddress = @"john@doe";
 
   AutofillProfile* profile = new AutofillProfile(
@@ -90,7 +90,7 @@ TEST_F(ManualFillAddressFormAutofilliOSTest, CreationWithMiddleInitial) {
   NSString* city = @"Springfield";
   NSString* state = @"State";
   NSString* country = @"US";
-  NSString* phoneNumber = @"6502345678";
+  NSString* phoneNumber = @"16502345678";
   NSString* emailAddress = @"john@doe";
 
   AutofillProfile* profile = new AutofillProfile(

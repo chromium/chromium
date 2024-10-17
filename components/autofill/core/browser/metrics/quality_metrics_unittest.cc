@@ -270,11 +270,11 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
                           FormControlType::kInputText),
       CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
                           FormControlType::kInputText),
-      CreateTestFormField("Phone", "phone", "2345678901",
+      CreateTestFormField("Phone", "phone", "12345678901",
                           FormControlType::kInputText),
       // RATIONALIZATION_BAD because it's filled with the same value as filled
       // previously.
-      CreateTestFormField("Phone1", "phone1", "2345678901",
+      CreateTestFormField("Phone1", "phone1", "12345678901",
                           FormControlType::kInputText),
   });
   test_api(form).field(2).set_is_autofilled(true);

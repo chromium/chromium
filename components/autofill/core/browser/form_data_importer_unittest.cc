@@ -99,7 +99,6 @@ constexpr char kDefaultCountry[] = "US";
 // "+". As these tests check equality, we drop the "+" in the input as it would
 // be gone in the output.
 constexpr char kDefaultPhone[] = "1 650-555-0000";
-constexpr char kDefaultPhoneDomesticFormatting[] = "(650) 555-0000";
 constexpr char kDefaultPhoneAreaCode[] = "650";
 constexpr char kDefaultPhonePrefix[] = "555";
 constexpr char kDefaultPhoneSuffix[] = "0000";
@@ -1414,18 +1413,16 @@ TEST_F(FormDataImporterTest,
       ConstructFormStructureFromFormData(form_data);
 
   ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure,
-      {ConstructProfileFromTypeValuePairs(
-          {{NAME_FIRST, kDefaultFirstName},
-           {NAME_LAST, kDefaultLastName},
-           {EMAIL_ADDRESS, kDefaultMail},
-           // Note that this formatting is without a country code.
-           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
-           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-           {ADDRESS_HOME_CITY, kDefaultCity},
-           {ADDRESS_HOME_STATE, kDefaultState},
-           {ADDRESS_HOME_ZIP, kDefaultZip},
-           {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
+      *form_structure, {ConstructProfileFromTypeValuePairs(
+                           {{NAME_FIRST, kDefaultFirstName},
+                            {NAME_LAST, kDefaultLastName},
+                            {EMAIL_ADDRESS, kDefaultMail},
+                            {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+                            {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+                            {ADDRESS_HOME_CITY, kDefaultCity},
+                            {ADDRESS_HOME_STATE, kDefaultState},
+                            {ADDRESS_HOME_ZIP, kDefaultZip},
+                            {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
 }
 
 // Tests that not enough filled fields will result in not importing an address.
@@ -1518,17 +1515,16 @@ TEST_F(FormDataImporterTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
   ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure,
-      {ConstructProfileFromTypeValuePairs(
-          {{NAME_FIRST, kDefaultFirstName},
-           {NAME_LAST, kDefaultLastName},
-           {EMAIL_ADDRESS, kDefaultMail},
-           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
-           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-           {ADDRESS_HOME_CITY, kDefaultCity},
-           {ADDRESS_HOME_STATE, kDefaultState},
-           {ADDRESS_HOME_ZIP, kDefaultZip},
-           {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
+      *form_structure, {ConstructProfileFromTypeValuePairs(
+                           {{NAME_FIRST, kDefaultFirstName},
+                            {NAME_LAST, kDefaultLastName},
+                            {EMAIL_ADDRESS, kDefaultMail},
+                            {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+                            {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+                            {ADDRESS_HOME_CITY, kDefaultCity},
+                            {ADDRESS_HOME_STATE, kDefaultState},
+                            {ADDRESS_HOME_ZIP, kDefaultZip},
+                            {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
 }
 
 // Test that even from unfocusable fields we extract.
