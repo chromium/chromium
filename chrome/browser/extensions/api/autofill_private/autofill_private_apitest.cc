@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -408,6 +409,27 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        IsUserEligibleForAutofillImprovements) {
   EXPECT_TRUE(RunAutofillSubtest("isUserEligibleForAutofillImprovements"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MigrateCreditCards) {
+  EXPECT_TRUE(RunAutofillSubtest("migrateCreditCards")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
+  autofill::TestPersonalDataManager* personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  autofill_client()
+      ->GetPaymentsAutofillClient()
+      ->set_test_payments_network_interface(
+          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+              autofill_client()->GetURLLoaderFactory(),
+              autofill_client()->GetIdentityManager(), personal_data_manager));
+  // Required for adding the server card.
+  personal_data_manager->payments_data_manager().SetSyncingForTest(
+      /*is_syncing_for_test=*/true);
+  personal_data_manager->test_payments_data_manager().AddServerCreditCard(
+      autofill::test::GetMaskedServerCard());
+  EXPECT_TRUE(RunAutofillSubtest("addVirtualCard")) << message_;
 }
 
 }  // namespace

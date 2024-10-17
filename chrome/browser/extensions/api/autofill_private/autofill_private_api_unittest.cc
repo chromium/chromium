@@ -24,10 +24,13 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
@@ -341,4 +344,63 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
   RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(RunAutofillSubtest("logServerCardLinkClicked"));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardLinkClicked",
+      autofill::AutofillMetrics::PaymentsSigninState::kSignedOut, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
+  autofill::TestPersonalDataManager* personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  autofill_client()
+      ->GetPaymentsAutofillClient()
+      ->set_test_payments_network_interface(
+          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+              autofill_client()->GetURLLoaderFactory(),
+              autofill_client()->GetIdentityManager(), personal_data_manager));
+  // Required for adding the server card.
+  personal_data_manager->payments_data_manager().SetSyncingForTest(
+      /*is_syncing_for_test=*/true);
+  autofill::CreditCard virtual_card = autofill::test::GetVirtualCard();
+  virtual_card.set_server_id("a123");
+  virtual_card.set_instrument_id(123);
+  personal_data_manager->test_payments_data_manager().AddServerCreditCard(
+      virtual_card);
+  EXPECT_TRUE(RunAutofillSubtest("removeVirtualCard"));
+  EXPECT_THAT(
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetPaymentsNetworkInterface()
+          ->update_virtual_card_enrollment_request_details(),
+      ::testing::AllOf(
+          ::testing::Field(
+              &autofill::payments::UpdateVirtualCardEnrollmentRequestDetails::
+                  instrument_id,
+              123),
+          ::testing::Field(
+              &autofill::payments::UpdateVirtualCardEnrollmentRequestDetails::
+                  virtual_card_enrollment_request_type,
+              autofill::VirtualCardEnrollmentRequestType::kUnenroll)));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
+                       SetAutofillSyncToggleEnabled) {
+  autofill::TestPersonalDataManager* personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  syncer::TestSyncService test_sync_service;
+  personal_data_manager->test_address_data_manager().SetSyncServiceForTest(
+      &test_sync_service);
+  test_sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kAutofill, false);
+  EXPECT_FALSE(test_sync_service.GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kAutofill));
+  EXPECT_TRUE(RunAutofillSubtest("setAutofillSyncToggleEnabled"));
+  EXPECT_TRUE(test_sync_service.GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kAutofill));
+}
+
 }  // namespace
