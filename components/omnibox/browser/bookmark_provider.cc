@@ -216,7 +216,7 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
 
   // Bookmarks with javascript scheme ("bookmarklets") that do not have title
   // matches get a lower base and lower maximum score because returning them
-  // for matches in their (often very long) URL looks stupid and is often not
+  // for matches in their (often very long) URL looks bad and is often not
   // intended by the user.
   const GURL& url(bookmark_match.node->GetTitledUrlNodeUrl());
   const bool bookmarklet_without_title_match =
