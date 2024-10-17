@@ -94,6 +94,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "babel_orca_manager_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
     "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",

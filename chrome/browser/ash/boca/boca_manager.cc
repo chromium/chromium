@@ -11,6 +11,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -50,7 +51,9 @@ BocaManager::BocaManager(Profile* profile)
                                       ->GetAccountId());
   babel_orca_manager_ = std::make_unique<boca::BabelOrcaManager>(
       std::make_unique<captions::TranslationDispatcher>(
-          google_apis::GetBocaAPIKey(), profile));
+          google_apis::GetBocaAPIKey(), profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory());
 
   if (ash::boca_util::IsConsumer()) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(

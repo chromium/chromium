@@ -16,7 +16,10 @@
 #include "components/account_id/account_id.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/common/request_sender.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,6 +117,8 @@ class BocaManagerTest : public testing::Test {
   NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
   NiceMock<MockInstanceID> mock_instance_id_;
   std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  network::TestURLLoaderFactory url_loader_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -131,7 +136,9 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>(
-            /*translation_dispatcher*/ nullptr));
+            /*translation_dispatcher=*/nullptr,
+            identity_test_env_.identity_manager(),
+            url_loader_factory_.GetSafeWeakWrapper()));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -170,7 +177,9 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>(
-            /*translation_dispatcher*/ nullptr));
+            /*translation_dispatcher=*/nullptr,
+            identity_test_env_.identity_manager(),
+            url_loader_factory_.GetSafeWeakWrapper()));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };

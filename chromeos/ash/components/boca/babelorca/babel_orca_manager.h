@@ -5,8 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_BABEL_ORCA_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_BABEL_ORCA_MANAGER_H_
 
+#include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
+#include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "components/live_caption/translation_dispatcher.h"
 
@@ -14,14 +20,24 @@ namespace boca {
 class UserIdentity;
 }  // namespace boca
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash::boca {
 
-// Session manager implementation that is primarily used for configuring and
-// managing OnTask components and services throughout a Boca session.
+// Manager for BabelOrca observing BOCA session events and doing captions
+// related actions accordingly.
 class BabelOrcaManager : public boca::BocaSessionManager::Observer {
  public:
-  explicit BabelOrcaManager(
-      std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher);
+  BabelOrcaManager(
+      std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   BabelOrcaManager(const BabelOrcaManager&) = delete;
   BabelOrcaManager& operator=(const BabelOrcaManager&) = delete;
   ~BabelOrcaManager() override;
@@ -33,8 +49,16 @@ class BabelOrcaManager : public boca::BocaSessionManager::Observer {
 
   bool IsCaptioningAvailable();
 
+  // Signin to Tachyon and run the callback with `true` on success and with
+  // `false` otherwise.
+  void SigninToTachyonAndRespond(base::OnceCallback<void(bool)> on_response_cb);
+
  private:
   std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher_;
+  const std::string client_uuid_;
+  babelorca::TokenManagerImpl token_manager_;
+  babelorca::TachyonAuthedClientImpl authed_client_;
+  babelorca::TachyonRegistrar registrar_;
 };
 
 }  // namespace ash::boca
