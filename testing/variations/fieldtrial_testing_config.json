@@ -12875,7 +12875,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CustomWebSignInInterceptForSupervisedUsersUi",
+                        "CustomProfileStringsForSupervisedUsers",
                         "ForceSafeSearchForUnauthenticatedSupervisedUsers",
                         "ForceSupervisedUserReauthenticationForBlockedSites",
                         "ForceSupervisedUserReauthenticationForYouTube",
