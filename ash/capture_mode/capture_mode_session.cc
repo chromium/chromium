@@ -495,11 +495,13 @@ class ActionButtonView : public PillButton {
  public:
   ActionButtonView(views::Button::PressedCallback callback,
                    std::u16string text,
-                   const gfx::VectorIcon* icon)
+                   const gfx::VectorIcon* icon,
+                   ActionButtonRank rank)
       : PillButton(std::move(callback),
                    text,
                    Type::kDefaultLargeWithIconLeading,
                    icon),
+        rank_(rank),
         // Since this view has fully circular rounded corners, we can't use a
         // nine patch layer for the shadow. We have to use the
         // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
@@ -513,6 +515,8 @@ class ActionButtonView : public PillButton {
   ActionButtonView(const ActionButtonView&) = delete;
   ActionButtonView& operator=(const ActionButtonView&) = delete;
   ~ActionButtonView() override = default;
+
+  ActionButtonRank rank() const { return rank_; }
 
   // views::View:
   void AddedToWidget() override {
@@ -536,6 +540,7 @@ class ActionButtonView : public PillButton {
   }
 
  private:
+  const ActionButtonRank rank_;
   std::unique_ptr<SystemShadow> shadow_;
 };
 
@@ -1378,10 +1383,13 @@ void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
   UpdateActionContainerWidget();
 }
 
+// TODO(crbug.com/372740410): Determine behavior when we add a button with the
+// exact same rank (type and priority) as an existing valid button.
 void CaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
-    const gfx::VectorIcon* icon) {
+    const gfx::VectorIcon* icon,
+    ActionButtonRank rank) {
   // Another process may try to add an action button before the container is
   // created, or while it is invalid. In these cases, we don't want to do
   // anything.
@@ -1389,10 +1397,41 @@ void CaptureModeSession::AddActionButton(
     return;
   }
 
-  // TODO(http://b/368674223): Add a ranking when the button is added.
   CHECK(action_container_view_);
-  action_container_view_->AddChildView(std::make_unique<ActionButtonView>(
-      std::move(callback), text, &kCaptureModeImageIcon));
+
+  // Collect the existing buttons and newly requested button, and sort them by
+  // rank.
+  std::vector<std::unique_ptr<ActionButtonView>> action_buttons;
+
+  // Populate `action_buttons` with the existing action buttons, if any. We need
+  // to copy the vector of `children()` as we will be removing buttons from the
+  // original.
+  auto children = action_container_view_->children();
+  for (views::View* action_button : children) {
+    CHECK(action_button);
+    action_buttons.push_back(action_container_view_->RemoveChildViewT(
+        AsViewClass<ActionButtonView>(action_button)));
+  }
+
+  CHECK(action_container_view_->children().empty());
+
+  // Add the new action button to the vector so it can also be sorted.
+  action_buttons.push_back(std::make_unique<ActionButtonView>(
+      std::move(callback), text, &kCaptureModeImageIcon, rank));
+
+  // Sort the buttons by rank.
+  auto rank_sort = [](const std::unique_ptr<ActionButtonView>& lhs,
+                      const std::unique_ptr<ActionButtonView>& rhs) {
+    return lhs->rank() < rhs->rank();
+  };
+  sort(action_buttons.begin(), action_buttons.end(), rank_sort);
+
+  // Re-insert the buttons into the container view in sorted order from highest
+  // to lowest. Higher ranked buttons should appear to the right of lower ranked
+  // buttons, so insert new buttons on the left.
+  for (std::unique_ptr<ActionButtonView>& action_button : action_buttons) {
+    action_container_view_->AddChildView(std::move(action_button));
+  }
 
   UpdateActionContainerWidget();
 }

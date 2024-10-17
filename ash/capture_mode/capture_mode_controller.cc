@@ -1717,7 +1717,9 @@ void CaptureModeController::OnImageCapturedForSearch(
 
 void CaptureModeController::OnScannerActionsFetched(
     std::vector<ScannerActionViewModel> scanner_actions) {
-  for (ScannerActionViewModel& action : scanner_actions) {
+  int size = static_cast<int>(scanner_actions.size());
+  for (int i = 0; i < size; ++i) {
+    ScannerActionViewModel& action = scanner_actions[i];
     std::u16string text = action.GetText();
     const gfx::VectorIcon& icon = action.GetIcon();
     // TODO(b/369470078): Replace the placeholder action finished callback with
@@ -1725,7 +1727,8 @@ void CaptureModeController::OnScannerActionsFetched(
     capture_mode_util::AddActionButton(
         std::move(action).ToCallback(
             /*action_finished_callback=*/base::DoNothing()),
-        std::move(text), &icon);
+        std::move(text), &icon,
+        ActionButtonRank{ActionButtonType::kScanner, i});
   }
 }
 

@@ -119,7 +119,8 @@ void NullCaptureModeSession::ShowSearchResultsPanel(
 void NullCaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
-    const gfx::VectorIcon* icon) {}
+    const gfx::VectorIcon* icon,
+    const ActionButtonRank rank) {}
 
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");

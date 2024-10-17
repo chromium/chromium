@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/shell_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/controls/button/button.h"
@@ -158,7 +159,8 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // Adds an action button below the selected region during an active session.
   virtual void AddActionButton(views::Button::PressedCallback callback,
                                std::u16string text,
-                               const gfx::VectorIcon* icon) = 0;
+                               const gfx::VectorIcon* icon,
+                               ActionButtonRank rank) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

@@ -181,7 +181,8 @@ class ASH_EXPORT CaptureModeSession
   void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
   void AddActionButton(views::Button::PressedCallback callback,
                        std::u16string text,
-                       const gfx::VectorIcon* icon) override;
+                       const gfx::VectorIcon* icon,
+                       ActionButtonRank rank) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

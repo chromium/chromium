@@ -242,7 +242,8 @@ gfx::Rect GetEffectivePartialRegionBounds(
 // active.
 ASH_EXPORT void AddActionButton(views::Button::PressedCallback callback,
                                 std::u16string text,
-                                const gfx::VectorIcon* icon);
+                                const gfx::VectorIcon* icon,
+                                const ActionButtonRank rank);
 
 }  // namespace capture_mode_util
 

@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
@@ -506,8 +507,9 @@ TEST_F(SunfishTest, AddActionButton) {
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
 
   // Attempt to add a new action button using the API.
-  capture_mode_util::AddActionButton(views::Button::PressedCallback(),
-                                     u"Do not show", &kCaptureModeImageIcon);
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Do not show", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kOther, 0));
 
   // The region has not been selected yet, so attempting to add a button should
   // do nothing.
@@ -525,7 +527,7 @@ TEST_F(SunfishTest, AddActionButton) {
   bool pressed = false;
   capture_mode_util::AddActionButton(
       base::BindLambdaForTesting([&]() { pressed = true; }), u"Test",
-      &kCaptureModeImageIcon);
+      &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kOther, 0));
 
   // There should only be one valid button in the session.
   const std::vector<PillButton*> action_buttons =
@@ -536,6 +538,64 @@ TEST_F(SunfishTest, AddActionButton) {
   // value of the bool.
   LeftClickOn(action_buttons[0]);
   ASSERT_TRUE(pressed);
+}
+
+// Tests that action buttons of different types and priorities are displayed in
+// the correct order.
+TEST_F(SunfishTest, ActionButtonRank) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Select a region on the far left of the screen so we have space for the
+  // button between it and the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // Add a default action button.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Default 1", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kOther, 1));
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Add a sunfish action button, which should appear in the rightmost position.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Sunfish", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kSunfish, 0));
+  auto action_buttons = session_test_api.GetActionButtons();
+  EXPECT_EQ(action_buttons.size(), 2u);
+  EXPECT_EQ(action_buttons[1]->GetText(), u"Sunfish");
+
+  // Add another default action button, which should appear in the leftmost
+  // position.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Default 2", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kOther, 0));
+  action_buttons = session_test_api.GetActionButtons();
+  EXPECT_EQ(action_buttons.size(), 3u);
+  EXPECT_EQ(action_buttons[0]->GetText(), u"Default 2");
+  EXPECT_EQ(action_buttons[1]->GetText(), u"Default 1");
+  EXPECT_EQ(action_buttons[2]->GetText(), u"Sunfish");
+
+  // Add a scanner action button, which should appear to the immediate left of
+  // the Sunfish action button.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Scanner", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kScanner, 0));
+  action_buttons = session_test_api.GetActionButtons();
+  EXPECT_EQ(action_buttons.size(), 4u);
+  EXPECT_EQ(action_buttons[0]->GetText(), u"Default 2");
+  EXPECT_EQ(action_buttons[1]->GetText(), u"Default 1");
+  EXPECT_EQ(action_buttons[2]->GetText(), u"Scanner");
+  EXPECT_EQ(action_buttons[3]->GetText(), u"Sunfish");
 }
 
 class SunfishWithScannerTest : public SunfishTest {

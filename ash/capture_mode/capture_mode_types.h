@@ -104,6 +104,40 @@ enum class SessionType {
   kReal,
 };
 
+// Defines the type of action button used for a selected region. Higher enum
+// values correspond to higher ranks. Buttons of same type are grouped together.
+enum class ActionButtonType {
+  kOther,
+  kScanner,
+  kSunfish,
+};
+
+// Defines the rank of an action button for a selected region. Higher ranked
+// buttons are placed further to the right than lower ranked ones. Lower ranked
+// buttons may not be visible if there are too many action buttons available.
+struct ActionButtonRank {
+  ActionButtonRank(ActionButtonType type, int weight)
+      : type(type), weight(weight) {}
+
+  // Returns `true` if `this` is less than `rhs`. The comparison is done
+  // by `type` first, then by `weight`.
+  bool operator<(const ActionButtonRank& rhs) const {
+    if (type == rhs.type) {
+      return weight < rhs.weight;
+    }
+
+    return type < rhs.type;
+  }
+
+  ActionButtonType type;
+
+  // Buttons are weighted against other buttons of the same `ActionButtonType`.
+  // For example, an `ActionButtonType::kDefault` button with weight 1 will have
+  // a higher rank compared to an `ActionButtonType::kDefault` button with
+  // weight 0, and thus be placed to its right.
+  int weight;
+};
+
 }  // namespace ash
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_TYPES_H_
