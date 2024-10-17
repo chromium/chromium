@@ -241,7 +241,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
     app_browser = app_browser_observer.Wait();
     ASSERT_TRUE(app_browser);
     EXPECT_NE(app_browser, browser());
-    ui_test_utils::WaitUntilBrowserBecomeActive(app_browser);
   }
 
   // After installing a tabbed display mode app the install page should pop out
@@ -680,7 +679,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
-  ui_test_utils::WaitUntilBrowserBecomeActive(app_browser);
 
   chrome::NewTab(app_browser);
 
@@ -691,7 +689,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
   chrome::MoveTabsToNewWindow(app_browser, {1});
   Browser* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);
-  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
 
@@ -714,7 +711,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
-  ui_test_utils::WaitUntilBrowserBecomeActive(app_browser);
   chrome::NewTab(app_browser);
 
   // Open a second app browser window.
@@ -723,7 +719,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   chrome::MoveTabsToNewWindow(app_browser, {1});
   Browser* app_browser2 = app_browser_observer.Wait();
   ASSERT_TRUE(app_browser2);
-  ui_test_utils::WaitUntilBrowserBecomeActive(app_browser2);
 
   EXPECT_EQ(app_browser->tab_strip_model()->count(), 1);
   EXPECT_EQ(app_browser2->tab_strip_model()->count(), 2);
