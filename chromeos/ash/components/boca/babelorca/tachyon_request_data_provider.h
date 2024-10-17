@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_REQUEST_DATA_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_REQUEST_DATA_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 namespace ash::babelorca {
@@ -18,10 +19,10 @@ class TachyonRequestDataProvider {
 
   virtual ~TachyonRequestDataProvider() = default;
 
-  virtual std::string session_id() = 0;
-  virtual std::string tachyon_token() = 0;
-  virtual std::string group_id() = 0;
-  virtual std::string sender_email() = 0;
+  virtual std::optional<std::string> session_id() const = 0;
+  virtual std::optional<std::string> tachyon_token() const = 0;
+  virtual std::optional<std::string> group_id() const = 0;
+  virtual std::optional<std::string> sender_email() const = 0;
 
  protected:
   TachyonRequestDataProvider() = default;

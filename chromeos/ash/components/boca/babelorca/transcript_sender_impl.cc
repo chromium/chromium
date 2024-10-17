@@ -108,7 +108,16 @@ void TranscriptSenderImpl::SendTranscriptionUpdate(
     const media::SpeechRecognitionResult& transcript,
     const std::string& language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (errors_num_ >= options_.max_errors_num) {
+  if (failed_) {
+    return;
+  }
+
+  if (!request_data_provider_->session_id().has_value() ||
+      !request_data_provider_->sender_email().has_value() ||
+      !request_data_provider_->tachyon_token().has_value() ||
+      !request_data_provider_->group_id().has_value()) {
+    failed_ = true;
+    std::move(failure_cb_).Run();
     return;
   }
   const int part_index =
@@ -118,9 +127,9 @@ void TranscriptSenderImpl::SendTranscriptionUpdate(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(CreateRequestString, std::move(message),
-                     request_data_provider_->tachyon_token(),
-                     request_data_provider_->group_id(),
-                     request_data_provider_->sender_email()),
+                     request_data_provider_->tachyon_token().value(),
+                     request_data_provider_->group_id().value(),
+                     request_data_provider_->sender_email().value()),
       base::BindOnce(&TranscriptSenderImpl::Send, weak_ptr_factory.GetWeakPtr(),
                      /*max_retries=*/transcript.is_final ? 1 : 0));
   // Should be called after `GenerateMessage`.
@@ -135,7 +144,7 @@ BabelOrcaMessage TranscriptSenderImpl::GenerateMessage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BabelOrcaMessage message;
   // Set main message metadata.
-  message.set_session_id(request_data_provider_->session_id());
+  message.set_session_id(request_data_provider_->session_id().value());
   message.set_init_timestamp_ms(init_timestamp_ms_);
   message.set_order(message_order_);
   ++message_order_;
@@ -210,6 +219,7 @@ void TranscriptSenderImpl::OnSendResponse(TachyonResponse response) {
   }
   ++errors_num_;
   if (errors_num_ >= options_.max_errors_num && failure_cb_) {
+    failed_ = true;
     std::move(failure_cb_).Run();
   }
 }

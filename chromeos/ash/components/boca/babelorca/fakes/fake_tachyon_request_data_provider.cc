@@ -4,24 +4,40 @@
 
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 
 namespace ash::babelorca {
 
-std::string FakeTachyonRequestDataProvider::session_id() {
-  return "session-id";
+FakeTachyonRequestDataProvider::FakeTachyonRequestDataProvider(
+    std::optional<std::string> session_id,
+    std::optional<std::string> tachyon_token,
+    std::optional<std::string> group_id,
+    std::optional<std::string> sender_email)
+    : session_id_(std::move(session_id)),
+      tachyon_token_(std::move(tachyon_token)),
+      group_id_(std::move(group_id)),
+      sender_email_(std::move(sender_email)) {}
+
+FakeTachyonRequestDataProvider::~FakeTachyonRequestDataProvider() = default;
+
+std::optional<std::string> FakeTachyonRequestDataProvider::session_id() const {
+  return session_id_;
 }
 
-std::string FakeTachyonRequestDataProvider::tachyon_token() {
-  return "tachyon-token";
+std::optional<std::string> FakeTachyonRequestDataProvider::tachyon_token()
+    const {
+  return tachyon_token_;
 }
 
-std::string FakeTachyonRequestDataProvider::group_id() {
-  return "group-id";
+std::optional<std::string> FakeTachyonRequestDataProvider::group_id() const {
+  return group_id_;
 }
 
-std::string FakeTachyonRequestDataProvider::sender_email() {
-  return "sender@email.com";
+std::optional<std::string> FakeTachyonRequestDataProvider::sender_email()
+    const {
+  return sender_email_;
 }
 
 }  // namespace ash::babelorca

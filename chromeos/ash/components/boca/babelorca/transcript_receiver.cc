@@ -49,16 +49,22 @@ void TranscriptReceiver::StartReceiving(OnTranscript on_transcript_cb,
 }
 
 void TranscriptReceiver::StartReceivingInternal() {
+  if (!request_data_provider_->session_id().has_value() ||
+      !request_data_provider_->sender_email().has_value() ||
+      !request_data_provider_->tachyon_token().has_value()) {
+    std::move(on_failure_cb_).Run();
+    return;
+  }
   transcript_builder_ = std::make_unique<TranscriptBuilder>(
-      request_data_provider_->session_id(),
-      request_data_provider_->sender_email());
+      request_data_provider_->session_id().value(),
+      request_data_provider_->sender_email().value());
   streaming_client_ = streaming_client_getter_.Run(
       url_loader_factory_, base::BindRepeating(&TranscriptReceiver::OnMessage,
                                                base::Unretained(this)));
   ReceiveMessagesRequest request;
   *request.mutable_header() = GetRequestHeaderTemplate();
   request.mutable_header()->set_auth_token_payload(
-      request_data_provider_->tachyon_token());
+      request_data_provider_->tachyon_token().value());
   std::unique_ptr<RequestDataWrapper> request_data =
       std::make_unique<RequestDataWrapper>(
           network_traffic_annotation_, kReceiveMessagesUrl, /*max_retries=*/0,

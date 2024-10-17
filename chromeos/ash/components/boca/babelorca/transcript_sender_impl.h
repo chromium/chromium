@@ -92,6 +92,7 @@ class TranscriptSenderImpl : public TranscriptSender {
   const Options options_;
   base::OnceClosure failure_cb_;
   size_t errors_num_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  bool failed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<TranscriptSenderImpl> weak_ptr_factory{this};
 };

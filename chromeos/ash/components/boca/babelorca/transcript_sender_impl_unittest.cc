@@ -63,7 +63,8 @@ TEST(TranscriptSenderImplTest, SendOneMessageLongerThanMaxAllowed) {
   const int kMaxAllowedChar = 5;
   const std::string kTranscriptText = "hello transcription";
   FakeTachyonAuthedClient authed_client;
-  FakeTachyonRequestDataProvider request_data_provider;
+  FakeTachyonRequestDataProvider request_data_provider(
+      "session-id", "tachyon-token", "group-id", "sender@email.com");
   base::test::TestFuture<void> failure_future;
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
@@ -127,7 +128,8 @@ TEST(TranscriptSenderImplTest, SendNewTranscript) {
   FakeTachyonAuthedClient authed_client;
   std::string request_string1;
   std::string request_string2;
-  FakeTachyonRequestDataProvider request_data_provider;
+  FakeTachyonRequestDataProvider request_data_provider(
+      "session-id", "tachyon-token", "group-id", "sender@email.com");
   base::test::TestFuture<void> failure_future;
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
@@ -187,7 +189,8 @@ TEST(TranscriptSenderImplTest, ReplyWithErrrorOnMaxErrorsReached) {
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
   FakeTachyonAuthedClient authed_client;
-  FakeTachyonRequestDataProvider request_data_provider;
+  FakeTachyonRequestDataProvider request_data_provider(
+      "session-id", "tachyon-token", "group-id", "sender@email.com");
   base::test::TestFuture<void> failure_future;
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
@@ -218,7 +221,8 @@ TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
   FakeTachyonAuthedClient authed_client;
-  FakeTachyonRequestDataProvider request_data_provider;
+  FakeTachyonRequestDataProvider request_data_provider(
+      "session-id", "tachyon-token", "group-id", "sender@email.com");
   base::test::TestFuture<void> failure_future;
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
@@ -261,7 +265,8 @@ TEST(TranscriptSenderImplTest, InflightRequestsAreHandledOnFailure) {
   const int kMaxAllowedChar = 26;
   const std::string kTranscriptText = "hello1 hello2 hello3";
   FakeTachyonAuthedClient authed_client;
-  FakeTachyonRequestDataProvider request_data_provider;
+  FakeTachyonRequestDataProvider request_data_provider(
+      "session-id", "tachyon-token", "group-id", "sender@email.com");
   base::test::TestFuture<void> failure_future;
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
@@ -306,7 +311,8 @@ TEST_P(TranscriptSenderImplTest, SendTwoMessages) {
   base::test::TaskEnvironment task_environment;
   FakeTachyonAuthedClient authed_client;
   InboxSendRequest sent_request2;
-  FakeTachyonRequestDataProvider request_data_provider;
+  FakeTachyonRequestDataProvider request_data_provider(
+      "session-id", "tachyon-token", "group-id", "sender@email.com");
   TranscriptSenderImpl sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
@@ -341,6 +347,55 @@ INSTANTIATE_TEST_SUITE_P(
     }),
     [](const testing::TestParamInfo<TranscriptSenderImplTest::ParamType>&
            info) { return info.param.test_name; });
+
+struct TranscriptSenderImplMissingDataTestCase {
+  std::string test_name;
+  std::optional<std::string> session_id;
+  std::optional<std::string> tachyon_token;
+  std::optional<std::string> group_id;
+  std::optional<std::string> sender_email;
+};
+
+using TranscriptSenderImplMissingDataTest =
+    testing::TestWithParam<TranscriptSenderImplMissingDataTestCase>;
+
+TEST_P(TranscriptSenderImplMissingDataTest, FailWithMissing) {
+  base::test::TaskEnvironment task_environment;
+  const std::string kTranscriptText = "hello transcription";
+  FakeTachyonAuthedClient authed_client;
+  FakeTachyonRequestDataProvider request_data_provider(
+      GetParam().session_id, GetParam().tachyon_token, GetParam().group_id,
+      GetParam().sender_email);
+  base::test::TestFuture<void> failure_future;
+  TranscriptSenderImpl sender(
+      &authed_client, &request_data_provider,
+      base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
+      TRAFFIC_ANNOTATION_FOR_TESTS, TranscriptSenderImpl::Options(),
+      failure_future.GetCallback());
+
+  media::SpeechRecognitionResult transcript(kTranscriptText,
+                                            /*is_final=*/false);
+  sender.SendTranscriptionUpdate(transcript, kLanguage);
+
+  EXPECT_TRUE(failure_future.IsReady());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TranscriptSenderImplMissingDataTests,
+    TranscriptSenderImplMissingDataTest,
+    testing::ValuesIn<TranscriptSenderImplMissingDataTestCase>(
+        {{"SessionId", std::nullopt, "tachyon-token", "group-id",
+          "sender@email.com"},
+         {"TachyonToken", "session_id", std::nullopt, "group-id",
+          "sender@email.com"},
+         {"GroupId", "session_id", "tachyon-token", std::nullopt,
+          "sender@email.com"},
+         {"SenderEmail", "session_id", "tachyon-token", "group-id",
+          std::nullopt}}),
+    [](const testing::TestParamInfo<
+        TranscriptSenderImplMissingDataTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace ash::babelorca

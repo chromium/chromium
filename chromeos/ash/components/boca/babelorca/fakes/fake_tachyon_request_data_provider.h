@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_REQUEST_DATA_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_REQUEST_DATA_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
@@ -13,19 +14,28 @@ namespace ash::babelorca {
 
 class FakeTachyonRequestDataProvider : public TachyonRequestDataProvider {
  public:
-  FakeTachyonRequestDataProvider() = default;
+  FakeTachyonRequestDataProvider(std::optional<std::string> session_id,
+                                 std::optional<std::string> tachyon_token,
+                                 std::optional<std::string> group_id,
+                                 std::optional<std::string> sender_email);
 
   FakeTachyonRequestDataProvider(const FakeTachyonRequestDataProvider&) =
       delete;
   FakeTachyonRequestDataProvider& operator=(
       const FakeTachyonRequestDataProvider&) = delete;
 
-  ~FakeTachyonRequestDataProvider() override = default;
+  ~FakeTachyonRequestDataProvider() override;
 
-  std::string session_id() override;
-  std::string tachyon_token() override;
-  std::string group_id() override;
-  std::string sender_email() override;
+  std::optional<std::string> session_id() const override;
+  std::optional<std::string> tachyon_token() const override;
+  std::optional<std::string> group_id() const override;
+  std::optional<std::string> sender_email() const override;
+
+ private:
+  std::optional<std::string> session_id_;
+  std::optional<std::string> tachyon_token_;
+  std::optional<std::string> group_id_;
+  std::optional<std::string> sender_email_;
 };
 
 }  // namespace ash::babelorca
