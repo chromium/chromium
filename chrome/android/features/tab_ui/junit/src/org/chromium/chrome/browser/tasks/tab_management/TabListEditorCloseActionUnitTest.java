@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -45,6 +44,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitT
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitTestHelper.TabListHolder;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class TabListEditorCloseActionUnitTest {
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
 
-    @Captor ArgumentCaptor<Callback<Integer>> mConfirmationResultCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCallbackCaptor;
 
     private MockTabModel mTabModel;
     private TabListEditorAction mAction;
@@ -135,10 +135,10 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         verify(mGroupFilter).closeTabs(TabClosureParams.closeTabs(List.of(tabs.get(1))).build());
         verify(mDelegate).hideByAction();
@@ -164,10 +164,10 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         verify(mGroupFilter).closeTabs(TabClosureParams.closeTabs(tabs).build());
         verify(mDelegate).hideByAction();
@@ -177,11 +177,11 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager, times(2))
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getAllValues()
                 .get(1)
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         verify(mGroupFilter, times(2)).closeTabs(TabClosureParams.closeTabs(tabs).build());
         verify(mDelegate, times(2)).hideByAction();
@@ -251,10 +251,10 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         verify(mGroupFilter)
                 .closeTabs(
@@ -319,10 +319,10 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         verify(mGroupFilter)
                 .closeTabs(TabClosureParams.closeTabs(holder.getSelectedTabs()).build());
@@ -341,10 +341,10 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         verify(mGroupFilter).closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
         verify(mDelegate).hideByAction();
@@ -361,10 +361,10 @@ public class TabListEditorCloseActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         verify(mGroupFilter, never()).closeTabs(any());
         verify(mDelegate).hideByAction();

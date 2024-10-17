@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -92,6 +91,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -1117,8 +1117,8 @@ class TabListMediator implements TabListNotificationHandler {
                         }
 
                         Callback<Integer> onResult =
-                                (@ConfirmationResult Integer result) -> {
-                                    if (result == ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                                (@ActionConfirmationResult Integer result) -> {
+                                    if (result == ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                                         // If this is being invoked because of a swipe, the view
                                         // element has been removed. We need to bring that back.
                                         // This is done by just triggering a model update for that
@@ -1132,7 +1132,9 @@ class TabListMediator implements TabListNotificationHandler {
                                                 tabId,
                                                 closingTab,
                                                 filter,
-                                                result == ConfirmationResult.IMMEDIATE_CONTINUE);
+                                                result
+                                                        == ActionConfirmationResult
+                                                                .IMMEDIATE_CONTINUE);
                                     }
                                 };
 

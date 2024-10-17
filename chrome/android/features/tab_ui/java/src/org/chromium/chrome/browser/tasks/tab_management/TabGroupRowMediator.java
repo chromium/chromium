@@ -27,8 +27,8 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
@@ -244,8 +244,8 @@ class TabGroupRowMediator {
 
     private void processDeleteGroup() {
         mActionConfirmationManager.processDeleteGroupAttempt(
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         deleteGroup();
                     }
                 });
@@ -256,8 +256,8 @@ class TabGroupRowMediator {
         // no other users.
         mActionConfirmationManager.processDeleteSharedGroupAttempt(
                 groupTitle,
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         mDataSharingService.deleteGroup(groupId, this::onLeaveOrDeleteGroup);
                     }
                 });
@@ -268,8 +268,8 @@ class TabGroupRowMediator {
         // no other users.
         mActionConfirmationManager.processLeaveGroupAttempt(
                 groupTitle,
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         String memberEmail = mCoreAccountInfoSupplier.get().getEmail();
                         mDataSharingService.removeMember(
                                 groupId, memberEmail, this::onLeaveOrDeleteGroup);

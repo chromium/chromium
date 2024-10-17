@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -108,6 +107,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -246,7 +246,9 @@ public class SelectableTabListEditorTest {
         Callback<Callback<Integer>> immediateContinue =
                 (Callback<Integer> callback) ->
                         ThreadUtils.runOnUiThreadBlocking(
-                                () -> callback.onResult(ConfirmationResult.IMMEDIATE_CONTINUE));
+                                () ->
+                                        callback.onResult(
+                                                ActionConfirmationResult.IMMEDIATE_CONTINUE));
         doCallback(1, immediateContinue)
                 .when(mActionConfirmationManager)
                 .processCloseTabAttempt(any(), any());

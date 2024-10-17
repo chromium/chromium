@@ -136,7 +136,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
@@ -144,6 +143,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -330,7 +330,7 @@ public class TabListMediatorUnitTest {
     @Captor ArgumentCaptor<Callback<TabFavicon>> mCallbackCaptor;
     @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
     @Captor ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
-    @Captor ArgumentCaptor<Callback<Integer>> mConfirmationResultCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCallbackCaptor;
 
     @Captor
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
@@ -998,10 +998,10 @@ public class TabListMediatorUnitTest {
                 .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         TabClosureParams params = TabClosureParams.closeTab(mTab2).build();
         verify(mTabModel).closeTabs(params);
@@ -1019,10 +1019,10 @@ public class TabListMediatorUnitTest {
                 .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         TabClosureParams params = TabClosureParams.closeTab(mTab2).allowUndo(false).build();
         verify(mTabModel).closeTabs(params);
@@ -1040,10 +1040,10 @@ public class TabListMediatorUnitTest {
                 .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
+                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
+        mActionConfirmationResultCallbackCaptor
                 .getValue()
-                .onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         verify(mTabModel, never()).closeTabs(any());
         assertFalse(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));

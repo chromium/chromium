@@ -12,9 +12,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,8 +87,8 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
                     tabsToUngroup.stream().map(Tab::getId).collect(Collectors.toList());
             mActionConfirmationManager.processUngroupTabAttempt(
                     tabIdList,
-                    (@ConfirmationResult Integer result) -> {
-                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                    (@ActionConfirmationResult Integer result) -> {
+                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                             doRemoveTabs(tabsToUngroup);
                         }
                     });

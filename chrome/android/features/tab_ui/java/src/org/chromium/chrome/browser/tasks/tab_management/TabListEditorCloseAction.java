@@ -13,9 +13,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,9 +80,9 @@ public class TabListEditorCloseAction extends TabListEditorAction {
         }
 
         Callback<Integer> onResult =
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        doRemoveTabs(tabs, result == ConfirmationResult.IMMEDIATE_CONTINUE);
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+                        doRemoveTabs(tabs, result == ActionConfirmationResult.IMMEDIATE_CONTINUE);
                     }
                 };
 

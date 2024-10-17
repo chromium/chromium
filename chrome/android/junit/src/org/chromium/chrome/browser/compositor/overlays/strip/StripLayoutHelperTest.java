@@ -96,10 +96,10 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -140,7 +140,7 @@ public class StripLayoutHelperTest {
     @Mock private PrefService mPrefService;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
-    @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
+    @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -2746,8 +2746,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog triggers.
         verify(mActionConfirmationManager)
-                .processUngroupTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .processUngroupTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         // Verify tab is moved out of group as user chooses delete tab group without showing the
         // dialog.
@@ -2769,8 +2771,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processUngroupTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+                .processUngroupTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         // Verify tab is moved out of group as user confirms tab group delete.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
@@ -2791,8 +2795,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processUngroupTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+                .processUngroupTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         // Verify tab is not moved out of group as user cancels tab group delete.
         verify(mTabGroupModelFilter, never())
@@ -2810,8 +2816,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog triggers.
         verify(mActionConfirmationManager)
-                .processUngroupTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .processUngroupTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         // Verify tab is not moved out of group for unhandled drops.
         verify(mTabGroupModelFilter, never())
@@ -2837,8 +2845,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processUngroupTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+                .processUngroupTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         // Verify tab is moved out of group as user confirms tab group delete.
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), false);
@@ -2859,8 +2869,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processUngroupTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+                .processUngroupTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         // Verify tab is not moved out of group as user cancels tab group delete.
         verify(mTabGroupModelFilter, never())
@@ -2878,8 +2890,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+                .processCloseTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         // Assert tab is being closed.
         assertTrue("Tab should be closing", tabs[0].isDying());
@@ -2900,8 +2914,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog triggered.
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+                .processCloseTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         // Assert tab is being closed.
         assertTrue("Tab should be closing", tabs[0].isDying());
@@ -2922,8 +2938,10 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processCloseTabAttempt(mConfirmationResultCaptor.capture());
-        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+                .processCloseTabAttempt(mActionConfirmationResultCaptor.capture());
+        mActionConfirmationResultCaptor
+                .getValue()
+                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         // Assert tab should not be closed.
         assertFalse("Tab should not be closing", tabs[0].isDying());

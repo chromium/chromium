@@ -32,8 +32,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -86,9 +86,10 @@ public class TabUiUtils {
 
             // Present a confirmation dialog to the user before closing the tab group.
             Callback<Integer> onResult =
-                    (@ConfirmationResult Integer result) -> {
-                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            boolean allowUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
+                    (@ActionConfirmationResult Integer result) -> {
+                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            boolean allowUndo =
+                                    result == ActionConfirmationResult.IMMEDIATE_CONTINUE;
                             List<Tab> tabsToClose =
                                     tabIds.stream()
                                             .map(filter.getTabModel()::getTabById)
@@ -136,8 +137,8 @@ public class TabUiUtils {
         } else {
             // Present a confirmation dialog to the user before ungrouping the tab group.
             Callback<Integer> onResult =
-                    (@ConfirmationResult Integer result) -> {
-                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                    (@ActionConfirmationResult Integer result) -> {
+                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                             List<Tab> tabsToUngroup =
                                     tabIds.stream()
                                             .map(filter.getTabModel()::getTabById)
@@ -242,8 +243,8 @@ public class TabUiUtils {
 
         actionConfirmationManager.processDeleteSharedGroupAttempt(
                 savedTabGroup.title,
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         dataSharingService.deleteGroup(
                                 savedTabGroup.collaborationId,
                                 bindOnLeaveOrDeleteGroup(context, modalDialogManager));
@@ -286,8 +287,8 @@ public class TabUiUtils {
 
         actionConfirmationManager.processLeaveGroupAttempt(
                 savedTabGroup.title,
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         dataSharingService.removeMember(
                                 savedTabGroup.collaborationId,
                                 account.getEmail(),

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogResult;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -33,8 +33,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -59,24 +57,6 @@ public class ActionConfirmationManager {
             TAB_GROUP_CONFIRMATION + "CollaborationOwnerRemoveLastTab.";
     private static final String COLLABORATION_MEMBER_REMOVE_LAST_TAB =
             TAB_GROUP_CONFIRMATION + "CollaborationMemberRemoveLastTab.";
-
-    // The result of processing an action.
-    @IntDef({
-        ConfirmationResult.IMMEDIATE_CONTINUE,
-        ConfirmationResult.CONFIRMATION_POSITIVE,
-        ConfirmationResult.CONFIRMATION_NEGATIVE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ConfirmationResult {
-        // Did not show any confirmation, the action should immediately continue. Resulting action
-        // should likely be undoable.
-        int IMMEDIATE_CONTINUE = 0;
-        // Confirmation was received from the user to continue the action. Do not make resulting
-        // action undoable.
-        int CONFIRMATION_POSITIVE = 1;
-        // The user wants to cancel the action.
-        int CONFIRMATION_NEGATIVE = 2;
-    }
 
     private final Profile mProfile;
     private final Context mContext;
@@ -185,7 +165,7 @@ public class ActionConfirmationManager {
                     R.string.delete_tab_group_action,
                     onResult);
         } else {
-            onResult.onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+            onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 
@@ -221,7 +201,7 @@ public class ActionConfirmationManager {
                     R.string.delete_tab_group_action,
                     onResult);
         } else {
-            onResult.onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+            onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 
@@ -290,7 +270,7 @@ public class ActionConfirmationManager {
 
         PrefService prefService = UserPrefs.get(mProfile);
         if (prefService.getBoolean(stopShowingPref)) {
-            onResult.onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+            onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
             return;
         }
 
@@ -356,8 +336,8 @@ public class ActionConfirmationManager {
         RecordUserAction.record(userActionBaseString + (takePositiveAction ? "Proceed" : "Abort"));
         onResult.onResult(
                 takePositiveAction
-                        ? ConfirmationResult.CONFIRMATION_POSITIVE
-                        : ConfirmationResult.CONFIRMATION_NEGATIVE);
+                        ? ActionConfirmationResult.CONFIRMATION_POSITIVE
+                        : ActionConfirmationResult.CONFIRMATION_NEGATIVE);
     }
 
     private void processCollaborationTabRemoval(
@@ -395,8 +375,8 @@ public class ActionConfirmationManager {
                         buttonClickResult, userActionBaseString);
         onResult.onResult(
                 takePositiveAction
-                        ? ConfirmationResult.CONFIRMATION_POSITIVE
-                        : ConfirmationResult.CONFIRMATION_NEGATIVE);
+                        ? ActionConfirmationResult.CONFIRMATION_POSITIVE
+                        : ActionConfirmationResult.CONFIRMATION_NEGATIVE);
     }
 
     /**

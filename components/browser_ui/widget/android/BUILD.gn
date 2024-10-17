@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/ActionConfirmationDialog.java",
+    "java/src/org/chromium/components/browser_ui/widget/ActionConfirmationResult.java",
     "java/src/org/chromium/components/browser_ui/widget/AlwaysDismissedDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/BrowserUiListMenuUtils.java",
