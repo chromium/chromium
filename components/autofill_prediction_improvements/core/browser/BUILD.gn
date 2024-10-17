@@ -26,6 +26,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_prediction_improvements_filling_engine.h",
       "autofill_prediction_improvements_filling_engine_impl.cc",
       "autofill_prediction_improvements_filling_engine_impl.h",
+      "autofill_prediction_improvements_logger.cc",
+      "autofill_prediction_improvements_logger.h",
       "autofill_prediction_improvements_manager.cc",
       "autofill_prediction_improvements_manager.h",
       "autofill_prediction_improvements_utils.cc",
@@ -55,6 +57,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     sources = [
       "autofill_prediction_improvements_features_unittest.cc",
       "autofill_prediction_improvements_filling_engine_impl_unittest.cc",
+      "autofill_prediction_improvements_logger_unittest.cc",
       "autofill_prediction_improvements_manager_test_api.h",
       "autofill_prediction_improvements_manager_unittest.cc",
       "autofill_prediction_improvements_utils_unittest.cc",

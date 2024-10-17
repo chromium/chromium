@@ -2818,6 +2818,51 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormsAI.Funnel.{SubmissionState}.{FunnelStage}"
+    enum="Boolean" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records various stages of the FormsAI funnel. The same metric is logged for
+    submitted and for abandoned forms, with an additional metric aggregating
+    both. The metric is recorded once per form per submission/abandonment.
+
+    {FunnelStage}
+  </summary>
+  <token key="SubmissionState">
+    <variant name="Abandoned"/>
+    <variant name="Aggregate"/>
+    <variant name="Submitted"/>
+  </token>
+  <token key="FunnelStage">
+    <variant name="CorrectionAfterFill"
+        summary="Given a form where the user filled a FormsAI suggestion,
+                 records whether the filling was corrected or not."/>
+    <variant name="Eligibility"
+        summary="This metric records whether a parsed form is eligible for
+                 FormsAI filling or not."/>
+    <variant name="FillAfterSuggestion"
+        summary="Given a form where the user saw FormsAI filling suggestions,
+                 records whether the suggestion was filled or not."/>
+    <variant name="FillingSuggestionAfterLoading"
+        summary="Given a form where the user triggered FormsAI filling
+                 suggestions, records whether filling suggestions where
+                 generated for the form or not."/>
+    <variant name="LoadingAfterSuggestion"
+        summary="Given a form where the user saw a FormsAI trigger
+                 suggestion, records whether the user accepted the trigger
+                 suggestion and went to the state of waiting for filling
+                 suggestions to load, or not."/>
+    <variant name="ReadinessAfterEligibility"
+        summary="Given a FormsAI-eligible form, this metric records whether
+                 the user has stored data to fill the form."/>
+    <variant name="SuggestionAfterReadiness"
+        summary="Given a FormsAI-eligible form where the user has data stored
+                 to fill it, this metric records whether the user saw a
+                 FormsAI suggestion or not."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.FormSubmission.PerProfileType"
     enum="BrowserProfileType" expires_after="2025-04-13">
   <owner>arabm@google.com</owner>
