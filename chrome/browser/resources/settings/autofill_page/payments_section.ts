@@ -38,7 +38,7 @@ import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractio
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import type {PersonalDataChangedListener} from './autofill_manager_proxy.js';
-import type {DotsIbanMenuClickEvent} from './iban_list_entry.js';
+import type {DotsIbanMenuClickEvent, RemoteIbanMenuClickEvent} from './iban_list_entry.js';
 import type {SettingsPaymentsListElement} from './payments_list.js';
 import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
@@ -391,10 +391,15 @@ export class SettingsPaymentsSectionElement extends
     OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
-  private onRemoteEditIbanMenuClick_() {
+  private onRemoteEditIbanMenuClick_(e: RemoteIbanMenuClickEvent) {
+    this.activeIban_ = e.detail.iban;
     this.paymentsManager_.logServerIbanLinkClicked();
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('managePaymentMethodsUrl'));
+    const url = new URL(loadTimeData.getString('managePaymentMethodsUrl'));
+    assert(this.activeIban_);
+    if (this.activeIban_.instrumentId) {
+      url.searchParams.append('id', this.activeIban_.instrumentId);
+    }
+    OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
   private onLocalCreditCardRemoveConfirmationDialogClose_() {
