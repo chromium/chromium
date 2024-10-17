@@ -34,15 +34,6 @@ namespace WTF {
 // including trailing null character
 static const size_t kPrintBufferSize = 100;
 
-static inline bool HasFractions(double val) {
-  // We use 0.011 to more than match the number of significant digits we print
-  // out when dumping the render tree.
-  static const double kEpsilon = 0.011;
-  int ival = static_cast<int>(round(val));
-  double dval = static_cast<double>(ival);
-  return fabs(val - dval) > kEpsilon;
-}
-
 TextStream& TextStream::operator<<(bool b) {
   return *this << (b ? "1" : "0");
 }
@@ -105,15 +96,6 @@ TextStream& TextStream::operator<<(const std::string& string) {
 
 TextStream& TextStream::operator<<(const String& string) {
   text_.Append(string);
-  return *this;
-}
-
-TextStream& TextStream::operator<<(
-    const FormatNumberRespectingIntegers& number_to_format) {
-  if (HasFractions(number_to_format.value))
-    return *this << number_to_format.value;
-
-  text_.AppendNumber(static_cast<int>(round(number_to_format.value)));
   return *this;
 }
 

@@ -38,11 +38,6 @@ class WTF_EXPORT TextStream final {
   STACK_ALLOCATED();
 
  public:
-  struct FormatNumberRespectingIntegers {
-    FormatNumberRespectingIntegers(double number) : value(number) {}
-    double value;
-  };
-
   TextStream& operator<<(bool);
   TextStream& operator<<(int16_t);
   TextStream& operator<<(uint16_t);
@@ -56,7 +51,6 @@ class WTF_EXPORT TextStream final {
   TextStream& operator<<(const void*);
   TextStream& operator<<(const String&);
   TextStream& operator<<(const std::string&);
-  TextStream& operator<<(const FormatNumberRespectingIntegers&);
 
   String Release();
 

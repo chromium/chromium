@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -67,8 +68,24 @@ namespace blink {
 
 namespace {
 
+inline bool HasFractions(double val) {
+  // We use 0.011 to more than match the number of significant digits we print
+  // out when dumping the render tree.
+  static const double kEpsilon = 0.011;
+  int ival = static_cast<int>(round(val));
+  double dval = static_cast<double>(ival);
+  return fabs(val - dval) > kEpsilon;
+}
+
+String FormatNumberRespectingIntegers(double value) {
+  if (HasFractions(value)) {
+    return String::NumberToStringFixedWidth(value, 2);
+  }
+  return String::Number(static_cast<int>(round(value)));
+}
+
 WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutUnit& unit) {
-  return ts << WTF::TextStream::FormatNumberRespectingIntegers(unit.ToDouble());
+  return ts << FormatNumberRespectingIntegers(unit.ToDouble());
 }
 
 }  // namespace
@@ -127,13 +144,10 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r) {
-  ts << "at ("
-     << WTF::TextStream::FormatNumberRespectingIntegers(r.X().ToFloat());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.Y().ToFloat());
-  ts << ") size "
-     << WTF::TextStream::FormatNumberRespectingIntegers(r.Width().ToFloat());
-  ts << "x"
-     << WTF::TextStream::FormatNumberRespectingIntegers(r.Height().ToFloat());
+  ts << "at (" << FormatNumberRespectingIntegers(r.X().ToFloat());
+  ts << "," << FormatNumberRespectingIntegers(r.Y().ToFloat());
+  ts << ") size " << FormatNumberRespectingIntegers(r.Width().ToFloat());
+  ts << "x" << FormatNumberRespectingIntegers(r.Height().ToFloat());
   return ts;
 }
 
@@ -142,16 +156,16 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::PointF& p) {
-  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.x());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.y());
+  ts << "(" << FormatNumberRespectingIntegers(p.x());
+  ts << "," << FormatNumberRespectingIntegers(p.y());
   ts << ")";
   return ts;
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::RectF& r) {
   ts << "at " << r.origin();
-  ts << " size " << WTF::TextStream::FormatNumberRespectingIntegers(r.width());
-  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.height());
+  ts << " size " << FormatNumberRespectingIntegers(r.width());
+  ts << "x" << FormatNumberRespectingIntegers(r.height());
   return ts;
 }
 
