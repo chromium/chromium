@@ -154,6 +154,10 @@ class DiskMountManagerImpl : public DiskMountManager,
     VLOG(1) << "Unmounting '" << mount_path << "'...";
 
     const base::FilePath mount_file_path(mount_path);
+
+    // TODO(crbug.com/317944073) Enable this code path once crbug.com/373514367
+    // is fixed.
+#if 0
     if (arc_delegate_ &&
         cros_disks_client_->GetRemovableDiskMountPoint().IsParent(
             mount_file_path)) {
@@ -164,6 +168,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                                     std::move(callback)));
       return;
     }
+#endif
 
     UnmountPathContinue(mount_path, std::move(callback), true /* success */);
   }
