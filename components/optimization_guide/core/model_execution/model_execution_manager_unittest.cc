@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -156,6 +157,12 @@ class ModelExecutionManagerTest : public testing::Test {
     return &identity_test_env_;
   }
 
+  void SetAutomaticIssueOfAccessTokens() {
+    identity_test_env()->MakePrimaryAccountAvailable(
+        "test_email", signin::ConsentLevel::kSignin);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  }
+
   ModelExecutionManager* model_execution_manager() {
     return model_execution_manager_.get();
   }
@@ -220,14 +227,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
   base::HistogramTester histogram_tester;
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
       /*timeout=*/std::nullopt,
       /*log_ai_data_request=*/nullptr, response_holder.GetCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder.value());
@@ -253,14 +257,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
   base::HistogramTester histogram_tester;
 
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   session->ExecuteModel(UserInputRequest("a user typed this"),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
 
   std::string serialized_response;
   proto::ExecuteResponse execute_response;
@@ -287,14 +288,11 @@ TEST_F(ModelExecutionManagerTest,
   base::HistogramTester histogram_tester;
 
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   session->ExecuteModel(UserInputRequest("a user typed this"),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
 
   std::string serialized_response;
   proto::ExecuteResponse execute_response;
@@ -330,8 +328,7 @@ TEST_F(ModelExecutionManagerTest,
 TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetOnDeviceOnly) {
   base::HistogramTester histogram_tester;
 
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose,
       SessionConfigParams{
@@ -350,16 +347,13 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetToServerOnly) {
   base::HistogramTester histogram_tester;
 
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose,
       SessionConfigParams{.execution_mode =
                               SessionConfigParams::ExecutionMode::kServerOnly});
   session->ExecuteModel(UserInputRequest("a user typed this"),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
 
   EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -393,16 +387,13 @@ TEST_F(ModelExecutionManagerTest,
   base::HistogramTester histogram_tester;
 
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose,
       SessionConfigParams{.execution_mode =
                               SessionConfigParams::ExecutionMode::kDefault});
   session->ExecuteModel(UserInputRequest("a user typed this"),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
 
   EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -435,14 +426,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
   base::HistogramTester histogram_tester;
 
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   session->ExecuteModel(UserInputRequest("a user typed this"),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
 
   EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -469,17 +457,13 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
 
 TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
   base::HistogramTester histogram_tester;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   auto execute_model = [&] {
     ResponseHolder response_holder;
     session->ExecuteModel(UserInputRequest("some test"),
                           response_holder.GetStreamingCallback());
-    identity_test_env()
-        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-            "access_token", base::Time::Max());
     CheckPendingRequestMessage("some test");
     EXPECT_TRUE(SimulateSuccessfulResponse());
     EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -513,8 +497,7 @@ TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionAddContext) {
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   // Message is added through AddContext().
@@ -522,8 +505,6 @@ TEST_F(ModelExecutionManagerTest,
   // ExecuteModel() uses empty message.
   session->ExecuteModel(proto::ComposeRequest(),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   CheckPendingRequestMessage("some test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
   EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -532,8 +513,7 @@ TEST_F(ModelExecutionManagerTest,
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionMultipleAddContext) {
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   session->AddContext(UserInputRequest("first test"));
@@ -541,8 +521,6 @@ TEST_F(ModelExecutionManagerTest,
   // ExecuteModel() uses empty message.
   session->ExecuteModel(proto::ComposeRequest(),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   CheckPendingRequestMessage("second test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
   EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -551,8 +529,7 @@ TEST_F(ModelExecutionManagerTest,
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionExecuteOverridesAddContext) {
   ResponseHolder response_holder;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   // First message is added through AddContext().
@@ -560,8 +537,6 @@ TEST_F(ModelExecutionManagerTest,
   // ExecuteModel() adds a different message.
   session->ExecuteModel(UserInputRequest("other test"),
                         response_holder.GetStreamingCallback());
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   CheckPendingRequestMessage("other test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
   EXPECT_TRUE(response_holder.GetFinalStatus());
@@ -571,8 +546,7 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
   base::HistogramTester histogram_tester;
   ResponseHolder response_holder1, response_holder2;
 
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
 
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
@@ -584,8 +558,6 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
       /*timeout=*/std::nullopt,
       /*log_ai_data_request=*/nullptr, response_holder2.GetCallback());
 
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   test_url_loader_factory()->EraseResponse(
       GURL(kOptimizationGuideServiceModelExecutionDefaultURL));
   EXPECT_TRUE(SimulateSuccessfulResponse());
