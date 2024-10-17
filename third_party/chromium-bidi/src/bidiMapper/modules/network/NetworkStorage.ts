@@ -268,6 +268,7 @@ export class NetworkStorage {
     for (const request of this.#requests.values()) {
       if (request.cdpClient.sessionId === sessionId) {
         this.#requests.delete(request.id);
+        request.dispose();
       }
     }
   }
@@ -296,6 +297,16 @@ export class NetworkStorage {
       );
     }
     this.#intercepts.delete(intercept);
+  }
+
+  getRequestsByTarget(target: CdpTarget): NetworkRequest[] {
+    const requests: NetworkRequest[] = [];
+    for (const request of this.#requests.values()) {
+      if (request.cdpTarget === target) {
+        requests.push(request);
+      }
+    }
+    return requests;
   }
 
   getRequestById(id: Network.Request): NetworkRequest | undefined {

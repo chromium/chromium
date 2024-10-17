@@ -33,6 +33,11 @@ import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+interface FetchStages {
+  request: boolean;
+  response: boolean;
+  auth: boolean;
+}
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
@@ -53,7 +58,7 @@ export class CdpTarget {
   #deviceAccessEnabled = false;
   #cacheDisableState = false;
   #networkDomainEnabled = false;
-  #fetchDomainStages = {
+  #fetchDomainStages: FetchStages = {
     request: false,
     response: false,
     auth: false,
@@ -290,7 +295,24 @@ export class CdpTarget {
         handleAuthRequests: stages.auth,
       });
     } else {
-      await this.#cdpClient.sendCommand('Fetch.disable');
+      const blockedRequest = this.#networkStorage
+        .getRequestsByTarget(this)
+        .filter((request) => request.interceptPhase);
+      void Promise.allSettled(
+        blockedRequest.map((request) => request.waitNextPhase),
+      )
+        .then(async () => {
+          const blockedRequest = this.#networkStorage
+            .getRequestsByTarget(this)
+            .filter((request) => request.interceptPhase);
+          if (blockedRequest.length) {
+            return await this.toggleFetchIfNeeded();
+          }
+          return await this.#cdpClient.sendCommand('Fetch.disable');
+        })
+        .catch((error) => {
+          this.#logger?.(LogType.bidi, 'Disable failed', error);
+        });
     }
   }
 
@@ -398,6 +420,98 @@ export class CdpTarget {
         this.id,
       );
     });
+  }
+
+  async #toggleNetwork(enable: boolean): Promise<void> {
+    this.#networkDomainEnabled = enable;
+    try {
+      await this.#cdpClient.sendCommand(
+        enable ? 'Network.enable' : 'Network.disable',
+      );
+    } catch {
+      this.#networkDomainEnabled = !enable;
+    }
+  }
+
+  async #enableFetch(stages: FetchStages) {
+    const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
+
+    if (stages.request || stages.auth) {
+      // CDP quirk we need request interception when we intercept auth
+      patterns.push({
+        urlPattern: '*',
+        requestStage: 'Request',
+      });
+    }
+    if (stages.response) {
+      patterns.push({
+        urlPattern: '*',
+        requestStage: 'Response',
+      });
+    }
+    if (
+      // Only enable interception when Network is enabled
+      this.#networkDomainEnabled &&
+      patterns.length
+    ) {
+      const oldStages = this.#fetchDomainStages;
+      this.#fetchDomainStages = stages;
+      try {
+        await this.#cdpClient.sendCommand('Fetch.enable', {
+          patterns,
+          handleAuthRequests: stages.auth,
+        });
+      } catch {
+        this.#fetchDomainStages = oldStages;
+      }
+    }
+  }
+
+  async #disableFetch() {
+    const blockedRequest = this.#networkStorage
+      .getRequestsByTarget(this)
+      .filter((request) => request.interceptPhase);
+
+    if (blockedRequest.length === 0) {
+      this.#fetchDomainStages = {
+        request: false,
+        response: false,
+        auth: false,
+      };
+      await this.#cdpClient.sendCommand('Fetch.disable');
+    }
+  }
+
+  async toggleNetwork() {
+    const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
+    const fetchEnable = Object.values(stages).some((value) => value);
+    const fetchChanged =
+      this.#fetchDomainStages.request !== stages.request ||
+      this.#fetchDomainStages.response !== stages.response ||
+      this.#fetchDomainStages.auth !== stages.auth;
+    const networkEnable = this.isSubscribedTo(BiDiModule.Network);
+    const networkChanged = this.#networkDomainEnabled !== networkEnable;
+
+    this.#logger?.(
+      LogType.debugInfo,
+      'Toggle Network',
+      `Fetch (${fetchEnable}) ${fetchChanged}`,
+      `Network (${networkEnable}) ${networkChanged}`,
+    );
+
+    if (networkEnable && networkChanged) {
+      await this.#toggleNetwork(true);
+    }
+    if (fetchEnable && fetchChanged) {
+      await this.#enableFetch(stages);
+    }
+    if (!fetchEnable && fetchChanged) {
+      await this.#disableFetch();
+    }
+
+    if (!networkEnable && networkChanged && !fetchEnable && !fetchChanged) {
+      await this.#toggleNetwork(false);
+    }
   }
 
   /**
