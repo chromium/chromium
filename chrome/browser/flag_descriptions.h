@@ -652,6 +652,9 @@ extern const char kDisallowManagedProfileSignoutName[];
 extern const char kDisallowManagedProfileSignoutDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+extern const char kViewTransitionLayeredCaptureName[];
+extern const char kViewTransitionLayeredCaptureDescription[];
+
 extern const char kViewTransitionOnNavigationName[];
 extern const char kViewTransitionOnNavigationDescription[];
 

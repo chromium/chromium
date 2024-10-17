@@ -329,6 +329,11 @@ crbug.com/333739950 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/
 crbug.com/333739950 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 crbug.com/333739950 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 
+# View transition: tests that work only in layered capture mode. Remove this once we settle the spec.
+crbug.com/373759981 virtual/threaded/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
+crbug.com/373759981 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
+crbug.com/373759981 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
+
 # View transition SPA failures with MPA serialization.
 crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 

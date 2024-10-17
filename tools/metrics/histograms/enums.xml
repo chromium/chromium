@@ -19664,6 +19664,7 @@ from previous Chrome versions.
   <int value="-262180853" label="AccessibilityAccelerator:disabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
+  <int value="-261089705" label="ViewTransitionLayeredCapture:disabled"/>
   <int value="-259952983"
       label="AutofillVirtualCardsOnTouchToFillAndroid:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
@@ -20824,6 +20825,7 @@ from previous Chrome versions.
   <int value="224381468"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:enabled"/>
   <int value="224476390" label="PageInfoAboutThisSiteNonMsbb:enabled"/>
+  <int value="225059444" label="ViewTransitionLayeredCapture:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="226633333"

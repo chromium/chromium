@@ -397,7 +397,6 @@ vertical-align: baseline
 view-timeline-axis: block
 view-timeline-inset: auto
 view-timeline-name: none
-view-transition-capture-mode: layered
 view-transition-class: none
 view-transition-group: normal
 view-transition-name: none

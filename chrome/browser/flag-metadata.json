@@ -9201,6 +9201,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "view-transition-layered-capture",
+    "owners": [ "nrosenthal@chromium.org", "khushalsagar@chromium.org", "vmpstr@chromium.org"],
+    "expiry_milestone" : 150
+  },
+  {
     "name": "view-transition-on-navigation",
     "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "chrishtr@chromium.org" ],
     "expiry_milestone" : 130

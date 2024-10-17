@@ -5,7 +5,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="match" href="nested-opacity-ref.html">
 <script src="/common/reftest-wait.js"></script>
-<script src="resources/compute-test.js"></script>
+<script src="../nested/resources/compute-test.js"></script>
 <style>
     body {
         margin: 0;
@@ -19,6 +19,9 @@
 
     .parent {
         view-transition-name: parent;
+    }
+
+    .vt-old .parent {
         opacity: 0.4;
     }
 
@@ -29,6 +32,7 @@
         left: 50px;
     }
 
+    ::view-transition-group(*),
     ::view-transition-old(*),
     ::view-transition-new(*) {
         animation-play-state: paused;

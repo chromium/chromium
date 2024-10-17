@@ -1313,6 +1313,20 @@
   },
 
   "This virtual test suite ensures the ViewTransition feature works correctly",
+  "with the new capture mode (layered) enabled by default. A lot of the existing tests rely on flat capture,",
+  "will consolidate this once the spec settles",
+  {
+    "prefix": "view-transition-layered-capture",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["view-transitions-api@chromium.org"],
+    "bases": ["external/wpt/css/css-view-transitions/layered-capture/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-threaded-compositing",
+             "--enable-blink-features=ViewTransitionLayeredCapture"],
+    "expires": "April 1, 2025"
+  },
+
+  "This virtual test suite ensures the ViewTransition feature works correctly",
   "for non-sRGB color spaces.",
   {
     "prefix": "view-transition-wide-gamut",

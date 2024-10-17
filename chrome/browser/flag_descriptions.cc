@@ -1134,6 +1134,13 @@ const char kDisallowManagedProfileSignoutDescription[] =
     "Disallows signing out from managed profiles.";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+const char kViewTransitionLayeredCaptureName[] =
+    "CSS view transition layered capture";
+const char kViewTransitionLayeredCaptureDescription[] =
+    "Controls the way view transition elements are captured. "
+    "When enabled, view transition borders, backgrounds, effects etc. "
+    "are captured as style instead of being baked into the image.";
+
 const char kViewTransitionOnNavigationName[] =
     "viewTransition API for navigations";
 const char kViewTransitionOnNavigationDescription[] =
