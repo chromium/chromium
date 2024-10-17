@@ -141,6 +141,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    public UseCounter,
                                    public WebNavigationBodyLoader::Client {
  public:
+  // Limit used for policies optimizing for LCP, e.g. font loading. Based on the
+  // "good" LCP value of 2500ms. See `RemainingTimeToLCPLimit()`.
+  static constexpr base::TimeDelta kLCPLimit = base::Milliseconds(2000);
+
   DocumentLoader(LocalFrame*,
                  WebNavigationType navigation_type,
                  std::unique_ptr<WebNavigationParams> navigation_params,

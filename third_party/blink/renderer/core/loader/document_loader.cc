@@ -3504,9 +3504,7 @@ base::TimeDelta DocumentLoader::RemainingTimeToLCPLimit() const {
   // We shouldn't call this function before navigation start
   DCHECK(!document_load_timing_.NavigationStart().is_null());
   base::TimeTicks lcp_limit =
-      document_load_timing_.NavigationStart() +
-      base::Milliseconds(
-          features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get());
+      document_load_timing_.NavigationStart() + kLCPLimit;
   base::TimeTicks now = clock_->NowTicks();
   if (now < lcp_limit)
     return lcp_limit - now;

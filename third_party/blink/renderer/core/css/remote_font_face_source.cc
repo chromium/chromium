@@ -40,10 +40,6 @@ namespace blink {
 
 bool RemoteFontFaceSource::NeedsInterventionToAlignWithLCPGoal() const {
   DCHECK_EQ(display_, FontDisplay::kAuto);
-  if (!base::FeatureList::IsEnabled(
-          features::kAlignFontDisplayAutoTimeoutWithLCPGoal)) {
-    return false;
-  }
   if (!GetDocument() ||
       !FontFaceSetDocument::From(*GetDocument())->HasReachedLCPLimit()) {
     return false;
@@ -61,16 +57,6 @@ RemoteFontFaceSource::DisplayPeriod
 RemoteFontFaceSource::ComputeFontDisplayAutoPeriod() const {
   DCHECK_EQ(display_, FontDisplay::kAuto);
   if (NeedsInterventionToAlignWithLCPGoal()) {
-    using Mode = features::AlignFontDisplayAutoTimeoutWithLCPGoalMode;
-    Mode mode =
-        features::kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam.Get();
-    if (mode == Mode::kToSwapPeriod) {
-      return kSwapPeriod;
-    }
-    DCHECK_EQ(Mode::kToFailurePeriod, mode);
-    if (custom_font_data_ && !custom_font_data_->MayBeIconFont()) {
-      return kFailurePeriod;
-    }
     return kSwapPeriod;
   }
 

@@ -73,34 +73,6 @@ BASE_FEATURE(kLowerHighResolutionTimerThreshold,
              "LowerHighResolutionTimerThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Make all pending 'display: auto' web fonts enter the swap or failure period
-// immediately before reaching the LCP time limit (~2500ms), so that web fonts
-// do not become a source of bad LCP.
-BASE_FEATURE(kAlignFontDisplayAutoTimeoutWithLCPGoal,
-             "AlignFontDisplayAutoTimeoutWithLCPGoal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The amount of time allowed for 'display: auto' web fonts to load without
-// intervention, counted from navigation start.
-BASE_FEATURE_PARAM(int,
-                   kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam,
-                   &kAlignFontDisplayAutoTimeoutWithLCPGoal,
-                   "lcp-limit-in-ms",
-                   2000);
-
-const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>::Option
-    align_font_display_auto_timeout_with_lcp_goal_modes[] = {
-        {AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToFailurePeriod,
-         "failure"},
-        {AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToSwapPeriod, "swap"}};
-BASE_FEATURE_ENUM_PARAM(
-    AlignFontDisplayAutoTimeoutWithLCPGoalMode,
-    kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam,
-    &kAlignFontDisplayAutoTimeoutWithLCPGoal,
-    "intervention-mode",
-    AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToSwapPeriod,
-    &align_font_display_auto_timeout_with_lcp_goal_modes);
-
 BASE_FEATURE(kAllowDatapipeDrainedAsBytesConsumerInBFCache,
              "AllowDatapipeDrainedAsBytesConsumerInBFCache",
              base::FEATURE_ENABLED_BY_DEFAULT);

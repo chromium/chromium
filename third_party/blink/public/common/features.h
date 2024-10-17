@@ -49,19 +49,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAlignFontDisplayAutoTimeoutWithLCPGoal);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam);
-enum class AlignFontDisplayAutoTimeoutWithLCPGoalMode {
-  kToFailurePeriod,
-  kToSwapPeriod
-};
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    AlignFontDisplayAutoTimeoutWithLCPGoalMode,
-    kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam);
-
 // Allows running DevTools main thread debugger even when a renderer process
 // hosts multiple main frames.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
