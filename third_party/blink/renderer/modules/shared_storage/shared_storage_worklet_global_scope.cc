@@ -972,6 +972,7 @@ SharedStorageWorkletGlobalScope::interestGroups(
                     mojom_group->interest_group->aggregation_coordinator_origin
                         ->ToString());
               }
+              group->setPrivateAggregationConfig(pa_config);
 
               group->setJoinCount(
                   mojom_group->bidding_browser_signals->join_count);

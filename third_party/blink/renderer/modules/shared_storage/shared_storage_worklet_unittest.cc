@@ -2164,6 +2164,9 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
                 "j": 2,
                 "k": 4
               },
+              "privateAggregationConfig": {
+                "aggregationCoordinatorOrigin": "https://aggegator.example.org"
+              },
               "sellerCapabilities": {
                 "https://example.org": [
                   "interest-group-counts"
