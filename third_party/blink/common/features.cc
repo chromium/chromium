@@ -81,12 +81,6 @@ BASE_FEATURE(kAllowDevToolsMainThreadDebuggerForMultipleMainFrames,
              "AllowDevToolsMainThreadDebuggerForMultipleMainFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, allow dropping alpha on media streams for rendering sinks if
-// other sinks connected do not use alpha.
-BASE_FEATURE(kAllowDropAlphaForMediaStream,
-             "AllowDropAlphaForMediaStream",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAllowSourceSwitchOnPausedVideoMediaStream,
              "AllowSourceSwitchOnPausedVideoMediaStream",
              base::FEATURE_ENABLED_BY_DEFAULT);

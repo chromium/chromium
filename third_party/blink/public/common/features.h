@@ -54,10 +54,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
 
-// When enabled, allow dropping alpha on media streams for rendering sinks if
-// other sinks connected do not use alpha.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowDropAlphaForMediaStream);
-
 // Enables rate obfuscation mitigation in compute pressure, to prevent
 // cross-channel attacks.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
