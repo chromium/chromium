@@ -281,15 +281,13 @@ void UntrustedSource::ServeBackgroundImage(
     const std::string& position_y,
     const std::string& scrim_display,
     content::URLDataSource::GotDataCallback callback) {
-  if (!url.is_valid() || IsURLBlockedByPolicy(url) ||
-      !(url.SchemeIs(url::kHttpsScheme) ||
-        url.SchemeIs(content::kChromeUIUntrustedScheme))) {
+  if (!IsURLAllowed(url)) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
   ui::TemplateReplacements replacements;
   replacements["url"] = url.spec();
-  if (url_2x.is_valid() && !IsURLBlockedByPolicy(url_2x)) {
+  if (IsURLAllowed(url_2x)) {
     replacements["backgroundUrl"] =
         base::StringPrintf("image-set(url(%s) 1x, url(%s) 2x)",
                            url.spec().c_str(), url_2x.spec().c_str());
@@ -306,6 +304,16 @@ void UntrustedSource::ServeBackgroundImage(
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
           IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements)));
+}
+
+bool UntrustedSource::IsURLAllowed(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme) ||
+      !url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+      IsURLBlockedByPolicy(url)) {
+    LOG(WARNING) << "URL is not allowed.";
+    return false;
+  }
+  return true;
 }
 
 bool UntrustedSource::IsURLBlockedByPolicy(const GURL& url) {
