@@ -821,6 +821,19 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
 
 }  // namespace
 
+struct MediaFoundationVideoEncodeAccelerator::PendingInput {
+  PendingInput() = default;
+  ~PendingInput() = default;
+  PendingInput(const PendingInput&) = default;
+  // If true, output bits should be discarded and the rate control object
+  // shouldn't be let known about the encode.
+  bool discard_output = false;
+  EncodeOptions options;
+  base::TimeDelta timestamp;
+  gfx::ColorSpace color_space;
+  ComMFSample input_sample;
+};
+
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
  public:
   EncodeOutput(uint32_t size, const BitstreamBufferMetadata& md)
@@ -1110,13 +1123,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  auto hr = MFCreateSample(&input_sample_);
-  if (FAILED(hr)) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
-                       "Failed to create sample"});
-    return false;
-  }
-
+  HRESULT hr = S_OK;
   if (IsMediaFoundationD3D11VideoCaptureEnabled()) {
     MEDIA_LOG(INFO, media_log_)
         << "Preferred DXGI device " << luid_.HighPart << ":" << luid_.LowPart;
@@ -1304,16 +1311,30 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
   last_frame_was_keyframe_request_ = options.key_frame;
 }
 
-MediaFoundationVideoEncodeAccelerator::PendingInput
-MediaFoundationVideoEncodeAccelerator::MakeInput(
+void MediaFoundationVideoEncodeAccelerator::QueueInput(
     scoped_refptr<media::VideoFrame> frame,
     const VideoEncoder::EncodeOptions& options,
     bool discard_output) {
   PendingInput result;
-  result.frame = std::move(frame);
+  auto hr = MFCreateSample(&result.input_sample);
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+                       "Failed to create sample"});
+    return;
+  }
+  result.timestamp = frame->timestamp();
+  result.color_space = frame->ColorSpace();
   result.options = options;
   result.discard_output = discard_output;
-  return result;
+
+  hr = PopulateInputSampleBuffer(result, std::move(frame));
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       "Failed to populate input sample buffer"});
+    return;
+  }
+
+  pending_input_queue_.push_back(result);
 }
 
 void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
@@ -1325,8 +1346,7 @@ void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
 
   switch (state_) {
     case kEncoding: {
-      pending_input_queue_.push_back(
-          MakeInput(std::move(frame), options, discard_output));
+      QueueInput(std::move(frame), options, discard_output);
       // Check the status of METransformNeedInput counter, only feed input when
       // MFT is ready.
       if (encoder_needs_input_counter_ > 0) {
@@ -1335,8 +1355,7 @@ void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
       break;
     }
     case kInitializing: {
-      pending_input_queue_.push_back(
-          MakeInput(std::move(frame), options, discard_output));
+      QueueInput(std::move(frame), options, discard_output);
       break;
     }
     default:
@@ -1639,7 +1658,6 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
     return;
   }
 
-  input_sample_->RemoveAllBuffers();
   bitstream_buffer_size_ = input_visible_size_.GetArea();
   bitstream_buffer_queue_.clear();
   // Reset the input frame counter since MFT was notified to end the streaming
@@ -2139,9 +2157,6 @@ void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
   auto& next_input = pending_input_queue_.front();
 
   HRESULT hr = ProcessInput(next_input);
-  if (hr == MF_E_NOTACCEPTING) {
-    return;
-  }
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Failed to encode pending frame: " + PrintHr(hr)});
@@ -2154,136 +2169,124 @@ void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
 HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     const PendingInput& input) {
   DVLOG(3) << __func__;
-  DCHECK(input_sample_);
+  CHECK(input.input_sample);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(encoder_needs_input_counter_ > 0);
   TRACE_EVENT2("media", "MediaFoundationVideoEncodeAccelerator::ProcessInput",
-               "timestamp", input.frame->timestamp(), "discard_output",
+               "timestamp", input.timestamp, "discard_output",
                input.discard_output);
 
-  std::optional<int> metadata_qp;
-  if (has_prepared_input_sample_) {
-    if (DCHECK_IS_ON()) {
-      // Let's validate that prepared sample actually matches the frame
-      // we encode.
-      LONGLONG sample_ts = 0;
-      auto hr = input_sample_->GetSampleTime(&sample_ts);
-      DCHECK_EQ(hr, S_OK) << PrintHr(hr);
-      int64_t frame_ts = input.frame->timestamp().InMicroseconds() *
-                         kOneMicrosecondInMFSampleTimeUnits;
-      DCHECK_EQ(frame_ts, sample_ts)
-          << "Prepared sample timestamp doesn't match frame timestamp.";
-    }
-  } else {
-    // Reset the frame count when keyframe is requested.
-    if (input.options.key_frame ||
-        (input_since_keyframe_count_ % kDefaultGOPLength) == 0) {
-      input_since_keyframe_count_ = 0;
-    }
-    // Prepare input sample if it hasn't been done yet.
-    HRESULT hr = PopulateInputSampleBuffer(input);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't populate input sample buffer", hr);
+  // Reset the frame count when keyframe is requested.
+  if (input.options.key_frame ||
+      (input_since_keyframe_count_ % kDefaultGOPLength) == 0) {
+    input_since_keyframe_count_ = 0;
+  }
 
-    std::optional<uint8_t> quantizer;
-    int temporal_id = 0;
-    if (input.options.quantizer.has_value()) {
-      DCHECK_EQ(codec_, VideoCodec::kH264);
-      quantizer = std::clamp(static_cast<int>(input.options.quantizer.value()),
-                             1, kH26xMaxQp);
-    } else if (rate_ctrl_ && !input.discard_output) {
-      VideoRateControlWrapper::FrameParams frame_params{};
-      frame_params.frame_type =
-          input.options.key_frame
-              ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
-              : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
-      // H.264 and H.265 SW BRC need timestamp information.
-      frame_params.timestamp = input.frame->timestamp().InMilliseconds();
-      temporal_id =
-          svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
-      frame_params.temporal_layer_id = temporal_id;
-      // For now, MFVEA does not support spatial layer encoding.
-      frame_params.spatial_layer_id = 0;
-      // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
-      // set on sample metadata and carried over from input to output.
-      metadata_qp = rate_ctrl_->ComputeQP(frame_params);
-      if (codec_ == VideoCodec::kH264) {
-        if (metadata_qp.value() >= 0) {
-          // For H.264, the qp value should be in the range of 1-51.
-          metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
-          quantizer = metadata_qp;
-        } else {
-          // Negative QP values mean that the frame should be dropped. We use
-          // maximum QP in that case.
-          // Drop frame functionality is not supported yet.
-          // TODO(b/361250558): Support drop frame for H.264 Rate Controller
-          quantizer = kH264MaxQuantizer;
-          metadata_qp = quantizer;
-        }
-      }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      else if (codec_ == VideoCodec::kHEVC) {
-        // For HEVC, the qp value should be in the range of 1-51.
+  std::optional<int> metadata_qp;
+  std::optional<uint8_t> quantizer;
+  int temporal_id = 0;
+  if (input.options.quantizer.has_value()) {
+    DCHECK_EQ(codec_, VideoCodec::kH264);
+    quantizer = std::clamp(static_cast<int>(input.options.quantizer.value()), 1,
+                           kH26xMaxQp);
+  } else if (rate_ctrl_ && !input.discard_output) {
+    VideoRateControlWrapper::FrameParams frame_params{};
+    frame_params.frame_type =
+        input.options.key_frame
+            ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
+            : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
+    // H.264 and H.265 SW BRC need timestamp information.
+    frame_params.timestamp = input.timestamp.InMilliseconds();
+    temporal_id =
+        svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
+    frame_params.temporal_layer_id = temporal_id;
+    // For now, MFVEA does not support spatial layer encoding.
+    frame_params.spatial_layer_id = 0;
+    // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
+    // set on sample metadata and carried over from input to output.
+    metadata_qp = rate_ctrl_->ComputeQP(frame_params);
+    if (codec_ == VideoCodec::kH264) {
+      if (metadata_qp.value() >= 0) {
+        // For H.264, the qp value should be in the range of 1-51.
         metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
         quantizer = metadata_qp;
+      } else {
+        // Negative QP values mean that the frame should be dropped. We use
+        // maximum QP in that case.
+        // Drop frame functionality is not supported yet.
+        // TODO(b/361250558): Support drop frame for H.264 Rate Controller
+        quantizer = kH264MaxQuantizer;
+        metadata_qp = quantizer;
       }
+    }
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    else if (codec_ == VideoCodec::kHEVC) {
+      // For HEVC, the qp value should be in the range of 1-51.
+      metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
+      quantizer = metadata_qp;
+    }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      else {
-        // VP9 or AV1 codec.
-        quantizer = QindextoAVEncQP(metadata_qp.value());
-      }
-    } else if (input.discard_output) {
-      // Set up encoder for maximum speed if we're anyway going to discard the
-      // output.
-      quantizer = kVP9MaxQuantizer;
+    else {
+      // VP9 or AV1 codec.
+      quantizer = QindextoAVEncQP(metadata_qp.value());
     }
-    if (quantizer.has_value()) {
-      VARIANT var;
-      var.vt = VT_UI4;
-      var.ulVal = temporal_id;
-      DVLOG(3) << "Setting CODECAPI_AVEncVideoSelectLayer to " << var.ulVal;
-      hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
-      var.vt = VT_UI8;
-      // Only 16 least significant bits are responsible for generic frame QP
-      // values.
-      var.ullVal = quantizer.value() & 0xFFFF;
-      DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
-      hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
-      hr =
-          input_sample_->SetUINT64(MFSampleExtension_VideoEncodeQP, var.ullVal);
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
-    }
-
-    // We don't actually tell the MFT about the color space since all current
-    // MFT implementations just write UNSPECIFIED in the bitstream, and setting
-    // it can actually break some encoders; see https://crbug.com/1446081.
-    sample_metadata_queue_.push_back(
-        OutOfBandMetadata{.color_space = input.frame->ColorSpace(),
-                          .discard_output = input.discard_output,
-                          .qp = metadata_qp,
-                          .frame_id = input_since_keyframe_count_});
-
-    has_prepared_input_sample_ = true;
+  } else if (input.discard_output) {
+    // Set up encoder for maximum speed if we're anyway going to discard the
+    // output.
+    quantizer = kVP9MaxQuantizer;
   }
 
   HRESULT hr = S_OK;
+  if (quantizer.has_value()) {
+    VARIANT var;
+    var.vt = VT_UI4;
+    var.ulVal = temporal_id;
+    DVLOG(3) << "Setting CODECAPI_AVEncVideoSelectLayer to " << var.ulVal;
+    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
+    var.vt = VT_UI8;
+    // Only 16 least significant bits are responsible for generic frame QP
+    // values.
+    var.ullVal = quantizer.value() & 0xFFFF;
+    DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
+    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
+    hr = input.input_sample->SetUINT64(MFSampleExtension_VideoEncodeQP,
+                                       var.ullVal);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
+  }
+  if (input.options.key_frame) {
+    VARIANT var;
+    var.vt = VT_UI4;
+    var.ulVal = 1;
+    DVLOG(3) << "Setting CODECAPI_AVEncVideoForceKeyFrame to " << var.ulVal;
+    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
+    RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
+  }
+
+  // We don't actually tell the MFT about the color space since all current
+  // MFT implementations just write UNSPECIFIED in the bitstream, and setting
+  // it can actually break some encoders; see https://crbug.com/1446081.
+  sample_metadata_queue_.push_back(
+      OutOfBandMetadata{.color_space = input.color_space,
+                        .discard_output = input.discard_output,
+                        .qp = quantizer,
+                        .frame_id = input_since_keyframe_count_});
+
   {
     TRACE_EVENT1("media", "IMFTransform::ProcessInput", "timestamp",
-                 input.frame->timestamp());
-    hr = encoder_->ProcessInput(input_stream_id_, input_sample_.Get(), 0);
+                 input.timestamp);
+    hr = encoder_->ProcessInput(input_stream_id_, input.input_sample.Get(), 0);
     encoder_needs_input_counter_--;
   }
-  // Check if ProcessInput() actually accepted the sample, if not, remember
-  // that we don't need to prepare sample next time and can just use it.
-  has_prepared_input_sample_ = (hr == MF_E_NOTACCEPTING);
   return hr;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
-    const PendingInput& input) {
+    const PendingInput& input,
+    scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto frame = input.frame;
+  auto input_sample = input.input_sample;
   if (frame->storage_type() !=
           VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER &&
       !frame->IsMappable()) {
@@ -2302,32 +2305,23 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     return MF_E_INVALID_STREAM_DATA;
   }
 
-  auto hr = input_sample_->SetSampleTime(frame->timestamp().InMicroseconds() *
-                                         kOneMicrosecondInMFSampleTimeUnits);
+  auto hr = input_sample->SetSampleTime(frame->timestamp().InMicroseconds() *
+                                        kOneMicrosecondInMFSampleTimeUnits);
   RETURN_ON_HR_FAILURE(hr, "SetSampleTime() failed", hr);
 
   UINT64 sample_duration = 0;
   hr = MFFrameRateToAverageTimePerFrame(frame_rate_, 1, &sample_duration);
   RETURN_ON_HR_FAILURE(hr, "Couldn't calculate sample duration", hr);
 
-  hr = input_sample_->SetSampleDuration(sample_duration);
+  hr = input_sample->SetSampleDuration(sample_duration);
   RETURN_ON_HR_FAILURE(hr, "SetSampleDuration() failed", hr);
-
-  if (input.options.key_frame) {
-    VARIANT var;
-    var.vt = VT_UI4;
-    var.ulVal = 1;
-    DVLOG(3) << "Setting CODECAPI_AVEncVideoForceKeyFrame to " << var.ulVal;
-    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
-    RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
-  }
 
   if (frame->HasMappableGpuBuffer()) {
     if (frame->HasNativeGpuMemoryBuffer() && dxgi_device_manager_ != nullptr) {
       if (!dxgi_resource_mapping_required_) {
-        return PopulateInputSampleBufferGpu(std::move(frame));
+        return PopulateInputSampleBufferGpu(std::move(frame), input_sample);
       } else {
-        return CopyInputSampleBufferFromGpu(*(frame.get()));
+        return CopyInputSampleBufferFromGpu(std::move(frame), input_sample);
       }
     }
 
@@ -2343,7 +2337,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
 
   const auto kTargetPixelFormat = PIXEL_FORMAT_NV12;
   ComMFMediaBuffer input_buffer;
-  hr = input_sample_->GetBufferByIndex(0, &input_buffer);
+  hr = input_sample->GetBufferByIndex(0, &input_buffer);
   if (FAILED(hr)) {
     // Allocate a new buffer.
     MFT_INPUT_STREAM_INFO input_stream_info;
@@ -2363,7 +2357,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
             : VideoFrame::AllocationSize(kTargetPixelFormat,
                                          input_visible_size_));
     RETURN_ON_HR_FAILURE(hr, "Failed to set length on buffer", hr);
-    hr = input_sample_->AddBuffer(input_buffer.Get());
+    hr = input_sample->AddBuffer(input_buffer.Get());
     RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
   }
 
@@ -2407,13 +2401,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
 // copied to CPU memory, if HMFT does not accept texture from adapter
 // different from that is currently used for encoding.
 HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
-    const VideoFrame& frame) {
+    scoped_refptr<VideoFrame> frame,
+    ComMFSample input_sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(frame.storage_type(),
+  DCHECK_EQ(frame->storage_type(),
             VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
   DCHECK(dxgi_device_manager_);
 
-  gfx::GpuMemoryBufferHandle buffer_handle = frame.GetGpuMemoryBufferHandle();
+  gfx::GpuMemoryBufferHandle buffer_handle = frame->GetGpuMemoryBufferHandle();
   CHECK(!buffer_handle.is_null());
   CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
@@ -2437,9 +2432,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   gfx::Size texture_size(input_desc.Width, input_desc.Height);
   ComD3D11Texture2D sample_texture;
   if (texture_size != input_visible_size_ ||
-      frame.visible_rect().size() != input_visible_size_ ||
-      !frame.visible_rect().origin().IsOrigin()) {
-    hr = PerformD3DScaling(input_texture.Get(), frame.visible_rect());
+      frame->visible_rect().size() != input_visible_size_ ||
+      !frame->visible_rect().origin().IsOrigin()) {
+    hr = PerformD3DScaling(input_texture.Get(), frame->visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
   } else {
@@ -2475,15 +2470,15 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
       input_visible_size_.width() * input_visible_size_.height() * 3 / 2;
   hr = input_buffer->SetCurrentLength(copied_bytes);
   RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
-  hr = input_sample_->RemoveAllBuffers();
+  hr = input_sample->RemoveAllBuffers();
   RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
-  hr = input_sample_->AddBuffer(input_buffer.Get());
+  hr = input_sample->AddBuffer(input_buffer.Get());
   RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
 
   if (mf_video_processor_) {
     // This sample needs color space conversion
-    ComMFSample vp_input_sample = std::move(input_sample_);
-    hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample_);
+    ComMFSample vp_input_sample = std::move(input_sample);
+    hr = mf_video_processor_->Convert(vp_input_sample.Get(), &input_sample);
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
   }
 
@@ -2492,7 +2487,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
 
 // Handle case where video frame is backed by a GPU texture
 HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
-    scoped_refptr<VideoFrame> frame) {
+    scoped_refptr<VideoFrame> frame,
+    ComMFSample input_sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(frame->storage_type(),
             VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
@@ -2506,8 +2502,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     // - MFVP will call SetCurrentLength on the output buffer
     // - MFVP will output a different texture that can be used
     //    as encoder input with no synchronization issues.
-    input_sample_ = nullptr;
-    HRESULT hr = mf_video_processor_->Convert(frame, &input_sample_);
+    input_sample = nullptr;
+    HRESULT hr = mf_video_processor_->Convert(frame, &input_sample);
     RETURN_ON_HR_FAILURE(hr, "Failed to convert input frame", hr);
     return S_OK;
   }
@@ -2561,9 +2557,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   hr = input_buffer->SetCurrentLength(buffer_length);
   RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
 
-  hr = input_sample_->RemoveAllBuffers();
+  hr = input_sample->RemoveAllBuffers();
   RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
-  hr = input_sample_->AddBuffer(input_buffer.Get());
+  hr = input_sample->AddBuffer(input_buffer.Get());
   RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
   return S_OK;
 }
