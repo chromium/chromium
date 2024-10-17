@@ -218,10 +218,6 @@ bool AccountAppsAvailability::IsArcAccountRestrictionsEnabled() {
   return crosapi::browser_util::IsLacrosEnabled();
 }
 
-bool AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled() {
-  return true;
-}
-
 // static
 void AccountAppsAvailability::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(

@@ -66,14 +66,6 @@ constexpr char kAccountRemovedToastId[] =
   return ::account_manager::AccountKey{*id, account_type};
 }
 
-::account_manager::Account GetAccountFromJsCallback(
-    const base::Value::Dict& dictionary) {
-  ::account_manager::AccountKey key = GetAccountKeyFromJsCallback(dictionary);
-  const std::string* email = dictionary.FindString("email");
-  DCHECK(email);
-  return ::account_manager::Account{key, *email};
-}
-
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type()) {
@@ -173,10 +165,7 @@ class AccountBuilder {
     DCHECK(account_.FindBool("isSignedIn"));
     DCHECK(account_.FindBool("unmigrated"));
     DCHECK(account_.FindString("pic"));
-    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-        AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-      DCHECK(account_.FindBool("isAvailableInArc"));
-    }
+    DCHECK(account_.FindBool("isAvailableInArc"));
     // "organization" is an optional field.
 
     return std::move(account_);
@@ -442,22 +431,7 @@ void AccountManagerUIHandler::HandleRemoveAccount(
 
 void AccountManagerUIHandler::HandleChangeArcAvailability(
     const base::Value::List& args) {
-  DCHECK(AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
-  // We do not expect this to be called when policy based ARC access is enabled.
-  CHECK(!AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
-
-  // 2 args: account, is_available.
-  CHECK_GT(args.size(), 1u);
-  const base::Value::Dict* account_dict = args[0].GetIfDict();
-  CHECK(account_dict);
-  const std::optional<bool> is_available = args[1].GetIfBool();
-  CHECK(is_available.has_value());
-
-  const ::account_manager::Account account =
-      GetAccountFromJsCallback(*account_dict);
-  account_apps_availability_->SetIsAccountAvailableInArc(account,
-                                                         is_available.value());
-  // Note: the observer call will update the UI.
+  NOTREACHED();
 }
 
 void AccountManagerUIHandler::OnJavascriptAllowed() {
@@ -540,8 +514,7 @@ void AccountManagerUIHandler::RefreshUI() {
 }
 
 bool AccountManagerUIHandler::AreArcAccountsRestricted() {
-  return AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-         AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled();
+  return true;
 }
 
 }  // namespace ash::settings

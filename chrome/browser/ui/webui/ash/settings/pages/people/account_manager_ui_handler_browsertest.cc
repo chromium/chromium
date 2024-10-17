@@ -413,9 +413,6 @@ class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
     base::RunLoop().RunUntilIdle();
-
-    ASSERT_TRUE(
-        ash::AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
   }
 
   void TearDownOnMainThread() override {

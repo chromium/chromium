@@ -896,8 +896,7 @@ void ArcAuthService::EnsureFactoryBuilt() {
 }
 
 bool ArcAuthService::AreAccountsRestricted() {
-  return ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-         ash::AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled();
+  return true;
 }
 
 }  // namespace arc

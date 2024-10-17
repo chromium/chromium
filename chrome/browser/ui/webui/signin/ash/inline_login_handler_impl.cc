@@ -331,16 +331,10 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
     return;
   }
 
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-    ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
-        ->GetAccounts(base::BindOnce(
-            &InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin,
-            weak_factory_.GetWeakPtr(), params));
-    return;
-  }
-
-  CreateSigninHelper(params, /*arc_helper=*/nullptr);
+  ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+      ->GetAccounts(
+          base::BindOnce(&InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin,
+                         weak_factory_.GetWeakPtr(), params));
 }
 
 void InlineLoginHandlerImpl::HandleDialogClose(const base::Value::List& args) {
@@ -353,16 +347,10 @@ void InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin(
   bool is_new_account = !base::Contains(
       accounts, params.gaia_id,
       [](const account_manager::Account& account) { return account.key.id(); });
-  bool is_available_in_arc = params.is_available_in_arc;
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile->IsChild() ||
-      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-    is_available_in_arc = true;
-  }
 
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
-          is_available_in_arc, /*is_account_addition=*/is_new_account,
+          /*is_available_in_arc=*/true, /*is_account_addition=*/is_new_account,
           AccountAppsAvailabilityFactory::GetForProfile(
               Profile::FromWebUI(web_ui())));
   CreateSigninHelper(params, std::move(arc_helper));

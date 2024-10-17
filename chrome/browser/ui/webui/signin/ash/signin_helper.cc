@@ -76,11 +76,7 @@ SigninHelper::SigninHelper(
       gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
   DCHECK(!signin_scoped_device_id.empty());
   CHECK(show_signin_error_);
-
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-    DCHECK(arc_helper_);
-  }
+  DCHECK(arc_helper_);
 
   if (!IsInitialPrimaryAccount()) {
     restriction_fetcher_ =
@@ -146,10 +142,7 @@ void SigninHelper::UpsertAccount(const std::string& refresh_token) {
   account_manager_->UpsertAccount(account_key_, email_, refresh_token);
 
   auto new_account = account_manager::Account{account_key_, email_};
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-    arc_helper_->OnAccountAdded(new_account);
-  }
+  arc_helper_->OnAccountAdded(new_account);
   // Notify `AccountManagerMojoService` about successful account addition and
   // send the account.
   account_manager_mojo_service_->OnAccountUpsertionFinished(
@@ -204,21 +197,13 @@ void SigninHelper::OnGetSecondaryGoogleAccountUsage(
     return;
   }
 
-  if (AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
-    restriction_fetcher_->GetSecondaryAccountAllowedInArcPolicy(
-        /*access_token_fetcher=*/GaiaAccessTokenFetcher::
-            CreateExchangeRefreshTokenForAccessTokenInstance(
-                restriction_fetcher_.get(), url_loader_factory_,
-                refresh_token_),
-        /*callback=*/base::BindOnce(
-            &SigninHelper::OnGetSecondaryAccountAllowedInArcPolicy,
-            weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  // Enterprise accounts with no restrictions are allow to sign-in.
-  UpsertAccount(refresh_token_);
-  CloseDialogAndExit();
+  restriction_fetcher_->GetSecondaryAccountAllowedInArcPolicy(
+      /*access_token_fetcher=*/GaiaAccessTokenFetcher::
+          CreateExchangeRefreshTokenForAccessTokenInstance(
+              restriction_fetcher_.get(), url_loader_factory_, refresh_token_),
+      /*callback=*/base::BindOnce(
+          &SigninHelper::OnGetSecondaryAccountAllowedInArcPolicy,
+          weak_factory_.GetWeakPtr()));
 }
 
 void SigninHelper::OnGetSecondaryAccountAllowedInArcPolicy(
