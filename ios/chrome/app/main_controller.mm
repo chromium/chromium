@@ -872,6 +872,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   BackgroundRefreshAppAgent* refreshAgent =
       [[BackgroundRefreshAppAgent alloc] init];
+  refreshAgent.startupInformation = self;
   [_appState addAgent:refreshAgent];
   // Register background refresh providers.
   [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]

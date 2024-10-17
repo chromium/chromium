@@ -11,6 +11,7 @@
 
 @class AppRefreshProvider;
 @protocol BackgroundRefreshAudience;
+@protocol StartupInformation;
 
 // An app agent that manages background refresh tasks.
 // DEBUGGING/TESTING note: App refresh does not work on simulators; you must
@@ -19,6 +20,8 @@
 
 // Audience for the background refresh lifecycle.
 @property(nonatomic, weak) id<BackgroundRefreshAudience> audience;
+
+@property(nonatomic, weak) id<StartupInformation> startupInformation;
 
 // Register `provider` as providing app refresh tasks. Registration must happen
 // before refresh tasks execute, ideally during basic app init.

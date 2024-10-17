@@ -10,7 +10,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
@@ -24,36 +24,30 @@ namespace {
 // this key is less than `resetDataValue`, then all of the foillowing debug
 // data counts are reset to 0.
 NSString* resetDebugDataKey = @"debug_data_reset";
-NSInteger resetDebugDataValue = 1;
+NSInteger resetDebugDataValue = 2;
 
-// Debug NSUserDefaults key used to collect debug data.
+// Debug NSUserDefaults keys used to collect debug data.
+// Number of times refresh was triggered.
 NSString* triggeredBackgroundRefreshesKey =
     @"debug_number_of_triggered_background_refreshes";
-
-// Debug NSUserDefaults key used to collect debug data.
+// Number of times refresh was triggered during a cold start.
+NSString* coldBackgroundRefreshesKey =
+    @"debug_number_of_cold_background_refreshes";
 // Number of times systemTriggeredRefreshForTask was run when appState was
 // UIApplicationStateActive.
 NSString* appStateActiveCountDuringBackgroundRefreshKey =
     @"debug_app_state_active_count_during_background_refresh";
-
-// Debug NSUserDefaults key used to collect debug data.
 // Number of times systemTriggeredRefreshForTask was run when appState was
 // UIApplicationStateInactive.
 NSString* appStateInactiveCountDuringBackgroundRefreshKey =
     @"debug_app_state_inactive_count_during_background_refresh";
-
-// Debug NSUserDefaults key used to collect debug data.
 // Number of times systemTriggeredRefreshForTask was run when appState was
 // UIApplicationStateBackground.
 NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
     @"debug_app_state_background_count_during_background_refresh";
-
-// Debug NSUserDefaults key used to collect debug data.
 // Number of times systemTriggeredRefreshForTask was run with no due tasks.
 NSString* noTasksDueCountDuringBackgroundRefreshKey =
     @"debug_no_tasks_due_count_during_background_refresh";
-
-// Debug NSUserDefaults key used to collect debug data.
 // Number of times systemTriggeredRefreshForTask was with the last startup not
 // being clean (as defined by ApplicationContext::WasLastShutdownClean());
 NSString* dirtyShutdownDuringAppRefreshKey =
@@ -185,10 +179,16 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 
   // TODO(crbug.com/354918794): Remove this code once not needed anymore.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  int triggeredRefreshCount =
+  NSInteger triggeredRefreshCount =
       [defaults integerForKey:triggeredBackgroundRefreshesKey];
   [defaults setInteger:triggeredRefreshCount + 1
                 forKey:triggeredBackgroundRefreshesKey];
+  if (self.startupInformation.isColdStart) {
+    NSInteger coldRefreshCount =
+        [defaults integerForKey:coldBackgroundRefreshesKey];
+    [defaults setInteger:coldRefreshCount + 1
+                  forKey:coldBackgroundRefreshesKey];
+  }
 
   // Hop on to the main thread for task execution.
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -225,6 +225,9 @@ NSString* dirtyShutdownDuringAppRefreshKey =
   }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setInteger:[defaults integerForKey:appState] + 1 forKey:appState];
+
+  // Schedule another refresh.
+  [self requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
 
   [self refreshStarted];
   for (AppRefreshProvider* provider in self.providers) {
@@ -361,7 +364,7 @@ NSString* dirtyShutdownDuringAppRefreshKey =
   NSInteger resetValue = [defaults integerForKey:resetDebugDataKey];
   if (resetValue < resetDebugDataValue) {
     NSArray* debugKeys = @[
-      triggeredBackgroundRefreshesKey,
+      triggeredBackgroundRefreshesKey, coldBackgroundRefreshesKey,
       appStateActiveCountDuringBackgroundRefreshKey,
       appStateInactiveCountDuringBackgroundRefreshKey,
       appStateBackgroundCountDuringBackgroundRefreshKey,
