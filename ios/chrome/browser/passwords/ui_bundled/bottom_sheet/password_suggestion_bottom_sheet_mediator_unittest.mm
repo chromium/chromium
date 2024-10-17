@@ -47,7 +47,7 @@ FormSuggestion* SuggestionForSingleUsernameForm() {
               displayDescription:nil
                             icon:nil
                             type:autofill::SuggestionType::kAutocompleteEntry
-               backendIdentifier:nil
+               backendIdentifier:autofill::Suggestion::Payload()
                   requiresReauth:NO
       acceptanceA11yAnnouncement:nil
                         metadata:{.is_single_username_form = true}];
@@ -115,13 +115,13 @@ NSString* PrimaryActionLabelForUsernameFill() {
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
+          backendIdentifier:autofill::Suggestion::Payload()
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
                                    type:autofill::SuggestionType::kAddressEntry
-                      backendIdentifier:nil
+                      backendIdentifier:autofill::Suggestion::Payload()
                          requiresReauth:NO]
   ];
   return [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
@@ -389,7 +389,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
@@ -416,7 +416,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];

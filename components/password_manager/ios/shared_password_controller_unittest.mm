@@ -616,7 +616,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
               displayDescription:@"display-description"
                             icon:nil
                             type:autofill::SuggestionType::kAutocompleteEntry
-               backendIdentifier:nil
+               backendIdentifier:autofill::Suggestion::Payload()
                   requiresReauth:NO
       acceptanceA11yAnnouncement:nil
                         metadata:{.is_single_username_form = true}];
@@ -769,7 +769,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
        displayDescription:@"test-description"
                      icon:nil
                      type:autofill::SuggestionType::kGeneratePasswordEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [controller_ didSelectSuggestion:suggestion
                            atIndex:0
@@ -860,7 +860,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
        displayDescription:@"test-description"
                      icon:nil
                      type:autofill::SuggestionType::kGeneratePasswordEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [controller_ didSelectSuggestion:suggestion
                            atIndex:0
@@ -956,7 +956,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword_Empty) {
        displayDescription:@"test-description"
                      icon:nil
                      type:autofill::SuggestionType::kGeneratePasswordEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [controller_ didSelectSuggestion:suggestion
                            atIndex:0
@@ -1749,7 +1749,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
        displayDescription:@"test-description"
                      icon:nil
                      type:autofill::SuggestionType::kGeneratePasswordEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
 
   // Triggering password generation will trigger a new form extraction.

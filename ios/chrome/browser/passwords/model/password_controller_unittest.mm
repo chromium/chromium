@@ -613,7 +613,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
 
   SuggestionHandledCompletion completion = ^{

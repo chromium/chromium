@@ -156,7 +156,7 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
        displayDescription:kTestDisplayDescription
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [autofill_agent_ addSuggestion:suggestion
                      forFormName:kTestFormName
@@ -203,7 +203,7 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   OCMExpect([password_controller_
       checkIfSuggestionsAvailableForForm:[OCMArg any]
@@ -253,7 +253,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:form_suggestion

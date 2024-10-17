@@ -744,7 +744,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
                displayDescription:nil
                              icon:nil
                              type:autofill::SuggestionType::kAddressEntry
-                backendIdentifier:[self.address GUID]
+                // TODO(crbug.com/324557053): Update payload.
+                backendIdentifier:autofill::Suggestion::Guid(
+                                      base::SysNSStringToUTF8(
+                                          [self.address GUID]))
       fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
                    requiresReauth:NO
        acceptanceA11yAnnouncement:

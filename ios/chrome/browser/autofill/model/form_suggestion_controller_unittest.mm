@@ -84,13 +84,13 @@ using autofill::FormRendererId;
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
+          backendIdentifier:autofill::Suggestion::Payload()
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
                                    type:autofill::SuggestionType::kAddressEntry
-                      backendIdentifier:nil
+                      backendIdentifier:autofill::Suggestion::Payload()
                          requiresReauth:NO]
   ];
   return [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
@@ -399,13 +399,13 @@ TEST_F(FormSuggestionControllerTest,
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
+          backendIdentifier:autofill::Suggestion::Payload()
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
                                    type:autofill::SuggestionType::kAddressEntry
-                      backendIdentifier:nil
+                      backendIdentifier:autofill::Suggestion::Payload()
                          requiresReauth:NO]
   ];
   TestSuggestionProvider* provider1 =
@@ -452,7 +452,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
+          backendIdentifier:autofill::Suggestion::Payload()
              requiresReauth:NO],
   ];
   TestSuggestionProvider* provider =
@@ -490,7 +490,7 @@ TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   suggestion.featureForIPH =
       SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
@@ -526,7 +526,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kGeneratePasswordEntry
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [suggestions addObject:suggestion];
 
@@ -550,7 +550,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kCreateNewPlusAddress
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [suggestions addObject:suggestion];
 
@@ -559,7 +559,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kFillExistingPlusAddress
-        backendIdentifier:nil
+        backendIdentifier:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [suggestions addObject:suggestion];
 

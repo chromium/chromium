@@ -89,7 +89,7 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
                           displayDescription:@""
                                         icon:nil
                                         type:type
-                           backendIdentifier:@""
+                           backendIdentifier:autofill::Suggestion::Payload()
                               requiresReauth:NO];
 }
 
@@ -562,7 +562,8 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       gfx::test::PlatformImagesEqual(virtual_card_suggestion.icon, visa_icon));
   EXPECT_EQ(autofill::SuggestionType::kVirtualCreditCardEntry,
             virtual_card_suggestion.type);
-  EXPECT_NSEQ(@"", virtual_card_suggestion.backendIdentifier);
+  EXPECT_EQ(autofill::Suggestion::Payload(),
+            virtual_card_suggestion.backendIdentifier);
   EXPECT_EQ(false, virtual_card_suggestion.requiresReauth);
   EXPECT_NSEQ(nil, virtual_card_suggestion.acceptanceA11yAnnouncement);
 
@@ -575,7 +576,8 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       gfx::test::PlatformImagesEqual(credit_card_suggestion.icon, visa_icon));
   EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             credit_card_suggestion.type);
-  EXPECT_NSEQ(@"", credit_card_suggestion.backendIdentifier);
+  EXPECT_EQ(autofill::Suggestion::Payload(),
+            credit_card_suggestion.backendIdentifier);
   EXPECT_EQ(false, credit_card_suggestion.requiresReauth);
   EXPECT_NSEQ(nil, credit_card_suggestion.acceptanceA11yAnnouncement);
 }

@@ -366,11 +366,14 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofill_suggestion.type = suggestion.type;
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
-      if (!suggestion.backendIdentifier.length) {
+      // TODO(crbug.com/324557053): Update payload.
+      const std::string& guid =
+          absl::get<autofill::Suggestion::Guid>(suggestion.backendIdentifier)
+              .value();
+      if (guid.empty()) {
         autofill_suggestion.payload = autofill::Suggestion::Payload();
       } else {
-        autofill_suggestion.payload = autofill::Suggestion::Guid(
-            SysNSStringToUTF8(suggestion.backendIdentifier));
+        autofill_suggestion.payload = suggestion.backendIdentifier;
       }
 
       _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
@@ -665,20 +668,16 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
              ? *popup_suggestion.field_by_field_filling_type_used
              : autofill::FieldType::EMPTY_TYPE);
 
-    FormSuggestion* suggestion = [FormSuggestion
-                suggestionWithValue:value
-                         minorValue:minorValue
-                 displayDescription:displayDescription
-                               icon:icon
-                               type:popup_suggestion.type
-                  backendIdentifier:SysUTF8ToNSString(
-                                        popup_suggestion
-                                            .GetPayload<
-                                                autofill::Suggestion::Guid>()
-                                            .value())
-        fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
-                     requiresReauth:NO
-         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+    FormSuggestion* suggestion =
+        [FormSuggestion suggestionWithValue:value
+                                 minorValue:minorValue
+                         displayDescription:displayDescription
+                                       icon:icon
+                                       type:popup_suggestion.type
+                          backendIdentifier:popup_suggestion.payload
+                fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
+                             requiresReauth:NO
+                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
     if (popup_suggestion.feature_for_iph ==

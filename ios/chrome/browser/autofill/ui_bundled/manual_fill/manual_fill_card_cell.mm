@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/grit/components_scaled_resources.h"
@@ -661,18 +662,19 @@ CGFloat GPayIconTopAnchorOffset() {
               [self.card recordType] == kVirtualCard
           ? autofill::SuggestionType::kVirtualCreditCardEntry
           : autofill::SuggestionType::kCreditCardEntry;
-  FormSuggestion* suggestion =
-      [FormSuggestion suggestionWithValue:nil
-                               minorValue:nil
-                       displayDescription:nil
-                                     icon:nil
-                                     type:type
-                        backendIdentifier:[self.card GUID]
-              fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
-                           requiresReauth:NO
-               acceptanceA11yAnnouncement:
-                   base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+  FormSuggestion* suggestion = [FormSuggestion
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:type
+                backendIdentifier:autofill::Suggestion::Guid(
+                                      base::SysNSStringToUTF8([self.card GUID]))
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   [self.contentInjector autofillFormWithSuggestion:suggestion
                                            atIndex:_cellIndex];

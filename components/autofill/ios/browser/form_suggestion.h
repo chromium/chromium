@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 
 // Metadata tied to the form suggestion that gives more context around the
@@ -63,9 +64,9 @@ enum class SuggestionFeatureForIPH {
 // If specified, shows in-product help for the suggestion.
 @property(assign, nonatomic) SuggestionFeatureForIPH featureForIPH;
 
-// The id associated with this suggestion. Would be GUID for the addresses and
-// credit cards where `identifier` > 0.
-@property(copy, readonly, nonatomic) NSString* backendIdentifier;
+// The payload associated with this suggestion.
+@property(assign, readonly, nonatomic)
+    autofill::Suggestion::Payload backendIdentifier;
 
 // Metadata tied to the suggestion that gives more context.
 @property(assign, readonly, nonatomic) FormSuggestionMetadata metadata;
@@ -75,29 +76,31 @@ enum class SuggestionFeatureForIPH {
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                     backendIdentifier:
+                         (autofill::Suggestion::Payload)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
                               metadata:(FormSuggestionMetadata)metadata;
 
 // Returns FormSuggestion (immutable) with given values.
-+ (FormSuggestion*)suggestionWithValue:(NSString*)value
-                            minorValue:(NSString*)minorValue
-                    displayDescription:(NSString*)displayDescription
-                                  icon:(UIImage*)icon
-                                  type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
-           fieldByFieldFillingTypeUsed:
-               (autofill::FieldType)fieldByFieldFillingTypeUsed
-                        requiresReauth:(BOOL)requiresReauth
-            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
++ (FormSuggestion*)
+            suggestionWithValue:(NSString*)value
+                     minorValue:(NSString*)minorValue
+             displayDescription:(NSString*)displayDescription
+                           icon:(UIImage*)icon
+                           type:(autofill::SuggestionType)type
+              backendIdentifier:(autofill::Suggestion::Payload)backendIdentifier
+    fieldByFieldFillingTypeUsed:(autofill::FieldType)fieldByFieldFillingTypeUsed
+                 requiresReauth:(BOOL)requiresReauth
+     acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
 
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                     backendIdentifier:
+                         (autofill::Suggestion::Payload)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth;
 
 @end
