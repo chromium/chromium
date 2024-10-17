@@ -432,11 +432,16 @@ BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, try to reuse an unlocked renderer process when COOP swap is
-// happening on prerender initial navigation. Please see crbug.com/1519131 for
+// happening on prerender initial navigation. Please see crbug.com/41492112 for
 // more details.
 BASE_FEATURE(kProcessReuseOnPrerenderCOOPSwap,
              "ProcessReuseOnPrerenderCOOPSwap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Enables process sharing for sites that do not require a dedicated process
 // by using a default SiteInstance. Default SiteInstances will only be used
