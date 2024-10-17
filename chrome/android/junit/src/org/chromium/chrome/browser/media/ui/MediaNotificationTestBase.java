@@ -40,6 +40,7 @@ import org.chromium.components.browser_ui.media.MediaNotificationListener;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaMetadata;
 
@@ -164,6 +165,14 @@ public class MediaNotificationTestBase {
                         })
                 .when(mMockContext)
                 .startService(any(Intent.class));
+
+        MockMediaNotificationController.PendingIntentInitializer mockPendingIntentInitializer =
+                mock(MockMediaNotificationController.PendingIntentInitializer.class);
+        doNothing().when(mockPendingIntentInitializer).schedulePendingIntentConstructionIfNeeded();
+        doNothing().when(mockPendingIntentInitializer).scheduleIdleTask();
+        getController().mPendingIntentInitializer = mockPendingIntentInitializer;
+
+        getController().mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
 
         mMockForegroundServiceUtils = mock(ForegroundServiceUtils.class);
         ForegroundServiceUtils.setInstanceForTesting(mMockForegroundServiceUtils);

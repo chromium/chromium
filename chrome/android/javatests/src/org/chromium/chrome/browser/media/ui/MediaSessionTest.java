@@ -123,6 +123,13 @@ public class MediaSessionTest {
                 },
                 LONG_TIMEOUT,
                 DEFAULT_POLL_INTERVAL);
+
+        // Force the creation of `mPendingIntentActionSwipe` since it can take a non-trivial amount
+        // of time to be created, which could lead to tests timing out.
+        MediaNotificationController controller =
+                MediaNotificationManager.getController(R.id.media_playback_notification);
+        controller.mPendingIntentActionSwipe =
+                controller.createPendingIntent(MediaNotificationController.ACTION_SWIPE);
     }
 
     private void simulateHeadsetUnplug() {
