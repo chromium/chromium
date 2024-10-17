@@ -258,19 +258,20 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
+  CanvasHibernationHandler handler;
+  FakeCanvasResourceHost host(gfx::Size(300, 200));
+  host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
-  auto& handler = bridge->GetHibernationHandler();
+  Draw(host);
+
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
-  SetPageVisible(Host(), &handler, platform, false);
+  SetPageVisible(&host, &handler, platform, false);
 
   // Triggers a delayed task for encoding.
   EXPECT_FALSE(task_runner->delayed().empty());
 
   EXPECT_TRUE(handler.IsHibernating());
-  SetPageVisible(Host(), &handler, platform, true);
+  SetPageVisible(&host, &handler, platform, true);
 
   // Nothing happens, because the page came to foreground in-between.
   TestSingleThreadTaskRunner::RunAll(task_runner->delayed());
