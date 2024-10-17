@@ -71,6 +71,7 @@
 namespace blink {
 namespace {
 
+using ::blink_testing::ClearRectFlags;
 using ::blink_testing::FillFlags;
 using ::blink_testing::ParseFilter;
 using ::blink_testing::RecordedOpsAre;
@@ -153,7 +154,7 @@ class TestRenderingContext2D final
     return execution_context_.Get();
   }
 
-  bool HasAlpha() const override { return false; }
+  bool HasAlpha() const override { return true; }
 
   void SetContextLost(bool context_lost) { context_lost_ = context_lost; }
   bool isContextLost() const override { return context_lost_; }
@@ -1325,10 +1326,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CopyCompositeOp) {
                       exception_state);
   context->endLayer(exception_state);
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
-                  PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
+          PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests,
@@ -1365,7 +1367,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
       RecordedOpsAre(
           PaintOpEq<TranslateOp>(6, 7),
           DrawRecordOpEq(
-              PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
+              PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
               PaintOpEq<SaveOp>(),
               PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
                                            0, 1, 0, 0,  //
@@ -1679,11 +1681,10 @@ TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 
   // `reset` discards all paint ops and reset the canvas content.
-  cc::PaintFlags reset_rect_flags;
   EXPECT_THAT(context->FlushRecorder(),
               RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, context->Width(), context->Height()),
-                  reset_rect_flags)));
+                  ClearRectFlags())));
 
   // The recording should now be empty:
   ASSERT_THAT(RecordedOpsView(context->FlushRecorder()), IsEmpty());
