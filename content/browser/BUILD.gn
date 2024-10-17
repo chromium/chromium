@@ -2882,7 +2882,6 @@ source_set("browser") {
     deps += [
       "//components/app_launch_prefetch",
       "//content/utility:delegate_data",
-      "//services/screen_ai/public/cpp:utilities",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

@@ -82,7 +82,6 @@ include_rules = [
   "+services/cert_verifier/public/cpp",
   "+services/cert_verifier/public/mojom",
   "+services/screen_ai/buildflags",
-  "+services/screen_ai/public/cpp",
   "+services/video_effects/public/cpp/buildflags.h",
 
   # In general, //content shouldn't depend on //device.
