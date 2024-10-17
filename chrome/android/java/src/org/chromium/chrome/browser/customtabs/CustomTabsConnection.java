@@ -1368,18 +1368,6 @@ public class CustomTabsConnection {
     /**
      * @param session The session that the corresponding custom tab is assigned to.
      * @param intent The intent that launched the custom tab.
-     * @param windowAndroid The android window.
-     * @param profileProviderSupplier The supplier of the current profile.
-     */
-    void maybeShowAccountMismatchNotification(
-            CustomTabsSessionToken session,
-            Intent intent,
-            WindowAndroid windowAndroid,
-            OneshotSupplier<ProfileProvider> profileProviderSupplier) {}
-
-    /**
-     * @param session The session that the corresponding custom tab is assigned to.
-     * @param intent The intent that launched the custom tab.
      * @param context the Android context.
      * @param windowAndroid The android window.
      * @param profileProviderSupplier The supplier of the current profile.
