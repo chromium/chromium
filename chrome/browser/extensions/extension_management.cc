@@ -70,6 +70,18 @@ namespace extensions {
 BASE_FEATURE(kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment,
              "DisableOffstoreForceInstalledExtensionsInLowTrustEnviroment",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The highest level of trustworthiness for either platform or browser.
+policy::ManagementAuthorityTrustworthiness GetHighestTrustworthiness(
+    Profile* profile) {
+  policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
+      policy::ManagementServiceFactory::GetForPlatform()
+          ->GetManagementAuthorityTrustworthiness();
+  policy::ManagementAuthorityTrustworthiness browser_trustworthiness =
+      policy::ManagementServiceFactory::GetForProfile(profile)
+          ->GetManagementAuthorityTrustworthiness();
+  return std::max(platform_trustworthiness, browser_trustworthiness);
+}
 #endif
 
 ExtensionManagement::ExtensionManagement(Profile* profile)
@@ -417,6 +429,24 @@ bool ExtensionManagement::IsAllowedByUnpackedDeveloperModePolicy(
   return in_developer_mode;
 }
 
+bool ExtensionManagement::IsForceInstalledInLowTrustEnvironment(
+    const Extension& extension) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (GetInstallationMode(&extension) != INSTALLATION_FORCED) {
+    return false;
+  }
+
+  if (!Manifest::IsPolicyLocation(extension.location())) {
+    return false;
+  }
+
+  return GetHighestTrustworthiness(profile_) <
+         policy::ManagementAuthorityTrustworthiness::TRUSTED;
+#else
+  return false;
+#endif
+}
+
 bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
     const Extension& extension) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -435,18 +465,7 @@ bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
     return false;
   }
 
-  // The highest level of ManagementAuthorityTrustworthiness of either
-  // platform or browser are taken into account.
-  policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
-      policy::ManagementServiceFactory::GetForPlatform()
-          ->GetManagementAuthorityTrustworthiness();
-  policy::ManagementAuthorityTrustworthiness browser_trustworthiness =
-      policy::ManagementServiceFactory::GetForProfile(profile_)
-          ->GetManagementAuthorityTrustworthiness();
-  policy::ManagementAuthorityTrustworthiness highest_trustworthiness =
-      std::max(platform_trustworthiness, browser_trustworthiness);
-
-  return highest_trustworthiness <
+  return GetHighestTrustworthiness(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;

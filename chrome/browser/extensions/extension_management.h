@@ -176,6 +176,9 @@ class ExtensionManagement : public KeyedService {
   // is OFF.
   bool IsAllowedByUnpackedDeveloperModePolicy(const Extension& extension);
 
+  // Returns true if a force-installed extension is in a low-trust environment.
+  bool IsForceInstalledInLowTrustEnvironment(const Extension& extension);
+
   // Returns true if an off-store extension is force-installed in low trust
   // environments. Only trusted environments like domain-joined devices or
   // cloud-managed user profiles are allowed to force-install off-store
