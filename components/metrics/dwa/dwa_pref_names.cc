@@ -9,4 +9,8 @@ namespace metrics::dwa::prefs {
 // Preference which stores serialized DWA logs to be uploaded.
 const char kUnsentLogStoreName[] = "dwa.persistent_logs";
 
+const char kDwaClientId[] = "dwa.client_id";
+
+const char kDwaClientIdLastUpdated[] = "dwa.client_id_last_updated";
+
 }  // namespace metrics::dwa::prefs

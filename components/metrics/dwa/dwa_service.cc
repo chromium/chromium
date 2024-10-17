@@ -9,8 +9,10 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/i18n/timezone.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
+#include "components/metrics/dwa/dwa_pref_names.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -118,7 +120,8 @@ void DwaService::RecordCoarseSystemInformation(
   }
 
   int64_t seconds_since_install =
-      MetricsLog::GetCurrentTime() - local_state.GetInt64(prefs::kInstallDate);
+      MetricsLog::GetCurrentTime() -
+      local_state.GetInt64(metrics::prefs::kInstallDate);
   coarse_system_info->set_client_age(
       seconds_since_install < kOneWeekInSeconds
           ? ::dwa::CoarseSystemInfo::CLIENT_AGE_RECENT
@@ -132,6 +135,33 @@ void DwaService::RecordCoarseSystemInformation(
   coarse_system_info->set_milestone_prefix_trimmed(milestone % 16);
 
   coarse_system_info->set_is_ukm_enabled(client.IsUkmAllowedForAllProfiles());
+}
+
+// static
+uint64_t DwaService::GetEphemeralClientId(PrefService& local_state) {
+  // We want to update the client id once a day (measured in UTC), so our date
+  // should only contain information up to day level.
+  base::Time now_day_level = base::Time::Now().UTCMidnight();
+
+  uint64_t client_id = local_state.GetUint64(prefs::kDwaClientId);
+  if (local_state.GetTime(prefs::kDwaClientIdLastUpdated) != now_day_level ||
+      client_id == 0u) {
+    client_id = 0u;
+    while (!client_id) {
+      client_id = base::RandUint64();
+    }
+    local_state.SetUint64(prefs::kDwaClientId, client_id);
+
+    local_state.SetTime(prefs::kDwaClientIdLastUpdated, now_day_level);
+  }
+
+  return client_id;
+}
+
+// static
+void DwaService::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterUint64Pref(prefs::kDwaClientId, 0u);
+  registry->RegisterTimePref(prefs::kDwaClientIdLastUpdated, base::Time());
 }
 
 }  // namespace metrics::dwa
