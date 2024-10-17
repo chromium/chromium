@@ -735,7 +735,13 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
       PrivacyIndicatorsTrayItemView::Type::kAllUsed);
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
+// TODO(crbug.com/373996845): Re-enable test.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RecordShowPerSessionMetrics DISABLED_RecordShowPerSessionMetrics
+#else
+#define MAYBE_RecordShowPerSessionMetrics RecordShowPerSessionMetrics
+#endif
+TEST_F(PrivacyIndicatorsTrayItemViewTest, MAYBE_RecordShowPerSessionMetrics) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display when session changes.
   UpdateDisplay("100x200,300x400");
