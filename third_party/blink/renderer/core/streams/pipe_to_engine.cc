@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/pipe_to_engine.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/promise_all.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -253,7 +254,7 @@ v8::Local<v8::Promise> PipeToEngine::AbortAlgorithmAction() {
   v8::Local<v8::Value> error = shutdown_error_.Get(script_state_->GetIsolate());
 
   // ii. Let actions be an empty ordered set.
-  HeapVector<ScriptPromiseUntyped> actions;
+  HeapVector<ScriptPromise<IDLUndefined>> actions;
 
   // This method runs later than the equivalent steps in the standard. This
   // means that it is safe to do the checks of the state of the destination
@@ -278,9 +279,8 @@ v8::Local<v8::Promise> PipeToEngine::AbortAlgorithmAction() {
     actions.push_back(ReadableStream::Cancel(script_state_, Readable(), error));
   }
 
-  return ScriptPromiseUntyped::All(script_state_.Get(), actions)
-      .V8Value()
-      .As<v8::Promise>();
+  return PromiseAll<IDLUndefined>::Create(script_state_.Get(), actions)
+      .V8Promise();
 }
 
 v8::Local<v8::Value> PipeToEngine::HandleNextEvent(v8::Local<v8::Value>) {

@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/promise_all.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -55,64 +56,48 @@ using mojom::blink::PermissionService;
 
 // This class deals with all the clipboard item promises and executes the write
 // operation after all the promises have been resolved.
-class ClipboardPromise::ClipboardItemDataPromiseResolverFunction final
-    : public ScriptFunction::Callable {
+class ClipboardPromise::ClipboardItemDataPromiseFulfill final
+    : public ThenCallable<IDLSequence<V8UnionBlobOrString>,
+                          ClipboardItemDataPromiseFulfill> {
  public:
-  enum class ResolveType { kFulfill, kReject };
-
-  static void Create(ScriptState* script_state,
-                     ScriptPromiseUntyped promise,
-                     ClipboardPromise* clipboard_promise) {
-    promise.Then(
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<ClipboardItemDataPromiseResolverFunction>(
-                clipboard_promise, ResolveType::kFulfill)),
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<ClipboardItemDataPromiseResolverFunction>(
-                clipboard_promise, ResolveType::kReject)));
-  }
-
-  ClipboardItemDataPromiseResolverFunction(ClipboardPromise* clipboard_promise,
-                                           ResolveType type)
-      : clipboard_promise_(clipboard_promise), type_(type) {}
+  explicit ClipboardItemDataPromiseFulfill(ClipboardPromise* clipboard_promise)
+      : clipboard_promise_(clipboard_promise) {}
 
   void Trace(Visitor* visitor) const final {
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLSequence<V8UnionBlobOrString>,
+                 ClipboardItemDataPromiseFulfill>::Trace(visitor);
     visitor->Trace(clipboard_promise_);
   }
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
-    if (type_ == ResolveType::kReject) {
-      String exception_text =
-          RuntimeEnabledFeatures::ClipboardItemWithDOMStringSupportEnabled()
-              ? "Promises to ClipboardItemData were rejected."
-              : "Promises to Blobs were rejected.";
-      clipboard_promise_->RejectClipboardItemPromise(exception_text);
-    } else {
-      v8::TryCatch try_catch(script_state->GetIsolate());
-      HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list =
-          MakeGarbageCollected<HeapVector<Member<V8UnionBlobOrString>>>(
-              NativeValueTraits<IDLSequence<V8UnionBlobOrString>>::NativeValue(
-                  script_state->GetIsolate(), value.V8Value(),
-                  PassThroughException(script_state->GetIsolate())));
-      if (try_catch.HasCaught()) {
-        String exception_text =
-            RuntimeEnabledFeatures::ClipboardItemWithDOMStringSupportEnabled()
-                ? "Invalid ClipboardItemData types."
-                : "Invalid Blob types.";
-        clipboard_promise_->RejectClipboardItemPromise(exception_text);
-      } else {
-        clipboard_promise_->HandlePromiseWrite(clipboard_item_list);
-      }
-    }
-    return ScriptValue();
+  void React(ScriptState* script_state,
+             HeapVector<Member<V8UnionBlobOrString>> clipboard_item_list) {
+    auto* list_copy =
+        MakeGarbageCollected<HeapVector<Member<V8UnionBlobOrString>>>(
+            std::move(clipboard_item_list));
+    clipboard_promise_->HandlePromiseWrite(list_copy);
   }
 
  private:
   Member<ClipboardPromise> clipboard_promise_;
-  ResolveType type_;
+};
+
+class ClipboardPromise::ClipboardItemDataPromiseReject final
+    : public ThenCallable<IDLAny, ClipboardItemDataPromiseReject> {
+ public:
+  explicit ClipboardItemDataPromiseReject(ClipboardPromise* clipboard_promise)
+      : clipboard_promise_(clipboard_promise) {}
+
+  void Trace(Visitor* visitor) const final {
+    ThenCallable<IDLAny, ClipboardItemDataPromiseReject>::Trace(visitor);
+    visitor->Trace(clipboard_promise_);
+  }
+
+  void React(ScriptState* script_state, ScriptValue exception) {
+    clipboard_promise_->RejectClipboardItemPromise(exception);
+  }
+
+ private:
+  Member<ClipboardPromise> clipboard_promise_;
 };
 
 // static
@@ -512,7 +497,7 @@ void ClipboardPromise::HandleWriteWithPermission(
     return;
   }
 
-  HeapVector<ScriptPromiseUntyped> promise_list;
+  HeapVector<ScriptPromise<V8UnionBlobOrString>> promise_list;
   promise_list.ReserveInitialCapacity(
       clipboard_item_data_with_promises_.size());
   write_clipboard_item_types_.ReserveInitialCapacity(
@@ -531,9 +516,10 @@ void ClipboardPromise::HandleWriteWithPermission(
   }
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
-  ClipboardItemDataPromiseResolverFunction::Create(
-      script_state, ScriptPromiseUntyped::All(script_state, promise_list),
-      this);
+  PromiseAll<V8UnionBlobOrString>::Create(script_state, promise_list)
+      .React(script_state,
+             MakeGarbageCollected<ClipboardItemDataPromiseFulfill>(this),
+             MakeGarbageCollected<ClipboardItemDataPromiseReject>(this));
 }
 
 void ClipboardPromise::HandleWriteTextWithPermission(
@@ -554,10 +540,8 @@ void ClipboardPromise::HandleWriteTextWithPermission(
   script_promise_resolver_->DowncastTo<IDLUndefined>()->Resolve();
 }
 
-void ClipboardPromise::RejectClipboardItemPromise(
-    const String& exception_text) {
-  script_promise_resolver_->RejectWithDOMException(
-      DOMExceptionCode::kNotAllowedError, exception_text);
+void ClipboardPromise::RejectClipboardItemPromise(ScriptValue exception) {
+  script_promise_resolver_->Reject(exception);
 }
 
 PermissionService* ClipboardPromise::GetPermissionService() {

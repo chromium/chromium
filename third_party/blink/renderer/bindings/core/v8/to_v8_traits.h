@@ -15,7 +15,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -239,22 +238,6 @@ struct ToV8Traits<IDLObject> {
     if (!v8_value->IsObject())
       return v8::Undefined(script_state->GetIsolate());
     return v8_value;
-  }
-};
-
-// Promise
-template <typename T>
-struct ToV8Traits<IDLPromise<T>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const ScriptPromise<T>& script_promise) {
-    DCHECK(!script_promise.IsEmpty());
-    return script_promise.V8Value();
-  }
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      v8::Local<v8::Promise> script_promise) {
-    return script_promise;
   }
 };
 
@@ -902,15 +885,6 @@ struct ToV8Traits<IDLOptional<T>> {
     return ToV8Traits<T>::ToV8(script_state, value);
   }
 };
-
-template <typename IDLType, typename BlinkType>
-ScriptPromise<IDLType> ToResolvedPromise(ScriptState* script_state,
-                                         BlinkType value) {
-  auto v8_value = ToV8Traits<IDLType>::ToV8(script_state, value);
-  return ScriptPromise<IDLType>(
-      script_state->GetIsolate(),
-      ScriptPromiseUntyped::ResolveRaw(script_state, v8_value));
-}
 
 }  // namespace blink
 

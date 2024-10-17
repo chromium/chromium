@@ -104,18 +104,17 @@ class MODULES_EXPORT ClipboardPromise final
   void Trace(Visitor* visitor) const override;
 
  private:
-  class ClipboardItemDataPromiseResolverFunction;
+  class ClipboardItemDataPromiseFulfill;
+  class ClipboardItemDataPromiseReject;
 
   void HandlePromiseWrite(
       HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
   void WriteClipboardItemData(
       HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
 
-  // Rejects the promise for clipboard items that have invalid MIME types or
-  // got rejected. `exception_text` The JS exception text populated after the
-  // promises for clipboard items were either fulfilled with invalid clipboard
-  // item types or rejected.
-  void RejectClipboardItemPromise(const String& exception_text);
+  // Rejects the promise for blobs that have invalid MIME types or got rejected
+  // with the given exception.
+  void RejectClipboardItemPromise(ScriptValue);
   void WriteNextRepresentation();
 
   // Checks Read/Write permission (interacting with `PermissionService`).

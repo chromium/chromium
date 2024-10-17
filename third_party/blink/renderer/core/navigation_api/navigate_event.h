@@ -34,7 +34,6 @@ class NavigateEventInit;
 class NavigationInterceptOptions;
 class ExceptionState;
 class FormData;
-class ScriptPromiseUntyped;
 class V8NavigationInterceptHandler;
 
 class NavigateEvent final : public Event,
@@ -106,7 +105,8 @@ class NavigateEvent final : public Event,
   void PotentiallyProcessScrollBehavior();
   void ProcessScrollBehavior();
 
-  class Reaction;
+  class FulfillReaction;
+  class RejectReaction;
   void ReactDone(ScriptValue, bool did_fulfill);
 
   void DelayedLoadStartTimerFired();
@@ -138,7 +138,7 @@ class NavigateEvent final : public Event,
   };
   InterceptState intercept_state_ = InterceptState::kNone;
 
-  HeapVector<ScriptPromiseUntyped> navigation_action_promises_list_;
+  HeapVector<ScriptPromise<IDLUndefined>> navigation_action_promises_list_;
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
   bool did_change_focus_during_intercept_ = false;

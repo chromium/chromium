@@ -469,7 +469,7 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
   ScriptPromise<IDLAny> createRejectedPromise(ScriptState*, ScriptValue);
-  ScriptPromise<IDLAny> addOneToPromise(ScriptState*, ScriptPromiseUntyped);
+  ScriptPromise<IDLLong> addOneToPromise(ScriptState*, ScriptPromise<IDLLong>);
   ScriptPromise<IDLAny> promiseCheck(ScriptState*,
                                      int32_t,
                                      bool,

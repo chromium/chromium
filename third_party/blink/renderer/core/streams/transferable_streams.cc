@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/promise_all.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -908,25 +909,25 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       return source2_->Cancel(script_state, reason, exception_state);
     }
     v8::TryCatch try_catch(script_state->GetIsolate());
-    ScriptPromiseUntyped cancel_promise1 = reader_for_stream1_->cancel(
+    ScriptPromise<IDLUndefined> cancel_promise1 = reader_for_stream1_->cancel(
         script_state, reason, PassThroughException(script_state->GetIsolate()));
     if (try_catch.HasCaught()) {
-      cancel_promise1 =
-          ScriptPromiseUntyped::Reject(script_state, try_catch.Exception());
+      cancel_promise1 = ScriptPromise<IDLUndefined>::Reject(
+          script_state, try_catch.Exception());
     }
 
     ReadableStream* dummy_stream =
         ReadableStream::CreateWithCountQueueingStrategy(script_state, source2_,
                                                         /*high_water_mark=*/0);
-    ScriptPromiseUntyped cancel_promise2 = dummy_stream->cancel(
+    ScriptPromise<IDLUndefined> cancel_promise2 = dummy_stream->cancel(
         script_state, reason, PassThroughException(script_state->GetIsolate()));
     if (try_catch.HasCaught()) {
-      cancel_promise2 =
-          ScriptPromiseUntyped::Reject(script_state, try_catch.Exception());
+      cancel_promise2 = ScriptPromise<IDLUndefined>::Reject(
+          script_state, try_catch.Exception());
     }
 
-    return ScriptPromiseUntyped::All(script_state,
-                                     {cancel_promise1, cancel_promise2});
+    return PromiseAll<IDLUndefined>::Create(script_state,
+                                            {cancel_promise1, cancel_promise2});
   }
 
   void Trace(Visitor* visitor) const override {

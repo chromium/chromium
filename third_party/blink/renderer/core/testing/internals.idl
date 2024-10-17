@@ -304,7 +304,7 @@ interface Internals {
 
     [CallWith=ScriptState] Promise<any> createResolvedPromise(any value);
     [CallWith=ScriptState] Promise<any> createRejectedPromise(any reason);
-    [CallWith=ScriptState] Promise<any> addOneToPromise(Promise<any> promise);
+    [CallWith=ScriptState] Promise<long> addOneToPromise(Promise<long> promise);
     [CallWith=ScriptState, RaisesException] Promise<any> promiseCheck(long arg1, boolean arg2, object arg3, DOMString arg4, sequence<DOMString> arg5);
     [CallWith=ScriptState] Promise<any> promiseCheckWithoutExceptionState(object arg1, DOMString arg2, DOMString... variadic);
     [CallWith=ScriptState] Promise<any> promiseCheckRange([EnforceRange] octet arg1);

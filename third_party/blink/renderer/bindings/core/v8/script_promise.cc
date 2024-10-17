@@ -41,123 +41,6 @@
 
 namespace blink {
 
-namespace {
-
-class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
- public:
-  static ScriptPromiseUntyped All(
-      ScriptState* script_state,
-      const HeapVector<ScriptPromiseUntyped>& promises) {
-    if (promises.empty()) {
-      return ToResolvedPromise<IDLSequence<IDLAny>>(script_state,
-                                                    HeapVector<ScriptValue>());
-    }
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLAny>>>(
-            script_state);
-    MakeGarbageCollected<PromiseAllHandler>(script_state, promises, resolver);
-    return resolver->Promise();
-  }
-
-  PromiseAllHandler(ScriptState* script_state,
-                    HeapVector<ScriptPromiseUntyped> promises,
-                    ScriptPromiseResolver<IDLSequence<IDLAny>>* resolver)
-      : number_of_pending_promises_(promises.size()), resolver_(resolver) {
-    DCHECK(!promises.empty());
-    values_.resize(promises.size());
-    for (wtf_size_t i = 0; i < promises.size(); ++i) {
-      promises[i].Then(CreateFulfillFunction(script_state, i),
-                       CreateRejectFunction(script_state));
-    }
-  }
-
-  PromiseAllHandler(const PromiseAllHandler&) = delete;
-  PromiseAllHandler& operator=(const PromiseAllHandler&) = delete;
-
-  virtual void Trace(Visitor* visitor) const {
-    visitor->Trace(resolver_);
-    visitor->Trace(values_);
-  }
-
- private:
-  class AdapterFunction : public ScriptFunction::Callable {
-   public:
-    enum ResolveType {
-      kFulfilled,
-      kRejected,
-    };
-
-    AdapterFunction(ResolveType resolve_type,
-                    wtf_size_t index,
-                    PromiseAllHandler* handler)
-        : resolve_type_(resolve_type), index_(index), handler_(handler) {}
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(handler_);
-      ScriptFunction::Callable::Trace(visitor);
-    }
-
-    ScriptValue Call(ScriptState*, ScriptValue value) override {
-      if (resolve_type_ == kFulfilled)
-        handler_->OnFulfilled(index_, value);
-      else
-        handler_->OnRejected(value);
-      // This return value is never used.
-      return ScriptValue();
-    }
-
-   private:
-    const ResolveType resolve_type_;
-    const wtf_size_t index_;
-    Member<PromiseAllHandler> handler_;
-  };
-
-  ScriptFunction* CreateFulfillFunction(ScriptState* script_state,
-                                        wtf_size_t index) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state, MakeGarbageCollected<AdapterFunction>(
-                          AdapterFunction::kFulfilled, index, this));
-  }
-
-  ScriptFunction* CreateRejectFunction(ScriptState* script_state) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state, MakeGarbageCollected<AdapterFunction>(
-                          AdapterFunction::kRejected, 0, this));
-  }
-
-  void OnFulfilled(wtf_size_t index, const ScriptValue& value) {
-    if (is_settled_)
-      return;
-
-    DCHECK_LT(index, values_.size());
-    values_[index] = value;
-    if (--number_of_pending_promises_ > 0)
-      return;
-
-    is_settled_ = true;
-    resolver_->Resolve(values_);
-    values_.clear();
-  }
-
-  void OnRejected(const ScriptValue& value) {
-    if (is_settled_)
-      return;
-    is_settled_ = true;
-    resolver_->Reject(value);
-    values_.clear();
-  }
-
-  size_t number_of_pending_promises_;
-  Member<ScriptPromiseResolver<IDLSequence<IDLAny>>> resolver_;
-  bool is_settled_ = false;
-
-  // This is cleared when owners of this handler, that is, given promises are
-  // settled.
-  HeapVector<ScriptValue> values_;
-};
-
-}  // namespace
-
 ScriptPromiseUntyped::ScriptPromiseUntyped(v8::Isolate* isolate,
                                            v8::Local<v8::Promise> promise)
     : promise_(isolate, promise) {}
@@ -168,36 +51,46 @@ ScriptPromiseUntyped::ScriptPromiseUntyped(const ScriptPromiseUntyped& other) {
 
 ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
                                                  ScriptFunction* on_rejected) {
+  DCHECK(on_fulfilled || on_rejected);
+  ScriptState* script_state = on_fulfilled ? on_fulfilled->GetScriptState()
+                                           : on_rejected->GetScriptState();
+  return ScriptPromise<IDLAny>::FromV8Promise(
+      script_state->GetIsolate(),
+      ThenRaw(script_state, on_fulfilled, on_rejected));
+}
+
+v8::Local<v8::Promise> ScriptPromiseUntyped::ThenRaw(
+    ScriptState* script_state,
+    ScriptFunction* on_fulfilled,
+    ScriptFunction* on_rejected) const {
   CHECK(on_fulfilled || on_rejected);
   CHECK(!on_fulfilled || !on_rejected ||
         on_fulfilled->GetScriptState() == on_rejected->GetScriptState());
-  if (promise_.IsEmpty())
-    return EmptyPromise();
+  if (promise_.IsEmpty()) {
+    return v8::Local<v8::Promise>();
+  }
 
   v8::Local<v8::Promise> promise = V8Promise();
   v8::Local<v8::Promise> result_promise;
-  ScriptState* script_state = on_fulfilled ? on_fulfilled->GetScriptState()
-                                           : on_rejected->GetScriptState();
   if (!on_rejected) {
     if (!promise->Then(script_state->GetContext(), on_fulfilled->V8Function())
              .ToLocal(&result_promise)) {
-      return EmptyPromise();
+      return v8::Local<v8::Promise>();
     }
   } else if (!on_fulfilled) {
     if (!promise->Catch(script_state->GetContext(), on_rejected->V8Function())
              .ToLocal(&result_promise)) {
-      return EmptyPromise();
+      return v8::Local<v8::Promise>();
     }
   } else {
     if (!promise
              ->Then(script_state->GetContext(), on_fulfilled->V8Function(),
                     on_rejected->V8Function())
              .ToLocal(&result_promise)) {
-      return EmptyPromise();
+      return v8::Local<v8::Promise>();
     }
   }
-  return ScriptPromise<IDLAny>::FromV8Promise(script_state->GetIsolate(),
-                                              result_promise);
+  return result_promise;
 }
 
 ScriptPromiseUntyped ScriptPromiseUntyped::Reject(ScriptState* script_state,
@@ -239,12 +132,6 @@ void ScriptPromiseUntyped::MarkAsHandled() {
   if (promise_.IsEmpty())
     return;
   promise_.V8Value().As<v8::Promise>()->MarkAsHandled();
-}
-
-ScriptPromiseUntyped ScriptPromiseUntyped::All(
-    ScriptState* script_state,
-    const HeapVector<ScriptPromiseUntyped>& promises) {
-  return PromiseAllHandler::All(script_state, promises);
 }
 
 ScriptPromise<IDLUndefined> ToResolvedUndefinedPromise(

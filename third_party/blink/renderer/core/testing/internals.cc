@@ -3372,17 +3372,15 @@ void Internals::setShouldRevealPassword(Element* element,
 
 namespace {
 
-class AddOneFunction : public ScriptFunction::Callable {
+class AddOneFunction : public ThenCallable<IDLLong, AddOneFunction, IDLLong> {
  public:
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    v8::Local<v8::Value> v8_value = value.V8Value();
-    DCHECK(v8_value->IsNumber());
-    int32_t int_value =
-        static_cast<int32_t>(v8_value.As<v8::Integer>()->Value());
-    return ScriptValue(
-        script_state->GetIsolate(),
-        v8::Integer::New(script_state->GetIsolate(), int_value + 1));
-  }
+  int32_t React(ScriptState*, int32_t value) { return value + 1; }
+};
+
+class AddOneTypeMismatch
+    : public ThenCallable<IDLAny, AddOneTypeMismatch, IDLAny> {
+ public:
+  ScriptValue React(ScriptState*, ScriptValue value) { return value; }
 };
 
 }  // namespace
@@ -3399,10 +3397,11 @@ ScriptPromise<IDLAny> Internals::createRejectedPromise(
   return ScriptPromise<IDLAny>::Reject(script_state, value);
 }
 
-ScriptPromise<IDLAny> Internals::addOneToPromise(ScriptState* script_state,
-                                                 ScriptPromiseUntyped promise) {
-  return promise.Then(MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<AddOneFunction>()));
+ScriptPromise<IDLLong> Internals::addOneToPromise(
+    ScriptState* script_state,
+    ScriptPromise<IDLLong> promise) {
+  return promise.ThenTyped(script_state, MakeGarbageCollected<AddOneFunction>(),
+                           MakeGarbageCollected<AddOneTypeMismatch>());
 }
 
 ScriptPromise<IDLAny> Internals::promiseCheck(ScriptState* script_state,

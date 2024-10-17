@@ -35,7 +35,9 @@
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -49,7 +51,6 @@
 namespace blink {
 
 class DOMException;
-class ScriptFunction;
 
 template <typename IDLResolvedType>
 class ScriptPromise;
@@ -64,6 +65,83 @@ struct NativeValueTraits<IDLPromise<T>>
                                       ExceptionState&) {
     return ScriptPromise<T>::FromV8Value(isolate, std::move(value));
   }
+};
+
+// Defined here rather than in to_v8_traits.h to avoid a circular dependency.
+template <typename T>
+struct ToV8Traits<IDLPromise<T>> {
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      const ScriptPromise<T>& script_promise) {
+    DCHECK(!script_promise.IsEmpty());
+    return script_promise.V8Value();
+  }
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      v8::Local<v8::Promise> script_promise) {
+    return script_promise;
+  }
+};
+
+// Base class for passing in to ScriptPromise::ThenTyped()/React(), and being
+// notified of promise resolution. Handles v8->blink type conversions, and
+// converts type mismatches into rejections.
+// All subclasses must implement `React()`, taking a ScriptState*, and the
+// expected blink type (unless listening to an undefined promise, in which case
+// the second parameter is omitted).
+// `IDLType` must match ScriptPromise<IDLType>::Then()/React().
+// `Derived` is the name of your derived class.
+// `ThenReturnType` is the return type of your React() function. Only required
+// when calling `ThenTyped()`, and your React() handling must return a blink
+// type that ToV8Traits<> knows how to convert to `ThenReturnType`.
+template <typename IDLType,
+          typename Derived,
+          typename ThenReturnType = IDLUndefined>
+class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
+ public:
+  ~ThenCallable() override = default;
+
+  void SetTypingFailureCallable(ScriptFunction::Callable* callable) {
+    typing_failure_callable_ = callable;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ScriptFunction::Callable::Trace(visitor);
+    visitor->Trace(typing_failure_callable_);
+  }
+
+ private:
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    if constexpr (std::is_same_v<IDLType, IDLUndefined> ||
+                  std::is_same_v<IDLType, IDLSequence<IDLUndefined>>) {
+      static_cast<Derived*>(this)->React(script_state);
+      return ScriptValue();
+    } else {
+      v8::Isolate* isolate = script_state->GetIsolate();
+      v8::TryCatch try_catch(isolate);
+      auto&& blink_value = NativeValueTraits<IDLType>::NativeValue(
+          isolate, value.V8Value(), PassThroughException(isolate));
+      if (try_catch.HasCaught()) {
+        DCHECK(typing_failure_callable_);
+        return typing_failure_callable_->Call(
+            script_state, ScriptValue(isolate, try_catch.Exception()));
+      }
+      if constexpr (std::is_same_v<IDLUndefined, ThenReturnType>) {
+        static_cast<Derived*>(this)->React(script_state,
+                                           std::move(blink_value));
+        try_catch.ReThrow();
+        return ScriptValue();
+      } else {
+        v8::Local<v8::Value> return_value = ToV8Traits<ThenReturnType>::ToV8(
+            script_state, static_cast<Derived*>(this)->React(
+                              script_state, std::move(blink_value)));
+        try_catch.ReThrow();
+        return ScriptValue(script_state->GetIsolate(), return_value);
+      }
+    }
+  }
+
+  Member<ScriptFunction::Callable> typing_failure_callable_;
 };
 
 // ScriptPromise is the class for representing Promise values in C++
@@ -119,13 +197,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   static ScriptPromiseUntyped Reject(ScriptState*, const ScriptValue&);
   static ScriptPromiseUntyped Reject(ScriptState*, v8::Local<v8::Value>);
 
-  // Constructs and returns a ScriptPromiseUntyped to be resolved when all
-  // |promises| are resolved. If one of |promises| is rejected, the returned
-  // ScriptPromiseUntyped is rejected.
-  static ScriptPromiseUntyped All(
-      ScriptState*,
-      const HeapVector<ScriptPromiseUntyped>& promises);
-
   void Trace(Visitor* visitor) const { visitor->Trace(promise_); }
 
  protected:
@@ -134,6 +205,10 @@ class CORE_EXPORT ScriptPromiseUntyped {
 
   static v8::Local<v8::Promise> ResolveRaw(ScriptState*, v8::Local<v8::Value>);
   static v8::Local<v8::Promise> RejectRaw(ScriptState*, v8::Local<v8::Value>);
+
+  v8::Local<v8::Promise> ThenRaw(ScriptState*,
+                                 ScriptFunction* on_fulfilled,
+                                 ScriptFunction* on_rejected) const;
 
  private:
   ScriptValue promise_;
@@ -190,6 +265,34 @@ class ScriptPromise : public ScriptPromiseUntyped {
     }
   }
 
+  template <typename ReturnPromiseResolveType = IDLResolvedType,
+            typename ResolveClass,
+            typename RejectClass>
+  ScriptPromise<ReturnPromiseResolveType> ThenTyped(
+      ScriptState* script_state,
+      ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
+          on_fulfilled,
+      ThenCallable<IDLAny, RejectClass, IDLAny>* on_rejected) const {
+    on_fulfilled->SetTypingFailureCallable(on_rejected);
+    v8::Local<v8::Promise> v8_promise = ThenRaw(
+        script_state,
+        MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+        MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
+    return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
+        script_state->GetIsolate(), v8_promise);
+  }
+
+  template <typename ResolveClass, typename RejectClass>
+  void React(
+      ScriptState* script_state,
+      ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>* on_fulfilled,
+      ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
+    on_fulfilled->SetTypingFailureCallable(on_rejected);
+    ThenRaw(script_state,
+            MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+            MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
+  }
+
  private:
   template <typename IDLType>
   friend class ScriptPromiseResolver;
@@ -201,9 +304,14 @@ class ScriptPromise : public ScriptPromiseUntyped {
       : ScriptPromiseUntyped(isolate, promise) {}
 };
 
-// Defined in to_v8_traits.h due to circular dependency.
 template <typename IDLType, typename BlinkType>
-ScriptPromise<IDLType> ToResolvedPromise(ScriptState*, BlinkType value);
+ScriptPromise<IDLType> ToResolvedPromise(ScriptState* script_state,
+                                         BlinkType value) {
+  auto v8_value = ToV8Traits<IDLType>::ToV8(script_state, value);
+  return ScriptPromise<IDLType>(
+      script_state->GetIsolate(),
+      ScriptPromiseUntyped::ResolveRaw(script_state, v8_value));
+}
 
 CORE_EXPORT ScriptPromise<IDLUndefined> ToResolvedUndefinedPromise(
     ScriptState*);
