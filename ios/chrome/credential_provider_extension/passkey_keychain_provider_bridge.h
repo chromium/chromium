@@ -13,6 +13,13 @@
 // PasskeyKeychainProvider.
 @interface PasskeyKeychainProviderBridge : NSObject
 
+// Default initializer. `enableLogging` indicates whether metrics logging should
+// be enabled in the Credential Provider Extension.
+- (instancetype)initWithEnableLogging:(BOOL)enableLogging
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // Fetches the Security Domain Secret and calls the completion block
 // with the Security Domain Secret as the input argument.
 - (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
@@ -20,7 +27,6 @@
                         (UINavigationController*)navigationController
                                  purpose:(PasskeyKeychainProvider::
                                               ReauthenticatePurpose)purpose
-                           enableLogging:(BOOL)enableLogging
                               completion:(FetchKeyCompletionBlock)completion;
 
 // Marks the security domain secret vault keys as stale and calls the completion

@@ -24,9 +24,11 @@ NSData* GetSecurityDomainSecret(
   std::unique_ptr<PasskeyKeychainProvider> _passkeyKeychainProvider;
 }
 
-- (instancetype)init {
+- (instancetype)initWithEnableLogging:(BOOL)enableLogging {
   self = [super init];
   if (self) {
+    // TODO(crbug.com/370513825): Pass `enableLogging` to the
+    // PasskeyKeychainProvider's constructor.
     _passkeyKeychainProvider = std::make_unique<PasskeyKeychainProvider>();
   }
   return self;
@@ -43,7 +45,6 @@ NSData* GetSecurityDomainSecret(
                         (UINavigationController*)navigationController
                                  purpose:(PasskeyKeychainProvider::
                                               ReauthenticatePurpose)purpose
-                           enableLogging:(BOOL)enableLogging
                               completion:(FetchKeyCompletionBlock)completion {
   _passkeyKeychainProvider->FetchKeys(
       gaia, navigationController, purpose,

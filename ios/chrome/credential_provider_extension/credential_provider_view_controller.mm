@@ -287,8 +287,8 @@ UIColor* BackgroundColor() {
 
 - (PasskeyKeychainProviderBridge*)passkeyKeychainProviderBridge {
   if (!_passkeyKeychainProviderBridge) {
-    _passkeyKeychainProviderBridge =
-        [[PasskeyKeychainProviderBridge alloc] init];
+    _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
+        initWithEnableLogging:[self metricsAreEnabled]];
   }
   return _passkeyKeychainProviderBridge;
 }
@@ -613,7 +613,6 @@ UIColor* BackgroundColor() {
       fetchSecurityDomainSecretForGaia:gaia
                   navigationController:nil
                                purpose:purpose
-                         enableLogging:[self metricsAreEnabled]
                             completion:completion];
 }
 
