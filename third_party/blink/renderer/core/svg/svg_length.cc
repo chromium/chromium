@@ -344,9 +344,7 @@ void SVGLength::SetInitial(unsigned initial_value) {
 }
 
 bool SVGLength::IsNegativeNumericLiteral() const {
-  if (!value_->IsNumericLiteralValue())
-    return false;
-  return value_->GetDoubleValue() < 0;
+  return value_->IsNegative() == CSSPrimitiveValue::BoolStatus::kTrue;
 }
 
 }  // namespace blink

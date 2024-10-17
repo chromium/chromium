@@ -1,1 +1,3 @@
+CONSOLE ERROR: Error: <rect> attribute rx: A negative value is not valid. ("calc(-50)")
+CONSOLE ERROR: Error: <rect> attribute ry: A negative value is not valid. ("calc(-50)")
 CONSOLE ERROR: Error: <rect> attribute ry: A negative value is not valid. ("-100")
