@@ -69,6 +69,9 @@ constexpr int kChromaFormatIDC = 1;
 constexpr uint8_t kMinSupportedH264TemporalLayers = 2;
 constexpr uint8_t kMaxSupportedH264TemporalLayers = 3;
 
+// Maximum number of temporal layers supported by software bitrate controller.
+constexpr uint8_t kMaxSupportedH264TemporalLayersBySWBRC = 2;
+
 template <typename VAEncMiscParam>
 VAEncMiscParam& AllocateMiscParameterBuffer(
     std::vector<uint8_t>& misc_buffer,
@@ -482,7 +485,6 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
 
 bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
     const VideoEncodeAccelerator::Config& config) {
-  // TODO(b/362266573): Use the software bitrate controller for L1T2.
   uint8_t num_temporal_layers = 1;
   if (config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
@@ -494,7 +496,8 @@ bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
 #else
       false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return num_temporal_layers == 1 && is_sw_bitrate_controller_enabled;
+  return num_temporal_layers <= kMaxSupportedH264TemporalLayersBySWBRC &&
+         is_sw_bitrate_controller_enabled;
 }
 
 BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
