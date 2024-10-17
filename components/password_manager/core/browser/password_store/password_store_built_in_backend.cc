@@ -395,7 +395,7 @@ void PasswordStoreBuiltInBackend::DisableAutoSignInForOriginsAsync(
 }
 
 SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
-  return this;
+  return is_database_initialized_successfully_ ? this : nullptr;
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
