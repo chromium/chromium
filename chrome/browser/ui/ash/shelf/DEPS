@@ -61,6 +61,7 @@ include_rules = [
   "+chrome/browser/ui/app_icon_loader.h",
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/app_icon_color_cache",
+  "+chrome/browser/ui/ash/default_pinned_apps",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/session",

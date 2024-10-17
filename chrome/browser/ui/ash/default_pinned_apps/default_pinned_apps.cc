@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/default_pinned_apps/default_pinned_apps.h"
+#include "chrome/browser/ui/ash/default_pinned_apps/default_pinned_apps.h"
 
 #include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_switches.h"
