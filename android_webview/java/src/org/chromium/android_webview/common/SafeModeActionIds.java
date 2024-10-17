@@ -11,6 +11,7 @@ package org.chromium.android_webview.common;
  * <p>Note: These IDs should not be reused in other locations than the owning SafeModeAction.
  */
 public class SafeModeActionIds {
+    // LINT.IfChange(SafeModeActionIds)
     public static final String DELETE_VARIATIONS_SEED = "delete_variations_seed";
     public static final String FAST_VARIATIONS_SEED = "fast_variations_seed";
     public static final String NOOP = "noop";
@@ -19,6 +20,5 @@ public class SafeModeActionIds {
     public static final String DISABLE_AW_SAFE_BROWSING = "disable_safe_browsing";
     public static final String RESET_COMPONENT_UPDATER = "reset_component_updater";
     public static final String DISABLE_SUPERVISION_CHECKS = "disable_supervision_checks";
-    // Note: if you add more SafeMode ID strings, then please also update createLoggingMap() inside
-    // SafeModeController.java.
+    // LINT.ThenChange(SafeModeController.java:SafeModeActionIds)
 }

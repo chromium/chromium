@@ -64,6 +64,7 @@ public class SafeModeController {
         int COUNT = 3;
     }
 
+    // LINT.IfChange(SafeModeActionIds)
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
@@ -116,11 +117,14 @@ public class SafeModeController {
         return map;
     }
 
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SafeModeActionIds)
+
     /**
      * Sets the singleton instance for testing. Not thread safe, must only be called from single
      * threaded tests.
+     *
      * @param controller The SafeModeController object to return from getInstance(). Passing in a
-     * null value resets this.
+     *     null value resets this.
      */
     public static void setInstanceForTests(SafeModeController controller) {
         sInstanceForTests = controller;

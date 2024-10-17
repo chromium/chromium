@@ -381,6 +381,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="AndroidWebViewSafeModeActionName">
+<!-- LINT.IfChange(SafeModeActionIds) -->
+
   <int value="0" label="Delete Variations Seed"/>
   <int value="1" label="Fast Variations Seed"/>
   <int value="2" label="Noop"/>
@@ -389,6 +391,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Disable Origin Trials"/>
   <int value="6" label="Disable Safe Browsing"/>
   <int value="7" label="Reset Component Updater"/>
+  <int value="8" label="Disable Supervision Checks"/>
+<!-- LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/common/SafeModeActionIds.java:SafeModeActionIds) -->
+
 </enum>
 
 <enum name="AndroidWebViewSafeModeResult">
