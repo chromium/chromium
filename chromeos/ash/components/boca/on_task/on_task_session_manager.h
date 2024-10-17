@@ -23,6 +23,8 @@
 
 namespace ash::boca {
 
+class OnTaskSessionManagerTest;
+
 // Session manager implementation that is primarily used for configuring and
 // managing OnTask components and services throughout a Boca session.
 class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
@@ -39,9 +41,13 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
                         const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
+  void OnAppReloaded() override;
+
   ActiveTabTracker* active_tab_tracker() { return &active_tab_tracker_; }
 
  private:
+  friend class OnTaskSessionManagerTest;
+
   // Helper class that is used to launch the Boca system web app as well as
   // manage all interactions with the Boca system web app while it is being
   // spawned.

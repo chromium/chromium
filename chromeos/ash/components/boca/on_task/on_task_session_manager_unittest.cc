@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Sequence;
@@ -64,6 +66,10 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (SessionID window_id,
                const base::flat_set<SessionID>& tab_ids_to_remove),
               (override));
+  MOCK_METHOD(void,
+              PrepareSystemWebAppWindowForOnTask,
+              (SessionID window_id),
+              (override));
 };
 
 // Mock implementation of the `OnTaskExtensionsManager`.
@@ -76,6 +82,7 @@ class OnTaskExtensionsManagerMock : public OnTaskExtensionsManager {
 
   MOCK_METHOD(void, ReEnableExtensions, (), (override));
 };
+}  // namespace
 
 class OnTaskSessionManagerTest : public ::testing::Test {
  protected:
@@ -88,6 +95,17 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     extensions_manager_ptr_ = extensions_manager.get();
     session_manager_ = std::make_unique<OnTaskSessionManager>(
         std::move(system_web_app_manager), std::move(extensions_manager));
+  }
+
+  base::flat_map<GURL, base::flat_set<SessionID>>* provider_url_tab_ids_map() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
+    return &session_manager_->provider_url_tab_ids_map_;
+  }
+
+  base::flat_map<GURL, OnTaskBlocklist::RestrictionLevel>*
+  provider_url_restriction_level_map() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
+    return &session_manager_->provider_url_restriction_level_map_;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -499,5 +517,66 @@ TEST_F(OnTaskSessionManagerTest, ShouldUpdateRestrictionsToTabOnBundleUpdated) {
   session_manager_->OnBundleUpdated(bundle_2);
 }
 
-}  // namespace
+TEST_F(OnTaskSessionManagerTest, OnAppReloadWithNoActiveWindow) {
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(SessionID::InvalidValue()));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(_))
+      .Times(0);
+  session_manager_->OnAppReloaded();
+}
+
+TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
+  // Inject tab ids and nav restrictions tracked by the previous session for
+  // testing purposes. It should fall back to
+  // `OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation` if there is no
+  // nav restriction being tracked.
+  const SessionID kOldTabId1 = SessionID::NewUnique();
+  const SessionID kOldTabId2 = SessionID::NewUnique();
+  (*provider_url_tab_ids_map())[GURL(kTestUrl1)].insert(kOldTabId1);
+  (*provider_url_restriction_level_map())[GURL(kTestUrl1)] =
+      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation;
+  (*provider_url_tab_ids_map())[GURL(kTestUrl2)].insert(kOldTabId2);
+
+  // Attempt an app reload and verify tabs are restored with newer tab ids.
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId1 = SessionID::NewUnique();
+  const SessionID kTabId2 = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetWindowTrackerForSystemWebAppWindow(
+                  kWindowId, session_manager_->active_tab_tracker()))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl1),
+                  OnTaskBlocklist::RestrictionLevel::kLimitedNavigation))
+      .InSequence(s)
+      .WillOnce(Return(kTabId1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl2),
+                  OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation))
+      .InSequence(s)
+      .WillOnce(Return(kTabId2));
+  session_manager_->OnAppReloaded();
+  ASSERT_TRUE(
+      testing::Mock::VerifyAndClearExpectations(system_web_app_manager_ptr_));
+  EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl1)],
+              ElementsAre(kTabId1));
+  EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl1)],
+            OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+  EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl2)],
+              ElementsAre(kTabId2));
+  EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl2)],
+            OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+}
+
 }  // namespace ash::boca

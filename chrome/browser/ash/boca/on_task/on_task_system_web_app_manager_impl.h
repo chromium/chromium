@@ -46,6 +46,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   void RemoveTabsWithTabIds(
       SessionID window_id,
       const base::flat_set<SessionID>& tab_ids_to_remove) override;
+  void PrepareSystemWebAppWindowForOnTask(SessionID window_id) override;
 
   void SetWindowTrackerForTesting(LockedSessionWindowTracker* window_tracker);
 

@@ -170,6 +170,37 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void OnTaskSessionManager::OnAppReloaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const SessionID window_id =
+      system_web_app_manager_->GetActiveSystemWebAppWindowID();
+  if (!window_id.is_valid()) {
+    // No active window found, so we return. We should rarely get here.
+    return;
+  }
+  system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(window_id);
+  system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
+      window_id, &active_tab_tracker_);
+
+  // Reopen only content that was originally shared by the provider. We also
+  // clear stale tab ids that were tracked with the previous instance.
+  // TODO: Restore nav restrictions applied with the previous instance.
+  for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+    tab_ids.clear();
+    OnTaskBlocklist::RestrictionLevel restriction_level = OnTaskBlocklist::
+        RestrictionLevel::kSameDomainNavigation;  // Default restriction.
+    if (provider_url_restriction_level_map_.contains(provider_sent_url)) {
+      restriction_level =
+          provider_url_restriction_level_map_[provider_sent_url];
+    }
+    system_web_app_launch_helper_->AddTab(
+        provider_sent_url, restriction_level,
+        base::BindOnce(&OnTaskSessionManager::OnTabAdded,
+                       weak_ptr_factory_.GetWeakPtr(), provider_sent_url,
+                       restriction_level));
+  }
+}
+
 OnTaskSessionManager::SystemWebAppLaunchHelper::SystemWebAppLaunchHelper(
     OnTaskSystemWebAppManager* system_web_app_manager,
     ActiveTabTracker* active_tab_tracker)

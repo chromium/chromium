@@ -58,6 +58,11 @@ class OnTaskSystemWebAppManager {
       SessionID window_id,
       const base::flat_set<SessionID>& tab_ids_to_remove) = 0;
 
+  // Sets up the specified Boca SWA window for OnTask. This may remove all
+  // pre-existing content tabs except for the homepage one, normally required
+  // when the app instance was restored manually.
+  virtual void PrepareSystemWebAppWindowForOnTask(SessionID window_id) = 0;
+
  protected:
   OnTaskSystemWebAppManager() = default;
 };

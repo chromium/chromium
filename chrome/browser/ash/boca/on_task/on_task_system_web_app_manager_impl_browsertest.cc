@@ -250,5 +250,29 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_NE(web_contents_2->GetLastCommittedURL(), GURL(kTestUrl));
 }
 
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       PreparingSystemWebAppWindow) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+
+  // Create tab so we can verify it gets cleaned up with window prep.
+  system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->session_id(), GURL(kTestUrl),
+      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+
+  // Verify that the tab is cleaned up after window prep.
+  system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
+      boca_app_browser->session_id());
+  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+}
+
 }  // namespace
 }  // namespace ash::boca

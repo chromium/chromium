@@ -67,15 +67,9 @@ void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
              base::WeakPtr<OnTaskSystemWebAppManagerImpl> instance,
              apps::LaunchResult&& launch_result) {
             if (instance) {
-              // Configure the browser window for OnTask. This is required to
-              // ensure downstream components (especially UI controls) are setup
-              // for locked mode transitions.
               const SessionID active_window_id =
                   instance->GetActiveSystemWebAppWindowID();
-              Browser* const browser = GetBrowserWindowWithID(active_window_id);
-              if (browser) {
-                browser->SetLockedForOnTask(true);
-              }
+              instance->PrepareSystemWebAppWindowForOnTask(active_window_id);
             }
             std::move(callback).Run(launch_result.state ==
                                     apps::LaunchResult::State::kSuccess);
@@ -198,6 +192,30 @@ void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
     }
   }
   window_tracker->set_can_start_navigation_throttle(true);
+}
+
+void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
+    SessionID window_id) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+
+  // Configure the browser window for OnTask. This is required to ensure
+  // downstream components (especially UI controls) are setup for locked mode
+  // transitions.
+  browser->SetLockedForOnTask(true);
+
+  // Remove all tabs with pre-existing content. This is to de-dupe content and
+  // ensure that the tabs are set up for locked mode.
+  base::flat_set<SessionID> tab_ids_to_remove;
+  for (int idx = browser->tab_strip_model()->count() - 1; idx > 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+    const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+    tab_ids_to_remove.insert(tab_id);
+  }
+  RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
 }
 
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(
