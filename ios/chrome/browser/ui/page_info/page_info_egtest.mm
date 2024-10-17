@@ -547,7 +547,15 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 // Tests that the Last Visited section is displayed when there exists a previous
 // visit, and also, it tests that the correct timestamp of the last visit is
 // presented.
-- (void)testLastVisitedSectionDisplaysYesterday {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLastVisitedSectionDisplaysYesterday \
+  DISABLED_testLastVisitedSectionDisplaysYesterday
+#else
+#define MAYBE_testLastVisitedSectionDisplaysYesterday \
+  testLastVisitedSectionDisplaysYesterday
+#endif
+- (void)MAYBE_testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on `URL`.
@@ -573,7 +581,13 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 }
 
 // Tests that tapping on the Last Visited row reveals the Last Visited subpage.
-- (void)testLastVisitedSubpage {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLastVisitedSubpage DISABLED_testLastVisitedSubpage
+#else
+#define MAYBE_testLastVisitedSubpage testLastVisitedSubpage
+#endif
+- (void)MAYBE_testLastVisitedSubpage {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -611,7 +625,15 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 // Tests that tapping on the show full history button leads to the history page.
 // Additionally, it tests that dismissing full history reveals back the Last
 // Visited subpage.
-- (void)testLastVisitedSubpageOpensFullHistory {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLastVisitedSubpageOpensFullHistory \
+  DISABLED_testLastVisitedSubpageOpensFullHistory
+#else
+#define MAYBE_testLastVisitedSubpageOpensFullHistory \
+  testLastVisitedSubpageOpensFullHistory
+#endif
+- (void)MAYBE_testLastVisitedSubpageOpensFullHistory {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -664,7 +686,15 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 // Tests that tapping on a history entry from the Last Visited subpage dismisses
 // Page Info (which presents the Last Visited subpage) and opens the
 // corresponding URL.
-- (void)testOpeningURLFromLastVisitedDismissesPageInfo {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo \
+  DISABLED_testOpeningURLFromLastVisitedDismissesPageInfo
+#else
+#define MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo \
+  testOpeningURLFromLastVisitedDismissesPageInfo
+#endif
+- (void)MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -704,7 +734,15 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo \
+  DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo
+#else
+#define MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo \
+  testOpeningURLFromFullHistoryDismissesPageInfo
+#endif
+- (void)MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -749,7 +787,13 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry from the Last Visited subpage.
-- (void)testContextMenuOpenInNewTab {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuOpenInNewTab DISABLED_testContextMenuOpenInNewTab
+#else
+#define MAYBE_testContextMenuOpenInNewTab testContextMenuOpenInNewTab
+#endif
+- (void)MAYBE_testContextMenuOpenInNewTab {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -847,7 +891,15 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry from the Last Visited subpage.
-- (void)testContextMenuOpenInNewIncognitoTab {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuOpenInNewIncognitoTab \
+  DISABLED_testContextMenuOpenInNewIncognitoTab
+#else
+#define MAYBE_testContextMenuOpenInNewIncognitoTab \
+  testContextMenuOpenInNewIncognitoTab
+#endif
+- (void)MAYBE_testContextMenuOpenInNewIncognitoTab {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -894,7 +946,13 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 
 // Tests display and selection of 'Copy URL' in a context menu on a history
 // entry from the Last Visited subpage.
-- (void)testContextMenuCopy {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuCopy DISABLED_testContextMenuCopy
+#else
+#define MAYBE_testContextMenuCopy testContextMenuCopy
+#endif
+- (void)MAYBE_testContextMenuCopy {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -944,7 +1002,13 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
 
 // Tests display and selection of "Share" in the context menu for a history
 // entry from the Last Visited subpage.
-- (void)testContextMenuShare {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuShare DISABLED_testContextMenuShare
+#else
+#define MAYBE_testContextMenuShare testContextMenuShare
+#endif
+- (void)MAYBE_testContextMenuShare {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
