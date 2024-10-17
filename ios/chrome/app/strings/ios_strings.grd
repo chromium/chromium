@@ -4726,7 +4726,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Tabs
       </message>
       <message name="IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON" desc="Text for the Allow button for the Send Tab to Self promo Magic Stack module.">
-        Allow Tabs Notifications
+        Allow Tabs Notifications…
       </message>
       <message name="IDS_IOS_SEND_TAB_PROMO_FEATURE_NAME_FOR_SNACKBAR" desc="Send Tab to Self feature name for snackbar message that is displayed after enabling Send Tab push notifications from the Magic Stack module.">
         Received Tabs
@@ -4735,7 +4735,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Open tabs received from your other devices from the lock screen.
       </message>
       <message name="IDS_IOS_SEND_TAB_PROMO_TITLE" desc="Title for the Send Tab to Self promo Magic Stack module.">
-        Get Tabs Notifications…
+        Get Tabs Notifications
       </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to the user to inform that the tab is being sent to the target device. [Length: 35em]" meaning="The is being sent to the target device. [Length: 35em]">
         Sending to <ph name="DEVICE_NAME">$1<ex>IPhone</ex></ph>…
