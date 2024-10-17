@@ -217,6 +217,11 @@ const autofill::FormFieldData* FindUsernameInPredictions(
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max);
 
+// Returns the heuristics predictions for `renderer_form`.
+autofill::PasswordFormClassification ClassifyAsPasswordForm(
+    const autofill::FormData& renderer_form,
+    const FormPredictions& form_predictions);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_FORM_DATA_PARSER_H_

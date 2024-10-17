@@ -1325,4 +1325,26 @@ const FormFieldData* FindUsernameInPredictions(
   return nullptr;
 }
 
+autofill::PasswordFormClassification ClassifyAsPasswordForm(
+    const autofill::FormData& renderer_form,
+    const FormPredictions& form_predictions) {
+  FormDataParser parser;
+  parser.set_predictions(form_predictions);
+  // The parser can use stored usernames to identify a filled username field by
+  // the value it contains. Here it remains empty.
+  std::unique_ptr<PasswordForm> pw_form =
+      parser.Parse(renderer_form, FormDataParser::Mode::kFilling,
+                   /*stored_usernames=*/{});
+  if (!pw_form) {
+    return {};
+  }
+  autofill::PasswordFormClassification result{
+      .type = pw_form->GetPasswordFormType()};
+  if (!pw_form->username_element_renderer_id.is_null()) {
+    result.username_field = autofill::FieldGlobalId(
+        renderer_form.host_frame(), pw_form->username_element_renderer_id);
+  }
+  return result;
+}
+
 }  // namespace password_manager

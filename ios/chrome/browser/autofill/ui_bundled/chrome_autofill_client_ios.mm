@@ -455,26 +455,12 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     return {};
   }
 
-  password_manager::FormDataParser parser;
   // The driver id is irrelevant here because it would only be used by password
   // manager logic that handles the `PasswordForm` returned by the parser.
-  parser.set_predictions(password_manager::ConvertToFormPredictions(
-      /*driver_id=*/0, *renderer_form, form_and_predictions.predictions));
-
-  // The parser can use stored usernames to identify a filled username field by
-  // the value it contains. Here it remains empty.
-  std::unique_ptr<password_manager::PasswordForm> pw_form = parser.Parse(
-      *renderer_form, password_manager::FormDataParser::Mode::kFilling,
-      /*stored_usernames=*/{});
-  if (!pw_form) {
-    return {};
-  }
-  PasswordFormClassification result{.type = pw_form->GetPasswordFormType()};
-  if (!pw_form->username_element_renderer_id.is_null()) {
-    result.username_field = FieldGlobalId(
-        field_id.frame_token, pw_form->username_element_renderer_id);
-  }
-  return result;
+  return password_manager::ClassifyAsPasswordForm(
+      *renderer_form,
+      password_manager::ConvertToFormPredictions(
+          /*driver_id=*/0, *renderer_form, form_and_predictions.predictions));
 }
 
 AutofillSaveCardInfoBarDelegateIOS*
