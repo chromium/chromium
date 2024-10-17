@@ -179,6 +179,10 @@ struct PageLoadTiming {
   // be established.
   mojo_base.mojom.TimeDelta? connect_start;
 
+  // Time relative to navigation_start that the network connection was
+  // established.
+  mojo_base.mojom.TimeDelta? connect_end;
+
   // Time relative to navigation_start that the first byte of the response is
   // received.
   mojo_base.mojom.TimeDelta? response_start;

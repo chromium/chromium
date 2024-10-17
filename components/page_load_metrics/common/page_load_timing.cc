@@ -11,8 +11,8 @@ namespace page_load_metrics {
 mojom::PageLoadTimingPtr CreatePageLoadTiming() {
   return mojom::PageLoadTiming::New(
       base::Time(), std::optional<base::TimeDelta>(),
-      std::optional<base::TimeDelta>(), mojom::DocumentTiming::New(),
-      mojom::InteractiveTiming::New(),
+      std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
+      mojom::DocumentTiming::New(), mojom::InteractiveTiming::New(),
       mojom::PaintTiming::New(
           std::nullopt, std::nullopt, std::nullopt, std::nullopt,
           CreateLargestContentfulPaintTiming(),
@@ -74,7 +74,7 @@ bool IsEmpty(const page_load_metrics::mojom::DomainLookupTiming& timing) {
 
 bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
   return timing.navigation_start.is_null() && !timing.connect_start &&
-         !timing.response_start &&
+         !timing.connect_end && !timing.response_start &&
          (!timing.document_timing ||
           page_load_metrics::IsEmpty(*timing.document_timing)) &&
          (!timing.interactive_timing ||
