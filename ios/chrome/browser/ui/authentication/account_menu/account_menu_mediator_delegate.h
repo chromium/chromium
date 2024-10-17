@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 
 @class AccountMenuMediator;
+@class AuthenticationFlow;
 @protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
@@ -22,20 +23,21 @@
 // show a spinner instead.
 - (void)mediatorWantsToDismissTheView:(AccountMenuMediator*)mediator;
 
-// Start managed account switch.
-// `viewWillBeDismissedAfterSignout`: Whether we expect the NTP to be reloaded
-// after sign out, causing the account menu to be closed.
-// `userDecisionCompletion`: Callback when the user can’t cancel anymore.
-- (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
-                               newIdentity:(id<SystemIdentity>)newIdentity
-           viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
-                    userDecisionCompletion:(void (^)())userDecisionCompletion
-                          signInCompletion:(ShowSigninCommandCompletionCallback)
-                                               signInCompletion;
+// Starts the sign-in flow. Then call `completion`, with a parameter stating
+// whether the the sign-out was done.
+- (AuthenticationFlow*)
+    triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
+                         completion:
+                             (signin_ui::SigninCompletionCallback)completion;
+
+// Displays the identity snackbar with `systemIdentity`.
+- (void)triggerAccountSwitchSnackbarWithIdentity:
+    (id<SystemIdentity>)systemIdentity;
 
 // Sign out, display a toast, and call `callback` with argument stating whether
 // it’s a success.
 - (void)signOutFromTargetRect:(CGRect)targetRect
+                    forSwitch:(BOOL)forSwith
                      callback:(void (^)(BOOL))callback;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in

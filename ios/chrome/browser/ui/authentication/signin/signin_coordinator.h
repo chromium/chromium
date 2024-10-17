@@ -181,6 +181,11 @@ class PrefRegistrySyncable;
                                                                     PromoAction)
                                                                    promoAction;
 
+// Returns a coordinator to switch account.
++ (instancetype)accountMenuCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                     browser:(Browser*)browser;
+
 // Interrupts the sign-in flow.
 // `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to
 // be called before `completion()`.

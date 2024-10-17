@@ -144,7 +144,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/ui/authentication/signin/account_switch/account_switch_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
@@ -1853,27 +1853,21 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:command.callback];
 }
 
-- (void)
-    switchAccountWithBaseViewController:(UIViewController*)baseViewController
-                            newIdentity:(id<SystemIdentity>)newIdentity
-                                   rect:(CGRect)rect
-                         rectAnchorView:(UIView*)rectAnchorView
-        viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
-                 userDecisionCompletion:(void (^)())userDecisionCompletion
-                       signInCompletion:(ShowSigninCommandCompletionCallback)
-                                            signInCompletion {
-  UIViewController* mainViewController = viewWillBeDismissedAfterSignout
-                                             ? self.mainInterface.viewController
-                                             : baseViewController;
-  self.signinCoordinator = [[AccountSwitchCoordinator alloc]
-      initWithBaseViewController:baseViewController
-                         browser:self.mainInterface.browser
-                     newIdentity:newIdentity
-              mainViewController:mainViewController
-                            rect:rect
-          userDecisionCompletion:(void (^)())userDecisionCompletion
-                  rectAnchorView:rectAnchorView];
-  [self startSigninCoordinatorWithCompletion:signInCompletion];
+- (void)showAccountMenuWithAnchorView:(UIView*)anchorView {
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  Browser* browser = self.mainInterface.browser;
+  UIViewController* baseViewController = self.mainInterface.viewController;
+  AccountMenuCoordinator* accountMenuCoordinator =
+      [[AccountMenuCoordinator alloc]
+          initWithBaseViewController:baseViewController
+                             browser:browser];
+  accountMenuCoordinator.anchorView = anchorView;
+  self.signinCoordinator = accountMenuCoordinator;
+  // TODO(crbug.com/336719423): Record signin metrics based on the
+  // selected action from the account switcher.
+  [self startSigninCoordinatorWithCompletion:nil];
 }
 
 - (void)

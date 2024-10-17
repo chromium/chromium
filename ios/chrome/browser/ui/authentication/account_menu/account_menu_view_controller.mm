@@ -135,7 +135,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
   CGFloat height =
       [self.tableView
-          systemLayoutSizeFittingSize:self.popoverPresentationController
+          systemLayoutSizeFittingSize:self.navigationController
+                                          .popoverPresentationController
                                           .containerView.bounds.size]
           .height;
   self.preferredContentSize = CGSize(self.preferredContentSize.width, height);

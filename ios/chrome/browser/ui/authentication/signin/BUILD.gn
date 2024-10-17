@@ -62,6 +62,7 @@ source_set("signin_impl") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication/account_menu",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin",

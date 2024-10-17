@@ -110,8 +110,6 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
@@ -133,8 +131,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
-                                     AuthenticationServiceObserving,
+@interface NewTabPageCoordinator () <AuthenticationServiceObserving,
                                      BooleanObserver,
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedManageDelegate,
@@ -277,8 +274,6 @@
 @implementation NewTabPageCoordinator {
   // Coordinator in charge of handling sharing use cases.
   SharingCoordinator* _sharingCoordinator;
-  // Coordinator in charge of fast account menu.
-  AccountMenuCoordinator* _accountMenuCoordinator;
   // Coordinator for presenting the Home customization menu.
   HomeCustomizationCoordinator* _customizationCoordinator;
   // Coordinator for the tab group indicator.
@@ -468,8 +463,6 @@
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
 
-  [self stopAccountMenuCoordinator];
-
   [_fakeboxLensIconBubblePresenter dismissAnimated:NO];
 
   self.started = NO;
@@ -611,10 +604,6 @@
   }
 
   [self presentLensIconBubbleNow];
-}
-
-- (void)dismissAccountMenu {
-  [self stopAccountMenuCoordinator];
 }
 
 #pragma mark - Setters
@@ -918,16 +907,7 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-      if (!_accountMenuCoordinator) {
-        _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
-            initWithBaseViewController:self.baseViewController
-                               browser:self.browser];
-        _accountMenuCoordinator.delegate = self;
-        _accountMenuCoordinator.anchorView = identityDisc;
-        // TODO(crbug.com/336719423): Record signin metrics based on the
-        // selected action from the account switcher.
-        [_accountMenuCoordinator start];
-      }
+      [handler showAccountMenuWithAnchorView:identityDisc];
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }
@@ -1592,13 +1572,6 @@
 
 #pragma mark - Private
 
-// Stops the account switcher.
-- (void)stopAccountMenuCoordinator {
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator.delegate = nil;
-  _accountMenuCoordinator = nil;
-}
-
 // Updates the feed visibility or content based on the supervision state
 // of the account defined in `value`.
 - (void)updateFeedWithIsSupervisedUser:(BOOL)value {
@@ -1953,13 +1926,6 @@
   [presenter presentInViewController:self.NTPViewController
                          anchorPoint:anchorPoint];
   _fakeboxLensIconBubblePresenter = presenter;
-}
-
-#pragma mark - AccountMenuCoordinatorDelegate
-
-- (void)acountMenuCoordinatorShouldStop:(AccountMenuCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _accountMenuCoordinator);
-  [self stopAccountMenuCoordinator];
 }
 
 #pragma mark - HomeCustomizationDelegate
