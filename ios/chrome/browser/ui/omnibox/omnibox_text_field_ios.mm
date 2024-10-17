@@ -119,6 +119,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
              object:nil];
 
     [self pasteboardDidChange:nil];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      [self
+          registerForTraitChanges:(traits)
+                       withAction:@selector(updateTextProperitesOnTraitChange)];
+    }
   }
   return self;
 }
@@ -479,14 +487,16 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 #pragma mark - UITraitCollection
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  // Reset the fonts to the appropriate ones in this size class.
-  [self setFont:self.currentFont];
-  // Reset the attributed text to apply the new font.
-  [self setAttributedText:self.attributedText];
+  [self updateTextProperitesOnTraitChange];
 }
+#endif
 
 #pragma mark - UIGestureRecognizerDelegate
 
@@ -1049,6 +1059,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)pasteboardDidChangeCallback:(UIPasteboard*)pasteboard {
   _pasteboardHasStrings = pasteboard.hasStrings;
+}
+
+// Resets Omnibox's the font and attributed text when a UITrait is modified.
+- (void)updateTextProperitesOnTraitChange {
+  // Reset the fonts to the appropriate ones in this size class.
+  [self setFont:self.currentFont];
+  // Reset the attributed text to apply the new font.
+  [self setAttributedText:self.attributedText];
 }
 
 @end
