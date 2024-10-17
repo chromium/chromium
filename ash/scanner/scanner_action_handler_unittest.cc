@@ -175,6 +175,68 @@ TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
           Property("query_piece", &GURL::query_piece, "givenname=L%C3%A9a")))));
 }
 
+TEST(ScannerActionToCommandTest, NewContactWithFamilyName) {
+  manta::proto::NewContactAction action;
+  action.set_family_name("François");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece,
+                   "familyname=Fran%C3%A7ois")))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithEmail) {
+  manta::proto::NewContactAction action;
+  action.set_phone("afrancois@example.com");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece,
+                   "phone=afrancois%40example.com")))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithPhoneNumber) {
+  manta::proto::NewContactAction action;
+  action.set_phone("+61400000000");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece,
+                   "phone=%2B61400000000")))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
+  manta::proto::NewContactAction action;
+  action.set_given_name("André");
+  action.set_family_name("François");
+  action.set_email("afrancois@example.com");
+  action.set_phone("+61400000000");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  EXPECT_THAT(
+      command,
+      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece,
+                   "givenname=Andr%C3%A9"
+                   "&familyname=Fran%C3%A7ois"
+                   "&email=afrancois%40example.com"
+                   "&phone=%2B61400000000")))));
+}
+
 TEST(ScannerActionToCommandTest, NewGoogleDoc) {
   ScannerCommand command = ScannerActionToCommand(
       NewGoogleDocAction("Doc Title", "<span>Contents</span>"));

@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
@@ -28,6 +29,8 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/drive/drive_api_util.h"
@@ -84,15 +87,41 @@ GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
 }
 
 GURL GetContactUrl(const manta::proto::NewContactAction& contact) {
-  std::string query = GetGoogleContactsNewUrl().query();
-  CHECK(query.empty());
+  CHECK(GetGoogleContactsNewUrl().query_piece().empty());
+
+  // Unlike the calendar event URL, the new contact URL template does not have a
+  // query.
+  // Because of this, we can't always prepend a '&' to every query parameter -
+  // only the query parameters after the first.
+  // Use `base::JoinString` to simplify this logic.
+  std::vector<std::string> query_params;
   if (!contact.given_name().empty()) {
-    query += "givenname=";
-    query +=
-        base::EscapeQueryParamValue(contact.given_name(), /*use_plus=*/true);
+    query_params.push_back(base::StrCat({
+        "givenname=",
+        base::EscapeQueryParamValue(contact.given_name(), /*use_plus=*/true),
+    }));
+  }
+  if (!contact.family_name().empty()) {
+    query_params.push_back(base::StrCat({
+        "familyname=",
+        base::EscapeQueryParamValue(contact.family_name(), /*use_plus=*/true),
+    }));
+  }
+  if (!contact.email().empty()) {
+    query_params.push_back(base::StrCat({
+        "email=",
+        base::EscapeQueryParamValue(contact.email(), /*use_plus=*/true),
+    }));
+  }
+  if (!contact.phone().empty()) {
+    query_params.push_back(base::StrCat({
+        "phone=",
+        base::EscapeQueryParamValue(contact.phone(), /*use_plus=*/true),
+    }));
   }
 
   GURL::Replacements replacements;
+  std::string query = base::JoinString(std::move(query_params), "&");
   replacements.SetQueryStr(query);
   return GetGoogleContactsNewUrl().ReplaceComponents(replacements);
 }
