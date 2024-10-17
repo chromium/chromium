@@ -334,6 +334,7 @@ android_library("wolvic_java") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
