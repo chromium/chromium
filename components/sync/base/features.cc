@@ -201,10 +201,6 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders,
-             "SyncEnableModelTypeLocalDataBatchUploaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncEnableExtensionsInTransportMode,
              "kSyncEnableExtensionsInTransportMode",
              base::FEATURE_DISABLED_BY_DEFAULT);

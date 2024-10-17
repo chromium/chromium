@@ -19,8 +19,6 @@ class Profile;
 
 namespace browser_sync {
 
-class LocalDataQueryHelper;
-class LocalDataMigrationHelper;
 class SyncEngineFactoryImpl;
 
 class ChromeSyncClient : public syncer::SyncClient {
@@ -47,15 +45,6 @@ class ChromeSyncClient : public syncer::SyncClient {
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
-#if BUILDFLAG(IS_ANDROID)
-  void GetLocalDataDescriptions(
-      syncer::DataTypeSet types,
-      base::OnceCallback<void(
-          std::map<syncer::DataType, syncer::LocalDataDescription>)> callback)
-      override;
-  void TriggerLocalDataMigration(syncer::DataTypeSet types) override;
-#endif  // BUILDFLAG(IS_ANDROID)
-
  private:
   const raw_ptr<Profile> profile_;
 
@@ -66,10 +55,6 @@ class ChromeSyncClient : public syncer::SyncClient {
   browser_sync::ExtensionsActivityMonitor extensions_activity_monitor_;
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
-  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
-      local_data_migration_helper_;
-
   // Watches password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores.
   PrefChangeRegistrar upm_pref_change_registrar_;
 #endif  // BUILDFLAG(IS_ANDROID)

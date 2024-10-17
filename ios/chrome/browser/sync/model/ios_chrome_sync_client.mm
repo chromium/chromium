@@ -10,7 +10,6 @@
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "components/browser_sync/browser_sync_switches.h"
-#import "components/browser_sync/sync_client_utils.h"
 #import "components/browser_sync/sync_engine_factory_impl.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -59,19 +58,6 @@ IOSChromeSyncClient::IOSChromeSyncClient(ProfileIOS* profile)
       DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker(),
       DataTypeStoreServiceFactory::GetForProfile(profile_)->GetSyncDataPath());
-
-  local_data_query_helper_ =
-      std::make_unique<browser_sync::LocalDataQueryHelper>(
-          profile_password_store_.get(), account_password_store_.get(),
-          ios::BookmarkModelFactory::GetForProfile(profile_),
-          ReadingListModelFactory::GetAsDualReadingListModelForProfile(
-              profile_));
-  local_data_migration_helper_ =
-      std::make_unique<browser_sync::LocalDataMigrationHelper>(
-          profile_password_store_.get(), account_password_store_.get(),
-          ios::BookmarkModelFactory::GetForProfile(profile_),
-          ReadingListModelFactory::GetAsDualReadingListModelForProfile(
-              profile_));
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
@@ -127,19 +113,6 @@ bool IOSChromeSyncClient::IsPasswordSyncAllowed() {
 void IOSChromeSyncClient::SetPasswordSyncAllowedChangeCb(
     const base::RepeatingClosure& cb) {
   // IsPasswordSyncAllowed() doesn't change on //ios/chrome.
-}
-
-void IOSChromeSyncClient::GetLocalDataDescriptions(
-    syncer::DataTypeSet types,
-    base::OnceCallback<void(
-        std::map<syncer::DataType, syncer::LocalDataDescription>)> callback) {
-  types.RemoveAll(
-      local_data_migration_helper_->GetTypesWithOngoingMigrations());
-  local_data_query_helper_->Run(types, std::move(callback));
-}
-
-void IOSChromeSyncClient::TriggerLocalDataMigration(syncer::DataTypeSet types) {
-  local_data_migration_helper_->Run(types);
 }
 
 void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(

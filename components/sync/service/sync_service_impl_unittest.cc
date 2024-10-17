@@ -300,8 +300,6 @@ class SyncServiceImplTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEnableModelTypeLocalDataBatchUploaders};
   SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
   raw_ptr<SyncClientMock, DanglingUntriaged> sync_client_ =

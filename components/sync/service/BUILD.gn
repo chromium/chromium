@@ -44,7 +44,6 @@ static_library("service") {
     "passphrase_type_metrics_provider.h",
     "sync_auth_manager.cc",
     "sync_auth_manager.h",
-    "sync_client.cc",
     "sync_client.h",
     "sync_engine_factory.h",
     "sync_error.cc",

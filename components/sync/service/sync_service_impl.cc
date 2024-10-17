@@ -2286,41 +2286,18 @@ void SyncServiceImpl::GetLocalDataDescriptionsImpl(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
-    // Only retain types that are not only preferred but also active, that is,
-    // those which are configured and have not encountered any error.
-    types.RetainAll(GetActiveDataTypes());
-
-    sync_client_->GetLocalDataDescriptions(types, std::move(callback));
-    return;
-  }
-
   data_type_manager_->GetLocalDataDescriptions(types, std::move(callback));
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
-    for (DataType type : types) {
-      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
-                                    syncer::DataTypeHistogramValue(type));
-    }
+  for (DataType type : types) {
+    base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
+                                  syncer::DataTypeHistogramValue(type));
   }
 
   // Syncing users do not use separate local and account storages. Thus, there's
   // no local-only data to migrate.
   if (HasSyncConsent()) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
-    // Only retain types that are not only preferred but also active, that is,
-    // those which are configured and have not encountered any error.
-    types.RetainAll(GetActiveDataTypes());
-
-    sync_client_->TriggerLocalDataMigration(types);
     return;
   }
 

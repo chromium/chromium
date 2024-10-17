@@ -182,11 +182,6 @@ BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Kill switch for a change in the internal implementation of
-// SyncService::GetLocalDataDescriptions() and TriggerLocalDataMigration(),
-// which is expected to be a no-op.
-BASE_DECLARE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders);
-
 // Enables syncing for extensions when in transport mode (when a user is signed
 // in but has not turned on full sync).
 BASE_DECLARE_FEATURE(kSyncEnableExtensionsInTransportMode);

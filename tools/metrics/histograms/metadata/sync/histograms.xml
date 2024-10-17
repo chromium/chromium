@@ -182,30 +182,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.BatchUpload.Requests2" enum="SyncDataTypes"
-    expires_after="2025-03-02">
-  <owner>ankushkush@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Logged when batch upload of local data for a data type is requested.
-
-    Note that at the time of writing, this metric only supports PASSWORDS,
-    BOOKMARKS and READING_LIST.
-
-    This is not logged when kSyncEnableModelTypeLocalDataBatchUploaders is
-    enabled and will eventually be removed in favor of
-    Sync.BatchUpload.Requests3.
-  </summary>
-</histogram>
-
 <histogram name="Sync.BatchUpload.Requests3" enum="SyncDataTypes"
-    expires_after="2025-04-13">
+    expires_after="2025-10-13">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Logged when batch upload of local data for a data type is requested via
     SyncService::TriggerLocalDataMigration() (normally by one of the UI entry
-    points), if kSyncEnableModelTypeLocalDataBatchUploaders is enabled.
+    points).
 
     Note that at the time of writing, this metric only supports PASSWORDS,
     BOOKMARKS and READING_LIST.
