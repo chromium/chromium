@@ -112,10 +112,6 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
   return ts << c.NameForLayoutTreeAsText();
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutPoint& point) {
-  return ts << gfx::PointF(point);
-}
-
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
   return ts << "(" << p.x() << "," << p.y() << ")";
 }
