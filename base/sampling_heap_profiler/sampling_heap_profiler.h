@@ -78,7 +78,7 @@ class BASE_EXPORT SamplingHeapProfiler
   void SetSamplingInterval(size_t sampling_interval_bytes);
 
   // Enables recording thread name that made the sampled allocation.
-  void SetRecordThreadNames(bool value);
+  void EnableRecordThreadNames();
 
   // Returns the current thread name.
   static const char* CachedThreadName();
@@ -138,12 +138,11 @@ class BASE_EXPORT SamplingHeapProfiler
   // Contains pointers to static sample context strings that are never deleted.
   std::unordered_set<const char*> strings_ GUARDED_BY(mutex_);
 
-  // Mutex to make |running_sessions_| and Add/Remove samples observer access
-  // atomic.
+  // Mutex to guard |running_sessions_| and Add/Remove samples.
   Lock start_stop_mutex_;
 
   // Number of the running sessions.
-  int running_sessions_ = 0;
+  int running_sessions_ GUARDED_BY(start_stop_mutex_) = 0;
 
   // Last sample ordinal used to mark samples recorded during single session.
   std::atomic<uint32_t> last_sample_ordinal_{1};

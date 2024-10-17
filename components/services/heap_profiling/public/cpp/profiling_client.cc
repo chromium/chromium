@@ -125,7 +125,7 @@ void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
 
   if (params->stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES) {
     g_include_thread_names = true;
-    base::SamplingHeapProfiler::Get()->SetRecordThreadNames(true);
+    base::SamplingHeapProfiler::Get()->EnableRecordThreadNames();
   }
 
   switch (params->stack_mode) {

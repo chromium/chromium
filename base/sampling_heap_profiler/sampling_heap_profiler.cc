@@ -150,8 +150,9 @@ SamplingHeapProfiler::Sample::~Sample() = default;
 
 SamplingHeapProfiler::SamplingHeapProfiler() = default;
 SamplingHeapProfiler::~SamplingHeapProfiler() {
-  if (record_thread_names_)
+  if (record_thread_names_.load(std::memory_order_acquire)) {
     base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
+  }
 }
 
 uint32_t SamplingHeapProfiler::Start() {
@@ -165,12 +166,12 @@ uint32_t SamplingHeapProfiler::Start() {
     LOG(WARNING) << "Sampling heap profiler: Stack unwinding is not available.";
     return 0;
   }
-  unwinder_.store(unwinder);
+  unwinder_.store(unwinder, std::memory_order_release);
 
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)
     PoissonAllocationSampler::Get()->AddSamplesObserver(this);
-  return last_sample_ordinal_;
+  return last_sample_ordinal_.load(std::memory_order_acquire);
 }
 
 void SamplingHeapProfiler::Stop() {
@@ -184,14 +185,11 @@ void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval_bytes) {
   PoissonAllocationSampler::Get()->SetSamplingInterval(sampling_interval_bytes);
 }
 
-void SamplingHeapProfiler::SetRecordThreadNames(bool value) {
-  if (record_thread_names_ == value)
-    return;
-  record_thread_names_ = value;
-  if (value) {
+void SamplingHeapProfiler::EnableRecordThreadNames() {
+  bool was_enabled = record_thread_names_.exchange(/*desired=*/true,
+                                                   std::memory_order_acq_rel);
+  if (!was_enabled) {
     base::ThreadIdNameManager::GetInstance()->AddObserver(this);
-  } else {
-    base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
   }
 }
 
@@ -204,7 +202,7 @@ span<const void*> SamplingHeapProfiler::CaptureStackTrace(
     span<const void*> frames) {
   size_t skip_frames = 0;
   size_t frame_count = 0;
-  switch (unwinder_) {
+  switch (unwinder_.load(std::memory_order_acquire)) {
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
     case StackUnwinder::kFramePointers:
       frame_count = base::debug::TraceStackFramePointers(frames, skip_frames);
@@ -235,7 +233,9 @@ void SamplingHeapProfiler::SampleAdded(void* address,
     return;
   }
   DCHECK(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-  Sample sample(size, total, ++last_sample_ordinal_);
+  uint32_t previous_last =
+      last_sample_ordinal_.fetch_add(1, std::memory_order_acq_rel);
+  Sample sample(size, total, previous_last + 1);
   sample.allocator = type;
   CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
@@ -264,8 +264,9 @@ void SamplingHeapProfiler::CaptureNativeStack(const char* context,
       base::span(stack).first(kMaxStackEntries - 1));
   sample->stack = ToVector(frames);
 
-  if (record_thread_names_)
+  if (record_thread_names_.load(std::memory_order_acquire)) {
     sample->thread_name = CachedThreadName();
+  }
 
   if (!context) {
     const auto* tracker =

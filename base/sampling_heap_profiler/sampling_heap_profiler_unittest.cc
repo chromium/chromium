@@ -54,7 +54,9 @@ class SamplingHeapProfilerTest : public ::testing::Test {
   }
 
   static int GetRunningSessionsCount() {
-    return SamplingHeapProfiler::Get()->running_sessions_;
+    SamplingHeapProfiler* p = SamplingHeapProfiler::Get();
+    AutoLock lock(p->start_stop_mutex_);
+    return p->running_sessions_;
   }
 
   static void RunStartStopLoop(SamplingHeapProfiler* profiler) {
