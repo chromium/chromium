@@ -15,6 +15,10 @@
 // This class also sets up code coverage by default.
 @interface BaseEarlGreyTestCase : XCTestCase
 
+// When enabled, restart the test host between each test, and wipe the host
+// home directory to mimic a new install.
++ (BOOL)forceRestartAndWipe;
+
 // Invoked once per test case after launching test app from -setUp.
 // Subclasses can use this method to perform class level setup instead of
 // overriding +setUp, as due to EG2 limitations (crbug.com/961879) +setUp would

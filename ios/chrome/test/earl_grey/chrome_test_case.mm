@@ -223,10 +223,12 @@ void ResetAuthentication() {
   ResetAuthentication();
 
   // Reset any remaining sign-in state from previous tests.
-  [ChromeEarlGrey killWebKitNetworkProcess];
-  [ChromeEarlGrey signOutAndClearIdentities];
-  if (![ChromeTestCase isStartupTest]) {
-    [ChromeEarlGrey openNewTab];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey killWebKitNetworkProcess];
+    [ChromeEarlGrey signOutAndClearIdentities];
+    if (![ChromeTestCase isStartupTest]) {
+      [ChromeEarlGrey openNewTab];
+    }
   }
   _executedTestMethodSetUp = YES;
 
@@ -239,7 +241,9 @@ void ResetAuthentication() {
 // Tear down called once per test, to close all tabs and menus, and clear the
 // tracked tests accounts. It also makes sure mock authentication is running.
 - (void)tearDown {
-  [self tearDownHelper];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [self tearDownHelper];
+  }
 
   const bool appShouldBeRunning = !IsAppInAllowedCrashState();
 
@@ -255,7 +259,7 @@ void ResetAuthentication() {
     _tearDownHandler();
   }
 
-  if (appShouldBeRunning) {
+  if (![ChromeTestCase forceRestartAndWipe] && appShouldBeRunning) {
     // EG syncs with WKWebView loading. Stops all loadings to prevent these from
     // failing rest of tearDown actions.
     [ChromeEarlGrey stopAllWebStatesLoading];
@@ -436,7 +440,8 @@ void ResetAuthentication() {
 
   // Sometimes on start up there can be infobars (e.g. restore session), so
   // ensure the UI is in a clean state.
-  if (![ChromeTestCase isStartupTest]) {
+  if (![ChromeTestCase isStartupTest] &&
+      ![ChromeTestCase forceRestartAndWipe]) {
     [[self class] removeAnyOpenMenusAndInfoBars];
     [self closeAllTabs];
   }
@@ -505,10 +510,12 @@ void ResetAuthentication() {
 
       ResetAuthentication();
 
-      // Reset any remaining sign-in state from previous tests.
-      [ChromeEarlGrey signOutAndClearIdentities];
-      if (![ChromeTestCase isStartupTest]) {
-        [ChromeEarlGrey openNewTab];
+      if (![ChromeTestCase forceRestartAndWipe]) {
+        // Reset any remaining sign-in state from previous tests.
+        [ChromeEarlGrey signOutAndClearIdentities];
+        if (![ChromeTestCase isStartupTest]) {
+          [ChromeEarlGrey openNewTab];
+        }
       }
     }
   }

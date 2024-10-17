@@ -32,6 +32,10 @@ bool g_needs_set_up_for_test_case = true;
 
 @implementation BaseEarlGreyTestCase
 
++ (BOOL)forceRestartAndWipe {
+  return NO;
+}
+
 + (void)setUpForTestCase {
 }
 
@@ -61,8 +65,14 @@ bool g_needs_set_up_for_test_case = true;
 - (void)setUp {
   [super setUp];
 
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
+  // Before starting a new test, relaunch the app and wipe the profile.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  if ([BaseEarlGreyTestCase forceRestartAndWipe]) {
+    config.relaunch_policy = RelaunchPolicy::ForceRelaunchByKilling;
+    config.additional_args.push_back(std::string("-EGTestWipeProfile"));
+  }
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [SystemAlertHandler handleSystemAlertIfVisible];
 
   NSString* logFormat = @"*********************************\nStarting test: %@";

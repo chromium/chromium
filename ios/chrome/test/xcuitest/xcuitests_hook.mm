@@ -120,4 +120,8 @@ std::optional<std::string> FETDemoModeOverride() {
   return std::nullopt;
 }
 
+void WipeProfileIfRequested(int argc, char* argv[]) {
+  // Do nothing.
+}
+
 }  // namespace tests_hook

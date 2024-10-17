@@ -160,6 +160,11 @@ std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
 // for a demo tracker that enables all features).
 std::optional<std::string> FETDemoModeOverride();
 
+// If the given argv contains `-EGTestWipeProfile`, deletes the
+// contents of the `Library` directory at the start of `main()`. This
+// simulates launching the application with a fresh profile.
+void WipeProfileIfRequested(int argc, char* argv[]);
+
 }  // namespace tests_hook
 
 #endif  // IOS_CHROME_APP_TESTS_HOOK_H_
