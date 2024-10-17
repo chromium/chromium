@@ -41,7 +41,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncFeatureMap;
@@ -103,8 +102,6 @@ public class SyncPromoControllerTest {
 
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
-    private final AccountCapabilitiesBuilder mAccountCapabilitiesBuilder =
-            new AccountCapabilitiesBuilder();
 
     private SyncPromoController mSyncPromoController;
 
@@ -133,12 +130,12 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldShowSigninPromoForNTP_noAccountsOnDevice() {
+    public void shouldShowSigninPromoForNtp_noAccountsOnDevice() {
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }
 
     @Test
-    public void shouldNotShowNTPSigninPromo_alreadySignedIn() {
+    public void shouldNotShowNtpSigninPromo_alreadySignedIn() {
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -152,23 +149,12 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldShowSyncPromoForNTPWhenNoAccountOnDevice() {
+    public void shouldShowSyncPromoForNtpWhenNoAccountOnDevice() {
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void
-            shouldHideSyncPromoForNTPWhenDefaultAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-
-        Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void
-            shouldShowPromoForNTPWhenDefaultAccountCannotShowHistoryOptInWithoutRestrictions_replaceSyncBySigninEnabled() {
+    public void shouldShowPromoForNtpWhenDefaultAccountCannotShowHistoryOptInWithoutRestrictions() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
@@ -176,17 +162,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldHideSyncPromoForNTPWhenDefaultAccountCapabilityIsNotFetched() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-
-        Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void
-            shouldShowPromoForNTPWhenDefaultAccountCapabilityIsNotFetched_replaceSyncBySigninEnabled() {
+    public void shouldShowPromoForNtpWhenDefaultAccountCapabilityIsNotFetched() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
 
@@ -195,7 +171,7 @@ public class SyncPromoControllerTest {
 
     @Test
     public void
-            shouldShowPromoForNTPWhenSecondaryAccountCannotShowHistoryOptInWithoutRestrictions() {
+            shouldShowPromoForNtpWhenSecondaryAccountCannotShowHistoryOptInWithoutRestrictions() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
 
@@ -203,7 +179,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldShowNTPSyncPromoWhenCountLimitIsNotExceeded() {
+    public void shouldShowNtpSyncPromoWhenCountLimitIsNotExceeded() {
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO),
@@ -213,7 +189,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldHideNTPSyncPromoWhenCountLimitIsExceeded() {
+    public void shouldHideNtpSyncPromoWhenCountLimitIsExceeded() {
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO),
@@ -223,7 +199,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldShowNTPSyncPromoWhenTimeSinceFirstShownLimitIsNotExceeded() {
+    public void shouldShowNtpSyncPromoWhenTimeSinceFirstShownLimitIsNotExceeded() {
         final long firstShownTime = System.currentTimeMillis();
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, firstShownTime);
@@ -232,7 +208,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldHideNTPSyncPromoWhenTimeSinceFirstShownLimitIsExceeded() {
+    public void shouldHideNtpSyncPromoWhenTimeSinceFirstShownLimitIsExceeded() {
         final long firstShownTime =
                 System.currentTimeMillis() - TIME_SINCE_FIRST_SHOWN_LIMIT_MS - 1;
         mSharedPreferencesManager.writeLong(
@@ -246,7 +222,7 @@ public class SyncPromoControllerTest {
         final long firstShownTime =
                 System.currentTimeMillis() - TIME_SINCE_FIRST_SHOWN_LIMIT_MS - 1;
         final long lastShownTime = System.currentTimeMillis();
-        disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime);
+        disableNtpSyncPromoBySettingLimits(firstShownTime, lastShownTime);
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
 
         SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
@@ -273,7 +249,7 @@ public class SyncPromoControllerTest {
         final long firstShownTime =
                 System.currentTimeMillis() - TIME_SINCE_FIRST_SHOWN_LIMIT_MS - 1;
         final long lastShownTime = System.currentTimeMillis() - RESET_AFTER_MS - 1;
-        disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime);
+        disableNtpSyncPromoBySettingLimits(firstShownTime, lastShownTime);
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
 
         SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
@@ -296,7 +272,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldShowSyncPromoForNTPWhenNotDismissed() {
+    public void shouldShowSyncPromoForNtpWhenNotDismissed() {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
 
@@ -304,7 +280,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldHideSyncPromoForNTPWhenDismissed() {
+    public void shouldHideSyncPromoForNtpWhenDismissed() {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
 
@@ -391,24 +367,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void shouldHideRecentTabsSyncPromoIfTabsIsManagedByPolicy() {
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
-
-        SyncPromoController syncPromoController =
-                new SyncPromoController(
-                        mProfile,
-                        BOTTOM_SHEET_STRINGS,
-                        SigninAccessPoint.RECENT_TABS,
-                        mSyncConsentActivityLauncher,
-                        mSigninAndHistorySyncActivityLauncher);
-        Assert.assertFalse(syncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void
-            shouldHideRecentTabsSyncPromoIfTabsIsManagedByPolicy_replaceSyncPromosWithSigninPromosEnabled() {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(true).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
@@ -425,24 +384,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldShowRecentTabsSyncPromoIfTabsIsNotManagedByPolicy() {
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(false);
-
-        SyncPromoController syncPromoController =
-                new SyncPromoController(
-                        mProfile,
-                        BOTTOM_SHEET_STRINGS,
-                        SigninAccessPoint.RECENT_TABS,
-                        mSyncConsentActivityLauncher,
-                        mSigninAndHistorySyncActivityLauncher);
-        Assert.assertTrue(syncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void
-            shouldHideRecentTabsIfUserAlreadyOptedIn_replaceSyncPromosWithSigninPromosEnabled() {
+    public void shouldHideRecentTabsIfUserAlreadyOptedIn() {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(false).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
@@ -460,7 +402,7 @@ public class SyncPromoControllerTest {
 
     @Test
     public void
-            shouldShowRecentTabsHistorySyncPromoIfTabsIsNotManagedByPolicyAndUserIsNotSignedIn_replaceSyncPromosWithSigninPromosEnabled() {
+            shouldShowRecentTabsHistorySyncPromoIfTabsIsNotManagedByPolicyAndUserIsNotSignedIn() {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(true).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
@@ -476,8 +418,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void
-            shouldShowRecentTabsSyncPromoIfUserSignedInButDidNotOptIn_replaceSyncPromosWithSigninPromosEnabled() {
+    public void shouldShowRecentTabsSyncPromoIfUserSignedInButDidNotOptIn() {
         when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
         doReturn(false).when(mSigninManager).isSigninAllowed();
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
@@ -494,7 +435,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldLaunchBookmarksSigninFlowReturnsTrue_UnoFeatureEnabled() {
+    public void shouldLaunchBookmarksSigninFlowReturnsTrue() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
@@ -510,156 +451,7 @@ public class SyncPromoControllerTest {
                         mPrefService));
     }
 
-    @Test
-    public void shouldLaunchBookmarksSigninFlowReturnsTrue_AccountStorageFeatureEnabled() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        Assert.assertTrue(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(TestAccounts.ACCOUNT1),
-                        mPrefService));
-    }
-
-    @Test
-    @DisableFeatures({
-        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_AccountStorageFeatureDisabled() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(TestAccounts.ACCOUNT1),
-                        mPrefService));
-    }
-
-    @Test
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_NotBookmarkAccessPoint() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(TestAccounts.ACCOUNT1),
-                        mPrefService));
-    }
-
-    @Test
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_SignedIn() {
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(TestAccounts.ACCOUNT1),
-                        mPrefService));
-    }
-
-    @Test
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_SyncDataLeft() {
-        when(mPrefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID))
-                .thenReturn(TestAccounts.ACCOUNT1.getGaiaId());
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(TestAccounts.ACCOUNT1),
-                        mPrefService));
-    }
-
-    @Test
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_NonGmailDomain() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn("nongmail.com").when(mSigninManager).extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_NON_GMAIL_ACCOUNT);
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(AccountManagerTestRule.TEST_NON_GMAIL_ACCOUNT),
-                        mPrefService));
-    }
-
-    @Test
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_EmptyAccountList() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(),
-                        mPrefService));
-    }
-
-    @Test
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_NullAccountList() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-
-        Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        null,
-                        mPrefService));
-    }
-
-    private void disableNTPSyncPromoBySettingLimits(long firstShownTime, long lastShownTime) {
+    private void disableNtpSyncPromoBySettingLimits(long firstShownTime, long lastShownTime) {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         SyncPromoController.getPromoShowCountPreferenceName(
