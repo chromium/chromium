@@ -34,12 +34,23 @@ public class WebViewModalDialogOverrideTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String EMPTY_PAGE =
-            "<!doctype html>" + "<title>Modal Dialog Test</title><p>Testcase.</p>";
+            """
+        <!doctype html>
+        <title>Modal Dialog Test</title>
+        <p>Testcase.</p>
+        """;
     private static final String BEFORE_UNLOAD_URL =
-            "<!doctype html>"
-                    + "<head><script>window.onbeforeunload=function() {"
-                    + "return 'Are you sure?';"
-                    + "};</script></head></body>";
+            """
+        <!doctype html>
+        <head>
+            <script>
+                window.onbeforeunload = function() {
+                    return 'Are you sure?';
+                };
+            </script>
+        </head>
+        </body>
+        """;
 
     public WebViewModalDialogOverrideTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

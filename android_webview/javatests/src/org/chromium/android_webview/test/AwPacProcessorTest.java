@@ -36,10 +36,12 @@ public class AwPacProcessorTest extends AwParameterizedTest {
     private AwPacProcessor mProcessor;
 
     private final String mPacScript =
-            "function FindProxyForURL(url, host) {\n"
-                    + "var x = myIpAddress();"
-                    + "\treturn \"PROXY \" + x + \":80\";\n"
-                    + "}";
+            """
+        function FindProxyForURL(url, host) {
+          var x = myIpAddress();
+          return "PROXY " + x + ":80";
+        }
+        """;
     private final String mTestUrl = "http://testurl.test";
 
     @Rule public AwActivityTestRule mRule;

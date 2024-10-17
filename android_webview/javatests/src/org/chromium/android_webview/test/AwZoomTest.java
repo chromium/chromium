@@ -54,10 +54,17 @@ public class AwZoomTest extends AwParameterizedTest {
         final int divWidthPercent = (int) (100.0f / scale);
         return String.format(
                 Locale.US,
-                "<html><head><meta name=\"viewport\" content=\"width=device-width,"
-                        + " minimum-scale=%f, maximum-scale=%f, initial-scale=%f\"/></head><body"
-                        + " style='margin:0'><div style='width:%d%%;height:100px;border:1px solid"
-                        + " black'>Zoomable</div></body></html>",
+                """
+            <html>
+              <head>
+                <meta name="viewport" content="width=device-width,
+                      minimum-scale=%f, maximum-scale=%f, initial-scale=%f"/>
+              </head>
+              <body style='margin:0'>
+                <div style='width:%d%%;height:100px;border:1px solid black'>Zoomable</div>
+              </body>
+            </html>
+            """,
                 scale,
                 MAXIMUM_SCALE,
                 scale,
@@ -67,11 +74,17 @@ public class AwZoomTest extends AwParameterizedTest {
     private String getNonZoomableHtml() {
         // This page can't be zoomed because its viewport fully occupies
         // view area and is explicitly made non user-scalable.
-        return "<html><head>"
-                + "<meta name=\"viewport\" "
-                + "content=\"width=device-width,height=device-height,"
-                + "initial-scale=1,maximum-scale=1,user-scalable=no\">"
-                + "</head><body>Non-zoomable</body></html>";
+        return """
+            <html>
+              <head>
+                <meta name="viewport" content="width=device-width,height=device-height,
+                      initial-scale=1,maximum-scale=1,user-scalable=no">
+              </head>
+              <body>
+                Non-zoomable
+              </body>
+            </html>
+            """;
     }
 
     private boolean isMultiTouchZoomSupportedOnUiThread() throws Throwable {
