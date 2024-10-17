@@ -374,13 +374,15 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
 };
 
 class DedicatedStyleAuctionProcessManagerTest
-    : public AuctionProcessManagerTest {
+    : public AuctionProcessManagerTestBase {
  protected:
   DedicatedStyleAuctionProcessManagerTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "10s"}});
   }
+
+  SiteInstance* GetSiteInstance() override { return nullptr; }
 
   AuctionProcessManager& GetAuctionProcessManager() override {
     return auction_process_manager_;
