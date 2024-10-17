@@ -93,20 +93,16 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.AccountCapabilitiesConstants;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link FeedSurfaceCoordinator}. */
@@ -488,7 +484,7 @@ public class FeedSurfaceCoordinatorTest {
 
     @Test
     public void testIsPrimaryAccountSupervisedForChildUser() {
-        AccountInfo account = createFakeAccount(/* isChild= */ true);
+        AccountInfo account = TestAccounts.CHILD_ACCOUNT;
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
                 .thenReturn(account);
@@ -499,7 +495,7 @@ public class FeedSurfaceCoordinatorTest {
 
     @Test
     public void testIsPrimaryAccountSupervisedForRegularUser() {
-        AccountInfo account = createFakeAccount(/* isChild= */ false);
+        AccountInfo account = TestAccounts.ACCOUNT1;
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
                 .thenReturn(account);
@@ -605,24 +601,6 @@ public class FeedSurfaceCoordinatorTest {
     private static void advanceBy(long seconds) {
         ShadowSystemClock.advanceBy(seconds, TimeUnit.SECONDS);
         ShadowLooper.runUiThreadTasks();
-    }
-
-    private AccountInfo createFakeAccount(boolean isChild) {
-        AccountCapabilities capabilities =
-                new AccountCapabilities(
-                        new HashMap<>(
-                                Map.of(
-                                        AccountCapabilitiesConstants
-                                                .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
-                                        isChild)));
-        return new AccountInfo(
-                new CoreAccountId("id"),
-                "test@gmail.com",
-                "gaiaId",
-                "John Doe",
-                "John",
-                null,
-                capabilities);
     }
 
     private boolean hasStreamBound() {
