@@ -1,4 +1,4 @@
-<style include="searchbox-shared-style">
+<style include="searchbox-shared-style cr-spinner-style">
 #content {
   background-color: var(--color-searchbox-background);
   border-radius: calc(0.5 * var(--cr-searchbox-height));
@@ -65,16 +65,14 @@
   }
 }
 
-paper-spinner-lite {
-  height: 16px;
-  width: 16px;
-  --paper-spinner-color: #DBDBDB;
+.spinner {
+  --cr-spinner-color: #DBDBDB;
+  --cr-spinner-size: 16px;
 }
 
 </style>
 <div id="content">
   <div id="loading-match">
-    <paper-spinner-lite active></paper-spinner-lite>
     <div class="spinner"></div>
     <span id="hint-text1">$i18n{searchboxGhostLoaderHintTextPrimary}</span>
     <span id="hint-text2">$i18n{searchboxGhostLoaderHintTextSecondary}</span>
