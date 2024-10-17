@@ -255,6 +255,13 @@ std::string ToIdString(OpenerMode opener) {
   }
 }
 
+std::string ToParamString(mojom::UserDisplayMode display_mode) {
+  if (display_mode == mojom::UserDisplayMode::kStandalone) {
+    return "";
+  }
+  return base::ToString(display_mode);
+}
+
 std::string ToParamString(
     blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
   if (client_mode == blink::mojom::ManifestLaunchHandler_ClientMode::kAuto) {
@@ -318,6 +325,7 @@ std::string_view ToParamString(NavigationTarget target) {
 // be used to construct the values.
 using LinkCaptureTestParam =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
+               mojom::UserDisplayMode,
                LinkCapturing,
                StartingPoint,
                Destination,
@@ -335,6 +343,10 @@ std::string LinkCaptureTestParamToString(
       [](auto&... p) { return base::JoinString({ToParamString(p)...}, "_"); },
       param_info.param);
   base::TrimString(name, "_", &name);
+  // Two test params use an empty string for their default values, which can
+  // create a double underscore in the test names, so remove the redundant
+  // underscore.
+  base::ReplaceSubstringsAfterOffset(&name, 0, "__", "_");
   return name;
 }
 
@@ -849,6 +861,22 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<LinkCapturing>(GetParam());
   }
 
+  mojom::UserDisplayMode GetUserDisplayMode() const {
+    return std::get<mojom::UserDisplayMode>(GetParam());
+  }
+
+  blink::mojom::DisplayMode GetDisplayMode() const {
+    mojom::UserDisplayMode user_display_mode = GetUserDisplayMode();
+    switch (user_display_mode) {
+      case mojom::UserDisplayMode::kBrowser:
+        return blink::mojom::DisplayMode::kBrowser;
+      case mojom::UserDisplayMode::kStandalone:
+        return blink::mojom::DisplayMode::kStandalone;
+      case mojom::UserDisplayMode::kTabbed:
+        NOTREACHED_NORETURN();  // kTabbed is not supported.
+    }
+  }
+
   blink::mojom::ManifestLaunchHandler_ClientMode GetClientMode() const {
     return std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(GetParam());
   }
@@ -926,11 +954,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
   webapps::AppId InstallTestWebApp(const GURL& start_url) {
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->launch_handler =
         blink::Manifest::LaunchHandler(GetClientMode());
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->display_mode = GetDisplayMode();
+    web_app_info->user_display_mode = GetUserDisplayMode();
     const webapps::AppId app_id =
         test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
@@ -1327,6 +1355,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1365,6 +1394,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // ClientMode::kAuto defaults to NavigateNew on all platforms.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
@@ -1396,6 +1426,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // TODO(https://crbug.com/371513459): Test more client modes.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         // There is really only one combination that makes sense for the rest of
         // the values, since the IntentPicker is not affected by LinkCapturing,
         // it only shows in a Tab (not an App), it always stays within the same
@@ -1412,10 +1443,27 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
+    DisplayModeBrowser,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kBrowser),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A),
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1439,6 +1487,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
                         LinkCapturing::kDisabled  // LinkCapturing turned off.
                         ),
@@ -1462,6 +1511,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2X),
@@ -1481,6 +1531,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
@@ -1498,6 +1549,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2A),
@@ -1516,6 +1568,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow),
         testing::Values(Destination::kScopeA2B),
@@ -1535,6 +1588,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
         testing::Values(Destination::kScopeA2B),
@@ -1594,6 +1648,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting,
             blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting),
+        testing::Values(mojom::UserDisplayMode::kStandalone),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
