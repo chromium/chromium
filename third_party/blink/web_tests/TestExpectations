@@ -4533,6 +4533,9 @@ crbug.com/1083362 compositing/reflections/load-video-in-reflection.html [ Failur
 # Sheriff 2020-06-17
 crbug.com/1092975 http/tests/inspector-protocol/target/target-expose-devtools-protocol.js [ Failure Pass ]
 
+# The test failed due to https://crbug.com/372866278, https://crbug.com/40140417.
+crbug.com/40246707 external/wpt/webaudio/the-audio-api/the-audiocontext-interface/processing-after-resume.https.html [ Crash Failure Pass Timeout ]
+
 crbug.com/1097005 http/tests/devtools/console/console-object-preview.js [ Crash Failure Pass Timeout ]
 crbug.com/1097005 http/tests/devtools/console/console-preserve-scroll.js [ Crash Failure Pass Timeout ]
 crbug.com/1097005 http/tests/devtools/console/console-search.js [ Crash Failure Pass Timeout ]
