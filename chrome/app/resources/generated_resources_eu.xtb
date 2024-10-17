@@ -1431,7 +1431,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="2002109485265116295">Denbora errealean</translation>
 <translation id="2002160221914907025">AA esperimentala</translation>
 <translation id="2003130567827682533">"<ph name="NAME" />" datuak aktibatzeko, konektatu wifi-sare batera</translation>
-<translation id="2003596238737586336"><ph name="SUNRISE" />-<ph name="SUNSET" /> tarterako dago ezarrita oraingo programazioa. Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="2003596238737586336"><ph name="SUNRISE" />-<ph name="SUNSET" /> tarterako dago ezarrita oraingo programazioa. Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="2004413981947727241">Erabili zure pasahitzak edozein gailutan</translation>
 <translation id="2004697686368036666">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2005199804247617997">Beste profil batzuk</translation>
@@ -3597,7 +3597,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3568431410312984116">Eman Idazteko laguntza automatikoki irekitzeko baimena</translation>
 <translation id="3569382839528428029">Zure pantaila partekatzeko baimena eman nahi diozu <ph name="APP_NAME" /> aplikazioari?</translation>
 <translation id="3569614820047645079">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatzen dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun.</translation>
-<translation id="3569617221227793022"><ph name="TIME_ZONE_ENTRY" /> ordu-zona ezarrita dago. Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="3569617221227793022"><ph name="TIME_ZONE_ENTRY" /> ordu-zona ezarrita dago. Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> webguneak honako fitxategi eta karpeta hauek ikus ditzake</translation>
 <translation id="3571734092741541777">Konfiguratu</translation>
 <translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> luzapen desaktibatu dira</translation>
@@ -5126,7 +5126,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4670909875730475086">Zorionak! Instalatu da <ph name="APP_NAME" /> gailuan.</translation>
 <translation id="4672759829555593783">Ireki <ph name="FILE_NAME" /></translation>
 <translation id="4673442866648850031">Ireki arkatzaren tresnak arkatza kendu ondoren</translation>
-<translation id="4673785607287397025">Arazoak ditugu konektatzeko. Ziurtatu Chromecast-a eta ordenagailua sare berean daudela, eta saiatu berriro.</translation>
+<translation id="4673785607287397025">Arazoak daude konektatzeko. Ziurtatu Chromecast-a eta ordenagailua sare berean daudela, eta saiatu berriro.</translation>
 <translation id="4675065861091108046"><ph name="ORIGIN" /> orrian luzapen guztiak gaitzea aukeratu zenuen aurrez</translation>
 <translation id="467510802200863975">Pasahitzak ez datoz bat</translation>
 <translation id="4675828034887792601">Sortu lasterbideak webguneetan bilatzeko, eta kudeatu bilatzailea</translation>
@@ -5430,7 +5430,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4892328231620815052">Prest zaudenean, bilatu irakurketa-zerrenda Laster-markak eta zerrendak atalean</translation>
 <translation id="489258173289528622">Gailua kargatzen ari ez denean inaktibo geratuz gero gauzatu beharreko ekintza</translation>
 <translation id="4892811427319351753">Ezin da gaitu <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
-<translation id="4892981359753171125">Aurpegi bidezko kontrola</translation>
+<translation id="4892981359753171125">Aurpegi-keinuen bidez kontrolatzea</translation>
 <translation id="4893073099212494043">Gaitu hurrengo hitzaren iragarpena</translation>
 <translation id="4893336867552636863">Hori eginez gero, betiko ezabatuko dira gailuko arakatze-datuak.</translation>
 <translation id="4893454800196085005">Ona: DVDa</translation>
@@ -10026,7 +10026,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8261625296061301062">Instalatu da eskanerraren softwarea</translation>
 <translation id="8263228331881858381">Gorde da sarbide-gakoa</translation>
 <translation id="8263336784344783289">Eman izena taldeari</translation>
-<translation id="8264024885325823677">Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="8264024885325823677">Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="826511437356419340">Leihoen ikuspegi orokorraren moduan sartu zara. Pasatu hatza nabigatzeko edo, teklatu bat erabiltzen ari bazara, sakatu tabuladorea.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Berriro exekutatu ondoren, ezkutuko moduko leihoa ez da irekiko}other{Berriro exekutatu ondoren, ezkutuko moduko {COUNT} leihoak ez dira irekiko}}</translation>
 <translation id="8266947622852630193">Idazketa-metodo guztiak</translation>

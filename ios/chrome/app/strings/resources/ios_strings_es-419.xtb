@@ -715,7 +715,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4514889972748124117">Sugerir contraseña segura…</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} favorito}other{{count} favoritos}}</translation>
-<translation id="452750746583162491">Revisa tus datos sincronizados</translation>
+<translation id="452750746583162491">Revisar tus datos sincronizados</translation>
 <translation id="4527660062930312477">Tu cuenta está administrada</translation>
 <translation id="4539187448429948815">{count,plural, =1{Hay {count} sugerencia de autocompletar guardada disponible sobre el teclado.}other{Hay {count} sugerencias de autocompletar guardadas disponibles sobre el teclado.}}</translation>
 <translation id="4540780316273593836">Se produjo un error</translation>

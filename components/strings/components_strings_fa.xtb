@@ -438,7 +438,7 @@
 <translation id="1755203724116202818">برای سنجش عملکرد آگهی، انواع محدودی از داده‌ها بین سایت‌ها هم‌رسانی می‌شود؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="1755621011177747277">به فرزندی پذیرفتن</translation>
 <translation id="1756026472674246267">باز کردن پیوند در برگه جدید</translation>
-<translation id="1756555787993603971">ازاین‌پس می‌توانید بااستفاده از کارت مجازی به‌طور ایمن‌تر با تکمیل خودکار تصفیه‌حساب کنید.</translation>
+<translation id="1756555787993603971">ازاین‌پس می‌توانید بااستفاده از کارت مجازی به‌طور ایمن‌تر با تکمیل خودکار تسویه‌حساب کنید.</translation>
 <translation id="175656076281618225">تردستی</translation>
 <translation id="1757773103848038814">قلم تک‌فاصله</translation>
 <translation id="1757935267918149452">‏دکمه تغییر گذرواژه Google؛ برای تغییر گذرواژه «حساب Google»، آن را فعال کنید</translation>
@@ -1217,7 +1217,7 @@
 <translation id="3266367459139339908">درحال راه‌اندازی روش‌های جدیدی هستیم برای محدود کردن اطلاعاتی که سایت‌ها می‌توانند هنگام نمایش آگهی‌های شخصی‌سازی‌شده درباره شما کسب کنند، برای مثال:</translation>
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
-<translation id="3270041629388773465">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تصفیه‌حساب کنید</translation>
+<translation id="3270041629388773465">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تسویه‌حساب کنید</translation>
 <translation id="3270847123878663523">&amp;واگرد ترتیب‌بندی مجدد</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
 <translation id="3272091146646336650">‏B سوپر</translation>
@@ -1674,7 +1674,7 @@
 <translation id="4089152113577680600">سینی ۱۴</translation>
 <translation id="4092349052316400070">نشانی را تکمیل کنید</translation>
 <translation id="4096237801206588987">۱۵ × ۱۱ اینچ</translation>
-<translation id="4098306082496067348">روی جزئیات کارت مجازی تک‌ضرب بزنید تا به بخش تصفیه‌حساب اضافه شود.</translation>
+<translation id="4098306082496067348">روی جزئیات کارت مجازی تک‌ضرب بزنید تا به بخش تسویه‌حساب اضافه شود.</translation>
 <translation id="4099048595830172239">سیاست سرپرست توصیه می‌کند هرگاه محتوای محرمانه در صفحه‌نمایش شما نمایان باشد، صفحه را با <ph name="APPLICATION_TITLE" /> هم‌رسانی نکنید:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="4101413244023615925">نوشتار و تصاویر گرافیکی</translation>
@@ -2633,7 +2633,7 @@
 <translation id="5915189366813702112">ساعات کاری انعطاف‌پذیر</translation>
 <translation id="59174027418879706">فعال شد</translation>
 <translation id="5918373444239520146">اسبابک‌ها و وسایل الکترونیکی قابل‌حمل</translation>
-<translation id="5918847752193018339">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تصفیه‌حساب کنید. <ph name="LINK_BEGIN" />حذف کدهای امنیتی ذخیره‌شده<ph name="LINK_END" /></translation>
+<translation id="5918847752193018339">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تسویه‌حساب کنید. <ph name="LINK_BEGIN" />حذف کدهای امنیتی ذخیره‌شده<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{۱ کوکی درحال استفاده}one{# کوکی درحال استفاده}other{# کوکی درحال استفاده}}</translation>
 <translation id="5921185718311485855">روشن</translation>
@@ -3175,7 +3175,7 @@
 <translation id="6915804003454593391">کاربر:</translation>
 <translation id="6916193791494646625">دلیلی برای بارگیری ارائه دهید (الزامی)</translation>
 <translation id="6917795328362592458">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه» توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
-<translation id="6924013822850225188">انتخاب می‌کنید مزایای کارت هنگام تصفیه‌حساب به شما نمایش داده شود یا نه (شرایط بانک اعمال می‌شود)</translation>
+<translation id="6924013822850225188">انتخاب می‌کنید مزایای کارت هنگام تسویه‌حساب به شما نمایش داده شود یا نه (شرایط بانک اعمال می‌شود)</translation>
 <translation id="6925267999184670015">‏B+‎ آمریکای شمالی</translation>
 <translation id="6926216138694948720">هنر بدن</translation>
 <translation id="692638818576287323">خودروهای تجاری</translation>
@@ -3334,7 +3334,7 @@
 <translation id="7192537357091279678">درایو و فضای ذخیره‌سازی رایانه</translation>
 <translation id="7193661028827781021">مرجع</translation>
 <translation id="719464814642662924">ویزا</translation>
-<translation id="7195432682252510959">هنگام تصفیه‌حساب، از این کد استفاده کنید. تا <ph name="DATE" /> اعتبار دارد.</translation>
+<translation id="7195432682252510959">هنگام تسویه‌حساب، از این کد استفاده کنید. تا <ph name="DATE" /> اعتبار دارد.</translation>
 <translation id="7195852673246414183">بعداز روشن کردن این تنظیم، به این برگه برگردید و نوشتن را شروع کنید</translation>
 <translation id="7199278868241956094">اداری</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای باز کردن «برگه ناشناس» جدید و مرور کردن به‌صورت خصوصی، کلید Tab و سپس Enter را فشار دهید</translation>
@@ -3735,7 +3735,7 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">برای تسویه‌حساب سریع‌تر، کد تأیید این کارت رمزگذاری خواهد شد و در دستگاهتان ذخیره می‌شود</translation>
 <translation id="7937554595067888181">در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
-<translation id="7938490694919717008">پاداش‌ها و مزایایی که در زمان تصفیه‌حساب برای کارت‌هایتان دردسترس است نشان داده می‌شود<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />با مزایای کارت آشنا شوید<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="7938490694919717008">پاداش‌ها و مزایایی که در زمان تسویه‌حساب برای کارت‌هایتان دردسترس است نشان داده می‌شود<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />با مزایای کارت آشنا شوید<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">گواهی سرور هنوز معتبر نیست.</translation>
 <translation id="7941628148012649605">پاکت چو ۴</translation>
 <translation id="794169214536209644">آب‌نبات و شیرینی</translation>
