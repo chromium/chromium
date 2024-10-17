@@ -411,7 +411,8 @@ void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
 void OnDeviceTranslationServiceController::UninstallLanguagePackage(
     LanguagePackKey language_pack_key) {
   component_updater::UninstallTranslateKitLanguagePackComponent(
-      g_browser_process->local_state(), language_pack_key);
+      g_browser_process->component_updater(), g_browser_process->local_state(),
+      language_pack_key);
 }
 
 // Called when the TranslateKitBinaryPath pref is changed.
