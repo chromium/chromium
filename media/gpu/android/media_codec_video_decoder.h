@@ -361,6 +361,8 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // Enables Block Model (LinearBlock).
   const bool use_block_model_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<MediaCodecVideoDecoder> weak_factory_{this};
   base::WeakPtrFactory<MediaCodecVideoDecoder> codec_allocator_weak_factory_{
       this};

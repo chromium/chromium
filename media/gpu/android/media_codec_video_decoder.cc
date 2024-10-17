@@ -283,6 +283,7 @@ std::unique_ptr<VideoDecoder> MediaCodecVideoDecoder::Create(
 }
 
 MediaCodecVideoDecoder::~MediaCodecVideoDecoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::~MediaCodecVideoDecoder");
   ReleaseCodec();
@@ -331,6 +332,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                         InitCB init_cb,
                                         const OutputCB& output_cb,
                                         const WaitingCB& waiting_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_cb);
   DCHECK(waiting_cb);
 
@@ -437,6 +439,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
 }
 
 void MediaCodecVideoDecoder::SetCdm(CdmContext* cdm_context, InitCB init_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << __func__;
   DCHECK(cdm_context) << "No CDM provided";
   DCHECK(cdm_context->GetMediaCryptoContext());
@@ -459,6 +462,7 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
     InitCB init_cb,
     JavaObjectPtr media_crypto,
     bool requires_secure_video_codec) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << __func__
            << ": requires_secure_video_codec = " << requires_secure_video_codec;
 
@@ -499,6 +503,7 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
 }
 
 void MediaCodecVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
 
   if (event != CdmContext::Event::kHasAdditionalUsableKey)
@@ -509,6 +514,7 @@ void MediaCodecVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
 }
 
 void MediaCodecVideoDecoder::StartLazyInit() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::StartLazyInit");
   lazy_init_pending_ = false;
@@ -545,6 +551,7 @@ void MediaCodecVideoDecoder::StartLazyInit() {
 
 void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
     scoped_refptr<gpu::TextureOwner> texture_owner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   TRACE_EVENT0("media",
                "MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized");
@@ -580,6 +587,7 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
 
 void MediaCodecVideoDecoder::OnOverlayInfoChanged(
     const OverlayInfo& overlay_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK(device_info_->SupportsOverlaySurfaces());
   DCHECK(!enable_threaded_texture_mailboxes_);
@@ -598,6 +606,7 @@ void MediaCodecVideoDecoder::OnOverlayInfoChanged(
 
 void MediaCodecVideoDecoder::OnSurfaceChosen(
     std::unique_ptr<AndroidOverlay> overlay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK(state_ == State::kInitializing ||
          device_info_->IsSetOutputSurfaceSupported());
@@ -622,6 +631,7 @@ void MediaCodecVideoDecoder::OnSurfaceChosen(
 }
 
 void MediaCodecVideoDecoder::OnSurfaceDestroyed(AndroidOverlay* overlay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK_NE(state_, State::kInitializing);
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::OnSurfaceDestroyed");
@@ -663,10 +673,12 @@ void MediaCodecVideoDecoder::OnSurfaceDestroyed(AndroidOverlay* overlay) {
 }
 
 bool MediaCodecVideoDecoder::SurfaceTransitionPending() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return codec_ && codec_->SurfaceBundle() != target_surface_bundle_;
 }
 
 void MediaCodecVideoDecoder::TransitionToTargetSurface() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK(SurfaceTransitionPending());
   DCHECK(device_info_->IsSetOutputSurfaceSupported());
@@ -684,6 +696,7 @@ void MediaCodecVideoDecoder::TransitionToTargetSurface() {
 }
 
 void MediaCodecVideoDecoder::CreateCodec() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!codec_);
   DCHECK(target_surface_bundle_);
   DCHECK_EQ(state_, State::kRunning);
@@ -740,6 +753,7 @@ void MediaCodecVideoDecoder::OnCodecConfiguredInternal(
 void MediaCodecVideoDecoder::OnCodecConfigured(
     scoped_refptr<CodecSurfaceBundle> surface_bundle,
     std::unique_ptr<MediaCodecBridge> codec) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!codec_);
   DCHECK_EQ(state_, State::kRunning);
   bool should_retry_codec_allocation = should_retry_codec_allocation_;
@@ -815,6 +829,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
 
 void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     DecodeCB decode_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << ": " << buffer->AsHumanReadableString();
   if (state_ == State::kError) {
     std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
@@ -837,6 +852,7 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 }
 
 void MediaCodecVideoDecoder::FlushCodec() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
 
   // If a deferred flush was pending, then it isn't anymore.
@@ -876,6 +892,7 @@ void MediaCodecVideoDecoder::FlushCodec() {
 }
 
 void MediaCodecVideoDecoder::PumpCodec() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(4) << __func__;
   if (state_ != State::kRunning) {
     return;
@@ -889,6 +906,7 @@ void MediaCodecVideoDecoder::PumpCodec() {
 }
 
 bool MediaCodecVideoDecoder::QueueInput() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(4) << __func__;
   if (!codec_ || waiting_for_key_)
     return false;
@@ -1017,6 +1035,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
 }
 
 bool MediaCodecVideoDecoder::DequeueOutput() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(4) << __func__;
   if (!codec_ || codec_->IsDrained() || waiting_for_key_)
     return false;
@@ -1106,6 +1125,7 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
 }
 
 void MediaCodecVideoDecoder::RunEosDecodeCb(int reset_generation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Both of the following conditions are necessary because:
   //  * In an error state, the reset generations will match but |eos_decode_cb_|
   //    will be aborted.
@@ -1120,6 +1140,7 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
     std::unique_ptr<ScopedAsyncTrace> async_trace,
     base::TimeTicks started_at,
     scoped_refptr<VideoFrame> frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " : "
            << (frame ? frame->AsHumanReadableString() : "null");
 
@@ -1158,6 +1179,7 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
 // 1) no VideoFrames from before the Reset() will be output, and
 // 2) no DecodeCBs (including EOS) from before the Reset() will be run.
 void MediaCodecVideoDecoder::Reset(base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK(!reset_cb_);
   reset_generation_++;
@@ -1167,6 +1189,7 @@ void MediaCodecVideoDecoder::Reset(base::OnceClosure closure) {
 }
 
 void MediaCodecVideoDecoder::StartDrainingCodec(DrainType drain_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::StartDrainingCodec");
   DCHECK(pending_decodes_.empty());
@@ -1193,6 +1216,7 @@ void MediaCodecVideoDecoder::StartDrainingCodec(DrainType drain_type) {
 }
 
 void MediaCodecVideoDecoder::OnCodecDrained() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::OnCodecDrained");
   DrainType drain_type = *drain_type_;
@@ -1217,6 +1241,7 @@ void MediaCodecVideoDecoder::OnCodecDrained() {
 
 void MediaCodecVideoDecoder::EnterTerminalState(State state,
                                                 DecoderStatus reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Any nested error inside `reason` not displayed as the error is propagated
   // to the caller.
   DVLOG(2) << __func__ << " " << static_cast<int>(state) << " "
@@ -1242,10 +1267,12 @@ void MediaCodecVideoDecoder::EnterTerminalState(State state,
 }
 
 bool MediaCodecVideoDecoder::InTerminalState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_ == State::kSurfaceDestroyed || state_ == State::kError;
 }
 
 void MediaCodecVideoDecoder::CancelPendingDecodes(DecoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& pending_decode : pending_decodes_)
     std::move(pending_decode.decode_cb).Run(status);
   pending_decodes_.clear();
@@ -1254,6 +1281,7 @@ void MediaCodecVideoDecoder::CancelPendingDecodes(DecoderStatus status) {
 }
 
 void MediaCodecVideoDecoder::ReleaseCodec() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!codec_)
     return;
   auto pair = codec_->TakeCodecSurfacePair();
@@ -1267,6 +1295,7 @@ void MediaCodecVideoDecoder::ReleaseCodec() {
 }
 
 AndroidOverlayFactoryCB MediaCodecVideoDecoder::CreateOverlayFactoryCb() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!overlay_factory_cb_ || !overlay_info_.HasValidRoutingToken())
     return AndroidOverlayFactoryCB();
 
@@ -1282,6 +1311,7 @@ bool MediaCodecVideoDecoder::NeedsBitstreamConversion() const {
 }
 
 bool MediaCodecVideoDecoder::CanReadWithoutStalling() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We should always be able to get at least two outputs, one in the front
   // buffer slot and one in the back buffer slot unless we're waiting for
   // rendering to happen.
@@ -1299,6 +1329,7 @@ int MediaCodecVideoDecoder::GetMaxDecodeRequests() const {
 
 PromotionHintAggregator::NotifyPromotionHintCB
 MediaCodecVideoDecoder::CreatePromotionHintCB() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Right now, we don't request promotion hints.  This is only used by SOP.
   // While we could simplify it a bit, this is the general form that we'll use
   // when handling promotion hints.
@@ -1327,22 +1358,26 @@ MediaCodecVideoDecoder::CreatePromotionHintCB() {
 }
 
 bool MediaCodecVideoDecoder::IsUsingOverlay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return codec_ && codec_->SurfaceBundle() &&
          codec_->SurfaceBundle()->overlay();
 }
 
 void MediaCodecVideoDecoder::NotifyPromotionHint(
     PromotionHintAggregator::Hint hint) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   surface_chooser_helper_.NotifyPromotionHintAndUpdateChooser(hint,
                                                               IsUsingOverlay());
 }
 
 void MediaCodecVideoDecoder::CacheFrameInformation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cached_frame_information_ =
       surface_chooser_helper_.ComputeFrameInformation(IsUsingOverlay());
 }
 
 bool MediaCodecVideoDecoder::CodecNeedsReallocation(int new_width) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !use_block_model_ && new_width > last_width_ * kReallocateThreshold &&
          device_info_ &&
          device_info_->SdkVersion() > base::android::SDK_VERSION_P;
@@ -1350,6 +1385,7 @@ bool MediaCodecVideoDecoder::CodecNeedsReallocation(int new_width) {
 
 std::vector<SupportedVideoDecoderConfig>
 MediaCodecVideoDecoder::GetSupportedConfigsInternal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Tests override the DeviceInfo, so if an override is provided query the
   // configs as they look under that DeviceInfo.
   if (device_info_ != DeviceInfo::GetInstance()) {
