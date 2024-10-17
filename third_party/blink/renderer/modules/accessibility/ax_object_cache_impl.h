@@ -668,11 +668,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   }
   HeapHashMap<AXID, Member<AXObject>>& GetObjects() { return objects_; }
 
-#if DCHECK_IS_ON()
-  // TODO(https://crbug.com/372508699): Remove after bug fixed.
-  bool can_mark_all_dirty_ = true;
-#endif
-
   // Used to turn on accessibility checks for internal Web UI, e.g. history,
   // preferences, etc. Will trigger DCHECKS so that WebUI with basic a11y errors
   // fail tests.
@@ -1005,6 +1000,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXObjectCacheLifecycle lifecycle_;
   // If > 0, tree is frozen.
   int frozen_count_ = 0;  // Used with Freeze(), Thaw() and IsFrozen() above.
+  // TODO(https://crbug.com/372508699): Remove after bug fixed.
+  bool can_mark_all_dirty_ = true;
 
 #if DCHECK_IS_ON()
   bool updating_layout_and_ax_ = false;
