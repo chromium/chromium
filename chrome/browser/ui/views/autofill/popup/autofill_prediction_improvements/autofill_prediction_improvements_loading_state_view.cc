@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill_prediction_improvements/prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
 
+#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_animated_gradient_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
-#include "chrome/browser/ui/views/autofill_prediction_improvements/prediction_improvements_animated_gradient_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 
