@@ -1533,7 +1533,8 @@ void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
         segmentation_platform::kDeviceSwitcherKey, options, input_context,
         base::BindOnce(
             &NewTabPageHandler::HandleMobilePromoSegmentationResponse,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            base::Time::Now()));
     return;
   }
 
@@ -1542,7 +1543,35 @@ void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
 
 void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
     GetMobilePromoQrCodeCallback callback,
+    base::Time request_start_time,
     const segmentation_platform::ClassificationResult& result) {
+  base::TimeDelta request_duration = base::Time::Now() - request_start_time;
+  switch (result.status) {
+    case segmentation_platform::PredictionStatus::kNotReady:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.NotReady."
+          "Duration",
+          request_duration);
+      break;
+    case segmentation_platform::PredictionStatus::kFailed:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Failed."
+          "Duration",
+          request_duration);
+      break;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Succeeded."
+          "Duration",
+          request_duration);
+      break;
+    default:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Unknown."
+          "Duration",
+          request_duration);
+      break;
+  }
   if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result)) {
     std::move(callback).Run(MakeMobilePromoQRCode());
     return;
@@ -1553,14 +1582,32 @@ void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
 
 void NewTabPageHandler::OnMobilePromoShown() {
   promos_utils::IOSDesktopNtpPromoShown(profile_->GetPrefs());
+  int appearance_count =
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.Displayed",
+                              appearance_count);
 }
 
 void NewTabPageHandler::OnDismissMobilePromo() {
+  int appearance_count =
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.Dismiss",
+                              appearance_count);
   profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
                                    true);
 }
 
 void NewTabPageHandler::OnUndoDismissMobilePromo() {
+  int appearance_count =
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.DismissUndone",
+                              appearance_count);
   profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
                                    false);
 }

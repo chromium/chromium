@@ -1188,6 +1188,10 @@ TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode) {
   run_loop.Run();
 
   EXPECT_NE("", encodedQrCode);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Succeeded."
+      "Duration",
+      1);
 }
 
 TEST_F(NewTabPageHandlerTest,
@@ -1227,6 +1231,10 @@ TEST_F(NewTabPageHandlerTest,
   run_loop.Run();
 
   EXPECT_EQ("", encodedQrCode);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Succeeded."
+      "Duration",
+      1);
 }
 
 TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode_EmptyWhenNoSync) {
@@ -1262,6 +1270,8 @@ TEST_F(NewTabPageHandlerTest, OnDismissMobilePromo) {
   handler_->OnDismissMobilePromo();
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       promos_prefs::kDesktopToiOSNtpPromoDismissed));
+  histogram_tester_.ExpectTotalCount("NewTabPage.Promos.MobilePromo.Dismiss",
+                                     1);
 }
 
 TEST_F(NewTabPageHandlerTest, OnUndoDismissMobilePromo) {
@@ -1270,14 +1280,17 @@ TEST_F(NewTabPageHandlerTest, OnUndoDismissMobilePromo) {
   handler_->OnUndoDismissMobilePromo();
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       promos_prefs::kDesktopToiOSNtpPromoDismissed));
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.Promos.MobilePromo.DismissUndone", 1);
 }
 
 TEST_F(NewTabPageHandlerTest, OnMobilePromoShown) {
   handler_->OnMobilePromoShown();
-  EXPECT_FALSE(
-      profile_->GetPrefs()
-          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
-          .empty());
+  histogram_tester_.ExpectBucketCount("NewTabPage.Promos.MobilePromo.Displayed",
+                                      1, 1);
+  handler_->OnMobilePromoShown();
+  histogram_tester_.ExpectBucketCount("NewTabPage.Promos.MobilePromo.Displayed",
+                                      2, 1);
 }
 
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {
