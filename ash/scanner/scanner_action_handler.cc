@@ -87,7 +87,7 @@ GURL GetContactUrl(const manta::proto::NewContactAction& contact) {
   std::string query = GetGoogleContactsNewUrl().query();
   CHECK(query.empty());
   if (!contact.given_name().empty()) {
-    query += "given_name=";
+    query += "givenname=";
     query +=
         base::EscapeQueryParamValue(contact.given_name(), /*use_plus=*/true);
   }

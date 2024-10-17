@@ -172,8 +172,7 @@ TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
       VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
           Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
           Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece,
-                   "given_name=L%C3%A9a")))));
+          Property("query_piece", &GURL::query_piece, "givenname=L%C3%A9a")))));
 }
 
 TEST(ScannerActionToCommandTest, NewGoogleDoc) {
