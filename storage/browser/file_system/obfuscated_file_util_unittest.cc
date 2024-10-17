@@ -241,8 +241,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         is_incognito(), data_dir_.GetPath(), quota_manager_task_runner_,
-        /*quota_change_callback=*/base::DoNothing(), storage_policy_,
-        GetQuotaSettingsFunc());
+        storage_policy_, GetQuotaSettingsFunc());
 
     quota_manager_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(

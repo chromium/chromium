@@ -13,11 +13,6 @@ namespace {
 constexpr int64_t kMBytes = 1024 * 1024;
 }  // namespace
 
-// Enables Storage Pressure Event.
-BASE_FEATURE(kStoragePressureEvent,
-             "StoragePressureEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables customized storage quota settings for embedders.
 BASE_FEATURE(kStorageQuotaSettings,
              "StorageQuotaSettings",

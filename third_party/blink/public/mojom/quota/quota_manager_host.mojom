@@ -6,26 +6,12 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/quota/quota_types.mojom";
 
-// Receives quota change notifications for a frame or worker.
-//
-// The interface is used to by the quota system in the browser process, to
-// send notifications to Blink in the renderer process.
-interface QuotaChangeListener {
-  // Triggered due to storage pressure.
-  OnQuotaChange();
-};
-
 // Implements the Web Platform's quota ("Storage") API.
 //
 // The interface is consumed by Blink in the renderer process. The interface is
 // currently implemented in the browser process, and will eventually move to the
 // Storage Service.
 interface QuotaManagerHost {
-  // Subscribes to changes in the quota transmitted in a request to an URL.
-  //
-  // The subscription is canceled by closing the pipe.
-  AddChangeListener(pending_remote<QuotaChangeListener> listener) => ();
-
   // Retrieves the origin's current usage and quota.
   //
   // This method can be called from frames and workers.

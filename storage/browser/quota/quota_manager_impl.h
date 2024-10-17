@@ -177,7 +177,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   QuotaManagerImpl(bool is_incognito,
                    const base::FilePath& profile_path,
                    scoped_refptr<base::SingleThreadTaskRunner> io_thread,
-                   base::RepeatingClosure quota_change_callback,
                    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
                    const GetQuotaSettingsFunc& get_settings_function);
   QuotaManagerImpl(const QuotaManagerImpl&) = delete;
@@ -471,7 +470,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       base::Minutes(5);
 
   static constexpr int kThresholdOfErrorsToBeDenylisted = 3;
-  static constexpr int kThresholdRandomizationPercent = 5;
 
   static constexpr char kDatabaseName[] = "QuotaManager";
 
@@ -752,13 +750,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                        int64_t total_space,
                                        int64_t available_space);
 
-  // Evaluates disk statistics to identify storage pressure
-  // (low disk space availability) and starts the storage
-  // pressure event dispatch if appropriate.
-  // TODO(crbug.com/40133191): Implement UsageAndQuotaInfoGatherer::Completed()
-  // to use DetermineStoragePressure().
-  void DetermineStoragePressure(int64_t free_space, int64_t total_space);
-
   std::optional<int64_t> GetQuotaOverrideForStorageKey(
       const blink::StorageKey&);
 
@@ -808,7 +799,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   scoped_refptr<base::TaskRunner> get_settings_task_runner_;
   base::RepeatingCallback<void(const blink::StorageKey&)>
       storage_pressure_callback_;
-  base::RepeatingClosure quota_change_callback_;
   QuotaSettings settings_;
   base::TimeTicks settings_timestamp_;
   std::tuple<base::TimeTicks, int64_t, int64_t>

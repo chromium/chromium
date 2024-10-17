@@ -595,11 +595,6 @@ const char kProtectedAudiencesConsentedDebugToken[] =
 // Defaults to disabled.
 const char kPullToRefresh[] = "pull-to-refresh";
 
-// Specifies the minimum amount of time, in seconds, that must pass before
-// consecutive quota change events can be fired. Set the value to '0' to disable
-// the debounce mechanimsm.
-const char kQuotaChangeEventInterval[] = "quota-change-event-interval";
-
 // Reduce the accept-language http header, and only send one language in the
 // request header: https://github.com/Tanych/accept-language.
 const char kReduceAcceptLanguage[] = "reduce-accept-language";

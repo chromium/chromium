@@ -9673,13 +9673,11 @@ interface StorageEvent : Event
     method initStorageEvent
 interface StorageManager : EventTarget
     attribute @@toStringTag
-    getter onquotachange
     method constructor
     method estimate
     method getDirectory
     method persist
     method persisted
-    setter onquotachange
 interface StylePropertyMap : StylePropertyMapReadOnly
     attribute @@toStringTag
     method append

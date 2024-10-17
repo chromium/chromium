@@ -13,13 +13,11 @@ QuotaManager::QuotaManager(
     bool is_incognito,
     const base::FilePath& profile_path,
     scoped_refptr<base::SingleThreadTaskRunner> io_thread,
-    base::RepeatingClosure quota_change_callback,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const GetQuotaSettingsFunc& get_settings_function)
     : QuotaManagerImpl(is_incognito,
                        profile_path,
                        std::move(io_thread),
-                       std::move(quota_change_callback),
                        std::move(special_storage_policy),
                        get_settings_function) {}
 

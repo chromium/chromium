@@ -3441,10 +3441,6 @@
       status: "stable",
     },
     {
-      name: "QuotaChange",
-      status: "experimental",
-    },
-    {
       name: "RasterInducingScroll",
       status: "test",
     },

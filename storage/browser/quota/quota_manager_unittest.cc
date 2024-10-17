@@ -79,7 +79,6 @@ const int64_t kAvailableSpaceForApp = 13377331U;
 const int64_t kMustRemainAvailableForSystem = kAvailableSpaceForApp / 2;
 const int64_t kDefaultPoolSize = 1000;
 const int64_t kDefaultPerStorageKeyQuota = 200 * 1024 * 1024;
-const int64_t kGigabytes = QuotaManagerImpl::kGBytes;
 
 struct UsageAndQuotaResult {
   QuotaStatusCode status;
@@ -181,7 +180,6 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_ = base::MakeRefCounted<QuotaManagerImpl>(
         is_incognito, data_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*quota_change_callback=*/base::DoNothing(),
         mock_special_storage_policy_.get(), GetQuotaSettingsFunc());
     SetQuotaSettings(kDefaultPoolSize, kDefaultPerStorageKeyQuota,
                      is_incognito ? INT64_C(0) : kMustRemainAvailableForSystem);
@@ -3490,55 +3488,6 @@ TEST_F(QuotaManagerImplTest, WithdrawQuotaOverride) {
   result = GetUsageAndQuotaForWebApps(storage_key, kTemp);
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.quota, kDefaultPerStorageKeyQuota);
-}
-
-TEST_F(QuotaManagerImplTest, QuotaChangeEvent_LargePartitionPressure) {
-  scoped_feature_list_.InitAndEnableFeature(features::kStoragePressureEvent);
-  bool quota_change_dispatched = false;
-
-  SetQuotaChangeCallback(
-      base::BindLambdaForTesting([&] { quota_change_dispatched = true; }));
-  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
-    int64_t total = kGigabytes * 100;
-    int64_t available = kGigabytes * 2;
-    return QuotaAvailability(total, available);
-  });
-  GetStorageCapacity();
-  EXPECT_FALSE(quota_change_dispatched);
-
-  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
-    int64_t total = kGigabytes * 100;
-    int64_t available = QuotaManagerImpl::kMBytes * 512;
-    return QuotaAvailability(total, available);
-  });
-  GetStorageCapacity();
-  EXPECT_TRUE(quota_change_dispatched);
-}
-
-TEST_F(QuotaManagerImplTest, QuotaChangeEvent_SmallPartitionPressure) {
-  scoped_feature_list_.InitAndEnableFeature(features::kStoragePressureEvent);
-  bool quota_change_dispatched = false;
-
-  SetQuotaChangeCallback(
-      base::BindLambdaForTesting([&] { quota_change_dispatched = true; }));
-  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
-    int64_t total = kGigabytes * 10;
-    int64_t available = total * 2;
-    return QuotaAvailability(total, available);
-  });
-  GetStorageCapacity();
-  EXPECT_FALSE(quota_change_dispatched);
-
-  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
-    // DetermineStoragePressure flow will trigger the storage pressure flow
-    // when available disk space is below 5% (+/- 0.25%) of total disk space.
-    // Available is 2% here to guarantee that it falls below the threshold.
-    int64_t total = kGigabytes * 10;
-    int64_t available = total * 0.02;
-    return QuotaAvailability(total, available);
-  });
-  GetStorageCapacity();
-  EXPECT_TRUE(quota_change_dispatched);
 }
 
 TEST_F(QuotaManagerImplTest, DeleteBucketData_QuotaManagerDeletedImmediately) {

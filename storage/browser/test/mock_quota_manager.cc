@@ -48,7 +48,6 @@ MockQuotaManager::MockQuotaManager(
     : QuotaManager(is_incognito,
                    profile_path,
                    std::move(io_thread),
-                   /*quota_change_callback=*/base::DoNothing(),
                    std::move(special_storage_policy),
                    GetQuotaSettingsFunc()),
       profile_path_(profile_path) {

@@ -90,10 +90,6 @@ const char* const kBadFlags[] = {
     switches::kIgnoreCertificateErrors,
     network::switches::kIgnoreCertificateErrorsSPKIList,
 
-    // This flag could prevent QuotaChange events from firing or cause the event
-    // to fire too often, potentially impacting web application behavior.
-    switches::kQuotaChangeEventInterval,
-
     // These flags change the URLs that handle PII.
     switches::kGaiaUrl,
     translate::switches::kTranslateScriptURL,

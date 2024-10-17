@@ -92,7 +92,6 @@ PASS oldChildWindow.navigator.serviceWorker.controller is newChildWindow.navigat
 PASS oldChildWindow.navigator.serviceWorker.oncontrollerchange is newChildWindow.navigator.serviceWorker.oncontrollerchange
 PASS oldChildWindow.navigator.serviceWorker.onmessage is newChildWindow.navigator.serviceWorker.onmessage
 PASS oldChildWindow.navigator.serviceWorker.onmessageerror is newChildWindow.navigator.serviceWorker.onmessageerror
-PASS oldChildWindow.navigator.storage.onquotachange is newChildWindow.navigator.storage.onquotachange
 PASS oldChildWindow.navigator.usb.onconnect is newChildWindow.navigator.usb.onconnect
 PASS oldChildWindow.navigator.usb.ondisconnect is newChildWindow.navigator.usb.ondisconnect
 PASS oldChildWindow.navigator.userActivation.hasBeenActive is newChildWindow.navigator.userActivation.hasBeenActive

@@ -7894,7 +7894,6 @@ data/stale-while-revalidate.html
 data/stop.html
 data/storage/common.js
 data/storage/quota_change_test.html
-data/storage/quota_change_test.js
 data/super_tall_page.html
 data/super_tall_parent.html
 data/sxg/127.0.0.1.public.pem.cbor

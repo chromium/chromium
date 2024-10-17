@@ -1903,12 +1903,10 @@ interface StorageBucketManager
     method open
 interface StorageManager : EventTarget
     attribute @@toStringTag
-    getter onquotachange
     method constructor
     method estimate
     method getDirectory
     method persisted
-    setter onquotachange
 interface Subscriber
     attribute @@toStringTag
     getter active

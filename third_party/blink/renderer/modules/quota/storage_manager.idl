@@ -12,5 +12,4 @@
     [Exposed=Window, CallWith=ScriptState, MeasureAs=DurableStoragePersist, RaisesException] Promise<boolean> persist();
 
     [CallWith=ScriptState, MeasureAs=DurableStorageEstimate, RaisesException] Promise<StorageEstimate> estimate();
-    [RuntimeEnabled=QuotaChange] attribute EventHandler onquotachange;
 };

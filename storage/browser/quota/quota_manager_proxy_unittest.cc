@@ -27,7 +27,6 @@ class QuotaManagerProxyTest : public testing::Test {
     quota_manager_ = base::MakeRefCounted<QuotaManagerImpl>(
         /*is_incognito*/ false, profile_path_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*quota_change_callback=*/base::DoNothing(),
         /*storage_policy=*/nullptr,
         base::BindRepeating([](OptionalQuotaSettingsCallback callback) {
           QuotaSettings settings;

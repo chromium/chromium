@@ -2116,12 +2116,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method open
 [Worker] interface StorageManager : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter onquotachange
 [Worker]     method constructor
 [Worker]     method estimate
 [Worker]     method getDirectory
 [Worker]     method persisted
-[Worker]     setter onquotachange
 [Worker] interface Subscriber
 [Worker]     attribute @@toStringTag
 [Worker]     getter active

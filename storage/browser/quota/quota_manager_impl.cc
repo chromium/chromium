@@ -98,13 +98,6 @@ constexpr double kStoragePressureThresholdRatio = 0.02;
 constexpr base::TimeDelta kStoragePressureCheckDiskStatsInterval =
     base::Minutes(5);
 
-// Modifies a given value by a uniformly random amount from
-// -percent to +percent.
-int64_t RandomizeByPercent(int64_t value, int percent) {
-  double random_percent = (base::RandDouble() - 0.5) * percent * 2;
-  return value * (1 + (random_percent / 100.0));
-}
-
 bool IsSupportedType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kSyncable;
 }
@@ -984,7 +977,6 @@ QuotaManagerImpl::QuotaManagerImpl(
     bool is_incognito,
     const base::FilePath& profile_path,
     scoped_refptr<base::SingleThreadTaskRunner> io_thread,
-    base::RepeatingClosure quota_change_callback,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const GetQuotaSettingsFunc& get_settings_function)
     : RefCountedDeleteOnSequence<QuotaManagerImpl>(io_thread),
@@ -998,7 +990,6 @@ QuotaManagerImpl::QuotaManagerImpl(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       get_settings_function_(get_settings_function),
-      quota_change_callback_(std::move(quota_change_callback)),
       special_storage_policy_(std::move(special_storage_policy)),
       get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo) {
   DCHECK_EQ(settings_.refresh_interval, base::TimeDelta::Max());
@@ -2371,27 +2362,6 @@ void QuotaManagerImpl::IsSimulateStoragePressureAvailable(
   std::move(callback).Run(!storage_pressure_callback_.is_null());
 }
 
-void QuotaManagerImpl::DetermineStoragePressure(int64_t total_space,
-                                                int64_t free_space) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(total_space, 0);
-  DCHECK_GE(free_space, 0);
-
-  if (!base::FeatureList::IsEnabled(features::kStoragePressureEvent)) {
-    return;
-  }
-  int64_t threshold_bytes =
-      RandomizeByPercent(kGBytes, kThresholdRandomizationPercent);
-  int64_t threshold = RandomizeByPercent(
-      static_cast<int64_t>(total_space *
-                           (kThresholdRandomizationPercent / 100.0)),
-      kThresholdRandomizationPercent);
-  threshold = std::min(threshold_bytes, threshold);
-  if (free_space < threshold && !quota_change_callback_.is_null()) {
-    quota_change_callback_.Run();
-  }
-}
-
 void QuotaManagerImpl::SetStoragePressureCallback(
     base::RepeatingCallback<void(const StorageKey&)>
         storage_pressure_callback) {
@@ -2454,12 +2424,6 @@ std::optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForStorageKey(
     return std::nullopt;
   }
   return devtools_overrides_[storage_key].quota_size;
-}
-
-void QuotaManagerImpl::SetQuotaChangeCallbackForTesting(
-    base::RepeatingClosure storage_pressure_event_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  quota_change_callback_ = std::move(storage_pressure_event_callback);
 }
 
 void QuotaManagerImpl::CorruptDatabaseForTesting(
@@ -2815,7 +2779,6 @@ void QuotaManagerImpl::DidGetStorageCapacity(
   cached_disk_stats_for_storage_pressure_ =
       std::make_tuple(base::TimeTicks::Now(), total_space, available_space);
   storage_capacity_callbacks_.Run(total_space, available_space);
-  DetermineStoragePressure(total_space, available_space);
 }
 
 void QuotaManagerImpl::DidRecoverOrRazeForReBootstrap(bool success) {

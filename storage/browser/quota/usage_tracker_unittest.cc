@@ -110,8 +110,7 @@ class UsageTrackerTest : public testing::Test {
     quota_manager_ = base::MakeRefCounted<QuotaManagerImpl>(
         /*is_incognito=*/false, base_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*quota_change_callback=*/base::DoNothing(), storage_policy_.get(),
-        GetQuotaSettingsFunc());
+        storage_policy_.get(), GetQuotaSettingsFunc());
     usage_tracker_ = std::make_unique<UsageTracker>(
         quota_manager_.get(), GetQuotaClientMap(), StorageType::kTemporary,
         storage_policy_.get());

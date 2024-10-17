@@ -13,8 +13,6 @@ namespace storage {
 
 namespace features {
 
-COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStoragePressureEvent);
-
 COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStorageQuotaSettings);
 extern const base::FeatureParam<double> kMustRemainAvailableBytes;
 extern const base::FeatureParam<double> kMustRemainAvailableRatio;

@@ -1634,8 +1634,6 @@ source_set("browser") {
     "push_messaging/push_messaging_manager.h",
     "push_messaging/push_messaging_router.cc",
     "push_messaging/push_messaging_router.h",
-    "quota/quota_change_dispatcher.cc",
-    "quota/quota_change_dispatcher.h",
     "quota/quota_context.cc",
     "quota/quota_context.h",
     "quota/quota_internals_ui.cc",

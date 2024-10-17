@@ -119,8 +119,7 @@ class SandboxFileSystemBackendTest : public testing::Test {
 
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         /*is_incognito=*/true, data_dir_.GetPath(), quota_manager_task_runner,
-        /*quota_change_callback=*/base::DoNothing(), storage_policy,
-        GetQuotaSettingsFunc());
+        storage_policy, GetQuotaSettingsFunc());
 
     quota_manager_task_runner->PostTask(
         FROM_HERE, base::BindOnce(
