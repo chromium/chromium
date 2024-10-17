@@ -790,6 +790,11 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       PrefetchStatus prefetch_status);
 
+  // Updates `attempt_`'s outcome and failure reason based on
+  // `new_prefetch_status`.
+  void SetTriggeringOutcomeAndFailureReasonFromStatus(
+      PrefetchStatus new_prefetch_status);
+
   // Add client hints headers to a request bound for |origin|.
   void AddClientHintsHeaders(const url::Origin& origin,
                              net::HttpRequestHeaders* request_headers);
@@ -818,6 +823,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns the |PrefetchStartResultCode| based on the |eligibility|.
   PrefetchStartResultCode GetPrefetchFailedIneligibleStartResultCode(
       PreloadingEligibility eligibility);
+
+  // Record `prefetch_status` to UMA if it hasn't already been recorded for this
+  // container.
+  // Note: We use a parameter instead of just `prefetch_status_` as it may not
+  // be updated to the latest value when this method is called.
+  void MaybeRecordPrefetchStatusToUMA(PrefetchStatus prefetch_status);
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
@@ -872,6 +883,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // TODO(crbug.com/40075414): Use `load_state_` instead for non-metrics
   // purpose.
   std::optional<PrefetchStatus> prefetch_status_;
+  bool prefetch_status_recorded_to_uma_ = false;
 
   // True iff `PrefetchStatus` was set to `kPrefetchNotUsedCookiesChanged` once.
   //

@@ -28967,8 +28967,9 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="DEPRECATED Prefetch Used, No Probe">
     The interceptor used a prefetch. (Deprecated M115)
   </int>
-  <int value="1" label="Prefetch Used, Probe Success">
+  <int value="1" label="DEPRECATED Prefetch Used, Probe Success">
     The interceptor used a prefetch after successfully probing the origin.
+    (Deprecated M110)
   </int>
   <int value="2" label="Prefetch Not Used, Probe Failed">
     The interceptor was not able to use an available prefetch because the origin
@@ -29114,9 +29115,10 @@ Called by update_net_error_codes.py.-->
     The URL is not eligible to be prefetched, because in the default network
     context it is configured to use a proxy server.
   </int>
-  <int value="39" label="Prefetch Not Eligible: Browser Context Off The Record">
+  <int value="39"
+      label="DEPRECATED Prefetch Not Eligible: Browser Context Off The Record">
     The URL is not eligible to be prefetched because in the browser is in
-    Incognito or Guest mode.
+    Incognito or Guest mode. (Deprecated M128)
   </int>
   <int value="40" label="Prefetch Heldback">
     The URL is eligible but heldback because it belongs to the Holdback group.
@@ -29135,8 +29137,9 @@ Called by update_net_error_codes.py.-->
     The prefetch was redirect and failed, because the redirect URL was not
     eligible to be prefetched.
   </int>
-  <int value="45" label="Prefetch Failed: Per Page Limit Exceeded">
+  <int value="45" label="DEPRECATED Prefetch Failed: Per Page Limit Exceeded">
     The prefetch was eligible but rejected due to the per-page limit exceeded.
+    (Deprecated M130)
   </int>
   <int value="46"
       label="Prefetch Not Eligible: Same-site Cross-origin Prefetch Required
