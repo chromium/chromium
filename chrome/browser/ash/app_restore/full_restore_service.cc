@@ -28,9 +28,11 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/version_info.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -82,6 +84,11 @@
 namespace ash::full_restore {
 
 namespace {
+
+bool g_restore_for_testing = true;
+
+// If true, do not show any full restore UI.
+bool g_last_session_sanitized = false;
 
 // This flag forces full session restore on startup regardless of potential
 // non-clean shutdown. It could be used in tests to ignore crashes on shutdown.
@@ -150,12 +157,11 @@ CollectRestoreIDsForNormalBrowserWindows(
   return app_restore_ids;
 }
 
+bool IsFactoryTestRunningMayBlock() {
+  return base::PathExists(base::FilePath("/use/local/factory/enabled"));
+}
+
 }  // namespace
-
-bool g_restore_for_testing = true;
-
-// If true, do not show any full restore UI.
-bool g_last_session_sanitized = false;
 
 const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
 const char kRestoreNotificationId[] = "restore_notification";
@@ -989,9 +995,30 @@ void FullRestoreService::OnSessionInformationReceived(
 }
 
 void FullRestoreService::MaybeShowInformedRestoreOnboarding(bool restore_on) {
-  if (Shell::HasInstance() && !profile_->IsNewProfile() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (!Shell::HasInstance()) {
+    return;
+  }
+
+  if (profile_->IsNewProfile()) {
+    return;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kNoFirstRun)) {
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&IsFactoryTestRunningMayBlock),
+      base::BindOnce(&FullRestoreService::OnShouldShowInformedRestoreOnboarding,
+                     weak_ptr_factory_.GetWeakPtr(), restore_on));
+}
+
+void FullRestoreService::OnShouldShowInformedRestoreOnboarding(
+    bool restore_on,
+    bool factory_test_running) {
+  if (!factory_test_running) {
     CHECK(Shell::Get()->informed_restore_controller());
     Shell::Get()
         ->informed_restore_controller()

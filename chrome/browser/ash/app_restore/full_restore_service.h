@@ -189,6 +189,8 @@ class FullRestoreService : public KeyedService,
 
   // Shows the informed restore onboarding dialog when there is no restore data.
   void MaybeShowInformedRestoreOnboarding(bool restore_on);
+  void OnShouldShowInformedRestoreOnboarding(bool restore_on,
+                                             bool factory_test_running);
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
