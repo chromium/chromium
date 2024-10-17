@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -103,7 +102,7 @@ public class DownloadMessageUiControllerTest {
 
         @Override
         public void openDownload(
-                ContentId contentId, OtrProfileId otrProfileId, int source, Context context) {}
+                OfflineItem offlineItem, OtrProfileId otrProfileId, int source, Context context) {}
 
         @Override
         public void removeNotification(int notificationId, DownloadInfo downloadInfo) {}

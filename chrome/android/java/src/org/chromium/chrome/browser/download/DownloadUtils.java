@@ -61,7 +61,6 @@ import org.chromium.components.download.ResumeMode;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -358,24 +357,39 @@ public class DownloadUtils {
      * Utility method to open an {@link OfflineItem}, which can be a chrome download, offline page.
      * Falls back to open download home.
      *
-     * @param contentId The {@link ContentId} of the associated offline item.
+     * @param offlineItem The associated {@link OfflineItem}.
      * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      * @param source The location from which the download was opened.
      */
     public static void openItem(
-            ContentId contentId,
+            OfflineItem offlineItem,
             OtrProfileId otrProfileId,
             @DownloadOpenSource int source,
             Context context) {
-        if (LegacyHelpers.isLegacyAndroidDownload(contentId)) {
+        if (offlineItem == null) {
+            DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
+            return;
+        }
+        if (LegacyHelpers.isLegacyAndroidDownload(offlineItem.id)) {
             ContextUtils.getApplicationContext()
                     .startActivity(
                             new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else if (source == DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE
+                && offlineItem.mimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)
+                && PdfUtils.shouldOpenPdfInline(OtrProfileId.isOffTheRecord(otrProfileId))) {
+            if (!openFileWithExternalApps(
+                    offlineItem.filePath,
+                    offlineItem.mimeType,
+                    offlineItem.originalUrl.getSpec(),
+                    offlineItem.referrerUrl.getSpec(),
+                    context == null ? ContextUtils.getApplicationContext() : context)) {
+                DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
+            }
         } else {
             OpenParams openParams = new OpenParams(LaunchLocation.PROGRESS_BAR);
             openParams.openInIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
-            OfflineContentAggregatorFactory.get().openItem(openParams, contentId);
+            OfflineContentAggregatorFactory.get().openItem(openParams, offlineItem.id);
         }
     }
 
@@ -433,19 +447,9 @@ public class DownloadUtils {
         }
 
         // Check if any apps can open the file.
-        try {
-            // TODO(qinmin): Move this to an AsyncTask so we don't need to temper with strict mode.
-            Uri uri =
-                    ContentUriUtils.isContentUri(filePath)
-                            ? Uri.parse(filePath)
-                            : getUriForOtherApps(filePath);
-            Intent viewIntent =
-                    MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
-            context.startActivity(viewIntent);
+        if (openFileWithExternalApps(filePath, mimeType, originalUrl, referrer, context)) {
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
-        } catch (Exception e) {
-            Log.e(TAG, "Cannot start activity to open file", e);
         }
 
         // If this is a zip file, check if Android Files app exists.
@@ -752,6 +756,28 @@ public class DownloadUtils {
             }
 
             return TextUtils.expandTemplate(template, formattedFilePath, sizeString);
+        }
+    }
+
+    private static boolean openFileWithExternalApps(
+            String filePath,
+            String mimeType,
+            String originalUrl,
+            String referrer,
+            Context context) {
+        try {
+            // TODO(qinmin): Move this to an AsyncTask so we don't need to temper with strict mode.
+            Uri uri =
+                    ContentUriUtils.isContentUri(filePath)
+                            ? Uri.parse(filePath)
+                            : getUriForOtherApps(filePath);
+            Intent viewIntent =
+                    MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
+            context.startActivity(viewIntent);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot start activity to open file", e);
+            return false;
         }
     }
 

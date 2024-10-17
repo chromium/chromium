@@ -50,9 +50,9 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
         /** Called to open the downloads page. */
         void openDownloadsPage(OtrProfileId otrProfileId, @DownloadOpenSource int source);
 
-        /** Called to open the download associated with the given {@link contentId}. */
+        /** Called to open the download associated with the given {@link OfflineItem}. */
         void openDownload(
-                ContentId contentId,
+                OfflineItem offlineItem,
                 OtrProfileId otrProfileId,
                 @DownloadOpenSource int source,
                 Context context);
