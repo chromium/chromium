@@ -2102,7 +2102,11 @@ group("cronet_package_android") {
 
 # Everything added here will be executed in the CI.
 group("cronet_package_ci") {
-  deps = [ ":gn2bp_check" ]
+  deps = [
+    # TODO(b/374121813): Add gn2bp check once cronet_package_ci
+    # is remove from the CQ.
+    # ":gn2bp_check"
+  ]
 
   if (enable_rust) {
     deps +=
