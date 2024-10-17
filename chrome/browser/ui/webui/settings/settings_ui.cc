@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -43,7 +44,9 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -568,54 +571,80 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
   // AI
-  optimization_guide::UserVisibleFeatureKey optimization_guide_features[4] = {
-      optimization_guide::UserVisibleFeatureKey::kCompose,
-      optimization_guide::UserVisibleFeatureKey::kTabOrganization,
-      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch,
-      optimization_guide::UserVisibleFeatureKey::kHistorySearch,
-  };
-
   auto* optimization_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  bool optimization_guide_feature_visible[5] = {false, false, false, false,
-                                                false};
+  const bool ai_settings_refresh_enabled = base::FeatureList::IsEnabled(
+      optimization_guide::features::kAiSettingsPageRefresh);
 
-  for (size_t i = 0; i < 4; i++) {
-    const bool visible = optimization_guide_service &&
-                         optimization_guide_service->IsSettingVisible(
-                             optimization_guide_features[i]);
-    optimization_guide_feature_visible[i + 1] = visible;
+  if (ai_settings_refresh_enabled) {
+    const bool compose_enabled = ComposeEnabling::IsEnabledForProfile(profile);
+    const bool tab_organization_enabled =
+        TabOrganizationUtils::GetInstance()->IsEnabled(profile);
+    const bool wallpaper_search_enabled =
+        customize_chrome::IsWallpaperSearchEnabledForProfile(profile);
+    // TODO(crbug.com/363968675): This should probably be calling
+    // `history_embeddings::IsHistoryEmbeddingsEnabledForProfile`, but we're
+    // not sure it has the correct behavior and it's safer to keep the
+    // pre-Synapse behavior while we investigate.
+    const bool history_search_enabled =
+        optimization_guide_service->IsSettingVisible(
+            optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+    const bool compare_enabled = commerce::CanFetchProductSpecificationsData(
+        shopping_service->GetAccountChecker());
 
-    // The main toggle is visible only if at least one of the sub toggles is
-    // visible.
-    optimization_guide_feature_visible[0] |= visible;
+    html_source->AddBoolean("showComposeControl", compose_enabled);
+    html_source->AddBoolean("showTabOrganizationControl",
+                            tab_organization_enabled);
+    html_source->AddBoolean("showWallpaperSearchControl",
+                            wallpaper_search_enabled);
+    html_source->AddBoolean("showHistorySearchControl", history_search_enabled);
+    html_source->AddBoolean("showCompareControl", compare_enabled);
+
+    const bool show_ai_page = compose_enabled || tab_organization_enabled ||
+                              wallpaper_search_enabled ||
+                              history_search_enabled || compare_enabled;
+    // "showAdvancedFeaturesMainControl", despite the name, controls whether the
+    // AI subpage is shown. We want to show the page if any of the AI features
+    // are enabled.
+    // TODO(crbug.com/363968675): Rename this to be clearer.
+    html_source->AddBoolean("showAdvancedFeaturesMainControl", show_ai_page);
+  } else {
+    optimization_guide::UserVisibleFeatureKey optimization_guide_features[4] = {
+        optimization_guide::UserVisibleFeatureKey::kCompose,
+        optimization_guide::UserVisibleFeatureKey::kTabOrganization,
+        optimization_guide::UserVisibleFeatureKey::kWallpaperSearch,
+        optimization_guide::UserVisibleFeatureKey::kHistorySearch,
+    };
+    bool optimization_guide_feature_visible[5] = {false, false, false, false,
+                                                  false};
+
+    for (size_t i = 0; i < 4; i++) {
+      const bool visible = optimization_guide_service &&
+                           optimization_guide_service->IsSettingVisible(
+                               optimization_guide_features[i]);
+      optimization_guide_feature_visible[i + 1] = visible;
+
+      // The main toggle is visible only if at least one of the sub toggles is
+      // visible.
+      optimization_guide_feature_visible[0] |= visible;
+    }
+
+    html_source->AddBoolean("showAdvancedFeaturesMainControl",
+                            optimization_guide_feature_visible[0]);
+    html_source->AddBoolean("showComposeControl",
+                            optimization_guide_feature_visible[1]);
+    html_source->AddBoolean("showTabOrganizationControl",
+                            optimization_guide_feature_visible[2]);
+    html_source->AddBoolean("showWallpaperSearchControl",
+                            optimization_guide_feature_visible[3]);
+    html_source->AddBoolean("showHistorySearchControl",
+                            optimization_guide_feature_visible[4]);
+    // Compare is only shown when Synpase ("AiSettingsPageRefresh") is enabled.
+    html_source->AddBoolean("showCompareControl", false);
   }
 
-  bool should_show_compare_settings_page =
-      base::FeatureList::IsEnabled(
-          optimization_guide::features::kAiSettingsPageRefresh) &&
-      commerce::CanFetchProductSpecificationsData(
-          shopping_service->GetAccountChecker());
-
-  optimization_guide_feature_visible[0] |= should_show_compare_settings_page;
-
-  html_source->AddBoolean("showAdvancedFeaturesMainControl",
-                          optimization_guide_feature_visible[0]);
-  html_source->AddBoolean("showComposeControl",
-                          optimization_guide_feature_visible[1]);
-  html_source->AddBoolean("showTabOrganizationControl",
-                          optimization_guide_feature_visible[2]);
-  html_source->AddBoolean("showWallpaperSearchControl",
-                          optimization_guide_feature_visible[3]);
-  html_source->AddBoolean("showHistorySearchControl",
-                          optimization_guide_feature_visible[4]);
-  html_source->AddBoolean("showCompareControl",
-                          should_show_compare_settings_page);
-
-  html_source->AddBoolean(
-      "enableAiSettingsPageRefresh",
-      base::FeatureList::IsEnabled(
-          optimization_guide::features::kAiSettingsPageRefresh));
+  html_source->AddBoolean("enableAiSettingsPageRefresh",
+                          ai_settings_refresh_enabled);
 
   TryShowHatsSurveyWithTimeout();
 }
