@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -67,10 +66,7 @@ public class ChromeCachedFlags {
      * {@link #cacheMinimalBrowserFlags()}.
      */
     private static final List<CachedFieldTrialParameter<?>> MINIMAL_BROWSER_FIELD_TRIALS =
-            List.of(
-                    // This is used by CustomTabsConnection implementation, which does not
-                    // necessarily start chrome.
-                    CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
+            List.of();
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.

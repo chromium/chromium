@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
-import org.chromium.components.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -77,11 +76,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
     private int mNumOmniboxNavigationEventsPerSession;
-
-    /** Contains all the parameters of the EXPERIMENTS_FOR_AGSA feature. */
-    public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
-            ChromeFeatureList.newAllCachedFieldTrialParameters(
-                    ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
     /** Prevents Tapjacking on T-. See crbug.com/1430867 */
     private static final boolean sPreventTouches =

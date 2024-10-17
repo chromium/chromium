@@ -15,7 +15,6 @@ android_library("java") {
   ]
 
   sources = [
-    "android/java/src/org/chromium/components/cached_flags/AllCachedFieldTrialParameters.java",
     "android/java/src/org/chromium/components/cached_flags/BooleanCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFieldTrialParameter.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlag.java",

@@ -17,14 +17,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.DoubleCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** Integration tests for {@link org.chromium.base.test.util.FieldTrials}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -143,22 +139,6 @@ public final class FieldTrialsInstrumentationTest {
     public void testFeatureWithoutParams() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=" + FEATURE_2 + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:101/x/y/99"
-    })
-    public void testAllCachedFieldTrialParameters() {
-        AllCachedFieldTrialParameters parameters =
-                new AllCachedFieldTrialParameters(FEATURE_MAP, FEATURE_2);
-        Map<String, String> expectedFeatures = new HashMap<>();
-        expectedFeatures.put("101", "x");
-        expectedFeatures.put("y", "99");
-        Assert.assertEquals(expectedFeatures, parameters.getParams());
     }
 
     @Test

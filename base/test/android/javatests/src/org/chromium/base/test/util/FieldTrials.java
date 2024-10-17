@@ -166,14 +166,6 @@ public class FieldTrials {
                     String overrideValue = param.getValue();
                     ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
                 }
-
-                // Override value for AllCachedFieldTrialParameters
-                String allParamsPreferenceKey =
-                        CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
-                                featureName, "");
-                String allParamsOverrideValue = CachedFlagsSharedPreferences.encodeParams(params);
-                ValuesOverridden.setOverrideForTesting(
-                        allParamsPreferenceKey, allParamsOverrideValue);
             }
         }
     }

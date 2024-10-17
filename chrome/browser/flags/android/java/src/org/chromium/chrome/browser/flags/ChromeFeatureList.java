@@ -11,7 +11,6 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
-import org.chromium.components.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.DoubleCachedFieldTrialParameter;
@@ -107,11 +106,6 @@ public abstract class ChromeFeatureList {
      */
     public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
         return ChromeFeatureMap.getInstance().getFieldTrialParamsForFeature(featureName);
-    }
-
-    public static AllCachedFieldTrialParameters newAllCachedFieldTrialParameters(
-            String featureName) {
-        return new AllCachedFieldTrialParameters(ChromeFeatureMap.getInstance(), featureName);
     }
 
     public static BooleanCachedFieldTrialParameter newBooleanCachedFieldTrialParameter(
@@ -323,7 +317,6 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_WEB_OPT_IN = "EdgeToEdgeWebOptIn";
     public static final String EDUCATIONAL_TIP_MODULE = "EducationalTipModule";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
-    public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
@@ -658,7 +651,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDUCATIONAL_TIP_MODULE, false);
     public static final CachedFlag sEnableDiscountInfoApi =
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false);
-    public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
@@ -842,8 +834,7 @@ public abstract class ChromeFeatureList {
                     sUseLibunwindstackNativeUnwinderAndroid,
                     sWebApkMinShellApkVersion);
 
-    public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
-            List.of(sExperimentsForAgsa);
+    public static final List<CachedFlag> sFlagsCachedInMinimalBrowser = List.of();
 
     public static final List<CachedFlag> sTestCachedFlags =
             List.of(sTestDefaultDisabled, sTestDefaultEnabled);
