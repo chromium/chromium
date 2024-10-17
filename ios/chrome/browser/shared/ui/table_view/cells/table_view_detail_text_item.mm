@@ -156,6 +156,17 @@
     // Make sure there are top and bottom margins of at least `margin`.
     AddOptionalVerticalPadding(self.contentView, containerView,
                                kTableViewTwoLabelsCellVerticalSpacing);
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateNumberOfLinesOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -179,8 +190,37 @@
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateNumberOfLinesOnTraitChange:previousTraitCollection];
+}
+#endif
+
+- (void)layoutSubviews {
+  if (UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory)) {
+    // Make sure that the multiline labels width isn't changed when the
+    // accessory is set.
+    self.detailTextLabel.preferredMaxLayoutWidth =
+        self.bounds.size.width -
+        (kTableViewAccessoryWidth + 2 * kTableViewHorizontalSpacing);
+    self.textLabel.preferredMaxLayoutWidth =
+        self.bounds.size.width -
+        (kTableViewAccessoryWidth + 2 * kTableViewHorizontalSpacing);
+  }
+  [super layoutSubviews];
+}
+
+#pragma mark - Private
+
+// Updates the `detailTextLabel`'s and/or the `textLabel`'s numberOfLines
+// property when the UITraitPreferredContentSizeCategory changes on the device.
+- (void)updateNumberOfLinesOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
   BOOL isCurrentCategoryAccessibility =
       UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory);
@@ -198,21 +238,6 @@
       self.detailTextLabel.numberOfLines = 0;
     }
   }
-}
-
-- (void)layoutSubviews {
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory)) {
-    // Make sure that the multiline labels width isn't changed when the
-    // accessory is set.
-    self.detailTextLabel.preferredMaxLayoutWidth =
-        self.bounds.size.width -
-        (kTableViewAccessoryWidth + 2 * kTableViewHorizontalSpacing);
-    self.textLabel.preferredMaxLayoutWidth =
-        self.bounds.size.width -
-        (kTableViewAccessoryWidth + 2 * kTableViewHorizontalSpacing);
-  }
-  [super layoutSubviews];
 }
 
 @end
