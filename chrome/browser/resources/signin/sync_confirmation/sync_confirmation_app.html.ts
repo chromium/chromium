@@ -76,7 +76,7 @@ export function getHtml(this: SyncConfirmationAppElement) {
         ?autofocus="${this.isModalDialog_}">
       $i18n{syncConfirmationConfirmLabel}
     </cr-button>
-    <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
+    <if expr="is_macosx or is_linux or chromeos_ash">
       <cr-button id="settingsButton" @click="${this.onGoToSettings_}"
           ?disabled="${this.anyButtonClicked_}" consent-confirmation>
         $i18n{syncConfirmationSettingsLabel}
@@ -87,7 +87,7 @@ export function getHtml(this: SyncConfirmationAppElement) {
         @click="${this.onUndo_}" ?disabled="${this.anyButtonClicked_}">
       $i18n{syncConfirmationUndoLabel}
     </cr-button>
-    <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
+    <if expr="not (is_macosx or is_linux or chromeos_ash)">
       <cr-button id="settingsButton" @click="${this.onGoToSettings_}"
           ?disabled="${this.anyButtonClicked_}" consent-confirmation>
         $i18n{syncConfirmationSettingsLabel}

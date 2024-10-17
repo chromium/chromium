@@ -38,7 +38,7 @@ export interface ExperimentalFeaturesData {
   // <if expr="chromeos_ash">
   showOwnerWarning: boolean;
   // </if>
-  // <if expr="chromeos_lacros or chromeos_ash">
+  // <if expr="chromeos_ash">
   showSystemFlagsLink: boolean;
   // </if>
 }

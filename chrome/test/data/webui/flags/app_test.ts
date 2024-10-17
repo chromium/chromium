@@ -69,9 +69,6 @@ suite('FlagsAppTest', function() {
     'showDevChannelPromotion': false,
     // <if expr="chromeos_ash">
     'showOwnerWarning': true,
-    'showSystemFlagsLink': false,
-    // </if>
-    // <if expr="chromeos_lacros">
     'showSystemFlagsLink': true,
     // </if>
   };
@@ -115,9 +112,6 @@ suite('FlagsAppTest', function() {
     assertTrue(isVisible(resetAllButton));
 
     // <if expr="chromeos_ash">
-    assertFalse(isVisible(app.getRequiredElement('#os-link-container')));
-    // </if>
-    // <if expr="chromeos_lacros">
     assertTrue(isVisible(app.getRequiredElement('#os-link-container')));
     // </if>
 

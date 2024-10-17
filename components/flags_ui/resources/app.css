@@ -316,7 +316,7 @@ cr-tabs {
   /* csschecker-disable-line left-right */
 }
 
-<if expr="chromeos_lacros or chromeos_ash">
+<if expr="chromeos_ash">
 #os-flags-link-container {
   background-image: url(chrome://resources/images/os_flags_app_icon.svg);
 }

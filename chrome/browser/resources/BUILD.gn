@@ -110,10 +110,6 @@ group("resources") {
     public_deps += [ "dlp_internals:resources" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-    public_deps += [ "browser_switch:resources" ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
     public_deps += [ "discards:resources" ]
   }
@@ -122,11 +118,9 @@ group("resources") {
     public_deps += [
       "app_home:resources",
       "app_settings:resources",
+      "browser_switch:resources",
+      "on_device_translation_internals:resources",
     ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    public_deps += [ "on_device_translation_internals:resources" ]
   }
 
   if (is_linux || is_chromeos) {

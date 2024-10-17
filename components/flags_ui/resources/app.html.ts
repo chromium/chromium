@@ -32,7 +32,7 @@ export function getHtml(this: AppElement) {
 </div>
 <div id="body-container">
   <div id="flagsTemplate">
-<if expr="chromeos_lacros or chromeos_ash">
+<if expr="chromeos_ash">
     <div class="os-link-container" id="os-link-container"
           ?hidden="${!this.data.showSystemFlagsLink}">
       <span id="os-flags-link-container" class="os-link-icon"></span>

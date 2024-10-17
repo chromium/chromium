@@ -31,8 +31,6 @@ const experimentalFeaturesData: ExperimentalFeaturesData = {
   'showDevChannelPromotion': false,
   // <if expr="chromeos_ash">
   'showOwnerWarning': false,
-  // </if>
-  // <if expr="chromeos_lacros or chromeos_ash">
   'showSystemFlagsLink': true,
   // </if>
 };

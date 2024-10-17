@@ -770,7 +770,7 @@ suite('PolicyTest', function() {
   // but is always available for Linux and ChromeOS.
   test('PrintPdfAsImageDefault', async () => {
     const tests = [
-      // <if expr="is_linux or chromeos_ash or chromeos_lacros">
+      // <if expr="is_linux or chromeos_ash">
       {
         // `availableAllowedMode` is irrelevant, option is always present.
         // No policy for default of "Print as image" option.
