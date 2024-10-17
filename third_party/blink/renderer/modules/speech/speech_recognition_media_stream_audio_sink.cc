@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
@@ -18,55 +19,105 @@
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
-namespace WTF {
-template <>
-struct CrossThreadCopier<media::mojom::blink::AudioDataS16Ptr>
-    : public CrossThreadCopierByValuePassThrough<
-          media::mojom::blink::AudioDataS16Ptr> {};
-}  // namespace WTF
+namespace {
+// Allocate 500ms worth of audio buffers. Audio is received on a real-time
+// thread and is posted to the main thread, which has a bit lower priority and
+// may also be blocked for long intervals due to garbage collection, for
+// example. As soon as the pool reaches maximum capacity, it will fall back to
+// allocating new buffers on the real-time thread until the main thread cathces
+// up and processes the whole pool.
+constexpr base::TimeDelta kAudioBusPoolDuration = base::Milliseconds(500);
+}  // namespace
 
 namespace blink {
 
 SpeechRecognitionMediaStreamAudioSink::SpeechRecognitionMediaStreamAudioSink(
     ExecutionContext* context,
-    mojo::PendingRemote<media::mojom::blink::SpeechRecognitionAudioForwarder>
-        audio_forwarder,
-    const media::AudioParameters& audio_parameters)
+    StartRecognitionCallback start_recognition_callback)
     : audio_forwarder_(context),
-      audio_parameters_(audio_parameters),
+      start_recognition_callback_(std::move(start_recognition_callback)),
       main_thread_task_runner_(
           context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
       weak_handle_(MakeCrossThreadWeakHandle(this)) {
-  audio_forwarder_.Bind(std::move(audio_forwarder), main_thread_task_runner_);
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 }
 
 void SpeechRecognitionMediaStreamAudioSink::OnData(
     const media::AudioBus& audio_bus,
     base::TimeTicks estimated_capture_time) {
+  CHECK(audio_bus_pool_);
+  std::unique_ptr<media::AudioBus> audio_bus_copy =
+      audio_bus_pool_->GetAudioBus();
+  CHECK_EQ(audio_bus.channels(), audio_bus_copy->channels());
+  CHECK_EQ(audio_bus.frames(), audio_bus_copy->frames());
+  audio_bus.CopyTo(audio_bus_copy.get());
+
   PostCrossThreadTask(
       *main_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &SpeechRecognitionMediaStreamAudioSink::SendAudio,
           MakeUnwrappingCrossThreadWeakHandle(weak_handle_),
-          ConvertToAudioDataS16(audio_bus, audio_parameters_.sample_rate(),
-                                audio_parameters_.channel_layout())));
+          std::move(audio_bus_copy),
+          CrossThreadUnretained(
+              audio_bus_pool_
+                  .get())));  // Unretained is safe here because the audio bus
+                              // pool is deleted on the main thread.
 }
 
+// This is always called at least once before OnData(), and on the same thread.
 void SpeechRecognitionMediaStreamAudioSink::OnSetFormat(
     const media::AudioParameters& audio_parameters) {
-  audio_parameters_ = audio_parameters;
+  CHECK(audio_parameters.IsValid());
+
+  // Reconfigure and start recognition on the main thread. Also, pass the old
+  // audio bus pool to the main thread for deletion to avoid a race condition
+  // because the threads are re-added to the pool on the main thread.
+  PostCrossThreadTask(
+      *main_thread_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&SpeechRecognitionMediaStreamAudioSink::
+                              ReconfigureAndMaybeStartRecognitionOnMainThread,
+                          MakeUnwrappingCrossThreadWeakHandle(weak_handle_),
+                          audio_parameters, std::move(audio_bus_pool_)));
+
+  // Initialize the audio bus pool on the real-time thread so that it's
+  // immediately available in `OnData()`.
+  int number_of_audio_buses =
+      std::ceil(kAudioBusPoolDuration / audio_parameters.GetBufferDuration());
+  audio_bus_pool_ = std::make_unique<media::AudioBusPoolImpl>(
+      audio_parameters, number_of_audio_buses, number_of_audio_buses);
 }
 
 void SpeechRecognitionMediaStreamAudioSink::Trace(Visitor* visitor) const {
   visitor->Trace(audio_forwarder_);
 }
 
+void SpeechRecognitionMediaStreamAudioSink::
+    ReconfigureAndMaybeStartRecognitionOnMainThread(
+        const media::AudioParameters& audio_parameters,
+        std::unique_ptr<media::AudioBusPoolImpl> old_audio_bus_pool) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  audio_parameters_ = audio_parameters;
+  if (start_recognition_callback_) {
+    std::move(start_recognition_callback_)
+        .Run(audio_parameters_, audio_forwarder_.BindNewPipeAndPassReceiver(
+                                    main_thread_task_runner_));
+  }
+
+  // Delete the old audio bus pool on the main thread as it goes out of scope.
+}
+
 void SpeechRecognitionMediaStreamAudioSink::SendAudio(
-    media::mojom::blink::AudioDataS16Ptr audio_data) {
-  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  audio_forwarder_->AddAudioFromRenderer(std::move(audio_data));
+    std::unique_ptr<media::AudioBus> audio_data,
+    media::AudioBusPoolImpl* audio_bus_pool) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  audio_forwarder_->AddAudioFromRenderer(
+      ConvertToAudioDataS16(*audio_data.get(), audio_parameters_.sample_rate(),
+                            audio_parameters_.channel_layout()));
+
+  audio_bus_pool->InsertAudioBus(std::move(audio_data));
 }
 
 media::mojom::blink::AudioDataS16Ptr
@@ -74,6 +125,8 @@ SpeechRecognitionMediaStreamAudioSink::ConvertToAudioDataS16(
     const media::AudioBus& audio_bus,
     int sample_rate,
     media::ChannelLayout channel_layout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
   auto signed_buffer = media::mojom::blink::AudioDataS16::New();
   signed_buffer->channel_count = audio_bus.channels();
   signed_buffer->frame_count = audio_bus.frames();
@@ -90,13 +143,11 @@ SpeechRecognitionMediaStreamAudioSink::ConvertToAudioDataS16(
     channel_mixer_->Transform(&audio_bus, monaural_audio_bus_.get());
     monaural_audio_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
         monaural_audio_bus_->frames(), &signed_buffer->data[0]);
-
-    return signed_buffer;
+  } else {
+    signed_buffer->data.resize(audio_bus.frames() * audio_bus.channels());
+    audio_bus.ToInterleaved<media::SignedInt16SampleTypeTraits>(
+        audio_bus.frames(), &signed_buffer->data[0]);
   }
-
-  signed_buffer->data.resize(audio_bus.frames() * audio_bus.channels());
-  audio_bus.ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      audio_bus.frames(), &signed_buffer->data[0]);
 
   return signed_buffer;
 }
@@ -105,6 +156,8 @@ void SpeechRecognitionMediaStreamAudioSink::ResetChannelMixerIfNeeded(
     int frame_count,
     media::ChannelLayout channel_layout,
     int channel_count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
   if (!monaural_audio_bus_ || frame_count != monaural_audio_bus_->frames()) {
     monaural_audio_bus_ = media::AudioBus::Create(1 /*channels*/, frame_count);
   }
