@@ -67,7 +67,6 @@ rm web_platform_model.mojom || exit 1
 
 echo "Changing import paths ..."
 sed --in-place --regexp-extended \
-  -e 's~^import "ml/mojom/big_buffer.mojom~import "mojo/public/mojom/base/big_buffer.mojom~g' \
   -e 's~^import "ml/mojom/file_path.mojom~import "mojo/public/mojom/base/file_path.mojom~g' \
   -e 's~^import "ml/mojom/geometry.mojom~import "ui/gfx/geometry/mojom/geometry.mojom~g' \
   -e 's~^import "ml/mojom/shared_memory.mojom~import "mojo/public/mojom/base/shared_memory.mojom~g' \
