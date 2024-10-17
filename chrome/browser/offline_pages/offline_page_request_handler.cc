@@ -571,11 +571,7 @@ void OfflinePageRequestHandler::ValidateFile() {
 
 void OfflinePageRequestHandler::GetFileSizeForValidation() {
   file_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          static_cast<std::optional<int64_t> (*)(const base::FilePath&)>(
-              base::GetFileSize),
-          GetCurrentOfflinePage().file_path),
+      FROM_HERE, base::GetFileSizeCallback(GetCurrentOfflinePage().file_path),
       base::BindOnce(&OfflinePageRequestHandler::DidGetFileSizeForValidation,
                      weak_ptr_factory_.GetWeakPtr()));
 }

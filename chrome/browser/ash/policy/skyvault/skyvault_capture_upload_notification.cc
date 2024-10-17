@@ -52,11 +52,7 @@ SkyvaultCaptureUploadNotification::SkyvaultCaptureUploadNotification(
   SystemNotificationHelper::GetInstance()->Display(*notification_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          static_cast<std::optional<int64_t> (*)(const base::FilePath&)>(
-              base::GetFileSize),
-          filename),
+      FROM_HERE, {base::MayBlock()}, base::GetFileSizeCallback(filename),
       base::BindOnce(&SkyvaultCaptureUploadNotification::OnFileSizeRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 }
