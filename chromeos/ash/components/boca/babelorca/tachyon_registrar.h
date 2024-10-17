@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
@@ -26,9 +25,7 @@ class TachyonResponse;
 // tachyon requests.
 class TachyonRegistrar {
  public:
-  TachyonRegistrar(
-      TachyonAuthedClient* authed_client,
-      const net::NetworkTrafficAnnotationTag& network_annotation_tag);
+  explicit TachyonRegistrar(TachyonAuthedClient* authed_client);
 
   TachyonRegistrar(const TachyonRegistrar&) = delete;
   TachyonRegistrar& operator=(const TachyonRegistrar&) = delete;
@@ -42,6 +39,8 @@ class TachyonRegistrar {
   // did not start or still in progress, of if registration request failed.
   std::optional<std::string> GetTachyonToken();
 
+  void ResetToken();
+
  private:
   void OnResponse(base::OnceCallback<void(bool)> success_cb,
                   TachyonResponse response);
@@ -49,7 +48,6 @@ class TachyonRegistrar {
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<TachyonAuthedClient> authed_client_;
-  const net::NetworkTrafficAnnotationTag network_annotation_tag_;
   std::optional<std::string> tachyon_token_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

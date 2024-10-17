@@ -14,20 +14,18 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::babelorca {
 
-constexpr char kClientUuid[] = "client-uuid";
-constexpr char kTachyonToken[] = "tachyon-token";
+const std::string kClientUuid = "client-uuid";
+const std::string kTachyonToken = "tachyon-token";
 
 TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   base::test::TaskEnvironment task_env;
   base::test::TestFuture<bool> test_future;
   FakeTachyonAuthedClient authed_client;
-  TachyonRegistrar registrar(&authed_client, TRAFFIC_ANNOTATION_FOR_TESTS);
+  TachyonRegistrar registrar(&authed_client);
 
   registrar.Register(kClientUuid, test_future.GetCallback());
   SignInGaiaResponse signin_response;
@@ -37,16 +35,18 @@ TEST(TachyonRegistrarTest, SuccessfulRegistration) {
       std::make_unique<std::string>(signin_response.SerializeAsString())));
 
   EXPECT_TRUE(test_future.Get());
-  std::optional<std::string> tachyon_token = registrar.GetTachyonToken();
-  ASSERT_TRUE(tachyon_token.has_value());
-  EXPECT_THAT(tachyon_token.value(), testing::StrEq(kTachyonToken));
+  ASSERT_TRUE(registrar.GetTachyonToken().has_value());
+  EXPECT_EQ(registrar.GetTachyonToken().value(), kTachyonToken);
+
+  registrar.ResetToken();
+  EXPECT_FALSE(registrar.GetTachyonToken().has_value());
 }
 
 TEST(TachyonRegistrarTest, FailedRegistration) {
   base::test::TaskEnvironment task_env;
   base::test::TestFuture<bool> test_future;
   FakeTachyonAuthedClient authed_client;
-  TachyonRegistrar registrar(&authed_client, TRAFFIC_ANNOTATION_FOR_TESTS);
+  TachyonRegistrar registrar(&authed_client);
 
   registrar.Register(kClientUuid, test_future.GetCallback());
   authed_client.ExecuteResponseCallback(

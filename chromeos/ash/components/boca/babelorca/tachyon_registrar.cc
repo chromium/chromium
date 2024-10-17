@@ -12,10 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "base/uuid.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
-#include "chromeos/ash/components/boca/babelorca/proto/tachyon_common.pb.h"
-#include "chromeos/ash/components/boca/babelorca/proto/tachyon_enums.pb.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
@@ -28,13 +25,39 @@ namespace {
 
 constexpr int kMaxRetries = 3;
 
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("ash_babelorca_tachyon_registrar", R"(
+        semantics {
+          sender: "School Tools"
+          description: "Sign into Google instant messaging service so that "
+                        "captions be sent and received during a School Tools "
+                        "session."
+          trigger: "User enables sending or recieivng captions during a School "
+                    "Tools session"
+          data: "User oauth token for using the instant messaging service."
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "cros-edu-eng@google.com"
+            }
+          }
+          last_reviewed: "2024-10-15"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This request cannot be stopped in settings, but will not "
+                    "be sent if the user does not enable session captions in "
+                    "School Tools."
+          policy_exception_justification: "Not implemented."
+        })");
+
 }  // namespace
 
-TachyonRegistrar::TachyonRegistrar(
-    TachyonAuthedClient* authed_client,
-    const net::NetworkTrafficAnnotationTag& network_annotation_tag)
-    : authed_client_(authed_client),
-      network_annotation_tag_(network_annotation_tag) {}
+TachyonRegistrar::TachyonRegistrar(TachyonAuthedClient* authed_client)
+    : authed_client_(authed_client) {}
 
 TachyonRegistrar::~TachyonRegistrar() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -58,8 +81,8 @@ void TachyonRegistrar::Register(const std::string& client_uuid,
                      weak_ptr_factory.GetWeakPtr(), std::move(success_cb));
 
   authed_client_->StartAuthedRequest(
-      std::make_unique<RequestDataWrapper>(network_annotation_tag_,
-                                           kSigninGaiaUrl, kMaxRetries,
+      std::make_unique<RequestDataWrapper>(kTrafficAnnotation, kSigninGaiaUrl,
+                                           kMaxRetries,
                                            std::move(response_callback)),
       std::move(signin_request));
 }
@@ -67,6 +90,11 @@ void TachyonRegistrar::Register(const std::string& client_uuid,
 std::optional<std::string> TachyonRegistrar::GetTachyonToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tachyon_token_;
+}
+
+void TachyonRegistrar::ResetToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tachyon_token_.reset();
 }
 
 void TachyonRegistrar::OnResponse(base::OnceCallback<void(bool)> success_cb,

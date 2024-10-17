@@ -499,4 +499,5 @@ Refer to README.md for content description and update process.
  <item id="forms_annotations_model_execution" added_in_milestone="131" content_hash_code="00add55e" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="forms_predictions_model_execution" added_in_milestone="131" content_hash_code="02b70ea8" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="chromeos_scanner_drive" added_in_milestone="131" content_hash_code="06d99e20" os_list="chromeos" file_path="chrome/browser/ash/scanner/scanner_keyed_service.cc" />
+ <item id="ash_babelorca_tachyon_registrar" added_in_milestone="132" content_hash_code="03b91268" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/tachyon_registrar.cc" />
 </annotations>
