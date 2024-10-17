@@ -13,6 +13,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
@@ -111,16 +112,14 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
                      "Country - response equals selected value, not filled", "",
                      "Spain", 5);
   AddFieldToResponse(response, "Field has value, not filled", "", "value", 6);
-  optimization_guide::proto::Any any;
-  any.set_type_url(response.GetTypeName());
-  response.SerializeToString(any.mutable_value());
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
           optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<3>(any, /*log_entry=*/nullptr));
+      .WillOnce(base::test::RunOnceCallback<3>(
+          optimization_guide::AnyWrapProto(response), /*log_entry=*/nullptr));
 
   autofill::test::FormDescription form_description = {
       .fields = {
