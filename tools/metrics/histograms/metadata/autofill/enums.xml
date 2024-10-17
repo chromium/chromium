@@ -733,6 +733,18 @@ Called by update_autofill_enums.py.-->
   <int value="10368"
       label="IMPROVED_PREDICTION: Not autofilled or autofilled value edited"/>
   <int value="10369" label="IMPROVED_PREDICTION: Autofilled value accepted"/>
+  <int value="10432"
+      label="ALTERNATIVE_FULL_NAME: Not autofilled or autofilled value edited"/>
+  <int value="10433" label="ALTERNATIVE_FULL_NAME: Autofilled value accepted"/>
+  <int value="10496"
+      label="ALTERNATIVE_GIVEN_NAME: Not autofilled or autofilled value
+             edited"/>
+  <int value="10497" label="ALTERNATIVE_GIVEN_NAME: Autofilled value accepted"/>
+  <int value="10560"
+      label="ALTERNATIVE_FAMILY_NAME: Not autofilled or autofilled value
+             edited"/>
+  <int value="10561"
+      label="ALTERNATIVE_FAMILY_NAME: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -955,6 +967,12 @@ Called by update_autofill_enums.py.-->
   <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
   <int value="2592" label="IMPROVED_PREDICTION: edited"/>
   <int value="2593" label="IMPROVED_PREDICTION: accepted"/>
+  <int value="2608" label="ALTERNATIVE_FULL_NAME: edited"/>
+  <int value="2609" label="ALTERNATIVE_FULL_NAME: accepted"/>
+  <int value="2624" label="ALTERNATIVE_GIVEN_NAME: edited"/>
+  <int value="2625" label="ALTERNATIVE_GIVEN_NAME: accepted"/>
+  <int value="2640" label="ALTERNATIVE_FAMILY_NAME: edited"/>
+  <int value="2641" label="ALTERNATIVE_FAMILY_NAME: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1663,6 +1681,20 @@ Called by update_autofill_enums.py.-->
       label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Mismatch)"/>
   <int value="12041"
       label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Unknown)"/>
+  <int value="12288" label="PREDICTION_IMPROVEMENTS: True Positive"/>
+  <int value="12289"
+      label="PREDICTION_IMPROVEMENTS: True Negative (Ambiguous)"/>
+  <int value="12290" label="PREDICTION_IMPROVEMENTS: True Negative (Unknown)"/>
+  <int value="12291" label="PREDICTION_IMPROVEMENTS: True Negative (Empty)"/>
+  <int value="12292"
+      label="PREDICTION_IMPROVEMENTS: False Positive (Mismatch)"/>
+  <int value="12293"
+      label="PREDICTION_IMPROVEMENTS: False Positive (Ambiguous)"/>
+  <int value="12294" label="PREDICTION_IMPROVEMENTS: False Positive (Unknown)"/>
+  <int value="12295" label="PREDICTION_IMPROVEMENTS: False Positive (Empty)"/>
+  <int value="12296"
+      label="PREDICTION_IMPROVEMENTS: False Negative (Mismatch)"/>
+  <int value="12297" label="PREDICTION_IMPROVEMENTS: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFieldType">
@@ -1769,6 +1801,9 @@ Called by update_autofill_enums.py.-->
   <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
   <int value="161" label="SERVER_RESPONSE_PENDING"/>
   <int value="162" label="IMPROVED_PREDICTION"/>
+  <int value="163" label="ALTERNATIVE_FULL_NAME"/>
+  <int value="164" label="ALTERNATIVE_GIVEN_NAME"/>
+  <int value="165" label="ALTERNATIVE_FAMILY_NAME"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -3731,6 +3766,54 @@ Called by update_autofill_enums.py.-->
   <int value="978"
       label="IMPROVED_PREDICTION - Predictions different - Value agrees with
              both predictions"/>
+  <int value="979"
+      label="ALTERNATIVE_FULL_NAME - Predictions equal - Value agrees"/>
+  <int value="980"
+      label="ALTERNATIVE_FULL_NAME - Predictions equal - Value disagrees"/>
+  <int value="981"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="982"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="983"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="984"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="985"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions equal - Value agrees"/>
+  <int value="986"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions equal - Value disagrees"/>
+  <int value="987"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="988"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="989"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="990"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="991"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions equal - Value agrees"/>
+  <int value="992"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions equal - Value disagrees"/>
+  <int value="993"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="994"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="995"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="996"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with both predictions"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -4007,6 +4090,12 @@ Called by update_autofill_enums.py.-->
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
   <int value="2592" label="IMPROVED_PREDICTION: Pre-filled on page load"/>
   <int value="2593" label="IMPROVED_PREDICTION: Empty on page load"/>
+  <int value="2608" label="ALTERNATIVE_FULL_NAME: Pre-filled on page load"/>
+  <int value="2609" label="ALTERNATIVE_FULL_NAME: Empty on page load"/>
+  <int value="2624" label="ALTERNATIVE_GIVEN_NAME: Pre-filled on page load"/>
+  <int value="2625" label="ALTERNATIVE_GIVEN_NAME: Empty on page load"/>
+  <int value="2640" label="ALTERNATIVE_FAMILY_NAME: Pre-filled on page load"/>
+  <int value="2641" label="ALTERNATIVE_FAMILY_NAME: Empty on page load"/>
 </enum>
 
 <enum name="AutofillPreFilledValueStatus">

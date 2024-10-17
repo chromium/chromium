@@ -463,6 +463,10 @@ enum FieldType {
   // It should not take precedence over existing types.
   IMPROVED_PREDICTION = 162,
 
+  ALTERNATIVE_FULL_NAME = 163,
+  ALTERNATIVE_GIVEN_NAME = 164,
+  ALTERNATIVE_FAMILY_NAME = 165,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -473,7 +477,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 163,
+  MAX_VALID_FIELD_TYPE = 166,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 

@@ -44,6 +44,9 @@ static constexpr auto kTypeNameToFieldType =
          {"NAME_MIDDLE_INITIAL", NAME_MIDDLE_INITIAL},
          {"NAME_FULL", NAME_FULL},
          {"NAME_SUFFIX", NAME_SUFFIX},
+         {"ALTERNATIVE_FULL_NAME", ALTERNATIVE_FULL_NAME},
+         {"ALTERNATIVE_GIVEN_NAME", ALTERNATIVE_GIVEN_NAME},
+         {"ALTERNATIVE_FAMILY_NAME", ALTERNATIVE_FAMILY_NAME},
          {"EMAIL_ADDRESS", EMAIL_ADDRESS},
          {"PHONE_HOME_NUMBER", PHONE_HOME_NUMBER},
          {"PHONE_HOME_CITY_CODE", PHONE_HOME_CITY_CODE},
@@ -155,6 +158,9 @@ bool IsFillableFieldType(FieldType field_type) {
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
     case PHONE_HOME_NUMBER:
@@ -350,6 +356,12 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Middle name initial";
     case NAME_FULL:
       return "Full name";
+    case ALTERNATIVE_FULL_NAME:
+      return "Alternative full name";
+    case ALTERNATIVE_FAMILY_NAME:
+      return "Alternative family name";
+    case ALTERNATIVE_GIVEN_NAME:
+      return "Alternative given name";
     case EMAIL_ADDRESS:
       return "Email address";
     case PHONE_HOME_NUMBER:
@@ -488,6 +500,9 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case ALTERNATIVE_FAMILY_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
+    case ALTERNATIVE_FULL_NAME:
       return FieldTypeGroup::kName;
 
     case EMAIL_ADDRESS:

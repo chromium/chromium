@@ -364,6 +364,9 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NAME_MIDDLE_INITIAL:
         case NAME_FULL:
         case NAME_SUFFIX:
+        case ALTERNATIVE_FULL_NAME:
+        case ALTERNATIVE_GIVEN_NAME:
+        case ALTERNATIVE_FAMILY_NAME:
         case EMAIL_ADDRESS:
         case PHONE_HOME_NUMBER:
         case PHONE_HOME_NUMBER_PREFIX:

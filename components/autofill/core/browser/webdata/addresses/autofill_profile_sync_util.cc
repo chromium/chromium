@@ -562,7 +562,8 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 163,
+  // TODO(crbug.com/359768803): Handle alternative names here.
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 166,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

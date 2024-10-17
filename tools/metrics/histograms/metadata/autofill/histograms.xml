@@ -539,6 +539,9 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
   <variant name="ADDRESS_HOME_STREET_NAME"/>
   <variant name="ADDRESS_HOME_SUBPREMISE"/>
   <variant name="ADDRESS_HOME_ZIP"/>
+  <variant name="ALTERNATIVE_FAMILY_NAME"/>
+  <variant name="ALTERNATIVE_FULL_NAME"/>
+  <variant name="ALTERNATIVE_GIVEN_NAME"/>
   <variant name="COMPANY_NAME"/>
   <variant name="EMAIL_ADDRESS"/>
   <variant name="NAME_FIRST"/>

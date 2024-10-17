@@ -156,6 +156,9 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NAME_LAST_CONJUNCTION:
     case NAME_LAST_SECOND:
     case NAME_HONORIFIC_PREFIX:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
     case PHONE_HOME_NUMBER:
     case PHONE_HOME_CITY_CODE:
     case PHONE_HOME_COUNTRY_CODE:
