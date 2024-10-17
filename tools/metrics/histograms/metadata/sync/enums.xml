@@ -608,7 +608,7 @@ chromium-metrics-reviews@google.com.
   <int value="100269" label="FingerprintingProtectionEnabled"/>
   <int value="100270" label="AccessibilityFaceGazeGesturesToMacros"/>
   <int value="100271" label="AccessibilityFaceGazeGesturesToConfidence"/>
-  <int value="100272" label="ShelfContainerAppPinRolls"/>
+  <int value="100272" label="ShelfGeminiAppPinRolls"/>
   <int value="100273"
       label="ProfileContentSettingsExceptionsTrackingProtection"/>
   <int value="100274"

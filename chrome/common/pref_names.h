@@ -3359,9 +3359,10 @@ inline constexpr char kShelfDefaultPinLayoutRolls[] =
 // Same as kShelfDefaultPinLayoutRolls, but for tablet form factor devices.
 inline constexpr char kShelfDefaultPinLayoutRollsForTabletFormFactor[] =
     "shelf_default_pin_layout_rolls_for_tablet_form_factor";
-// Keeps track of whether a container app was pinned to shelf as a default app,
+// Keeps track of whether the Gemini app was pinned to shelf as a default app,
 // to prevent applying the default pin twice (after the user unpins the app).
-inline constexpr char kShelfContainerAppPinRolls[] =
+// NOTE: The Gemini app was previously referred to as the container app.
+inline constexpr char kShelfGeminiAppPinRolls[] =
     "shelf_container_app_pin_layout_rolls";
 // Keeps track of whether the Mall app was pinned to shelf as a default app,
 // to prevent applying the default pin twice (after the user unpins the app).
