@@ -37,6 +37,10 @@ source_set("service_program") {
   ]
 }
 
+source_set("constants") {
+  public = [ "switches.h" ]
+}
+
 source_set("common") {
   public = [
     "get_calling_process.h",
@@ -51,11 +55,13 @@ source_set("common") {
 
 source_set("lib") {
   public = [
+    "logging_support.h",
     "process_wrl_module.h",
     "service.h",
   ]
   public_deps = [ "//base" ]
   sources = [
+    "logging_support.cc",
     "process_wrl_module.cc",
     "service.cc",
   ]
@@ -66,6 +72,7 @@ source_set("lib") {
   ]
   deps = [
     ":common",
+    ":constants",
     ":delegate",
     "//chrome/install_static:install_static_util",
     "//third_party/abseil-cpp:absl",
@@ -75,6 +82,7 @@ source_set("lib") {
     "//chrome/elevation_service:elevation_service_unittests",
     "//chrome/updater:base",
     "//chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests",
+    "//chrome/windows_services/service_program/test_support:unit_tests",
   ]
 }
 

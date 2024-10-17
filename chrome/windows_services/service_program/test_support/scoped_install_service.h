@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/win/windows_types.h"
+#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
 
 namespace installer {
 class InstallServiceWorkItem;
@@ -31,6 +32,8 @@ class ScopedInstallService {
   bool is_valid() const { return bool(work_item_); }
 
  private:
+  // Share this test process's log output with the installed service.
+  ScopedLogGrabber log_grabber_;
   std::unique_ptr<installer::InstallServiceWorkItem> work_item_;
 };
 

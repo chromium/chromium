@@ -113,6 +113,7 @@ test("elevated_tracing_service_unittests") {
     "//chrome/windows_services/service_program:common",
     "//chrome/windows_services/service_program:lib",
     "//chrome/windows_services/service_program/test_support",
+    "//chrome/windows_services/service_program/test_support:unit_tests",
     "//components/tracing:tracing_service_idl",
     "//mojo/core/embedder",
     "//mojo/public/cpp/platform",

@@ -14,6 +14,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/product_install_details.h"
+#include "chrome/windows_services/service_program/logging_support.h"
 #include "chrome/windows_services/service_program/process_wrl_module.h"
 #include "chrome/windows_services/service_program/service.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
@@ -21,11 +22,9 @@
 int ServiceProgramMain(ServiceDelegate& delegate) {
   // Initialize the CommandLine singleton from the environment.
   base::CommandLine::Init(0, nullptr);
+  base::CommandLine* const cmd_line = base::CommandLine::ForCurrentProcess();
 
-  logging::LoggingSettings settings;
-  settings.logging_dest =
-      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  logging::InitLogging(settings);
+  InitializeLogging(*cmd_line);
 
   // The exit manager is in charge of calling the dtors of singletons.
   base::AtExitManager exit_manager;
@@ -43,7 +42,7 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
   base::EnableTerminationOnOutOfMemory();
   logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
-  base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
+  base::win::SetupCRT(*cmd_line);
 
   // Initialize COM for the current thread.
   base::win::ScopedCOMInitializer com_initializer(
@@ -59,7 +58,5 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
   // Run the COM service.
   Service service(delegate);
 
-  return service.InitWithCommandLine(base::CommandLine::ForCurrentProcess())
-             ? service.Start()
-             : -1;
+  return service.InitWithCommandLine(cmd_line) ? service.Start() : -1;
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/windows_services/service_program/test_support/scoped_install_service.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -38,6 +39,7 @@ ScopedInstallService::ScopedInstallService(
   base::CommandLine service_command(
       base::PathService::CheckedGet(base::DIR_EXE).Append(exe_name));
   service_command.AppendSwitch(testing_switch);
+  log_grabber_.AddLoggingSwitches(service_command);
   service_command.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                    kSwitchesToCopy);
   auto work_item = std::make_unique<installer::InstallServiceWorkItem>(
