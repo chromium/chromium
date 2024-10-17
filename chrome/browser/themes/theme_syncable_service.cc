@@ -333,7 +333,12 @@ ThemeSyncableService::MergeDataAndStartSyncing(
 
   sync_pb::ThemeSpecifics current_specifics =
       GetThemeSpecificsFromCurrentTheme();
-  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+  // TODO(crbug.com/348173250): MergeDataAndStartSyncing is also called on
+  // browser startup, in which case the pref should not be updated with the
+  // current theme. Plumb a new method in SyncableService to distinguish between
+  // sync start and browser startup.
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
     // Save current theme specifics to pref. This is used to restore the local
     // theme upon signout.
     profile_->GetPrefs()->SetString(
@@ -356,7 +361,7 @@ ThemeSyncableService::MergeDataAndStartSyncing(
       if (!HasNonDefaultTheme(current_specifics) ||
           HasNonDefaultTheme(sync_data.GetSpecifics().theme())) {
         ThemeSyncState startup_state =
-            MaybeSetTheme(current_specifics, sync_data);
+            MaybeSetTheme(current_specifics, sync_data.GetSpecifics().theme());
         NotifyOnSyncStarted(startup_state);
         return std::nullopt;
       }
@@ -371,8 +376,30 @@ ThemeSyncableService::MergeDataAndStartSyncing(
 }
 
 void ThemeSyncableService::StopSyncing(syncer::DataType type) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_EQ(type, syncer::THEMES);
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK_EQ(type, syncer::THEMES);
+
+  sync_processor_.reset();
+
+  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
+      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    if (const base::Value* saved_local_theme =
+            profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme)) {
+      std::string decoded_str;
+      sync_pb::ThemeSpecifics specifics;
+      if (base::Base64Decode(saved_local_theme->GetString(), &decoded_str) &&
+          specifics.ParseFromString(decoded_str)) {
+        MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), specifics);
+      }
+    }
+  }
+
+  profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
+}
+
+void ThemeSyncableService::OnBrowserShutdown(syncer::DataType type) {
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK_EQ(type, syncer::THEMES);
 
   sync_processor_.reset();
 }
@@ -433,7 +460,7 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
         (theme_change.change_type() == syncer::SyncChange::ACTION_ADD ||
          theme_change.change_type() == syncer::SyncChange::ACTION_UPDATE)) {
       MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(),
-                    theme_change.sync_data());
+                    theme_change.sync_data().GetSpecifics().theme());
       return std::nullopt;
     }
   }
@@ -447,13 +474,10 @@ base::WeakPtr<syncer::SyncableService> ThemeSyncableService::AsWeakPtr() {
 
 ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     const sync_pb::ThemeSpecifics& current_specs,
-    const syncer::SyncData& sync_data) {
-  const sync_pb::ThemeSpecifics& theme_specifics =
-      sync_data.GetSpecifics().theme();
-  use_system_theme_by_default_ = theme_specifics.use_system_theme_by_default();
-  DVLOG(1) << "Set current theme from specifics: " << sync_data.ToString();
+    const sync_pb::ThemeSpecifics& new_specs) {
+  use_system_theme_by_default_ = new_specs.use_system_theme_by_default();
   if (AreThemeSpecificsEquivalent(
-          current_specs, theme_specifics,
+          current_specs, new_specs,
           theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
     DVLOG(1) << "Skip setting theme because specs are equal";
     return ThemeSyncState::kApplied;
@@ -461,11 +485,11 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
 
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
-  if (theme_specifics.use_custom_theme()) {
+  if (new_specs.use_custom_theme()) {
     // TODO(akalin): Figure out what to do about third-party themes
     // (i.e., those not on either Google gallery).
-    string id(theme_specifics.custom_theme_id());
-    GURL update_url(theme_specifics.custom_theme_update_url());
+    string id(new_specs.custom_theme_id());
+    GURL update_url(new_specs.custom_theme_update_url());
     DVLOG(1) << "Applying theme " << id << " with update_url " << update_url;
     extensions::ExtensionService* extension_service =
         extensions::ExtensionSystem::Get(profile_)->extension_service();
@@ -514,29 +538,53 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     return ThemeSyncState::kWaitingForExtensionInstallation;
   }
 
-  bool ntp_background_applied = false;
-  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
-    if (theme_specifics.has_ntp_background() && profile_->GetPrefs()) {
+  const bool use_new_fields =
+      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics);
+  // Apply theme besides the NTP background and the browser color scheme. These
+  // themes cannot exist alongside each other.
+  if (use_new_fields && new_specs.has_user_color_theme() &&
+      new_specs.user_color_theme().has_color() &&
+      new_specs.user_color_theme().has_browser_color_variant()) {
+    DVLOG(1) << "Applying user color";
+    theme_service_->SetUserColorAndBrowserColorVariant(
+        new_specs.user_color_theme().color(),
+        ProtoEnumToBrowserColorVariant(
+            new_specs.user_color_theme().browser_color_variant()));
+  } else if (use_new_fields && new_specs.has_grayscale_theme_enabled()) {
+    DVLOG(1) << "Applying grayscale theme";
+    theme_service_->SetIsGrayscale(/*is_grayscale=*/true);
+  } else if (new_specs.has_autogenerated_color_theme()) {
+    DVLOG(1) << "Applying autogenerated theme";
+    theme_service_->BuildAutogeneratedThemeFromColor(
+        new_specs.autogenerated_color_theme().color());
+  } else if (new_specs.use_system_theme_by_default()) {
+    DVLOG(1) << "Switch to use system theme";
+    theme_service_->UseSystemTheme();
+  } else {
+    DVLOG(1) << "Switch to use default theme";
+    theme_service_->UseDefaultTheme();
+  }
+
+  if (use_new_fields) {
+    // NTP background can exist along with the other (non-extension) themes.
+    if (new_specs.has_ntp_background() && profile_->GetPrefs()) {
       DVLOG(1) << "Applying custom NTP background";
 
       if (base::Value::Dict dict =
-              SpecificsNtpBackgroundToDict(theme_specifics.ntp_background());
+              SpecificsNtpBackgroundToDict(new_specs.ntp_background());
           !dict.empty()) {
         // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
         // of setting the pref directly.
         profile_->GetPrefs()->SetDict(
             prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse, std::move(dict));
-        ntp_background_applied = true;
       }
-      // No return since the NTP background exists along with the other themes.
     }
 
-    if (theme_specifics.has_browser_color_scheme()) {
+    // Browser color scheme can be set alongside other (non-extension) themes.
+    if (new_specs.has_browser_color_scheme()) {
       DVLOG(1) << "Applying browser color scheme";
-      theme_service_->SetBrowserColorScheme(ProtoEnumToBrowserColorScheme(
-          theme_specifics.browser_color_scheme()));
-      // No return, the browser color scheme can coexist with other
-      // (non-extension) themes.
+      theme_service_->SetBrowserColorScheme(
+          ProtoEnumToBrowserColorScheme(new_specs.browser_color_scheme()));
 
       // Before the migration of syncing theme prefs to ThemeSpecifics (see
       // crbug.com/356148174), the specifics will never have
@@ -550,45 +598,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
         pref_service_syncable_observer_.reset();
       }
     }
-
-    if (theme_specifics.has_user_color_theme() &&
-        theme_specifics.user_color_theme().has_color() &&
-        theme_specifics.user_color_theme().has_browser_color_variant()) {
-      DVLOG(1) << "Applying user color";
-      theme_service_->SetUserColorAndBrowserColorVariant(
-          theme_specifics.user_color_theme().color(),
-          ProtoEnumToBrowserColorVariant(
-              theme_specifics.user_color_theme().browser_color_variant()));
-      return ThemeSyncState::kApplied;
-    }
-
-    if (theme_specifics.has_grayscale_theme_enabled()) {
-      DVLOG(1) << "Applying grayscale theme";
-      theme_service_->SetIsGrayscale(/*is_grayscale=*/true);
-      return ThemeSyncState::kApplied;
-    }
   }
-
-  if (theme_specifics.has_autogenerated_color_theme()) {
-    DVLOG(1) << "Applying autogenerated theme";
-    theme_service_->BuildAutogeneratedThemeFromColor(
-        theme_specifics.autogenerated_color_theme().color());
-    return ThemeSyncState::kApplied;
-  }
-
-  // If a custom background was applied, don't reset to the default theme.
-  if (ntp_background_applied) {
-    return ThemeSyncState::kApplied;
-  }
-
-  if (theme_specifics.use_system_theme_by_default()) {
-    DVLOG(1) << "Switch to use system theme";
-    theme_service_->UseSystemTheme();
-    return ThemeSyncState::kApplied;
-  }
-
-  DVLOG(1) << "Switch to use default theme";
-  theme_service_->UseDefaultTheme();
   return ThemeSyncState::kApplied;
 }
 
