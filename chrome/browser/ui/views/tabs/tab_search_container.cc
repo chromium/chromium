@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -51,6 +52,8 @@ constexpr char kAutoTabGroupsTriggerOutcomeName[] =
     "Tab.Organization.Trigger.Outcome";
 constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
+constexpr char kDeclutterTriggerBucketedCTRName[] =
+    "Tab.Organization.Declutter.Trigger.BucketedCTR";
 
 Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
   const bool is_rtl = base::i18n::IsRTL();
@@ -420,6 +423,10 @@ void TabSearchContainer::ExecuteShowTabOrganization(
       FROM_HERE, kShowDuration,
       base::BindOnce(&TabSearchContainer::OnOrganizeButtonTimeout,
                      base::Unretained(this), button));
+
+  if (button == tab_declutter_button_) {
+    LogDeclutterTriggerBucket(false);
+  }
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization(
@@ -495,6 +502,7 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
 void TabSearchContainer::OnTabDeclutterButtonClicked() {
   base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
                                 TriggerOutcome::kAccepted);
+  LogDeclutterTriggerBucket(true);
   tab_search_button_->tab_search_bubble_host()->ShowTabSearchBubble(
       false, tab_search::mojom::TabSearchSection::kOrganize,
       tab_search::mojom::TabOrganizationFeature::kDeclutter);
@@ -524,6 +532,54 @@ void TabSearchContainer::OnTriggerDeclutterUIVisibility(bool should_show) {
   } else {
     HideTabOrganization(tab_declutter_button_);
   }
+}
+
+DeclutterTriggerCTRBucket TabSearchContainer::GetDeclutterTriggerBucket(
+    bool clicked) {
+  const auto total_tab_count =
+      tab_declutter_controller_->tab_strip_model()->GetTabCount();
+  const auto stale_tab_count = tab_declutter_controller_->GetStaleTabs().size();
+
+  if (total_tab_count < 15) {
+    return clicked ? DeclutterTriggerCTRBucket::kClickedUnder15Tabs
+                   : DeclutterTriggerCTRBucket::kShownUnder15Tabs;
+  } else if (total_tab_count < 20) {
+    if (stale_tab_count < 2) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19TabsUnder2Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19TabsUnder2Stale;
+    } else if (stale_tab_count < 5) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19Tabs2To4Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19Tabs2To4Stale;
+    } else if (stale_tab_count < 8) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19Tabs5To7Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19Tabs5To7Stale;
+    } else {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19TabsOver7Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19TabsOver7Stale;
+    }
+  } else if (total_tab_count < 25) {
+    if (stale_tab_count < 2) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24TabsUnder2Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24TabsUnder2Stale;
+    } else if (stale_tab_count < 5) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24Tabs2To4Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24Tabs2To4Stale;
+    } else if (stale_tab_count < 8) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24Tabs5To7Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24Tabs5To7Stale;
+    } else {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24TabsOver7Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24TabsOver7Stale;
+    }
+  } else {
+    return clicked ? DeclutterTriggerCTRBucket::kClickedOver24Tabs
+                   : DeclutterTriggerCTRBucket::kShownOver24Tabs;
+  }
+}
+
+void TabSearchContainer::LogDeclutterTriggerBucket(bool clicked) {
+  const DeclutterTriggerCTRBucket bucket = GetDeclutterTriggerBucket(clicked);
+  base::UmaHistogramEnumeration(kDeclutterTriggerBucketedCTRName, bucket);
 }
 
 BEGIN_METADATA(TabSearchContainer)

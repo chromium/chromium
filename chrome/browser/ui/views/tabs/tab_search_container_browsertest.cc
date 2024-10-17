@@ -378,6 +378,12 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Tab.Organization.Declutter.Trigger.Outcome", 0, 1);
+  // Bucketed CTR metric should reflect one show and one click, with fewer than
+  // 15 total tabs.
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 10, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,

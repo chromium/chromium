@@ -367,6 +367,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.Declutter.Trigger.BucketedCTR"
+    enum="TabOrganizationDeclutterTriggerCTRBucket" expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    On each show and each click of the proactive declutter nudge UI, logs the
+    bucket the user falls into based on total tab count and stale tab count. CTR
+    for any given bucket can be calculated by dividing its click count by its
+    shown count.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Declutter.Trigger.Outcome"
     enum="TabOrganizationTriggerOutcome" expires_after="2025-02-10">
   <owner>emshack@chromium.org</owner>
