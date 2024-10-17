@@ -777,6 +777,57 @@ AX_TEST_F(
       assertEquals(560, releaseEvent.y);
     });
 
+AX_TEST_F(
+    'FaceGazeTest', 'TurnOffActionsWhileInMiddleOfLongClick', async function() {
+      const gestureToMacroName = new Map().set(
+          FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence)
+                         .withRepeatDelayMs(0);
+      await this.configureFaceGaze(config);
+
+      // Toggle long click.
+      const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+      assertTrue(this.getFaceGaze().mouseController_.isLongClickActive());
+
+      // Remove long click action.
+      await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, false);
+
+      // Ensure long click automatically toggled off.
+      assertFalse(this.getFaceGaze().mouseController_.isLongClickActive());
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'RemoveLongClickActionWhileInMiddleOfLongClick',
+    async function() {
+      const gestureToMacroName = new Map().set(
+          FacialGesture.JAW_OPEN, MacroName.MOUSE_LONG_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence)
+                         .withRepeatDelayMs(0);
+      await this.configureFaceGaze(config);
+
+      // Toggle long click.
+      const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+      assertTrue(this.getFaceGaze().mouseController_.isLongClickActive());
+
+      // Remove long click action.
+      await this.setPref(GestureHandler.GESTURE_TO_MACRO_PREF, {});
+
+      // Ensure long click automatically toggled off.
+      assertFalse(this.getFaceGaze().mouseController_.isLongClickActive());
+    });
+
 // The BrowDown gesture is special because it is the combination of two
 // separate facial gestures. This test ensures that the associated action is
 // performed if either of the gestures is detected.

@@ -144,11 +144,16 @@ export class FaceGaze {
       this.gestureHandler_.start();
     } else {
       this.gestureHandler_.stop();
+
+      // If actions are turned off while a toggled action is active, then we
+      // should toggle out of the relevant action. Otherwise, the user will be
+      // stuck in the action with no way to exit.
       if (this.mouseController_.isScrollModeActive()) {
-        // If actions are turned off while scroll mode is active, then we should
-        // toggle out of scroll mode. Otherwise, the user will be stuck in
-        // scroll mode with no way to exit.
         this.mouseController_.toggleScrollMode();
+      }
+
+      if (this.mouseController_.isLongClickActive()) {
+        this.mouseController_.toggleLongClick();
       }
     }
   }

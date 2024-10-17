@@ -567,6 +567,10 @@ export class MouseController {
       EventGenerator.sendMouseRelease(
           this.mouseLocation_.x, this.mouseLocation_.y);
     }
+
+    if (!this.isLongClickActive()) {
+      this.bubbleController_.resetBubble();
+    }
   }
 
   /** Listener for when the mouse position changes. */

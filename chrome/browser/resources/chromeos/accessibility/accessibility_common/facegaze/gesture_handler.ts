@@ -95,6 +95,7 @@ export class GestureHandler {
             this.gestureToMacroName_.clear();
 
             let hasScrollModeAction = false;
+            let hasLongClickAction = false;
             for (const [gesture, assignedMacro] of Object.entries(pref.value)) {
               if (assignedMacro === MacroName.UNSPECIFIED) {
                 continue;
@@ -102,6 +103,10 @@ export class GestureHandler {
 
               if (assignedMacro === MacroName.TOGGLE_SCROLL_MODE) {
                 hasScrollModeAction = true;
+              }
+
+              if (assignedMacro === MacroName.MOUSE_LONG_CLICK_LEFT) {
+                hasLongClickAction = true;
               }
 
               this.gestureToMacroName_.set(
@@ -116,12 +121,17 @@ export class GestureHandler {
               }
             }
 
+            // If a "toggle" action is removed while the relevant action
+            // is active, then we should toggle out of the action. Otherwise,
+            // the user will be stuck in the action with no way to exit.
             if (this.mouseController_.isScrollModeActive() &&
                 !hasScrollModeAction) {
-              // If the "toggle scroll mode" action is removed while scroll mode
-              // is active, then we should toggle out of scroll mode. Otherwise,
-              // the user will be stuck in scroll mode with no way to exit.
               this.mouseController_.toggleScrollMode();
+            }
+
+            if (this.mouseController_.isLongClickActive() &&
+                !hasLongClickAction) {
+              this.mouseController_.toggleLongClick();
             }
           }
           break;
