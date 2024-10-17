@@ -366,8 +366,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofill_suggestion.type = suggestion.type;
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
-
-      const std::string& guid =
+      const std::string guid =
           absl::holds_alternative<autofill::Suggestion::AutofillProfilePayload>(
               suggestion.backendIdentifier)
               ? absl::get<autofill::Suggestion::AutofillProfilePayload>(
