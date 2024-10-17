@@ -410,14 +410,9 @@ SearchResult HistoryEmbeddingsService::Search(
       kWordMatchScoreBoostFactor.Get();
   search_params.word_match_limit = kWordMatchLimit.Get();
   search_params.word_match_smoothing_factor = kWordMatchSmoothingFactor.Get();
+  search_params.word_match_max_term_count = kWordMatchMaxTermCount.Get();
   search_params.word_match_required_term_ratio =
       kWordMatchRequiredTermRatio.Get();
-
-  if (search_params.query_terms.size() >
-      static_cast<size_t>(kWordMatchMaxTermCount.Get())) {
-    // Disable word match boosting for this long query.
-    search_params.query_terms.clear();
-  }
 
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
