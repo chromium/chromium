@@ -7832,7 +7832,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   AttachInterestGroupObserver();
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'auctionReportBuyerKeys' property from 'AuctionAdConfig': "
       "Cannot convert 3 to a BigInt",
       RunAuctionAndWait(JsReplace(
           R"({

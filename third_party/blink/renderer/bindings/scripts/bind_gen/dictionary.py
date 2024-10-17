@@ -914,6 +914,9 @@ def make_v8_to_blink_function(cg_context):
         "exception_state": "exception_state",
     })
     body.register_code_symbols([
+        S("dictionary_from_v8_context",
+          ("DictionaryConversionContext dictionary_from_v8_context("
+           "${isolate}, ${class_like_name});")),
         S("fallback_presence_var", "bool ${fallback_presence_var};"),
         S("has_deprecated", "bool ${has_deprecated};"),
         S("is_optional", "constexpr bool ${is_optional} = false;"),
@@ -950,6 +953,9 @@ def make_v8_to_blink_function(cg_context):
                           else "${fallback_presence_var}"),
             value_var=member.value_var)
         node = SequenceNode([
+            F(("${dictionary_from_v8_context}"
+               ".SetCurrentPropertyName(\"{property_name}\");"),
+              property_name=member.identifier),
             CxxUnlikelyIfNode(cond=cond, attribute=None, body=T("return;")),
         ])
 

@@ -87,12 +87,7 @@ class PLATFORM_EXPORT ExceptionState {
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
-
-  ~ExceptionState() {
-    if (!exception_.IsEmpty()) [[unlikely]] {
-      PropagateException();
-    }
-  }
+  ~ExceptionState();
 
   // Throws a DOMException due to the given exception code.
   NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
@@ -125,8 +120,6 @@ class PLATFORM_EXPORT ExceptionState {
   // immediately via the v8::TryCatch instead of in the destructor.
   NOINLINE void RethrowV8Exception(v8::TryCatch&);
 
-  bool DidRethrowViaV8TryCatch() const { return thrown_via_v8_trycatch_; }
-
   // Returns true if there is a pending exception.
   //
   // Note that this function returns true even when |exception_| is empty, and
@@ -141,10 +134,6 @@ class PLATFORM_EXPORT ExceptionState {
   }
 
   const String& Message() const { return message_; }
-
-  v8::Local<v8::Value> GetException() {
-    return isolate_ ? exception_.Get(isolate_) : v8::Local<v8::Value>();
-  }
 
   // Returns the context of what Web API is currently being executed.
   const ExceptionContext& GetContext() const {
@@ -170,9 +159,7 @@ class PLATFORM_EXPORT ExceptionState {
   }
 
  private:
-  void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
-  void PropagateException();
-
+  void SetExceptionInfo(ExceptionCode, const String&);
   // Since DOMException is defined in core/, we need a dependency injection in
   // order to create a DOMException in platform/.
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
@@ -183,10 +170,6 @@ class PLATFORM_EXPORT ExceptionState {
   v8::Isolate* isolate_;
   ExceptionCode code_ = 0;
   String message_;
-  // The exception is empty when it was thrown through
-  // DummyExceptionStateForTesting.
-  TraceWrapperV8Reference<v8::Value> exception_;
-  bool thrown_via_v8_trycatch_ = false;
 
 #if DCHECK_IS_ON()
   const char* file_ = "";

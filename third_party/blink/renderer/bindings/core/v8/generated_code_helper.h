@@ -187,13 +187,6 @@ CORE_EXPORT v8::Local<v8::Array> EnumerateIndexedProperties(
     v8::Isolate* isolate,
     uint32_t length);
 
-// Helper for GetDictionaryMemberFromV8Object() to add context information in
-// the case of exception.
-CORE_EXPORT void AddDictionaryContextToException(
-    v8::Isolate* isolate,
-    const char* dictionary_name,
-    v8::Local<v8::Name> v8_member_name,
-    ExceptionState&);
 
 // Performs the ES value to IDL value conversion of IDL dictionary member.
 // Sets a dictionary member |value| and |presence| to the resulting values.
@@ -218,8 +211,6 @@ bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
   if (v8_value->IsUndefined()) {
     if (is_required) [[unlikely]] {
       exception_state.ThrowTypeError("Required member is undefined.");
-      AddDictionaryContextToException(isolate, dictionary_name, v8_member_name,
-                                      exception_state);
       return false;
     }
     return true;
@@ -228,13 +219,6 @@ bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
   value = NativeValueTraits<IDLType>::NativeValue(isolate, v8_value,
                                                   exception_state);
   if (exception_state.HadException()) [[unlikely]] {
-    // If the exception state is rethrowing via a v8::TryCatch, we have either
-    // already applied context information, or intentionally skipped it, so
-    // don't add it here.
-    if (!exception_state.DidRethrowViaV8TryCatch()) {
-      AddDictionaryContextToException(isolate, dictionary_name, v8_member_name,
-                                      exception_state);
-    }
     return false;
   }
   presence = true;

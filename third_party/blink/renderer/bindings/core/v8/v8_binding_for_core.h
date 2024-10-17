@@ -560,6 +560,38 @@ CORE_EXPORT void ApplyContextToException(v8::Isolate*,
                                          v8::Local<v8::Value> exception,
                                          const ExceptionContext&);
 
+class CORE_EXPORT DictionaryConversionContext {
+ public:
+  DictionaryConversionContext(v8::Isolate* isolate, const char* dictionary_name)
+      : per_isolate_data_(V8PerIsolateData::From(isolate)),
+        dictionary_name_(dictionary_name) {
+    auto* per_isolate_data = V8PerIsolateData::From(isolate);
+    previous_ = per_isolate_data->TopOfDictionaryStack();
+    per_isolate_data->SetTopOfDictionaryStack(this);
+  }
+  DictionaryConversionContext(const DictionaryConversionContext&) = delete;
+  DictionaryConversionContext& operator=(const DictionaryConversionContext&) =
+      delete;
+
+  ~DictionaryConversionContext() {
+    per_isolate_data_->SetTopOfDictionaryStack(previous_);
+  }
+
+  void SetCurrentPropertyName(const char* property_name) {
+    property_name_ = property_name;
+  }
+
+  DictionaryConversionContext* Previous() const { return previous_; }
+  const char* DictionaryName() const { return dictionary_name_; }
+  const char* PropertyName() const { return property_name_; }
+
+ private:
+  V8PerIsolateData* const per_isolate_data_;
+  const char* const dictionary_name_;
+  const char* property_name_ = nullptr;
+  DictionaryConversionContext* previous_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_

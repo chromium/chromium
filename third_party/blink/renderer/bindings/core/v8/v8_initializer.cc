@@ -346,6 +346,17 @@ void V8Initializer::ExceptionPropagationCallback(
   }
   DCHECK(class_name.Is8Bit());
 
+  for (auto* dictionary_context =
+           V8PerIsolateData::From(isolate)->TopOfDictionaryStack();
+       dictionary_context;
+       dictionary_context = dictionary_context->Previous()) {
+    ApplyContextToException(
+        isolate, isolate->GetCurrentContext(), exception,
+        ExceptionContext(v8::ExceptionContext::kAttributeGet,
+                         dictionary_context->DictionaryName(),
+                         dictionary_context->PropertyName()));
+  }
+
   ApplyContextToException(
       isolate, isolate->GetCurrentContext(), exception,
       ExceptionContext(context_type, class_name.Utf8().data(), property_name));

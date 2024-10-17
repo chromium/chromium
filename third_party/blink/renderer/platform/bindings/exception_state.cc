@@ -54,6 +54,8 @@ void ExceptionState::SetCreateDOMExceptionFunction(
   DCHECK(s_create_dom_exception_func_);
 }
 
+ExceptionState::~ExceptionState() = default;
+
 NOINLINE void ExceptionState::ThrowSecurityError(
     const char* sanitized_message,
     const char* unsanitized_message) {
@@ -77,19 +79,11 @@ NOINLINE void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
   ThrowDOMException(exception_code, String(message));
 }
 
-void ExceptionState::SetException(ExceptionCode exception_code,
-                                  const String& message,
-                                  v8::Local<v8::Value> exception) {
+void ExceptionState::SetExceptionInfo(ExceptionCode exception_code,
+                                      const String& message) {
   CHECK(exception_code);
-
   code_ = exception_code;
   message_ = message;
-  if (exception.IsEmpty()) {
-    exception_.Reset();
-  } else {
-    DCHECK(isolate_);
-    exception_.Reset(isolate_, exception);
-  }
 }
 
 void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
@@ -102,11 +96,12 @@ void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
       << "DOMException should not be thrown.";
 #endif
 
-  v8::Local<v8::Value> exception =
-      isolate_ ? s_create_dom_exception_func_(isolate_, exception_code, message,
-                                              String())
-               : v8::Local<v8::Value>();
-  SetException(ToExceptionCode(exception_code), message, exception);
+  SetExceptionInfo(ToExceptionCode(exception_code), message);
+  if (isolate_) {
+    v8::Local<v8::Value> exception = s_create_dom_exception_func_(
+        isolate_, exception_code, message, String());
+    V8ThrowException::ThrowException(isolate_, exception);
+  }
 }
 
 void ExceptionState::ThrowSecurityError(const String& sanitized_message,
@@ -115,13 +110,14 @@ void ExceptionState::ThrowSecurityError(const String& sanitized_message,
   DCHECK_AT(!assert_no_exceptions_, file_, line_)
       << "SecurityError should not be thrown.";
 #endif
-  v8::Local<v8::Value> exception =
-      isolate_ ? s_create_dom_exception_func_(
-                     isolate_, DOMExceptionCode::kSecurityError,
-                     sanitized_message, unsanitized_message)
-               : v8::Local<v8::Value>();
-  SetException(ToExceptionCode(DOMExceptionCode::kSecurityError),
-               sanitized_message, exception);
+  SetExceptionInfo(ToExceptionCode(DOMExceptionCode::kSecurityError),
+                   sanitized_message);
+  if (isolate_) {
+    v8::Local<v8::Value> exception =
+        s_create_dom_exception_func_(isolate_, DOMExceptionCode::kSecurityError,
+                                     sanitized_message, unsanitized_message);
+    V8ThrowException::ThrowException(isolate_, exception);
+  }
 }
 
 void ExceptionState::ThrowRangeError(const String& message) {
@@ -129,10 +125,10 @@ void ExceptionState::ThrowRangeError(const String& message) {
   DCHECK_AT(!assert_no_exceptions_, file_, line_)
       << "RangeError should not be thrown.";
 #endif
-  v8::Local<v8::Value> exception =
-      isolate_ ? V8ThrowException::CreateRangeError(isolate_, message)
-               : v8::Local<v8::Value>();
-  SetException(ToExceptionCode(ESErrorType::kRangeError), message, exception);
+  SetExceptionInfo(ToExceptionCode(ESErrorType::kRangeError), message);
+  if (isolate_) {
+    V8ThrowException::ThrowRangeError(isolate_, message);
+  }
 }
 
 void ExceptionState::ThrowTypeError(const String& message) {
@@ -140,10 +136,10 @@ void ExceptionState::ThrowTypeError(const String& message) {
   DCHECK_AT(!assert_no_exceptions_, file_, line_)
       << "TypeError should not be thrown.";
 #endif
-  v8::Local<v8::Value> exception =
-      isolate_ ? V8ThrowException::CreateTypeError(isolate_, message)
-               : v8::Local<v8::Value>();
-  SetException(ToExceptionCode(ESErrorType::kTypeError), message, exception);
+  SetExceptionInfo(ToExceptionCode(ESErrorType::kTypeError), message);
+  if (isolate_) {
+    V8ThrowException::ThrowTypeError(isolate_, message);
+  }
 }
 
 void ExceptionState::ThrowWasmCompileError(const String& message) {
@@ -151,11 +147,10 @@ void ExceptionState::ThrowWasmCompileError(const String& message) {
   DCHECK_AT(!assert_no_exceptions_, file_, line_)
       << "WebAssembly.CompileError should not be thrown.";
 #endif
-  v8::Local<v8::Value> exception =
-      isolate_ ? V8ThrowException::CreateWasmCompileError(isolate_, message)
-               : v8::Local<v8::Value>();
-  SetException(ToExceptionCode(ESErrorType::kWasmCompileError), message,
-               exception);
+  SetExceptionInfo(ToExceptionCode(ESErrorType::kWasmCompileError), message);
+  if (isolate_) {
+    V8ThrowException::ThrowWasmCompileError(isolate_, message);
+  }
 }
 
 void ExceptionState::RethrowV8Exception(v8::TryCatch& try_catch) {
@@ -163,23 +158,11 @@ void ExceptionState::RethrowV8Exception(v8::TryCatch& try_catch) {
   DCHECK_AT(!assert_no_exceptions_, file_, line_)
       << "A V8 exception should not be thrown.";
 #endif
-  SetException(
+  SetExceptionInfo(
       static_cast<ExceptionCode>(InternalExceptionType::kRethrownException),
-      String(), isolate_ ? try_catch.Exception() : v8::Local<v8::Value>());
+      String());
   if (isolate_) {
-    thrown_via_v8_trycatch_ = true;
     try_catch.ReThrow();
-  }
-}
-
-void ExceptionState::PropagateException() {
-  // This is the non-inlined part of the destructor. Not inlining this part
-  // deoptimizes use cases where exceptions are thrown, but it reduces binary
-  // size and results in better performance due to improved code locality in
-  // the bindings for the most frequently used code path (cases where no
-  // exception is thrown).
-  if (!thrown_via_v8_trycatch_) {
-    V8ThrowException::ThrowException(isolate_, exception_.Get(isolate_));
   }
 }
 

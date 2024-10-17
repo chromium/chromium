@@ -382,23 +382,6 @@ v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
   return v8::Array::New(isolate, elements.data(), elements.size());
 }
 
-void AddDictionaryContextToException(v8::Isolate* isolate,
-                                     const char* dictionary_name,
-                                     v8::Local<v8::Name> v8_member_name,
-                                     ExceptionState& exception_state) {
-  DCHECK(exception_state.HadException());
-  if (exception_state.GetException().IsEmpty()) {
-    return;
-  }
-
-  CHECK(v8_member_name->IsString());
-  String member_name = ToCoreString(isolate, v8_member_name.As<v8::String>());
-  ExceptionContext exception_context(v8::ExceptionContext::kAttributeGet,
-                                     dictionary_name, member_name);
-  ApplyContextToException(ScriptState::ForCurrentRealm(isolate),
-                          exception_state.GetException(), exception_context);
-}
-
 template <typename IDLType,
           typename ArgType,
           void (Element::*MemFunc)(const QualifiedName&, ArgType)>
