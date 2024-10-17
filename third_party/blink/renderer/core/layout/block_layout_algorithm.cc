@@ -309,14 +309,6 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
       should_text_box_trim_end_(params.space.ShouldTextBoxTrimEnd()) {
   container_builder_.SetExclusionSpace(params.space.GetExclusionSpace());
 
-  // If this node has a column spanner inside, we'll force it to stay within the
-  // current fragmentation flow, so that it doesn't establish a parallel flow,
-  // even if it might have content that overflows into the next fragmentainer.
-  // This way we'll prevent content that comes after the spanner from being laid
-  // out *before* it.
-  if (column_spanner_path_)
-    container_builder_.SetShouldForceSameFragmentationFlow();
-
   child_percentage_size_ = CalculateChildPercentageSize(
       GetConstraintSpace(), Node(), ChildAvailableSize());
   replaced_child_percentage_size_ = CalculateReplacedChildPercentageSize(
@@ -345,6 +337,51 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
 // Define the destructor here, so that we can forward-declare more in the
 // header.
 BlockLayoutAlgorithm::~BlockLayoutAlgorithm() = default;
+
+void BlockLayoutAlgorithm::SetupRelayoutData(
+    const BlockLayoutAlgorithm& previous,
+    RelayoutType relayout_type) {
+  LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
+
+  column_spanner_path_ = previous.column_spanner_path_;
+
+  if (relayout_type == kRelayoutIgnoringLineClamp) {
+    line_clamp_data_.data.state = LineClampData::kDontTruncate;
+  } else if (relayout_type == kRelayoutWithLineClampBlockSize) {
+    line_clamp_data_.data.state = LineClampData::kClampByLines;
+    line_clamp_data_.data.lines_until_clamp =
+        previous.line_clamp_data_.data.lines_until_clamp;
+    line_clamp_data_.end_margin_strut =
+        previous.line_clamp_data_.end_margin_strut;
+  } else {
+    line_clamp_data_.data.state = previous.line_clamp_data_.data.state;
+    line_clamp_data_.data.lines_until_clamp =
+        previous.line_clamp_data_.data.lines_until_clamp;
+    line_clamp_data_.end_margin_strut =
+        previous.line_clamp_data_.end_margin_strut;
+  }
+
+  if (relayout_type == kRelayoutForTextBoxTrim) {
+    if (previous.last_non_empty_inflow_child_) {
+      // If there is at least one non-empty inflow child, re-layout by applying
+      // the `text-box-trim: end` to the `last_non_empty_inflow_child_`.
+      override_text_box_trim_end_child_ = previous.last_non_empty_inflow_child_;
+      override_text_box_trim_end_break_token_ =
+          previous.last_non_empty_break_token_;
+    } else {
+      DCHECK(!previous.GetConstraintSpace().ShouldTextBoxTrimEnd());
+      // If there are no more ancestors to propagate, re-layout by ignoring the
+      // `text-box-trim: end`.
+      should_text_box_trim_end_ = false;
+    }
+  } else {
+    override_text_box_trim_end_child_ =
+        previous.override_text_box_trim_end_child_;
+    override_text_box_trim_end_break_token_ =
+        previous.override_text_box_trim_end_break_token_;
+    should_text_box_trim_end_ = previous.should_text_box_trim_end_;
+  }
+}
 
 void BlockLayoutAlgorithm::SetBoxType(PhysicalFragment::BoxType type) {
   container_builder_.SetBoxType(type);
@@ -567,13 +604,8 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
       DCHECK(result->GetEarlyBreak());
-
-      LayoutAlgorithmParams params(
-          Node(), container_builder_.InitialFragmentGeometry(),
-          GetConstraintSpace(), GetBreakToken(), result->GetEarlyBreak());
-      params.column_spanner_path = column_spanner_path_;
-      BlockLayoutAlgorithm algorithm_with_break(params);
-      return RelayoutAndBreakEarlier(&algorithm_with_break);
+      return RelayoutAndBreakEarlier<BlockLayoutAlgorithm>(
+          *result->GetEarlyBreak());
     }
     case LayoutResult::kNeedsLineClampRelayout:
       if (line_clamp_data_.data.state == LineClampData::kClampByLines) {
@@ -628,67 +660,22 @@ BlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
 
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
   DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kClampByLines);
-  LayoutAlgorithmParams params(Node(),
-                               container_builder_.InitialFragmentGeometry(),
-                               GetConstraintSpace(), GetBreakToken(), nullptr);
-  BlockLayoutAlgorithm algorithm_ignoring_line_clamp(params);
-  algorithm_ignoring_line_clamp.line_clamp_data_.data.state =
-      LineClampData::kDontTruncate;
-  BoxFragmentBuilder& new_builder =
-      algorithm_ignoring_line_clamp.container_builder_;
-  new_builder.SetBoxType(container_builder_.GetBoxType());
-  return algorithm_ignoring_line_clamp.Layout();
+  return Relayout<BlockLayoutAlgorithm>(kRelayoutIgnoringLineClamp);
 }
 
 NOINLINE const LayoutResult*
 BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize(int lines_until_clamp) {
   DCHECK_EQ(line_clamp_data_.data.state,
             LineClampData::kMeasureLinesUntilBfcOffset);
-  LayoutAlgorithmParams params(Node(),
-                               container_builder_.InitialFragmentGeometry(),
-                               GetConstraintSpace(), GetBreakToken(), nullptr);
-  BlockLayoutAlgorithm algorithm_ignoring_line_clamp(params);
-  algorithm_ignoring_line_clamp.line_clamp_data_.data.state =
-      LineClampData::kClampByLines;
-  algorithm_ignoring_line_clamp.line_clamp_data_.data.lines_until_clamp =
-      std::max(1, lines_until_clamp);
-  algorithm_ignoring_line_clamp.line_clamp_data_.end_margin_strut =
-      line_clamp_data_.end_margin_strut;
-  BoxFragmentBuilder& new_builder =
-      algorithm_ignoring_line_clamp.container_builder_;
-  new_builder.SetBoxType(container_builder_.GetBoxType());
-  return algorithm_ignoring_line_clamp.Layout();
+  line_clamp_data_.data.lines_until_clamp = std::max(1, lines_until_clamp);
+  return Relayout<BlockLayoutAlgorithm>(kRelayoutWithLineClampBlockSize);
 }
 
 // Re-layout when the `child` failed to apply `text-box-trim: end`.
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutForTextBoxTrimEnd() {
-  if (last_non_empty_inflow_child_) {
-    // If there is at least one non-empty inflow child, re-layout by applying
-    // the `text-box-trim: end` to the `last_non_empty_inflow_child_`.
-    LayoutAlgorithmParams params{Node(),
-                                 container_builder_.InitialFragmentGeometry(),
-                                 GetConstraintSpace(), GetBreakToken()};
-    BlockLayoutAlgorithm relayout_algorithm{params};
-    relayout_algorithm.override_text_box_trim_end_child_ =
-        last_non_empty_inflow_child_;
-    relayout_algorithm.override_text_box_trim_end_break_token_ =
-        last_non_empty_break_token_;
-    BoxFragmentBuilder& new_builder = relayout_algorithm.container_builder_;
-    new_builder.SetBoxType(container_builder_.GetBoxType());
-    return relayout_algorithm.Layout();
-  }
-
-  if (!GetConstraintSpace().ShouldTextBoxTrimEnd()) {
-    // If there are no more ancestors to propagate, re-layout by ignoring the
-    // `text-box-trim: end`.
-    LayoutAlgorithmParams params{Node(),
-                                 container_builder_.InitialFragmentGeometry(),
-                                 GetConstraintSpace(), GetBreakToken()};
-    BlockLayoutAlgorithm relayout_algorithm{params};
-    relayout_algorithm.should_text_box_trim_end_ = false;
-    BoxFragmentBuilder& new_builder = relayout_algorithm.container_builder_;
-    new_builder.SetBoxType(container_builder_.GetBoxType());
-    return relayout_algorithm.Layout();
+  if (last_non_empty_inflow_child_ ||
+      !GetConstraintSpace().ShouldTextBoxTrimEnd()) {
+    return Relayout<BlockLayoutAlgorithm>(kRelayoutForTextBoxTrim);
   }
 
   return container_builder_.Abort(LayoutResult::kTextBoxTrimEndDidNotApply);
@@ -699,6 +686,15 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   DCHECK_EQ(!!inline_child_layout_context,
             Node().IsInlineFormattingContextRoot());
   container_builder_.SetIsInlineFormattingContext(inline_child_layout_context);
+
+  // If this node has a column spanner inside, we'll force it to stay within the
+  // current fragmentation flow, so that it doesn't establish a parallel flow,
+  // even if it might have content that overflows into the next fragmentainer.
+  // This way we'll prevent content that comes after the spanner from being laid
+  // out *before* it.
+  if (column_spanner_path_) {
+    container_builder_.SetShouldForceSameFragmentationFlow();
+  }
 
   const auto& constraint_space = GetConstraintSpace();
   container_builder_.SetBfcLineOffset(

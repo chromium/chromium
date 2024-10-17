@@ -144,6 +144,17 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
 }
 
+void FlexLayoutAlgorithm::SetupRelayoutData(const FlexLayoutAlgorithm& previous,
+                                            RelayoutType relayout_type) {
+  LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
+
+  if (relayout_type == kRelayoutIgnoringChildScrollbarChanges) {
+    ignore_child_scrollbar_changes_ = true;
+  } else {
+    ignore_child_scrollbar_changes_ = previous.ignore_child_scrollbar_changes_;
+  }
+}
+
 LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     LayoutUnit sum_hypothetical_main_size) const {
   if (is_column_) {
@@ -898,9 +909,13 @@ const LayoutResult* FlexLayoutAlgorithm::Layout() {
     case LayoutResult::kNeedsEarlierBreak:
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
-      return RelayoutAndBreakEarlierForFlex(result);
+      DCHECK(result->GetEarlyBreak());
+      return RelayoutAndBreakEarlier<FlexLayoutAlgorithm>(
+          *result->GetEarlyBreak(), &column_early_breaks_);
     case LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges:
-      return RelayoutIgnoringChildScrollbarChanges();
+      DCHECK(!ignore_child_scrollbar_changes_);
+      return Relayout<FlexLayoutAlgorithm>(
+          kRelayoutIgnoringChildScrollbarChanges);
     case LayoutResult::kDisableFragmentation:
       DCHECK(GetConstraintSpace().HasBlockFragmentation());
       return RelayoutWithoutFragmentation<FlexLayoutAlgorithm>();
@@ -909,30 +924,6 @@ const LayoutResult* FlexLayoutAlgorithm::Layout() {
     default:
       return result;
   }
-}
-
-const LayoutResult*
-FlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
-  DCHECK(!ignore_child_scrollbar_changes_);
-  LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), GetBreakToken(), /* early_break */ nullptr);
-  FlexLayoutAlgorithm algorithm(params);
-  algorithm.ignore_child_scrollbar_changes_ = true;
-  return algorithm.Layout();
-}
-
-const LayoutResult* FlexLayoutAlgorithm::RelayoutAndBreakEarlierForFlex(
-    const LayoutResult* previous_result) {
-  DCHECK(previous_result->GetEarlyBreak());
-  LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), GetBreakToken(), previous_result->GetEarlyBreak(),
-      &column_early_breaks_);
-  FlexLayoutAlgorithm algorithm_with_break(params);
-  algorithm_with_break.ignore_child_scrollbar_changes_ =
-      ignore_child_scrollbar_changes_;
-  return RelayoutAndBreakEarlier(&algorithm_with_break);
 }
 
 const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
