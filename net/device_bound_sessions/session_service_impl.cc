@@ -39,6 +39,7 @@ void SessionServiceImpl::OnRegistrationComplete(
 
   auto session = Session::CreateIfValid(std::move(params->params), params->url);
   if (session) {
+    session->set_unexportable_key_id(std::move(params->key_id));
     unpartitioned_sessions_.insert(std::make_pair(
         SchemefulSite(url::Origin::Create(params->url)), std::move(session)));
   }
