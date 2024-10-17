@@ -20,6 +20,25 @@ CONTENT_EXPORT extern const base::FeatureParam<std::string>
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2FallbackPrefetchSpecRules);
 
+// This allows controlling the behavior of multiple use of `PrefetchContainer`
+// if `kPrerender2FallbackPrefetchSpecRules` is enabled and `kPrefetchReusable`
+// is disabled. If `kPrefetchReusable` is enabled, the feature flag has
+// priority.
+//
+// TODO(crbug.com/373553133): Remove this control once a behavior is shipped and
+// stabilized.
+enum class Prerender2FallbackPrefetchReusablePolicy {
+  // Do not use `PrefetchReusable` code path.
+  kNotUse,
+  // Use if a prefetch is started by prerender.
+  kUseIfIsLikelyAheadOfPrerender,
+  // Use always.
+  kUseAlways,
+};
+CONTENT_EXPORT extern const base::FeatureParam<
+    Prerender2FallbackPrefetchReusablePolicy>
+    kPrerender2FallbackPrefetchReusablePolicy;
+
 // A field trial param that controls the timeout for waiting on headers
 // during navigation for the prerender URL matched by No-Vary-Search hint before
 // falling back to the default navigation path.

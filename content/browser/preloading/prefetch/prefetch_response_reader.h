@@ -113,6 +113,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  bool is_reusable() const { return is_reusable_; }
+
  private:
   // Identifies a client in `serving_url_loader_clients_`.
   using ServingUrlLoaderClientId = mojo::RemoteSetElementId;
