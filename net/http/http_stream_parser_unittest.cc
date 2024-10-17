@@ -2374,10 +2374,8 @@ TEST(HttpStreamParser, ReceiveOneByteAtATime) {
 
   get_runner.SetupParserAndSendRequest();
   get_runner.ReadHeaders();
-  std::string header_value;
-  EXPECT_TRUE(get_runner.response_info()->headers->GetNormalizedHeader(
-      "Foo", &header_value));
-  EXPECT_EQ("Bar", header_value);
+  EXPECT_EQ(get_runner.response_info()->headers->GetNormalizedHeader("Foo"),
+            "Bar");
   int read_lengths[] = {1, 1, 0};
   EXPECT_EQ(kResponseBody,
             get_runner.ReadBody(kResponseBody.size(), read_lengths));

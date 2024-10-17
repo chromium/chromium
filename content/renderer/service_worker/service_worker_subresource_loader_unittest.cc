@@ -1609,9 +1609,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, RangeRequest_206Response) {
   // Test the response.
   auto& info = client->response_head();
   EXPECT_EQ(206, info->headers->response_code());
-  std::string range;
-  ASSERT_TRUE(info->headers->GetNormalizedHeader("Content-Range", &range));
-  EXPECT_EQ("bytes 5-13/33", range);
+  EXPECT_EQ(info->headers->GetNormalizedHeader("Content-Range"),
+            "bytes 5-13/33");
   EXPECT_EQ(9, info->content_length);
   EXPECT_EQ("is sample", TakeResponseBody(client.get()));
 }
@@ -1633,9 +1632,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest,
   // Test the response.
   auto& info = client->response_head();
   EXPECT_EQ(206, info->headers->response_code());
-  std::string range;
-  ASSERT_TRUE(info->headers->GetNormalizedHeader("Content-Range", &range));
-  EXPECT_EQ("bytes 5-32/33", range);
+  EXPECT_EQ(info->headers->GetNormalizedHeader("Content-Range"),
+            "bytes 5-32/33");
   EXPECT_EQ(28, info->content_length);
   EXPECT_EQ("is sample text for the Blob.", TakeResponseBody(client.get()));
 }

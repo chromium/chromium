@@ -296,9 +296,8 @@ class IsolatedWebAppURLLoaderFactoryTest
   std::string ResponseBody() { return response_body_; }
 
   std::string GetResponseHeader(std::string_view name) {
-    std::string value;
-    ResponseInfo()->headers->GetNormalizedHeader(name, &value);
-    return value;
+    return ResponseInfo()->headers->GetNormalizedHeader(name).value_or(
+        std::string());
   }
 
   network::mojom::ParsedHeadersPtr ParseHeaders(const GURL& request_url) {

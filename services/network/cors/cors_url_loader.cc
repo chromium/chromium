@@ -1437,12 +1437,10 @@ CorsURLLoader::TakePrivateNetworkAccessPreflightResult() {
 std::optional<std::string> CorsURLLoader::GetHeaderString(
     const mojom::URLResponseHead& response,
     const std::string& header_name) {
-  if (!response.headers)
+  if (!response.headers) {
     return std::nullopt;
-  std::string header_value;
-  if (!response.headers->GetNormalizedHeader(header_name, &header_value))
-    return std::nullopt;
-  return header_value;
+  }
+  return response.headers->GetNormalizedHeader(header_name);
 }
 
 bool CorsURLLoader::

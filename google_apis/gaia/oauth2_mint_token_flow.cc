@@ -118,13 +118,8 @@ std::string FindTokenBindingChallenge(
     return std::string();
   }
 
-  std::string challenge;
-  if (!head->headers->GetNormalizedHeader(kTokenBindingChallengeHeader,
-                                          &challenge)) {
-    return std::string();
-  }
-
-  return challenge;
+  return head->headers->GetNormalizedHeader(kTokenBindingChallengeHeader)
+      .value_or(std::string());
 }
 
 bool AreCookiesEqual(const net::CanonicalCookie& lhs,

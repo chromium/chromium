@@ -235,10 +235,8 @@ TEST_P(EmbeddedTestServerTest, RegisterRequestHandler) {
   ASSERT_TRUE(request->response_headers());
   EXPECT_EQ(HTTP_OK, request->response_headers()->response_code());
   EXPECT_EQ("<b>Worked!</b>", delegate.data_received());
-  std::string content_type;
-  ASSERT_TRUE(request->response_headers()->GetNormalizedHeader("Content-Type",
-                                                               &content_type));
-  EXPECT_EQ("text/html", content_type);
+  EXPECT_EQ(request->response_headers()->GetNormalizedHeader("Content-Type"),
+            "text/html");
 
   EXPECT_EQ("/test?q=foo", request_relative_url_);
   EXPECT_EQ(server_->GetURL("/test?q=foo"), request_absolute_url_);
@@ -263,10 +261,8 @@ TEST_P(EmbeddedTestServerTest, ServeFilesFromDirectory) {
   ASSERT_TRUE(request->response_headers());
   EXPECT_EQ(HTTP_OK, request->response_headers()->response_code());
   EXPECT_EQ("<p>Hello World!</p>", delegate.data_received());
-  std::string content_type;
-  ASSERT_TRUE(request->response_headers()->GetNormalizedHeader("Content-Type",
-                                                               &content_type));
-  EXPECT_EQ("text/html", content_type);
+  EXPECT_EQ(request->response_headers()->GetNormalizedHeader("Content-Type"),
+            "text/html");
 }
 
 TEST_P(EmbeddedTestServerTest, MockHeadersWithoutCRLF) {
@@ -293,10 +289,8 @@ TEST_P(EmbeddedTestServerTest, MockHeadersWithoutCRLF) {
   ASSERT_TRUE(request->response_headers());
   EXPECT_EQ(HTTP_OK, request->response_headers()->response_code());
   EXPECT_EQ("<p>Hello World!</p>", delegate.data_received());
-  std::string content_type;
-  ASSERT_TRUE(request->response_headers()->GetNormalizedHeader("Content-Type",
-                                                               &content_type));
-  EXPECT_EQ("text/html", content_type);
+  EXPECT_EQ(request->response_headers()->GetNormalizedHeader("Content-Type"),
+            "text/html");
 }
 
 TEST_P(EmbeddedTestServerTest, DefaultNotFoundResponse) {
@@ -557,28 +551,22 @@ TEST_P(EmbeddedTestServerTest, ConcurrentFetches) {
   ASSERT_TRUE(request1->response_headers());
   EXPECT_EQ(HTTP_OK, request1->response_headers()->response_code());
   EXPECT_EQ("Raspberry chocolate", delegate1.data_received());
-  std::string content_type1;
-  ASSERT_TRUE(request1->response_headers()->GetNormalizedHeader(
-      "Content-Type", &content_type1));
-  EXPECT_EQ("text/html", content_type1);
+  EXPECT_EQ(request1->response_headers()->GetNormalizedHeader("Content-Type"),
+            "text/html");
 
   EXPECT_EQ(net::OK, delegate2.request_status());
   ASSERT_TRUE(request2->response_headers());
   EXPECT_EQ(HTTP_OK, request2->response_headers()->response_code());
   EXPECT_EQ("Vanilla chocolate", delegate2.data_received());
-  std::string content_type2;
-  ASSERT_TRUE(request2->response_headers()->GetNormalizedHeader(
-      "Content-Type", &content_type2));
-  EXPECT_EQ("text/html", content_type2);
+  EXPECT_EQ(request2->response_headers()->GetNormalizedHeader("Content-Type"),
+            "text/html");
 
   EXPECT_EQ(net::OK, delegate3.request_status());
   ASSERT_TRUE(request3->response_headers());
   EXPECT_EQ(HTTP_NOT_FOUND, request3->response_headers()->response_code());
   EXPECT_EQ("No chocolates", delegate3.data_received());
-  std::string content_type3;
-  ASSERT_TRUE(request3->response_headers()->GetNormalizedHeader(
-      "Content-Type", &content_type3));
-  EXPECT_EQ("text/plain", content_type3);
+  EXPECT_EQ(request3->response_headers()->GetNormalizedHeader("Content-Type"),
+            "text/plain");
 }
 
 namespace {

@@ -787,10 +787,7 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
             network::features::kAttributionReportingCrossAppWeb);
 
     const auto get_header = [&](std::string_view header, bool enabled = true) {
-      std::string value;
-      return enabled && headers->GetNormalizedHeader(header, &value)
-                 ? std::make_optional(std::move(value))
-                 : std::nullopt;
+      return enabled ? headers->GetNormalizedHeader(header) : std::nullopt;
     };
 
     std::optional<std::string> web_source_header = get_header(

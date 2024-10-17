@@ -6111,19 +6111,14 @@ TEST_F(URLRequestTestHTTP, ResponseHeadersTest) {
   // Simple sanity check that response_info() accesses the same data.
   EXPECT_EQ(headers, req->response_info().headers.get());
 
-  std::string header;
-  EXPECT_TRUE(headers->GetNormalizedHeader("cache-control", &header));
-  EXPECT_EQ("private", header);
+  EXPECT_EQ(headers->GetNormalizedHeader("cache-control"), "private");
 
-  header.clear();
-  EXPECT_TRUE(headers->GetNormalizedHeader("content-type", &header));
-  EXPECT_EQ("text/html; charset=ISO-8859-1", header);
+  EXPECT_EQ(headers->GetNormalizedHeader("content-type"),
+            "text/html; charset=ISO-8859-1");
 
   // The response has two "X-Multiple-Entries" headers.
-  // This verfies our output has them concatenated together.
-  header.clear();
-  EXPECT_TRUE(headers->GetNormalizedHeader("x-multiple-entries", &header));
-  EXPECT_EQ("a, b", header);
+  // This verifies our output has them concatenated together.
+  EXPECT_EQ(headers->GetNormalizedHeader("x-multiple-entries"), "a, b");
 }
 
 // TODO(svaldez): iOS tests are flaky with EmbeddedTestServer and transport
