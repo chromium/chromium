@@ -53,9 +53,6 @@ AutocompleteMatch NewOmniboxResult(const std::string& url) {
 
 AutocompleteMatch NewAnswerResult(const std::string& url,
                                   omnibox::AnswerType answer_type) {
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::SuggestionAnswerMigration>
-      scoped_config;
   AutocompleteMatch result;
 
   result.relevance = 1.0;
@@ -63,14 +60,9 @@ AutocompleteMatch NewAnswerResult(const std::string& url,
   result.stripped_destination_url = GURL(url);
   result.contents = u"contents";
   result.description = u"description";
-  if (scoped_config.Get().enabled) {
-    omnibox::RichAnswerTemplate answer_template;
-    answer_template.add_answers();
-    result.answer_template = answer_template;
-  } else {
-    SuggestionAnswer answer;
-    result.answer = answer;
-  }
+  omnibox::RichAnswerTemplate answer_template;
+  answer_template.add_answers();
+  result.answer_template = answer_template;
   result.answer_type = answer_type;
 
   return result;

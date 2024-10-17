@@ -150,18 +150,6 @@ SearchResult::MetricsType MatchTypeToMetricsType(
   }
 }
 
-SearchResult::TextType TextStyleToType(
-    const SuggestionAnswer::TextStyle style) {
-  switch (style) {
-    case SuggestionAnswer::TextStyle::POSITIVE:
-      return SearchResult::TextType::kPositive;
-    case SuggestionAnswer::TextStyle::NEGATIVE:
-      return SearchResult::TextType::kNegative;
-    default:
-      return SearchResult::TextType::kUnset;
-  }
-}
-
 SearchResult::TextType ColorTypeToType(
     omnibox::FormattedString::ColorType type) {
   switch (type) {
@@ -329,63 +317,29 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
   result->answer_type = MatchTypeToAnswerType(match.answer_type);
   result->contents = match.contents;
 
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-      match.answer_template) {
-    const auto& headline = match.answer_template->answers(0).headline();
-    if (headline.fragments_size() > 1) {
-      // Only use the second fragment as the first is equivalent to
-      // |match.contents|.
-      result->additional_contents =
-          base::UTF8ToUTF16(headline.fragments(1).text());
-      result->additional_contents_type =
-          ColorTypeToType(headline.fragments(1).color());
-    }
-    const auto& subhead = match.answer_template->answers(0).subhead();
-    if (subhead.fragments_size() > 0) {
-      result->description = base::UTF8ToUTF16(subhead.fragments(0).text());
-      result->description_type = ColorTypeToType(subhead.fragments(0).color());
-    }
-    if (subhead.fragments_size() > 1) {
-      result->additional_description =
-          base::UTF8ToUTF16(subhead.fragments(1).text());
-      result->additional_description_type =
-          ColorTypeToType(subhead.fragments(1).color());
-    }
-    if (result->answer_type == SearchResult::AnswerType::kWeather) {
-      result->image_url = GURL(match.answer_template->answers(0).image().url());
-      result->description_a11y_label = base::UTF8ToUTF16(subhead.a11y_text());
-    }
-
-    return result;
-  }
-
-  if (result->answer_type == SearchResult::AnswerType::kWeather) {
-    result->image_url = match.answer->image_url();
-
-    const std::u16string* a11y_label =
-        match.answer->second_line().accessibility_label();
-    if (a11y_label) {
-      result->description_a11y_label = *a11y_label;
-    }
-  }
-
-  const auto& first = match.answer->first_line();
-  if (first.additional_text()) {
-    result->additional_contents = first.additional_text()->text();
+  const auto& headline = match.answer_template->answers(0).headline();
+  if (headline.fragments_size() > 1) {
+    // Only use the second fragment as the first is equivalent to
+    // |match.contents|.
+    result->additional_contents =
+        base::UTF8ToUTF16(headline.fragments(1).text());
     result->additional_contents_type =
-        TextStyleToType(first.additional_text()->style());
+        ColorTypeToType(headline.fragments(1).color());
   }
-
-  const auto& second = match.answer->second_line();
-  if (!second.text_fields().empty()) {
-    // Only extract the first text field.
-    result->description = second.text_fields()[0].text();
-    result->description_type = TextStyleToType(second.text_fields()[0].style());
+  const auto& subhead = match.answer_template->answers(0).subhead();
+  if (subhead.fragments_size() > 0) {
+    result->description = base::UTF8ToUTF16(subhead.fragments(0).text());
+    result->description_type = ColorTypeToType(subhead.fragments(0).color());
   }
-  if (second.additional_text()) {
-    result->additional_description = second.additional_text()->text();
+  if (subhead.fragments_size() > 1) {
+    result->additional_description =
+        base::UTF8ToUTF16(subhead.fragments(1).text());
     result->additional_description_type =
-        TextStyleToType(second.additional_text()->style());
+        ColorTypeToType(subhead.fragments(1).color());
+  }
+  if (result->answer_type == SearchResult::AnswerType::kWeather) {
+    result->image_url = GURL(match.answer_template->answers(0).image().url());
+    result->description_a11y_label = base::UTF8ToUTF16(subhead.a11y_text());
   }
 
   return result;

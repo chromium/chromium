@@ -58,10 +58,6 @@ class OmniboxTextView : public views::View {
   void SetTextWithStyling(const std::u16string& new_text,
                           const ACMatchClassifications& classifications);
 
-  // Used for search answers not using `RichAnswerTemplate` (e.g. because the
-  // feature is disabled).
-  void SetTextWithStyling(const SuggestionAnswer::ImageLine& line);
-
   // Used for search answers using `RichAnswerTemplate`.
   // Sets the styling for `FormattedString`'s `FormattedStringFragment`s.
   // `fragment_index` specifies where to start appending and styling text from.
@@ -75,11 +71,6 @@ class OmniboxTextView : public views::View {
 
   // Used for history embedding answers.
   void SetMultilineText(const std::u16string& text);
-
-  // Used for search answers not using `RichAnswerTemplate` (e.g. because the
-  // feature is disabled). Adds the "additional" and "status" text from |line|,
-  // if any.
-  void AppendExtraText(const SuggestionAnswer::ImageLine& line);
 
   // Get the height of one line of text.  This is handy if the view might have
   // multiple lines.
@@ -95,11 +86,6 @@ class OmniboxTextView : public views::View {
       const std::u16string& text) const;
 
  private:
-  // Adds text from an answer field to the render text using appropriate style.
-  // A prefix (such as separating space) may also be prepended to field text.
-  void AppendText(const SuggestionAnswer::TextField& field,
-                  const std::u16string& prefix);
-
   // Updates the cached maximum line height and recomputes the preferred size.
   void OnStyleChanged();
 

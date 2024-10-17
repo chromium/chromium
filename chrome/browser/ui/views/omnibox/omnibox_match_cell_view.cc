@@ -315,8 +315,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : std::u16string());
 
   // Set content & description texts.
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-      match.answer_template.has_value()) {
+  if (match.answer_template.has_value()) {
     content_view_->SetTextWithStyling(match.contents, match.contents_class);
     omnibox::AnswerData answer_data = match.answer_template->answers(0);
     content_view_->AppendTextWithStyling(
@@ -326,9 +325,6 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     description_view_->SetMultilineText(
         /*formatted_string=*/answer_data.subhead(),
         /*answer_type=*/match.answer_type);
-  } else if (match.answer) {
-    content_view_->AppendExtraText(match.answer->first_line());
-    description_view_->SetTextWithStyling(match.answer->second_line());
   } else if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
     content_view_->SetMultilineText(match.contents);
     description_view_->SetTextWithStyling(match.description,

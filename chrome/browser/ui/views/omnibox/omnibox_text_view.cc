@@ -62,49 +62,6 @@ struct TextStyle {
   gfx::BaselineStyle baseline = gfx::BaselineStyle::kNormalBaseline;
 };
 
-// The new answer layout has separate and different treatment of text styles,
-// and as of writing both styling approaches need to be supported.  When old
-// answer styles are deprecated, the above TextStyle structure and related
-// logic can be removed, and this used exclusively.  This utility function
-// applies new answer text styling for given text_type over range on render_text
-// using result_view as a source for omnibox part colors.
-void ApplyTextStyleForType(SuggestionAnswer::TextStyle text_style,
-                           OmniboxResultView* result_view,
-                           gfx::RenderText* render_text,
-                           const gfx::Range& range) {
-  const gfx::Font::Weight weight =
-      (text_style == SuggestionAnswer::TextStyle::BOLD)
-          ? gfx::Font::Weight::BOLD
-          : gfx::Font::Weight::NORMAL;
-  render_text->ApplyWeight(weight, range);
-
-  const gfx::BaselineStyle baseline =
-      (text_style == SuggestionAnswer::TextStyle::SUPERIOR)
-          ? gfx::BaselineStyle::kSuperior
-          : gfx::BaselineStyle::kNormalBaseline;
-  render_text->ApplyBaselineStyle(baseline, range);
-
-  const bool selected =
-      result_view->GetThemeState() == OmniboxPartState::SELECTED;
-  ui::ColorId id;
-  if (text_style == SuggestionAnswer::TextStyle::NORMAL_DIM) {
-    id = selected ? kColorOmniboxResultsTextDimmedSelected
-                  : kColorOmniboxResultsTextDimmed;
-  } else if (text_style == SuggestionAnswer::TextStyle::SECONDARY) {
-    id = selected ? kColorOmniboxResultsTextSecondarySelected
-                  : kColorOmniboxResultsTextSecondary;
-  } else if (text_style == SuggestionAnswer::TextStyle::POSITIVE) {
-    id = selected ? kColorOmniboxResultsTextPositiveSelected
-                  : kColorOmniboxResultsTextPositive;
-  } else if (text_style == SuggestionAnswer::TextStyle::NEGATIVE) {
-    id = selected ? kColorOmniboxResultsTextNegativeSelected
-                  : kColorOmniboxResultsTextNegative;
-  } else {
-    id = selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
-  }
-  render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
-}
-
 void ApplyTextStyleFromColorType(
     const std::optional<omnibox::FormattedString::ColorType>& color_type,
     OmniboxResultView* result_view,
@@ -222,28 +179,6 @@ void OmniboxTextView::SetTextWithStyling(
   ReapplyStyling();
 }
 
-void OmniboxTextView::SetTextWithStyling(
-    const SuggestionAnswer::ImageLine& line) {
-  cached_classifications_.reset();
-  wrap_text_lines_ = line.num_text_lines() > 1;
-  render_text_ = CreateRenderText(std::u16string());
-
-  for (const SuggestionAnswer::TextField& text_field : line.text_fields())
-    AppendText(text_field, std::u16string());
-  if (!line.text_fields().empty()) {
-    const SuggestionAnswer::TextField& first_field = line.text_fields().front();
-    if (first_field.has_num_lines() && first_field.num_lines() > 1) {
-      render_text_->SetMultiline(true);
-      render_text_->SetMaxLines(1);
-    }
-  }
-
-  // Add the "additional" and "status" text from |line|, if any.
-  AppendExtraText(line);
-
-  OnStyleChanged();
-}
-
 void OmniboxTextView::AppendTextWithStyling(
     const omnibox::FormattedString& formatted_string,
     size_t fragment_index,
@@ -296,19 +231,6 @@ void OmniboxTextView::SetMultilineText(const std::u16string& text) {
   render_text_->SetMaxLines(3);
   wrap_text_lines_ = true;
   OnStyleChanged();
-}
-
-void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
-  const std::u16string space = u" ";
-  const auto* text_field = line.additional_text();
-  if (text_field) {
-    AppendText(*text_field, space);
-  }
-  text_field = line.status_text();
-  if (text_field) {
-    AppendText(*text_field, space);
-  }
-  SetPreferredSize(CalculatePreferredSize({}));
 }
 
 int OmniboxTextView::GetLineHeight() const {
@@ -368,18 +290,6 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
   // Increase space between lines for multiline texts.
   render_text->SetMinLineHeight(19);
   return render_text;
-}
-
-void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
-                                 const std::u16string& prefix) {
-  const std::u16string& append_text =
-      prefix.empty() ? field.text() : (prefix + field.text());
-  if (append_text.empty())
-    return;
-  int offset = GetText().length();
-  gfx::Range range(offset, offset + append_text.length());
-  render_text_->AppendText(append_text);
-  ApplyTextStyleForType(field.style(), result_view_, render_text_.get(), range);
 }
 
 void OmniboxTextView::OnStyleChanged() {
