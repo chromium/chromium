@@ -17,6 +17,8 @@
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
 
+class Profile;
+
 namespace web_app {
 
 // This class contains short-term experiments to specific web apps for testing
@@ -35,6 +37,11 @@ class ChromeOsWebAppExperiments {
   // At the moment, we are enabling testing of the proposed feature for
   // certain hard-coded web apps.
   static ScopeExtensions GetScopeExtensions(const webapps::AppId& app_id);
+
+  // Certain hard-coded apps should be configured to open supported links inside
+  // the app instead of inside a browser tab by default.
+  static bool ShouldAddLinkPreference(const webapps::AppId& app_id,
+                                      Profile* profile);
 
   // Returns the max scope score (similar to
   // WebAppRegistrar::GetUrlInAppScopeScore()) for the experimental extended

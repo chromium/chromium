@@ -1369,6 +1369,15 @@ void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
     app->icon_key->update_version = true;
     delegate_->PublishWebApp(std::move(app));
   }
+
+// Todo(b:372661290): Extract custom link preference handling into a new post
+// web app install hook.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ChromeOsWebAppExperiments::ShouldAddLinkPreference(app_id, profile_)) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+    proxy->SetSupportedLinksPreference(app_id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(

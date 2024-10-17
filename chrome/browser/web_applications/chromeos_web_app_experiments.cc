@@ -10,6 +10,8 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
 
 namespace web_app {
@@ -56,8 +58,9 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
   ScopeExtensions extensions;
-  if (!IsExperimentEnabled(app_id))
+  if (!IsExperimentEnabled(app_id)) {
     return extensions;
+  }
 
   if (GetScopeExtensionsOverrideForTesting()) {
     for (const auto* origin : *GetScopeExtensionsOverrideForTesting()) {
@@ -77,6 +80,14 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
         .origin = url::Origin::Create(GURL(url)), .has_origin_wildcard = true});
   }
   return extensions;
+}
+
+bool ChromeOsWebAppExperiments::ShouldAddLinkPreference(
+    const webapps::AppId& app_id,
+    Profile* profile) {
+  return IsExperimentEnabled(app_id) &&
+         chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAutomated(
+             profile);
 }
 
 int ChromeOsWebAppExperiments::GetExtendedScopeScore(

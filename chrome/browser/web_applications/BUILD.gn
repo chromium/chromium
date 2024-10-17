@@ -595,6 +595,7 @@ source_set("web_applications") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/chromeos/echo",
+      "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/web_applications/ash/migrations",
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
