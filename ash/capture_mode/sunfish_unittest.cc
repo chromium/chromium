@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/capture_mode/base_capture_mode_session.h"
@@ -20,7 +22,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
@@ -34,7 +35,7 @@
 #include "base/auto_reset.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/expected.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -570,11 +571,12 @@ TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
 
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
-      ->SendFakeActionsResponse(base::ok(std::vector<ScannerAction>{
-          manta::proto::NewEventAction(),
-          manta::proto::NewEventAction(),
-      }));
+      ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
 
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());

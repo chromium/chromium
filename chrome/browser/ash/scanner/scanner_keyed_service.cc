@@ -6,21 +6,20 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "components/manta/scanner_provider.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -91,12 +90,13 @@ ash::ScannerSystemState ScannerKeyedService::GetSystemState() const {
 
 void ScannerKeyedService::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-    base::OnceCallback<void(ash::ScannerActionsResponse)> callback) {
+    manta::ScannerProvider::ScannerProtoResponseCallback callback) {
   // TODO(b/363100868): Fetch available actions from service
-  manta::proto::NewEventAction action;
-  action.set_title("Event title");
-  std::move(callback).Run(
-      base::ok(std::vector<ash::ScannerAction>{std::move(action)}));
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event title");
+
+  std::move(callback).Run(std::move(output), manta::MantaStatus());
 }
 
 drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {

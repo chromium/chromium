@@ -4,13 +4,13 @@
 
 #include "ash/scanner/scanner_controller.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
@@ -19,7 +19,7 @@
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/types/expected.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,10 +60,11 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
 
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
-
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event title");
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
-      ->SendFakeActionsResponse(
-          base::ok(std::vector<ScannerAction>{manta::proto::NewEventAction()}));
+      ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
 
   EXPECT_THAT(actions_future.Take(), SizeIs(1));
 }

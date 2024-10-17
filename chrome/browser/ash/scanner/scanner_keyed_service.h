@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -49,7 +48,7 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
   ash::ScannerSystemState GetSystemState() const override;
   void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-      base::OnceCallback<void(ash::ScannerActionsResponse)> callback) override;
+      manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
   drive::DriveServiceInterface* GetDriveService() override;
 
   // KeyedService:

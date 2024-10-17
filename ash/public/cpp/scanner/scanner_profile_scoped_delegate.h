@@ -6,11 +6,11 @@
 #define ASH_PUBLIC_CPP_SCANNER_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/manta/scanner_provider.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -32,7 +32,7 @@ class ASH_PUBLIC_EXPORT ScannerProfileScopedDelegate {
   // contents of `jpeg_bytes`. The actions response is returned via `callback`.
   virtual void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-      base::OnceCallback<void(ScannerActionsResponse)> callback) = 0;
+      manta::ScannerProvider::ScannerProtoResponseCallback callback) = 0;
 
   // Returns a reference to a `drive::DriveServiceInterface` to upload files.
   virtual drive::DriveServiceInterface* GetDriveService() = 0;

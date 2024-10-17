@@ -82,11 +82,6 @@ using ScannerAction = std::variant<manta::proto::NewEventAction,
                                    NewGoogleSheetAction,
                                    CopyToClipboardAction>;
 
-// Holds the response returned from the Scanner service. This may be a list of
-// 0 or more actions, or an error state.
-using ScannerActionsResponse =
-    base::expected<std::vector<ScannerAction>, ScannerError>;
-
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_SCANNER_SCANNER_ACTION_H_

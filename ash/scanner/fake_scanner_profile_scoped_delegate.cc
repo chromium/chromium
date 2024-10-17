@@ -4,16 +4,19 @@
 
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/drive/service/drive_service_interface.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/proto/scanner.pb.h"
+#include "components/manta/scanner_provider.h"
 
 namespace ash {
 
@@ -27,14 +30,15 @@ ScannerSystemState FakeScannerProfileScopedDelegate::GetSystemState() const {
 
 void FakeScannerProfileScopedDelegate::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-    base::OnceCallback<void(ScannerActionsResponse)> callback) {
+    manta::ScannerProvider::ScannerProtoResponseCallback callback) {
   fetch_actions_callback_ = std::move(callback);
 }
 
 void FakeScannerProfileScopedDelegate::SendFakeActionsResponse(
-    ScannerActionsResponse actions_response) {
+    std::unique_ptr<manta::proto::ScannerOutput> output,
+    manta::MantaStatus status) {
   CHECK(!fetch_actions_callback_.is_null());
-  std::move(fetch_actions_callback_).Run(actions_response);
+  std::move(fetch_actions_callback_).Run(std::move(output), std::move(status));
 }
 
 drive::DriveServiceInterface*

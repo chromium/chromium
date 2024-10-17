@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
-#include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/functional/callback.h"
@@ -18,7 +16,8 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
 
@@ -52,9 +51,9 @@ class ASH_EXPORT ScannerSession : public ScannerCommandDelegate {
   void SetClipboard(std::unique_ptr<ui::ClipboardData> data) override;
 
  private:
-  void OnActionsReturned(
-      FetchActionsCallback callback,
-      base::expected<std::vector<ScannerAction>, ScannerError> returned);
+  void OnActionsReturned(FetchActionsCallback callback,
+                         std::unique_ptr<manta::proto::ScannerOutput> output,
+                         manta::MantaStatus status);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
 

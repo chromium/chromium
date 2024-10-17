@@ -5,9 +5,16 @@
 #ifndef ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 #define ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
-#include "base/functional/callback.h"
 #include "components/drive/service/fake_drive_service.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/scanner_provider.h"
+
+namespace manta::proto {
+class ScannerOutput;
+}
 
 namespace ash {
 
@@ -25,18 +32,20 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
   ScannerSystemState GetSystemState() const override;
   void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-      base::OnceCallback<void(ScannerActionsResponse)> callback) override;
+      manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
   drive::DriveServiceInterface* GetDriveService() override;
 
   // Simulates sending `actions_response` in response to a prior request to
   // `FetchActionsForImage`. `FetchActionsForImage` must be called before
   // sending a response via this method.
-  void SendFakeActionsResponse(ScannerActionsResponse actions_response);
+  void SendFakeActionsResponse(
+      std::unique_ptr<manta::proto::ScannerOutput> output,
+      manta::MantaStatus status);
 
  private:
   drive::FakeDriveService drive_service_;
 
-  base::OnceCallback<void(ScannerActionsResponse)> fetch_actions_callback_;
+  manta::ScannerProvider::ScannerProtoResponseCallback fetch_actions_callback_;
 };
 
 }  // namespace ash
