@@ -6,7 +6,6 @@
 #include <tuple>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/magic_boost/magic_boost_constants.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
@@ -282,8 +281,6 @@ class MagicBoostBrowserTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  base::AutoReset<bool> ignore_mahi_secret_key_ =
-      switches::SetIgnoreMahiSecretKeyForTest();
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   net::EmbeddedTestServer https_server_;
 };

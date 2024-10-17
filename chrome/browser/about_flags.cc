@@ -10881,10 +10881,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSparkyServerUrlDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kSparkyServerUrl, "")},
 
-    {"mahi-feature-key", flag_descriptions::kMahiFeatureKeyName,
-     flag_descriptions::kMahiFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kMahiFeatureKey, "")},
-
     {"ash-picker-always-show-feature-tour",
      flag_descriptions::kAshPickerAlwaysShowFeatureTourName,
      flag_descriptions::kAshPickerAlwaysShowFeatureTourDescription, kOsCrOS,

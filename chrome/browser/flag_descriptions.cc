@@ -7206,10 +7206,6 @@ const char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";
 const char kMahiDebuggingName[] = "Mahi Debugging";
 const char kMahiDebuggingDescription[] = "Enable debugging for mahi.";
 
-const char kMahiFeatureKeyName[] = "Feature key for Mahi feature";
-const char kMahiFeatureKeyDescription[] =
-    "Feature key to use the Mahi feature on ChromeOS.";
-
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";

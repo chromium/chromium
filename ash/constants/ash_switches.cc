@@ -35,20 +35,12 @@ constexpr char kConchHashKey[] =
     "\x55\x40\xce\x6c\x95\x34\xae\x33\x4c\x82\x20\xa3\x86\xdb\xbc\xc5\x4d\x49"
     "\x38\xf0";
 
-// The hash value for the secret key of the mahi feature.
-constexpr char kMahiHashKey[] =
-    "\xFE\x34\x22\x3F\xEA\x73\xC2\xD5\xA6\xE8\x82\x0B\xF3\x67\x7D\x01\xA3\x6F"
-    "\x3A\xFF";
-
-// Whether checking the mahi secret key is ignored.
-bool g_ignore_mahi_secret_key = false;
-
-// The hash value for the secret key of the mahi feature.
+// The hash value for the secret key of the modifier split feature.
 constexpr char kModifierSplitHashKey[] =
     "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B\x7E"
     "\x10\x99";
 
-// Whether checking the mahi secret key is ignored.
+// Whether checking the modifier split secret key is ignored.
 bool g_ignore_modifier_split_secret_key = true;
 
 // The hash value for the secret key of the sparky feature.
@@ -944,9 +936,6 @@ const char kDisableDisallowLacros[] = "disable-disallow-lacros";
 // enabled i.e. `standalone_browser::BrowserSupport::IsAllowed()` still apply.
 const char kEnableLacrosForTesting[] = "enable-lacros-for-testing";
 
-// Supply secret key for the mahi feature.
-const char kMahiFeatureKey[] = "mahi-feature-key";
-
 // Supply secret key for the sparky feature.
 const char kSparkyFeatureKey[] = "sparky-feature-key";
 
@@ -1466,30 +1455,6 @@ bool IsConchSecretKeyMatched() {
   }
 
   return key_matched;
-}
-
-bool IsMahiSecretKeyMatched() {
-  if (g_ignore_mahi_secret_key) {
-    return true;
-  }
-
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --mahi-feature-key="INSERT KEY HERE" --enable-features=Mahi
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kMahiFeatureKey));
-
-  bool mahi_key_matched = (provided_key_hash == kMahiHashKey);
-  if (!mahi_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return mahi_key_matched;
-}
-
-base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest() {
-  return {&g_ignore_mahi_secret_key, true};
 }
 
 bool IsSparkySecretKeyMatched() {

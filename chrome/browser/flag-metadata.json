@@ -5864,11 +5864,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "mahi-feature-key",
-    "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "main-node-annotations",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 135

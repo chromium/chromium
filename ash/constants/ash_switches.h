@@ -284,7 +284,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisallowLacros[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDisallowLacros[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableLacrosForTesting[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMahiFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSparkyFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSparkyServerUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -529,12 +528,6 @@ bool IsCampbellSecretKeyMatched();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsConchSecretKeyMatched();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsMahiSecretKeyMatched();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSparkySecretKeyMatched();

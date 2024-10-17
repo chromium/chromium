@@ -4152,12 +4152,6 @@ extern const char kMahiDescription[];
 extern const char kMahiDebuggingName[];
 extern const char kMahiDebuggingDescription[];
 
-extern const char kMahiName[];
-extern const char kMahiDescription[];
-
-extern const char kMahiFeatureKeyName[];
-extern const char kMahiFeatureKeyDescription[];
-
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
 
