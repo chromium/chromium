@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -130,16 +132,16 @@ PaintAggregator::PaintUpdate PaintAggregator::GetPendingUpdate() {
   return ret;
 }
 
-void PaintAggregator::SetIntermediateResults(
-    const std::vector<PaintReadyRect>& ready,
-    const std::vector<gfx::Rect>& pending) {
-  update_.ready_rects.insert(update_.ready_rects.end(), ready.begin(),
-                             ready.end());
-  update_.paint_rects = pending;
+void PaintAggregator::SetIntermediateResults(std::vector<PaintReadyRect> ready,
+                                             std::vector<gfx::Rect> pending) {
+  for (auto& rect : ready) {
+    update_.ready_rects.insert(update_.ready_rects.end(), std::move(rect));
+  }
+  update_.paint_rects = std::move(pending);
 }
 
-std::vector<PaintReadyRect> PaintAggregator::GetReadyRects() const {
-  return update_.ready_rects;
+std::vector<PaintReadyRect> PaintAggregator::TakeReadyRects() {
+  return std::move(update_.ready_rects);
 }
 
 void PaintAggregator::InvalidateRect(const gfx::Rect& rect) {

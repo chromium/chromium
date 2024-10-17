@@ -23,6 +23,10 @@ PaintReadyRect::PaintReadyRect(const gfx::Rect& rect,
   CHECK(image_);
 }
 
+PaintReadyRect::PaintReadyRect(PaintReadyRect&&) noexcept = default;
+
+PaintReadyRect& PaintReadyRect::operator=(PaintReadyRect&&) noexcept = default;
+
 PaintReadyRect::PaintReadyRect(const PaintReadyRect& other) = default;
 
 PaintReadyRect& PaintReadyRect::operator=(const PaintReadyRect& other) =

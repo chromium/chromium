@@ -66,14 +66,16 @@ class PaintAggregator {
 
   PaintUpdate GetPendingUpdate();
 
-  // Sets the result of a call to the plugin to paint.  This includes rects that
-  // are finished painting (ready), and ones that are still in-progress
-  // (pending).
-  void SetIntermediateResults(const std::vector<PaintReadyRect>& ready,
-                              const std::vector<gfx::Rect>& pending);
+  // Sets the result of a call to the plugin to paint.
+  //
+  // - `ready` includes rects that are finished painting.
+  // - `pending` includes rects that are still in-progress.
+  void SetIntermediateResults(std::vector<PaintReadyRect> ready,
+                              std::vector<gfx::Rect> pending);
 
-  // Returns the rectangles that are ready to be painted.
-  std::vector<PaintReadyRect> GetReadyRects() const;
+  // Returns the rectangles that are ready to be painted. Caller takes
+  // ownership.
+  std::vector<PaintReadyRect> TakeReadyRects();
 
   // The given rect should be repainted.
   void InvalidateRect(const gfx::Rect& rect);
