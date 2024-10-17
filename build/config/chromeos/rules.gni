@@ -265,8 +265,6 @@ template("generate_skylab_tast_filter") {
 #   generated_script: Path to place the generated script.
 #   deploy_chrome: If true, deploys a locally built chrome located in the root
 #       build dir to the VM or DUT after launching it.
-#   deploy_lacros: If true, deploys a locally built Lacros located in the root
-#       build dir to the VM or DUT after launching it.
 #   runtime_deps_file: Path to file listing runtime deps for the test. If set,
 #       all files listed will be copied to the VM before testing.
 #   skip_generating_board_args: By default, this template generates an '--board'
@@ -282,7 +280,6 @@ template("generate_runner_script") {
   forward_variables_from(invoker,
                          [
                            "deploy_chrome",
-                           "deploy_lacros",
                            "generated_script",
                            "runtime_deps_file",
                            "skip_generating_board_args",
@@ -308,9 +305,6 @@ template("generate_runner_script") {
 
   if (!defined(deploy_chrome)) {
     deploy_chrome = false
-  }
-  if (!defined(deploy_lacros)) {
-    deploy_lacros = false
   }
   if (!defined(strip_chrome)) {
     strip_chrome = false
@@ -371,16 +365,6 @@ template("generate_runner_script") {
 
           # Use the deployed dbus configs.
           executable_args += [ "--use-deployed-dbus-configs" ]
-        }
-
-        # Lacros need to know the wayland socket file created by Ash.
-        # In this way, Lacros will be connected to the system Ash.
-        if (is_chromeos_lacros) {
-          executable_args += [
-            "--env-var",
-            "XDG_RUNTIME_DIR",
-            "/run/chrome",
-          ]
         }
 
         # Make the tests match the browser's selinux tags so it gets the same
@@ -466,10 +450,6 @@ template("generate_runner_script") {
     # flashing the test device.
     if (!is_chrome_branded) {
       executable_args += [ "--public-image" ]
-    }
-
-    if (deploy_lacros) {
-      executable_args += [ "--deploy-lacros" ]
     }
 
     if (deploy_chrome && !defined(test_exe)) {
@@ -599,110 +579,8 @@ template("tast_test") {
       generated_script = "$root_build_dir/bin/run_${target_name}"
       runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
       deploy_chrome = true
-
       data_deps = _data_deps
-      if (!defined(deploy_lacros_chrome)) {
-        deploy_lacros_chrome = false
-      }
-      deploy_lacros = deploy_lacros_chrome
       data = _data
-      if (deploy_lacros_chrome) {
-        data += [
-          # A script needed to launch Lacros in Lacros Tast tests.
-          "//build/lacros/mojo_connection_lacros_launcher.py",
-        ]
-
-        # By default, tast tests download a lacros-chrome from a gcs location and
-        # use it for testing. To support running lacros tast tests from Chromium CI,
-        # a Var is added to support pointing the tast tests to use a specified
-        # pre-deployed lacros-chrome. The location is decided by:
-        # https://source.chromium.org/chromium/chromium/src/+/main:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
-        tast_vars = [ "lacros.DeployedBinary=/usr/local/lacros-chrome" ]
-      }
-    }
-  }
-}
-
-template("lacros_tast_tests") {
-  forward_variables_from(invoker,
-                         [
-                           "tast_attr_expr",
-                           "tast_disabled_tests",
-                           "tast_tests",
-                           "tast_control",
-                         ])
-  assert(defined(tast_attr_expr) != defined(tast_tests),
-         "Specify one of tast_tests or tast_attr_expr.")
-
-  _lacros_data_deps = [
-    "//chrome",  # Builds the browser.
-
-    # Tools used to symbolize Chrome crash dumps.
-    # TODO(crbug.com/40160552): Remove these if/when all tests pick them up by
-    # default.
-    "//third_party/breakpad:dump_syms",
-    "//third_party/breakpad:minidump_dump",
-    "//third_party/breakpad:minidump_stackwalk",
-  ]
-
-  _lacros_data = [
-    "//components/crash/content/tools/generate_breakpad_symbols.py",
-
-    # A script needed to launch Lacros in Lacros Tast tests.
-    "//build/lacros/mojo_connection_lacros_launcher.py",
-  ]
-
-  if (is_skylab) {
-    generate_skylab_tast_filter(target_name) {
-      data = _lacros_data + [
-               "//.vpython3",
-               "//third_party/chromite/",
-             ]
-      data_deps = _lacros_data_deps
-
-      # To disable a test on specific milestones, add it to the appropriate
-      # collection in the following file
-      tast_control = "//chromeos/tast_control.gni"
-    }
-  } else {
-    # Append any disabled tests to the expression.
-    if (defined(tast_disabled_tests)) {
-      assert(defined(tast_attr_expr),
-             "tast_attr_expr must be used when specifying tast_disabled_tests.")
-      foreach(_test, tast_disabled_tests) {
-        _excluded_test_name_and_board = []
-        _excluded_test_name_and_board = string_split(_test, "@") + [ "" ]
-        _excluded_test_name = _excluded_test_name_and_board[0]
-        _excluded_board = _excluded_test_name_and_board[1]
-        if (_excluded_board == "" || _excluded_board == cros_board) {
-          tast_attr_expr += " && !\"name:${_excluded_test_name}\""
-        }
-      }
-    }
-    if (defined(tast_attr_expr)) {
-      tast_attr_expr = "( " + tast_attr_expr + " )"
-    }
-    generate_runner_script(target_name) {
-      testonly = true
-      deploy_lacros = true
-      generated_script = "$root_build_dir/bin/run_${target_name}"
-      runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
-
-      # At build time, Lacros tests don't know whether they'll run on VM or HW,
-      # and instead, these flags are specified at runtime when invoking the
-      # generated runner script.
-      skip_generating_board_args = true
-
-      # By default, tast tests download a lacros-chrome from a gcs location and
-      # use it for testing. To support running lacros tast tests from Chromium CI,
-      # a Var is added to support pointing the tast tests to use a specified
-      # pre-deployed lacros-chrome. The location is decided by:
-      # https://source.chromium.org/chromium/chromium/src/+/main:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
-      tast_vars = [ "lacros.DeployedBinary=/usr/local/lacros-chrome" ]
-
-      data_deps = _lacros_data_deps
-
-      data = _lacros_data
     }
   }
 }
