@@ -34,10 +34,7 @@
 namespace gfx {
 class Point;
 class PointF;
-class Rect;
 class RectF;
-class Size;
-class SizeF;
 }  // namespace gfx
 
 namespace blink {
@@ -106,9 +103,6 @@ class LayoutTreeAsText {
 String QuoteAndEscapeNonPrintables(const String&);
 WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Size&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Rect&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::SizeF&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::PointF&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::RectF&);
 

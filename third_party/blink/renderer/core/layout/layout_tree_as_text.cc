@@ -116,17 +116,6 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
   return ts << "(" << p.x() << "," << p.y() << ")";
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Size& s) {
-  return ts << "width=" << s.width() << " height=" << s.height();
-}
-
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::SizeF& s) {
-  ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.width());
-  ts << " height="
-     << WTF::TextStream::FormatNumberRespectingIntegers(s.height());
-  return ts;
-}
-
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::PointF& p) {
   ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.x());
   ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.y());
