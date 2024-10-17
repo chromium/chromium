@@ -166,13 +166,13 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsAllowed() {
+    public void testLaunchActivityForHistorySyncRequiredFlowWhenSigninIsAllowed() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchActivityForHistorySyncDedicatedFlow(
+                            .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
@@ -180,7 +180,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             .BOTTOM_SHEET,
                                     BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAccessPoint.RECENT_TABS);
+                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
+                                            .REQUIRED,
+                                    SigninAccessPoint.RECENT_TABS,
+                                    null);
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -273,7 +276,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsNotAllowed() {
+    public void testLaunchActivityForHistorySyncRequiredFlowWhenSigninIsNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
@@ -282,7 +285,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchActivityForHistorySyncDedicatedFlow(
+                            .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
@@ -290,7 +293,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             .BOTTOM_SHEET,
                                     BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAccessPoint.RECENT_TABS);
+                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
+                                            .REQUIRED,
+                                    SigninAccessPoint.RECENT_TABS,
+                                    null);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -336,7 +342,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     @Test
     @MediumTest
     // TODO(crbug.com/41493758): Update this test when the error UI will be implemented.
-    public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsDisabledByPolicy() {
+    public void testLaunchActivityForHistorySyncRequiredFlowWhenSigninIsDisabledByPolicy() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
@@ -348,7 +354,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchActivityForHistorySyncDedicatedFlow(
+                            .launchActivityIfAllowed(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
@@ -356,7 +362,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             .BOTTOM_SHEET,
                                     BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAccessPoint.RECENT_TABS);
+                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
+                                            .REQUIRED,
+                                    SigninAccessPoint.RECENT_TABS,
+                                    null);
                 });
 
         onView(withText(R.string.managed_by_your_organization))

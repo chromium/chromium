@@ -67,28 +67,6 @@ public interface SigninAndHistorySyncActivityLauncher {
             @Nullable CoreAccountId selectedCoreAccountId);
 
     /**
-     * Launches the {@link SigninAndHistorySyncActivity} from an eligible access point where the
-     * flow is dedicated to enabling history sync. Shows error UI if sign-in is not allowed.
-     *
-     * @param profile the current profile.
-     * @param bottomSheetStrings the strings shown in the sign-in bottom sheet.
-     * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if *
-     *     there's no account on the device.
-     * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if *
-     *     there are 1+ accounts on the device.
-     * @param signinAccessPoint The access point from which the sign-in was triggered.
-     */
-    @MainThread
-    void launchActivityForHistorySyncDedicatedFlow(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
-            @SigninAccessPoint int signinAccessPoint);
-
-    /**
      * Launches the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if sign-in and
      * history opt-in are allowed.
      */

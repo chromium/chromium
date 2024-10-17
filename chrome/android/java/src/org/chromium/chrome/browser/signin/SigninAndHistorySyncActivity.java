@@ -80,8 +80,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             "SigninAndHistorySyncActivity.WithAccountSigninMode";
     private static final String ARGUMENT_HISTORY_OPT_IN_MODE =
             "SigninAndHistorySyncActivity.HistoryOptInMode";
-    private static final String ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW =
-            "SigninAndHistorySyncActivity.IsHistorySyncDedicatedFlow";
     private static final String ARGUMENT_IS_FULLSCREEN_SIGNIN =
             "SigninAndHistorySyncActivity.IsFullscreenSignin";
     private static final String ARGUMENT_SELECTED_CORE_ACCOUNT_ID =
@@ -153,8 +151,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         @HistoryOptInMode
         int historyOptInMode =
                 intent.getIntExtra(ARGUMENT_HISTORY_OPT_IN_MODE, HistoryOptInMode.OPTIONAL);
-        boolean isHistorySyncDedicatedFlow =
-                intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
         @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
 
         mCoordinator =
@@ -170,7 +166,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         withAccountSigninMode,
                         historyOptInMode,
                         signinAccessPoint,
-                        isHistorySyncDedicatedFlow,
                         accountId == null ? null : new CoreAccountId(accountId));
 
         setInitialContentView(mCoordinator.getView());
@@ -313,25 +308,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         if (selectedCoreAccountId != null) {
             intent.putExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID, selectedCoreAccountId.getId());
         }
-        return intent;
-    }
-
-    public static @NonNull Intent createIntentForDedicatedFlow(
-            Context context,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @NoAccountSigninMode int noAccountSigninMode,
-            @WithAccountSigninMode int withAccountSigninMode,
-            @SigninAccessPoint int signinAccessPoint) {
-        Intent intent =
-                createIntent(
-                        context,
-                        bottomSheetStrings,
-                        noAccountSigninMode,
-                        withAccountSigninMode,
-                        HistoryOptInMode.REQUIRED,
-                        signinAccessPoint,
-                        /* selectedCoreAccountId= */ null);
-        intent.putExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, true);
         return intent;
     }
 

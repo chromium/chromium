@@ -73,30 +73,6 @@ public final class SigninAndHistorySyncActivityLauncherImpl
         return launchActivityOrShowError(context, profile, intent, historyOptInMode, accessPoint);
     }
 
-    @Override
-    public void launchActivityForHistorySyncDedicatedFlow(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
-            @SigninAccessPoint int signinAccessPoint) {
-        Intent intent =
-                SigninAndHistorySyncActivity.createIntentForDedicatedFlow(
-                        context,
-                        bottomSheetStrings,
-                        noAccountSigninMode,
-                        withAccountSigninMode,
-                        signinAccessPoint);
-        launchActivityOrShowError(
-                context,
-                profile,
-                intent,
-                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
-                signinAccessPoint);
-    }
-
     private boolean launchActivityOrShowError(
             Context context,
             Profile profile,

@@ -270,13 +270,15 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityForHistorySyncDedicatedFlow(
+                .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(SigninAccessPoint.RECENT_TABS));
+                        eq(HistoryOptInMode.REQUIRED),
+                        eq(SigninAccessPoint.RECENT_TABS),
+                        isNull());
     }
 
     @Test
@@ -298,13 +300,15 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityForHistorySyncDedicatedFlow(
+                .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(SigninAccessPoint.RECENT_TABS));
+                        eq(HistoryOptInMode.REQUIRED),
+                        eq(SigninAccessPoint.RECENT_TABS),
+                        isNull());
     }
 
     @Test
@@ -326,13 +330,15 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityForHistorySyncDedicatedFlow(
+                .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(SigninAccessPoint.RECENT_TABS));
+                        eq(HistoryOptInMode.REQUIRED),
+                        eq(SigninAccessPoint.RECENT_TABS),
+                        isNull());
     }
 
     @Test

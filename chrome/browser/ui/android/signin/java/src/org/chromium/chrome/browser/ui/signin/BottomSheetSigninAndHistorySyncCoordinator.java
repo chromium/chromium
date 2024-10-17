@@ -76,7 +76,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private HistorySyncCoordinator mHistorySyncCoordinator;
     private PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
-    private boolean mIsHistorySyncDedicatedFlow;
     private boolean mFlowInitialized;
 
     /** This is a delegate that the embedder needs to implement. */
@@ -161,8 +160,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     }
 
     /**
-     * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} and shows the sign-in bottom
-     * sheet.
+     * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} and shows the
+     * sign-in bottom sheet.
      *
      * @param windowAndroid The window that hosts the sign-in & history opt-in flow.
      * @param activity The {@link Activity} that hosts the sign-in &opt-in flow.
@@ -171,8 +170,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
      * @param profileSupplier The supplier of the current profile.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
      * @param signinAccessPoint The entry point for the sign-in.
-     * @param isHistorySyncDedicatedFlow Whether the flow is dedicated to enabling history sync
-     *     (recent tabs for example).
      * @param accountId If not null, the identifier of the default account to display on the signin
      *     bottom sheet.
      */
@@ -188,7 +185,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint,
-            boolean isHistorySyncDedicatedFlow,
             @Nullable CoreAccountId accountId) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
@@ -202,7 +198,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         mWithAccountSigninMode = withAccountSigninMode;
         mHistoryOptInMode = historyOptInMode;
         mSigninAccessPoint = signinAccessPoint;
-        mIsHistorySyncDedicatedFlow = isHistorySyncDedicatedFlow;
         mCoreAccountId = accountId;
         mContainerView =
                 (ViewGroup)
@@ -494,6 +489,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     private void createHistorySyncCoordinator(Profile profile) {
         assert mHistorySyncCoordinator == null;
+        boolean shouldSignOutOnDecline =
+                mDidShowSigninStep && mHistoryOptInMode == HistoryOptInMode.REQUIRED;
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mActivity,
@@ -501,7 +498,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                         profile,
                         mSigninAccessPoint,
                         /* showEmailInFooter= */ !mDidShowSigninStep,
-                        mDidShowSigninStep && mIsHistorySyncDedicatedFlow,
+                        shouldSignOutOnDecline,
                         null);
         assert mDialogModel != null;
         mHistorySyncCoordinator.maybeRecreateView();
