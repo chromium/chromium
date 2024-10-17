@@ -47,75 +47,66 @@ void ApplyFilter(autofill::AutofillField& field) {
 
 // Filter all values that are contained in fields with a type from a sensitive
 // form group like credentials and payment information.
-int FilterSensitiveValuesByFieldType(FormStructure& form) {
-  int removed_values = 0;
+void FilterSensitiveValuesByFieldType(FormStructure& form) {
   for (auto& field : form) {
     if (HasTypeSensitiveGroup(field->Type())) {
       ApplyFilter(*field);
-      ++removed_values;
     }
   }
-  return removed_values;
 }
 
 // Filter sensitive values that have been filled with Autofill into arbitrary
 // fields.
-int FilterSensitiveValuesByFillingType(FormStructure& form) {
-  int removed_values = 0;
+void FilterSensitiveValuesByFillingType(FormStructure& form) {
   for (auto& field : form) {
     if (HasTypeSensitiveGroup(AutofillType(
             field->autofilled_type().value_or(autofill::UNKNOWN_TYPE)))) {
       ApplyFilter(*field);
-      ++removed_values;
     }
   }
-  return removed_values;
 }
 
 // Filter values that have been manually added by the user but resemble known
 // sensitive values. A sensitive value can be a password or a credit card
 // number, while usernames and dates are excluded due to the risk of false
 // positives.
-int FilterSensitiveValuesByPossibleFieldType(FormStructure& form) {
-  int removed_values = 0;
+void FilterSensitiveValuesByPossibleFieldType(FormStructure& form) {
   for (auto& field : form) {
     if (field->possible_types().contains_any(sensitive_types)) {
+      auto x = field->possible_types();
+      x.intersect(sensitive_types);
+      LOG(ERROR) << field->name()
+                 << " has possible field types: " << field->possible_types()
+                 << " out of which are sensitive: " << x;
       ApplyFilter(*field);
       continue;
     }
-    ++removed_values;
   }
-  return removed_values;
 }
 
 // Filters values that are contained in password-type fields.
-int FilterSensitiveValuesByInputType(FormStructure& form) {
-  int removed_values = 0;
+void FilterSensitiveValuesByInputType(FormStructure& form) {
   for (auto& field : form) {
     if (field->form_control_type() ==
         autofill::FormControlType::kInputPassword) {
+      LOG(ERROR) << field->name() << " has form control type "
+                 << field->form_control_type();
       ApplyFilter(*field);
       continue;
     }
-    ++removed_values;
   }
-  return removed_values;
 }
 
 }  // namespace
 
-int FilterSensitiveValues(FormStructure& form) {
-  int total_values_removed = 0;
-
+void FilterSensitiveValues(FormStructure& form) {
   // For metrics purposes we will do the removals in sequence.
   // To be able to evaluate the single stages in a form-holistic manner, we keep
   // the loops separated.
-  total_values_removed += FilterSensitiveValuesByFieldType(form);
-  total_values_removed += FilterSensitiveValuesByFillingType(form);
-  total_values_removed += FilterSensitiveValuesByPossibleFieldType(form);
-  total_values_removed += FilterSensitiveValuesByInputType(form);
-
-  return total_values_removed;
+  FilterSensitiveValuesByFieldType(form);
+  FilterSensitiveValuesByFillingType(form);
+  FilterSensitiveValuesByPossibleFieldType(form);
+  FilterSensitiveValuesByInputType(form);
 }
 
 }  // namespace autofill_prediction_improvements

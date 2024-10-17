@@ -13,7 +13,7 @@ namespace autofill_prediction_improvements {
 
 // Applies filtering rules to remove potential SPII data from form fields.
 // Return the number of fields that have been filtered.
-int FilterSensitiveValues(autofill::FormStructure& form);
+void FilterSensitiveValues(autofill::FormStructure& form);
 
 }  // namespace autofill_prediction_improvements
 
