@@ -659,11 +659,16 @@ source_set("memory_buffer_sources") {
       "linux/client_native_pixmap_factory_dmabuf.cc",
       "linux/client_native_pixmap_factory_dmabuf.h",
       "linux/dmabuf_uapi.h",
-      "linux/native_pixmap_dmabuf.cc",
-      "linux/native_pixmap_dmabuf.h",
     ]
-
     deps += [ "//build/config/linux/libdrm" ]
+
+    if (ozone_platform_drm || ozone_platform_wayland || ozone_platform_x11) {
+      deps += [ "//ui/gfx/linux:drm" ]
+      sources += [
+        "linux/native_pixmap_dmabuf.cc",
+        "linux/native_pixmap_dmabuf.h",
+      ]
+    }
   }
 
   if (is_linux || is_chromeos || is_android) {
@@ -985,10 +990,10 @@ test("gfx_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "linux/fontconfig_util_unittest.cc",
-      "linux/native_pixmap_dmabuf_unittest.cc",
-    ]
+    sources += [ "linux/fontconfig_util_unittest.cc" ]
+    if (ozone_platform_drm || ozone_platform_wayland || ozone_platform_x11) {
+      sources += [ "linux/native_pixmap_dmabuf_unittest.cc" ]
+    }
     deps += [ "//third_party/fontconfig" ]
   }
 

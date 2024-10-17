@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/dawn_ozone_image_representation.h"
 
 #include <dawn/native/VulkanBackend.h>
+#include <sync/sync.h>
 #include <vulkan/vulkan.h>
 
 #include "base/logging.h"
@@ -15,8 +16,15 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 namespace gpu {
 
@@ -45,7 +53,11 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
     wgpu::TextureUsage internal_usage) {
   // It doesn't make sense to have two overlapping BeginAccess calls on the same
   // representation.
+  // TODO(crbug.com/330385376): Switch to using the return value of
+  // OzoneImageBacking::BeginAccess().
   if (texture_) {
+    LOG(ERROR)
+        << "Attempting to begin access with before ending previous access.";
     return nullptr;
   }
 
@@ -69,88 +81,170 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
     return nullptr;
   }
 
-  if (!ozone_backing()->BeginAccess(
-          /*readonly=*/is_readonly_, OzoneImageBacking::AccessStream::kWebGPU,
-          &fences, need_end_fence)) {
+  if (!ozone_backing()->BeginAccess(is_readonly_,
+                                    OzoneImageBacking::AccessStream::kWebGPU,
+                                    &fences, need_end_fence)) {
     return nullptr;
   }
   DCHECK(need_end_fence || is_readonly_);
 
+  wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
+  begin_access_desc.initialized = IsCleared();
+
+  wgpu::SharedTextureMemoryVkImageLayoutBeginState begin_layout{};
+
+  // TODO(crbug.com/330385376): Track layouts correctly.
+  begin_layout.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  begin_layout.newLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  begin_access_desc.nextInChain = &begin_layout;
+
+  // If the semaphore from BeginWrite is valid then pass it to
+  // SharedTextureMemory::BeginAccess() below.
+  std::vector<wgpu::SharedFence> shared_fences;
+  std::vector<uint64_t> shared_fence_signals;
+
+  begin_access_desc.fenceCount = fences.size();
+  if (fences.size()) {
+    shared_fences.resize(fences.size());
+    shared_fence_signals.resize(fences.size());
+    for (size_t i = 0; i < fences.size(); i++) {
+      wgpu::SharedFenceVkSemaphoreSyncFDDescriptor sync_fd_desc;
+      // NOTE: There is no ownership transfer here, as Dawn internally dup()s
+      // the passed-in handle.
+      sync_fd_desc.handle = fences[i].Peek();
+      wgpu::SharedFenceDescriptor fence_desc;
+      fence_desc.nextInChain = &sync_fd_desc;
+      shared_fences[i] = device_.ImportSharedFence(&fence_desc);
+      // Pass 1 as the signaled value for the binary semaphore
+      // (Dawn's SharedTextureMemoryVk verifies that this is the value passed).
+      const uint64_t kSignaledValue = 1;
+      shared_fence_signals[i] = kSignaledValue;
+    }
+
+    begin_access_desc.fences = shared_fences.data();
+    begin_access_desc.signaledValues = shared_fence_signals.data();
+  }
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
+
+  wgpu::DawnTextureInternalUsageDescriptor internal_desc;
+  internal_desc.internalUsage = internal_usage;
+
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = format_;
-  texture_descriptor.viewFormats = view_formats_.data();
-  texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.usage = static_cast<wgpu::TextureUsage>(usage);
   texture_descriptor.dimension = wgpu::TextureDimension::e2D;
-  texture_descriptor.size = {static_cast<uint32_t>(pixmap_size.width()),
-                             static_cast<uint32_t>(pixmap_size.height()), 1};
+  texture_descriptor.size = {static_cast<uint32_t>(size().width()),
+                             static_cast<uint32_t>(size().height()),
+                             /*depthOrArrayLayers=*/1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
+  texture_descriptor.nextInChain = &internal_desc;
 
-  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = internal_usage;
+  wgpu::SharedTextureMemoryDmaBufDescriptor dma_buf_desc;
+  dma_buf_desc.size = {static_cast<uint32_t>(pixmap_size.width()),
+                       static_cast<uint32_t>(pixmap_size.height())};
 
-  texture_descriptor.nextInChain = &internalDesc;
+  dma_buf_desc.drmFormat = pixmap_->GetFourCCBufferFormat();
+  dma_buf_desc.drmModifier = pixmap_->GetBufferFormatModifier();
 
-  dawn::native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
-  descriptor.cTextureDescriptor =
-      reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
-  descriptor.isInitialized = IsCleared();
-
-  // Import the dma-buf into Dawn via the Vulkan backend. As per the Vulkan
-  // documentation, importing memory from a file descriptor transfers
-  // ownership of the fd from the application to the Vulkan implementation.
-  // Thus, we need to dup the fd so the fd corresponding to the dmabuf isn't
-  // closed twice (once by ScopedFD and once by the Vulkan implementation).
-  int fd = dup(pixmap_->GetDmaBufFd(0));
-  descriptor.memoryFD = fd;
-  for (uint32_t plane = 0u; plane < pixmap_->GetNumberOfPlanes(); ++plane) {
-    descriptor.planeLayouts[plane].offset = pixmap_->GetDmaBufOffset(plane);
-    descriptor.planeLayouts[plane].stride = pixmap_->GetDmaBufPitch(plane);
-  }
-  descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
-  descriptor.waitFDs = {};
-
-  for (auto& fence : fences) {
-    descriptor.waitFDs.push_back(fence.Release().release());
-  }
-
-  texture_ = wgpu::Texture::Acquire(
-      dawn::native::vulkan::WrapVulkanImage(device_.Get(), &descriptor));
-  if (!texture_) {
-    ozone_backing()->EndAccess(is_readonly_,
-                               OzoneImageBacking::AccessStream::kWebGPU,
-                               gfx::GpuFenceHandle());
-    close(fd);
+  std::vector<wgpu::SharedTextureMemoryDmaBufPlane> planes(
+      pixmap_->GetNumberOfPlanes());
+  dma_buf_desc.planeCount = pixmap_->GetNumberOfPlanes();
+  // We assume the pixmap is not disjoint (VK_IMAGE_CREATE_DISJOINT_BIT). All
+  // planes will have the the same fd but different pitch/offsets. This will not
+  // actually be reflected in the fds for each plane due to duping of the same
+  // fd elsewhere. This is why we cannot (d)check for this condition.
+  const int fd_for_all_planes = pixmap_->GetDmaBufFd(0);
+  for (uint32_t plane_idx = 0; plane_idx < dma_buf_desc.planeCount;
+       ++plane_idx) {
+    // Dawn is not an ownership transfer. Dawn will internally duplicate fds as
+    // necessary.
+    planes[plane_idx].fd = fd_for_all_planes;
+    planes[plane_idx].stride = pixmap_->GetDmaBufPitch(plane_idx);
+    planes[plane_idx].offset = pixmap_->GetDmaBufOffset(plane_idx);
   }
 
-  return texture_.Get();
+  dma_buf_desc.planes = planes.data();
+
+  wgpu::SharedTextureMemoryDescriptor desc;
+  desc.label = "DawnOzoneImageRepresentation";
+  desc.nextInChain = &dma_buf_desc;
+
+  if (!shared_texture_memory_) {
+    shared_texture_memory_ = device_.ImportSharedTextureMemory(&desc);
+    if (!shared_texture_memory_) {
+      LOG(ERROR) << "Failed to import shared texture memory.";
+      return nullptr;
+    }
+  }
+
+  texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
+  if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+    LOG(ERROR) << "Failed to begin access for shared image.";
+    // End the access on the backing and restore its fence, as Dawn did not
+    // consume it.
+    ozone_backing()->EndAccess(
+        is_readonly_, OzoneImageBacking::AccessStream::kWebGPU,
+        fences.empty() ? gfx::GpuFenceHandle() : std::move(fences[0]));
+
+    // Set `texture_` to nullptr to signal failure to BeginScopedAccess(),
+    // which will itself then return nullptr to signal failure to the client.
+    texture_ = nullptr;
+  }
+
+  return texture_;
 }
 
 void DawnOzoneImageRepresentation::EndAccess() {
   if (!texture_) {
     return;
   }
+  wgpu::SharedTextureMemoryEndAccessState end_access_desc = {};
+  wgpu::SharedTextureMemoryVkImageLayoutEndState end_layout{};
+  end_access_desc.nextInChain = &end_layout;
 
-  // Grab the signal semaphore from dawn
-  dawn::native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
-  if (!dawn::native::vulkan::ExportVulkanImage(
-          texture_.Get(), VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
-    DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
-  } else {
-    if (export_info.isInitialized) {
-      SetCleared();
-    }
-
-    // TODO(hob): Handle waiting on multiple semaphores from dawn.
-    DCHECK(export_info.semaphoreHandles.size() == 1);
-    gfx::GpuFenceHandle fence;
-    fence.Adopt(base::ScopedFD(export_info.semaphoreHandles[0]));
-    ozone_backing()->EndAccess(is_readonly_,
-                               OzoneImageBacking::AccessStream::kWebGPU,
-                               std::move(fence));
+  if (!shared_texture_memory_.EndAccess(texture_, &end_access_desc)) {
+    LOG(ERROR) << "Failed to end access for DawnOzoneImageRepresentation";
+    texture_.Destroy();
+    texture_ = nullptr;
+    return;
   }
+
+  if (end_access_desc.initialized) {
+    SetCleared();
+  }
+
+  // Note: Dawn may export zero fences if there were no begin fences,
+  // AND the WGPUTexture was not used on the GPU queue within the
+  // access scope. Otherwise, it should either export fences from Dawn
+  // signaled after the WGPUTexture's last use, or it should re-export
+  // the begin fences if the WGPUTexture was unused.
+  gfx::GpuFenceHandle fence;
+  if (end_access_desc.fenceCount) {
+    wgpu::SharedFenceExportInfo export_info;
+    wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
+    export_info.nextInChain = &sync_fd_export_info;
+    end_access_desc.fences[0].ExportInfo(&export_info);
+    // Dawn will close its FD when `end_access_desc` falls out of scope, and
+    // so it is necessary to dup() it to give OzoneImageBacking an FD that it
+    // can own.
+    base::ScopedFD fd_handle_merged(dup(sync_fd_export_info.handle));
+    for (size_t i = 1; i < end_access_desc.fenceCount; i++) {
+      end_access_desc.fences[i].ExportInfo(&export_info);
+      // The 'sync_merge' returns a new handle that is unowned. Wrap in scope
+      // to ensure ownership.
+      fd_handle_merged = base::ScopedFD(
+          sync_merge("", fd_handle_merged.get(), sync_fd_export_info.handle));
+    }
+    // Avoid fence handle 'dup' by moving the scope.
+    fence.Adopt(std::move(fd_handle_merged));
+  }
+
+  ozone_backing()->EndAccess(
+      is_readonly_, OzoneImageBacking::AccessStream::kWebGPU, std::move(fence));
+
   texture_.Destroy();
   texture_ = nullptr;
 }

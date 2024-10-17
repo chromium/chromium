@@ -155,6 +155,7 @@ class TestPixmap : public gfx::NativePixmap {
   size_t GetDmaBufPlaneSize(size_t plane) const override { return 0; }
   uint64_t GetBufferFormatModifier() const override { return 0; }
   gfx::BufferFormat GetBufferFormat() const override { return format_; }
+  uint32_t GetFourCCBufferFormat() const override { return 0; }
   size_t GetNumberOfPlanes() const override {
     return gfx::NumberOfPlanesForLinearBufferFormat(format_);
   }

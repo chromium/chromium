@@ -5,6 +5,8 @@
 #ifndef UI_GFX_NATIVE_PIXMAP_H_
 #define UI_GFX_NATIVE_PIXMAP_H_
 
+#include <cstdint>
+
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,6 +38,7 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
   // The following methods return format, modifier and size of the buffer,
   // respectively.
   virtual gfx::BufferFormat GetBufferFormat() const = 0;
+  virtual uint32_t GetFourCCBufferFormat() const = 0;
   virtual uint64_t GetBufferFormatModifier() const = 0;
   virtual gfx::Size GetBufferSize() const = 0;
 
