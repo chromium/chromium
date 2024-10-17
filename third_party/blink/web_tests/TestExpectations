@@ -6995,7 +6995,7 @@ crbug.com/40615943 http/tests/security/dataURL/xss-DENIED-to-data-url-in-foreign
 crbug.com/839997 http/tests/devtools/network/waterfall-header-height-updates.js [ Failure Pass ]
 
 # Gardener: 2024-01-19
-crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Skip Timeout ]
+crbug.com/374100202 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Failure Skip Timeout ]
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
 crbug.com/1518938 [ Linux ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Failure Pass ]
 crbug.com/1519124 [ Mac13 Release ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
@@ -7251,7 +7251,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-context-lost-restored-worker.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-context-lost-worker.html [ Timeout ]
 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-image-rendering.html [ Timeout ]
-[ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBitmap-invalid-mailbox.html [ Timeout ]
+crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBitmap-invalid-mailbox.html [ Failure Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-blob-resize.html [ Skip Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-canvas-resize.html [ Skip Timeout ]
 [ Mac14-arm64 ] fast/webgl/texImage-imageBitmap-from-image-resize.html [ Skip Timeout ]
