@@ -646,7 +646,9 @@ void ShowAppManagementPage(Profile* profile,
 }
 
 void ShowGraduationApp(Profile* profile) {
-  ShowSystemAppInternal(profile, ash::SystemWebAppType::GRADUATION);
+  ash::SystemAppLaunchParams params;
+  params.launch_source = apps::LaunchSource::kFromOtherApp;
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::GRADUATION, params);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

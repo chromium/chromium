@@ -366,6 +366,8 @@ const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     return apps::DefaultAppName::kFiles;
   } else if (app_id == ash::kFirmwareUpdateAppId) {
     return apps::DefaultAppName::kFirmwareUpdateApp;
+  } else if (app_id == ash::kGraduationAppId) {
+    return apps::DefaultAppName::kGraduationApp;
   } else if (app_id == ash::kHelpAppId) {
     return apps::DefaultAppName::kHelpApp;
   } else if (app_id == ash::kMallSystemAppId) {

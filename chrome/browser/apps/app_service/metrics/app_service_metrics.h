@@ -76,9 +76,10 @@ enum class DefaultAppName {
   kGemini = 58,
   kMall = 59,
   kSanitizeApp = 60,
+  kGraduationApp = 61,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kSanitizeApp,
+  kMaxValue = kGraduationApp,
 };
 
 // The built-in app's histogram name. This is used for logging so do not change

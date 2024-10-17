@@ -4055,6 +4055,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="58" label="Gemini"/>
   <int value="59" label="Mall"/>
   <int value="60" label="Sanitize"/>
+  <int value="61" label="Content Transfer"/>
 </enum>
 
 <enum name="DefaultBrowserInfoBarUserInteraction">
