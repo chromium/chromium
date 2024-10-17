@@ -1616,7 +1616,7 @@
   {
     "name": "conch",
     "owners": ["pihsun@chromium.org"],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "conch-key",
@@ -1626,7 +1626,7 @@
   {
     "name": "conch-system-audio-from-mic",
     "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "content-notification-experiment",
