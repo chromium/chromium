@@ -197,9 +197,7 @@ TEST_F(
               Optional(EqualsSuggestion(
                   SuggestionType::kComposeSavedStateNotification,
                   l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
-                  Suggestion::Icon::kPenSpark,
-                  {{Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}})));
+                  Suggestion::Icon::kPenSpark)));
 }
 
 TEST_F(

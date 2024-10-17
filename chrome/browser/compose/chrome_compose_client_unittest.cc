@@ -1016,6 +1016,9 @@ TEST_F(ChromeComposeClientTest,
 }
 
 TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
+  // Disable the proactive nudge
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = false;
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
