@@ -43,6 +43,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   static CSSValue* Create(const Length& value, float zoom);
 
   WTF::String CssText() const;
+  unsigned Hash() const;
 
   bool IsNumericLiteralValue() const {
     return class_type_ == kNumericLiteralClass;

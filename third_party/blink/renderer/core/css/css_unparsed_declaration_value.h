@@ -54,6 +54,7 @@ class CORE_EXPORT CSSUnparsedDeclarationValue final : public CSSValue {
     return base::ValuesEquivalent(data_, other.data_);
   }
   String CustomCSSText() const;
+  unsigned CustomHash() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

@@ -76,6 +76,7 @@ class CORE_EXPORT CSSValueList : public CSSValue {
 
   WTF::String CustomCSSText() const;
   bool Equals(const CSSValueList&) const;
+  unsigned CustomHash() const;
 
   const CSSValue* UntaintedCopy() const;
   const CSSValueList& PopulateWithTreeScope(const TreeScope*) const;

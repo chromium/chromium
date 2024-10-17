@@ -45,19 +45,34 @@ void MatchedProperties::Trace(Visitor* visitor) const {
 }
 
 void MatchResult::AddMatchedProperties(const CSSPropertyValueSet* properties,
-                                       const MatchedProperties::Data& types) {
-  MatchedProperties::Data new_types = types;
-  new_types.tree_order = current_tree_order_;
+                                       const MatchedProperties::Data& data) {
+  MatchedProperties::Data new_data = data;
+  new_data.tree_order = current_tree_order_;
   matched_properties_.emplace_back(const_cast<CSSPropertyValueSet*>(properties),
-                                   new_types);
+                                   new_data);
+  matched_properties_hashes_.emplace_back(properties->GetHash(), new_data);
+
+  if (properties->ModifiedSinceHashing()) {
+    // These properties were mutated as some point after original
+    // insertion, so it is not safe to use them in the MPC.
+    // In particular, the hash is wrong, but also, it's probably
+    // not a good idea performance-wise, since if something has
+    // been modified once, it might keep being modified, making
+    // it less useful for caching.
+    //
+    // There is a separate check for the case where we insert
+    // something into the MPC and then the properties used in the key
+    // change afterwards; see CachedMatchedProperties::CorrespondsTo().
+    is_cacheable_ = false;
+  }
 
 #if DCHECK_IS_ON()
-  DCHECK_NE(types.origin, CascadeOrigin::kNone);
-  DCHECK_GE(types.origin, last_origin_);
+  DCHECK_NE(data.origin, CascadeOrigin::kNone);
+  DCHECK_GE(data.origin, last_origin_);
   if (!tree_scopes_.empty()) {
-    DCHECK_EQ(types.origin, CascadeOrigin::kAuthor);
+    DCHECK_EQ(data.origin, CascadeOrigin::kAuthor);
   }
-  last_origin_ = types.origin;
+  last_origin_ = data.origin;
 #endif
 }
 
@@ -70,6 +85,7 @@ void MatchResult::BeginAddingAuthorRulesForTreeScope(
 
 void MatchResult::Reset() {
   matched_properties_.clear();
+  matched_properties_hashes_.clear();
   is_cacheable_ = true;
   depends_on_size_container_queries_ = false;
 #if DCHECK_IS_ON()

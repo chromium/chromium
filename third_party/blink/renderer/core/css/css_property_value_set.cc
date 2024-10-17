@@ -80,6 +80,50 @@ ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
       mutable_this->property_vector_.size(), CssParserMode());
 }
 
+unsigned CSSPropertyValueSet::ComputeHash() const {
+  unsigned hash = 3141592653;
+
+  const unsigned num_properties = PropertyCount();
+  for (unsigned i = 0; i < num_properties; ++i) {
+    const PropertyReference property = PropertyAt(i);
+
+    if (property.Id() == CSSPropertyID::kVariable) {
+      WTF::AddIntToHash(hash, property.Name().ToAtomicString().Hash());
+    } else {
+      WTF::AddIntToHash(hash, static_cast<unsigned>(property.Id()));
+    }
+    WTF::AddIntToHash(hash, property.IsImportant());
+    WTF::AddIntToHash(hash, property.Value().Hash());
+  }
+
+  static_assert((WTF::HashTraits<unsigned>::EmptyValue() ^ 0x80000000) !=
+                    WTF::HashTraits<unsigned>::DeletedValue(),
+                "We assume below that flipping the top bit will not turn "
+                "EmptyValue into DeletedValue or vice versa");
+  if (hash == WTF::HashTraits<unsigned>::EmptyValue() ||
+      hash == WTF::HashTraits<unsigned>::DeletedValue()) {
+    hash ^= 0x80000000;
+  }
+
+  return hash;
+}
+
+bool CSSPropertyValueSet::ContentsEqual(
+    const CSSPropertyValueSet& other) const {
+  const unsigned num_properties = PropertyCount();
+  if (num_properties != other.PropertyCount()) {
+    return false;
+  }
+
+  for (unsigned i = 0; i < num_properties; ++i) {
+    if (!(PropertyAt(i) == other.PropertyAt(i))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
     CSSParserMode css_parser_mode)
     : CSSPropertyValueSet(css_parser_mode) {}
@@ -323,6 +367,8 @@ bool MutableCSSPropertyValueSet::RemovePropertyAtIndex(int property_index,
   // and sweeping them when the vector grows too big.
   property_vector_.EraseAt(property_index);
 
+  InvalidateHashIfComputed();
+
   return true;
 }
 
@@ -473,6 +519,7 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
     property_vector_.push_back(
         CSSPropertyValue(longhand_name, value, important));
   }
+  InvalidateHashIfComputed();
 }
 
 ALWAYS_INLINE CSSPropertyValue*
@@ -517,11 +564,13 @@ MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyValue property) {
       return kUnchanged;
     }
     *to_replace = std::move(property);
+    InvalidateHashIfComputed();
     return kModifiedExisting;
   } else {
     may_have_logical_properties_ |= kLogicalGroupProperties.Has(id);
   }
   property_vector_.push_back(std::move(property));
+  InvalidateHashIfComputed();
   return kChangedPropertySet;
 }
 
@@ -537,6 +586,7 @@ void MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyID property_id,
     may_have_logical_properties_ |= kLogicalGroupProperties.Has(property_id);
     property_vector_.emplace_back(CSSPropertyName(property_id), value);
   }
+  InvalidateHashIfComputed();
 }
 
 MutableCSSPropertyValueSet::SetResult
@@ -553,6 +603,7 @@ void MutableCSSPropertyValueSet::ParseDeclarationList(
     SecureContextMode secure_context_mode,
     StyleSheetContents* context_style_sheet) {
   property_vector_.clear();
+  InvalidateHashIfComputed();
 
   CSSParserContext* context;
   if (context_style_sheet) {
@@ -613,6 +664,7 @@ bool CSSPropertyValueSet::HasFailedOrCanceledSubresources() const {
 
 void MutableCSSPropertyValueSet::Clear() {
   property_vector_.clear();
+  InvalidateHashIfComputed();
   may_have_logical_properties_ = false;
 }
 
@@ -646,6 +698,7 @@ bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
   }
   if (new_index != old_size) {
     property_vector_.Shrink(new_index);
+    InvalidateHashIfComputed();
     return true;
   }
   return false;
@@ -780,6 +833,7 @@ unsigned CSSPropertyValueSet::AverageSizeInBytes() {
 struct SameSizeAsCSSPropertyValueSet final
     : public GarbageCollected<SameSizeAsCSSPropertyValueSet> {
   uint32_t bitfield;
+  unsigned hash;
 };
 ASSERT_SIZE(CSSPropertyValueSet, SameSizeAsCSSPropertyValueSet);
 

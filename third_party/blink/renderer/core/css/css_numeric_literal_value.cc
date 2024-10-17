@@ -370,6 +370,12 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
   }
 }
 
+unsigned CSSNumericLiteralValue::CustomHash() const {
+  uint64_t val = base::bit_cast<uint64_t>(num_);
+  return WTF::HashInts(static_cast<unsigned>(GetType()),
+                       WTF::HashInts(val >> 32, val));
+}
+
 CSSPrimitiveValue::UnitType CSSNumericLiteralValue::CanonicalUnit() const {
   return CanonicalUnitTypeForCategory(UnitTypeToUnitCategory(GetType()));
 }

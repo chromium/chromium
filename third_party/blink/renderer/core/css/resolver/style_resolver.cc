@@ -283,6 +283,13 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     exclusions.insert(DebugField::border_image_);
   }
 
+  // clip_path_ too, for the reference.
+  if (!CSSPropertyEquality::PropertiesEqual(
+          PropertyHandle(CSSProperty::Get(CSSPropertyID::kClipPath)),
+          *base_computed_style, computed_style)) {
+    exclusions.insert(DebugField::clip_path_);
+  }
+
   // Changes to this flag caused by history.pushState do not always mark
   // for recalc in time, yet VisitedLinkState::DetermineLinkState will provide
   // the up-to-date answer when polled.
@@ -733,13 +740,12 @@ void MatchStyleAttribute(const Element& element,
       collector.GetPseudoId() == kPseudoIdNone) {
     // Do not add styles depending on style attributes to the
     // MatchedPropertiesCache (MPC) if they have been modified after parsing.
-    // The reason is that such declarations are not shared across elements and
-    // the caching would effectively only be useful for multiple resolutions for
-    // the same element with the exact same styles.
+    // The reason is that these are typically used for animations by modifying
+    // the style attribute every frame, and making the style cacheable would
+    // effectively just fill up the MPC with unnecessary ComputedStyles.
     //
-    // For cases where animations are done by modifying the style attribute
-    // every frame, making the style cacheable would effectively just fill up
-    // the MPC with unnecessary ComputedStyles.
+    // Note that we have a special fast path for modifying certain independent
+    // attributes on inline style, which also bypasses the MPC.
     bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
     collector.AddElementStyleProperties(
         element.InlineStyle(), CascadeOrigin::kAuthor,
@@ -1135,18 +1141,9 @@ void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
                                              ElementRuleCollector& collector) {
   Element& element = state.GetElement();
   if (element.IsStyledElement() && !state.IsForPseudoElement()) {
-    // Do not add styles depending on presentation attributes to the
-    // MatchedPropertiesCache (MPC) for SVG elements. The reason is that such
-    // declarations are not shared across elements and the caching would
-    // effectively only be useful for multiple resolutions for the same element
-    // with the exact same styles. We do this for SVG elements specifically
-    // since we have cases where SVG elements are animated by changing an
-    // attribute every frame, filling up the MPC.
-    const bool is_cacheable = !element.IsSVGElement();
-
     collector.AddElementStyleProperties(
         element.PresentationAttributeStyle(),
-        CascadeOrigin::kAuthorPresentationalHint, is_cacheable);
+        CascadeOrigin::kAuthorPresentationalHint);
 
     // Now we check additional mapped declarations.
     // Tables and table cells share an additional mapped rule that must be
@@ -1154,7 +1151,7 @@ void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
     // values of multiple attributes.
     collector.AddElementStyleProperties(
         element.AdditionalPresentationAttributeStyle(),
-        CascadeOrigin::kAuthorPresentationalHint, is_cacheable);
+        CascadeOrigin::kAuthorPresentationalHint);
 
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       if (html_element->HasDirectionAuto()) {

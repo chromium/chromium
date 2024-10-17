@@ -41,6 +41,14 @@ String CSSCustomIdentValue::CustomCSSText() const {
   return builder.ReleaseString();
 }
 
+unsigned CSSCustomIdentValue::CustomHash() const {
+  if (IsKnownPropertyID()) {
+    return WTF::HashInt(property_id_);
+  } else {
+    return string_.Hash();
+  }
+}
+
 const CSSCustomIdentValue& CSSCustomIdentValue::PopulateWithTreeScope(
     const TreeScope* tree_scope) const {
   DCHECK(this->needs_tree_scope_population_);

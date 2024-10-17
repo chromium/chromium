@@ -521,6 +521,115 @@ String CSSValue::CssText() const {
   return String();
 }
 
+unsigned CSSValue::Hash() const {
+  switch (GetClassType()) {
+    case kColorClass:
+      return WTF::HashInts(GetClassType(),
+                           To<cssvalue::CSSColor>(this)->CustomHash());
+    case kCSSContentDistributionClass:
+      return WTF::HashInts(
+          GetClassType(),
+          To<cssvalue::CSSContentDistributionValue>(this)->CustomHash());
+    case kCustomIdentClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSCustomIdentValue>(this)->CustomHash());
+    case kIdentifierClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSIdentifierValue>(this)->CustomHash());
+    case kNumericLiteralClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSNumericLiteralValue>(this)->CustomHash());
+    case kPathClass:
+      return WTF::HashInts(GetClassType(),
+                           To<cssvalue::CSSPathValue>(this)->CustomHash());
+    case kStringClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSStringValue>(this)->CustomHash());
+    case kUnparsedDeclarationClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSUnparsedDeclarationValue>(this)->CustomHash());
+    case kValueListClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSValueList>(this)->CustomHash());
+    case kValuePairClass:
+      return WTF::HashInts(GetClassType(),
+                           To<CSSValuePair>(this)->CustomHash());
+    // These don't have any values.
+    case kInheritedClass:
+    case kInitialClass:
+    case kUnsetClass:
+    case kRevertClass:
+    case kRevertLayerClass:
+      return WTF::HashInt(GetClassType());
+    case kMathFunctionClass:
+    case kScopedKeywordClass:
+    case kColorMixClass:
+    case kCounterClass:
+    case kQuadClass:
+    case kURIClass:
+    case kLightDarkValuePairClass:
+    case kAppearanceAutoBaseSelectValuePairClass:
+    case kScrollClass:
+    case kViewClass:
+    case kRatioClass:
+    case kRelativeColorClass:
+    case kBasicShapeCircleClass:
+    case kBasicShapeEllipseClass:
+    case kBasicShapePolygonClass:
+    case kBasicShapeInsetClass:
+    case kBasicShapeRectClass:
+    case kBasicShapeXYWHClass:
+    case kImageClass:
+    case kCursorImageClass:
+    case kCrossfadeClass:
+    case kPaintClass:
+    case kLinearGradientClass:
+    case kRadialGradientClass:
+    case kConicGradientClass:
+    case kConstantGradientClass:
+    case kLinearTimingFunctionClass:
+    case kCubicBezierTimingFunctionClass:
+    case kStepsTimingFunctionClass:
+    case kBorderImageSliceClass:
+    case kDynamicRangeLimitMixClass:
+    case kFontFeatureClass:
+    case kFontFaceSrcClass:
+    case kFontFamilyClass:
+    case kFontStyleRangeClass:
+    case kFontVariationClass:
+    case kAlternateClass:
+    case kReflectClass:
+    case kShadowClass:
+    case kUnicodeRangeClass:
+    case kGridTemplateAreasClass:
+    case kPaletteMixClass:
+    case kRayClass:
+    case kPendingSubstitutionValueClass:
+    case kPendingSystemFontValueClass:
+    case kInvalidVariableValueClass:
+    case kCyclicVariableValueClass:
+    case kFlipRevertClass:
+    case kLayoutFunctionClass:
+    case kKeyframeShorthandClass:
+    case kInitialColorValueClass:
+    case kImageSetOptionClass:
+    case kImageSetTypeClass:
+    case kRepeatStyleClass:
+    case kFunctionClass:
+    case kImageSetClass:
+    case kGridLineNamesClass:
+    case kGridAutoRepeatClass:
+    case kGridIntegerRepeatClass:
+    case kAxisClass:
+    case kRepeatClass:
+      // For rare or complicated CSSValue types, we simply use the pointer value
+      // as hash; it will definitely give false negatives, but those are fine.
+      // The lower 32 bits should be fine, as we live inside a 4G Oilpan cage
+      // anyway.
+      return static_cast<unsigned>(reinterpret_cast<uintptr_t>(this));
+  }
+}
+
 const CSSValue* CSSValue::UntaintedCopy() const {
   if (const auto* v = DynamicTo<CSSValueList>(this)) {
     return v->UntaintedCopy();

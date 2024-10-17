@@ -97,6 +97,17 @@ struct SameSizeAsMatchedProperties {
 
 ASSERT_SIZE(MatchedProperties, SameSizeAsMatchedProperties);
 
+struct CORE_EXPORT MatchedPropertiesHash {
+  // The value of ComputeHash() of the corresponding CSSPropertyValueSet.
+  unsigned hash;
+
+  // It's unfortunate that we need to duplicate Data here just to have it be
+  // part of the hash, but we cannot easily move it out of MatchedProperties,
+  // since CachedMatchedProperties::CorrespondsTo() needs it (and the hashes
+  // are not stored in CachedMatchedProperties).
+  MatchedProperties::Data data;
+};
+
 }  // namespace blink
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
@@ -104,6 +115,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
 namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
+using MatchedPropertiesHashVector = HeapVector<MatchedPropertiesHash, 64>;
 
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
@@ -210,6 +222,9 @@ class CORE_EXPORT MatchResult {
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
   }
+  const MatchedPropertiesHashVector& GetMatchedPropertiesHash() const {
+    return matched_properties_hashes_;
+  }
 
   // Reset the MatchResult to its initial state, as if no MatchedProperties
   // objects were added.
@@ -229,6 +244,9 @@ class CORE_EXPORT MatchResult {
 
  private:
   MatchedPropertiesVector matched_properties_;
+  // Same size as matched_properties_; kept separate so that it is
+  // contiguous (so that we hash the hashes more easily).
+  MatchedPropertiesHashVector matched_properties_hashes_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};

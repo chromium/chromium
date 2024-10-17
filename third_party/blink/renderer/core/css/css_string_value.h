@@ -24,6 +24,7 @@ class CORE_EXPORT CSSStringValue : public CSSValue {
   bool Equals(const CSSStringValue& other) const {
     return string_ == other.string_;
   }
+  unsigned CustomHash() const { return string_.Impl()->GetHash(); }
 
   const CSSValue* TaintedCopy() const;
   const CSSValue* UntaintedCopy() const;

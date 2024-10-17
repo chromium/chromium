@@ -87,6 +87,11 @@ class CORE_EXPORT CSSPropertyValueSet
 
     const CSSPropertyValueMetadata& PropertyMetadata() const;
 
+    bool operator==(const PropertyReference& other) const {
+      return Name() == other.Name() && IsImportant() == other.IsImportant() &&
+             Value() == other.Value();
+    }
+
    private:
     const CSSValue& PropertyValue() const;
 
@@ -147,6 +152,46 @@ class CORE_EXPORT CSSPropertyValueSet
   bool IsMutable() const { return is_mutable_; }
   bool ContainsCursorHand() const { return contains_cursor_hand_; }
 
+  // Computes a hash of the contents of this property value set
+  // (cached after first call). Note that hash equality may have
+  // false negatives (there is no guarantee that a.AsText() == b.AsText()
+  // implies a.GetHash() == b.GetHash()), because not all CSSValues are
+  // easily hashed and may fall back to using the pointer value.
+  //
+  // The hash value has a second task, namely to mark property sets that have
+  // been modified after we've stored them into the MPC
+  // (MatchedPropertiesCache). If you call GetHash() and then later modify the
+  // property set (in any way that would change the hash), all future calls to
+  // GetHash() for this object will return HashTraits<unsigned>::DeletedValue(),
+  // making them invalid for cache lookup uses. (This status can be reset if you
+  // clone the object, such as calling ImmutableCopyIfNeeded().) This protects
+  // the MPC from returning false positives when a mutable CSSPropertyValueSet
+  // has changed, such as for SVG objects' “direct update” of the presentation
+  // attribute style.
+  //
+  // Can never return HashTraits<unsigned>::EmptyValue() (it is used
+  // internally).
+  unsigned GetHash() const {
+    if (hash_ == WTF::HashTraits<unsigned>::EmptyValue()) {
+      hash_ = ComputeHash();
+    }
+    return hash_;
+  }
+  unsigned GetExistingHash() const {
+    DCHECK_NE(hash_, WTF::HashTraits<unsigned>::EmptyValue());
+    return hash_;
+  }
+  bool ModifiedSinceHashing() const {
+    return hash_ == WTF::HashTraits<unsigned>::DeletedValue();
+  }
+
+  bool Equals(const CSSPropertyValueSet& other) {
+    if (this == &other) {
+      return true;
+    }
+    return ContentsEqual(other);
+  }
+
   bool HasFailedOrCanceledSubresources() const;
 
   static unsigned AverageSizeInBytes();
@@ -181,10 +226,17 @@ class CORE_EXPORT CSSPropertyValueSet
         is_mutable_(false),
         contains_cursor_hand_(contains_cursor_hand) {}
 
+  unsigned ComputeHash() const;
+  bool ContentsEqual(const CSSPropertyValueSet& other) const;
+
   const uint32_t array_size_ : 26;
   const uint32_t css_parser_mode_ : 4;
   const uint32_t is_mutable_ : 1;
   const uint32_t contains_cursor_hand_ : 1;
+
+  // EmptyValue() means “not computed yet”. DeletedValue() means “invalid”
+  // (see GetHash()).
+  mutable unsigned hash_ = WTF::HashTraits<unsigned>::EmptyValue();
 
   friend class PropertySetCSSStyleDeclaration;
 };
@@ -377,6 +429,13 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
     return false;
   }
   CSSPropertyValue* FindCSSPropertyWithName(const CSSPropertyName&);
+
+  void InvalidateHashIfComputed() {
+    if (hash_ != WTF::HashTraits<unsigned>::EmptyValue()) {
+      hash_ = WTF::HashTraits<unsigned>::DeletedValue();
+    }
+  }
+
   Member<PropertySetCSSStyleDeclaration> cssom_wrapper_;
 
   friend class CSSPropertyValueSet;

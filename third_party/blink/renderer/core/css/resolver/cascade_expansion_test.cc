@@ -690,7 +690,7 @@ TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
 
   // Actually give the indexes a value, such that the calls to
   // ExpansionAt() does not crash.
-  for (wtf_size_t i = 0; i < max + 1; ++i) {
+  for (wtf_size_t i = 0; i < max + 2; ++i) {
     declarations[i] = CSSPropertyValue(CSSPropertyName(CSSPropertyID::kColor),
                                        *cssvalue::CSSUnsetValue::Create());
   }

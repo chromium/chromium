@@ -44,9 +44,15 @@
 namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
-  const MatchedPropertiesVector& properties = result.GetMatchedProperties();
-  return StringHasher::HashMemory(
-      properties.data(), sizeof(MatchedProperties) * properties.size());
+  const MatchedPropertiesHashVector& hashes = result.GetMatchedPropertiesHash();
+  DCHECK(!std::any_of(hashes.begin(), hashes.end(),
+                      [](const MatchedPropertiesHash& hash) {
+                        return hash.hash ==
+                               WTF::HashTraits<unsigned>::DeletedValue();
+                      }))
+      << "This should have been checked in AddMatchedProperties()";
+  return StringHasher::HashMemory(hashes.data(),
+                                  sizeof(hashes[0]) * hashes.size());
 }
 
 CachedMatchedProperties::CachedMatchedProperties(
@@ -179,11 +185,33 @@ bool CachedMatchedProperties::CorrespondsTo(
   if (lookup_properties.size() != matched_properties.size()) {
     return false;
   }
-  for (wtf_size_t i = 0; i < lookup_properties.size(); ++i) {
-    if (lookup_properties[i].properties != matched_properties[i]) {
+  CHECK_EQ(matched_properties.size(), matched_properties_metadata.size());
+
+  // These incantations are to make Clang realize it does not have to
+  // bounds-check.
+  auto lookup_it = lookup_properties.begin();
+  auto cached_it = matched_properties.begin();
+  auto metadata_it = matched_properties_metadata.begin();
+  for (; lookup_it != lookup_properties.end(); std::advance(lookup_it, 1),
+                                               std::advance(cached_it, 1),
+                                               std::advance(metadata_it, 1)) {
+    CSSPropertyValueSet* cached_properties = *cached_it;
+    DCHECK(!lookup_it->properties->ModifiedSinceHashing())
+        << "This should have been checked in AddMatchedProperties()";
+    if (cached_properties->ModifiedSinceHashing()) {
+      // These properties were mutated as some point after original
+      // insertion, so it is not safe to use them in the MPC
+      // (Equals() below would be comparing against the current state,
+      // not the state it had when the ComputedStyle in the cache
+      // was built). Note that this is very unlikely to actually
+      // happen in practice, since even getting here would also require
+      // a hash collision.
       return false;
     }
-    if (lookup_properties[i].data_ != matched_properties_metadata[i]) {
+    if (!lookup_it->properties->Equals(*cached_properties)) {
+      return false;
+    }
+    if (lookup_it->data_ != *metadata_it) {
       return false;
     }
   }
@@ -344,7 +372,8 @@ static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
   return std::any_of(value.matched_properties.begin(),
                      value.matched_properties.end(),
                      [&info](const CSSPropertyValueSet* properties) {
-                       return !info.IsHeapObjectAlive(properties);
+                       return !info.IsHeapObjectAlive(properties) ||
+                              properties->ModifiedSinceHashing();
                      });
 }
 
