@@ -18,7 +18,6 @@ group("unit_tests") {
   deps = [
     "//chrome/browser/chromeos/app_mode:unit_tests",
     "//chrome/browser/chromeos/arc:unit_tests",
-    "//chrome/browser/chromeos/container_app:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
     "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
@@ -31,6 +30,7 @@ group("unit_tests") {
     "//chrome/browser/chromeos/extensions/login_screen/login_state:unit_tests",
     "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
+    "//chrome/browser/chromeos/gemini_app:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/policy/dlp:unit_tests",
     "//chrome/browser/chromeos/printing/print_preview:unit_tests",

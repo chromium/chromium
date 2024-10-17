@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CONTAINER_APP_CONTAINER_APP_TAB_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_CONTAINER_APP_CONTAINER_APP_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_GEMINI_APP_GEMINI_APP_TAB_HELPER_H_
+#define CHROME_BROWSER_CHROMEOS_GEMINI_APP_GEMINI_APP_TAB_HELPER_H_
 
 #include <map>
 
@@ -12,12 +12,12 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 // Helper which is attached to every browser tab in order to record visits to
-// container app related pages.
-class ContainerAppTabHelper
+// Gemini app related pages.
+class GeminiAppTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<ContainerAppTabHelper> {
+      public content::WebContentsUserData<GeminiAppTabHelper> {
  public:
-  // Enumerations of pages related to the container app for which visits should
+  // Enumerations of pages related to the Gemini app for which visits should
   // be recorded. These values are persisted to logs. Entries should not be
   // renumbered and numeric values should never be reused.
   enum class Page {
@@ -29,12 +29,12 @@ class ContainerAppTabHelper
     kMaxValue = kDebug,
   };
 
-  ContainerAppTabHelper(const ContainerAppTabHelper&) = delete;
-  ContainerAppTabHelper& operator=(const ContainerAppTabHelper&) = delete;
-  ~ContainerAppTabHelper() override;
+  GeminiAppTabHelper(const GeminiAppTabHelper&) = delete;
+  GeminiAppTabHelper& operator=(const GeminiAppTabHelper&) = delete;
+  ~GeminiAppTabHelper() override;
 
   // Attaches a new instance to `web_contents` if and only if:
-  // (a) the container app preinstallation feature is enabled, and
+  // (a) the Gemini app preinstallation feature is enabled, and
   // (b) the specified `web_contents` is not off the record.
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
@@ -44,8 +44,8 @@ class ContainerAppTabHelper
   SetPageUrlsForTesting(std::map<GURL, Page> page_urls);
 
  private:
-  explicit ContainerAppTabHelper(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<ContainerAppTabHelper>;
+  explicit GeminiAppTabHelper(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<GeminiAppTabHelper>;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -54,4 +54,4 @@ class ContainerAppTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_CONTAINER_APP_CONTAINER_APP_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_GEMINI_APP_GEMINI_APP_TAB_HELPER_H_

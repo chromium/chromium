@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/container_app/container_app_tab_helper.h"
+#include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 
 #include <map>
 #include <memory>
@@ -39,18 +39,18 @@ using ::testing::WithParamInterface;
 
 }  // namespace
 
-// ContainerAppTabHelperTest ---------------------------------------------------
+// GeminiAppTabHelperTest ------------------------------------------------------
 
-// Base class for tests of the `ContainerAppTabHelper` parameterized by:
+// Base class for tests of the `GeminiAppTabHelper` parameterized by:
 // (a) whether the Gemini app preinstallation feature is enabled.
 // (b) whether the profile is off the record.
-class ContainerAppTabHelperTest
+class GeminiAppTabHelperTest
     : public ChromeRenderViewHostTestHarness,
       public WithParamInterface<
           std::tuple</*is_gemini_app_preinstall_enabled=*/bool,
                      /*is_profile_off_the_record=*/bool>> {
  public:
-  ContainerAppTabHelperTest() {
+  GeminiAppTabHelperTest() {
     scoped_feature_list_.InitWithFeatureState(
         chromeos::features::kGeminiAppPreinstall,
         IsGeminiAppPreinstallEnabled());
@@ -80,7 +80,7 @@ class ContainerAppTabHelperTest
           otr_profile, content::SiteInstance::Create(otr_profile)));
     }
 
-    ContainerAppTabHelper::MaybeCreateForWebContents(web_contents());
+    GeminiAppTabHelper::MaybeCreateForWebContents(web_contents());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -91,20 +91,20 @@ class ContainerAppTabHelperTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ContainerAppTabHelperTest,
+                         GeminiAppTabHelperTest,
                          Combine(/*is_gemini_app_preinstall_enabled=*/Bool(),
                                  /*is_profile_off_the_record=*/Bool()));
 
 // Tests -----------------------------------------------------------------------
 
 // Verifies that page visits are recorded to histograms as expected.
-TEST_P(ContainerAppTabHelperTest, RecordsPageVisitHistograms) {
+TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   // Aliases.
-  using Page = ContainerAppTabHelper::Page;
+  using Page = GeminiAppTabHelper::Page;
 
   // Constants.
   constexpr char kBaseUrl[] = "https://example.com/";
-  constexpr char kHistogramName[] = "Ash.ContainerApp.Page.Visit";
+  constexpr char kHistogramName[] = "Ash.GeminiApp.Page.Visit";
   constexpr char kRelativeFilename[] = "./filename";
 
   // Pages.
@@ -121,7 +121,7 @@ TEST_P(ContainerAppTabHelperTest, RecordsPageVisitHistograms) {
 
   // Replace URL for each page.
   base::AutoReset<std::map<uint64_t, Page>> page_urls_reset =
-      ContainerAppTabHelper::SetPageUrlsForTesting(page_urls);
+      GeminiAppTabHelper::SetPageUrlsForTesting(page_urls);
 
   base::HistogramTester histogram_tester;
   std::vector<Bucket> histogram_buckets;

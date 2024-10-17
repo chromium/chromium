@@ -6,10 +6,10 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
-static_library("container_app") {
+static_library("gemini_app") {
   sources = [
-    "container_app_tab_helper.cc",
-    "container_app_tab_helper.h",
+    "gemini_app_tab_helper.cc",
+    "gemini_app_tab_helper.h",
   ]
 
   public_deps = [
@@ -23,10 +23,10 @@ static_library("container_app") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "container_app_tab_helper_unittest.cc" ]
+  sources = [ "gemini_app_tab_helper_unittest.cc" ]
 
   deps = [
-    ":container_app",
+    ":gemini_app",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",

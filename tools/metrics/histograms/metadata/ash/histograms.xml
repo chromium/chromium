@@ -2518,16 +2518,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.ContainerApp.Page.Visit" enum="ContainerAppPage"
-    expires_after="2025-03-02">
-  <owner>dmblack@google.com</owner>
-  <owner>xiaohuic@chromium.org</owner>
-  <summary>
-    Records visits to container app related pages. Emitted when the browser tab
-    performing the visit has started navigation to the recorded page.
-  </summary>
-</histogram>
-
 <histogram name="Ash.ContentTransfer.FlowState" enum="ContentTransferFlowState"
     expires_after="2025-10-07">
   <owner>courtneywong@chromium.org</owner>
@@ -4551,6 +4541,16 @@ chromium-metrics-reviews@google.com.
   <owner>phshah@chromium.org</owner>
   <summary>
     Records whether the welcome notification is toggled on or off.
+  </summary>
+</histogram>
+
+<histogram name="Ash.GeminiApp.Page.Visit" enum="GeminiAppPage"
+    expires_after="2025-03-02">
+  <owner>dmblack@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Records visits to Gemini app related pages. Emitted when the browser tab
+    performing the visit has started navigation to the recorded page.
   </summary>
 </histogram>
 

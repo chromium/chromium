@@ -520,13 +520,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
              screenshot"/>
 </enum>
 
-<enum name="ContainerAppPage">
-  <int value="0" label="Congratulations"/>
-  <int value="1" label="Offer"/>
-  <int value="2" label="Terms &amp; Conditions"/>
-  <int value="3" label="Debug"/>
-</enum>
-
 <enum name="ContentTransferFlowState">
   <int value="0" label="Welcome screen"/>
   <int value="1" label="Takeout screen"/>
@@ -1281,6 +1274,13 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="FocusModeStartSessionSource">
   <int value="0" label="Focus panel"/>
   <int value="1" label="Feature pod"/>
+</enum>
+
+<enum name="GeminiAppPage">
+  <int value="0" label="Congratulations"/>
+  <int value="1" label="Offer"/>
+  <int value="2" label="Terms &amp; Conditions"/>
+  <int value="3" label="Debug"/>
 </enum>
 
 <enum name="GlanceableStudentAssignmentList">
