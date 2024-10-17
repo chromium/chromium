@@ -5,34 +5,96 @@
 
 import unittest
 import web_idl_schema
+
 from web_idl_schema import SchemaCompilerError
 
+# Helper functions for fetching specific parts of a processed API schema
+# dictionary.
 
-def getFunction(schema, name):
+
+def getFunction(schema: dict, name: str) -> dict:
+  """Gets the function dictionary with the specified name from the schema.
+
+  Args:
+    schema: The processed API schema dictionary to look for the function in.
+    name: The name of the function to look for.
+
+  Returns:
+    The dictionary for the function with the specified name.
+
+  Raises:
+    KeyError: If the given function name was not found in the list of functions.
+  """
   for item in schema['functions']:
     if item['name'] == name:
       return item
   raise KeyError('Could not find "function" with name "%s" in schema' % name)
 
 
-def getType(schema, name):
+def getType(schema: dict, name: str) -> dict:
+  """Gets the custom type dictionary with the specified name from the schema.
+
+  Args:
+    schema: The processed API schema dictionary to look for the type in.
+    name: The name of the custom type to look for.
+
+  Returns:
+    The dictionary for the custom type with the specified name.
+
+  Raises:
+    KeyError: If the given type name was not found in the list of types.
+  """
   for item in schema['types']:
     if item['id'] == name:
       return item
   raise KeyError('Could not find "type" with id "%s" in schema' % name)
 
 
-def getFunctionReturn(schema, name):
+def getFunctionReturn(schema: dict, name: str) -> dict:
+  """Gets the return dictionary for the function with the specified name.
+
+  Args:
+    schema: The processed API schema dictionary to look for the function in.
+    name: The name of the function to get the return value from.
+
+  Returns:
+    The dictionary representing the return for the specified function name if it
+    has a return, otherwise None if it does not.
+  """
   function = getFunction(schema, name)
   return function.get('returns', None)
 
 
-def getFunctionAsyncReturn(schema, name):
+def getFunctionAsyncReturn(schema: dict, name: str) -> dict:
+  """Gets the async return dictionary for the function with the specified name.
+
+  Args:
+    schema: The processed API schema dictionary to look for the function in.
+    name: The name of the function to get the async return value from.
+
+  Returns:
+    The dictionary representing the async return for the function with the
+    specified name if it has one, otherwise None if it does not.
+  """
   function = getFunction(schema, name)
   return function.get('returns_async', None)
 
 
-def getFunctionParameters(schema, name):
+def getFunctionParameters(schema: dict, name: str) -> dict:
+  """Gets the list of parameters for the function with the specified name.
+
+  Args:
+    schema: The processed API schema dictionary to look for the function in.
+    name: The name of the function to get the parameters list from.
+
+  Returns:
+    The list of dictionaries representing the function parameters for the
+    function with the specified name if it has any, otherwise None if it does
+    not.
+  """
+  # TODO(crbug.com/340297705): All functions should have the 'parameters' key,
+  # so we shouldn't have a None fallback and just raise a KeyError if it isn't
+  # present.
   function = getFunction(schema, name)
   return function.get('parameters', None)
 
