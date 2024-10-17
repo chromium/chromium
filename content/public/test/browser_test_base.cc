@@ -313,6 +313,11 @@ BrowserTestBase::BrowserTestBase() {
 }
 
 BrowserTestBase::~BrowserTestBase() {
+#if BUILDFLAG(IS_ANDROID)
+  // DiscardableSharedMemoryManager destruction can block the current thread.
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+  discardable_shared_memory_manager_.reset();
+#endif
   CHECK(set_up_called_ || IsSkipped() || HasFatalFailure())
       << "SetUp was not called. This probably means that the "
          "developer has overridden the method and not called "
@@ -694,7 +699,7 @@ void BrowserTestBase::SetUp() {
       "FeatureList overrides must happen in the test constructor, before "
       "BrowserTestBase::SetUp() has run.");
 
-  auto discardable_shared_memory_manager =
+  discardable_shared_memory_manager_ =
       std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
   auto ipc_support =
       std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());
@@ -745,7 +750,6 @@ void BrowserTestBase::SetUp() {
     // Shutting these down will block the thread.
     ShutDownNetworkService();
     ipc_support.reset();
-    discardable_shared_memory_manager.reset();
   }
 
   // Like in BrowserMainLoop::ShutdownThreadsAndCleanUp(), allow IO during main
