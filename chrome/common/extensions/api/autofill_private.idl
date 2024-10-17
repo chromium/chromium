@@ -287,6 +287,9 @@ namespace autofillPrivate {
     // Globally unique identifier for this entry.
     DOMString? guid;
 
+    // The IBAN's instrument ID from the GPay server, if applicable.
+    DOMString? instrumentId;
+
     // IBAN value.
     DOMString? value;
 
