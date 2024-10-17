@@ -478,8 +478,6 @@ api::autotest_private::AppWindowType GetAppWindowType(chromeos::AppType type) {
       return api::autotest_private::AppWindowType::kExtensionApp;
     case chromeos::AppType::BROWSER:
       return api::autotest_private::AppWindowType::kBrowser;
-    case chromeos::AppType::LACROS:
-      return api::autotest_private::AppWindowType::kLacros;
     case chromeos::AppType::NON_APP:
       return api::autotest_private::AppWindowType::kNone;
       // TODO(oshima): Investigate if we want to have "extension" type.

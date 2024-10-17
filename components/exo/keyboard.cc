@@ -115,7 +115,6 @@ bool IsImeSupportedSurface(Surface* surface) {
     switch (app_type) {
       case chromeos::AppType::ARC_APP:
       case chromeos::AppType::CROSTINI_APP:
-      case chromeos::AppType::LACROS:
         return true;
       default:
         // Do nothing.

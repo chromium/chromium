@@ -71,8 +71,7 @@ constexpr ShellWindowId kAppParentContainers[19] = {
 // FullRestoreService.
 constexpr chromeos::AppType kSupportedAppTypes[5] = {
     chromeos::AppType::BROWSER, chromeos::AppType::CHROME_APP,
-    chromeos::AppType::ARC_APP, chromeos::AppType::SYSTEM_APP,
-    chromeos::AppType::LACROS};
+    chromeos::AppType::ARC_APP, chromeos::AppType::SYSTEM_APP};
 
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user

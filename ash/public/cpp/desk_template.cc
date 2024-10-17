@@ -76,7 +76,6 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
     case chromeos::AppType::NON_APP:
     case chromeos::AppType::CROSTINI_APP:
       return false;
-    case chromeos::AppType::LACROS:
     case chromeos::AppType::ARC_APP:
     case chromeos::AppType::BROWSER:
     case chromeos::AppType::CHROME_APP:
