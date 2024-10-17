@@ -399,9 +399,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
                 "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
         Flag.baseFeature(
-                BlinkFeatures.PAINT_HOLDING_CROSS_ORIGIN,
-                "Defers the first commit until FCP or timeout for cross-origin navigations."),
-        Flag.baseFeature(
                 BlinkFeatures.PAINT_HOLDING_FOR_IFRAMES,
                 "Show stale paint from old Document until new Document is ready for subframe"
                         + " navigations."),
