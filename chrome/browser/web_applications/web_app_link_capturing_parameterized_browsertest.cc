@@ -1194,13 +1194,16 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
  private:
   bool ShouldSkipCurrentTest() {
+    // Don't skip any tests if `--run-all-tests` is passed to the test runner.
+    if (ShouldRunDisabledTests()) {
+      return false;
+    }
+
     testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
     const base::Value::Dict& test_case = GetTestCaseDataFromParam();
 
-    // Skip current test-case if the test is disabled and `--run-all-tests` is
-    // not passed to the test runner.
-    if (!ShouldRunDisabledTests() &&
-        test_case.FindBool("disabled").value_or(false)) {
+    // Skip current test-case if the test is disabled in the expectations file.
+    if (test_case.FindBool("disabled").value_or(false)) {
       return true;
     }
 
