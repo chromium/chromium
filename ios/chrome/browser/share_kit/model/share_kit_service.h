@@ -31,8 +31,7 @@ class ShareKitService : public KeyedService {
 
   // Returns a new FacePile view controller for `collab_id`. It will be a
   // "share" button if `collab_id` is nil.
-  // TODO(crbug.com/358373145): Make it pure virtual once downstream is landed.
-  virtual UIViewController* FacePile(NSString* collab_id);
+  virtual UIViewController* FacePile(NSString* collab_id) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SERVICE_H_

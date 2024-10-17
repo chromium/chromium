@@ -7,7 +7,3 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
-
-UIViewController* ShareKitService::FacePile(NSString* collab_id) {
-  return nil;
-}
