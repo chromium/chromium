@@ -11,7 +11,6 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check_deref.h"
-#include "base/command_line.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
@@ -20,6 +19,7 @@
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
+#include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -75,7 +75,8 @@ Browser* OpenA11ySettingsBrowser(KioskSystemSession* session) {
 }
 
 KioskBaseTest::KioskBaseTest()
-    : settings_helper_(false), fake_cws_(new FakeCWS) {
+    : settings_helper_(false),
+      fake_cws_mixin_(&mixin_host_, FakeCwsMixin::CwsInstanceType::kPublic) {
   set_exit_when_last_browser_closes(false);
 }
 
@@ -142,11 +143,6 @@ void KioskBaseTest::TearDownOnMainThread() {
   OobeBaseTest::TearDownOnMainThread();
 }
 
-void KioskBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
-  OobeBaseTest::SetUpCommandLine(command_line);
-  fake_cws_->Init(embedded_test_server());
-}
-
 bool KioskBaseTest::LaunchApp(const std::string& app_id) {
   return LoginScreenTestApi::LaunchApp(app_id);
 }
@@ -167,7 +163,8 @@ void KioskBaseTest::SetupTestAppUpdateCheck() {
     return;
   }
 
-  fake_cws_->SetUpdateCrx(test_app_id(), test_crx_file(), test_app_version());
+  fake_cws_mixin_.fake_cws().SetUpdateCrx(test_app_id(), test_crx_file(),
+                                          test_app_version());
 }
 
 void KioskBaseTest::ReloadAutolaunchKioskApps() {

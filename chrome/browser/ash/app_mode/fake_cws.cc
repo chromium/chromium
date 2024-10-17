@@ -274,9 +274,7 @@ void FakeCWS::InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
                                  std::string_view update_check_end_point) {
   use_private_store_templates_ = true;
   update_check_end_point_ = update_check_end_point;
-
-  SetupWebStoreURL(embedded_test_server->base_url());
-  OverrideGalleryCommandlineSwitches();
+  web_store_url_ = embedded_test_server->base_url();
 
   embedded_test_server->RegisterRequestHandler(
       base::BindRepeating(&FakeCWS::HandleRequest, base::Unretained(this)));

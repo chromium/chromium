@@ -159,6 +159,8 @@ static_library("test_support") {
     "consumer_kiosk_test_helper.h",
     "fake_cws.cc",
     "fake_cws.h",
+    "fake_cws_mixin.cc",
+    "fake_cws_mixin.h",
     "fake_kiosk_app_launcher.cc",
     "fake_kiosk_app_launcher.h",
     "fake_kiosk_controller.cc",
@@ -178,6 +180,7 @@ static_library("test_support") {
   ]
   deps = [
     "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/common",

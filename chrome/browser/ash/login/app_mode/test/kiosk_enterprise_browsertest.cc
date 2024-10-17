@@ -9,13 +9,10 @@
 
 #include "apps/test/app_window_waiter.h"
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/files/file_path.h"
-#include "base/location.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
+#include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
@@ -38,7 +35,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/device_local_account_type.h"
@@ -274,33 +270,23 @@ class SelfHostedKioskEnterpriseTest : public KioskEnterpriseTest {
 
   ~SelfHostedKioskEnterpriseTest() override = default;
 
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    private_store_.InitAsPrivateStore(&test_server_, kPrivateStoreUpdate);
-    KioskEnterpriseTest::SetUpCommandLine(command_line);
-  }
+  FakeCWS& private_cws() { return private_cws_mixin_.fake_cws(); }
 
+ protected:
   void SetUpOnMainThread() override {
     KioskEnterpriseTest::SetUpOnMainThread();
-    private_store_.SetUpdateCrx(kTestEnterpriseKioskAppId,
-                                std::string(kTestEnterpriseKioskAppId) + ".crx",
-                                "1.0.0");
+    private_cws().SetUpdateCrx(kTestEnterpriseKioskAppId,
+                               std::string(kTestEnterpriseKioskAppId) + ".crx",
+                               "1.0.0");
     SetTestApp(kTestEnterpriseKioskAppId);
 
     ConfigureKioskAppInPolicy(kTestEnterpriseAccountId,
                               kTestEnterpriseKioskAppId,
-                              test_server_.GetURL(kPrivateStoreUpdate).spec());
+                              private_cws_mixin_.UpdateUrl().spec());
   }
 
-  FakeCWS private_store_;
-
- private:
-  static constexpr std::string_view kPrivateStoreUpdate =
-      "/private_store_update";
-
-  net::EmbeddedTestServer test_server_;
-  EmbeddedTestServerSetupMixin test_server_setup_mixin_{&mixin_host_,
-                                                        &test_server_};
+  FakeCwsMixin private_cws_mixin_{&mixin_host_,
+                                  FakeCwsMixin::CwsInstanceType::kPrivate};
 };
 
 IN_PROC_BROWSER_TEST_F(SelfHostedKioskEnterpriseTest, SelfHostedChromeApp) {
@@ -316,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SelfHostedKioskEnterpriseTest, SelfHostedChromeApp) {
                               /*terminate_app=*/true);
 
   // Update checks should be made to the private store instead of CWS.
-  EXPECT_GT(private_store_.GetUpdateCheckCountAndReset(), 0);
+  EXPECT_GT(private_cws().GetUpdateCheckCountAndReset(), 0);
   EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
 }
 
